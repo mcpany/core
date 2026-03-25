@@ -130,16 +130,16 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 // Stop waits for the worker to stop.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
-//   - None
+//   - None.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes Stop operation.
 //

@@ -35,7 +35,7 @@ type Watcher struct {
 // NewWatcher creates a new file watcher.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - *Watcher: The resulting *Watcher.
@@ -45,7 +45,7 @@ type Watcher struct {
 //   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Initializes NewWatcher operation.
 //

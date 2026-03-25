@@ -37,10 +37,10 @@ type SmartRecoveryMiddleware struct {
 //   - *SmartRecoveryMiddleware: The resulting *SmartRecoveryMiddleware.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Initializes NewSmartRecoveryMiddleware operation.
 //
@@ -77,7 +77,7 @@ func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManage
 //   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes Execute operation.
 //

@@ -307,7 +307,7 @@ func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, e
 //   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes Register operation.
 //

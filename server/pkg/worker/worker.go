@@ -66,16 +66,16 @@ func (w *Worker) Start(ctx context.Context) {
 // Stop stops the worker and cleans up resources. Summary: Stops the worker. Side Effects: - Waits for pending jobs. - Unsubscribes from the bus.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
-//   - None
+//   - None.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes Stop operation.
 //

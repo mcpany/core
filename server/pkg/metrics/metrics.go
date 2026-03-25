@@ -105,7 +105,7 @@ func Handler() http.Handler {
 // Summary: Starts the metrics server.
 //
 // Parameters:
-//   - addr (string): The address to listen on (e.g., ":8080").
+//   - addr: string. The address to listen on (e.g., ":8080").
 //
 // Returns:
 //   - error: An error if the server fails to start.
@@ -145,9 +145,9 @@ func StartServer(addr string) error {
 // Summary: Sets a gauge metric.
 //
 // Parameters:
-//   - name (string): The name of the gauge.
-//   - val (float32): The value to set.
-//   - labels (...string): A list of labels to apply to the gauge.
+//   - name: string. The name of the gauge.
+//   - val: float32. The value to set.
+//   - labels: ...string. A list of labels to apply to the gauge.
 //
 // Side Effects:
 //   - Updates a global gauge metric.
@@ -166,8 +166,8 @@ func SetGauge(name string, val float32, labels ...string) {
 // Summary: Increments a counter metric.
 //
 // Parameters:
-//   - name ([]string): The name of the counter (as a path).
-//   - val (float32): The amount to increment.
+//   - name: []string. The name of the counter (as a path).
+//   - val: float32. The amount to increment.
 //
 // Side Effects:
 //   - Increments a global counter metric.
@@ -180,9 +180,9 @@ func IncrCounter(name []string, val float32) {
 // Summary: Increments a labeled counter metric.
 //
 // Parameters:
-//   - name ([]string): The name of the counter (as a path).
-//   - val (float32): The amount to increment.
-//   - labels ([]metrics.Label): The labels to apply.
+//   - name: []string. The name of the counter (as a path).
+//   - val: float32. The amount to increment.
+//   - labels: []metrics.Label. The labels to apply.
 //
 // Side Effects:
 //   - Increments a global labeled counter metric.
@@ -195,8 +195,8 @@ func IncrCounterWithLabels(name []string, val float32, labels []metrics.Label) {
 // Summary: Records a latency metric.
 //
 // Parameters:
-//   - name ([]string): The name of the metric (as a path).
-//   - start (time.Time): The start time.
+//   - name: []string. The name of the metric (as a path).
+//   - start: time.Time. The start time.
 //
 // Side Effects:
 //   - Updates a global latency metric.
@@ -209,9 +209,9 @@ func MeasureSince(name []string, start time.Time) {
 // Summary: Records a labeled latency metric.
 //
 // Parameters:
-//   - name ([]string): The name of the metric (as a path).
-//   - start (time.Time): The start time.
-//   - labels ([]metrics.Label): The labels to apply.
+//   - name: []string. The name of the metric (as a path).
+//   - start: time.Time. The start time.
+//   - labels: []metrics.Label. The labels to apply.
 //
 // Side Effects:
 //   - Updates a global labeled latency metric.
@@ -224,8 +224,8 @@ func MeasureSinceWithLabels(name []string, start time.Time, labels []metrics.Lab
 // Summary: Adds a sample to a metric.
 //
 // Parameters:
-//   - name ([]string): The name of the metric (as a path).
-//   - val (float32): The value to sample.
+//   - name: []string. The name of the metric (as a path).
+//   - val: float32. The value to sample.
 //
 // Side Effects:
 //   - Updates a global sample metric.
@@ -238,9 +238,9 @@ func AddSample(name []string, val float32) {
 // Summary: Adds a labeled sample to a metric.
 //
 // Parameters:
-//   - name ([]string): The name of the metric (as a path).
-//   - val (float32): The value to sample.
-//   - labels ([]metrics.Label): The labels to apply.
+//   - name: []string. The name of the metric (as a path).
+//   - val: float32. The value to sample.
+//   - labels: []metrics.Label. The labels to apply.
 //
 // Side Effects:
 //   - Updates a global labeled sample metric.

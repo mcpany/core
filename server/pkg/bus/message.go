@@ -38,16 +38,16 @@ type BaseMessage struct {
 // CorrelationID returns the correlation ID of the message. This ID is used to associate requests with their corresponding responses in asynchronous workflows.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - string: The resulting string.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes CorrelationID operation.
 //
@@ -72,13 +72,13 @@ func (m *BaseMessage) CorrelationID() string {
 //   - id (string): The id parameter.
 //
 // Returns:
-//   - None
+//   - None.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Updates SetCorrelationID operation.
 //

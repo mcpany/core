@@ -73,10 +73,10 @@ var (
 //   - mcp.Middleware: The resulting mcp.Middleware.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes PrometheusMetricsMiddleware operation.
 //

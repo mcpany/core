@@ -33,10 +33,10 @@ type AuditHandler struct {
 //   - *AuditHandler: The resulting *AuditHandler.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Initializes NewAuditHandler operation.
 //
@@ -105,10 +105,10 @@ func (h *AuditHandler) initializeStore(config *configv1.AuditConfig) {
 //   - bool: True if successful, false otherwise.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes Enabled operation.
 //
@@ -140,7 +140,7 @@ func (h *AuditHandler) Enabled(ctx context.Context, level slog.Level) bool {
 //   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes Handle operation.
 //
@@ -174,10 +174,10 @@ func (h *AuditHandler) Handle(ctx context.Context, r slog.Record) error {
 //   - slog.Handler: The resulting slog.Handler.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes WithAttrs operation.
 //
@@ -209,10 +209,10 @@ func (h *AuditHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 //   - slog.Handler: The resulting slog.Handler.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes WithGroup operation.
 //
@@ -248,7 +248,7 @@ func (h *AuditHandler) WithGroup(name string) slog.Handler {
 //   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes Export operation.
 //

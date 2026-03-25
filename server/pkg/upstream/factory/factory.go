@@ -34,7 +34,7 @@ type Factory interface {
 	// Summary: Creates a new upstream service.
 	//
 	// Parameters:
-	//   - config (*configv1.UpstreamServiceConfig): The upstream service configuration.
+	//   - config: *configv1.UpstreamServiceConfig. The upstream service configuration.
 	//
 	// Returns:
 	//   - upstream.Upstream: The created upstream service.
@@ -57,9 +57,9 @@ type UpstreamServiceFactory struct {
 // Summary: Creates a new UpstreamServiceFactory.
 //
 // Parameters:
-//   - poolManager (*pool.Manager): The connection pool manager used by upstreams that require
+//   - poolManager: *pool.Manager. The connection pool manager used by upstreams that require
 //     connection pooling (e.g., gRPC, HTTP, WebSocket).
-//   - globalSettings (*configv1.GlobalSettings): The global configuration settings.
+//   - globalSettings: *configv1.GlobalSettings. The global configuration settings.
 //
 // Returns:
 //   - Factory: A new Factory instance.
@@ -76,7 +76,7 @@ func NewUpstreamServiceFactory(poolManager *pool.Manager, globalSettings *config
 // Summary: Creates a new upstream service based on configuration.
 //
 // Parameters:
-//   - config (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
+//   - config: *configv1.UpstreamServiceConfig. The configuration for the upstream service.
 //
 // Returns:
 //   - upstream.Upstream: A new upstream service instance.

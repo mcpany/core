@@ -52,10 +52,10 @@ type GrpcClientWrapper struct {
 //   - *GrpcClientWrapper: The resulting *GrpcClientWrapper.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Initializes NewGrpcClientWrapper operation.
 //
@@ -91,10 +91,10 @@ func NewGrpcClientWrapper(conn Conn, config *configv1.UpstreamServiceConfig, che
 //   - bool: True if successful, false otherwise.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Checks IsHealthy operation.
 //
@@ -125,7 +125,7 @@ func (w *GrpcClientWrapper) IsHealthy(ctx context.Context) bool {
 // Close terminates the underlying gRPC connection, releasing any associated resources.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - error: An error if the operation fails.
@@ -134,7 +134,7 @@ func (w *GrpcClientWrapper) IsHealthy(ctx context.Context) bool {
 //   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes Close operation.
 //

@@ -28,16 +28,16 @@ var (
 // NewBroadcaster creates a new Broadcaster. Returns the result.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - *Broadcaster: The resulting *Broadcaster.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Initializes NewBroadcaster operation.
 //
@@ -63,16 +63,16 @@ func NewBroadcaster() *Broadcaster {
 // Reset clears the broadcaster history and subscribers. This is primarily for testing to ensure a clean state.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
-//   - None
+//   - None.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes Reset operation.
 //
@@ -99,16 +99,16 @@ func (b *Broadcaster) Reset() {
 // Subscribe returns a channel that will receive broadcast messages. The channel has a small buffer to prevent slow consumers from blocking the broadcaster. It is the caller's responsibility to read from the channel promptly.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - chanany: The resulting chanany.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes Subscribe operation.
 //
@@ -136,10 +136,10 @@ func (b *Broadcaster) Subscribe() chan any {
 //   - chanany: The resulting chanany.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes SubscribeBuffered operation.
 //
@@ -165,17 +165,17 @@ func (b *Broadcaster) SubscribeBuffered(size int) chan any {
 // SubscribeWithHistory returns a channel that will receive broadcast messages, and the current history of messages. This is atomic to ensure no messages are missed or duplicated.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - any: The resulting any.
 //   - []any: The resulting []any.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes SubscribeWithHistory operation.
 //
@@ -204,10 +204,10 @@ func (b *Broadcaster) SubscribeWithHistory() (chan any, []any) {
 //   - []any: The resulting []any.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes SubscribeWithHistoryBuffered operation.
 //
@@ -261,13 +261,13 @@ func (b *Broadcaster) SubscribeWithHistoryBuffered(size int) (chan any, []any) {
 //   - ch (chanany): The ch parameter.
 //
 // Returns:
-//   - None
+//   - None.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes Unsubscribe operation.
 //
@@ -297,13 +297,13 @@ func (b *Broadcaster) Unsubscribe(ch chan any) {
 //   - msg (any): The msg parameter.
 //
 // Returns:
-//   - None
+//   - None.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes Broadcast operation.
 //
@@ -371,16 +371,16 @@ func (b *Broadcaster) ClearHistory() {
 // GetHistory returns the current log history.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - []any: The resulting []any.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Retrieves GetHistory operation.
 //
@@ -428,13 +428,13 @@ func (b *Broadcaster) GetHistory() []any {
 //   - messages ([]any): The messages parameter.
 //
 // Returns:
-//   - None
+//   - None.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes Hydrate operation.
 //

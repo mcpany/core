@@ -399,16 +399,16 @@ func (p *mcpPrompt) Service() string {
 // Definition returns the raw configuration definition of the prompt.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - *configv1.PromptDefinition: The resulting *configv1.PromptDefinition.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes Definition operation.
 //
@@ -670,7 +670,7 @@ func (r *mcpResource) Subscribe(_ context.Context) error {
 //   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes Register operation.
 //

@@ -23,7 +23,7 @@ import (
 //   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes HydrateFromFile operation.
 //

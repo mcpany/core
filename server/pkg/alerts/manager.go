@@ -66,16 +66,16 @@ type Manager struct {
 // NewManager creates a new Manager and seeds it with initial data.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - *Manager: The resulting *Manager.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Initializes NewManager operation.
 //
@@ -116,16 +116,16 @@ func (m *Manager) seedData() {
 // ListAlerts returns all alerts sorted by timestamp descending.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - []*Alert: The resulting []*Alert.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes ListAlerts operation.
 //
@@ -163,10 +163,10 @@ func (m *Manager) ListAlerts() []*Alert {
 //   - *Alert: The resulting *Alert.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Retrieves GetAlert operation.
 //
@@ -196,10 +196,10 @@ func (m *Manager) GetAlert(id string) *Alert {
 //   - *Alert: The resulting *Alert.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Initializes CreateAlert operation.
 //
@@ -258,16 +258,16 @@ func (m *Manager) CreateAlert(alert *Alert) *Alert {
 // GetAlertStats returns aggregated statistics for alerts.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - *AlertStats: The resulting *AlertStats.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Retrieves GetAlertStats operation.
 //
@@ -320,10 +320,10 @@ func (m *Manager) GetAlertStats() *AlertStats {
 //   - *Alert: The resulting *Alert.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes UpdateAlert operation.
 //
@@ -386,16 +386,16 @@ func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 // GetWebhookURL returns the configured global webhook URL.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - string: The resulting string.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Retrieves GetWebhookURL operation.
 //
@@ -422,13 +422,13 @@ func (m *Manager) GetWebhookURL() string {
 //   - url (string): The url parameter.
 //
 // Returns:
-//   - None
+//   - None.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Updates SetWebhookURL operation.
 //
@@ -452,16 +452,16 @@ func (m *Manager) SetWebhookURL(url string) {
 // ListRules returns all rules.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - []*AlertRule: The resulting []*AlertRule.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes ListRules operation.
 //
@@ -498,10 +498,10 @@ func (m *Manager) ListRules() []*AlertRule {
 //   - *AlertRule: The resulting *AlertRule.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Retrieves GetRule operation.
 //
@@ -531,10 +531,10 @@ func (m *Manager) GetRule(id string) *AlertRule {
 //   - *AlertRule: The resulting *AlertRule.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Initializes CreateRule operation.
 //
@@ -570,10 +570,10 @@ func (m *Manager) CreateRule(rule *AlertRule) *AlertRule {
 //   - *AlertRule: The resulting *AlertRule.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes UpdateRule operation.
 //
@@ -618,7 +618,7 @@ func (m *Manager) UpdateRule(id string, rule *AlertRule) *AlertRule {
 //   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes DeleteRule operation.
 //

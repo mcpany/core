@@ -27,10 +27,10 @@ type WebsocketClientWrapper struct {
 //   - bool: True if successful, false otherwise.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Checks IsHealthy operation.
 //
@@ -55,7 +55,7 @@ func (w *WebsocketClientWrapper) IsHealthy(_ context.Context) bool {
 // Close terminates the underlying WebSocket connection. Returns an error if the operation fails.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - error: An error if the operation fails.
@@ -64,7 +64,7 @@ func (w *WebsocketClientWrapper) IsHealthy(_ context.Context) bool {
 //   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes Close operation.
 //

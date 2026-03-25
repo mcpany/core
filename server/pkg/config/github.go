@@ -120,16 +120,16 @@ func isGitHubURL(rawURL string) bool {
 // ToRawContentURL constructs the raw content URL for the configured GitHub path.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - string: The resulting string.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes ToRawContentURL operation.
 //

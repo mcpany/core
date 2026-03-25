@@ -20,8 +20,7 @@ import (
 type Client interface {
 	// ChatCompletion sends a chat request to the LLM and returns the response.
 	//
-	// Summary:
-	//   Sends a chat completion request to the configured LLM provider.
+	// Summary: Sends a chat completion request to the configured LLM provider.
 	//
 	// Parameters:
 	//   - ctx: context.Context. The context for the request.
@@ -81,10 +80,10 @@ type OpenAIClient struct {
 //   - *OpenAIClient: The resulting *OpenAIClient.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Initializes NewOpenAIClient operation.
 //
@@ -140,7 +139,7 @@ type openAIChatResponse struct {
 //   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes ChatCompletion operation.
 //

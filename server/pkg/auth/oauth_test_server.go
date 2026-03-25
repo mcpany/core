@@ -36,10 +36,10 @@ type MockOAuth2Server struct {
 //   - *MockOAuth2Server: The resulting *MockOAuth2Server.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Initializes NewMockOAuth2Server operation.
 //
@@ -134,10 +134,10 @@ func NewMockOAuth2Server(t *testing.T) *MockOAuth2Server {
 //   - string: The resulting string.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Initializes NewIDToken operation.
 //

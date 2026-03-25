@@ -40,16 +40,16 @@ type OllamaProvider struct {
 // Name returns the name of the provider.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - string: The resulting string.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes Name operation.
 //
@@ -81,7 +81,7 @@ func (p *OllamaProvider) Name() string {
 //   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes Discover operation.
 //

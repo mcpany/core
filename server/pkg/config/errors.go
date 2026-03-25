@@ -23,16 +23,16 @@ type ActionableError struct {
 // Error implements the error interface. Side Effects: - None.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - string: The resulting string.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes Error operation.
 //
@@ -54,7 +54,7 @@ func (e *ActionableError) Error() string {
 // Unwrap returns the underlying error. Side Effects: - None.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - error: An error if the operation fails.
@@ -63,7 +63,7 @@ func (e *ActionableError) Error() string {
 //   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes Unwrap operation.
 //

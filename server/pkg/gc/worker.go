@@ -40,10 +40,10 @@ type Worker struct {
 //   - *Worker: The resulting *Worker.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Initializes New operation.
 //
@@ -76,13 +76,13 @@ func New(config Config) *Worker {
 //   - ctx (context.Context): The context for the request.
 //
 // Returns:
-//   - None
+//   - None.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes Start operation.
 //

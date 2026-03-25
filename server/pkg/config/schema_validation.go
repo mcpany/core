@@ -58,7 +58,7 @@ func ValidateConfigAgainstSchema(rawConfig map[string]interface{}) error {
 // GenerateJSONSchemaBytes returns the JSON schema for McpAnyServerConfig as a byte slice. Side Effects: - None.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - []byte: The resulting []byte.
@@ -68,7 +68,7 @@ func ValidateConfigAgainstSchema(rawConfig map[string]interface{}) error {
 //   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes GenerateJSONSchemaBytes operation.
 //

@@ -41,7 +41,7 @@ type Bus[T any] interface {
 	//
 	// Parameters:
 	//   - ctx: context.Context. Controls the setup of the subscription. Note that context cancellation
-	//     may not automatically unsubscribe depending on implementation; use the returned unsubscribe function.
+	//     may not automatically unsubscribe depending on implementation; use the returned unsubscribe function..
 	//   - topic: string. The topic to listen to.
 	//   - handler: func(T). The callback function invoked for each received message.
 	//

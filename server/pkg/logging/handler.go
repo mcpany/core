@@ -47,10 +47,10 @@ type BroadcastHandler struct {
 //   - *BroadcastHandler: The resulting *BroadcastHandler.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Initializes NewBroadcastHandler operation.
 //
@@ -82,10 +82,10 @@ func NewBroadcastHandler(broadcaster *Broadcaster, level slog.Leveler) *Broadcas
 //   - bool: True if successful, false otherwise.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes Enabled operation.
 //
@@ -117,7 +117,7 @@ func (h *BroadcastHandler) Enabled(_ context.Context, level slog.Level) bool {
 //   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes Handle operation.
 //
@@ -214,10 +214,10 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 //   - slog.Handler: The resulting slog.Handler.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes WithAttrs operation.
 //
@@ -257,10 +257,10 @@ func (h *BroadcastHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 //   - slog.Handler: The resulting slog.Handler.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes WithGroup operation.
 //
@@ -307,10 +307,10 @@ type TeeHandler struct {
 //   - *TeeHandler: The resulting *TeeHandler.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Initializes NewTeeHandler operation.
 //
@@ -339,10 +339,10 @@ func NewTeeHandler(handlers ...slog.Handler) *TeeHandler {
 //   - bool: True if successful, false otherwise.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes Enabled operation.
 //
@@ -379,7 +379,7 @@ func (h *TeeHandler) Enabled(ctx context.Context, level slog.Level) bool {
 //   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes Handle operation.
 //
@@ -415,10 +415,10 @@ func (h *TeeHandler) Handle(ctx context.Context, r slog.Record) error {
 //   - slog.Handler: The resulting slog.Handler.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes WithAttrs operation.
 //
@@ -450,10 +450,10 @@ func (h *TeeHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 //   - slog.Handler: The resulting slog.Handler.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes WithGroup operation.
 //

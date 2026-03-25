@@ -26,10 +26,10 @@ import (
 //   - grpc.UnaryClientInterceptor: The resulting grpc.UnaryClientInterceptor.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes UnaryClientInterceptor operation.
 //

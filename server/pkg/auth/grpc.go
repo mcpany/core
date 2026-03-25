@@ -30,10 +30,10 @@ type PerRPCCredentials struct {
 //   - credentials.PerRPCCredentials: The resulting credentials.PerRPCCredentials.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Initializes NewPerRPCCredentials operation.
 //
@@ -69,7 +69,7 @@ func NewPerRPCCredentials(authenticator UpstreamAuthenticator) credentials.PerRP
 //   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Retrieves GetRequestMetadata operation.
 //
@@ -111,16 +111,16 @@ func (c *PerRPCCredentials) GetRequestMetadata(ctx context.Context, _ ...string)
 // RequireTransportSecurity indicates whether a secure transport (e.g., TLS) is required for the credentials. This implementation returns false, but should be updated if TLS is enabled for the gRPC connection.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - bool: True if successful, false otherwise.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes RequireTransportSecurity operation.
 //

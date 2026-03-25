@@ -50,7 +50,7 @@ type Manager struct {
 //   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Initializes NewManager operation.
 //
@@ -77,7 +77,7 @@ func NewManager(rootDir string) (*Manager, error) {
 // ListSkills returns all available skills. It scans the root directory for subdirectories containing SKILL.md.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - []*Skill: The resulting []*Skill.
@@ -87,7 +87,7 @@ func NewManager(rootDir string) (*Manager, error) {
 //   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes ListSkills operation.
 //
@@ -155,7 +155,7 @@ func (m *Manager) ListSkills() ([]*Skill, error) {
 //   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Retrieves GetSkill operation.
 //
@@ -188,7 +188,7 @@ func (m *Manager) GetSkill(name string) (*Skill, error) {
 //   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Initializes CreateSkill operation.
 //
@@ -244,7 +244,7 @@ func (m *Manager) CreateSkill(skill *Skill) error {
 //   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes UpdateSkill operation.
 //
@@ -302,7 +302,7 @@ func (m *Manager) UpdateSkill(originalName string, skill *Skill) error {
 //   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes DeleteSkill operation.
 //
@@ -347,7 +347,7 @@ func (m *Manager) DeleteSkill(name string) error {
 //   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes SaveAsset operation.
 //

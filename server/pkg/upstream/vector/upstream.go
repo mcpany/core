@@ -120,7 +120,7 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes Register operation.
 //

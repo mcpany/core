@@ -29,7 +29,7 @@ type RedactingWriter struct {
 //   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Updates Write operation.
 //

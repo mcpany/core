@@ -821,16 +821,16 @@ func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 // HasConfigSources returns true if the store has configuration paths configured. Side Effects: - None.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - bool: True if successful, false otherwise.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Checks HasConfigSources operation.
 //
@@ -1462,16 +1462,16 @@ func collectFieldNames(md protoreflect.MessageDescriptor, candidates map[string]
 // HasConfigSources returns true if any of the underlying stores have configuration sources. Side Effects: - None.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - bool: True if successful, false otherwise.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Checks HasConfigSources operation.
 //

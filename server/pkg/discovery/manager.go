@@ -35,16 +35,16 @@ type Manager struct {
 // NewManager creates a new discovery manager.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - *Manager: The resulting *Manager.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Initializes NewManager operation.
 //
@@ -71,13 +71,13 @@ func NewManager() *Manager {
 //   - p (Provider): The p parameter.
 //
 // Returns:
-//   - None
+//   - None.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes RegisterProvider operation.
 //
@@ -111,10 +111,10 @@ func (m *Manager) RegisterProvider(p Provider) {
 //   - []*configv1.UpstreamServiceConfig: The resulting []*configv1.UpstreamServiceConfig.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes Run operation.
 //
@@ -179,16 +179,16 @@ func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 // GetStatuses returns the current status of all providers.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - []*ProviderStatus: The resulting []*ProviderStatus.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Retrieves GetStatuses operation.
 //
@@ -228,10 +228,10 @@ func (m *Manager) GetStatuses() []*ProviderStatus {
 //   - bool: True if successful, false otherwise.
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Retrieves GetProviderStatus operation.
 //

@@ -35,7 +35,7 @@ import (
 //   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes InitiateOAuth operation.
 //
@@ -165,7 +165,7 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 //   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes HandleOAuthCallback operation.
 //

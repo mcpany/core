@@ -33,16 +33,16 @@ type DefaultBus[T any] struct {
 // New creates and returns a new instance of DefaultBus, which is the default, thread-safe implementation of the Bus interface. It is initialized with the default publish timeout. The type parameter T specifies the type of message that the bus will handle.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
 //   - *DefaultBus[T]: The resulting *DefaultBus[T].
 //
 // Errors:
-//   - None
+//   - None.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Initializes New operation.
 //

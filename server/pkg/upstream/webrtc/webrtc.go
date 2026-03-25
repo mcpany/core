@@ -174,7 +174,7 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 //   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - None
+//   - None.
 //
 // Summary: Executes Register operation.
 //

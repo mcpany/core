@@ -21,20 +21,20 @@ type GrpcClient interface {
 	// Invoke performs a unary RPC and blocks until the response is received.
 	//
 	// Parameters:
-	//   - ctx: The context for the RPC.
-	//   - method: The full gRPC method string (e.g., "/service.Service/Method").
-	//   - args: The request message to be sent.
-	//   - reply: The response message to be populated.
-	//   - opts: gRPC call options.
+	//   - ctx: context.Context. The context for the RPC.
+	//   - method: string. The full gRPC method string (e.g., "/service.Service/Method").
+	//   - args: any. The request message to be sent.
+	//   - reply: any. The response message to be populated.
+	//   - opts: ...grpc.CallOption. gRPC call options.
 	Invoke(ctx context.Context, method string, args any, reply any, opts ...grpc.CallOption) error
 
 	// NewStream creates a new gRPC stream.
 	//
 	// Parameters:
-	//   - ctx: The context for the stream.
-	//   - desc: The stream description.
-	//   - method: The full gRPC method string.
-	//   - opts: gRPC call options.
+	//   - ctx: context.Context. The context for the stream.
+	//   - desc: *grpc.StreamDesc. The stream description.
+	//   - method: string. The full gRPC method string.
+	//   - opts: ...grpc.CallOption. gRPC call options.
 	NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error)
 }
 
@@ -47,7 +47,7 @@ type HTTPClient interface {
 	// Do sends an HTTP request and returns an HTTP response.
 	//
 	// Parameters:
-	//   - req: The HTTP request to send.
+	//   - req: *http.Request. The HTTP request to send.
 	Do(req *http.Request) (*http.Response, error)
 }
 
@@ -60,8 +60,8 @@ type MCPClient interface {
 	// inputs and returning the result.
 	//
 	// Parameters:
-	//   - ctx: The context for the call.
-	//   - params: The parameters for the tool call, including the tool name and
+	//   - ctx: context.Context. The context for the call.
+	//   - params: *mcp.CallToolParams. The parameters for the tool call, including the tool name and
 	//     arguments.
 	CallTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error)
 }
