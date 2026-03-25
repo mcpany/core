@@ -17,6 +17,7 @@ import { unwrapMcpResult, deepParseJson } from "@/lib/mcp-unwrap";
  */
 interface SmartResultRendererProps {
     /** The result object to render. Can be a JSON string, an object, or an array. */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     result: any;
 }
 
@@ -25,6 +26,7 @@ interface McpContent {
     text?: string;
     data?: string;
     mimeType?: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resource?: any;
 }
 
@@ -53,7 +55,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                      if (Array.isArray(inner) || (typeof inner === 'object' && inner !== null)) {
                          content = inner;
                      }
-                 } catch (e) {
+        } catch (_e) {
                      // stdout is not JSON
                  }
              }
@@ -72,6 +74,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
     // 2. Identify MCP Content
     const mcpContent = useMemo<McpContent[] | null>(() => {
         if (Array.isArray(unwrappedContent) && unwrappedContent.length > 0) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const isMcp = unwrappedContent.every((item: any) =>
                 typeof item === 'object' && item !== null &&
                 (item.type === 'text' || item.type === 'image' || item.type === 'resource')
@@ -85,6 +88,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
     const tableData = useMemo(() => {
         // If fullyUnwrapped is a table, and there's no MCP content with non-text elements, use it directly!
         if (Array.isArray(fullyUnwrapped) && fullyUnwrapped.length > 0) {
+             // eslint-disable-next-line @typescript-eslint/no-explicit-any
              const isTable = fullyUnwrapped.every((item: any) => typeof item === 'object' && item !== null);
              // Make sure we don't accidentally treat MCP image objects as a table row if we want rich view
              const isRichMcp = mcpContent && mcpContent.some(c => c.type !== 'text');
@@ -103,13 +107,14 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                     if (Array.isArray(parsed) && parsed.every(item => typeof item === 'object')) {
                         return parsed;
                     }
-                } catch (e) {}
+                } catch (_e) {}
              }
              return null;
         }
 
         // If NOT MCP content, check if unwrapped content itself is tabular data (CLI use case)
         if (Array.isArray(unwrappedContent) && unwrappedContent.length > 0) {
+             // eslint-disable-next-line @typescript-eslint/no-explicit-any
              const isTable = unwrappedContent.every((item: any) => typeof item === 'object' && item !== null);
              if (isTable) return unwrappedContent;
         }
@@ -190,6 +195,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
 
         // Determine columns from all keys in the first 10 rows
         const allKeys = new Set<string>();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         tableData.slice(0, 10).forEach((row: any) => {
             Object.keys(row).forEach(k => allKeys.add(k));
         });
@@ -208,6 +214,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
+                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                         {tableData.map((row: any, idx: number) => (
                             <TableRow key={idx} className="hover:bg-muted/50">
                                 {columns.map(col => {
