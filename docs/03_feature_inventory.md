@@ -6,42 +6,6 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
-## Evolution: [2026-05-18] Updates
-
-### Proposed Additions
-- **Mission-Root Pinning (MRP) Middleware**: (P0) A transport-level security component that protects the "Mission Root" from context-window eviction during high-frequency "noise" injections (MRE defense).
-- **State-Trust Labeling (STL) Provider**: (P0) Security extension for the Blackboard that tags all KV data with the trust level of its origin framework, neutralizing PASI (Protocol-Agnostic State Injection).
-- **Wait-Graph Deadlock Resolver**: (P1) Advanced orchestration service for the `TeammateTool` Adapter that proactively breaks circular task dependencies in parallel swarms.
-- **Intent-Weighted Context Summarizer**: (P1) Upgrade for the ContextEngine Adapter supporting RCE v2.0 logic for mission-anchored context compression.
-
-### Priority Shifts
-- **TeammateTool Orchestration Adapter**: (Re-affirmed P0) Now elevated with the requirement for "Multi-Agent Quorum" (MAQ) cross-framework coordination.
-- **Contextual Quorum (CQ) Hub**: (Promoted to P0) Critical for supporting the new Claude-led MAQ protocol for high-risk actions.
-
-## Evolution: [2026-05-17] Updates
-
-### Proposed Additions
-- **`TeammateTool` Orchestration Adapter**: (P0) Infrastructure for cross-framework "Agent Teams," facilitating Claude-style delegation and synchronization for heterogeneous swarms.
-- **Transport-Layer Session Binder (TLSB)**: (P0) A security middleware that cryptographically binds inter-agent transport channels (Named Pipes/WebSockets) to hardware-attested reasoning session tokens.
-- **Authenticated Agent Card Discovery**: (P0) Identity-bound discovery service for the A2A Messaging Hub that enforces "Auth-Before-Discovery" for agent capabilities.
-- **ContextEngine Lifecycle Adapter (v2026.3.7)**: (P0) Upgrade for the ContextEngine Adapter to support the full OpenClaw v2026.3.7 lifecycle hooks for third-party context plugins.
-
-### Priority Shifts
-- **A2A Messaging Hub**: (Re-affirmed P0) Designated as the primary gateway for the new "Authenticated Agent Card Discovery."
-- **Isolated Named-Pipe Transport Middleware**: (Re-affirmed P0) Elevated with the requirement for mandatory TLSB to prevent "Team Ghosting."
-
-## Evolution: [2026-05-16] Updates
-
-### Proposed Additions
-- **Reasoning Quorum Middleware**: (P0) Infrastructure for agents to reach a cryptographically bound quorum on non-deterministic reasoning outputs, neutralizing "Hallucination Variance."
-- **Transport-Layer Session Binder**: (P0) Security middleware that cryptographically binds every named-pipe and local transport connection to a unique hardware-attested reasoning session token.
-- **RRRA Budget Controller**: (P1) Advanced resource manager implementing Reasoning-Responsive Resource Allocation, scaling compute/token budgets based on real-time reasoning intensity.
-- **Intent-Aware Transport Proxy**: (P1) Efficiency middleware that performs semantic deduplication of coordination messages between parallel agents sharing a mission root.
-
-### Priority Shifts
-- **Coordination Token Optimizer**: (Promoted to P0) Critical for neutralizing the overhead and "Team Ghosting" risks in parallel swarm coordination.
-- **Consensus Tool Validation Hub**: (Re-affirmed P0) Evolving to support the new Reasoning-Level Consensus (RLC) requirements.
-
 ## Evolution: [2026-05-15] Updates
 
 ### Proposed Additions
