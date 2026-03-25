@@ -25,7 +25,7 @@ The Prompt Engineer's Workbench transforms the basic "Prompts" list into a full-
 ### API & Client
 
 -   Updated `ui/src/lib/client.ts` to include `executePrompt`.
--   Added a robust **mock simulation** fallback for `executePrompt` to ensure the UI is fully functional and demonstratable even without a running backend or if the backend endpoint is missing (as is common in "UI-first" development).
+-   Wired `executePrompt` directly to the backend service for real-time template rendering and execution.
 
 ### Tests
 
