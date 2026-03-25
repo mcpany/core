@@ -595,3 +595,7 @@
 - [ ] **[P0] Teammate Isolation Monitor**: (2026-06-18) Visual indicator for cryptographically bound isolation.
 - [ ] **[P0] Logic-Sovereignty Path Tracer**: (2026-06-18) Visual debugger for reasoning paths.
 - [ ] **[P0] Request-Side Injection Alerts**: (2026-06-18) Real-time notification for blocked request-side injection attempts (CVE-2026-30741).
+
+- [ ] **[P0] Teammate Isolation Monitor**: (2026-06-18) Indicator for bound isolation.
+- [ ] **[P0] Logic-Sovereignty Path Tracer**: (2026-06-18) Reasoning path debugger.
+- [ ] **[P0] Request-Side Injection Alerts**: (2026-06-18) Blocked injection notifications.
