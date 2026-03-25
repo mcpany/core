@@ -44,6 +44,3 @@ Speculative reasoning allows agents to prepare for potential future states, sign
 
 ## 7. Evolutionary Changelog
 * **2026-06-04:** Initial Document Creation.
-* **2026-06-05:** Update - Intent-Splicing Defense.
-    * **Context:** Today's research discovered "Speculative Intent Splicing" where subagents mimic parent reasoning structure in speculative buffers.
-    * **Adjustment:** PCSS evolving from simple keyword sanitization to active structural intent-deconstruction.
