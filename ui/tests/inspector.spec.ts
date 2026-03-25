@@ -48,6 +48,12 @@ test.describe("Inspector Page", () => {
     // vite preview does not forward WebSocket upgrades through its proxy, so we
     // mock the WS at the browser level to ensure the trace is delivered to the
     // InspectorTable without depending on proxy-level WS tunnelling.
+<<<<<<< HEAD
+    let wsSend: any = null;
+    await page.routeWebSocket('**/api/v1/ws/traces', (ws: any) => {
+      wsSend = (data: string) => ws.send(data);
+    });
+=======
     let wsSend: ((data: string) => void) | null = null;
 
     await page.routeWebSocket(
@@ -57,6 +63,7 @@ test.describe("Inspector Page", () => {
         wsSend = (data: string) => ws.send(data);
       },
     );
+>>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
 
     // Navigate to the Inspector page
     await page.goto("/inspector");
@@ -79,7 +86,7 @@ test.describe("Inspector Page", () => {
     // After the POST succeeds, inject the trace into the active WebSocket
     // connection.
     if (wsSend) {
-      (wsSend as (data: string) => void)(JSON.stringify(MOCK_TRACE));
+      (wsSend as any)(JSON.stringify(MOCK_TRACE));
     }
 
     // Wait briefly to allow React state to update based on WebSocket message
@@ -98,6 +105,13 @@ test.describe("Inspector Page", () => {
     await expect(sheet.locator("text=orchestrator-task").first()).toBeVisible();
   });
 
+<<<<<<< HEAD
+  test('should clear traces permanently on backend when Clear is clicked', async ({ page }) => {
+    let wsSend: any = null;
+    await page.routeWebSocket('**/api/v1/ws/traces', (ws: any) => {
+      wsSend = (data: string) => ws.send(data);
+    });
+=======
   test("should clear traces permanently on backend when Clear is clicked", async ({
     page,
   }) => {
@@ -110,6 +124,7 @@ test.describe("Inspector Page", () => {
         wsSend = (data: string) => ws.send(data);
       },
     );
+>>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
 
     let deleteCalled = false;
     await page.route("**/api/v1/traces", async (route) => {
@@ -127,7 +142,7 @@ test.describe("Inspector Page", () => {
     ).toBeVisible();
 
     if (wsSend) {
-      (wsSend as (data: string) => void)(JSON.stringify(MOCK_TRACE));
+      (wsSend as any)(JSON.stringify(MOCK_TRACE));
     }
 
     const row = page.locator("text=orchestrator-task").first();
