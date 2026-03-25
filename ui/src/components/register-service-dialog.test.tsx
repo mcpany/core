@@ -3,24 +3,26 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { RegisterServiceDialog } from './register-service-dialog';
-import { SERVICE_TEMPLATES } from '@/lib/templates';
-import { vi } from 'vitest';
+import React from "react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { RegisterServiceDialog } from "./register-service-dialog";
+import { SERVICE_TEMPLATES } from "@/lib/templates";
+import { vi } from "vitest";
 
 // Mock the API client
-vi.mock('@/lib/client', () => ({
+vi.mock("@/lib/client", () => ({
   apiClient: {
     registerService: vi.fn(),
     updateService: vi.fn(),
     listCredentials: vi.fn().mockResolvedValue([]),
-    validateService: vi.fn().mockResolvedValue({ valid: true, message: "Valid" }),
+    validateService: vi
+      .fn()
+      .mockResolvedValue({ valid: true, message: "Valid" }),
   },
 }));
 
 // Mock useToast
-vi.mock('@/hooks/use-toast', () => ({
+vi.mock("@/hooks/use-toast", () => ({
   useToast: () => ({
     toast: vi.fn(),
   }),
@@ -31,39 +33,41 @@ vi.mock('@/hooks/use-toast', () => ({
 // But Button uses Radix which might have issues in JSDOM environment if not polyfilled properly for PointerEvents etc.
 // Let's assume standard JSDOM setup in vitest config.
 
-describe('RegisterServiceDialog', () => {
-  it('renders the trigger button', () => {
+describe("RegisterServiceDialog", () => {
+  it("renders the trigger button", () => {
     render(<RegisterServiceDialog />);
-    expect(screen.getByText('Register Service')).toBeInTheDocument();
+    expect(screen.getByText("Register Service")).toBeInTheDocument();
   });
 
-  it('shows template selection when opened for new service', () => {
+  it("shows template selection when opened for new service", () => {
     render(<RegisterServiceDialog />);
-    fireEvent.click(screen.getByText('Register Service'));
-    expect(screen.getByText('Select Service Template')).toBeInTheDocument();
+    fireEvent.click(screen.getByText("Register Service"));
+    expect(screen.getByText("Select Service Template")).toBeInTheDocument();
 
     // Check if templates are rendered
-    SERVICE_TEMPLATES.forEach(template => {
-       expect(screen.getByText(template.name)).toBeInTheDocument();
+    SERVICE_TEMPLATES.forEach((template) => {
+      expect(screen.getByText(template.name)).toBeInTheDocument();
     });
   });
 
-  it('populates form when template is selected', async () => {
+  it("populates form when template is selected", async () => {
     render(<RegisterServiceDialog />);
-    fireEvent.click(screen.getByText('Register Service'));
+    fireEvent.click(screen.getByText("Register Service"));
 
     // Click on Puppeteer template (no fields, goes to form)
-    const puppeteerTemplate = SERVICE_TEMPLATES.find(t => t.id === 'puppeteer');
+    const puppeteerTemplate = SERVICE_TEMPLATES.find(
+      (t) => t.id === "puppeteer",
+    );
     expect(puppeteerTemplate).toBeDefined();
     if (!puppeteerTemplate) return;
 
     fireEvent.click(screen.getByText(puppeteerTemplate.name));
 
     // Should switch to Configure Service view
-    expect(screen.getByText('Configure Service')).toBeInTheDocument();
+    expect(screen.getByText("Configure Service")).toBeInTheDocument();
 
     // Check if name field is populated
-    const nameInput = screen.getByLabelText('Service Name') as HTMLInputElement;
+    const nameInput = screen.getByLabelText("Service Name") as HTMLInputElement;
     expect(nameInput.value).toBe(puppeteerTemplate.config.name);
 
     // Check if command is populated (switch to Command Line if needed, but the template pre-sets it?)
@@ -73,44 +77,48 @@ describe('RegisterServiceDialog', () => {
     // But the command input should be visible if type is command_line.
 
     await waitFor(() => {
-        expect(screen.getByLabelText('Command')).toBeInTheDocument();
+      expect(screen.getByLabelText("Command")).toBeInTheDocument();
     });
 
-    const commandInput = screen.getByLabelText('Command') as HTMLInputElement;
-    expect(commandInput.value).toBe(puppeteerTemplate.config.commandLineService?.command);
+    const commandInput = screen.getByLabelText("Command") as HTMLInputElement;
+    expect(commandInput.value).toBe(
+      puppeteerTemplate.config.commandLineService?.command,
+    );
   });
 
-  it('allows going back to templates', () => {
-      render(<RegisterServiceDialog />);
-      fireEvent.click(screen.getByText('Register Service'));
-
-      // Select a template
-      fireEvent.click(screen.getByText('Custom Service'));
-      expect(screen.getByText('Configure Service')).toBeInTheDocument();
-
-      // Click Back button (aria-label="Back" for form view)
-      fireEvent.click(screen.getByLabelText('Back'));
-
-      expect(screen.getByText('Select Service Template')).toBeInTheDocument();
-  });
-
-  it('calls validateService when Test Connection is clicked', async () => {
+  it("allows going back to templates", () => {
     render(<RegisterServiceDialog />);
-    fireEvent.click(screen.getByText('Register Service'));
+    fireEvent.click(screen.getByText("Register Service"));
+
+    // Select a template
+    fireEvent.click(screen.getByText("Custom Service"));
+    expect(screen.getByText("Configure Service")).toBeInTheDocument();
+
+    // Click Back button (aria-label="Back" for form view)
+    fireEvent.click(screen.getByLabelText("Back"));
+
+    expect(screen.getByText("Select Service Template")).toBeInTheDocument();
+  });
+
+  it("calls validateService when Test Connection is clicked", async () => {
+    render(<RegisterServiceDialog />);
+    fireEvent.click(screen.getByText("Register Service"));
 
     // Select a template (Puppeteer)
-    const puppeteerTemplate = SERVICE_TEMPLATES.find(t => t.id === 'puppeteer');
+    const puppeteerTemplate = SERVICE_TEMPLATES.find(
+      (t) => t.id === "puppeteer",
+    );
     expect(puppeteerTemplate).toBeDefined();
     if (!puppeteerTemplate) return;
     fireEvent.click(screen.getByText(puppeteerTemplate.name));
 
     // Find and click Test Connection
-    const testBtn = screen.getByText('Test Connection');
+    const testBtn = screen.getByText("Test Connection");
     fireEvent.click(testBtn);
 
     // Wait for validation result
     await waitFor(() => {
-        expect(screen.getByText('Valid Configuration')).toBeInTheDocument();
+      expect(screen.getByText("Valid Configuration")).toBeInTheDocument();
     });
   });
 });

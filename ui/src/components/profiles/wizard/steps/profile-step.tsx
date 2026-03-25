@@ -3,8 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
-
 import { useState } from "react";
 import { WizardService } from "../wizard-dialog";
 import { Button } from "@/components/ui/button";
@@ -24,7 +22,11 @@ interface ProfileStepProps {
  * Step for finalizing the profile configuration.
  * @param props Component properties.
  */
-export function ProfileStep({ services, onBack, onComplete }: ProfileStepProps) {
+export function ProfileStep({
+  services,
+  onBack,
+  onComplete,
+}: ProfileStepProps) {
   const [profileName, setProfileName] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -40,15 +42,23 @@ export function ProfileStep({ services, onBack, onComplete }: ProfileStepProps) 
       for (const svc of services) {
         try {
           await apiClient.getService(svc.instanceName);
-          await apiClient.updateService({ ...svc.config, id: svc.instanceName, name: svc.instanceName });
+          await apiClient.updateService({
+            ...svc.config,
+            id: svc.instanceName,
+            name: svc.instanceName,
+          });
         } catch {
-          await apiClient.registerService({ ...svc.config, id: svc.instanceName, name: svc.instanceName });
+          await apiClient.registerService({
+            ...svc.config,
+            id: svc.instanceName,
+            name: svc.instanceName,
+          });
         }
       }
 
       // 2. Create Profile
       const serviceConfig: Record<string, any> = {};
-      services.forEach(s => {
+      services.forEach((s) => {
         serviceConfig[s.instanceName] = { enabled: true };
       });
 
@@ -56,17 +66,16 @@ export function ProfileStep({ services, onBack, onComplete }: ProfileStepProps) 
         name: profileName,
         selector: {
           tags: ["dev"], // Default to dev for wizard
-          toolProperties: {}
+          toolProperties: {},
         },
         serviceConfig,
         secrets: {},
         requiredRoles: [],
-        parentProfileIds: []
+        parentProfileIds: [],
       };
 
       await apiClient.createProfile(profileData);
       onComplete(profileName);
-
     } catch (error: any) {
       console.error(error);
       toast.error(`Failed to create profile: ${error.message}`);
@@ -81,7 +90,8 @@ export function ProfileStep({ services, onBack, onComplete }: ProfileStepProps) 
         <div className="space-y-2">
           <h3 className="text-lg font-medium">Finalize Profile</h3>
           <p className="text-sm text-muted-foreground">
-            Give your new profile a name. It will be created with {services.length} connected services.
+            Give your new profile a name. It will be created with{" "}
+            {services.length} connected services.
           </p>
         </div>
 
@@ -99,14 +109,19 @@ export function ProfileStep({ services, onBack, onComplete }: ProfileStepProps) 
           <strong>Included Services:</strong>
           <ul className="list-disc list-inside mt-2">
             {services.map((s, i) => (
-              <li key={i}>{s.instanceName} <span className="text-muted-foreground">({s.templateId})</span></li>
+              <li key={i}>
+                {s.instanceName}{" "}
+                <span className="text-muted-foreground">({s.templateId})</span>
+              </li>
             ))}
           </ul>
         </div>
       </div>
 
       <div className="flex justify-between pt-4">
-        <Button variant="outline" onClick={onBack} disabled={submitting}>Back</Button>
+        <Button variant="outline" onClick={onBack} disabled={submitting}>
+          Back
+        </Button>
         <Button onClick={handleCreate} disabled={submitting}>
           {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Create Profile

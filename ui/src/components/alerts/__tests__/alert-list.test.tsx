@@ -18,54 +18,60 @@ class ResizeObserver {
 }
 window.ResizeObserver = ResizeObserver;
 
- // Mock API Client
- vi.mock("@/lib/client", () => ({
-   apiClient: {
-     listAlerts: vi.fn().mockResolvedValue([
-       {
-         id: "1",
-         title: "High CPU Usage",
-         message: "The CPU usage is above 90% for service 'api-server'.",
-         severity: "critical",
-         status: "active",
-         service: "api-server",
-         timestamp: new Date().toISOString(),
-       },
-       {
-         id: "2",
-         title: "API Latency Spike",
-         message: "The API latency is above 500ms for service 'auth-service'.",
-         severity: "warning",
-         status: "active",
-         service: "auth-service",
-         timestamp: new Date().toISOString(),
-       },
-     ]),
-     updateAlertStatus: vi.fn().mockImplementation((id: string, status: AlertStatus) => Promise.resolve({
-         id,
-         status,
-         title: "Updated Alert",
-         message: "Status changed",
-         severity: "info",
-         service: "system",
-         timestamp: new Date().toISOString()
-     })),
-   },
- }));
+// Mock API Client
+vi.mock("@/lib/client", () => ({
+  apiClient: {
+    listAlerts: vi.fn().mockResolvedValue([
+      {
+        id: "1",
+        title: "High CPU Usage",
+        message: "The CPU usage is above 90% for service 'api-server'.",
+        severity: "critical",
+        status: "active",
+        service: "api-server",
+        timestamp: new Date().toISOString(),
+      },
+      {
+        id: "2",
+        title: "API Latency Spike",
+        message: "The API latency is above 500ms for service 'auth-service'.",
+        severity: "warning",
+        status: "active",
+        service: "auth-service",
+        timestamp: new Date().toISOString(),
+      },
+    ]),
+    updateAlertStatus: vi
+      .fn()
+      .mockImplementation((id: string, status: AlertStatus) =>
+        Promise.resolve({
+          id,
+          status,
+          title: "Updated Alert",
+          message: "Status changed",
+          severity: "info",
+          service: "system",
+          timestamp: new Date().toISOString(),
+        }),
+      ),
+  },
+}));
 
 describe("AlertList", () => {
   it("renders alerts correctly", async () => {
     render(<AlertList />);
     await waitFor(() => {
-        expect(screen.getByText("High CPU Usage")).toBeInTheDocument();
-        expect(screen.getByText("API Latency Spike")).toBeInTheDocument();
+      expect(screen.getByText("High CPU Usage")).toBeInTheDocument();
+      expect(screen.getByText("API Latency Spike")).toBeInTheDocument();
     });
   });
 
   it("filters alerts by search query", async () => {
     render(<AlertList />);
 
-    const searchInput = screen.getByPlaceholderText("Search alerts by title, message, service...");
+    const searchInput = screen.getByPlaceholderText(
+      "Search alerts by title, message, service...",
+    );
     await userEvent.type(searchInput, "CPU");
 
     expect(screen.getByText("High CPU Usage")).toBeInTheDocument();

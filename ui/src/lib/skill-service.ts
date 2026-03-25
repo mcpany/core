@@ -1,8 +1,8 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-import { apiClient } from './client';
-import { Skill } from '@proto/config/v1/skill';
+import { apiClient } from "./client";
+import { Skill } from "@proto/config/v1/skill";
 
 /**
  * SkillService provides methods to interact with the backend Skills API.
@@ -74,13 +74,17 @@ export const SkillService = {
    * @returns A promise that resolves when the upload is complete.
    * @throws Error if the request fails.
    */
-  async uploadAsset(skillName: string, path: string, file: File): Promise<void> {
+  async uploadAsset(
+    skillName: string,
+    path: string,
+    file: File,
+  ): Promise<void> {
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('path', path);
+    formData.append("file", file);
+    formData.append("path", path);
 
     const res = await fetch(`/api/v1/skills/${skillName}/assets`, {
-      method: 'POST',
+      method: "POST",
       body: formData,
       // fetchWithAuth doesn't handle FormData easily yet, and this endpoint
       // might be handled differently. If needed, we can add specialized
@@ -88,8 +92,8 @@ export const SkillService = {
     });
 
     if (!res.ok) {
-        const err = await res.text();
-        throw new Error(`Failed to upload asset: ${err}`);
+      const err = await res.text();
+      throw new Error(`Failed to upload asset: ${err}`);
     }
   },
 };

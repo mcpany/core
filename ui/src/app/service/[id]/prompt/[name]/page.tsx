@@ -16,23 +16,33 @@ import { useServiceSiblings } from "@/hooks/use-siblings";
  * @returns The rendered component.
  */
 export default function PromptDetailPage() {
-    const { id = "", name = "" } = useParams<{ id: string; name: string }>();
-    const [service, setService] = useState<UpstreamServiceConfig | null>(null);
-    const serviceSiblings = useServiceSiblings(id);
+  const { id = "", name = "" } = useParams<{ id: string; name: string }>();
+  const [service, setService] = useState<UpstreamServiceConfig | null>(null);
+  const serviceSiblings = useServiceSiblings(id);
 
-    useEffect(() => {
-        if (id) apiClient.getService(id).then(res => setService(res.service || null));
-    }, [id]);
+  useEffect(() => {
+    if (id)
+      apiClient.getService(id).then((res) => setService(res.service || null));
+  }, [id]);
 
-    const breadcrumbItems: BreadcrumbItem[] = service ? [
-        { label: service.name, href: `/service/${id}`, siblings: serviceSiblings },
-        { label: decodeURIComponent(name), href: `/service/${id}/prompt/${name}` }
-    ] : [];
+  const breadcrumbItems: BreadcrumbItem[] = service
+    ? [
+        {
+          label: service.name,
+          href: `/service/${id}`,
+          siblings: serviceSiblings,
+        },
+        {
+          label: decodeURIComponent(name),
+          href: `/service/${id}/prompt/${name}`,
+        },
+      ]
+    : [];
 
-    return (
-        <main className="flex min-h-screen flex-col items-center bg-background p-4 sm:p-8">
-            <Breadcrumbs items={breadcrumbItems} className="max-w-4xl"/>
-            <PromptDetail serviceId={id} promptName={name} />
-        </main>
-    );
+  return (
+    <main className="flex min-h-screen flex-col items-center bg-background p-4 sm:p-8">
+      <Breadcrumbs items={breadcrumbItems} className="max-w-4xl" />
+      <PromptDetail serviceId={id} promptName={name} />
+    </main>
+  );
 }

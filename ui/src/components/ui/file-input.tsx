@@ -3,18 +3,18 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import * as React from "react"
-import { Upload, X, FileText } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import * as React from "react";
+import { Upload, X, FileText } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface FileInputProps {
-  value?: string
-  onChange: (value: string | undefined) => void
-  accept?: string
-  className?: string
-  disabled?: boolean
-  id?: string
+  value?: string;
+  onChange: (value: string | undefined) => void;
+  accept?: string;
+  className?: string;
+  disabled?: boolean;
+  id?: string;
 }
 
 /**
@@ -23,99 +23,106 @@ interface FileInputProps {
  * @param props - Component props.
  * @returns The FileInput component.
  */
-export function FileInput({ value, onChange, accept, className, disabled, id }: FileInputProps) {
-  const inputRef = React.useRef<HTMLInputElement>(null)
-  const [fileName, setFileName] = React.useState<string | null>(null)
-  const [error, setError] = React.useState<string | null>(null)
+export function FileInput({
+  value,
+  onChange,
+  accept,
+  className,
+  disabled,
+  id,
+}: FileInputProps) {
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  const [fileName, setFileName] = React.useState<string | null>(null);
+  const [error, setError] = React.useState<string | null>(null);
 
   // Sync internal state with external value
   React.useEffect(() => {
     if (!value) {
-      setFileName(null)
+      setFileName(null);
       if (inputRef.current) {
-        inputRef.current.value = ""
+        inputRef.current.value = "";
       }
     } else if (!fileName) {
-       // Value exists but no filename (e.g. form preset loaded)
-       setFileName("File loaded")
+      // Value exists but no filename (e.g. form preset loaded)
+      setFileName("File loaded");
     }
-  }, [value])
+  }, [value]);
 
-  const [isDragging, setIsDragging] = React.useState(false)
+  const [isDragging, setIsDragging] = React.useState(false);
 
   const processFile = (file: File) => {
-    setError(null)
+    setError(null);
 
     // Check size (optional, e.g. 5MB limit to prevent browser crash)
     if (file.size > 5 * 1024 * 1024) {
-      setError("File is too large (max 5MB)")
-      return
+      setError("File is too large (max 5MB)");
+      return;
     }
 
-    setFileName(file.name)
+    setFileName(file.name);
 
-    const reader = new FileReader()
+    const reader = new FileReader();
     reader.onload = (event) => {
-      const result = event.target?.result as string
+      const result = event.target?.result as string;
       // result is "data:image/png;base64,....."
       // We want only the base64 part for contentEncoding="base64"
-      const base64 = result.split(",")[1]
-      onChange(base64)
-    }
+      const base64 = result.split(",")[1];
+      onChange(base64);
+    };
     reader.onerror = () => {
-      setError("Failed to read file")
-    }
-    reader.readAsDataURL(file)
-  }
+      setError("Failed to read file");
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+    const file = e.target.files?.[0];
     if (file) {
-      processFile(file)
+      processFile(file);
     }
-  }
+  };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault()
-    e.stopPropagation()
+    e.preventDefault();
+    e.stopPropagation();
     if (!disabled) {
-      setIsDragging(true)
+      setIsDragging(true);
     }
-  }
+  };
 
   const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setIsDragging(false)
-  }
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setIsDragging(false)
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
 
-    if (disabled) return
+    if (disabled) return;
 
-    const file = e.dataTransfer.files?.[0]
+    const file = e.dataTransfer.files?.[0];
     if (file) {
-      processFile(file)
+      processFile(file);
     }
-  }
+  };
 
   const clearFile = () => {
-    setFileName(null)
-    onChange(undefined)
+    setFileName(null);
+    onChange(undefined);
     if (inputRef.current) {
-      inputRef.current.value = ""
+      inputRef.current.value = "";
     }
-  }
+  };
 
   return (
     <div
       className={cn(
         "flex flex-col gap-2 rounded-md border border-transparent transition-all",
         isDragging && "border-dashed border-primary bg-primary/5 p-4",
-        className
+        className,
       )}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
@@ -142,29 +149,33 @@ export function FileInput({ value, onChange, accept, className, disabled, id }: 
           {fileName ? "Change File" : "Select File"}
         </Button>
         {fileName && (
-           <div className="flex items-center gap-2 bg-muted px-3 py-2 rounded-md text-sm flex-1 overflow-hidden">
-             <FileText className="h-4 w-4 shrink-0" />
-             <span className="truncate">{fileName}</span>
-             <Button
-               type="button"
-               variant="ghost"
-               size="icon"
-               className="h-6 w-6 ml-auto shrink-0"
-               onClick={clearFile}
-               disabled={disabled}
-             >
-               <X className="h-4 w-4" />
-             </Button>
-           </div>
+          <div className="flex items-center gap-2 bg-muted px-3 py-2 rounded-md text-sm flex-1 overflow-hidden">
+            <FileText className="h-4 w-4 shrink-0" />
+            <span className="truncate">{fileName}</span>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 ml-auto shrink-0"
+              onClick={clearFile}
+              disabled={disabled}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
         )}
-         {isDragging && !fileName && (
-            <div className="flex-1 flex items-center justify-center text-sm text-primary font-medium animate-pulse">
-                Drop file here
-            </div>
+        {isDragging && !fileName && (
+          <div className="flex-1 flex items-center justify-center text-sm text-primary font-medium animate-pulse">
+            Drop file here
+          </div>
         )}
       </div>
       {error && <p className="text-xs text-destructive">{error}</p>}
-      {accept && <p className="text-[10px] text-muted-foreground">Accepted formats: {accept}</p>}
+      {accept && (
+        <p className="text-[10px] text-muted-foreground">
+          Accepted formats: {accept}
+        </p>
+      )}
     </div>
-  )
+  );
 }

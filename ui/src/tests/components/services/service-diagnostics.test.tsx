@@ -3,14 +3,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { ServiceDiagnostics } from '@/components/services/editor/service-diagnostics';
-import { UpstreamServiceConfig } from '@/lib/client';
-import { vi } from 'vitest';
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { ServiceDiagnostics } from "@/components/services/editor/service-diagnostics";
+import { UpstreamServiceConfig } from "@/lib/client";
+import { vi } from "vitest";
 
 // Mock apiClient
-vi.mock('@/lib/client', () => ({
+vi.mock("@/lib/client", () => ({
   apiClient: {
     validateService: vi.fn(),
     getServiceStatus: vi.fn(),
@@ -18,20 +18,25 @@ vi.mock('@/lib/client', () => ({
   },
 }));
 
-import { apiClient } from '@/lib/client';
+import { apiClient } from "@/lib/client";
 
 // Helper to cast mocked function for typing
-const mockValidateService = apiClient.validateService as unknown as ReturnType<typeof vi.fn>;
-const mockGetServiceStatus = apiClient.getServiceStatus as unknown as ReturnType<typeof vi.fn>;
-const mockListTools = apiClient.listTools as unknown as ReturnType<typeof vi.fn>;
+const mockValidateService = apiClient.validateService as unknown as ReturnType<
+  typeof vi.fn
+>;
+const mockGetServiceStatus =
+  apiClient.getServiceStatus as unknown as ReturnType<typeof vi.fn>;
+const mockListTools = apiClient.listTools as unknown as ReturnType<
+  typeof vi.fn
+>;
 
-describe('ServiceDiagnostics', () => {
+describe("ServiceDiagnostics", () => {
   const mockService: UpstreamServiceConfig = {
-    id: 'test-id',
-    name: 'test-service',
-    version: '1.0.0',
+    id: "test-id",
+    name: "test-service",
+    version: "1.0.0",
     disable: false,
-    httpService: { address: 'http://localhost' },
+    httpService: { address: "http://localhost" },
     priority: 0,
     loadBalancingStrategy: 0,
   } as unknown as UpstreamServiceConfig;
@@ -40,68 +45,75 @@ describe('ServiceDiagnostics', () => {
     vi.clearAllMocks();
   });
 
-  it('renders correctly', () => {
+  it("renders correctly", () => {
     render(<ServiceDiagnostics service={mockService} />);
-    expect(screen.getByText('Service Diagnostics')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /run diagnostics/i })).toBeInTheDocument();
+    expect(screen.getByText("Service Diagnostics")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /run diagnostics/i }),
+    ).toBeInTheDocument();
   });
 
-  it('runs diagnostics successfully', async () => {
+  it("runs diagnostics successfully", async () => {
     const user = userEvent.setup();
 
     // Mock successful responses
     mockValidateService.mockResolvedValue({ valid: true });
-    mockGetServiceStatus.mockResolvedValue({ status: 'Active' });
+    mockGetServiceStatus.mockResolvedValue({ status: "Active" });
     mockListTools.mockResolvedValue({
-      tools: [{ name: 'test-tool', serviceId: 'test-service' }]
+      tools: [{ name: "test-tool", serviceId: "test-service" }],
     });
 
     render(<ServiceDiagnostics service={mockService} />);
 
-    await user.click(screen.getByRole('button', { name: /run diagnostics/i }));
+    await user.click(screen.getByRole("button", { name: /run diagnostics/i }));
 
     await waitFor(() => {
-        expect(apiClient.validateService).toHaveBeenCalledWith(mockService);
-        expect(apiClient.getServiceStatus).toHaveBeenCalledWith('test-service');
-        expect(apiClient.listTools).toHaveBeenCalled();
+      expect(apiClient.validateService).toHaveBeenCalledWith(mockService);
+      expect(apiClient.getServiceStatus).toHaveBeenCalledWith("test-service");
+      expect(apiClient.listTools).toHaveBeenCalled();
     });
 
     // Check results
-    expect(screen.getByText('Configuration Validation')).toBeInTheDocument();
-    expect(screen.getByText('Configuration is valid.')).toBeInTheDocument();
-    expect(screen.getByText('Runtime Status')).toBeInTheDocument();
-    expect(screen.getByText('Service is Active.')).toBeInTheDocument();
-    expect(screen.getByText('Tool Discovery')).toBeInTheDocument();
-    expect(screen.getByText('Discovered 1 tool(s).')).toBeInTheDocument();
+    expect(screen.getByText("Configuration Validation")).toBeInTheDocument();
+    expect(screen.getByText("Configuration is valid.")).toBeInTheDocument();
+    expect(screen.getByText("Runtime Status")).toBeInTheDocument();
+    expect(screen.getByText("Service is Active.")).toBeInTheDocument();
+    expect(screen.getByText("Tool Discovery")).toBeInTheDocument();
+    expect(screen.getByText("Discovered 1 tool(s).")).toBeInTheDocument();
   });
 
-  it('handles validation failure', async () => {
+  it("handles validation failure", async () => {
     const user = userEvent.setup();
-    mockValidateService.mockResolvedValue({ valid: false, errors: ['Invalid URL'] });
+    mockValidateService.mockResolvedValue({
+      valid: false,
+      errors: ["Invalid URL"],
+    });
 
     render(<ServiceDiagnostics service={mockService} />);
 
-    await user.click(screen.getByRole('button', { name: /run diagnostics/i }));
+    await user.click(screen.getByRole("button", { name: /run diagnostics/i }));
 
     await waitFor(() => {
-        expect(screen.getByText('Configuration is invalid.')).toBeInTheDocument();
+      expect(screen.getByText("Configuration is invalid.")).toBeInTheDocument();
     });
-    expect(screen.getByText('Invalid URL')).toBeInTheDocument();
+    expect(screen.getByText("Invalid URL")).toBeInTheDocument();
   });
 
-  it('skips runtime checks if service is unsaved', async () => {
-     const user = userEvent.setup();
-     const unsavedService = { ...mockService, id: '', name: 'new-service' };
-     mockValidateService.mockResolvedValue({ valid: true });
+  it("skips runtime checks if service is unsaved", async () => {
+    const user = userEvent.setup();
+    const unsavedService = { ...mockService, id: "", name: "new-service" };
+    mockValidateService.mockResolvedValue({ valid: true });
 
-     render(<ServiceDiagnostics service={unsavedService} />);
-     await user.click(screen.getByRole('button', { name: /run diagnostics/i }));
+    render(<ServiceDiagnostics service={unsavedService} />);
+    await user.click(screen.getByRole("button", { name: /run diagnostics/i }));
 
-     await waitFor(() => {
-        expect(apiClient.validateService).toHaveBeenCalled();
-        expect(apiClient.getServiceStatus).not.toHaveBeenCalled();
-     });
+    await waitFor(() => {
+      expect(apiClient.validateService).toHaveBeenCalled();
+      expect(apiClient.getServiceStatus).not.toHaveBeenCalled();
+    });
 
-     expect(screen.getByText('Skipped (Service not saved yet).')).toBeInTheDocument();
+    expect(
+      screen.getByText("Skipped (Service not saved yet)."),
+    ).toBeInTheDocument();
   });
 });

@@ -3,8 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
-
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,8 +18,20 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { apiClient } from "@/lib/client";
 
 const authSettingsSchema = z.object({
@@ -79,11 +89,11 @@ export function AuthSettingsForm() {
       const payload = {
         ...current,
         oidc: {
-            issuer: data.oidc_issuer,
-            client_id: data.oidc_client_id,
-            client_secret: data.oidc_client_secret,
-            redirect_url: data.oidc_redirect_url,
-        }
+          issuer: data.oidc_issuer,
+          client_id: data.oidc_client_id,
+          client_secret: data.oidc_client_secret,
+          redirect_url: data.oidc_redirect_url,
+        },
       };
 
       await apiClient.saveGlobalSettings(payload);
@@ -98,80 +108,86 @@ export function AuthSettingsForm() {
     <Card className="backdrop-blur-sm bg-background/50">
       <CardHeader>
         <CardTitle>Authentication Configuration</CardTitle>
-        <CardDescription>Configure OpenID Connect (OIDC) settings.</CardDescription>
+        <CardDescription>
+          Configure OpenID Connect (OIDC) settings.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 gap-6">
-                <FormField
+              <FormField
                 control={form.control}
                 name="oidc_issuer"
                 render={({ field }) => (
-                    <FormItem>
+                  <FormItem>
                     <FormLabel>Issuer URL</FormLabel>
                     <FormControl>
-                        <Input placeholder="https://accounts.google.com" {...field} />
+                      <Input
+                        placeholder="https://accounts.google.com"
+                        {...field}
+                      />
                     </FormControl>
                     <FormDescription>
-                        The OIDC Issuer URL (e.g. Auth0, Google, Keycloak).
+                      The OIDC Issuer URL (e.g. Auth0, Google, Keycloak).
                     </FormDescription>
                     <FormMessage />
-                    </FormItem>
+                  </FormItem>
                 )}
+              />
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="oidc_client_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Client ID</FormLabel>
+                      <FormControl>
+                        <Input placeholder="..." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
+                <FormField
+                  control={form.control}
+                  name="oidc_client_secret"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Client Secret</FormLabel>
+                      <FormControl>
+                        <Input type="password" placeholder="..." {...field} />
+                      </FormControl>
+                      <FormDescription>Stored securely.</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
-                    control={form.control}
-                    name="oidc_client_id"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Client ID</FormLabel>
-                        <FormControl>
-                            <Input placeholder="..." {...field} />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-                    <FormField
-                    control={form.control}
-                    name="oidc_client_secret"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Client Secret</FormLabel>
-                        <FormControl>
-                            <Input type="password" placeholder="..." {...field} />
-                        </FormControl>
-                         <FormDescription>
-                           Stored securely.
-                        </FormDescription>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-                </div>
-
-                 <FormField
+              <FormField
                 control={form.control}
                 name="oidc_redirect_url"
                 render={({ field }) => (
-                    <FormItem>
+                  <FormItem>
                     <FormLabel>Redirect URL</FormLabel>
                     <FormControl>
-                        <Input placeholder="http://localhost:8080/callback" {...field} />
+                      <Input
+                        placeholder="http://localhost:8080/callback"
+                        {...field}
+                      />
                     </FormControl>
-                     <FormDescription>
-                        The callback URL allowed in your IdP.
+                    <FormDescription>
+                      The callback URL allowed in your IdP.
                     </FormDescription>
                     <FormMessage />
-                    </FormItem>
+                  </FormItem>
                 )}
-                />
+              />
             </div>
             <Button type="submit" disabled={loading}>
-                {loading ? "Saving..." : "Save Settings"}
+              {loading ? "Saving..." : "Save Settings"}
             </Button>
           </form>
         </Form>

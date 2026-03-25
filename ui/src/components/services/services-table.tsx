@@ -3,8 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
-
 import {
   Table,
   TableBody,
@@ -16,7 +14,17 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Settings, Trash, RefreshCw, AlertCircle, CheckCircle2, CircleOff, ShieldCheck, ShieldAlert } from "lucide-react";
+import {
+  MoreHorizontal,
+  Settings,
+  Trash,
+  RefreshCw,
+  AlertCircle,
+  CheckCircle2,
+  CircleOff,
+  ShieldCheck,
+  ShieldAlert,
+} from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -30,14 +38,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import { UpstreamServiceConfig } from "@/lib/client";
 
 interface ServicesTableProps {
-    services: UpstreamServiceConfig[];
-    loading: boolean;
-    onToggle: (service: UpstreamServiceConfig) => void;
-    onDelete: (service: UpstreamServiceConfig) => void;
+  services: UpstreamServiceConfig[];
+  loading: boolean;
+  onToggle: (service: UpstreamServiceConfig) => void;
+  onDelete: (service: UpstreamServiceConfig) => void;
 }
 
 /**
@@ -45,10 +53,18 @@ interface ServicesTableProps {
  *
  * @param onDelete - The onDelete.
  */
-export function ServicesTable({ services, loading, onToggle, onDelete }: ServicesTableProps) {
-
+export function ServicesTable({
+  services,
+  loading,
+  onToggle,
+  onDelete,
+}: ServicesTableProps) {
   if (loading) {
-      return <div className="p-4 text-center text-muted-foreground">Loading services...</div>;
+    return (
+      <div className="p-4 text-center text-muted-foreground">
+        Loading services...
+      </div>
+    );
   }
 
   return (
@@ -68,103 +84,124 @@ export function ServicesTable({ services, loading, onToggle, onDelete }: Service
         </TableHeader>
         <TableBody>
           {services.length === 0 && (
-              <TableRow>
-                  <TableCell colSpan={8} className="text-center h-24 text-muted-foreground">
-                      No services registered.
-                  </TableCell>
-              </TableRow>
+            <TableRow>
+              <TableCell
+                colSpan={8}
+                className="text-center h-24 text-muted-foreground"
+              >
+                No services registered.
+              </TableCell>
+            </TableRow>
           )}
           {services.map((service) => (
             <TableRow key={service.id || service.name}>
               <TableCell className="font-medium">
-                <Link to={`/services/${service.name}`} className="hover:underline">
-                    {service.name}
+                <Link
+                  to={`/services/${service.name}`}
+                  className="hover:underline"
+                >
+                  {service.name}
                 </Link>
               </TableCell>
               <TableCell>
-                  {service.provenance?.verified ? (
-                      <Tooltip>
-                          <TooltipTrigger>
-                              <div className="flex items-center gap-1 text-green-600">
-                                  <ShieldCheck className="h-4 w-4" />
-                                  <span className="text-xs font-medium">Verified</span>
-                              </div>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                              <p className="font-semibold">Verified Source</p>
-                              <p className="text-xs text-muted-foreground">Signer: {service.provenance.signerIdentity}</p>
-                          </TooltipContent>
-                      </Tooltip>
-                  ) : (
-                      <Tooltip>
-                          <TooltipTrigger>
-                              <div className="flex items-center gap-1 text-muted-foreground opacity-50">
-                                  <ShieldAlert className="h-4 w-4" />
-                                  <span className="text-xs">Unverified</span>
-                              </div>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                              <p>Unverified Source</p>
-                          </TooltipContent>
-                      </Tooltip>
-                  )}
+                {service.provenance?.verified ? (
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <div className="flex items-center gap-1 text-green-600">
+                        <ShieldCheck className="h-4 w-4" />
+                        <span className="text-xs font-medium">Verified</span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="font-semibold">Verified Source</p>
+                      <p className="text-xs text-muted-foreground">
+                        Signer: {service.provenance.signerIdentity}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                ) : (
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <div className="flex items-center gap-1 text-muted-foreground opacity-50">
+                        <ShieldAlert className="h-4 w-4" />
+                        <span className="text-xs">Unverified</span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Unverified Source</p>
+                    </TooltipContent>
+                  </Tooltip>
+                )}
               </TableCell>
               <TableCell>
                 <Badge variant="outline">
-                    {service.grpcService ? "gRPC" :
-                     service.httpService ? "HTTP" :
-                     service.commandLineService ? "CMD" :
-                     service.openapiService ? "OpenAPI" : "Unknown"}
+                  {service.grpcService
+                    ? "gRPC"
+                    : service.httpService
+                      ? "HTTP"
+                      : service.commandLineService
+                        ? "CMD"
+                        : service.openapiService
+                          ? "OpenAPI"
+                          : "Unknown"}
                 </Badge>
               </TableCell>
               <TableCell>
-                  {service.toolCount !== undefined ? (
-                      <Badge variant="secondary">{service.toolCount}</Badge>
-                  ) : (
-                      <span className="text-muted-foreground">-</span>
-                  )}
+                {service.toolCount !== undefined ? (
+                  <Badge variant="secondary">{service.toolCount}</Badge>
+                ) : (
+                  <span className="text-muted-foreground">-</span>
+                )}
               </TableCell>
-              <TableCell>{service.version || '-'}</TableCell>
+              <TableCell>{service.version || "-"}</TableCell>
               <TableCell>
                 <div className="flex items-center space-x-4">
-                    <Switch
-                        checked={!service.disable}
-                        onCheckedChange={() => onToggle(service)}
-                    />
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <div className="flex items-center space-x-1 cursor-help">
-                                {service.disable ? (
-                                    <>
-                                        <CircleOff className="h-4 w-4 text-muted-foreground" />
-                                        <span className="text-sm text-muted-foreground">Disabled</span>
-                                    </>
-                                ) : service.lastError ? (
-                                    <>
-                                        <AlertCircle className="h-4 w-4 text-destructive" />
-                                        <span className="text-sm text-destructive font-medium">Error</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <CheckCircle2 className="h-4 w-4 text-green-600" />
-                                        <span className="text-sm text-green-600 font-medium">Active</span>
-                                    </>
-                                )}
-                            </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            {service.disable ? (
-                                <p>Service is explicitly disabled.</p>
-                            ) : service.lastError ? (
-                                <div className="max-w-xs">
-                                    <p className="font-semibold">Error:</p>
-                                    <p className="text-sm break-words">{service.lastError}</p>
-                                </div>
-                            ) : (
-                                <p>Service is active and healthy.</p>
-                            )}
-                        </TooltipContent>
-                    </Tooltip>
+                  <Switch
+                    checked={!service.disable}
+                    onCheckedChange={() => onToggle(service)}
+                  />
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex items-center space-x-1 cursor-help">
+                        {service.disable ? (
+                          <>
+                            <CircleOff className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-sm text-muted-foreground">
+                              Disabled
+                            </span>
+                          </>
+                        ) : service.lastError ? (
+                          <>
+                            <AlertCircle className="h-4 w-4 text-destructive" />
+                            <span className="text-sm text-destructive font-medium">
+                              Error
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <CheckCircle2 className="h-4 w-4 text-green-600" />
+                            <span className="text-sm text-green-600 font-medium">
+                              Active
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {service.disable ? (
+                        <p>Service is explicitly disabled.</p>
+                      ) : service.lastError ? (
+                        <div className="max-w-xs">
+                          <p className="font-semibold">Error:</p>
+                          <p className="text-sm break-words">
+                            {service.lastError}
+                          </p>
+                        </div>
+                      ) : (
+                        <p>Service is active and healthy.</p>
+                      )}
+                    </TooltipContent>
+                  </Tooltip>
                 </div>
               </TableCell>
               <TableCell>{service.priority || 0}</TableCell>
@@ -182,7 +219,10 @@ export function ServicesTable({ services, loading, onToggle, onDelete }: Service
                       <Settings className="mr-2 h-4 w-4" /> Configure
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem className="text-red-600" onClick={() => onDelete(service)}>
+                    <DropdownMenuItem
+                      className="text-red-600"
+                      onClick={() => onDelete(service)}
+                    >
                       <Trash className="mr-2 h-4 w-4" /> Delete
                     </DropdownMenuItem>
                   </DropdownMenuContent>

@@ -7,25 +7,25 @@
  * Represents the type of a node in the topology graph.
  */
 export type NodeType =
-  | 'NODE_TYPE_UNSPECIFIED'
-  | 'NODE_TYPE_CLIENT'
-  | 'NODE_TYPE_CORE'
-  | 'NODE_TYPE_SERVICE'
-  | 'NODE_TYPE_TOOL'
-  | 'NODE_TYPE_RESOURCE'
-  | 'NODE_TYPE_PROMPT'
-  | 'NODE_TYPE_API_CALL'
-  | 'NODE_TYPE_MIDDLEWARE'
-  | 'NODE_TYPE_WEBHOOK';
+  | "NODE_TYPE_UNSPECIFIED"
+  | "NODE_TYPE_CLIENT"
+  | "NODE_TYPE_CORE"
+  | "NODE_TYPE_SERVICE"
+  | "NODE_TYPE_TOOL"
+  | "NODE_TYPE_RESOURCE"
+  | "NODE_TYPE_PROMPT"
+  | "NODE_TYPE_API_CALL"
+  | "NODE_TYPE_MIDDLEWARE"
+  | "NODE_TYPE_WEBHOOK";
 
 /**
  * Represents the operational status of a node.
  */
 export type NodeStatus =
-  | 'NODE_STATUS_UNSPECIFIED'
-  | 'NODE_STATUS_ACTIVE'
-  | 'NODE_STATUS_INACTIVE'
-  | 'NODE_STATUS_ERROR';
+  | "NODE_STATUS_UNSPECIFIED"
+  | "NODE_STATUS_ACTIVE"
+  | "NODE_STATUS_INACTIVE"
+  | "NODE_STATUS_ERROR";
 
 /**
  * Performance metrics associated with a node.

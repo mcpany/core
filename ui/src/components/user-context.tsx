@@ -3,15 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
-
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { apiClient } from '@/lib/client';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { apiClient } from "@/lib/client";
 
 /**
  * Defines the role of a user in the system.
  */
-export type UserRole = 'admin' | 'editor' | 'viewer';
+export type UserRole = "admin" | "editor" | "viewer";
 
 /**
  * Represents a user of the application.
@@ -63,11 +61,11 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       const u = await apiClient.getCurrentUser();
       if (u) {
         setUser({
-            id: u.id,
-            name: u.name || u.id,
-            email: u.email || '',
-            roles: u.roles || [],
-            avatar: u.avatar
+          id: u.id,
+          name: u.name || u.id,
+          email: u.email || "",
+          roles: u.roles || [],
+          avatar: u.avatar,
         });
       } else {
         setUser(null);
@@ -94,14 +92,16 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('mcp_auth_token');
-    localStorage.removeItem('mcp_user_role');
+    localStorage.removeItem("mcp_auth_token");
+    localStorage.removeItem("mcp_user_role");
     // Force reload to clear client state
     window.location.reload();
   };
 
   return (
-    <UserContext.Provider value={{ user, loading, login, logout, refresh: fetchUser }}>
+    <UserContext.Provider
+      value={{ user, loading, login, logout, refresh: fetchUser }}
+    >
       {children}
     </UserContext.Provider>
   );
@@ -115,7 +115,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 export function useUser() {
   const context = useContext(UserContext);
   if (context === undefined) {
-    throw new Error('useUser must be used within a UserProvider');
+    throw new Error("useUser must be used within a UserProvider");
   }
   return context;
 }

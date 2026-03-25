@@ -3,8 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
-
 import { useState } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -20,11 +18,11 @@ import { apiClient } from "@/lib/client";
  * Interface defining a service configuration within the wizard.
  */
 export interface WizardService {
-    templateId: string;
-    instanceName: string; // e.g. "my-google-cal"
-    config: any; // The upstream service config
-    isAuthenticated: boolean;
-    credentials?: any;
+  templateId: string;
+  instanceName: string; // e.g. "my-google-cal"
+  config: any; // The upstream service config
+  isAuthenticated: boolean;
+  credentials?: any;
 }
 
 /**
@@ -32,92 +30,98 @@ export interface WizardService {
  * @param props Component properties.
  * @param props.onProfileCreated Callback when a profile is created.
  */
-export function WizardDialog({ onProfileCreated }: { onProfileCreated: () => void }) {
-    const [open, setOpen] = useState(false);
-    const [step, setStep] = useState(1);
-    const [selectedServices, setSelectedServices] = useState<WizardService[]>([]);
+export function WizardDialog({
+  onProfileCreated,
+}: {
+  onProfileCreated: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [step, setStep] = useState(1);
+  const [selectedServices, setSelectedServices] = useState<WizardService[]>([]);
 
-    // Reset state when opening
-    const handleOpenChange = (newOpen: boolean) => {
-        if (newOpen) {
-            setStep(1);
-            setSelectedServices([]);
-        }
-        setOpen(newOpen);
-    };
+  // Reset state when opening
+  const handleOpenChange = (newOpen: boolean) => {
+    if (newOpen) {
+      setStep(1);
+      setSelectedServices([]);
+    }
+    setOpen(newOpen);
+  };
 
-    const nextStep = () => setStep(s => s + 1);
-    const prevStep = () => setStep(s => s - 1);
+  const nextStep = () => setStep((s) => s + 1);
+  const prevStep = () => setStep((s) => s - 1);
 
-    const handleServicesSelected = (services: WizardService[]) => {
-        setSelectedServices(services);
-        nextStep();
-    };
+  const handleServicesSelected = (services: WizardService[]) => {
+    setSelectedServices(services);
+    nextStep();
+  };
 
-    const handleConfigComplete = (services: WizardService[]) => {
-        setSelectedServices(services);
-        nextStep();
-    };
+  const handleConfigComplete = (services: WizardService[]) => {
+    setSelectedServices(services);
+    nextStep();
+  };
 
-    const handleAuthComplete = (services: WizardService[]) => {
-        setSelectedServices(services);
-        nextStep();
-    };
+  const handleAuthComplete = (services: WizardService[]) => {
+    setSelectedServices(services);
+    nextStep();
+  };
 
-    const handleProfileCreated = (profileName: string) => {
-        toast.success(`Profile ${profileName} created successfully!`);
-        setOpen(false);
-        onProfileCreated();
-    };
+  const handleProfileCreated = (profileName: string) => {
+    toast.success(`Profile ${profileName} created successfully!`);
+    setOpen(false);
+    onProfileCreated();
+  };
 
-    return (
-        <Dialog open={open} onOpenChange={handleOpenChange}>
-            <DialogTrigger asChild>
-                <Button variant="outline" className="gap-2">
-                    <Wand2 className="h-4 w-4" />
-                    Profile Wizard
-                </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-4xl h-[80vh] flex flex-col p-0 gap-0">
-                <div className="p-6 border-b">
-                    <h2 className="text-2xl font-semibold tracking-tight">Profile Wizard</h2>
-                    <p className="text-sm text-muted-foreground">
-                        Step {step} of 4: {
-                            step === 1 ? "Select Services" :
-                            step === 2 ? "Configure Services" :
-                            step === 3 ? "Authenticate" :
-                            "Finalize Profile"
-                        }
-                    </p>
-                </div>
+  return (
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogTrigger asChild>
+        <Button variant="outline" className="gap-2">
+          <Wand2 className="h-4 w-4" />
+          Profile Wizard
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-4xl h-[80vh] flex flex-col p-0 gap-0">
+        <div className="p-6 border-b">
+          <h2 className="text-2xl font-semibold tracking-tight">
+            Profile Wizard
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Step {step} of 4:{" "}
+            {step === 1
+              ? "Select Services"
+              : step === 2
+                ? "Configure Services"
+                : step === 3
+                  ? "Authenticate"
+                  : "Finalize Profile"}
+          </p>
+        </div>
 
-                <div className="flex-1 overflow-y-auto p-6">
-                    {step === 1 && (
-                        <CatalogStep onNext={handleServicesSelected} />
-                    )}
-                    {step === 2 && (
-                        <ServiceConfigStep
-                            services={selectedServices}
-                            onNext={handleConfigComplete}
-                            onBack={prevStep}
-                        />
-                    )}
-                    {step === 3 && (
-                        <AuthStep
-                            services={selectedServices}
-                            onNext={handleAuthComplete}
-                            onBack={prevStep}
-                        />
-                    )}
-                    {step === 4 && (
-                        <ProfileStep
-                            services={selectedServices}
-                            onBack={prevStep}
-                            onComplete={handleProfileCreated}
-                        />
-                    )}
-                </div>
-            </DialogContent>
-        </Dialog>
-    );
+        <div className="flex-1 overflow-y-auto p-6">
+          {step === 1 && <CatalogStep onNext={handleServicesSelected} />}
+          {step === 2 && (
+            <ServiceConfigStep
+              services={selectedServices}
+              onNext={handleConfigComplete}
+              onBack={prevStep}
+            />
+          )}
+          {step === 3 && (
+            <AuthStep
+              services={selectedServices}
+              onNext={handleAuthComplete}
+              onBack={prevStep}
+            />
+          )}
+          {step === 4 && (
+            <ProfileStep
+              services={selectedServices}
+              onBack={prevStep}
+              onComplete={handleProfileCreated}
+            />
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
 }

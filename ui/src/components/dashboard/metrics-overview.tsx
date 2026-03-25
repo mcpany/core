@@ -3,8 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
-
 import { useEffect, useState, memo, useCallback } from "react";
 import { useDashboard } from "@/components/dashboard/dashboard-context";
 import { usePolling } from "@/hooks/use-polling";
@@ -18,7 +16,7 @@ import {
   Database,
   MessageSquare,
   Clock,
-  AlertCircle
+  AlertCircle,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SystemHealthCard } from "./system-health-card";
@@ -33,7 +31,7 @@ const iconMap: Record<string, any> = {
   Database,
   MessageSquare,
   Clock,
-  AlertCircle
+  AlertCircle,
 };
 
 // ⚡ Bolt Optimization: Extracted and memoized MetricItem to prevent unnecessary re-renders
@@ -48,15 +46,19 @@ const MetricItem = memo(function MetricItem({ metric }: { metric: Metric }) {
   const Icon = iconMap[metric.icon] || Activity;
   const isPositiveTrend = metric.trend === "up";
   // For latency and errors, down is usually good (green), up is bad (red)
-  const isReverseTrend = metric.label.includes("Latency") || metric.label.includes("Error");
+  const isReverseTrend =
+    metric.label.includes("Latency") || metric.label.includes("Error");
 
   let trendColor = isPositiveTrend ? "text-green-500" : "text-red-500";
   if (isReverseTrend) {
-      trendColor = isPositiveTrend ? "text-red-500" : "text-green-500";
+    trendColor = isPositiveTrend ? "text-red-500" : "text-green-500";
   }
 
   return (
-    <Card data-testid={`metric-card-${metric.label}`} className="backdrop-blur-xl bg-background/60 border border-white/20 shadow-sm hover:shadow-lg transition-all duration-300">
+    <Card
+      data-testid={`metric-card-${metric.label}`}
+      className="backdrop-blur-xl bg-background/60 border border-white/20 shadow-sm hover:shadow-lg transition-all duration-300"
+    >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">
           {metric.label}
@@ -64,22 +66,27 @@ const MetricItem = memo(function MetricItem({ metric }: { metric: Metric }) {
         <Icon className="h-4 w-4 text-muted-foreground opacity-70" />
       </CardHeader>
       <CardContent>
-        <div data-testid="metric-value" className="text-2xl font-bold tracking-tight">{metric.value}</div>
+        <div
+          data-testid="metric-value"
+          className="text-2xl font-bold tracking-tight"
+        >
+          {metric.value}
+        </div>
         <div className="flex items-center justify-between mt-1">
-            {metric.change && (
-          <p className={`text-xs flex items-center ${trendColor}`}>
-            {metric.trend === "up" ? (
-              <ArrowUpRight className="h-3 w-3 mr-1" />
-            ) : (
-              <ArrowDownRight className="h-3 w-3 mr-1" />
-            )}
-            <span>
-              {metric.change}
-            </span>
-          </p>
-        )}
+          {metric.change && (
+            <p className={`text-xs flex items-center ${trendColor}`}>
+              {metric.trend === "up" ? (
+                <ArrowUpRight className="h-3 w-3 mr-1" />
+              ) : (
+                <ArrowDownRight className="h-3 w-3 mr-1" />
+              )}
+              <span>{metric.change}</span>
+            </p>
+          )}
           {metric.subLabel && (
-            <span className="text-xs text-muted-foreground opacity-80">{metric.subLabel}</span>
+            <span className="text-xs text-muted-foreground opacity-80">
+              {metric.subLabel}
+            </span>
           )}
         </div>
       </CardContent>
@@ -123,13 +130,15 @@ export const MetricsOverview = memo(function MetricsOverview() {
   return (
     <div className="space-y-4">
       {metrics.length === 0 ? (
-        <div className="text-muted-foreground animate-pulse">Loading dashboard metrics...</div>
+        <div className="text-muted-foreground animate-pulse">
+          Loading dashboard metrics...
+        </div>
       ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {metrics.map((metric) => (
-              <MetricItem key={metric.label} metric={metric} />
-            ))}
-          </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {metrics.map((metric) => (
+            <MetricItem key={metric.label} metric={metric} />
+          ))}
+        </div>
       )}
       <SystemHealthCard />
     </div>

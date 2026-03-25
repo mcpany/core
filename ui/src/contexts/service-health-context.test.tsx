@@ -3,9 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
 import { renderHook, waitFor, render, act } from "@testing-library/react";
-import { ServiceHealthProvider, useServiceHealth, useTopology } from "./service-health-context";
+import {
+  ServiceHealthProvider,
+  useServiceHealth,
+  useTopology,
+} from "./service-health-context";
 import React from "react";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 
@@ -13,123 +16,127 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 global.fetch = vi.fn();
 
 describe("ServiceHealthContext", () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("fetches topology and updates history", async () => {
+    const mockTopology = {
+      core: {
+        id: "core",
+        type: "NODE_TYPE_CORE",
+        children: [
+          {
+            id: "service-1",
+            type: "NODE_TYPE_SERVICE",
+            status: "NODE_STATUS_ACTIVE",
+            metrics: { latencyMs: 100, errorRate: 0, qps: 5 },
+          },
+        ],
+      },
+    };
+
+    (global.fetch as any).mockResolvedValue({
+      headers: new Map(),
+      ok: true,
+      json: async () => mockTopology,
+      text: async () => JSON.stringify(mockTopology),
     });
 
-    it("fetches topology and updates history", async () => {
-        const mockTopology = {
-            core: {
-                id: "core",
-                type: "NODE_TYPE_CORE",
-                children: [
-                    {
-                        id: "service-1",
-                        type: "NODE_TYPE_SERVICE",
-                        status: "NODE_STATUS_ACTIVE",
-                        metrics: { latencyMs: 100, errorRate: 0, qps: 5 }
-                    }
-                ]
-            }
-        };
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <ServiceHealthProvider>{children}</ServiceHealthProvider>
+    );
 
-        (global.fetch as any).mockResolvedValue({
-            headers: new Map(),
-            ok: true,
-            json: async () => mockTopology,
-            text: async () => JSON.stringify(mockTopology)
-        });
+    const { result } = renderHook(() => useServiceHealth(), { wrapper });
 
-        const wrapper = ({ children }: { children: React.ReactNode }) => (
-            <ServiceHealthProvider>{children}</ServiceHealthProvider>
-        );
-
-        const { result } = renderHook(() => useServiceHealth(), { wrapper });
-
-        // Wait for fetch
-        await waitFor(() => {
-             expect(global.fetch).toHaveBeenCalledWith('/api/v1/topology', { headers: {} });
-        });
-
-        // Check history
-        await waitFor(() => {
-            const history = result.current.getServiceHistory("service-1");
-            expect(history.length).toBeGreaterThan(0);
-            expect(history[0].latencyMs).toBe(100);
-            expect(history[0].status).toBe("NODE_STATUS_ACTIVE");
-        });
+    // Wait for fetch
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith("/api/v1/topology", {
+        headers: {},
+      });
     });
 
-    it("useTopology should not re-render when only metrics update", async () => {
-        const mockTopology = {
-            core: {
-                id: "core",
-                type: "NODE_TYPE_CORE",
-                children: [
-                    {
-                        id: "service-1",
-                        type: "NODE_TYPE_SERVICE",
-                        status: "NODE_STATUS_ACTIVE",
-                        metrics: { latencyMs: 100, errorRate: 0, qps: 5 }
-                    }
-                ]
-            }
-        };
+    // Check history
+    await waitFor(() => {
+      const history = result.current.getServiceHistory("service-1");
+      expect(history.length).toBeGreaterThan(0);
+      expect(history[0].latencyMs).toBe(100);
+      expect(history[0].status).toBe("NODE_STATUS_ACTIVE");
+    });
+  });
 
-        (global.fetch as any).mockResolvedValue({
-            headers: new Map(),
-            ok: true,
-            json: async () => mockTopology,
-            text: async () => JSON.stringify(mockTopology)
-        });
+  it("useTopology should not re-render when only metrics update", async () => {
+    const mockTopology = {
+      core: {
+        id: "core",
+        type: "NODE_TYPE_CORE",
+        children: [
+          {
+            id: "service-1",
+            type: "NODE_TYPE_SERVICE",
+            status: "NODE_STATUS_ACTIVE",
+            metrics: { latencyMs: 100, errorRate: 0, qps: 5 },
+          },
+        ],
+      },
+    };
 
-        vi.useFakeTimers();
+    (global.fetch as any).mockResolvedValue({
+      headers: new Map(),
+      ok: true,
+      json: async () => mockTopology,
+      text: async () => JSON.stringify(mockTopology),
+    });
 
-        let renderCount = 0;
-        const Consumer = () => {
-            useTopology();
-            renderCount++;
-            return null;
-        };
+    vi.useFakeTimers();
 
-        render(
-            <ServiceHealthProvider>
-                <Consumer />
-            </ServiceHealthProvider>
-        );
+    let renderCount = 0;
+    const Consumer = () => {
+      useTopology();
+      renderCount++;
+      return null;
+    };
 
-        // Allow initial effect to run
-        await act(async () => {
-            await vi.advanceTimersByTimeAsync(100);
-        });
+    render(
+      <ServiceHealthProvider>
+        <Consumer />
+      </ServiceHealthProvider>,
+    );
 
-        // Verify first fetch
-        expect(global.fetch).toHaveBeenCalledWith('/api/v1/topology', { headers: {} });
+    // Allow initial effect to run
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(100);
+    });
 
-        // Capture render count after initial fetch setup
-        const rendersAfterInit = renderCount;
+    // Verify first fetch
+    expect(global.fetch).toHaveBeenCalledWith("/api/v1/topology", {
+      headers: {},
+    });
 
-        // Mock next fetch with SAME topology (same content, new object)
-        // This simulates a poll where metrics might be processed but topology structure is identical
-        const mockTopology2 = structuredClone(mockTopology);
-        (global.fetch as any).mockResolvedValue({
-            headers: new Map(),
-            ok: true,
-            json: async () => mockTopology2,
-            text: async () => JSON.stringify(mockTopology2)
-        });
+    // Capture render count after initial fetch setup
+    const rendersAfterInit = renderCount;
 
-        // Advance timer to trigger poll
-        await act(async () => {
-            await vi.advanceTimersByTimeAsync(5000);
-        });
+    // Mock next fetch with SAME topology (same content, new object)
+    // This simulates a poll where metrics might be processed but topology structure is identical
+    const mockTopology2 = structuredClone(mockTopology);
+    (global.fetch as any).mockResolvedValue({
+      headers: new Map(),
+      ok: true,
+      json: async () => mockTopology2,
+      text: async () => JSON.stringify(mockTopology2),
+    });
 
-        // Verify fetch was called again
-        expect(global.fetch).toHaveBeenCalledTimes(2);
+    // Advance timer to trigger poll
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(5000);
+    });
 
-        // Verify render count DID NOT increase
-        expect(renderCount).toBe(rendersAfterInit);
+    // Verify fetch was called again
+    expect(global.fetch).toHaveBeenCalledTimes(2);
 
-        vi.useRealTimers();
-    }, 10000);
+    // Verify render count DID NOT increase
+    expect(renderCount).toBe(rendersAfterInit);
+
+    vi.useRealTimers();
+  }, 10000);
 });

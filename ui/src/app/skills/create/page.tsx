@@ -3,9 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
-
-import SkillWizard from '@/components/skills/skill-wizard';
+import SkillWizard from "@/components/skills/skill-wizard";
 
 /**
  * CreateSkillPage component.

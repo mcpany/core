@@ -3,11 +3,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
-
 import { useState, useEffect } from "react";
 import { apiClient } from "@/lib/client";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -25,10 +29,13 @@ interface CatalogStepProps {
 export function CatalogStep({ onNext }: CatalogStepProps) {
   const [templates, setTemplates] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedTemplateIds, setSelectedTemplateIds] = useState<Set<string>>(new Set());
+  const [selectedTemplateIds, setSelectedTemplateIds] = useState<Set<string>>(
+    new Set(),
+  );
 
   useEffect(() => {
-    apiClient.getServiceTemplates()
+    apiClient
+      .getServiceTemplates()
       .then(setTemplates)
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -43,26 +50,32 @@ export function CatalogStep({ onNext }: CatalogStepProps) {
 
   const handleNext = () => {
     // Convert selected templates to initial WizardService objects
-    const services: WizardService[] = Array.from(selectedTemplateIds).map(id => {
-      const tmpl = templates.find(t => t.id === id) as any;
-      return {
-        templateId: id,
-        instanceName: "", // To be filled in next step
-        config: tmpl.serviceConfig,
-        isAuthenticated: false
-      };
-    });
+    const services: WizardService[] = Array.from(selectedTemplateIds).map(
+      (id) => {
+        const tmpl = templates.find((t) => t.id === id) as any;
+        return {
+          templateId: id,
+          instanceName: "", // To be filled in next step
+          config: tmpl.serviceConfig,
+          isAuthenticated: false,
+        };
+      },
+    );
     onNext(services);
   };
 
   if (loading) {
-    return <div className="flex justify-center p-12"><Loader2 className="animate-spin" /></div>;
+    return (
+      <div className="flex justify-center p-12">
+        <Loader2 className="animate-spin" />
+      </div>
+    );
   }
 
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {templates.map(tmpl => {
+        {templates.map((tmpl) => {
           const isSelected = selectedTemplateIds.has(tmpl.id);
           return (
             <Card
@@ -80,7 +93,13 @@ export function CatalogStep({ onNext }: CatalogStepProps) {
                 </div>
                 <div className="flex gap-1 mt-2">
                   {tmpl.tags?.map((tag: string) => (
-                    <Badge key={tag} variant="secondary" className="text-[10px]">{tag}</Badge>
+                    <Badge
+                      key={tag}
+                      variant="secondary"
+                      className="text-[10px]"
+                    >
+                      {tag}
+                    </Badge>
                   ))}
                 </div>
               </CardHeader>

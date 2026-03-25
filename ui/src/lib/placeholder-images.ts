@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import data from './placeholder-images.json';
+import data from "./placeholder-images.json";
 
 /**
  * ImagePlaceholder type definition.

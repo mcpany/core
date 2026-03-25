@@ -6,7 +6,7 @@
 import { render, screen } from "@testing-library/react";
 import { SchemaViewer, Schema } from "@/components/tools/schema-viewer";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import React from 'react';
+import React from "react";
 
 // Mock ResizeObserver
 global.ResizeObserver = class ResizeObserver {
@@ -23,26 +23,26 @@ describe("SchemaViewer", () => {
     properties: {
       name: {
         type: "string",
-        description: "The name of the person"
+        description: "The name of the person",
       },
       age: {
         type: "integer",
-        description: "Age in years"
+        description: "Age in years",
       },
       tags: {
         type: "array",
         items: {
-          type: "string"
-        }
-      }
-    }
+          type: "string",
+        },
+      },
+    },
   };
 
   it("renders the root object", () => {
     render(
       <TooltipProvider>
         <SchemaViewer schema={sampleSchema} name="root" />
-      </TooltipProvider>
+      </TooltipProvider>,
     );
     expect(screen.getByText("root")).toBeInTheDocument();
     // The text content is lowercase "object", usually styled uppercase via CSS
@@ -53,7 +53,7 @@ describe("SchemaViewer", () => {
     render(
       <TooltipProvider>
         <SchemaViewer schema={sampleSchema} />
-      </TooltipProvider>
+      </TooltipProvider>,
     );
     expect(screen.getByText("name")).toBeInTheDocument();
     // "string" appears multiple times
@@ -66,7 +66,7 @@ describe("SchemaViewer", () => {
     render(
       <TooltipProvider>
         <SchemaViewer schema={sampleSchema} />
-      </TooltipProvider>
+      </TooltipProvider>,
     );
     // The asterisk is in a span with title="Required"
     const requiredMarks = screen.getAllByTitle("Required");
@@ -74,14 +74,14 @@ describe("SchemaViewer", () => {
   });
 
   it("renders array items", () => {
-      render(
-        <TooltipProvider>
-          <SchemaViewer schema={sampleSchema} />
-        </TooltipProvider>
-      );
-      expect(screen.getByText("tags")).toBeInTheDocument();
-      expect(screen.getByText("array")).toBeInTheDocument();
-      // "Items:" label
-      expect(screen.getByText("Items:")).toBeInTheDocument();
+    render(
+      <TooltipProvider>
+        <SchemaViewer schema={sampleSchema} />
+      </TooltipProvider>,
+    );
+    expect(screen.getByText("tags")).toBeInTheDocument();
+    expect(screen.getByText("array")).toBeInTheDocument();
+    // "Items:" label
+    expect(screen.getByText("Items:")).toBeInTheDocument();
   });
 });

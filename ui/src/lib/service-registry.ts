@@ -31,10 +31,10 @@ export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
           type: "string",
           title: "Connection URL",
           description: "postgresql://user:password@host:5432/db",
-          format: "password"
-        }
-      }
-    }
+          format: "password",
+        },
+      },
+    },
   },
   {
     id: "sqlite",
@@ -49,11 +49,12 @@ export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
         DB_PATH: {
           type: "string",
           title: "Database Path",
-          description: "Absolute path to the SQLite file (e.g. /data/mydb.sqlite)",
-          default: "mcp.db"
-        }
-      }
-    }
+          description:
+            "Absolute path to the SQLite file (e.g. /data/mydb.sqlite)",
+          default: "mcp.db",
+        },
+      },
+    },
   },
 
   // --- Cloud Platforms ---
@@ -71,15 +72,15 @@ export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
           type: "string",
           title: "API Token",
           description: "Cloudflare API Token with Account.Read permissions",
-          format: "password"
+          format: "password",
         },
         CLOUDFLARE_ACCOUNT_ID: {
           type: "string",
           title: "Account ID",
-          description: "Your Cloudflare Account ID"
-        }
-      }
-    }
+          description: "Your Cloudflare Account ID",
+        },
+      },
+    },
   },
   {
     id: "aws-kb",
@@ -95,22 +96,22 @@ export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
           type: "string",
           title: "Access Key ID",
           description: "AWS Access Key ID",
-          format: "password"
+          format: "password",
         },
         AWS_SECRET_ACCESS_KEY: {
           type: "string",
           title: "Secret Access Key",
           description: "AWS Secret Access Key",
-          format: "password"
+          format: "password",
         },
         AWS_REGION: {
           type: "string",
           title: "Region",
           description: "AWS Region (e.g. us-east-1)",
-          default: "us-east-1"
-        }
-      }
-    }
+          default: "us-east-1",
+        },
+      },
+    },
   },
 
   // --- Developer Tools ---
@@ -128,10 +129,10 @@ export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
           type: "string",
           title: "Personal Access Token",
           description: "GitHub PAT with repo scope",
-          format: "password"
-        }
-      }
-    }
+          format: "password",
+        },
+      },
+    },
   },
   {
     id: "gitlab",
@@ -147,16 +148,16 @@ export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
           type: "string",
           title: "Personal Access Token",
           description: "GitLab PAT with api scope",
-          format: "password"
+          format: "password",
         },
         GITLAB_API_URL: {
           type: "string",
           title: "GitLab API URL",
           description: "Base URL for GitLab API",
-          default: "https://gitlab.com/api/v4"
-        }
-      }
-    }
+          default: "https://gitlab.com/api/v4",
+        },
+      },
+    },
   },
   {
     id: "sentry",
@@ -172,10 +173,10 @@ export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
           type: "string",
           title: "Auth Token",
           description: "Sentry Auth Token",
-          format: "password"
-        }
-      }
-    }
+          format: "password",
+        },
+      },
+    },
   },
 
   // --- Productivity ---
@@ -193,15 +194,15 @@ export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
           type: "string",
           title: "Bot User OAuth Token",
           description: "xoxb-...",
-          format: "password"
+          format: "password",
         },
         SLACK_TEAM_ID: {
           type: "string",
           title: "Team ID",
-          description: "Workspace Team ID (e.g. T01234567)"
-        }
-      }
-    }
+          description: "Workspace Team ID (e.g. T01234567)",
+        },
+      },
+    },
   },
   {
     id: "linear",
@@ -217,10 +218,10 @@ export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
           type: "string",
           title: "API Key",
           description: "Linear Personal API Key",
-          format: "password"
-        }
-      }
-    }
+          format: "password",
+        },
+      },
+    },
   },
   {
     id: "google-drive",
@@ -235,16 +236,16 @@ export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
         GOOGLE_CLIENT_ID: {
           type: "string",
           title: "Client ID",
-          description: "Google Cloud Client ID"
+          description: "Google Cloud Client ID",
         },
         GOOGLE_CLIENT_SECRET: {
           type: "string",
           title: "Client Secret",
           description: "Google Cloud Client Secret",
-          format: "password"
-        }
-      }
-    }
+          format: "password",
+        },
+      },
+    },
   },
 
   // --- Web & Search ---
@@ -262,10 +263,10 @@ export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
           type: "string",
           title: "API Key",
           description: "Brave Search API Key",
-          format: "password"
-        }
-      }
-    }
+          format: "password",
+        },
+      },
+    },
   },
   {
     id: "google-maps",
@@ -281,10 +282,10 @@ export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
           type: "string",
           title: "API Key",
           description: "Google Maps API Key",
-          format: "password"
-        }
-      }
-    }
+          format: "password",
+        },
+      },
+    },
   },
   {
     id: "fetch",
@@ -295,8 +296,8 @@ export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
     configurationSchema: {
       type: "object",
       required: [],
-      properties: {}
-    }
+      properties: {},
+    },
   },
   {
     id: "puppeteer",
@@ -307,8 +308,8 @@ export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
     configurationSchema: {
       type: "object",
       required: [],
-      properties: {}
-    }
+      properties: {},
+    },
   },
 
   // --- Local System ---
@@ -325,11 +326,12 @@ export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
         ALLOWED_DIRECTORIES: {
           type: "string",
           title: "Allowed Directories",
-          description: "Comma-separated list of absolute paths to allow access to",
-          default: "/tmp"
-        }
-      }
-    }
+          description:
+            "Comma-separated list of absolute paths to allow access to",
+          default: "/tmp",
+        },
+      },
+    },
   },
   {
     id: "memory",
@@ -340,8 +342,8 @@ export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
     configurationSchema: {
       type: "object",
       required: [],
-      properties: {}
-    }
+      properties: {},
+    },
   },
   {
     id: "time",
@@ -352,8 +354,8 @@ export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
     configurationSchema: {
       type: "object",
       required: [],
-      properties: {}
-    }
+      properties: {},
+    },
   },
 
   // --- External Integrations ---
@@ -371,15 +373,15 @@ export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
           type: "string",
           title: "API Key",
           description: "EverArt API Key",
-          format: "password"
+          format: "password",
         },
         EVERART_MEMBER_ID: {
           type: "string",
           title: "Member ID",
-          description: "EverArt Member ID"
-        }
-      }
-    }
+          description: "EverArt Member ID",
+        },
+      },
+    },
   },
   {
     id: "sequential-thinking",
@@ -390,8 +392,8 @@ export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
     configurationSchema: {
       type: "object",
       required: [],
-      properties: {}
-    }
+      properties: {},
+    },
   },
   {
     id: "redis",
@@ -407,10 +409,10 @@ export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
           type: "string",
           title: "Redis URL",
           description: "redis://localhost:6379",
-          default: "redis://localhost:6379"
-        }
-      }
-    }
+          default: "redis://localhost:6379",
+        },
+      },
+    },
   },
   {
     id: "mysql",
@@ -420,37 +422,42 @@ export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
     description: "Access MySQL databases",
     configurationSchema: {
       type: "object",
-      required: ["MYSQL_HOST", "MYSQL_USER", "MYSQL_PASSWORD", "MYSQL_DATABASE"],
+      required: [
+        "MYSQL_HOST",
+        "MYSQL_USER",
+        "MYSQL_PASSWORD",
+        "MYSQL_DATABASE",
+      ],
       properties: {
         MYSQL_HOST: {
           type: "string",
           title: "Host",
           description: "MySQL Host (e.g. localhost)",
-          default: "localhost"
+          default: "localhost",
         },
         MYSQL_PORT: {
           type: "string",
           title: "Port",
           description: "MySQL Port",
-          default: "3306"
+          default: "3306",
         },
         MYSQL_USER: {
           type: "string",
           title: "User",
-          description: "MySQL User"
+          description: "MySQL User",
         },
         MYSQL_PASSWORD: {
           type: "string",
           title: "Password",
           description: "MySQL Password",
-          format: "password"
+          format: "password",
         },
         MYSQL_DATABASE: {
           type: "string",
           title: "Database",
-          description: "MySQL Database Name"
-        }
-      }
-    }
-  }
+          description: "MySQL Database Name",
+        },
+      },
+    },
+  },
 ];

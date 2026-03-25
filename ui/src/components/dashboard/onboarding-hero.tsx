@@ -3,12 +3,22 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
-
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, ShoppingBag, BookOpen, CheckCircle2, Circle } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Plus,
+  ShoppingBag,
+  BookOpen,
+  CheckCircle2,
+  Circle,
+} from "lucide-react";
 
 /**
  * OnboardingHero component.
@@ -37,7 +47,8 @@ export function OnboardingHero() {
               Connect Service
             </CardTitle>
             <CardDescription>
-              Manually configure an upstream service like a local MCP server or remote API.
+              Manually configure an upstream service like a local MCP server or
+              remote API.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -56,7 +67,8 @@ export function OnboardingHero() {
               Browse Marketplace
             </CardTitle>
             <CardDescription>
-              Discover and install pre-configured services from the community or official catalog.
+              Discover and install pre-configured services from the community or
+              official catalog.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -70,19 +82,21 @@ export function OnboardingHero() {
       </div>
 
       <div className="pt-8 w-full max-w-md">
-        <h3 className="text-sm font-medium text-muted-foreground mb-4 uppercase tracking-wider">Getting Started Checklist</h3>
+        <h3 className="text-sm font-medium text-muted-foreground mb-4 uppercase tracking-wider">
+          Getting Started Checklist
+        </h3>
         <div className="space-y-3 text-left bg-muted/20 p-6 rounded-lg border">
           <div className="flex items-center gap-3">
-             <Circle className="h-5 w-5 text-muted-foreground" />
-             <span className="font-medium">1. Connect an MCP Service</span>
+            <Circle className="h-5 w-5 text-muted-foreground" />
+            <span className="font-medium">1. Connect an MCP Service</span>
           </div>
           <div className="flex items-center gap-3 text-muted-foreground opacity-60">
-             <Circle className="h-5 w-5" />
-             <span>2. Verify connection health</span>
+            <Circle className="h-5 w-5" />
+            <span>2. Verify connection health</span>
           </div>
           <div className="flex items-center gap-3 text-muted-foreground opacity-60">
-             <Circle className="h-5 w-5" />
-             <span>3. Test tools in the Playground</span>
+            <Circle className="h-5 w-5" />
+            <span>3. Test tools in the Playground</span>
           </div>
         </div>
       </div>

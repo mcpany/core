@@ -9,7 +9,13 @@ import { vi, describe, it, expect } from "vitest";
 
 // Mock Monaco Editor since it doesn't render well in JSDOM
 vi.mock("@monaco-editor/react", () => ({
-  default: ({ value, onChange }: { value: string; onChange: (val: string) => void }) => (
+  default: ({
+    value,
+    onChange,
+  }: {
+    value: string;
+    onChange: (val: string) => void;
+  }) => (
     <textarea
       data-testid="monaco-editor"
       value={value}
@@ -51,7 +57,7 @@ describe("ConfigValidatorPage", () => {
       Promise.resolve({
         ok: true,
         json: () => Promise.resolve({ valid: true }),
-      } as Response)
+      } as Response),
     );
 
     render(<ConfigValidatorPage />);
@@ -70,8 +76,9 @@ describe("ConfigValidatorPage", () => {
     global.fetch = vi.fn(() =>
       Promise.resolve({
         ok: true,
-        json: () => Promise.resolve({ valid: false, errors: ["Invalid syntax"] }),
-      } as Response)
+        json: () =>
+          Promise.resolve({ valid: false, errors: ["Invalid syntax"] }),
+      } as Response),
     );
 
     render(<ConfigValidatorPage />);

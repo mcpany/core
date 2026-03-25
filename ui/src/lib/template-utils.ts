@@ -15,7 +15,7 @@ import { UpstreamServiceConfig } from "@/lib/client";
  */
 export function applyTemplateFields(
   template: ServiceTemplate,
-  fieldValues: Record<string, string>
+  fieldValues: Record<string, string>,
 ): Partial<UpstreamServiceConfig> {
   // Deep clone the config to avoid mutating the original
   const config = structuredClone(template.config);
@@ -27,7 +27,7 @@ export function applyTemplateFields(
   for (const field of template.fields) {
     const value = fieldValues[field.name];
     if (value === undefined || value === "") {
-        continue; // Skip empty values, or handle defaults if we had them
+      continue; // Skip empty values, or handle defaults if we had them
     }
 
     applyValueToConfig(config, field.key, value, field.replaceToken);
@@ -45,7 +45,7 @@ function applyValueToConfig(
   obj: Record<string, any>,
   path: string,
   value: string,
-  replaceToken?: string
+  replaceToken?: string,
 ) {
   const parts = path.split(".");
   let current = obj;
@@ -66,8 +66,8 @@ function applyValueToConfig(
     if (typeof currentValue === "string") {
       current[lastPart] = currentValue.replace(replaceToken, value);
     } else {
-        // Fallback: if target isn't a string, just set it (shouldn't happen for replaceToken use cases)
-        current[lastPart] = value;
+      // Fallback: if target isn't a string, just set it (shouldn't happen for replaceToken use cases)
+      current[lastPart] = value;
     }
   } else {
     // Direct assignment

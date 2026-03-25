@@ -8,7 +8,7 @@ import { Trace } from "@/types/trace";
 import { apiClient } from "@/lib/client";
 
 interface UseTracesOptions {
-    initialPaused?: boolean;
+  initialPaused?: boolean;
 }
 
 const MAX_TRACES = 1000;
@@ -21,185 +21,186 @@ const MAX_TRACES = 1000;
  * @returns An object containing the current traces, loading state, connection status, and controls.
  */
 export function useTraces(options: UseTracesOptions = {}) {
-    const [traces, setTraces] = useState<Trace[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [isConnected, setIsConnected] = useState(false);
-    const [isPaused, setIsPaused] = useState(options.initialPaused || false);
-    const wsRef = useRef<WebSocket | null>(null);
-    const isPausedRef = useRef(isPaused);
-    const isMountedRef = useRef(true);
-    const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [traces, setTraces] = useState<Trace[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isConnected, setIsConnected] = useState(false);
+  const [isPaused, setIsPaused] = useState(options.initialPaused || false);
+  const wsRef = useRef<WebSocket | null>(null);
+  const isPausedRef = useRef(isPaused);
+  const isMountedRef = useRef(true);
+  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    // ⚡ BOLT: Buffer for batched updates to avoid main thread blocking
-    // Randomized Selection from Top 5 High-Impact Targets
-    const bufferRef = useRef<Trace[]>([]);
+  // ⚡ BOLT: Buffer for batched updates to avoid main thread blocking
+  // Randomized Selection from Top 5 High-Impact Targets
+  const bufferRef = useRef<Trace[]>([]);
 
-    useEffect(() => {
-        isPausedRef.current = isPaused;
-    }, [isPaused]);
+  useEffect(() => {
+    isPausedRef.current = isPaused;
+  }, [isPaused]);
 
-    // ⚡ BOLT: Flush buffer periodically
-    useEffect(() => {
-        const interval = setInterval(() => {
-            if (bufferRef.current.length === 0) return;
+  // ⚡ BOLT: Flush buffer periodically
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (bufferRef.current.length === 0) return;
 
-            // Take current buffer and clear it immediately
-            const buffer = bufferRef.current;
-            bufferRef.current = [];
+      // Take current buffer and clear it immediately
+      const buffer = bufferRef.current;
+      bufferRef.current = [];
 
-            setTraces((prev) => {
-                // ⚡ BOLT: Batched updates logic
+      setTraces((prev) => {
+        // ⚡ BOLT: Batched updates logic
 
-                // 1. Deduplicate buffer (last write wins)
-                const updatesMap = new Map<string, Trace>();
-                for (const t of buffer) {
-                    updatesMap.set(t.id, t);
-                }
-
-                // 2. Identify existing IDs for O(1) lookup
-                const existingIds = new Set(prev.map(t => t.id));
-
-                // 3. Separate new inserts from updates
-                const inserts: Trace[] = [];
-                const updatesForExisting = new Map<string, Trace>();
-
-                for (const t of updatesMap.values()) {
-                    if (existingIds.has(t.id)) {
-                        updatesForExisting.set(t.id, t);
-                    } else {
-                        inserts.push(t);
-                    }
-                }
-
-                // 4. Apply updates in-place to preserve order of existing items
-                // ⚡ BOLT: Optimization - Skip mapping if no existing items need updates
-                let nextTraces = prev;
-                if (updatesForExisting.size > 0) {
-                    nextTraces = prev.map(t => {
-                        if (updatesForExisting.has(t.id)) {
-                            return updatesForExisting.get(t.id)!;
-                        }
-                        return t;
-                    });
-                }
-
-                // 5. Prepend new inserts (newest first).
-                // Buffer is oldest->newest. We want newest at top of list.
-                // So we reverse inserts.
-                const merged = [...inserts.reverse(), ...nextTraces];
-
-                // ⚡ BOLT: Optimization - Enforce hard limit to prevent memory leaks
-                // Randomized Selection from Top 5 High-Impact Targets
-                if (merged.length > MAX_TRACES) {
-                    return merged.slice(0, MAX_TRACES);
-                }
-                return merged;
-            });
-        }, 100);
-
-        return () => clearInterval(interval);
-    }, []);
-
-    const connect = () => {
-        if (!isMountedRef.current) return;
-
-        setLoading(true);
-        // Use relative URL for client-side navigation, but handle both dev and prod
-        // If window is undefined (SSR), don't connect
-        if (typeof window === 'undefined') return;
-
-        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const host = window.location.host;
-        let wsUrl = `${protocol}//${host}/api/v1/ws/traces`;
-
-        // Inject auth token from localStorage if available
-        const token = localStorage.getItem('mcp_auth_token');
-        if (token) {
-            // Encode the token because it might contain special characters (like base64 padding =)
-            wsUrl += `?auth_token=${encodeURIComponent(token)}`;
+        // 1. Deduplicate buffer (last write wins)
+        const updatesMap = new Map<string, Trace>();
+        for (const t of buffer) {
+          updatesMap.set(t.id, t);
         }
 
-        // Cleanup previous
-        if (wsRef.current) {
-            wsRef.current.close();
+        // 2. Identify existing IDs for O(1) lookup
+        const existingIds = new Set(prev.map((t) => t.id));
+
+        // 3. Separate new inserts from updates
+        const inserts: Trace[] = [];
+        const updatesForExisting = new Map<string, Trace>();
+
+        for (const t of updatesMap.values()) {
+          if (existingIds.has(t.id)) {
+            updatesForExisting.set(t.id, t);
+          } else {
+            inserts.push(t);
+          }
         }
 
-        const ws = new WebSocket(wsUrl);
-
-        ws.onopen = () => {
-            if (!isMountedRef.current) {
-                ws.close();
-                return;
+        // 4. Apply updates in-place to preserve order of existing items
+        // ⚡ BOLT: Optimization - Skip mapping if no existing items need updates
+        let nextTraces = prev;
+        if (updatesForExisting.size > 0) {
+          nextTraces = prev.map((t) => {
+            if (updatesForExisting.has(t.id)) {
+              return updatesForExisting.get(t.id)!;
             }
-            setIsConnected(true);
-            setLoading(false);
-        };
-
-        ws.onmessage = (event) => {
-            if (!isMountedRef.current) return;
-            if (isPausedRef.current) return;
-            try {
-                const trace: Trace = JSON.parse(event.data);
-                // ⚡ BOLT: Push to buffer instead of updating state directly
-                bufferRef.current.push(trace);
-            } catch (e) {
-                console.error("Failed to parse trace", e);
-            }
-        };
-
-        ws.onclose = () => {
-            if (!isMountedRef.current) return;
-            setIsConnected(false);
-            // Reconnect after 3s
-            if (reconnectTimeoutRef.current) clearTimeout(reconnectTimeoutRef.current);
-            reconnectTimeoutRef.current = setTimeout(connect, 3000);
-        };
-
-        ws.onerror = (err) => {
-            console.error("WebSocket error", err);
-            ws.close();
-        };
-
-        wsRef.current = ws;
-    };
-
-    useEffect(() => {
-        isMountedRef.current = true;
-        connect();
-        return () => {
-            isMountedRef.current = false;
-            if (wsRef.current) {
-                wsRef.current.onclose = null; // Prevent reconnect trigger on manual close
-                wsRef.current.close();
-            }
-            if (reconnectTimeoutRef.current) {
-                clearTimeout(reconnectTimeoutRef.current);
-            }
-        };
-    }, []);
-
-    const clearTraces = async () => {
-        try {
-            await apiClient.clearTraces();
-            setTraces([]);
-            bufferRef.current = [];
-        } catch (e) {
-            console.error("Failed to clear traces", e);
+            return t;
+          });
         }
+
+        // 5. Prepend new inserts (newest first).
+        // Buffer is oldest->newest. We want newest at top of list.
+        // So we reverse inserts.
+        const merged = [...inserts.reverse(), ...nextTraces];
+
+        // ⚡ BOLT: Optimization - Enforce hard limit to prevent memory leaks
+        // Randomized Selection from Top 5 High-Impact Targets
+        if (merged.length > MAX_TRACES) {
+          return merged.slice(0, MAX_TRACES);
+        }
+        return merged;
+      });
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const connect = () => {
+    if (!isMountedRef.current) return;
+
+    setLoading(true);
+    // Use relative URL for client-side navigation, but handle both dev and prod
+    // If window is undefined (SSR), don't connect
+    if (typeof window === "undefined") return;
+
+    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    const host = window.location.host;
+    let wsUrl = `${protocol}//${host}/api/v1/ws/traces`;
+
+    // Inject auth token from localStorage if available
+    const token = localStorage.getItem("mcp_auth_token");
+    if (token) {
+      // Encode the token because it might contain special characters (like base64 padding =)
+      wsUrl += `?auth_token=${encodeURIComponent(token)}`;
+    }
+
+    // Cleanup previous
+    if (wsRef.current) {
+      wsRef.current.close();
+    }
+
+    const ws = new WebSocket(wsUrl);
+
+    ws.onopen = () => {
+      if (!isMountedRef.current) {
+        ws.close();
+        return;
+      }
+      setIsConnected(true);
+      setLoading(false);
     };
 
-    const refresh = () => {
-        setTraces([]);
-        connect();
+    ws.onmessage = (event) => {
+      if (!isMountedRef.current) return;
+      if (isPausedRef.current) return;
+      try {
+        const trace: Trace = JSON.parse(event.data);
+        // ⚡ BOLT: Push to buffer instead of updating state directly
+        bufferRef.current.push(trace);
+      } catch (e) {
+        console.error("Failed to parse trace", e);
+      }
     };
 
-    return {
-        traces,
-        loading,
-        isConnected,
-        isPaused,
-        setIsPaused,
-        clearTraces,
-        refresh
+    ws.onclose = () => {
+      if (!isMountedRef.current) return;
+      setIsConnected(false);
+      // Reconnect after 3s
+      if (reconnectTimeoutRef.current)
+        clearTimeout(reconnectTimeoutRef.current);
+      reconnectTimeoutRef.current = setTimeout(connect, 3000);
     };
+
+    ws.onerror = (err) => {
+      console.error("WebSocket error", err);
+      ws.close();
+    };
+
+    wsRef.current = ws;
+  };
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    connect();
+    return () => {
+      isMountedRef.current = false;
+      if (wsRef.current) {
+        wsRef.current.onclose = null; // Prevent reconnect trigger on manual close
+        wsRef.current.close();
+      }
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const clearTraces = async () => {
+    try {
+      await apiClient.clearTraces();
+      setTraces([]);
+      bufferRef.current = [];
+    } catch (e) {
+      console.error("Failed to clear traces", e);
+    }
+  };
+
+  const refresh = () => {
+    setTraces([]);
+    connect();
+  };
+
+  return {
+    traces,
+    loading,
+    isConnected,
+    isPaused,
+    setIsPaused,
+    clearTraces,
+    refresh,
+  };
 }

@@ -1,17 +1,21 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-
-
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Skill, SkillService } from '@/lib/skill-service';
-import { Edit, ChevronLeft } from 'lucide-react';
-import { toast } from 'sonner';
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Skill, SkillService } from "@/lib/skill-service";
+import { Edit, ChevronLeft } from "lucide-react";
+import { toast } from "sonner";
 
 /**
  * SkillDetail component.
@@ -34,7 +38,7 @@ export default function SkillDetail() {
       const data = await SkillService.get(skillName);
       setSkill(data);
     } catch (err: any) {
-      toast.error('Failed to load skill: ' + err.message);
+      toast.error("Failed to load skill: " + err.message);
     } finally {
       setLoading(false);
     }
@@ -71,22 +75,28 @@ export default function SkillDetail() {
             <CardTitle>Metadata</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-             {skill.license && (
-                 <div>
-                     <span className="font-semibold mr-2">License:</span>
-                     {skill.license}
-                 </div>
-             )}
-             <div>
-                <span className="font-semibold block mb-2">Allowed Tools:</span>
-                <div className="flex gap-2 flex-wrap">
-                    {skill.allowedTools && skill.allowedTools.length > 0 ? (
-                        skill.allowedTools.map((t: string) => <Badge key={t} variant="secondary">{t}</Badge>)
-                    ) : (
-                        <span className="text-muted-foreground italic">None allowed (default)</span>
-                    )}
-                </div>
-             </div>
+            {skill.license && (
+              <div>
+                <span className="font-semibold mr-2">License:</span>
+                {skill.license}
+              </div>
+            )}
+            <div>
+              <span className="font-semibold block mb-2">Allowed Tools:</span>
+              <div className="flex gap-2 flex-wrap">
+                {skill.allowedTools && skill.allowedTools.length > 0 ? (
+                  skill.allowedTools.map((t: string) => (
+                    <Badge key={t} variant="secondary">
+                      {t}
+                    </Badge>
+                  ))
+                ) : (
+                  <span className="text-muted-foreground italic">
+                    None allowed (default)
+                  </span>
+                )}
+              </div>
+            </div>
           </CardContent>
         </Card>
 
@@ -96,7 +106,7 @@ export default function SkillDetail() {
           </CardHeader>
           <CardContent>
             <pre className="bg-muted p-4 rounded-lg overflow-x-auto whitespace-pre-wrap font-mono text-sm">
-                {skill.instructions}
+              {skill.instructions}
             </pre>
           </CardContent>
         </Card>
@@ -106,13 +116,17 @@ export default function SkillDetail() {
             <CardTitle>Assets</CardTitle>
           </CardHeader>
           <CardContent>
-              {skill.assets && skill.assets.length > 0 ? (
-                  <ul className="list-disc pl-5">
-                      {skill.assets.map((a: string) => <li key={a} className="font-mono">{a}</li>)}
-                  </ul>
-              ) : (
-                  <p className="text-muted-foreground">No assets.</p>
-              )}
+            {skill.assets && skill.assets.length > 0 ? (
+              <ul className="list-disc pl-5">
+                {skill.assets.map((a: string) => (
+                  <li key={a} className="font-mono">
+                    {a}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-muted-foreground">No assets.</p>
+            )}
           </CardContent>
         </Card>
       </div>

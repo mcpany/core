@@ -3,92 +3,100 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
-import { ResourceViewer } from './resource-viewer';
-import { ResourceContent } from '@/lib/client';
+import { render, screen } from "@testing-library/react";
+import { describe, it, expect, vi } from "vitest";
+import { ResourceViewer } from "./resource-viewer";
+import { ResourceContent } from "@/lib/client";
 
 // Mock syntax highlighter since it might cause issues in JSDOM
-vi.mock('react-syntax-highlighter/dist/esm/light', () => {
-/**
- * MockHighlighter component.
- * @param props - The component props.
- * @param props.children - The child components.
- * @returns The rendered component.
- */
-    const MockHighlighter = ({ children }: { children: React.ReactNode }) => <pre data-testid="code-block">{children}</pre>;
-    // Mock static methods like registerLanguage
-    MockHighlighter.registerLanguage = vi.fn();
-    return {
-        default: MockHighlighter
-    };
+vi.mock("react-syntax-highlighter/dist/esm/light", () => {
+  /**
+   * MockHighlighter component.
+   * @param props - The component props.
+   * @param props.children - The child components.
+   * @returns The rendered component.
+   */
+  const MockHighlighter = ({ children }: { children: React.ReactNode }) => (
+    <pre data-testid="code-block">{children}</pre>
+  );
+  // Mock static methods like registerLanguage
+  MockHighlighter.registerLanguage = vi.fn();
+  return {
+    default: MockHighlighter,
+  };
 });
 
-describe('ResourceViewer', () => {
-  it('renders loading state', () => {
+describe("ResourceViewer", () => {
+  it("renders loading state", () => {
     render(<ResourceViewer content={null} loading={true} />);
-    expect(screen.getByText('Loading content...')).toBeInTheDocument();
+    expect(screen.getByText("Loading content...")).toBeInTheDocument();
   });
 
-  it('renders empty state', () => {
+  it("renders empty state", () => {
     render(<ResourceViewer content={null} loading={false} />);
-    expect(screen.getByText('Select a resource to view its content.')).toBeInTheDocument();
+    expect(
+      screen.getByText("Select a resource to view its content."),
+    ).toBeInTheDocument();
   });
 
-  it('renders JSON content using JsonView', () => {
+  it("renders JSON content using JsonView", () => {
     const content: ResourceContent = {
-        uri: 'file:///config.json',
-        mimeType: 'application/json',
-        text: '{"foo": "bar"}'
+      uri: "file:///config.json",
+      mimeType: "application/json",
+      text: '{"foo": "bar"}',
     };
-    const { container } = render(<ResourceViewer content={content} loading={false} />);
+    const { container } = render(
+      <ResourceViewer content={content} loading={false} />,
+    );
     // JsonView uses syntax highlighter internally for raw view, but tree view parses it.
     // If it's a small object, it might render as a tree or smart table.
     // Assuming JsonView renders some keys:
-    expect(container).toHaveTextContent('foo');
-    expect(container).toHaveTextContent('bar');
+    expect(container).toHaveTextContent("foo");
+    expect(container).toHaveTextContent("bar");
   });
 
-  it('renders YAML content using ReactSyntaxHighlighter', () => {
+  it("renders YAML content using ReactSyntaxHighlighter", () => {
     const content: ResourceContent = {
-        uri: 'file:///config.yaml',
-        mimeType: 'application/yaml',
-        text: 'foo: bar'
+      uri: "file:///config.yaml",
+      mimeType: "application/yaml",
+      text: "foo: bar",
     };
     render(<ResourceViewer content={content} loading={false} />);
-    expect(screen.getByTestId('code-block')).toHaveTextContent('foo: bar');
+    expect(screen.getByTestId("code-block")).toHaveTextContent("foo: bar");
   });
 
-  it('renders Markdown content', () => {
+  it("renders Markdown content", () => {
     const content: ResourceContent = {
-        uri: 'file:///README.md',
-        mimeType: 'text/markdown',
-        text: '# Hello'
+      uri: "file:///README.md",
+      mimeType: "text/markdown",
+      text: "# Hello",
     };
     render(<ResourceViewer content={content} loading={false} />);
-    expect(screen.getByTestId('code-block')).toHaveTextContent('# Hello');
+    expect(screen.getByTestId("code-block")).toHaveTextContent("# Hello");
   });
 
-  it('renders Plain text content', () => {
-     const content: ResourceContent = {
-        uri: 'file:///log.txt',
-        mimeType: 'text/plain',
-        text: 'Just some logs'
-    };
-    render(<ResourceViewer content={content} loading={false} />);
-    expect(screen.getByTestId('code-block')).toHaveTextContent('Just some logs');
-  });
-
-  it('renders image content', () => {
+  it("renders Plain text content", () => {
     const content: ResourceContent = {
-        uri: 'file:///image.png',
-        mimeType: 'image/png',
-        blob: 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=='
+      uri: "file:///log.txt",
+      mimeType: "text/plain",
+      text: "Just some logs",
     };
     render(<ResourceViewer content={content} loading={false} />);
-    const img = screen.getByRole('img');
+    expect(screen.getByTestId("code-block")).toHaveTextContent(
+      "Just some logs",
+    );
+  });
+
+  it("renders image content", () => {
+    const content: ResourceContent = {
+      uri: "file:///image.png",
+      mimeType: "image/png",
+      blob: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+    };
+    render(<ResourceViewer content={content} loading={false} />);
+    const img = screen.getByRole("img");
     expect(img).toBeInTheDocument();
-    expect(img).toHaveAttribute('src', `data:image/png;base64,${content.blob}`);
-    expect(img).toHaveAttribute('alt', content.uri);
+    expect(img).toHaveAttribute("src", `data:image/png;base64,${content.blob}`);
+    expect(img).toHaveAttribute("alt", content.uri);
   });
 });

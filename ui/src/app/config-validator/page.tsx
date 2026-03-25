@@ -3,8 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
-
 import { useState } from "react";
 import Editor from "@monaco-editor/react";
 import { Button } from "@/components/ui/button";
@@ -21,9 +19,10 @@ import { defineDraculaTheme } from "@/lib/monaco-theme";
 export default function ConfigValidatorPage() {
   const [content, setContent] = useState("");
   const [isValidating, setIsValidating] = useState(false);
-  const [result, setResult] = useState<{ valid: boolean; errors?: string[] } | null>(
-    null
-  );
+  const [result, setResult] = useState<{
+    valid: boolean;
+    errors?: string[];
+  } | null>(null);
   const { theme } = useTheme();
 
   const handleValidate = async () => {
@@ -70,7 +69,9 @@ export default function ConfigValidatorPage() {
     <div className="h-full flex flex-col p-6 space-y-4">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Config Validator</h1>
+          <h1 className="text-2xl font-bold tracking-tight">
+            Config Validator
+          </h1>
           <p className="text-muted-foreground">
             Validate your YAML or JSON configuration against the server schema.
           </p>
@@ -116,16 +117,21 @@ export default function ConfigValidatorPage() {
             ) : result.valid ? (
               <div className="flex flex-col items-center justify-center h-full text-green-600 space-y-2">
                 <CheckCircle2 className="h-16 w-16" />
-                <span className="text-lg font-semibold">Valid Configuration</span>
+                <span className="text-lg font-semibold">
+                  Valid Configuration
+                </span>
                 <p className="text-sm text-muted-foreground text-center max-w-xs">
-                  The configuration syntax and structure match the server schema.
+                  The configuration syntax and structure match the server
+                  schema.
                 </p>
               </div>
             ) : (
               <div className="space-y-4">
                 <div className="flex items-center text-red-600 space-x-2">
                   <XCircle className="h-6 w-6" />
-                  <span className="text-lg font-semibold">Validation Errors</span>
+                  <span className="text-lg font-semibold">
+                    Validation Errors
+                  </span>
                 </div>
                 <div className="space-y-2">
                   {result.errors?.map((err, i) => (

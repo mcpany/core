@@ -3,26 +3,29 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
-import { RichResultViewer } from './rich-result-viewer';
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+import { RichResultViewer } from "./rich-result-viewer";
 
-describe('RichResultViewer', () => {
-  it('renders stdout JSON arrays containing image content', () => {
+describe("RichResultViewer", () => {
+  it("renders stdout JSON arrays containing image content", () => {
     render(
       <RichResultViewer
         result={{
           stdout: JSON.stringify([
             {
-              type: 'image',
-              data: 'base64data',
-              mimeType: 'image/png',
+              type: "image",
+              data: "base64data",
+              mimeType: "image/png",
             },
           ]),
         }}
       />,
     );
 
-    expect(screen.getByRole('img')).toHaveAttribute('src', 'data:image/png;base64,base64data');
+    expect(screen.getByRole("img")).toHaveAttribute(
+      "src",
+      "data:image/png;base64,base64data",
+    );
   });
 });

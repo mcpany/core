@@ -16,7 +16,9 @@ describe("ChartStyle Security", () => {
       },
     };
 
-    const { container } = render(<ChartStyle id="test-chart" config={config} />);
+    const { container } = render(
+      <ChartStyle id="test-chart" config={config} />,
+    );
     const styleTag = container.querySelector("style");
 
     // It should fail closed and not generate the color test at all
@@ -31,7 +33,9 @@ describe("ChartStyle Security", () => {
       },
     };
 
-    const { container } = render(<ChartStyle id="test-chart" config={config} />);
+    const { container } = render(
+      <ChartStyle id="test-chart" config={config} />,
+    );
     const styleTag = container.querySelector("style");
 
     expect(styleTag?.innerHTML).not.toContain("--color-test");
@@ -45,20 +49,25 @@ describe("ChartStyle Security", () => {
       },
     };
 
-    const { container } = render(<ChartStyle id="test-chart" config={config} />);
+    const { container } = render(
+      <ChartStyle id="test-chart" config={config} />,
+    );
     const styleTag = container.querySelector("style");
     expect(styleTag?.innerHTML).not.toContain("--color-test");
   });
 
   it("should block @import CSS injections", () => {
-    const dangerousColor = "</style><style>@import url('http://evil.com/malicious.css');</style>";
+    const dangerousColor =
+      "</style><style>@import url('http://evil.com/malicious.css');</style>";
     const config = {
       test: {
         color: dangerousColor,
       },
     };
 
-    const { container } = render(<ChartStyle id="test-chart" config={config} />);
+    const { container } = render(
+      <ChartStyle id="test-chart" config={config} />,
+    );
     const styleTag = container.querySelector("style");
 
     expect(styleTag?.innerHTML).not.toContain("--color-test");
@@ -77,10 +86,14 @@ describe("ChartStyle Security", () => {
       test4: { color: safeVar },
     };
 
-    const { container } = render(<ChartStyle id="test-chart" config={config} />);
+    const { container } = render(
+      <ChartStyle id="test-chart" config={config} />,
+    );
     const styleTag = container.querySelector("style");
 
-    expect(styleTag?.innerHTML).toContain("--color-test1: hsl(var(--primary));");
+    expect(styleTag?.innerHTML).toContain(
+      "--color-test1: hsl(var(--primary));",
+    );
     expect(styleTag?.innerHTML).toContain("--color-test2: #ef4444;");
     expect(styleTag?.innerHTML).toContain("--color-test3: rgb(239, 68, 68);");
     expect(styleTag?.innerHTML).toContain("--color-test4: var(--danger);");

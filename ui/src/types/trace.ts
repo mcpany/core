@@ -6,7 +6,7 @@
 /**
  * Represents the status of a span.
  */
-export type SpanStatus = 'success' | 'error' | 'pending';
+export type SpanStatus = "success" | "error" | "pending";
 
 /**
  * Represents a span in a trace.
@@ -14,7 +14,7 @@ export type SpanStatus = 'success' | 'error' | 'pending';
 export interface Span {
   id: string;
   name: string;
-  type: 'tool' | 'service' | 'resource' | 'prompt' | 'core';
+  type: "tool" | "service" | "resource" | "prompt" | "core";
   startTime: number;
   endTime: number;
   status: SpanStatus;
@@ -34,5 +34,5 @@ export interface Trace {
   timestamp: string;
   totalDuration: number;
   status: SpanStatus;
-  trigger: 'user' | 'webhook' | 'scheduler' | 'system';
+  trigger: "user" | "webhook" | "scheduler" | "system";
 }

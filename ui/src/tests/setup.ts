@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { expect, vi } from 'vitest';
-import * as matchers from '@testing-library/jest-dom/matchers';
-import '@testing-library/jest-dom/vitest';
+import { expect, vi } from "vitest";
+import * as matchers from "@testing-library/jest-dom/matchers";
+import "@testing-library/jest-dom/vitest";
 
 expect.extend(matchers);
 
@@ -28,10 +28,10 @@ window.HTMLElement.prototype.scrollIntoView = vi.fn();
 window.HTMLElement.prototype.hasPointerCapture = vi.fn();
 window.HTMLElement.prototype.releasePointerCapture = vi.fn();
 
- // Global fetch mock to handle relative URLs in JSDOM
- global.fetch = vi.fn().mockImplementation(() =>
-   Promise.resolve({
-     ok: true,
-     json: () => Promise.resolve([]),
-   })
- );
+// Global fetch mock to handle relative URLs in JSDOM
+global.fetch = vi.fn().mockImplementation(() =>
+  Promise.resolve({
+    ok: true,
+    json: () => Promise.resolve([]),
+  }),
+);

@@ -3,13 +3,17 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
-
 import React, { useState, useEffect } from "react";
 import { apiClient, UpstreamServiceConfig, ToolAnalytics } from "@/lib/client";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -42,12 +46,15 @@ export default function ToolsPage() {
   const [toolUsage, setToolUsage] = useState<Record<string, ToolAnalytics>>({});
   const [selectedTool, setSelectedTool] = useState<ToolDefinition | null>(null);
   const [inspectorOpen, setInspectorOpen] = useState(false);
-  const { isPinned, togglePin, bulkPin, bulkUnpin, isLoaded } = usePinnedTools();
+  const { isPinned, togglePin, bulkPin, bulkUnpin, isLoaded } =
+    usePinnedTools();
   const [showPinnedOnly, setShowPinnedOnly] = useState(false);
   const [selectedService, setSelectedService] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [isCompact, setIsCompact] = useState(false);
-  const [groupBy, setGroupBy] = useState<"none" | "service" | "category">("none");
+  const [groupBy, setGroupBy] = useState<"none" | "service" | "category">(
+    "none",
+  );
   const { toast } = useToast();
 
   useEffect(() => {
@@ -66,7 +73,7 @@ export default function ToolsPage() {
       const stats = await apiClient.getToolUsage();
       if (!stats || !Array.isArray(stats)) return;
       const statsMap: Record<string, ToolAnalytics> = {};
-      stats.forEach(s => {
+      stats.forEach((s) => {
         statsMap[`${s.name}@${s.serviceId}`] = s;
       });
       setToolUsage(statsMap);
@@ -117,7 +124,11 @@ export default function ToolsPage() {
 
   const toggleTool = async (name: string, currentStatus: boolean) => {
     // Optimistic update
-    setTools(tools.map(t => t.name === name ? { ...t, disable: currentStatus } : t));
+    setTools(
+      tools.map((t) =>
+        t.name === name ? { ...t, disable: currentStatus } : t,
+      ),
+    );
 
     try {
       await apiClient.setToolStatus(name, !currentStatus);
@@ -129,13 +140,19 @@ export default function ToolsPage() {
 
   const handleBulkToggle = async (names: string[], enabled: boolean) => {
     // Optimistic update
-    setTools(tools.map(t => names.includes(t.name) ? { ...t, disable: !enabled } : t));
+    setTools(
+      tools.map((t) =>
+        names.includes(t.name) ? { ...t, disable: !enabled } : t,
+      ),
+    );
 
     try {
-      await Promise.all(names.map(name => apiClient.setToolStatus(name, !enabled)));
+      await Promise.all(
+        names.map((name) => apiClient.setToolStatus(name, !enabled)),
+      );
       toast({
         title: enabled ? "Tools Enabled" : "Tools Disabled",
-        description: `${names.length} tools have been ${enabled ? "enabled" : "disabled"}.`
+        description: `${names.length} tools have been ${enabled ? "enabled" : "disabled"}.`,
       });
     } catch (e) {
       console.error("Failed to bulk toggle tools", e);
@@ -143,7 +160,7 @@ export default function ToolsPage() {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to update some tools."
+        description: "Failed to update some tools.",
       });
     }
   };
@@ -156,7 +173,7 @@ export default function ToolsPage() {
     }
     toast({
       title: pinned ? "Tools Pinned" : "Tools Unpinned",
-      description: `${names.length} tools have been ${pinned ? "pinned" : "unpinned"}.`
+      description: `${names.length} tools have been ${pinned ? "pinned" : "unpinned"}.`,
     });
   };
 
@@ -176,11 +193,14 @@ export default function ToolsPage() {
   const filteredTools = React.useMemo(() => {
     return tools
       .filter((t) => !showPinnedOnly || isPinned(t.name))
-      .filter((t) => selectedService === "all" || t.serviceId === selectedService)
-      .filter((t) =>
-        searchQuery === "" ||
-        t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        t.description.toLowerCase().includes(searchQuery.toLowerCase())
+      .filter(
+        (t) => selectedService === "all" || t.serviceId === selectedService,
+      )
+      .filter(
+        (t) =>
+          searchQuery === "" ||
+          t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          t.description.toLowerCase().includes(searchQuery.toLowerCase()),
       )
       .sort((a, b) => {
         const aPinned = isPinned(a.name);
@@ -195,27 +215,31 @@ export default function ToolsPage() {
   const groupedTools = React.useMemo(() => {
     // ⚡ BOLT: Prevented O(N*M) loop inside reduce by creating an O(1) lookup map for services.
     // Randomized Selection from Top 5 High-Impact Targets (Algorithmic / Render Waste)
-    const servicesMap = groupBy === "service"
-      ? new Map(services.map(s => [s.id, s]))
-      : new Map();
+    const servicesMap =
+      groupBy === "service"
+        ? new Map(services.map((s) => [s.id, s]))
+        : new Map();
 
-    return filteredTools.reduce((acc, tool) => {
-      let key = "Other";
-      if (groupBy === "service") {
-        const service = servicesMap.get(tool.serviceId);
-        key = service ? service.name : tool.serviceId || "Unknown Service";
-      } else if (groupBy === "category") {
-        key = tool.tags && tool.tags.length > 0 ? tool.tags[0] : "Uncategorized";
-      }
+    return filteredTools.reduce(
+      (acc, tool) => {
+        let key = "Other";
+        if (groupBy === "service") {
+          const service = servicesMap.get(tool.serviceId);
+          key = service ? service.name : tool.serviceId || "Unknown Service";
+        } else if (groupBy === "category") {
+          key =
+            tool.tags && tool.tags.length > 0 ? tool.tags[0] : "Uncategorized";
+        }
 
-      if (!acc[key]) {
-        acc[key] = [];
-      }
-      acc[key].push(tool);
-      return acc;
-    }, {} as Record<string, ToolDefinition[]>);
+        if (!acc[key]) {
+          acc[key] = [];
+        }
+        acc[key].push(tool);
+        return acc;
+      },
+      {} as Record<string, ToolDefinition[]>,
+    );
   }, [filteredTools, groupBy, services]);
-
 
   if (!isLoaded) {
     return (
@@ -270,7 +294,10 @@ export default function ToolsPage() {
               checked={showPinnedOnly}
               onCheckedChange={setShowPinnedOnly}
             />
-            <label htmlFor="show-pinned" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+            <label
+              htmlFor="show-pinned"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
               Show Pinned Only
             </label>
           </div>
@@ -281,7 +308,11 @@ export default function ToolsPage() {
             title={isCompact ? "Comfortable View" : "Compact View"}
             className="h-9 w-9"
           >
-            {isCompact ? <LayoutList className="h-4 w-4" /> : <List className="h-4 w-4" />}
+            {isCompact ? (
+              <LayoutList className="h-4 w-4" />
+            ) : (
+              <List className="h-4 w-4" />
+            )}
           </Button>
         </div>
       </div>
@@ -289,7 +320,9 @@ export default function ToolsPage() {
       <Card className="backdrop-blur-sm bg-background/50">
         <CardHeader>
           <CardTitle>Available Tools</CardTitle>
-          <CardDescription>Manage exposed tools from connected services.</CardDescription>
+          <CardDescription>
+            Manage exposed tools from connected services.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {groupBy === "none" ? (
@@ -305,8 +338,16 @@ export default function ToolsPage() {
               onBulkPin={handleBulkPin}
             />
           ) : (
-            <Accordion type="multiple" defaultValue={Object.keys(groupedTools)} className="w-full">
-              {(Object.entries(groupedTools) as Array<[string, ToolDefinition[]]>).map(([groupName, groupTools]) => (
+            <Accordion
+              type="multiple"
+              defaultValue={Object.keys(groupedTools)}
+              className="w-full"
+            >
+              {(
+                Object.entries(groupedTools) as Array<
+                  [string, ToolDefinition[]]
+                >
+              ).map(([groupName, groupTools]) => (
                 <AccordionItem key={groupName} value={groupName}>
                   <AccordionTrigger className="hover:no-underline px-2">
                     <span className="font-medium text-lg flex items-center">

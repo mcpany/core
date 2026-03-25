@@ -22,7 +22,11 @@ interface TemplateConfigFormProps {
  * @param props - Component props.
  * @returns The TemplateConfigForm component.
  */
-export function TemplateConfigForm({ template, onCancel, onSubmit }: TemplateConfigFormProps) {
+export function TemplateConfigForm({
+  template,
+  onCancel,
+  onSubmit,
+}: TemplateConfigFormProps) {
   const [values, setValues] = useState<Record<string, string>>({});
 
   const handleChange = (name: string, value: string) => {
@@ -38,13 +42,13 @@ export function TemplateConfigForm({ template, onCancel, onSubmit }: TemplateCon
     <div className="space-y-6">
       <CardHeader className="px-0">
         <div className="flex items-center gap-2">
-            <div className="p-2 bg-primary/10 rounded-md">
-                <template.icon className="w-6 h-6 text-primary" />
-            </div>
-            <div>
-                <CardTitle>{template.name}</CardTitle>
-                <CardDescription>{template.description}</CardDescription>
-            </div>
+          <div className="p-2 bg-primary/10 rounded-md">
+            <template.icon className="w-6 h-6 text-primary" />
+          </div>
+          <div>
+            <CardTitle>{template.name}</CardTitle>
+            <CardDescription>{template.description}</CardDescription>
+          </div>
         </div>
       </CardHeader>
 
@@ -61,9 +65,10 @@ export function TemplateConfigForm({ template, onCancel, onSubmit }: TemplateCon
                 required
               />
               {field.replaceToken && (
-                  <p className="text-xs text-muted-foreground">
-                      This will replace <code>{field.replaceToken}</code> in the configuration.
-                  </p>
+                <p className="text-xs text-muted-foreground">
+                  This will replace <code>{field.replaceToken}</code> in the
+                  configuration.
+                </p>
               )}
             </div>
           ))}
@@ -73,9 +78,7 @@ export function TemplateConfigForm({ template, onCancel, onSubmit }: TemplateCon
           <Button type="button" variant="outline" onClick={onCancel}>
             Cancel
           </Button>
-          <Button type="submit">
-            Continue
-          </Button>
+          <Button type="submit">Continue</Button>
         </div>
       </form>
     </div>

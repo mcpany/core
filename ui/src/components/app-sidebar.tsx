@@ -25,10 +25,10 @@ import {
   ClipboardCheck,
   Bug,
   Workflow,
-  Brain
-} from "lucide-react"
-import { Link } from 'react-router-dom'
-import { useLocation } from 'react-router-dom'
+  Brain,
+} from "lucide-react";
+import { Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 import {
   Sidebar,
@@ -42,18 +42,17 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { useUser } from "@/components/user-context"
-
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useUser } from "@/components/user-context";
 
 const platformItems = [
   {
@@ -111,7 +110,7 @@ const platformItems = [
     url: "/marketplace",
     icon: ShoppingBag,
   },
-]
+];
 
 const devItems = [
   {
@@ -159,10 +158,9 @@ const devItems = [
     url: "/config-validator",
     icon: ShieldCheck,
   },
-]
+];
 
 const configItems = [
-
   {
     title: "Upstream Services",
     url: "/upstream-services",
@@ -194,7 +192,7 @@ const configItems = [
     url: "/settings",
     icon: Settings,
   },
-]
+];
 
 /**
  * The main application sidebar.
@@ -203,17 +201,17 @@ const configItems = [
  * @returns {JSX.Element} The rendered sidebar component.
  */
 export function AppSidebar() {
-  const { pathname } = useLocation()
-  const { user, login } = useUser()
+  const { pathname } = useLocation();
+  const { user, login } = useUser();
 
-  const isAdmin = user?.roles?.includes('admin');
+  const isAdmin = user?.roles?.includes("admin");
 
   // Filter items based on role
   // Regular users see Dashboard, Network Graph, Analytics, Marketplace for Platform?
   // User said: "Regular user, probably will not see... Live Logs/Traces"
-  const filteredPlatformItems = platformItems.filter(item => {
+  const filteredPlatformItems = platformItems.filter((item) => {
     if (!isAdmin) {
-        return !['Live Logs', 'Traces'].includes(item.title);
+      return !["Live Logs", "Traces"].includes(item.title);
     }
     return true;
   });
@@ -222,26 +220,26 @@ export function AppSidebar() {
   // So we hide the whole config group if not admin?
   // "Regular user can only see and manage settings belong to their own copy of profile"
   // Maybe we keep Settings but hide Services, Users, Secrets?
-  const filteredConfigItems = configItems.filter(item => {
-      if (!isAdmin) {
-          // Keep Settings, hide others?
-          return item.title === 'Settings';
-      }
-      return true;
+  const filteredConfigItems = configItems.filter((item) => {
+    if (!isAdmin) {
+      // Keep Settings, hide others?
+      return item.title === "Settings";
+    }
+    return true;
   });
 
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-          <div className="flex items-center gap-2 p-2">
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <Network className="size-4" />
-              </div>
-              <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-                <span className="truncate font-semibold">MCP Any</span>
-                <span className="truncate text-xs">Admin Console</span>
-              </div>
+        <div className="flex items-center gap-2 p-2">
+          <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+            <Network className="size-4" />
           </div>
+          <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
+            <span className="truncate font-semibold">MCP Any</span>
+            <span className="truncate text-xs">Admin Console</span>
+          </div>
+        </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
@@ -250,7 +248,11 @@ export function AppSidebar() {
             <SidebarMenu>
               {filteredPlatformItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={pathname === item.url} tooltip={item.title}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === item.url}
+                    tooltip={item.title}
+                  >
                     <Link to={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
@@ -268,7 +270,11 @@ export function AppSidebar() {
             <SidebarMenu>
               {devItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={pathname === item.url} tooltip={item.title}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === item.url}
+                    tooltip={item.title}
+                  >
                     <Link to={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
@@ -282,23 +288,27 @@ export function AppSidebar() {
 
         {/* Only show Configuration group if there are items to show */}
         {filteredConfigItems.length > 0 && (
-            <SidebarGroup>
+          <SidebarGroup>
             <SidebarGroupLabel>Configuration</SidebarGroupLabel>
             <SidebarGroupContent>
-                <SidebarMenu>
+              <SidebarMenu>
                 {filteredConfigItems.map((item) => (
-                    <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild isActive={pathname === item.url} tooltip={item.title}>
-                        <Link to={item.url}>
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname === item.url}
+                      tooltip={item.title}
+                    >
+                      <Link to={item.url}>
                         <item.icon />
                         <span>{item.title}</span>
-                        </Link>
+                      </Link>
                     </SidebarMenuButton>
-                    </SidebarMenuItem>
+                  </SidebarMenuItem>
                 ))}
-                </SidebarMenu>
+              </SidebarMenu>
             </SidebarGroupContent>
-            </SidebarGroup>
+          </SidebarGroup>
         )}
       </SidebarContent>
 
@@ -335,19 +345,23 @@ export function AppSidebar() {
                       <AvatarFallback className="rounded-lg">AD</AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-semibold">{user?.name}</span>
+                      <span className="truncate font-semibold">
+                        {user?.name}
+                      </span>
                       <span className="truncate text-xs">{user?.email}</span>
                     </div>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => login(isAdmin ? 'viewer' : 'admin')}>
-                   <User className="mr-2 h-4 w-4" />
-                   Switch Role (Demo)
+                <DropdownMenuItem
+                  onClick={() => login(isAdmin ? "viewer" : "admin")}
+                >
+                  <User className="mr-2 h-4 w-4" />
+                  Switch Role (Demo)
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                   <Settings className="mr-2 h-4 w-4" />
-                   Preferences
+                  <Settings className="mr-2 h-4 w-4" />
+                  Preferences
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
@@ -361,5 +375,5 @@ export function AppSidebar() {
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

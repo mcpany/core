@@ -3,14 +3,25 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
-
 import { useState, useCallback, useEffect } from "react";
-import { Link } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Link } from "react-router-dom";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, XCircle, Clock, ArrowRight, Activity, Loader2 } from "lucide-react";
+import {
+  CheckCircle2,
+  XCircle,
+  Clock,
+  ArrowRight,
+  Activity,
+  Loader2,
+} from "lucide-react";
 import { apiClient } from "@/lib/client";
 import { cn } from "@/lib/utils";
 import { usePolling } from "@/hooks/use-polling";
@@ -66,74 +77,108 @@ export function RecentActivityWidget() {
 
   // Initial fetch on mount
   useEffect(() => {
-      fetchTraces();
+    fetchTraces();
   }, [fetchTraces]);
 
   return (
     <Card className="col-span-3 backdrop-blur-sm bg-background/50">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <div className="space-y-1">
-            <CardTitle className="text-base font-medium flex items-center gap-2">
-                <Activity className="h-4 w-4 text-primary" />
-                Recent Activity
-            </CardTitle>
-            <CardDescription>
-                Real-time monitor of tool executions.
-            </CardDescription>
+          <CardTitle className="text-base font-medium flex items-center gap-2">
+            <Activity className="h-4 w-4 text-primary" />
+            Recent Activity
+          </CardTitle>
+          <CardDescription>
+            Real-time monitor of tool executions.
+          </CardDescription>
         </div>
-        <Link to="/traces" className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors">
-            View All <ArrowRight className="h-3 w-3" />
+        <Link
+          to="/traces"
+          className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors"
+        >
+          View All <ArrowRight className="h-3 w-3" />
         </Link>
       </CardHeader>
       <CardContent>
         {loading && traces.length === 0 ? (
-            <div className="flex items-center justify-center h-[200px] text-muted-foreground">
-                <Loader2 className="h-6 w-6 animate-spin mr-2" /> Loading activity...
-            </div>
+          <div className="flex items-center justify-center h-[200px] text-muted-foreground">
+            <Loader2 className="h-6 w-6 animate-spin mr-2" /> Loading
+            activity...
+          </div>
         ) : error && traces.length === 0 ? (
-            <div className="flex items-center justify-center h-[200px] text-destructive">
-                {error}
-            </div>
+          <div className="flex items-center justify-center h-[200px] text-destructive">
+            {error}
+          </div>
         ) : traces.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-[200px] text-muted-foreground">
-                <Clock className="h-8 w-8 mb-2 opacity-20" />
-                <p>No recent activity recorded.</p>
-                <p className="text-xs opacity-70 mt-1">Execute a tool to see it here.</p>
-            </div>
+          <div className="flex flex-col items-center justify-center h-[200px] text-muted-foreground">
+            <Clock className="h-8 w-8 mb-2 opacity-20" />
+            <p>No recent activity recorded.</p>
+            <p className="text-xs opacity-70 mt-1">
+              Execute a tool to see it here.
+            </p>
+          </div>
         ) : (
-            <div className="space-y-4">
-                {traces.map((trace) => (
-                    <div key={trace.id} className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0">
-                        <div className="flex items-center gap-4">
-                            <div className={cn("rounded-full p-2 bg-muted/50",
-                                trace.status === 'success' ? "text-green-500 bg-green-500/10" :
-                                trace.status === 'error' ? "text-red-500 bg-red-500/10" : "text-yellow-500"
-                            )}>
-                                {trace.status === 'success' ? <CheckCircle2 className="h-4 w-4" /> :
-                                 trace.status === 'error' ? <XCircle className="h-4 w-4" /> : <Clock className="h-4 w-4" />}
-                            </div>
-                            <div className="space-y-1">
-                                <div className="text-sm font-medium leading-none flex items-center gap-2">
-                                    {trace.rootSpan.name.replace('POST /', '').replace('GET /', '')}
-                                    {trace.status === 'error' && (
-                                        <Badge variant="destructive" className="text-[10px] h-4 px-1">Failed</Badge>
-                                    )}
-                                </div>
-                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                    <span>{formatTime(trace.timestamp)}</span>
-                                    <span>•</span>
-                                    <span className={getDurationColor(trace.totalDuration)}>{trace.totalDuration.toFixed(0)}ms</span>
-                                </div>
-                            </div>
-                        </div>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0" asChild>
-                            <Link to={`/traces?id=${trace.id}`}>
-                                <ArrowRight className="h-4 w-4" />
-                            </Link>
-                        </Button>
+          <div className="space-y-4">
+            {traces.map((trace) => (
+              <div
+                key={trace.id}
+                className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0"
+              >
+                <div className="flex items-center gap-4">
+                  <div
+                    className={cn(
+                      "rounded-full p-2 bg-muted/50",
+                      trace.status === "success"
+                        ? "text-green-500 bg-green-500/10"
+                        : trace.status === "error"
+                          ? "text-red-500 bg-red-500/10"
+                          : "text-yellow-500",
+                    )}
+                  >
+                    {trace.status === "success" ? (
+                      <CheckCircle2 className="h-4 w-4" />
+                    ) : trace.status === "error" ? (
+                      <XCircle className="h-4 w-4" />
+                    ) : (
+                      <Clock className="h-4 w-4" />
+                    )}
+                  </div>
+                  <div className="space-y-1">
+                    <div className="text-sm font-medium leading-none flex items-center gap-2">
+                      {trace.rootSpan.name
+                        .replace("POST /", "")
+                        .replace("GET /", "")}
+                      {trace.status === "error" && (
+                        <Badge
+                          variant="destructive"
+                          className="text-[10px] h-4 px-1"
+                        >
+                          Failed
+                        </Badge>
+                      )}
                     </div>
-                ))}
-            </div>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <span>{formatTime(trace.timestamp)}</span>
+                      <span>•</span>
+                      <span className={getDurationColor(trace.totalDuration)}>
+                        {trace.totalDuration.toFixed(0)}ms
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0"
+                  asChild
+                >
+                  <Link to={`/traces?id=${trace.id}`}>
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
+            ))}
+          </div>
         )}
       </CardContent>
     </Card>

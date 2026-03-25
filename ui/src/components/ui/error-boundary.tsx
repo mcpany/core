@@ -3,8 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
-
 import React, { Component, ErrorInfo, ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, RefreshCcw, FileText } from "lucide-react";
@@ -26,7 +24,7 @@ interface State {
 export class ErrorBoundary extends Component<Props, State> {
   public state: State = {
     hasError: false,
-    error: null
+    error: null,
   };
 
   public static getDerivedStateFromError(error: Error): State {
@@ -45,7 +43,7 @@ export class ErrorBoundary extends Component<Props, State> {
   public render() {
     if (this.state.hasError) {
       if (this.props.fallback) {
-          return this.props.fallback;
+        return this.props.fallback;
       }
 
       return (
@@ -53,16 +51,22 @@ export class ErrorBoundary extends Component<Props, State> {
           <div className="bg-destructive/10 p-4 rounded-full text-destructive mb-2">
             <AlertCircle className="h-12 w-12" />
           </div>
-          <h2 className="text-2xl font-bold tracking-tight">Something went wrong</h2>
+          <h2 className="text-2xl font-bold tracking-tight">
+            Something went wrong
+          </h2>
           <p className="text-muted-foreground max-w-md mx-auto">
-            The application encountered an unexpected error. We've been notified and are working on a fix.
+            The application encountered an unexpected error. We've been notified
+            and are working on a fix.
           </p>
 
-          <Alert variant="destructive" className="max-w-xl text-left font-mono text-xs overflow-hidden">
+          <Alert
+            variant="destructive"
+            className="max-w-xl text-left font-mono text-xs overflow-hidden"
+          >
             <FileText className="h-4 w-4" />
             <AlertTitle>Error Details</AlertTitle>
             <AlertDescription className="mt-2 whitespace-pre-wrap line-clamp-4">
-                {this.state.error?.message || "Unknown error occurred"}
+              {this.state.error?.message || "Unknown error occurred"}
             </AlertDescription>
           </Alert>
 
@@ -71,7 +75,10 @@ export class ErrorBoundary extends Component<Props, State> {
               <RefreshCcw className="mr-2 h-4 w-4" />
               Reload Page
             </Button>
-            <Button variant="outline" onClick={() => window.location.href = "/"}>
+            <Button
+              variant="outline"
+              onClick={() => (window.location.href = "/")}
+            >
               Go to Home
             </Button>
           </div>

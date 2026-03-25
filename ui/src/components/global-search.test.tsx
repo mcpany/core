@@ -3,12 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
-import { render, screen, fireEvent, waitFor, act } from '../tests/test-utils';
-import { GlobalSearch } from './global-search';
-import { KeyboardShortcutsProvider } from '@/contexts/keyboard-shortcuts-context';
-import { vi } from 'vitest';
-import { apiClient } from '@/lib/client';
+import React from "react";
+import { render, screen, fireEvent, waitFor, act } from "../tests/test-utils";
+import { GlobalSearch } from "./global-search";
+import { KeyboardShortcutsProvider } from "@/contexts/keyboard-shortcuts-context";
+import { vi } from "vitest";
+import { apiClient } from "@/lib/client";
 
 // Create mocks with vi.hoisted so they are available when vi.mock factories run
 const { mockReload, mockToast, mockPush, mockWriteText } = vi.hoisted(() => ({
@@ -19,28 +19,36 @@ const { mockReload, mockToast, mockPush, mockWriteText } = vi.hoisted(() => ({
 }));
 
 // Mock the reloadPage function so tests can verify it was called without touching window.location
-vi.mock('./global-search', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('./global-search')>();
+vi.mock("./global-search", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("./global-search")>();
   return { ...actual, reloadPage: mockReload };
 });
 
 // Mock the API client
-vi.mock('@/lib/client', () => ({
+vi.mock("@/lib/client", () => ({
   apiClient: {
     listServices: vi.fn().mockResolvedValue([
-        { id: 'srv1', name: 'service-1', version: '1.0', disable: false },
-        { id: 'srv2', name: 'service-2', version: '2.0', disable: true }
+      { id: "srv1", name: "service-1", version: "1.0", disable: false },
+      { id: "srv2", name: "service-2", version: "2.0", disable: true },
     ]),
-    listTools: vi.fn().mockResolvedValue({ tools: [{ name: 'tool-1', description: 'A test tool' }] }),
-    listResources: vi.fn().mockResolvedValue({ resources: [{ name: 'res-1', uri: 'file:///tmp/res1' }] }),
-    listPrompts: vi.fn().mockResolvedValue({ prompts: [{ name: 'prompt-1' }] }),
+    listTools: vi
+      .fn()
+      .mockResolvedValue({
+        tools: [{ name: "tool-1", description: "A test tool" }],
+      }),
+    listResources: vi
+      .fn()
+      .mockResolvedValue({
+        resources: [{ name: "res-1", uri: "file:///tmp/res1" }],
+      }),
+    listPrompts: vi.fn().mockResolvedValue({ prompts: [{ name: "prompt-1" }] }),
     setServiceStatus: vi.fn().mockResolvedValue({}),
   },
 }));
 
 // Mock useNavigate (react-router-dom) so we can track navigation calls
-vi.mock('react-router-dom', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('react-router-dom')>();
+vi.mock("react-router-dom", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("react-router-dom")>();
   return {
     ...actual,
     useNavigate: () => mockPush,
@@ -48,176 +56,182 @@ vi.mock('react-router-dom', async (importOriginal) => {
 });
 
 // Mock useTheme
-vi.mock('next-themes', () => ({
+vi.mock("next-themes", () => ({
   useTheme: () => ({
     setTheme: vi.fn(),
   }),
 }));
 
 // Mock useToast
-vi.mock('@/hooks/use-toast', () => ({
+vi.mock("@/hooks/use-toast", () => ({
   useToast: () => ({
     toast: mockToast,
   }),
 }));
 
-Object.defineProperty(navigator, 'clipboard', {
+Object.defineProperty(navigator, "clipboard", {
   configurable: true,
   value: { writeText: mockWriteText },
 });
 
-
 // ResizeObserver mock
 global.ResizeObserver = class ResizeObserver {
-    observe() {}
-    unobserve() {}
-    disconnect() {}
+  observe() {}
+  unobserve() {}
+  disconnect() {}
 };
 
 // Mock pointer capture methods
 Element.prototype.setPointerCapture = () => {};
 Element.prototype.releasePointerCapture = () => {};
 
-describe('GlobalSearch', () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
+describe("GlobalSearch", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("renders the search button", () => {
+    render(
+      <KeyboardShortcutsProvider>
+        <GlobalSearch />
+      </KeyboardShortcutsProvider>,
+    );
+    expect(screen.getByText(/Search or type >/i)).toBeInTheDocument();
+  });
+
+  it("opens dialog on click and lists items", async () => {
+    render(
+      <KeyboardShortcutsProvider>
+        <GlobalSearch />
+      </KeyboardShortcutsProvider>,
+    );
+
+    await act(async () => {
+      fireEvent.click(screen.getByText(/Search or type >/i));
     });
 
-    it('renders the search button', () => {
-        render(
-            <KeyboardShortcutsProvider>
-                <GlobalSearch />
-            </KeyboardShortcutsProvider>
-        );
-        expect(screen.getByText(/Search or type >/i)).toBeInTheDocument();
+    // Wait for data to load
+    await waitFor(() => {
+      expect(screen.getByText("service-1")).toBeInTheDocument();
+      expect(screen.getByText("tool-1")).toBeInTheDocument();
+      expect(screen.getByText("res-1")).toBeInTheDocument();
+    });
+  });
+
+  it("navigates when item is selected", async () => {
+    render(
+      <KeyboardShortcutsProvider>
+        <GlobalSearch />
+      </KeyboardShortcutsProvider>,
+    );
+
+    await act(async () => {
+      fireEvent.click(screen.getByText(/Search or type >/i));
     });
 
-    it('opens dialog on click and lists items', async () => {
-        render(
-            <KeyboardShortcutsProvider>
-                <GlobalSearch />
-            </KeyboardShortcutsProvider>
-        );
-
-        await act(async () => {
-            fireEvent.click(screen.getByText(/Search or type >/i));
-        });
-
-        // Wait for data to load
-        await waitFor(() => {
-            expect(screen.getByText('service-1')).toBeInTheDocument();
-            expect(screen.getByText('tool-1')).toBeInTheDocument();
-            expect(screen.getByText('res-1')).toBeInTheDocument();
-        });
+    await waitFor(() => {
+      expect(screen.getByText("service-1")).toBeInTheDocument();
     });
 
-    it('navigates when item is selected', async () => {
-        render(
-            <KeyboardShortcutsProvider>
-                <GlobalSearch />
-            </KeyboardShortcutsProvider>
-        );
+    // Click the navigation item (first occurrence of service-1 text might be title or item, assuming item text)
+    // Since we added actions, 'service-1' appears twice (navigate and restart).
+    // CommandItem children: Icon + Text.
+    // We can select by text.
+    const serviceItems = screen.getAllByText("service-1");
+    // The first one is likely the navigation one based on render order.
+    fireEvent.click(serviceItems[0]);
 
-        await act(async () => {
-            fireEvent.click(screen.getByText(/Search or type >/i));
-        });
+    expect(mockPush).toHaveBeenCalledWith("/upstream-services?id=srv1");
+  });
 
-        await waitFor(() => {
-            expect(screen.getByText('service-1')).toBeInTheDocument();
-        });
+  it("triggers restart action", async () => {
+    render(
+      <KeyboardShortcutsProvider>
+        <GlobalSearch />
+      </KeyboardShortcutsProvider>,
+    );
 
-        // Click the navigation item (first occurrence of service-1 text might be title or item, assuming item text)
-        // Since we added actions, 'service-1' appears twice (navigate and restart).
-        // CommandItem children: Icon + Text.
-        // We can select by text.
-        const serviceItems = screen.getAllByText('service-1');
-        // The first one is likely the navigation one based on render order.
-        fireEvent.click(serviceItems[0]);
-
-        expect(mockPush).toHaveBeenCalledWith('/upstream-services?id=srv1');
+    await act(async () => {
+      fireEvent.click(screen.getByText(/Search or type >/i));
     });
 
-    it('triggers restart action', async () => {
-         render(
-            <KeyboardShortcutsProvider>
-                <GlobalSearch />
-            </KeyboardShortcutsProvider>
-         );
+    // Type to show restart actions
+    const input = screen.getByPlaceholderText(/Type a command or search.../i);
+    fireEvent.change(input, { target: { value: "restart" } });
 
-        await act(async () => {
-            fireEvent.click(screen.getByText(/Search or type >/i));
-        });
-
-        // Type to show restart actions
-        const input = screen.getByPlaceholderText(/Type a command or search.../i);
-        fireEvent.change(input, { target: { value: 'restart' } });
-
-        await waitFor(() => {
-            expect(screen.getByText('Restart service-1')).toBeInTheDocument();
-        });
-
-        fireEvent.click(screen.getByText('Restart service-1'));
-
-        // Should call setServiceStatus twice (disable then enable)
-        await waitFor(() => {
-             expect(apiClient.setServiceStatus).toHaveBeenCalledWith('service-1', true);
-        });
-
-        // We can't easily wait for the timeout in the component without fake timers,
-        // but we can check if toast was called.
-        expect(mockToast).toHaveBeenCalledWith(expect.objectContaining({
-            title: "Restarting Service"
-        }));
+    await waitFor(() => {
+      expect(screen.getByText("Restart service-1")).toBeInTheDocument();
     });
 
-    it('triggers copy URI action', async () => {
-         render(
-            <KeyboardShortcutsProvider>
-                <GlobalSearch />
-            </KeyboardShortcutsProvider>
-         );
+    fireEvent.click(screen.getByText("Restart service-1"));
 
-        await act(async () => {
-            fireEvent.click(screen.getByText(/Search or type >/i));
-        });
-
-        // Type to show copy actions
-        const input = screen.getByPlaceholderText(/Type a command or search.../i);
-        fireEvent.change(input, { target: { value: 'copy' } });
-
-        await waitFor(() => {
-            expect(screen.getByText('Copy URI: res-1')).toBeInTheDocument();
-        });
-
-        fireEvent.click(screen.getByText('Copy URI: res-1'));
-
-        expect(mockWriteText).toHaveBeenCalledWith('file:///tmp/res1');
-        expect(mockToast).toHaveBeenCalledWith(expect.objectContaining({
-            title: "Copied to clipboard"
-        }));
+    // Should call setServiceStatus twice (disable then enable)
+    await waitFor(() => {
+      expect(apiClient.setServiceStatus).toHaveBeenCalledWith(
+        "service-1",
+        true,
+      );
     });
 
-    it('triggers reload window action', async () => {
-         render(
-            <KeyboardShortcutsProvider>
-                <GlobalSearch />
-            </KeyboardShortcutsProvider>
-         );
+    // We can't easily wait for the timeout in the component without fake timers,
+    // but we can check if toast was called.
+    expect(mockToast).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: "Restarting Service",
+      }),
+    );
+  });
 
-        await act(async () => {
-            fireEvent.click(screen.getByText(/Search or type >/i));
-        });
+  it("triggers copy URI action", async () => {
+    render(
+      <KeyboardShortcutsProvider>
+        <GlobalSearch />
+      </KeyboardShortcutsProvider>,
+    );
 
-        await waitFor(() => {
-            expect(screen.getByText('Reload Window')).toBeInTheDocument();
-        });
-
-        fireEvent.click(screen.getByText('Reload Window'));
-
-        // Verify the command dialog closes after selecting "Reload Window"
-        // (runCommand closes the dialog and then calls the reload action)
-        await waitFor(() => {
-            expect(screen.queryByText('Reload Window')).not.toBeInTheDocument();
-        });
+    await act(async () => {
+      fireEvent.click(screen.getByText(/Search or type >/i));
     });
+
+    // Type to show copy actions
+    const input = screen.getByPlaceholderText(/Type a command or search.../i);
+    fireEvent.change(input, { target: { value: "copy" } });
+
+    await waitFor(() => {
+      expect(screen.getByText("Copy URI: res-1")).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText("Copy URI: res-1"));
+
+    expect(mockWriteText).toHaveBeenCalledWith("file:///tmp/res1");
+    expect(mockToast).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: "Copied to clipboard",
+      }),
+    );
+  });
+
+  it("triggers reload window action", async () => {
+    render(
+      <KeyboardShortcutsProvider>
+        <GlobalSearch />
+      </KeyboardShortcutsProvider>,
+    );
+
+    await act(async () => {
+      fireEvent.click(screen.getByText(/Search or type >/i));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("Reload Window")).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText("Reload Window"));
+
+    // Verify the command dialog closes after selecting "Reload Window"
+    // (runCommand closes the dialog and then calls the reload action)
+    await waitFor(() => {
+      expect(screen.queryByText("Reload Window")).not.toBeInTheDocument();
+    });
+  });
 });

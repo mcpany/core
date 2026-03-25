@@ -3,8 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
-
 import { JsonView } from "@/components/ui/json-view";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Node } from "@xyflow/react";
@@ -23,7 +21,10 @@ interface VariableInspectorProps {
  * @param props.onClose - Callback to close the inspector.
  * @returns The VariableInspector component.
  */
-export function VariableInspector({ selectedNode, onClose }: VariableInspectorProps) {
+export function VariableInspector({
+  selectedNode,
+  onClose,
+}: VariableInspectorProps) {
   if (!selectedNode) return null;
 
   return (
@@ -32,36 +33,46 @@ export function VariableInspector({ selectedNode, onClose }: VariableInspectorPr
         <CardTitle className="text-sm font-medium">
           Inspector: {selectedNode.data.label as string}
         </CardTitle>
-        <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8">
-            <X className="h-4 w-4" />
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onClose}
+          className="h-8 w-8"
+        >
+          <X className="h-4 w-4" />
         </Button>
       </CardHeader>
       <CardContent className="overflow-y-auto h-[calc(100%-4rem)]">
         <div className="space-y-4">
-            <div>
-                <h4 className="text-xs font-semibold mb-2 text-muted-foreground">Node Properties</h4>
-                <div className="text-xs space-y-1">
-                    <div className="flex justify-between">
-                        <span className="text-muted-foreground">ID:</span>
-                        <span className="font-mono">{selectedNode.id}</span>
-                    </div>
-                    <div className="flex justify-between">
-                        <span className="text-muted-foreground">Type:</span>
-                        <span className="font-mono">{selectedNode.type}</span>
-                    </div>
-                    <div className="flex justify-between">
-                        <span className="text-muted-foreground">Position:</span>
-                        <span className="font-mono">
-                            {Math.round(selectedNode.position.x)}, {Math.round(selectedNode.position.y)}
-                        </span>
-                    </div>
-                </div>
+          <div>
+            <h4 className="text-xs font-semibold mb-2 text-muted-foreground">
+              Node Properties
+            </h4>
+            <div className="text-xs space-y-1">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">ID:</span>
+                <span className="font-mono">{selectedNode.id}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Type:</span>
+                <span className="font-mono">{selectedNode.type}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Position:</span>
+                <span className="font-mono">
+                  {Math.round(selectedNode.position.x)},{" "}
+                  {Math.round(selectedNode.position.y)}
+                </span>
+              </div>
             </div>
+          </div>
 
-            <div>
-                <h4 className="text-xs font-semibold mb-2 text-muted-foreground">Data (Variables)</h4>
-                <JsonView data={selectedNode.data} />
-            </div>
+          <div>
+            <h4 className="text-xs font-semibold mb-2 text-muted-foreground">
+              Data (Variables)
+            </h4>
+            <JsonView data={selectedNode.data} />
+          </div>
         </div>
       </CardContent>
     </Card>

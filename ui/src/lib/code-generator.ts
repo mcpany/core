@@ -19,7 +19,12 @@ interface CodeGeneratorOptions {
  * @param params.token - The authentication token.
  * @returns The generated Curl command string.
  */
-export function generateCurlCommand({ toolName, args, baseUrl = "http://localhost:8080", token }: CodeGeneratorOptions): string {
+export function generateCurlCommand({
+  toolName,
+  args,
+  baseUrl = "http://localhost:8080",
+  token,
+}: CodeGeneratorOptions): string {
   const payload = {
     name: toolName,
     arguments: args,
@@ -46,7 +51,12 @@ export function generateCurlCommand({ toolName, args, baseUrl = "http://localhos
  * @param params.token - The authentication token.
  * @returns The generated Python code string.
  */
-export function generatePythonCode({ toolName, args, baseUrl = "http://localhost:8080", token }: CodeGeneratorOptions): string {
+export function generatePythonCode({
+  toolName,
+  args,
+  baseUrl = "http://localhost:8080",
+  token,
+}: CodeGeneratorOptions): string {
   const payload = {
     name: toolName,
     arguments: args,

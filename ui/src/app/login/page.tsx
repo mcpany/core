@@ -3,8 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,11 +17,24 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@/components/ui/card";
 
 const loginSchema = z.object({
-  username: z.string().min(1, "Username is required").max(100, "Username too long"),
-  password: z.string().min(1, "Password is required").max(100, "Password too long"),
+  username: z
+    .string()
+    .min(1, "Username is required")
+    .max(100, "Username too long"),
+  password: z
+    .string()
+    .min(1, "Password is required")
+    .max(100, "Password too long"),
 });
 
 type LoginValues = z.infer<typeof loginSchema>;
@@ -77,15 +88,17 @@ export default function LoginPage() {
   }
 
   const handleOIDCLogin = () => {
-     // Redirect to OIDC provider via backend
-     window.location.href = "/auth/login";
+    // Redirect to OIDC provider via backend
+    window.location.href = "/auth/login";
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">
+            Login
+          </CardTitle>
           <CardDescription className="text-center">
             Enter your credentials to access the admin console
           </CardDescription>
@@ -121,7 +134,7 @@ export default function LoginPage() {
               />
               {error && (
                 <div className="text-sm text-destructive text-center">
-                    {error}
+                  {error}
                 </div>
               )}
               <Button type="submit" className="w-full" disabled={loading}>
@@ -141,12 +154,19 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <Button variant="outline" className="w-full" onClick={handleOIDCLogin} type="button">
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={handleOIDCLogin}
+            type="button"
+          >
             Login with SSO (OIDC)
           </Button>
         </CardContent>
         <CardFooter className="flex flex-col space-y-2 text-center text-sm text-muted-foreground">
-             {process.env.NODE_ENV === 'development' && <p>Use 'admin' / 'password' for demo.</p>}
+          {process.env.NODE_ENV === "development" && (
+            <p>Use 'admin' / 'password' for demo.</p>
+          )}
         </CardFooter>
       </Card>
     </div>

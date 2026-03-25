@@ -3,9 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
-
-import SkillDetail from '@/components/skills/skill-detail';
+import SkillDetail from "@/components/skills/skill-detail";
 
 /**
  * SkillDetailPage component.

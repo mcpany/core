@@ -3,19 +3,27 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
-import { ResourceExplorer } from './resource-explorer';
-import { apiClient } from '@/lib/client';
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { describe, it, expect, vi } from "vitest";
+import { ResourceExplorer } from "./resource-explorer";
+import { apiClient } from "@/lib/client";
 
 const MOCK_RESOURCES = [
-    { uri: 'file:///app/config.json', name: 'config.json', mimeType: 'application/json' },
-    { uri: 'file:///app/README.md', name: 'README.md', mimeType: 'text/markdown' },
-    { uri: 'postgres://db/users', name: 'users', mimeType: 'application/sql' }
+  {
+    uri: "file:///app/config.json",
+    name: "config.json",
+    mimeType: "application/json",
+  },
+  {
+    uri: "file:///app/README.md",
+    name: "README.md",
+    mimeType: "text/markdown",
+  },
+  { uri: "postgres://db/users", name: "users", mimeType: "application/sql" },
 ];
 
 // Mock dependencies
-vi.mock('@/lib/client', () => ({
+vi.mock("@/lib/client", () => ({
   apiClient: {
     listResources: vi.fn(),
     readResource: vi.fn(),
@@ -23,23 +31,25 @@ vi.mock('@/lib/client', () => ({
 }));
 
 // Mock syntax highlighter since it might cause issues in JSDOM
-vi.mock('react-syntax-highlighter/dist/esm/light', () => {
-/**
- * MockHighlighter component.
- * @param props - The component props.
- * @param props.children - The child components.
- * @returns The rendered component.
- */
-    const MockHighlighter = ({ children }: { children: React.ReactNode }) => <pre data-testid="code-block">{children}</pre>;
-    // Mock static methods like registerLanguage
-    MockHighlighter.registerLanguage = vi.fn();
-    return {
-        default: MockHighlighter
-    };
+vi.mock("react-syntax-highlighter/dist/esm/light", () => {
+  /**
+   * MockHighlighter component.
+   * @param props - The component props.
+   * @param props.children - The child components.
+   * @returns The rendered component.
+   */
+  const MockHighlighter = ({ children }: { children: React.ReactNode }) => (
+    <pre data-testid="code-block">{children}</pre>
+  );
+  // Mock static methods like registerLanguage
+  MockHighlighter.registerLanguage = vi.fn();
+  return {
+    default: MockHighlighter,
+  };
 });
 
-describe('ResourceExplorer', () => {
-  it('renders loading state initially', async () => {
+describe("ResourceExplorer", () => {
+  it("renders loading state initially", async () => {
     // @ts-expect-error Mocking partial implementation
     apiClient.listResources.mockResolvedValueOnce({ resources: [] });
 
@@ -49,54 +59,70 @@ describe('ResourceExplorer', () => {
     expect(apiClient.listResources).toHaveBeenCalled();
   });
 
-  it('renders list of resources', async () => {
+  it("renders list of resources", async () => {
     // @ts-expect-error Mocking partial implementation
-    apiClient.listResources.mockResolvedValueOnce({ resources: MOCK_RESOURCES });
+    apiClient.listResources.mockResolvedValueOnce({
+      resources: MOCK_RESOURCES,
+    });
 
     render(<ResourceExplorer />);
 
     await waitFor(() => {
-        expect(screen.getByText('config.json')).toBeInTheDocument();
-        expect(screen.getByText('README.md')).toBeInTheDocument();
+      expect(screen.getByText("config.json")).toBeInTheDocument();
+      expect(screen.getByText("README.md")).toBeInTheDocument();
     });
   });
 
-  it('filters resources based on search query', async () => {
+  it("filters resources based on search query", async () => {
     // @ts-expect-error Mocking partial implementation
-    apiClient.listResources.mockResolvedValueOnce({ resources: MOCK_RESOURCES });
+    apiClient.listResources.mockResolvedValueOnce({
+      resources: MOCK_RESOURCES,
+    });
 
     render(<ResourceExplorer />);
 
     await waitFor(() => {
-        expect(screen.getByText('config.json')).toBeInTheDocument();
+      expect(screen.getByText("config.json")).toBeInTheDocument();
     });
 
-    const searchInput = screen.getByPlaceholderText('Search resources...');
-    fireEvent.change(searchInput, { target: { value: 'json' } });
+    const searchInput = screen.getByPlaceholderText("Search resources...");
+    fireEvent.change(searchInput, { target: { value: "json" } });
 
-    expect(screen.getByText('config.json')).toBeInTheDocument();
-    expect(screen.queryByText('README.md')).not.toBeInTheDocument();
+    expect(screen.getByText("config.json")).toBeInTheDocument();
+    expect(screen.queryByText("README.md")).not.toBeInTheDocument();
   });
 
-  it('selects a resource and shows content', async () => {
+  it("selects a resource and shows content", async () => {
     // @ts-expect-error Mocking partial implementation
-    apiClient.listResources.mockResolvedValueOnce({ resources: MOCK_RESOURCES });
+    apiClient.listResources.mockResolvedValueOnce({
+      resources: MOCK_RESOURCES,
+    });
     // @ts-expect-error Mocking partial implementation
     apiClient.readResource.mockResolvedValueOnce({
-        contents: [{ uri: 'file:///app/config.json', mimeType: 'application/json', text: '{"test": true}' }]
+      contents: [
+        {
+          uri: "file:///app/config.json",
+          mimeType: "application/json",
+          text: '{"test": true}',
+        },
+      ],
     });
 
     render(<ResourceExplorer />);
 
     await waitFor(() => {
-        expect(screen.getByText('config.json')).toBeInTheDocument();
+      expect(screen.getByText("config.json")).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText('config.json'));
+    fireEvent.click(screen.getByText("config.json"));
 
     await waitFor(() => {
-        expect(apiClient.readResource).toHaveBeenCalledWith('file:///app/config.json');
-        expect(screen.getByTestId('code-block')).toHaveTextContent('{"test": true}');
+      expect(apiClient.readResource).toHaveBeenCalledWith(
+        "file:///app/config.json",
+      );
+      expect(screen.getByTestId("code-block")).toHaveTextContent(
+        '{"test": true}',
+      );
     });
   });
 });

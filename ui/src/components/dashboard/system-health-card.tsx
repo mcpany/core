@@ -2,47 +2,47 @@
  * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
-import React, { useEffect, useState, memo } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Activity, Globe, ShieldAlert, Clock, Terminal } from "lucide-react"
+import React, { useEffect, useState, memo } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Activity, Globe, ShieldAlert, Clock, Terminal } from "lucide-react";
 
-import { apiClient, SystemStatus } from "@/lib/client"
-import { usePolling } from "@/hooks/use-polling"
+import { apiClient, SystemStatus } from "@/lib/client";
+import { usePolling } from "@/hooks/use-polling";
 
 const formatUptime = (seconds: number) => {
-  const hrs = Math.floor(seconds / 3600)
-  const mins = Math.floor((seconds % 3600) / 60)
-  const secs = seconds % 60
-  return `${hrs}h ${mins}m ${secs}s`
-}
+  const hrs = Math.floor(seconds / 3600);
+  const mins = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+  return `${hrs}h ${mins}m ${secs}s`;
+};
 
 /**
  * SystemHealthCard component.
  * @returns The rendered component.
  */
 export const SystemHealthCard = memo(function SystemHealthCard() {
-  const [status, setStatus] = useState<SystemStatus | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [status, setStatus] = useState<SystemStatus | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const fetchStatus = React.useCallback(async () => {
     try {
-      const data = await apiClient.getSystemStatus()
-      setStatus(data)
+      const data = await apiClient.getSystemStatus();
+      setStatus(data);
     } catch (error) {
-      console.error("Failed to fetch system status", error)
+      console.error("Failed to fetch system status", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    fetchStatus()
-  }, [fetchStatus])
+    fetchStatus();
+  }, [fetchStatus]);
 
   // ⚡ BOLT: [Render Optimization] Use usePolling hook instead of raw setInterval
   // Randomized Selection from Top 5 High-Impact Targets
-  usePolling(fetchStatus, 5000)
+  usePolling(fetchStatus, 5000);
 
   if (loading && !status) {
     return (
@@ -52,10 +52,12 @@ export const SystemHealthCard = memo(function SystemHealthCard() {
           <Activity className="h-4 w-4 text-muted-foreground animate-pulse" />
         </CardHeader>
         <CardContent>
-          <div className="text-xs text-muted-foreground">Loading system status...</div>
+          <div className="text-xs text-muted-foreground">
+            Loading system status...
+          </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -70,25 +72,33 @@ export const SystemHealthCard = memo(function SystemHealthCard() {
             <div className="flex items-center text-xs text-muted-foreground">
               <Clock className="mr-1 h-3 w-3" /> Uptime
             </div>
-            <div className="text-xs font-mono">{status ? formatUptime(status.uptime_seconds) : "---"}</div>
+            <div className="text-xs font-mono">
+              {status ? formatUptime(status.uptime_seconds) : "---"}
+            </div>
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center text-xs text-muted-foreground">
               <Globe className="mr-1 h-3 w-3" /> Connections
             </div>
-            <div className="text-xs font-bold">{status?.active_connections ?? 0} active</div>
+            <div className="text-xs font-bold">
+              {status?.active_connections ?? 0} active
+            </div>
           </div>
           <div className="flex items-center justify-between border-t pt-2 mt-1">
             <div className="flex items-center text-xs text-muted-foreground">
               <Terminal className="mr-1 h-3 w-3" /> HTTP Port
             </div>
-            <Badge variant="secondary" className="text-[10px] h-4">:{status?.bound_http_port}</Badge>
+            <Badge variant="secondary" className="text-[10px] h-4">
+              :{status?.bound_http_port}
+            </Badge>
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center text-xs text-muted-foreground">
               <ShieldAlert className="mr-1 h-3 w-3" /> gRPC Port
             </div>
-            <Badge variant="secondary" className="text-[10px] h-4">:{status?.bound_grpc_port}</Badge>
+            <Badge variant="secondary" className="text-[10px] h-4">
+              :{status?.bound_grpc_port}
+            </Badge>
           </div>
 
           {status?.security_warnings && status.security_warnings.length > 0 && (
@@ -98,7 +108,9 @@ export const SystemHealthCard = memo(function SystemHealthCard() {
               </div>
               <ul className="list-disc list-inside">
                 {status.security_warnings.map((warning, idx) => (
-                  <li key={idx} className="text-[10px] text-amber-800">{warning}</li>
+                  <li key={idx} className="text-[10px] text-amber-800">
+                    {warning}
+                  </li>
                 ))}
               </ul>
             </div>
@@ -110,5 +122,5 @@ export const SystemHealthCard = memo(function SystemHealthCard() {
         </div>
       </CardContent>
     </Card>
-  )
-})
+  );
+});
