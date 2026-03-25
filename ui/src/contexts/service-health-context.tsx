@@ -37,7 +37,31 @@ interface TopologyContextType {
     refreshTopology: () => Promise<void>;
 }
 
+/**
+ * Summary: ServiceHealthContext component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const ServiceHealthContext = createContext<ServiceHealthContextType | undefined>(undefined);
+/**
+ * Summary: TopologyContext component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const TopologyContext = createContext<TopologyContextType | undefined>(undefined);
 
 /** Maximum number of history points to keep (30 points * 5s = 2.5 minutes). */
@@ -47,10 +71,17 @@ const MAX_HISTORY_POINTS = 30;
 const POLLING_INTERVAL = 5000;
 
 /**
- * ServiceHealthProvider component.
- * @param props - The component props.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * Summary: ServiceHealthProvider component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.children: The child components.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function ServiceHealthProvider({ children }: { children: ReactNode }) {
     const [history, setHistory] = useState<Record<string, MetricPoint[]>>({});

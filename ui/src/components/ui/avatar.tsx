@@ -8,10 +8,17 @@ import * as AvatarPrimitive from "@radix-ui/react-avatar"
 import { cn } from "@/lib/utils"
 
 /**
- * Avatar component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: Avatar component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const Avatar = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Root>,
@@ -29,10 +36,17 @@ const Avatar = React.forwardRef<
 Avatar.displayName = AvatarPrimitive.Root.displayName
 
 /**
- * AvatarImage component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: AvatarImage component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const AvatarImage = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Image>,
@@ -47,10 +61,17 @@ const AvatarImage = React.forwardRef<
 AvatarImage.displayName = AvatarPrimitive.Image.displayName
 
 /**
- * AvatarFallback component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: AvatarFallback component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const AvatarFallback = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Fallback>,

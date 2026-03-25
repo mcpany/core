@@ -17,11 +17,18 @@ interface ServiceHealthSparklineProps {
 // ⚡ Bolt Optimization: Isolated health visualization to prevent row re-renders on context updates.
 // Randomized Selection from Top 5 High-Impact Targets
 /**
- * ServiceHealthSparkline component.
- * @param props - The component props.
- * @param props.serviceName - The name of the service to display health for.
- * @param props.disabled - Whether the service is disabled.
- * @returns The rendered component.
+ * Summary: ServiceHealthSparkline component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.serviceName: The name of the service.
+ *   - props.disabled: The disabled property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export const ServiceHealthSparkline = memo(function ServiceHealthSparkline({ serviceName, disabled }: ServiceHealthSparklineProps) {
     const { getServiceHistory } = useServiceHealth();

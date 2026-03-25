@@ -6,8 +6,16 @@
 import { NetworkGraphClient } from "@/components/network/network-graph-client";
 
 /**
- * NetworkPage component.
- * @returns The rendered component.
+ * Summary: NetworkPage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function NetworkPage() {
   return (

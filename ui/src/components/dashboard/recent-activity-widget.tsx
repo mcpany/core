@@ -48,9 +48,16 @@ function safeParsePayload(payload: any) {
 }
 
 /**
- * RecentActivityWidget component.
- * Displays the most recent tool executions.
- * @returns The rendered component.
+ * Summary: RecentActivityWidget component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function RecentActivityWidget() {
   const [traces, setTraces] = useState<any[]>([]);

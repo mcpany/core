@@ -10,6 +10,18 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { apiClient } from "@/lib/client";
 import { useToast } from "@/hooks/use-toast";
 
+/**
+ * Summary: OAuthCallbackContent component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 function OAuthCallbackContent() {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
@@ -132,8 +144,16 @@ function OAuthCallbackContent() {
 }
 
 /**
- * OAuthCallbackPage component.
- * @returns The rendered component.
+ * Summary: OAuthCallbackPage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function OAuthCallbackPage() {
   return (

@@ -10,16 +10,35 @@ import { KeyboardShortcutsProvider, useShortcut, useKeyboardShortcuts } from "./
 
 // Mock component to test the hook
 /**
- * TestComponent component.
- * @param props - The component props.
- * @param props.action - The action property.
- * @returns The rendered component.
+ * Summary: TestComponent component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.action: The action property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const TestComponent = ({ action }: { action: () => void }) => {
   useShortcut("test.shortcut", ["meta+k"], action, { label: "Test Shortcut" })
   return <div>Test Component</div>
 }
 
+/**
+ * Summary: TestOverrideComponent component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const TestOverrideComponent = () => {
   const { updateOverride, getKeys } = useKeyboardShortcuts()
   return (

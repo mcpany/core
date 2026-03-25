@@ -67,24 +67,18 @@ type McpField struct {
 	IsRepeated  bool
 }
 
-// GetName returns the name of the McpField.
+// GetName retrieves the name.
+//
+// Summary: Retrieves the name.
+//
+// Parameters:
+//   None.
 //
 // Returns:
 //   - string: The result.
 //
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves GetName operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -92,24 +86,18 @@ func (f *McpField) GetName() string {
 	return f.Name
 }
 
-// GetDescription returns the description of the McpField.
+// GetDescription retrieves the description.
+//
+// Summary: Retrieves the description.
+//
+// Parameters:
+//   None.
 //
 // Returns:
 //   - string: The result.
 //
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves GetDescription operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -117,24 +105,18 @@ func (f *McpField) GetDescription() string {
 	return f.Description
 }
 
-// GetType returns the type of the McpField.
+// GetType retrieves the type.
+//
+// Summary: Retrieves the type.
+//
+// Parameters:
+//   None.
 //
 // Returns:
 //   - string: The result.
 //
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves GetType operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -142,24 +124,18 @@ func (f *McpField) GetType() string {
 	return f.Type
 }
 
-// GetIsRepeated returns true if the McpField is a repeated field.
+// GetIsRepeated retrieves the is repeated.
+//
+// Summary: Retrieves the is repeated.
+//
+// Parameters:
+//   None.
 //
 // Returns:
 //   - bool: The result.
 //
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves GetIsRepeated operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -432,34 +408,20 @@ type McpResource struct {
 	MessageType string
 }
 
-// ParseProtoByReflection connects to a gRPC service that has server reflection
-// enabled, discovers its entire set of protobuf definitions, including all
-// dependencies, and returns them as a complete FileDescriptorSet.
+// ParseProtoByReflection parseProtoByReflection parse proto by reflection.
+//
+// Summary: ParseProtoByReflection parse proto by reflection.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - target (string): The parameter.
+//   - target (string): The target.
 //
 // Returns:
 //   - *descriptorpb.FileDescriptorSet: The result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes ParseProtoByReflection operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -645,33 +607,19 @@ func getFileDescriptorByFilename(stream reflectpb.ServerReflection_ServerReflect
 	return fdp, nil
 }
 
-// ExtractMcpDefinitions iterates through a FileDescriptorSet, parsing any MCP
-// (Model Context Protocol) options found in service methods and messages. It
-// extracts definitions for tools, prompts, and resources.
+// ExtractMcpDefinitions extractMcpDefinitions extract mcp definitions.
+//
+// Summary: ExtractMcpDefinitions extract mcp definitions.
 //
 // Parameters:
-//   - fds (*descriptorpb.FileDescriptorSet): The parameter.
+//   - fds (*descriptorpb.FileDescriptorSet): The fds.
 //
 // Returns:
 //   - *ParsedMcpAnnotations: The result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes ExtractMcpDefinitions operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

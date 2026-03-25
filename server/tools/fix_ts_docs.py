@@ -82,9 +82,17 @@ def process_file(filepath):
                     continue
                 if prev.endswith('*/'):
                     has_doc = True
-                    # Check if it is the generic one we want to replace
-                    # We check if it contains "@returns The rendered component." and NO @param
+                    pass
 
+                break
+
+            comp_name = match.group(4)
+
+            # We only care about components (usually Capitalized)
+            if comp_name and comp_name[0].isupper():
+
+                # Check previous lines again to determine generic doc status using comp_name
+                if has_doc:
                     # Read back until /**
                     doc_content = ""
                     k = j
@@ -95,15 +103,10 @@ def process_file(filepath):
                         k -= 1
 
                     if ("@returns The rendered component." in doc_content and "@param" not in doc_content) or \
-                       ("The name of the ." in doc_content):
+                       ("The name of the ." in doc_content) or \
+                       (f"{comp_name} component." in doc_content and "@returns" in doc_content) or \
+                       ("Returns:" in doc_content and "React.ReactNode" in doc_content and "Parameters:" not in doc_content):
                         is_generic = True
-
-                break
-
-            comp_name = match.group(4)
-
-            # We only care about components (usually Capitalized)
-            if comp_name and comp_name[0].isupper():
 
                 # Parse params
                 # Read lines until ')'
@@ -138,14 +141,85 @@ def process_file(filepath):
                     # Construct new docstring
                     new_doc = [
                         '/**',
-                        f' * {comp_name} component.',
-                        ' * @param props - The component props.'
+                        f' * Summary: {comp_name} component.',
+                        ' *',
+                        ' * Parameters:',
+                        ' *   - props (Object): The component props.'
                     ]
                     for p in params:
                         desc = get_prop_desc(p)
-                        new_doc.append(f' * @param props.{p} - {desc}')
-                    new_doc.append(' * @returns The rendered component.')
+                        new_doc.append(f' *   - props.{p}: {desc}')
+                    new_doc.append(' *')
+                    new_doc.append(' * Returns:')
+                    new_doc.append(' *   - React.ReactNode: The rendered component.')
+                    new_doc.append(' *')
+                    new_doc.append(' * Throws/Errors:')
+                    new_doc.append(' *   - None.')
                     new_doc.append(' */')
+
+                    if has_doc and is_generic:
+                         # Remove old docstring from new_lines
+                         idx = len(new_lines) - 1
+                         while idx >= 0:
+                             l = new_lines[idx].strip()
+                             if not l or l.startswith('@'):
+                                 idx -= 1
+                                 continue
+                             if l == '*/':
+                                 end_idx = idx
+                                 # Find start
+                                 while idx >= 0:
+                                     if new_lines[idx].strip() == '/**':
+                                         start_idx = idx
+                                         del new_lines[start_idx : end_idx+1]
+                                         break
+                                     idx -= 1
+                                 break
+                             break
+
+                         insert_pos = len(new_lines)
+                         while insert_pos > 0:
+                             if new_lines[insert_pos-1].strip().startswith('@'):
+                                 insert_pos -= 1
+                             else:
+                                 break
+
+                         for l in new_doc:
+                             new_lines.insert(insert_pos, l)
+                             insert_pos += 1
+
+                         modified = True
+                         print(f"Upgraded docstring in {filepath} for {comp_name}")
+
+                    elif not has_doc:
+                         insert_pos = len(new_lines)
+                         while insert_pos > 0:
+                             if new_lines[insert_pos-1].strip().startswith('@'):
+                                 insert_pos -= 1
+                             else:
+                                 break
+
+                         for l in new_doc:
+                             new_lines.insert(insert_pos, l)
+                             insert_pos += 1
+
+                         modified = True
+                         print(f"Added docstring in {filepath} for {comp_name}")
+                else:
+                    new_doc = [
+                        '/**',
+                        f' * Summary: {comp_name} component.',
+                        ' *',
+                        ' * Parameters:',
+                        ' *   - None.',
+                        ' *',
+                        ' * Returns:',
+                        ' *   - React.ReactNode: The rendered component.',
+                        ' *',
+                        ' * Throws/Errors:',
+                        ' *   - None.',
+                        ' */'
+                    ]
 
                     if has_doc and is_generic:
                          # Remove old docstring from new_lines

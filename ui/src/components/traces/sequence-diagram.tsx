@@ -44,11 +44,89 @@ interface Message {
 }
 
 // Config
+/**
+ * Summary: ACTOR_WIDTH component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.trace: The trace property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const ACTOR_WIDTH = 120;
+/**
+ * Summary: ACTOR_GAP component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.trace: The trace property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const ACTOR_GAP = 160;
+/**
+ * Summary: MESSAGE_HEIGHT component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.trace: The trace property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const MESSAGE_HEIGHT = 60;
+/**
+ * Summary: PADDING_TOP component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.trace: The trace property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const PADDING_TOP = 60;
+/**
+ * Summary: PADDING_BOTTOM component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.trace: The trace property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const PADDING_BOTTOM = 40;
+/**
+ * Summary: PADDING_X component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.trace: The trace property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const PADDING_X = 40;
 
 /**

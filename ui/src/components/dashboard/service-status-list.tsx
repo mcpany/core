@@ -16,8 +16,16 @@ import { apiClient } from "@/lib/client"
 import { UpstreamServiceConfig } from "@proto/config/v1/upstream_service"
 
 /**
- * ServiceStatusList component.
- * @returns The rendered component.
+ * Summary: ServiceStatusList component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function ServiceStatusList() {
     const [services, setServices] = useState<UpstreamServiceConfig[]>([]);

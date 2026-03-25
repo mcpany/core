@@ -17,13 +17,20 @@ interface DebuggerControlsProps {
 }
 
 /**
- * DebuggerControls provides play/pause and step controls for the debugger.
- * @param props - The component props.
- * @param props.isPlaying - Whether the debugger is currently playing.
- * @param props.onPlayPause - Callback to toggle play/pause.
- * @param props.onStep - Callback to step forward.
- * @param props.onStop - Callback to stop execution.
- * @returns The DebuggerControls component.
+ * Summary: DebuggerControls component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.isPlaying: The isPlaying property.
+ *   - props.onPlayPause: The onPlayPause property.
+ *   - props.onStep: The onStep property.
+ *   - props.onStop: The onStop property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function DebuggerControls({ isPlaying, onPlayPause, onStep, onStop }: DebuggerControlsProps) {
   return (

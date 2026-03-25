@@ -6,8 +6,16 @@
 import { ResourceExplorer } from "@/components/resources/resource-explorer";
 
 /**
- * ResourcesPage component.
- * @returns The rendered component.
+ * Summary: ResourcesPage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function ResourcesPage() {
   return (

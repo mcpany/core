@@ -17,8 +17,16 @@ interface Middleware {
 }
 
 /**
- * MiddlewarePage component.
- * @returns The rendered component.
+ * Summary: MiddlewarePage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function MiddlewarePage() {
     const [middleware, setMiddleware] = useState<Middleware[]>([]);

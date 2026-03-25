@@ -61,31 +61,19 @@ type CheckResult struct {
 	Error error
 }
 
-// RunChecks performs connectivity and health checks on the provided configuration.
+// RunChecks runChecks run checks.
 //
-// It iterates through all upstream services defined in the configuration and executes
-// the appropriate check logic for each service type.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the request, used for timeouts and cancellation.
-//   - config: *configv1.McpAnyServerConfig. The server configuration containing upstream service definitions.
-//
-// Returns:
-//   - []CheckResult: A slice of results for each checked service.
-//
-// Side Effects:
-//   - Performs network I/O to connect to upstream services.
-//
-// Summary: Executes RunChecks operation.
+// Summary: RunChecks run checks.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The context for the request.
+//   - config (*configv1.McpAnyServerConfig): The config.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - []CheckResult: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -113,31 +101,19 @@ func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []Check
 	return results
 }
 
-// CheckService performs a connectivity check for a single service.
+// CheckService checkService check service.
 //
-// It dispatches the check to the specific handler based on the service type (HTTP, gRPC, etc.)
-// and handles upstream authentication checks if configured.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - service: *configv1.UpstreamServiceConfig. The configuration of the service to check.
-//
-// Returns:
-//   - CheckResult: The result of the connectivity check.
-//
-// Side Effects:
-//   - Performs network I/O to connect to the upstream service.
-//
-// Summary: Executes CheckService operation.
+// Summary: CheckService check service.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The context for the request.
+//   - service (*configv1.UpstreamServiceConfig): The service.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - CheckResult: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

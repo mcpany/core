@@ -8,8 +8,16 @@
 import SkillWizard from '@/components/skills/skill-wizard';
 
 /**
- * CreateSkillPage component.
- * @returns The rendered component.
+ * Summary: CreateSkillPage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function CreateSkillPage() {
   return <SkillWizard />;

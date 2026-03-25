@@ -11,8 +11,16 @@ import { useDashboard } from "@/components/dashboard/dashboard-context";
 import { usePolling } from "@/hooks/use-polling";
 
 /**
- * RequestVolumeChart component.
- * @returns The rendered component.
+ * Summary: RequestVolumeChart component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function RequestVolumeChart() {
   const [data, setData] = useState<{ time: string; requests: number }[]>([]);

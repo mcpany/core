@@ -25,30 +25,18 @@ var (
 	GlobalBroadcaster = NewBroadcaster()
 )
 
-// NewBroadcaster creates a new Broadcaster. Returns the result.
+// NewBroadcaster creates a new broadcaster.
+//
+// Summary: Creates a new broadcaster.
 //
 // Parameters:
-//   - None
+//   None.
 //
 // Returns:
-//   - *Broadcaster: The resulting *Broadcaster.
+//   - *Broadcaster: The result.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes NewBroadcaster operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -60,30 +48,18 @@ func NewBroadcaster() *Broadcaster {
 	}
 }
 
-// Reset clears the broadcaster history and subscribers. This is primarily for testing to ensure a clean state.
+// Reset reset reset.
+//
+// Summary: Reset reset.
 //
 // Parameters:
-//   - None
+//   None.
 //
 // Returns:
-//   - None
+//   None.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Reset operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -162,31 +138,19 @@ func (b *Broadcaster) SubscribeBuffered(size int) chan any {
 	return ch
 }
 
-// SubscribeWithHistory returns a channel that will receive broadcast messages, and the current history of messages. This is atomic to ensure no messages are missed or duplicated.
+// SubscribeWithHistory subscribeWithHistory subscribe with history.
+//
+// Summary: SubscribeWithHistory subscribe with history.
 //
 // Parameters:
-//   - None
+//   None.
 //
 // Returns:
-//   - any: The resulting any.
-//   - []any: The resulting []any.
+//   - any: The result.
+//   - []any: The result.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes SubscribeWithHistory operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -194,31 +158,19 @@ func (b *Broadcaster) SubscribeWithHistory() (chan any, []any) {
 	return b.SubscribeWithHistoryBuffered(100)
 }
 
-// SubscribeWithHistoryBuffered returns a channel that will receive broadcast messages with a custom buffer size, and the current history of messages. This is atomic to ensure no messages are missed or duplicated.
+// SubscribeWithHistoryBuffered subscribeWithHistoryBuffered subscribe with history buffered.
+//
+// Summary: SubscribeWithHistoryBuffered subscribe with history buffered.
 //
 // Parameters:
-//   - size (int): The size parameter.
+//   - size (int): The size.
 //
 // Returns:
-//   - any: The resulting any.
-//   - []any: The resulting []any.
+//   - any: The result.
+//   - []any: The result.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes SubscribeWithHistoryBuffered operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -255,30 +207,18 @@ func (b *Broadcaster) SubscribeWithHistoryBuffered(size int) (chan any, []any) {
 	return ch, result
 }
 
-// Unsubscribe removes a subscriber channel. ch is the ch.
+// Unsubscribe unsubscribe unsubscribe.
+//
+// Summary: Unsubscribe unsubscribe.
 //
 // Parameters:
-//   - ch (chanany): The ch parameter.
+//   - ch chan (any): The ch chan.
 //
 // Returns:
-//   - None
+//   None.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Unsubscribe operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -291,30 +231,18 @@ func (b *Broadcaster) Unsubscribe(ch chan any) {
 	}
 }
 
-// Broadcast sends a message to all subscribers. This method is non-blocking; if a subscriber's channel is full, the message is dropped for that subscriber.
+// Broadcast broadcast broadcast.
+//
+// Summary: Broadcast broadcast.
 //
 // Parameters:
-//   - msg (any): The msg parameter.
+//   - msg (any): The msg.
 //
 // Returns:
-//   - None
+//   None.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Broadcast operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -345,18 +273,18 @@ func (b *Broadcaster) Broadcast(msg any) {
 	}
 }
 
-// ClearHistory clears the history of the broadcaster without removing subscribers.
+// ClearHistory clearHistory clear history.
 //
-// Summary: Executes ClearHistory operation.
+// Summary: ClearHistory clear history.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -368,30 +296,18 @@ func (b *Broadcaster) ClearHistory() {
 	b.full = false
 }
 
-// GetHistory returns the current log history.
+// GetHistory retrieves the history.
+//
+// Summary: Retrieves the history.
 //
 // Parameters:
-//   - None
+//   None.
 //
 // Returns:
-//   - []any: The resulting []any.
+//   - []any: The result.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Retrieves GetHistory operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -422,30 +338,18 @@ func (b *Broadcaster) GetHistory() []any {
 	return result
 }
 
-// Hydrate populates the history buffer with messages. It is intended to be called at startup. Messages are NOT broadcasted to subscribers, as subscribers shouldn't exist yet, or shouldn't receive old history as "new" events.
+// Hydrate hydrate hydrate.
+//
+// Summary: Hydrate hydrate.
 //
 // Parameters:
-//   - messages ([]any): The messages parameter.
+//   - messages ([]any): The messages.
 //
 // Returns:
-//   - None
+//   None.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Hydrate operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

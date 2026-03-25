@@ -19,6 +19,18 @@ import {
   Activity
 } from "lucide-react";
 
+/**
+ * Summary: UniversalAgentBusPage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 export default function UniversalAgentBusPage() {
   return (
     <div className="p-6 space-y-6">

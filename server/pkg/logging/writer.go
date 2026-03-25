@@ -16,31 +16,19 @@ type RedactingWriter struct {
 	w io.Writer
 }
 
-// Write implements io.Writer.
+// Write write write.
+//
+// Summary: Write write.
 //
 // Parameters:
-//   - p ([]byte): The p parameter.
+//   - p ([]byte): The p.
 //
 // Returns:
-//   - int: The resulting int.
+//   - int: The result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Updates Write operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

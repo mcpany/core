@@ -42,7 +42,9 @@ type Upstream struct {
 	mu          sync.RWMutex
 }
 
-// CheckHealth performs a health check on the upstream service.
+// CheckHealth checkHealth check health.
+//
+// Summary: CheckHealth check health.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
@@ -51,21 +53,7 @@ type Upstream struct {
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes CheckHealth operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -84,25 +72,18 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 	return nil
 }
 
-// Shutdown gracefully terminates the WebSocket upstream service by shutting down
-// the associated connection pool.
+// Shutdown shutdown shutdown.
+//
+// Summary: Shutdown shutdown.
 //
 // Parameters:
-//   - ctx: The context for the shutdown operation.
+//   - _ (context.Context): Unused parameter.
 //
 // Returns:
-//   - error: An error if the shutdown operation fails, or nil on success.
-//
-// Summary: Executes Shutdown operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -120,24 +101,18 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
-// NewUpstream creates a new instance of WebsocketUpstream.
+// NewUpstream creates a new upstream.
+//
+// Summary: Creates a new upstream.
 //
 // Parameters:
-//   - poolManager: The connection pool manager to be used for managing WebSocket connections.
+//   - poolManager (*pool.Manager): The pool manager.
 //
 // Returns:
-//   - upstream.Upstream: A new Upstream instance for WebSocket services.
-//
-// Summary: Initializes NewUpstream operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - upstream.Upstream: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

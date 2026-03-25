@@ -26,31 +26,19 @@ type PineconeClient struct {
 	baseURL string
 }
 
-// NewPineconeClient creates a new Pinecone client.
+// NewPineconeClient creates a new pinecone client.
+//
+// Summary: Creates a new pinecone client.
 //
 // Parameters:
-//   - config (*configv1.PineconeVectorDB): The parameter.
+//   - config (*configv1.PineconeVectorDB): The config.
 //
 // Returns:
 //   - *PineconeClient: The result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewPineconeClient operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -134,31 +122,23 @@ func (c *PineconeClient) doRequest(ctx context.Context, method, path string, bod
 	return result, nil
 }
 
-// Query searches for similar vectors.
+// Query query query.
+//
+// Summary: Query query.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - vector ([]float32): The parameter.
-//   - topK (int64): The parameter.
-//   - filter (map[string]interface{}): The parameter.
-//   - namespace (string): The parameter.
+//   - vector ([]float32): The vector.
+//   - topK (int64): The top k.
+//   - filter (map[string]interface{}): The filter.
+//   - namespace (string): The namespace.
 //
 // Returns:
-//   - (map[string]interface: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Query operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - map[string]interface{}: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -179,29 +159,21 @@ func (c *PineconeClient) Query(ctx context.Context, vector []float32, topK int64
 	return c.doRequest(ctx, "POST", "/query", req)
 }
 
-// Upsert inserts or updates vectors.
+// Upsert upsert upsert.
+//
+// Summary: Upsert upsert.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - vectors ([]map[string]interface{}): The parameter.
-//   - namespace (string): The parameter.
+//   - vectors ([]map[string]interface{}): The vectors.
+//   - namespace (string): The namespace.
 //
 // Returns:
-//   - (map[string]interface: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Upsert operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - map[string]interface{}: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -216,30 +188,22 @@ func (c *PineconeClient) Upsert(ctx context.Context, vectors []map[string]interf
 	return c.doRequest(ctx, "POST", "/vectors/upsert", req)
 }
 
-// Delete removes vectors.
+// Delete deletes the .
+//
+// Summary: Deletes the .
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - ids ([]string): The parameter.
-//   - namespace (string): The parameter.
-//   - filter (map[string]interface{}): The parameter.
+//   - ids ([]string): The ids.
+//   - namespace (string): The namespace.
+//   - filter (map[string]interface{}): The filter.
 //
 // Returns:
-//   - (map[string]interface: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Delete operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - map[string]interface{}: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -262,28 +226,20 @@ func (c *PineconeClient) Delete(ctx context.Context, ids []string, namespace str
 	return c.doRequest(ctx, "POST", "/vectors/delete", req)
 }
 
-// DescribeIndexStats returns statistics about the index.
+// DescribeIndexStats describeIndexStats describe index stats.
+//
+// Summary: DescribeIndexStats describe index stats.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - filter (map[string]interface{}): The parameter.
+//   - filter (map[string]interface{}): The filter.
 //
 // Returns:
-//   - (map[string]interface: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes DescribeIndexStats operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - map[string]interface{}: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

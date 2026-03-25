@@ -13,10 +13,17 @@ const labelVariants = cva(
 )
 
 /**
- * Label component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: Label component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const Label = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,

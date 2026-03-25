@@ -16,9 +16,16 @@ import { Badge } from "@/components/ui/badge";
 import { ServiceCollection } from "@/lib/marketplace-service";
 
 /**
- * StacksPage component.
- * Lists all available service collections (stacks) and provides options to create or delete them.
- * @returns The rendered page.
+ * Summary: StacksPage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function StacksPage() {
   const [stacks, setStacks] = useState<ServiceCollection[]>([]);

@@ -8,8 +8,16 @@ import { PlaygroundClientPro } from "@/components/playground/pro/playground-clie
 import { Loader2 } from "lucide-react";
 
 /**
- * PlaygroundPage component.
- * @returns The rendered component.
+ * Summary: PlaygroundPage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function PlaygroundPage() {
   return (

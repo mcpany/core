@@ -51,6 +51,18 @@ export interface WidgetInstance {
 }
 
 // Default widgets for a fresh dashboard
+/**
+ * Summary: DEFAULT_LAYOUT component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const DEFAULT_LAYOUT: WidgetInstance[] = WIDGET_DEFINITIONS.map(def => ({
     instanceId: crypto.randomUUID(),
     type: def.type,
@@ -73,12 +85,46 @@ const renderWidget = (widget: WidgetInstance) => {
     const def = getWidgetDefinition(widget.type);
     if (!def) return <div className="p-4 border border-dashed text-muted-foreground">Unknown Widget Type: {widget.type}</div>;
 
+/**
+ * Summary: Component component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.widget: The unique identifier for wget.
+ *   - props.index: The index property.
+ *   - props.updateWidgetSize: The unique identifier for updateWgetSize.
+ *   - props.toggleWidgetVisibility: The unique identifier for toggleWgetVisibility.
+ *   - props.removeWidget: The unique identifier for removeWget.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
     const Component = def.component;
     return <Component />;
 };
 
 // ⚡ BOLT: [Render Optimization] Extract Draggable Widget into React.memo to prevent re-rendering all widgets during drag or single-widget state changes.
 // Randomized Selection from Top 5 High-Impact Targets
+/**
+ * Summary: MemoizedWidgetCard component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.widget: The unique identifier for wget.
+ *   - props.index: The index property.
+ *   - props.updateWidgetSize: The unique identifier for updateWgetSize.
+ *   - props.toggleWidgetVisibility: The unique identifier for toggleWgetVisibility.
+ *   - props.removeWidget: The unique identifier for removeWget.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const MemoizedWidgetCard = React.memo(({ widget, index, updateWidgetSize, toggleWidgetVisibility, removeWidget }: {
     widget: WidgetInstance;
     index: number;
@@ -158,9 +204,16 @@ const MemoizedWidgetCard = React.memo(({ widget, index, updateWidgetSize, toggle
 MemoizedWidgetCard.displayName = "MemoizedWidgetCard";
 
 /**
- * DashboardGrid component.
- * Implements a draggable grid for dashboard widgets with resizing and dynamic layout controls.
- * @returns The rendered component.
+ * Summary: DashboardGrid component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function DashboardGrid() {
     const [widgets, setWidgets] = useState<WidgetInstance[]>([]);

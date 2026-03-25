@@ -10,18 +10,32 @@ import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 /**
- * ToastProvider component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: ToastProvider component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const ToastProvider = ToastPrimitives.Provider
 
 /**
- * ToastViewport component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: ToastViewport component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const ToastViewport = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Viewport>,
@@ -55,11 +69,18 @@ const toastVariants = cva(
 )
 
 /**
- * Toast component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.variant - The variant property.
- * @returns The rendered component.
+ * Summary: Toast component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *   - props.variant: The variant property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const Toast = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Root>,
@@ -77,10 +98,17 @@ const Toast = React.forwardRef<
 Toast.displayName = ToastPrimitives.Root.displayName
 
 /**
- * ToastAction component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: ToastAction component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const ToastAction = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Action>,
@@ -98,10 +126,17 @@ const ToastAction = React.forwardRef<
 ToastAction.displayName = ToastPrimitives.Action.displayName
 
 /**
- * ToastClose component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: ToastClose component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const ToastClose = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Close>,
@@ -122,10 +157,17 @@ const ToastClose = React.forwardRef<
 ToastClose.displayName = ToastPrimitives.Close.displayName
 
 /**
- * ToastTitle component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: ToastTitle component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const ToastTitle = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Title>,
@@ -140,10 +182,17 @@ const ToastTitle = React.forwardRef<
 ToastTitle.displayName = ToastPrimitives.Title.displayName
 
 /**
- * ToastDescription component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: ToastDescription component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const ToastDescription = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Description>,

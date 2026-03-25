@@ -27,8 +27,16 @@ import { Plus, Trash, Key, Lock, Globe, ExternalLink } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 /**
- * CredentialList component.
- * @returns The rendered component.
+ * Summary: CredentialList component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function CredentialList() {
   const { toast } = useToast()

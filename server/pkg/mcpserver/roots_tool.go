@@ -26,24 +26,18 @@ type RootsTool struct {
 	mcpTool *mcp.Tool
 }
 
-// NewRootsTool creates a new instance of the RootsTool.
+// NewRootsTool creates a new roots tool.
 //
-// Returns:
-//   - *RootsTool: A new instance of RootsTool.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewRootsTool operation.
+// Summary: Creates a new roots tool.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *RootsTool: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -68,24 +62,18 @@ func NewRootsTool() *RootsTool {
 	}
 }
 
-// Tool returns the protobuf definition of the tool.
+// Tool tool tool.
 //
-// Returns:
-//   - *v1.Tool: The protobuf tool definition.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Tool operation.
+// Summary: Tool tool.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *v1.Tool: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -93,24 +81,18 @@ func (t *RootsTool) Tool() *v1.Tool {
 	return t.tool
 }
 
-// MCPTool returns the MCP-compliant tool definition.
+// MCPTool mCPTool mcp tool.
 //
-// Returns:
-//   - *mcp.Tool: The MCP tool definition.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes MCPTool operation.
+// Summary: MCPTool mcp tool.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *mcp.Tool: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -220,24 +202,18 @@ func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any,
 	return rootsResult, nil
 }
 
-// GetCacheConfig returns the caching configuration for this tool.
+// GetCacheConfig retrieves the cache config.
 //
-// Returns:
-//   - *configv1.CacheConfig: Always nil (caching disabled).
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves GetCacheConfig operation.
+// Summary: Retrieves the cache config.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *configv1.CacheConfig: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

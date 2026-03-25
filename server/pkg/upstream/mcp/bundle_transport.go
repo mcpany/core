@@ -30,24 +30,18 @@ type transportError struct {
 	Data    any    `json:"data,omitempty"`
 }
 
-// Error returns the error message.
+// Error error error.
+//
+// Summary: Error error.
+//
+// Parameters:
+//   None.
 //
 // Returns:
 //   - string: The result.
 //
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Error operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -72,7 +66,9 @@ type BundleDockerTransport struct {
 	dockerClientFactory func(ops ...client.Opt) (dockerClient, error)
 }
 
-// Connect establishes a connection to the service within the Docker container.
+// Connect connect connect.
+//
+// Summary: Connect connect.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
@@ -82,21 +78,7 @@ type BundleDockerTransport struct {
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Connect operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -210,31 +192,19 @@ type bundleDockerConn struct {
 	log     *slog.Logger
 }
 
-// Read reads a JSON-RPC message from the connection.
+// Read read read.
+//
+// Summary: Read read.
 //
 // Parameters:
-//   - _ (context.Context): The parameter.
+//   - _ (context.Context): Unused parameter.
 //
 // Returns:
 //   - jsonrpc.Message: The result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves Read operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -366,31 +336,19 @@ func setUnexportedID(idPtr interface{}, val interface{}) error {
 	return nil
 }
 
-// Write writes a JSON-RPC message to the connection.
+// Write write write.
+//
+// Summary: Write write.
 //
 // Parameters:
-//   - _ (context.Context): The parameter.
-//   - msg (jsonrpc.Message): The parameter.
+//   - _ (context.Context): Unused parameter.
+//   - msg (jsonrpc.Message): The msg.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Updates Write operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -513,27 +471,18 @@ func fixIDExtracted(val interface{}) interface{} {
 	return fixID(val)
 }
 
-// Close closes the connection.
+// Close close close.
+//
+// Summary: Close close.
+//
+// Parameters:
+//   None.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Close operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -541,24 +490,18 @@ func (c *bundleDockerConn) Close() error {
 	return c.rwc.Close()
 }
 
-// SessionID returns the session ID of the connection.
+// SessionID sessionID session id.
+//
+// Summary: SessionID session id.
+//
+// Parameters:
+//   None.
 //
 // Returns:
 //   - string: The result.
 //
-// Side Effects:
-//   - None.
-//
-// Summary: Executes SessionID operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -572,31 +515,19 @@ type bundleSlogWriter struct {
 	level slog.Level
 }
 
-// Write writes the log message to the logger.
+// Write write write.
+//
+// Summary: Write write.
 //
 // Parameters:
-//   - p ([]byte): The parameter.
+//   - p ([]byte): The p.
 //
 // Returns:
-//   - n (int): The result.
-//   - err (error): An error if the operation fails.
+//   - int: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Updates Write operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

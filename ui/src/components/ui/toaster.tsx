@@ -13,8 +13,16 @@ import {
 } from "@/components/ui/toast"
 
 /**
- * Toaster component.
- * @returns The rendered component.
+ * Summary: Toaster component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function Toaster() {
   const { toasts } = useToast()

@@ -8,10 +8,17 @@ import * as ResizablePrimitive from "react-resizable-panels"
 import { cn } from "@/lib/utils"
 
 /**
- * ResizablePanelGroup component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: ResizablePanelGroup component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const ResizablePanelGroup = ({
   className,
@@ -27,20 +34,34 @@ const ResizablePanelGroup = ({
 )
 
 /**
- * ResizablePanel component.
- * @param props - The component props.
- * @param props.withHandle - The withHandle property.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: ResizablePanel component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.withHandle: The withHandle property.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const ResizablePanel = ResizablePrimitive.Panel
 
 /**
- * ResizableHandle component.
- * @param props - The component props.
- * @param props.withHandle - The withHandle property.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: ResizableHandle component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.withHandle: The withHandle property.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const ResizableHandle = ({
   withHandle,

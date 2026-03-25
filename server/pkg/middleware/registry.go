@@ -42,22 +42,19 @@ var (
 	}
 )
 
-// Register registers a HTTP middleware factory.
+// Register register register.
+//
+// Summary: Register register.
 //
 // Parameters:
-//   - name (string): The name of the resource.
+//   - name (string): The name.
 //   - factory (Factory): The factory.
 //
-// Summary: Executes Register operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
+//   None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -67,22 +64,19 @@ func Register(name string, factory Factory) {
 	globalRegistry.factories[name] = factory
 }
 
-// RegisterMCP registers an MCP middleware factory.
+// RegisterMCP registerMCP register mcp.
+//
+// Summary: RegisterMCP register mcp.
 //
 // Parameters:
-//   - name (string): The name of the resource.
+//   - name (string): The name.
 //   - factory (MCPFactory): The factory.
 //
-// Summary: Executes RegisterMCP operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
+//   None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -92,24 +86,18 @@ func RegisterMCP(name string, factory MCPFactory) {
 	globalRegistry.mcpFactories[name] = factory
 }
 
-// GetHTTPMiddlewares returns a sorted list of HTTP middlewares based on configuration.
+// GetHTTPMiddlewares retrieves the http middlewares.
+//
+// Summary: Retrieves the http middlewares.
 //
 // Parameters:
-//   - configs ([]*configv1.Middleware): The configs.
+//   - configs []*configv1.Middleware) ([]func(http.Handler): The configs []*configv1. middleware).
 //
 // Returns:
-//   - ([]func(http.Handler) http.Handler): The result.
-//
-// Summary: Retrieves GetHTTPMiddlewares operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - http.Handler: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -136,24 +124,18 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 	return middlewares
 }
 
-// GetMCPMiddlewares returns a sorted list of MCP middlewares based on configuration.
+// GetMCPMiddlewares retrieves the mcp middlewares.
+//
+// Summary: Retrieves the mcp middlewares.
 //
 // Parameters:
-//   - configs ([]*configv1.Middleware): The configs.
+//   - configs []*configv1.Middleware) ([]func(mcp.MethodHandler): The configs []*configv1. middleware).
 //
 // Returns:
-//   - ([]func(mcp.MethodHandler) mcp.MethodHandler): The result.
-//
-// Summary: Retrieves GetMCPMiddlewares operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - mcp.MethodHandler: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

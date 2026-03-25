@@ -43,8 +43,16 @@ import { useToast } from "@/hooks/use-toast";
 import { apiClient, SecretDefinition } from "@/lib/client";
 
 /**
- * SecretsManager component.
- * @returns The rendered component.
+ * Summary: SecretsManager component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function SecretsManager() {
     const [secrets, setSecrets] = useState<SecretDefinition[]>([]);
@@ -271,11 +279,18 @@ export function SecretsManager() {
 }
 
 /**
- * SecretItem component.
- * @param props - The component props.
- * @param props.secret - The secret property.
- * @param props.onDelete - The onDelete property.
- * @returns The rendered component.
+ * Summary: SecretItem component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.secret: The secret property.
+ *   - props.onDelete: The onDelete property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 function SecretItem({ secret, onDelete }: { secret: SecretDefinition; onDelete: (id: string) => void }) {
     const [revealedValue, setRevealedValue] = useState<string | null>(null);

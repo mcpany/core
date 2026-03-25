@@ -84,28 +84,20 @@ func NewWithClient[T any](client *redis.Client) *Bus[T] {
 	}
 }
 
-// Publish publishes a message to a Redis channel.
+// Publish publish publish.
 //
-// The message is marshaled to JSON before being published.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - topic: string. The topic (channel) to publish to.
-//   - msg: T. The message payload.
-//
-// Returns:
-//   - error: An error if marshaling or publishing fails.
-//
-// Summary: Executes Publish operation.
+// Summary: Publish publish.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The context for the request.
+//   - topic (string): The topic.
+//   - msg (T): The msg.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -117,29 +109,20 @@ func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 	return b.client.Publish(ctx, topic, payload).Err()
 }
 
-// Subscribe subscribes to a Redis channel.
+// Subscribe subscribe subscribe.
 //
-// It starts a goroutine that continuously receives messages from the channel
-// and invokes the provided handler.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the subscription.
-//   - topic: string. The topic (channel) to subscribe to.
-//   - handler: func(T). The callback function invoked for each message.
-//
-// Returns:
-//   - func(): A function that unsubscribes the handler when called.
-//
-// Summary: Executes Subscribe operation.
+// Summary: Subscribe subscribe.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The context for the request.
+//   - topic (string): The topic.
+//   - handler (func(T)): The handler.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - func(): The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -192,28 +175,20 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 	return unsubscribe
 }
 
-// SubscribeOnce subscribes to a topic for a single message.
+// SubscribeOnce subscribeOnce subscribe once.
 //
-// It ensures that the handler is called only once for the next message received.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the subscription.
-//   - topic: string. The topic (channel) to subscribe to.
-//   - handler: func(T). The callback function invoked for the single message.
-//
-// Returns:
-//   - func(): A function that unsubscribes the handler if called before the message is received.
-//
-// Summary: Executes SubscribeOnce operation.
+// Summary: SubscribeOnce subscribe once.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The context for the request.
+//   - topic (string): The topic.
+//   - handler (func(T)): The handler.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - func(): The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

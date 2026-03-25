@@ -8,8 +8,16 @@
 import SkillList from '@/components/skills/skill-list';
 
 /**
- * SkillsPage component.
- * @returns The rendered component.
+ * Summary: SkillsPage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function SkillsPage() {
   return <SkillList />;

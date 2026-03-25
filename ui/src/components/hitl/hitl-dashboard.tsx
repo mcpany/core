@@ -7,6 +7,18 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
+/**
+ * Summary: HitlDashboard component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 export function HitlDashboard() {
     const [approvals, setApprovals] = useState([
         { id: "1", tool: "database.drop_table", intent: "Drop users table", status: "pending" }

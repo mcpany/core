@@ -25,10 +25,17 @@ interface AddWidgetSheetProps {
 }
 
 /**
- * AddWidgetSheet component.
- * A sheet that displays a gallery of available widgets to add to the dashboard.
- * @param props - The component props.
- * @returns The rendered component.
+ * Summary: AddWidgetSheet component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.onAdd: The onAdd property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function AddWidgetSheet({ onAdd }: AddWidgetSheetProps) {
     const [open, setOpen] = useState(false);
@@ -55,6 +62,18 @@ export function AddWidgetSheet({ onAdd }: AddWidgetSheetProps) {
                 <ScrollArea className="h-[calc(100vh-8rem)] mt-6 pr-4">
                     <div className="grid grid-cols-1 gap-4">
                         {WIDGET_DEFINITIONS.map((widget) => {
+/**
+ * Summary: Icon component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
                             const Icon = widget.icon;
                             return (
                                 <Card

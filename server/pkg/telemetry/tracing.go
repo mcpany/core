@@ -29,35 +29,23 @@ const (
 	exporterNone   = "none"
 )
 
-// InitTelemetry initializes OpenTelemetry tracing and metrics. It writes traces/metrics to the provided writer (e.g., os.Stderr) if stdout exporter is selected. It returns a shutdown function that should be called when the application exits.
+// InitTelemetry initTelemetry init telemetry.
+//
+// Summary: InitTelemetry init telemetry.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - serviceName (string): The serviceName parameter.
-//   - version (string): The version parameter.
-//   - cfg (*config_v1.TelemetryConfig): The cfg parameter.
-//   - writer (io.Writer): The writer parameter.
+//   - serviceName (string): The service name.
+//   - version (string): The version.
+//   - cfg (*config_v1.TelemetryConfig): The cfg.
+//   - writer (io.Writer): The writer.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - func(context.Context) error: The result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes InitTelemetry operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

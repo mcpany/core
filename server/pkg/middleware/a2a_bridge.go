@@ -21,30 +21,18 @@ type A2ABridgeMiddleware struct {
 	contextManager *RecursiveContextManager
 }
 
-// NewA2ABridgeMiddleware creates a new A2ABridgeMiddleware.
+// NewA2ABridgeMiddleware creates a new a2 a bridge middleware.
+//
+// Summary: Creates a new a2 a bridge middleware.
 //
 // Parameters:
-//   - contextManager (*RecursiveContextManager): The manager for A2A session tokens.
+//   - contextManager (*RecursiveContextManager): The context manager.
 //
 // Returns:
-//   - *A2ABridgeMiddleware: The newly created middleware.
+//   - *A2ABridgeMiddleware: The result.
 //
 // Errors:
 //   - None.
-//
-// Side Effects:
-//   - Allocates memory for the middleware struct.
-//
-// Summary: Initializes NewA2ABridgeMiddleware operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -54,34 +42,22 @@ func NewA2ABridgeMiddleware(contextManager *RecursiveContextManager) *A2ABridgeM
 	}
 }
 
-// Execute processes the MCP request and intercepts A2A agent calls.
+// Execute executes the operation.
+//
+// Summary: Executes the operation.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - method (string): The MCP method being called.
-//   - req (mcp.Request): The incoming MCP request.
-//   - next (mcp.MethodHandler): The next handler in the middleware chain.
+//   - method (string): The method.
+//   - req (mcp.Request): The req.
+//   - next (mcp.MethodHandler): The next.
 //
 // Returns:
-//   - mcp.Result: The result of the request, either intercepted or from the next handler.
-//   - error: Any error that occurred during processing.
+//   - mcp.Result: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns errors from the next handler if the request is not intercepted.
-//
-// Side Effects:
-//   - May create a new session in the RecursiveContextManager if intercepted.
-//
-// Summary: Executes Execute operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

@@ -63,30 +63,18 @@ func (w *Worker) Start(ctx context.Context) {
 	go w.startToolExecutionWorker(ctx)
 }
 
-// Stop stops the worker and cleans up resources. Summary: Stops the worker. Side Effects: - Waits for pending jobs. - Unsubscribes from the bus.
+// Stop stop stop.
+//
+// Summary: Stop stop.
 //
 // Parameters:
-//   - None
+//   None.
 //
 // Returns:
-//   - None
+//   None.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Stop operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

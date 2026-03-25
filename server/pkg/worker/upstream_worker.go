@@ -27,25 +27,19 @@ type UpstreamWorker struct {
 	wg          sync.WaitGroup
 }
 
-// NewUpstreamWorker creates a new UpstreamWorker.
+// NewUpstreamWorker creates a new upstream worker.
+//
+// Summary: Creates a new upstream worker.
 //
 // Parameters:
-//   - bus: The event bus used for receiving requests and publishing results.
-//   - toolManager: The tool manager that will handle the actual tool execution.
+//   - bus (*bus.Provider): The bus.
+//   - toolManager (tool.ManagerInterface): The tool manager.
 //
 // Returns:
-//   - *UpstreamWorker: A new upstream worker.
-//
-// Summary: Initializes NewUpstreamWorker operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - *UpstreamWorker: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -56,23 +50,18 @@ func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *Up
 	}
 }
 
-// Start launches the worker in a new goroutine. It subscribes to tool execution
-// requests on the event bus and will continue to process them until the
-// provided context is canceled.
+// Start start start.
+//
+// Summary: Start start.
 //
 // Parameters:
-//   - ctx: The context that controls the lifecycle of the worker.
-//
-// Summary: Executes Start operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The context for the request.
 //
 // Returns:
-//   - TODO: Document returns.
+//   None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -127,30 +116,18 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 	}()
 }
 
-// Stop waits for the worker to stop.
+// Stop stop stop.
+//
+// Summary: Stop stop.
 //
 // Parameters:
-//   - None
+//   None.
 //
 // Returns:
-//   - None
+//   None.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Stop operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

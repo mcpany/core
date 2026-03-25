@@ -18,10 +18,17 @@ interface ServiceInspectorProps {
 }
 
 /**
- * ServiceInspector component.
- * @param props - The component props.
- * @param props.service - The service property.
- * @returns The rendered component.
+ * Summary: ServiceInspector component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.service: The service property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function ServiceInspector({ service }: ServiceInspectorProps) {
     const {

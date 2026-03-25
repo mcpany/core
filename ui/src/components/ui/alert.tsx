@@ -25,11 +25,18 @@ const alertVariants = cva(
 )
 
 /**
- * Alert component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.variant - The variant property.
- * @returns The rendered component.
+ * Summary: Alert component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *   - props.variant: The variant property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const Alert = React.forwardRef<
   HTMLDivElement,
@@ -45,10 +52,17 @@ const Alert = React.forwardRef<
 Alert.displayName = "Alert"
 
 /**
- * AlertTitle component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: AlertTitle component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const AlertTitle = React.forwardRef<
   HTMLParagraphElement,
@@ -63,10 +77,17 @@ const AlertTitle = React.forwardRef<
 AlertTitle.displayName = "AlertTitle"
 
 /**
- * AlertDescription component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: AlertDescription component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const AlertDescription = React.forwardRef<
   HTMLParagraphElement,

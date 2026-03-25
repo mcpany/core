@@ -23,31 +23,19 @@ type AuditHandler struct {
 	store  audit.Store
 }
 
-// NewAuditHandler creates a new AuditHandler.
+// NewAuditHandler creates a new audit handler.
+//
+// Summary: Creates a new audit handler.
 //
 // Parameters:
-//   - next (slog.Handler): The next parameter.
-//   - config (*configv1.AuditConfig): The config parameter.
+//   - next (slog.Handler): The next.
+//   - config (*configv1.AuditConfig): The config.
 //
 // Returns:
-//   - *AuditHandler: The resulting *AuditHandler.
+//   - *AuditHandler: The result.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes NewAuditHandler operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -95,31 +83,19 @@ func (h *AuditHandler) initializeStore(config *configv1.AuditConfig) {
 	h.store = store
 }
 
-// Enabled reports whether the handler handles records at the given level.
+// Enabled enabled enabled.
+//
+// Summary: Enabled enabled.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - level (slog.Level): The level parameter.
+//   - level (slog.Level): The level.
 //
 // Returns:
-//   - bool: True if successful, false otherwise.
+//   - bool: The result.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Enabled operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -127,31 +103,19 @@ func (h *AuditHandler) Enabled(ctx context.Context, level slog.Level) bool {
 	return h.next.Enabled(ctx, level)
 }
 
-// Handle handles the Record.
+// Handle handle handle.
+//
+// Summary: Handle handle.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - r (slog.Record): The r parameter.
+//   - r (slog.Record): The r.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Handle operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -165,30 +129,18 @@ func (h *AuditHandler) Handle(ctx context.Context, r slog.Record) error {
 	return h.next.Handle(ctx, r)
 }
 
-// WithAttrs returns a new generic Handler with the given attributes.
+// WithAttrs withAttrs with attrs.
+//
+// Summary: WithAttrs with attrs.
 //
 // Parameters:
-//   - attrs ([]slog.Attr): The attrs parameter.
+//   - attrs ([]slog.Attr): The attrs.
 //
 // Returns:
-//   - slog.Handler: The resulting slog.Handler.
+//   - slog.Handler: The result.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes WithAttrs operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -200,30 +152,18 @@ func (h *AuditHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	}
 }
 
-// WithGroup returns a new generic Handler with the given group.
+// WithGroup withGroup with group.
+//
+// Summary: WithGroup with group.
 //
 // Parameters:
-//   - name (string): The name parameter.
+//   - name (string): The name.
 //
 // Returns:
-//   - slog.Handler: The resulting slog.Handler.
+//   - slog.Handler: The result.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes WithGroup operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -235,31 +175,19 @@ func (h *AuditHandler) WithGroup(name string) slog.Handler {
 	}
 }
 
-// Export sends the log record to the configued sinks.
+// Export export export.
+//
+// Summary: Export export.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - r (slog.Record): The r parameter.
+//   - r (slog.Record): The r.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Export operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

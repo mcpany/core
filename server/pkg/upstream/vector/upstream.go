@@ -32,24 +32,18 @@ type Upstream struct {
 	clientFactory ClientFactory
 }
 
-// NewUpstream creates a new instance of VectorUpstream.
+// NewUpstream creates a new upstream.
+//
+// Summary: Creates a new upstream.
+//
+// Parameters:
+//   None.
 //
 // Returns:
 //   - upstream.Upstream: The result.
 //
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewUpstream operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -69,30 +63,18 @@ func defaultClientFactory(config *configv1.VectorUpstreamService) (Client, error
 	return nil, fmt.Errorf("unsupported vector database type")
 }
 
-// Shutdown implements the upstream.Upstream interface.
+// Shutdown shutdown shutdown.
+//
+// Summary: Shutdown shutdown.
 //
 // Parameters:
-//   - _ (context.Context): The parameter.
+//   - _ (context.Context): Unused parameter.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Shutdown operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -232,34 +214,20 @@ type vectorCallable struct {
 	handler func(ctx context.Context, args map[string]interface{}) (map[string]interface{}, error)
 }
 
-// Call executes the vector tool with the given arguments.
-// It accepts a context and an execution request containing arguments,
-// and returns the result of the tool execution or an error.
+// Call call call.
+//
+// Summary: Call call.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The parameter.
+//   - req (*tool.ExecutionRequest): The req.
 //
 // Returns:
 //   - any: The result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Call operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

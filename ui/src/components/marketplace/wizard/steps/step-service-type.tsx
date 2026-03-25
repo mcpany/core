@@ -12,6 +12,18 @@ import { Input } from '@/components/ui/input';
 import { apiClient, ServiceTemplate } from '@/lib/client';
 import { Loader2 } from 'lucide-react';
 
+/**
+ * Summary: MANUAL_TEMPLATE component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const MANUAL_TEMPLATE: any = {
     id: 'manual',
     name: 'Manual / Custom',
@@ -28,8 +40,16 @@ const MANUAL_TEMPLATE: any = {
 };
 
 /**
- * StepServiceType component.
- * @returns The rendered component.
+ * Summary: StepServiceType component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function StepServiceType() {
     const { state, updateConfig, updateState } = useWizard();

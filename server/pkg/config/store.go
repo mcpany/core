@@ -118,27 +118,18 @@ type yamlEngine struct {
 	ignoreEnv      bool
 }
 
-// SetSkipValidation sets whether to skip schema validation.
+// SetSkipValidation setSkipValidation set skip validation.
+//
+// Summary: SetSkipValidation set skip validation.
 //
 // Parameters:
-//   - skip (bool): The parameter.
+//   - skip (bool): The skip.
 //
 // Returns:
-//   - None.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Updates SetSkipValidation operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -146,27 +137,18 @@ func (e *yamlEngine) SetSkipValidation(skip bool) {
 	e.skipValidation = skip
 }
 
-// SetIgnoreEnv sets whether to ignore environment variables.
+// SetIgnoreEnv setIgnoreEnv set ignore env.
+//
+// Summary: SetIgnoreEnv set ignore env.
 //
 // Parameters:
-//   - ignore (bool): The parameter.
+//   - ignore (bool): The ignore.
 //
 // Returns:
-//   - None.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Updates SetIgnoreEnv operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -174,31 +156,19 @@ func (e *yamlEngine) SetIgnoreEnv(ignore bool) {
 	e.ignoreEnv = ignore
 }
 
-// Unmarshal parses a YAML byte slice into a `proto.Message`.
+// Unmarshal unmarshal unmarshal.
+//
+// Summary: Unmarshal unmarshal.
 //
 // Parameters:
-//   - b ([]byte): The parameter.
-//   - v (proto.Message): The parameter.
+//   - b ([]byte): The b.
+//   - v (proto.Message): The v.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Unmarshal operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -220,32 +190,20 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	return e.unmarshalInternal(yamlMap, v, b)
 }
 
-// UnmarshalFromMap populates the provided proto.Message from a raw map.
+// UnmarshalFromMap unmarshalFromMap unmarshal from map.
+//
+// Summary: UnmarshalFromMap unmarshal from map.
 //
 // Parameters:
-//   - yamlMap (map[string]interface{}): The parameter.
-//   - v (proto.Message): The parameter.
-//   - originalBytes ([]byte): The parameter.
+//   - yamlMap (map[string]interface{}): The yaml map.
+//   - v (proto.Message): The v.
+//   - originalBytes ([]byte): The original bytes.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes UnmarshalFromMap operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -353,31 +311,19 @@ func (e *yamlEngine) unmarshalInternal(yamlMap map[string]interface{}, v proto.M
 // textprotoEngine implements the Engine interface for textproto configuration files.
 type textprotoEngine struct{}
 
-// Unmarshal parses a textproto byte slice into a `proto.Message`.
+// Unmarshal unmarshal unmarshal.
+//
+// Summary: Unmarshal unmarshal.
 //
 // Parameters:
-//   - b ([]byte): The parameter.
-//   - v (proto.Message): The parameter.
+//   - b ([]byte): The b.
+//   - v (proto.Message): The v.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Unmarshal operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -388,31 +334,19 @@ func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
 // jsonEngine implements the Engine interface for JSON configuration files.
 type jsonEngine struct{}
 
-// Unmarshal parses a JSON byte slice into a `proto.Message`.
+// Unmarshal unmarshal unmarshal.
+//
+// Summary: Unmarshal unmarshal.
 //
 // Parameters:
-//   - b ([]byte): The parameter.
-//   - v (proto.Message): The parameter.
+//   - b ([]byte): The b.
+//   - v (proto.Message): The v.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Unmarshal operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -740,24 +674,18 @@ type FileStore struct {
 	skipValidation   bool
 }
 
-// SetSkipValidation configures whether to skip schema validation during loading.
+// SetSkipValidation setSkipValidation set skip validation.
 //
-// Returns:
-//   - None.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Updates SetSkipValidation operation.
+// Summary: SetSkipValidation set skip validation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - skip (bool): The skip.
 //
 // Returns:
-//   - TODO: Document returns.
+//   None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -765,24 +693,18 @@ func (s *FileStore) SetSkipValidation(skip bool) {
 	s.skipValidation = skip
 }
 
-// SetIgnoreMissingEnv configures whether to ignore missing environment variables during loading.
+// SetIgnoreMissingEnv setIgnoreMissingEnv set ignore missing env.
 //
-// Returns:
-//   - None.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Updates SetIgnoreMissingEnv operation.
+// Summary: SetIgnoreMissingEnv set ignore missing env.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ignore (bool): The ignore.
 //
 // Returns:
-//   - TODO: Document returns.
+//   None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -818,30 +740,18 @@ func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 	return &FileStore{fs: fs, paths: paths, skipErrors: true}
 }
 
-// HasConfigSources returns true if the store has configuration paths configured. Side Effects: - None.
+// HasConfigSources hasConfigSources has config sources.
+//
+// Summary: HasConfigSources has config sources.
 //
 // Parameters:
-//   - None
+//   None.
 //
 // Returns:
-//   - bool: True if successful, false otherwise.
+//   - bool: The result.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Checks HasConfigSources operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -1459,30 +1369,18 @@ func collectFieldNames(md protoreflect.MessageDescriptor, candidates map[string]
 	}
 }
 
-// HasConfigSources returns true if any of the underlying stores have configuration sources. Side Effects: - None.
+// HasConfigSources hasConfigSources has config sources.
+//
+// Summary: HasConfigSources has config sources.
 //
 // Parameters:
-//   - None
+//   None.
 //
 // Returns:
-//   - bool: True if successful, false otherwise.
+//   - bool: The result.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Checks HasConfigSources operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

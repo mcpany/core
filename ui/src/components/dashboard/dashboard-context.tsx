@@ -14,6 +14,18 @@ interface DashboardContextType {
   setTimeRange: (range: string) => void;
 }
 
+/**
+ * Summary: DashboardContext component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
 
 /**

@@ -12,8 +12,16 @@ import { UpstreamServiceConfig } from "@/lib/types";
 import { useServiceSiblings, useToolSiblings } from "@/hooks/use-siblings";
 
 /**
- * ToolDetailPage component.
- * @returns The rendered component.
+ * Summary: ToolDetailPage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function ToolDetailPage() {
     const { id = "", name = "" } = useParams<{ id: string; name: string }>();

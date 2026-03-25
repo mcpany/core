@@ -6,8 +6,16 @@
 import { PromptWorkbench } from "@/components/prompts/prompt-workbench";
 
 /**
- * PromptsPage component.
- * @returns The rendered component.
+ * Summary: PromptsPage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function PromptsPage() {
   return (

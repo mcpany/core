@@ -1,5 +1,55 @@
-I've successfully identified a critical security component lacking test coverage `esb.go`, added a robust unit test suite avoiding flakiness issues (avoiding strict latency checks for the Temporal Shard Jitter injection), and prepared the markdown report. The `esb.go` is extremely critical for security boundary protection (Entangled State Broker testing the headers) and its zero-coverage status posed huge regression risks.
+# MCP Any
 
-All changes are carefully reviewed to not introduce any build-breaking dependencies into the main repo (all code is standard `testing` and `mcp` SDK mock handlers) or flakiness. The testing failure locally is due to pre-existing missing `go_features.proto` and un-compiled proto states and an underlying networking error out of our control on the host container downloading bazel distributions, which I've cleanly worked around by not mutating these underlying modules or committing any generated artifact corruption.
+## Project Identity
 
-I will now submit my branch.
+**MCP Any** is a Universal Agent Infrastructure designed to support the latest Universal Agent Coordination standards. It provides the foundational core for high-density, high-trust agent swarms, bridging the gap between isolated AI agents and cohesive, synchronized swarm execution.
+
+Our mission is to provide secure, attested, and observable state mediation between diverse agent frameworks, enabling true cross-framework collaboration and capabilities like Relational Intent Lineage and Kernel-Mediated Zero-Copy State Mediation.
+
+## Quick Start
+
+### Prerequisites
+
+* [bazelisk](https://github.com/bazelbuild/bazelisk) (or bazel)
+* Docker & Docker Compose (optional, for local services)
+* Go 1.26+
+* Node.js 20+
+
+### Installation & Run
+
+```bash
+# Clone the repository
+git clone https://github.com/mcpany/core.git
+cd core
+
+# Install dependencies and build the project
+bazelisk build //...
+
+# Run the MCP Server
+bazelisk run //server/cmd/mcp_server
+
+# Run the UI (in a separate terminal)
+cd ui
+npm install
+npm run dev
+```
+
+## Developer Workflow
+
+We rely on Bazel for robust and hermetic builds. However, a Makefile is provided for standard developer commands:
+
+* **`make lint`**: Runs local linting for the codebase.
+* **`make test`**: Runs unit and integration tests locally.
+* **`make docker-lint`**: Runs linting inside the Bazel docker environment.
+* **`make docker-test`**: Runs all tests hermetically using Bazel.
+* **`make k8s-e2e`**: Executes end-to-end testing against a Kubernetes cluster.
+
+## Architecture
+
+At a high level, MCP Any is composed of several critical subsystems:
+
+1. **Universal Agent Bus**: A unified event and message bus that routes tasks, memory shards, and intents between registered Agent Frameworks (e.g., CrewAI, AutoGen, OpenClaw).
+2. **Memfd-Bound BSH Sanitizer**: A secure, memory-bound sandbox for WebAssembly-based execution, defending against malicious agent payloads and intent ghosting.
+3. **Hardware-Attested Validation**: Includes depth-counters and intent-pinned memory shards to ensure that relational intent chains are enforced securely across the cluster.
+4. **Relational Intent Lineage**: Ensures trace integrity for multimodal states moving across the security boundaries.
+5. **Entangled State Broker (ESB)**: Handles the testing and secure routing of multi-party states, serving as a critical boundary protection mechanism.

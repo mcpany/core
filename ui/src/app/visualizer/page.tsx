@@ -6,8 +6,16 @@
 import { AgentFlow } from "@/components/visualizer/agent-flow";
 
 /**
- * VisualizerPage is the main page for the Agent Flow visualizer.
- * @returns The VisualizerPage component.
+ * Summary: VisualizerPage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function VisualizerPage() {
   return (

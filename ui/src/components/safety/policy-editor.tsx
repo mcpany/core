@@ -29,6 +29,20 @@ interface PolicyEditorProps {
     onUpdate: (policies: CallPolicy[]) => void;
 }
 
+/**
+ * Summary: ACTION_LABELS component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.policies: The policies property.
+ *   - props.onUpdate: The onUpdate property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const ACTION_LABELS: Record<number, string> = {
     [CallPolicy_Action.ALLOW]: "Allow",
     [CallPolicy_Action.DENY]: "Deny",
@@ -36,6 +50,20 @@ const ACTION_LABELS: Record<number, string> = {
     [CallPolicy_Action.DELETE_CACHE]: "Delete Cache",
 };
 
+/**
+ * Summary: ACTION_COLORS component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.policies: The policies property.
+ *   - props.onUpdate: The onUpdate property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const ACTION_COLORS: Record<number, "default" | "destructive" | "secondary" | "outline"> = {
     [CallPolicy_Action.ALLOW]: "default", // Green-ish usually, but default works
     [CallPolicy_Action.DENY]: "destructive",

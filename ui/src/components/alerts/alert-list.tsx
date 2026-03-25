@@ -41,8 +41,16 @@ import { useToast } from "@/hooks/use-toast";
 import { apiClient } from "@/lib/client";
 
 /**
- * AlertList component.
- * @returns The rendered component.
+ * Summary: AlertList component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function AlertList() {
   const [alerts, setAlerts] = useState<Alert[]>([]);

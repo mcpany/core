@@ -30,24 +30,18 @@ type Upstream struct {
 	mu sync.Mutex
 }
 
-// NewUpstream creates a new SQL upstream.
+// NewUpstream creates a new upstream.
+//
+// Summary: Creates a new upstream.
+//
+// Parameters:
+//   None.
 //
 // Returns:
 //   - *Upstream: The result.
 //
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewUpstream operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -55,30 +49,18 @@ func NewUpstream() *Upstream {
 	return &Upstream{}
 }
 
-// Shutdown closes the database connection.
+// Shutdown shutdown shutdown.
+//
+// Summary: Shutdown shutdown.
 //
 // Parameters:
-//   - _ (context.Context): The parameter.
+//   - _ (context.Context): Unused parameter.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Shutdown operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

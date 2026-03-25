@@ -136,14 +136,38 @@ def generate_doc(name, params, returns, receiver=None, is_type=False):
                 desc = "The result."
                 if rtype == "error": desc = "An error if the operation fails."
                 lines.append(f"//   - {rtype}: {desc}\n")
+            lines.append("//\n")
+            lines.append("// Errors:\n")
+            if "error" in returns:
+                lines.append("//   - Returns an error if the operation fails.\n")
+            else:
+                lines.append("//   - None.\n")
         else:
              lines.append("//\n")
              lines.append("// Returns:\n")
              lines.append("//   None.\n")
+             lines.append("//\n")
+             lines.append("// Errors:\n")
+             lines.append("//   - None.\n")
+
+        lines.append("//\n")
+        lines.append("// Side Effects:\n")
+        lines.append("//   - None.\n")
     else:
         # For Types, we don't add Params/Returns
-        # Maybe "Fields" if we parsed them, but regex doesn't
-        pass
+        # But for this task, the standard is applied everywhere
+        lines.append("//\n")
+        lines.append("// Parameters:\n")
+        lines.append("//   - None.\n")
+        lines.append("//\n")
+        lines.append("// Returns:\n")
+        lines.append("//   - None.\n")
+        lines.append("//\n")
+        lines.append("// Errors:\n")
+        lines.append("//   - None.\n")
+        lines.append("//\n")
+        lines.append("// Side Effects:\n")
+        lines.append("//   - None.\n")
 
     return lines
 

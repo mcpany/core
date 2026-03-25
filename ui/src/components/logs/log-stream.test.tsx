@@ -11,7 +11,33 @@ import { vi } from "vitest";
 // Mock log-viewer module to avoid next/dynamic issues with Virtuoso in tests
 vi.mock("./log-viewer", () => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
+/**
+ * Summary: React component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
   const React = require('react');
+/**
+ * Summary: HighlightText component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.text: The text property.
+ *   - props.regex: The regex property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
   const HighlightText = ({ text, regex }: { text: string; regex: RegExp | null }) => {
     if (!regex || !text) return React.createElement(React.Fragment, null, text);
     const parts = text.split(regex);
@@ -32,6 +58,20 @@ vi.mock("./log-viewer", () => {
            (trimmed.startsWith('[') && trimmed.endsWith(']'));
   };
 
+/**
+ * Summary: LogRowComponent component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.log: The log property.
+ *   - props.highlightRegex: The highlightRegex property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
   const LogRowComponent = ({ log, highlightRegex }: any) => {
     const [isExpanded, setIsExpanded] = React.useState(false);
     const isPotentialJson = isLikelyJson(log.message);

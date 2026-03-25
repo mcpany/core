@@ -106,9 +106,16 @@ function layoutGraph(graph: any): SwarmTopologyData {
 }
 
 /**
- * SwarmTopologyWidget component displays a visual representation of the swarm network of agents.
+ * Summary: SwarmTopologyWidget component.
  *
- * @returns The rendered component.
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function SwarmTopologyWidget() {
     const [data, setData] = useState<SwarmTopologyData | null>(null);
@@ -225,6 +232,18 @@ export function SwarmTopologyWidget() {
                 {/* Nodes Layer (HTML for easier interaction/styling) */}
                 <div className="absolute inset-0">
                     {data.nodes.map((node) => {
+/**
+ * Summary: Icon component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
                         const Icon = node.type === 'core' ? Shield : node.type === 'client' ? Cpu : Zap;
                         const isBlocked = node.status === 'error';
 

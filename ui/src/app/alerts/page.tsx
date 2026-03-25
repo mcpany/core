@@ -11,8 +11,16 @@ import { CreateRuleDialog } from "@/components/alerts/create-rule-dialog";
 import { WebhookDialog } from "@/components/alerts/webhook-dialog";
 
 /**
- * AlertsPage component.
- * @returns The rendered component.
+ * Summary: AlertsPage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function AlertsPage() {
   return (

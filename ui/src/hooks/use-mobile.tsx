@@ -5,6 +5,18 @@
 
 import * as React from "react"
 
+/**
+ * Summary: MOBILE_BREAKPOINT component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const MOBILE_BREAKPOINT = 768
 
 /**

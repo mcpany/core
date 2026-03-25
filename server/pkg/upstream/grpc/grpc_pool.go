@@ -31,24 +31,18 @@ type poolWithChecker[T pool.ClosableClient] struct {
 	checker health.Checker
 }
 
-// Close stops the health checker and closes the underlying pool.
+// Close close close.
+//
+// Summary: Close close.
+//
+// Parameters:
+//   None.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
-// Side Effects:
-//   - Stops the health checker.
-//
-// Summary: Executes Close operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

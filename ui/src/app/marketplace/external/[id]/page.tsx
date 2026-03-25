@@ -19,10 +19,16 @@ import { ArrowLeft, Download, Terminal } from "lucide-react";
 import { Link } from 'react-router-dom';
 
 /**
- * ExternalMarketplacePage component.
- * @param props - The component props.
- * @param props.params - The params property.
- * @returns The rendered component.
+ * Summary: ExternalMarketplacePage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function ExternalMarketplacePage() {
 

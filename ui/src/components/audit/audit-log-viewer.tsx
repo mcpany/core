@@ -43,10 +43,16 @@ interface AuditLogEntry {
 }
 
 /**
- * AuditLogViewer component.
- * Displays a table of audit logs with filtering capabilities and detailed view.
+ * Summary: AuditLogViewer component.
  *
- * @returns The rendered AuditLogViewer component.
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function AuditLogViewer() {
     SyntaxHighlighter.registerLanguage('json', json);

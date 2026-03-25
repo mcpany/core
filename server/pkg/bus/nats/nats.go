@@ -91,28 +91,20 @@ func (b *Bus[T]) Close() {
 	}
 }
 
-// Publish sends a message to a NATS topic.
+// Publish publish publish.
 //
-// The message is marshaled to JSON before being published.
-//
-// Parameters:
-//   - _: context.Context. The context (unused in NATS publish).
-//   - topic: string. The topic to publish to.
-//   - msg: T. The message payload.
-//
-// Returns:
-//   - error: An error if marshaling or publishing fails.
-//
-// Summary: Executes Publish operation.
+// Summary: Publish publish.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): Unused parameter.
+//   - topic (string): The topic.
+//   - msg (T): The msg.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -124,28 +116,20 @@ func (b *Bus[T]) Publish(_ context.Context, topic string, msg T) error {
 	return b.nc.Publish(topic, data)
 }
 
-// Subscribe registers a handler for a NATS topic.
+// Subscribe subscribe subscribe.
 //
-// The handler will be invoked for each message received on the topic.
-//
-// Parameters:
-//   - _: context.Context. The context (unused in NATS subscribe).
-//   - topic: string. The topic to subscribe to.
-//   - handler: func(T). The callback function invoked for each message.
-//
-// Returns:
-//   - func(): A function that unsubscribes the handler when called.
-//
-// Summary: Executes Subscribe operation.
+// Summary: Subscribe subscribe.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): Unused parameter.
+//   - topic (string): The topic.
+//   - handler (func(T)): The handler.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - func(): The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -161,29 +145,20 @@ func (b *Bus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (un
 	}
 }
 
-// SubscribeOnce registers a one-time handler for a NATS topic.
+// SubscribeOnce subscribeOnce subscribe once.
 //
-// The handler will be invoked only once for the next message received on the topic.
-// The subscription is automatically removed after one message.
-//
-// Parameters:
-//   - _: context.Context. The context (unused in NATS subscribe).
-//   - topic: string. The topic to subscribe to.
-//   - handler: func(T). The callback function invoked for the single message.
-//
-// Returns:
-//   - func(): A function that unsubscribes the handler if called before the message is received.
-//
-// Summary: Executes SubscribeOnce operation.
+// Summary: SubscribeOnce subscribe once.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): Unused parameter.
+//   - topic (string): The topic.
+//   - handler (func(T)): The handler.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - func(): The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

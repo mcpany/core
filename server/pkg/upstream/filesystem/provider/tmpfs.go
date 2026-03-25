@@ -16,24 +16,18 @@ type TmpfsProvider struct {
 	fs afero.Fs
 }
 
-// NewTmpfsProvider creates a new TmpfsProvider.
+// NewTmpfsProvider creates a new tmpfs provider.
+//
+// Summary: Creates a new tmpfs provider.
+//
+// Parameters:
+//   None.
 //
 // Returns:
 //   - *TmpfsProvider: The result.
 //
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewTmpfsProvider operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -43,24 +37,18 @@ func NewTmpfsProvider() *TmpfsProvider {
 	}
 }
 
-// GetFs returns the underlying filesystem.
+// GetFs retrieves the fs.
+//
+// Summary: Retrieves the fs.
+//
+// Parameters:
+//   None.
 //
 // Returns:
 //   - afero.Fs: The result.
 //
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves GetFs operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -68,31 +56,19 @@ func (p *TmpfsProvider) GetFs() afero.Fs {
 	return p.fs
 }
 
-// ResolvePath resolves the virtual path to a real path.
+// ResolvePath resolvePath resolve path.
+//
+// Summary: ResolvePath resolve path.
 //
 // Parameters:
-//   - virtualPath (string): The parameter.
+//   - virtualPath (string): The virtual path.
 //
 // Returns:
 //   - string: The result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes ResolvePath operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -101,27 +77,18 @@ func (p *TmpfsProvider) ResolvePath(virtualPath string) (string, error) {
 	return filepath.Clean(virtualPath), nil
 }
 
-// Close closes the provider.
+// Close close close.
+//
+// Summary: Close close.
+//
+// Parameters:
+//   None.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Close operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

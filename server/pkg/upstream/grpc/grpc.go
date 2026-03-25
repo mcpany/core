@@ -51,27 +51,18 @@ type Upstream struct {
 	mu              sync.RWMutex
 }
 
-// CheckHealth performs a health check on the upstream service.
+// CheckHealth checkHealth check health.
+//
+// Summary: CheckHealth check health.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the health check.
+//   - ctx (context.Context): The context for the request.
 //
 // Returns:
-//   - error: An error if the service is unhealthy.
-//
-// Side Effects:
-//   - Performs a health check RPC.
-//
-// Summary: Executes CheckHealth operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -90,27 +81,18 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 	return nil
 }
 
-// NewUpstream creates a new instance of Upstream.
+// NewUpstream creates a new upstream.
+//
+// Summary: Creates a new upstream.
 //
 // Parameters:
-//   - poolManager (*pool.Manager): The connection pool manager to be used for managing gRPC connections.
+//   - poolManager (*pool.Manager): The pool manager.
 //
 // Returns:
-//   - upstream.Upstream: An implementation of the upstream.Upstream interface.
-//
-// Side Effects:
-//   - Starts a background cache cleaner.
-//
-// Summary: Initializes NewUpstream operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - upstream.Upstream: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -126,30 +108,18 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	}
 }
 
-// Shutdown gracefully terminates the gRPC upstream service by shutting down the
-// associated connection pool.
+// Shutdown shutdown shutdown.
+//
+// Summary: Shutdown shutdown.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the shutdown operation (currently unused).
+//   - _ (context.Context): Unused parameter.
 //
 // Returns:
-//   - error: Always returns nil.
-//
-// Side Effects:
-//   - Stops the health checker.
-//   - Stops the reflection cache.
-//   - Deregisters the connection pool.
-//
-// Summary: Executes Shutdown operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

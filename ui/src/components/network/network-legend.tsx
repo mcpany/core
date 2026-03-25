@@ -25,13 +25,20 @@ interface LegendItemProps {
 }
 
 /**
- * LegendItem component.
- * @param props - The component props.
- * @param props.icon - The icon property.
- * @param props.label - The label property.
- * @param props.description - The description property.
- * @param props.color - The color property.
- * @returns The rendered component.
+ * Summary: LegendItem component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.icon: The icon property.
+ *   - props.label: The label property.
+ *   - props.description: The description property.
+ *   - props.color: The color property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const LegendItem = ({ icon, label, description, color }: LegendItemProps) => (
     <div className="flex items-start gap-3 p-2 rounded-md hover:bg-muted/50 transition-colors">
@@ -46,10 +53,16 @@ const LegendItem = ({ icon, label, description, color }: LegendItemProps) => (
 );
 
 /**
- * NetworkLegend component.
- * Displays a legend for the network topology graph, explaining node types and status indicators.
+ * Summary: NetworkLegend component.
  *
- * @returns The rendered NetworkLegend component.
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function NetworkLegend() {
     return (

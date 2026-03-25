@@ -18,11 +18,18 @@ interface ServiceConfigDiffProps {
 }
 
 /**
- * ServiceConfigDiff component.
- * @param props - The component props.
- * @param props.original - The original property.
- * @param props.modified - The modified property.
- * @returns The rendered component.
+ * Summary: ServiceConfigDiff component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.original: The original property.
+ *   - props.modified: The modified property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function ServiceConfigDiff({ original, modified }: ServiceConfigDiffProps) {
   const { theme, systemTheme } = useTheme();

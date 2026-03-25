@@ -17,9 +17,16 @@ interface HealthPoint {
 }
 
 /**
- * HealthHistoryChart component.
- * Displays server uptime history over the last 24 hours.
- * @returns The rendered component.
+ * Summary: HealthHistoryChart component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function HealthHistoryChart() {
     const [data, setData] = useState<HealthPoint[]>([]);
@@ -90,6 +97,18 @@ export function HealthHistoryChart() {
         fetchData();
     }, []);
 
+/**
+ * Summary: STATUS_COLORS component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
     const STATUS_COLORS: Record<string, string> = {
         healthy: "hsl(var(--chart-2))",
         ok: "hsl(var(--chart-2))",

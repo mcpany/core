@@ -45,6 +45,18 @@ interface UserContextType {
   refresh: () => Promise<void>;
 }
 
+/**
+ * Summary: UserContext component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 /**

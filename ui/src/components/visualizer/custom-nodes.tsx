@@ -9,6 +9,21 @@ import { User, Cpu, Terminal, Database, Globe } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 
+/**
+ * Summary: NodeWrapper component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.children: The child components.
+ *   - props.className: The name of the class.
+ *   - props.selected: The selected property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const NodeWrapper = ({ children, className, selected }: { children: React.ReactNode, className?: string, selected?: boolean }) => (
   <div className={cn(
     "px-4 py-2 shadow-md rounded-md bg-background border-2 min-w-[150px]",

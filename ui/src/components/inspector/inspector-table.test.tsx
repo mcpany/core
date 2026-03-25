@@ -17,6 +17,18 @@ vi.mock('@/components/traces/trace-detail', () => ({
 vi.mock('react-virtuoso', () => ({
   TableVirtuoso: (props: any) => {
     const { data, itemContent, components, context } = props;
+/**
+ * Summary: TableRow component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
     const TableRow = components?.TableRow || 'tr';
     return (
       <table>

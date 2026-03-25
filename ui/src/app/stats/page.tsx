@@ -6,8 +6,16 @@
 import { AnalyticsDashboard } from "@/components/stats/analytics-dashboard";
 
 /**
- * StatsPage component.
- * @returns The rendered component.
+ * Summary: StatsPage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function StatsPage() {
   return (

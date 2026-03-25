@@ -23,8 +23,16 @@ import { useToast } from "@/hooks/use-toast";
 import { useState, useMemo } from "react";
 
 /**
- * InspectorPage component.
- * @returns The rendered component.
+ * Summary: InspectorPage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function InspectorPage() {
   const {

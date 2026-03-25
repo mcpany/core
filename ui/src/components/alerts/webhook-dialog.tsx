@@ -23,8 +23,16 @@ import { useToast } from "@/hooks/use-toast";
 import { apiClient } from "@/lib/client";
 
 /**
- * WebhookDialog component.
- * @returns The rendered component.
+ * Summary: WebhookDialog component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function WebhookDialog() {
   const [open, setOpen] = useState(false);

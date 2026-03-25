@@ -18,8 +18,16 @@ const formatUptime = (seconds: number) => {
 }
 
 /**
- * SystemHealthCard component.
- * @returns The rendered component.
+ * Summary: SystemHealthCard component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export const SystemHealthCard = memo(function SystemHealthCard() {
   const [status, setStatus] = useState<SystemStatus | null>(null)

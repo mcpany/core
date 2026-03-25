@@ -10,8 +10,16 @@ import { GlobalSettingsForm } from "@/components/settings/global-settings-form";
 import { AuthSettingsForm } from "@/components/settings/auth-settings";
 
 /**
- * SettingsPage component.
- * @returns The rendered component.
+ * Summary: SettingsPage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function SettingsPage() {
   return (

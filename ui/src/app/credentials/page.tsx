@@ -7,8 +7,16 @@ import { CredentialList } from "@/components/credentials/credential-list"
 import { Separator } from "@/components/ui/separator"
 
 /**
- * CredentialsPage component.
- * @returns The rendered component.
+ * Summary: CredentialsPage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function CredentialsPage() {
   return (

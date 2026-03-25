@@ -3,6 +3,18 @@ import { ChatMessage } from './chat-message';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 // Create a functional mock component to avoid hook issues
+/**
+ * Summary: MockDiffEditor component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const MockDiffEditor = (props: any) => {
   return (
     <div data-testid="diff-editor">

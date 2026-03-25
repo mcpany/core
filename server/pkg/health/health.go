@@ -39,30 +39,18 @@ var (
 	globalAlertConfigMu sync.RWMutex
 )
 
-// SetGlobalAlertConfig sets the global alert configuration.
+// SetGlobalAlertConfig setGlobalAlertConfig set global alert config.
 //
-// It updates the thread-safe global configuration used for sending alerts on health status changes.
-//
-// Parameters:
-//   - cfg: *configv1.AlertConfig. The new alert configuration.
-//
-// Returns:
-//
-//	None.
-//
-// Side Effects:
-//   - Updates a global variable protected by a mutex.
-//
-// Summary: Updates SetGlobalAlertConfig operation.
+// Summary: SetGlobalAlertConfig set global alert config.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - cfg (*configv1.AlertConfig): The cfg.
 //
 // Returns:
-//   - TODO: Document returns.
+//   None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -88,30 +76,18 @@ type HTTPServiceWithHealthCheck interface {
 	GetHealthCheck() *configv1.HttpHealthCheck
 }
 
-// NewChecker creates a new health checker for the given upstream service.
+// NewChecker creates a new checker.
 //
-// It determines the type of service (HTTP, gRPC, etc.) and creates an appropriate
-// health check strategy wrapped with latency metrics and status change listeners.
-//
-// Parameters:
-//   - uc: *configv1.UpstreamServiceConfig. The configuration of the upstream service to check.
-//
-// Returns:
-//   - health.Checker: A configured health checker instance. Returns nil if the configuration is nil or invalid.
-//
-// Side Effects:
-//   - Registers metrics for the health check.
-//
-// Summary: Initializes NewChecker operation.
+// Summary: Creates a new checker.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - uc (*configv1.UpstreamServiceConfig): The uc.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - health.Checker: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

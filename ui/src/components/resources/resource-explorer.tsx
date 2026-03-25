@@ -62,7 +62,39 @@ const getIcon = (mimeType?: string) => {
 // ⚡ BOLT: [Render Optimization] Extract Resource List/Grid items into React.memo components.
 // Randomized Selection from Top 5 High-Impact Targets (React/View - Render waste).
 // This prevents re-rendering hundreds of unchanged resource rows every time selectedUri changes.
+/**
+ * Summary: MemoizedResourceListItem component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.res: The res property.
+ *   - props.isSelected: The isSelected property.
+ *   - props.onSelect: The onSelect property.
+ *   - props.onDragStart: The onDragStart property.
+ *   - props.onPreview: The onPreview property.
+ *   - props.onCopyUri: The onCopyUri property.
+ *   - props.onCopyName: The name of the onCopy.
+ *   - props.onDownload: The onDownload property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const MemoizedResourceListItem = React.memo(({ res, isSelected, onSelect, onDragStart, onPreview, onCopyUri, onCopyName, onDownload }: any) => {
+/**
+ * Summary: Icon component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
     const Icon = getIcon(res.mimeType);
     return (
         <ContextMenu>
@@ -108,7 +140,38 @@ const MemoizedResourceListItem = React.memo(({ res, isSelected, onSelect, onDrag
 });
 MemoizedResourceListItem.displayName = "MemoizedResourceListItem";
 
+/**
+ * Summary: MemoizedResourceGridItem component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.res: The res property.
+ *   - props.isSelected: The isSelected property.
+ *   - props.onSelect: The onSelect property.
+ *   - props.onPreview: The onPreview property.
+ *   - props.onCopyUri: The onCopyUri property.
+ *   - props.onCopyName: The name of the onCopy.
+ *   - props.onDownload: The onDownload property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const MemoizedResourceGridItem = React.memo(({ res, isSelected, onSelect, onPreview, onCopyUri, onCopyName, onDownload }: any) => {
+/**
+ * Summary: Icon component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
     const Icon = getIcon(res.mimeType);
     return (
         <ContextMenu>

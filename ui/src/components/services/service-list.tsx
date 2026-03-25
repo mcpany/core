@@ -242,18 +242,26 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
 }
 
 /**
- * ServiceRow component.
- * @param props - The component props.
- * @param props.service - The service property.
- * @param props.isSelected - The isSelected property.
- * @param props.onSelect - The onSelect property.
- * @param props.onToggle - The onToggle property.
- * @param props.onEdit - The onEdit property.
- * @param props.onDelete - The onDelete property.
- * @param props.onDuplicate - The onDuplicate property.
- * @param props.onExport - The onExport property.
- * @param props.onLogin - The onLogin property.
- * @returns The rendered component.
+ * Summary: ServiceRow component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.service: The service property.
+ *   - props.isSelected: The isSelected property.
+ *   - props.onSelect: The onSelect property.
+ *   - props.onToggle: The onToggle property.
+ *   - props.onEdit: The onEdit property.
+ *   - props.onDelete: The onDelete property.
+ *   - props.onDuplicate: The onDuplicate property.
+ *   - props.onExport: The onExport property.
+ *   - props.onLogin: The onLogin property.
+ *   - props.onRestart: The onRestart property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onToggle, onEdit, onDelete, onDuplicate, onExport, onLogin, onRestart }: {
     service: UpstreamServiceConfig,

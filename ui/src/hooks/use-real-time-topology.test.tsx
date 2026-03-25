@@ -17,6 +17,18 @@ vi.mock("@/lib/client", () => ({
 
 // Mock dagre to avoid complex graph logic
 vi.mock("dagre", () => {
+/**
+ * Summary: Graph component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
     const Graph = vi.fn();
     Graph.prototype.setGraph = vi.fn();
     Graph.prototype.setDefaultEdgeLabel = vi.fn();

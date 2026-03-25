@@ -5,6 +5,18 @@
 
 import { lazy, Suspense } from "react";
 
+/**
+ * Summary: ChartSkeleton component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const ChartSkeleton = () => (
   <div className="col-span-3 rounded-lg border bg-card text-card-foreground shadow-sm h-full backdrop-blur-sm bg-background/50">
       <div className="p-6 flex flex-col space-y-1.5">

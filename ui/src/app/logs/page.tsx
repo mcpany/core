@@ -9,8 +9,16 @@ import { Loader2 } from "lucide-react"
 import { LogStream } from "@/components/logs/log-stream"
 
 /**
- * LogsPage component.
- * @returns The rendered component.
+ * Summary: LogsPage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function LogsPage() {
   return (

@@ -25,32 +25,20 @@ type HTTPClientWrapper struct {
 	checker health.Checker
 }
 
-// NewHTTPClientWrapper creates a new HTTPClientWrapper. It accepts a shared health checker to avoid creating a new one for every client.
+// NewHTTPClientWrapper creates a new http client wrapper.
+//
+// Summary: Creates a new http client wrapper.
 //
 // Parameters:
-//   - client (*http.Client): The client parameter.
-//   - config (*configv1.UpstreamServiceConfig): The config parameter.
-//   - checker (health.Checker): The checker parameter.
+//   - client (*http.Client): The client.
+//   - config (*configv1.UpstreamServiceConfig): The config.
+//   - checker (health.Checker): The checker.
 //
 // Returns:
-//   - *HTTPClientWrapper: The resulting *HTTPClientWrapper.
+//   - *HTTPClientWrapper: The result.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes NewHTTPClientWrapper operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -66,30 +54,18 @@ func NewHTTPClientWrapper(client *http.Client, config *configv1.UpstreamServiceC
 	}
 }
 
-// IsHealthy checks the health of the upstream service by making a request to the configured health check endpoint. ctx is the context for the request. Returns true if successful.
+// IsHealthy isHealthy is healthy.
+//
+// Summary: IsHealthy is healthy.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //
 // Returns:
-//   - bool: True if successful, false otherwise.
+//   - bool: The result.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Checks IsHealthy operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -100,30 +76,18 @@ func (w *HTTPClientWrapper) IsHealthy(ctx context.Context) bool {
 	return w.checker.Check(ctx).Status == health.StatusUp
 }
 
-// Close is a no-op for the wrapper as it does not own the http.Client. The owner of the http.Client (e.g., the pool manager) is responsible for closing idle connections on the shared Transport when the service is shut down. Previously, this called CloseIdleConnections on the shared transport, which would negatively impact other concurrent requests sharing the same Transport.
+// Close close close.
+//
+// Summary: Close close.
 //
 // Parameters:
-//   - None
+//   None.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Close operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

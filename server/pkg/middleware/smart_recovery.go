@@ -27,31 +27,19 @@ type SmartRecoveryMiddleware struct {
 	mu          sync.RWMutex
 }
 
-// NewSmartRecoveryMiddleware creates a new SmartRecoveryMiddleware.
+// NewSmartRecoveryMiddleware creates a new smart recovery middleware.
+//
+// Summary: Creates a new smart recovery middleware.
 //
 // Parameters:
-//   - config (*configv1.SmartRecoveryConfig): The config parameter.
-//   - toolManager (tool.ManagerInterface): The toolManager parameter.
+//   - config (*configv1.SmartRecoveryConfig): The config.
+//   - toolManager (tool.ManagerInterface): The tool manager.
 //
 // Returns:
-//   - *SmartRecoveryMiddleware: The resulting *SmartRecoveryMiddleware.
+//   - *SmartRecoveryMiddleware: The result.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes NewSmartRecoveryMiddleware operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -62,33 +50,21 @@ func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManage
 	}
 }
 
-// Execute executes the middleware logic.
+// Execute executes the operation.
+//
+// Summary: Executes the operation.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The request object.
-//   - next (tool.ExecutionFunc): The next parameter.
+//   - req (*tool.ExecutionRequest): The req.
+//   - next (tool.ExecutionFunc): The next.
 //
 // Returns:
-//   - any: The resulting any.
+//   - any: The result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Execute operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

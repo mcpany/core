@@ -174,6 +174,18 @@ describe("ConnectionDiagnosticDialog", () => {
     it("detects WebSocket service and adds browser check step", async () => {
         // We try to mock WebSocket just to prevent errors, but we won't assert on it heavily
         // since JSDOM mocking is flaky.
+/**
+ * Summary: MockWebSocket component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
         const MockWebSocket = vi.fn().mockImplementation(() => {
             return {
                 close: vi.fn(),

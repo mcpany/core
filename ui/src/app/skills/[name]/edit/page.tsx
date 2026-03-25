@@ -8,8 +8,16 @@
 import SkillWizard from '@/components/skills/skill-wizard';
 
 /**
- * EditSkillPage component.
- * @returns The rendered component.
+ * Summary: EditSkillPage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function EditSkillPage() {
   return <SkillWizard />;

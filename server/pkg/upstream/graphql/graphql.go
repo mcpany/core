@@ -93,24 +93,18 @@ const introspectionQuery = `
 // Summary: Represents a Upstream.
 type Upstream struct{}
 
-// NewGraphQLUpstream creates a new GraphQL upstream.
+// NewGraphQLUpstream creates a new graph ql upstream.
+//
+// Summary: Creates a new graph ql upstream.
+//
+// Parameters:
+//   None.
 //
 // Returns:
 //   - upstream.Upstream: The result.
 //
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewGraphQLUpstream operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -118,30 +112,18 @@ func NewGraphQLUpstream() upstream.Upstream {
 	return &Upstream{}
 }
 
-// Shutdown shuts down the upstream.
+// Shutdown shutdown shutdown.
+//
+// Summary: Shutdown shutdown.
 //
 // Parameters:
-//   - _ (context.Context): The parameter.
+//   - _ (context.Context): Unused parameter.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Shutdown operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -236,32 +218,20 @@ type Callable struct {
 	address       string
 }
 
-// Call executes the GraphQL query.
+// Call call call.
+//
+// Summary: Call call.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The parameter.
+//   - req (*tool.ExecutionRequest): The req.
 //
 // Returns:
 //   - any: The result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Call operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

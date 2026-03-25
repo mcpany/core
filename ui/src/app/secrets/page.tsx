@@ -6,8 +6,16 @@
 import { SecretsManager } from "@/components/settings/secrets-manager";
 
 /**
- * SecretsPage component.
- * @returns The rendered component.
+ * Summary: SecretsPage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function SecretsPage() {
   return (

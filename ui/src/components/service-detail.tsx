@@ -32,14 +32,21 @@ import { CallPolicy } from "@proto/config/v1/upstream_service";
 import { LogStream } from "@/components/logs/log-stream";
 
 /**
- * DefinitionsTable component.
- * @param props - The component props.
- * @param props.title - The title.
- * @param props.data - The data to display.
- * @param props.icon - The icon property.
- * @param props.serviceId - The unique identifier for service.
- * @param props.linkPath - The linkPath property.
- * @returns The rendered component.
+ * Summary: DefinitionsTable component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.title: The title.
+ *   - props.data: The data to display.
+ *   - props.icon: The icon property.
+ *   - props.serviceId: The unique identifier for service.
+ *   - props.linkPath: The linkPath property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 function DefinitionsTable<T extends { name: string; description?: string; type?: string; source?: string; }>({ title, data, icon, serviceId, linkPath }: { title: string; data?: T[], icon: React.ReactNode, serviceId: string, linkPath: string }) {
   if (!data || data.length === 0) {
@@ -91,10 +98,17 @@ function DefinitionsTable<T extends { name: string; description?: string; type?:
 }
 
 /**
- * MetricsCard component.
- * @param props - The component props.
- * @param props.serviceId - The unique identifier for service.
- * @returns The rendered component.
+ * Summary: MetricsCard component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.serviceId: The unique identifier for service.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 function MetricsCard({ serviceId }: { serviceId: string }) {
     const [metrics, setMetrics] = useState<Record<string, number> | null>(null);

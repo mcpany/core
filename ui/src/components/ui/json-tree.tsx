@@ -18,15 +18,20 @@ interface JsonTreeProps {
 }
 
 /**
- * JsonTree component.
- * Renders a recursive tree view of JSON data.
+ * Summary: JsonTree component.
  *
- * @param props - The component props.
- * @param props.data - The data to display.
- * @param props.level - The current nesting level (default: 0).
- * @param props.defaultExpandedLevel - The level up to which nodes are expanded by default (default: 1).
- * @param props.className - The className.
- * @returns The rendered component.
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.data: The data to display.
+ *   - props.level: The level property.
+ *   - props.defaultExpandedLevel: The defaultExpandedLevel property.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function JsonTree({ data, level = 0, defaultExpandedLevel = 1, className }: JsonTreeProps) {
   const isObject = typeof data === 'object' && data !== null;
@@ -138,6 +143,19 @@ export function JsonTree({ data, level = 0, defaultExpandedLevel = 1, className 
   );
 }
 
+/**
+ * Summary: PrimitiveValue component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.value: The current value.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 function PrimitiveValue({ value }: { value: unknown }) {
   if (typeof value === 'string') {
     if (value.startsWith('data:image/') && value.length > 50) {

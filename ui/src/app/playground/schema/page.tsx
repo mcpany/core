@@ -23,6 +23,18 @@ export default function SchemaPlaygroundPage() {
   const [isValidating, setIsValidating] = useState(false);
   const [result, setResult] = useState<{ valid: boolean; message: string } | null>(null);
 
+/**
+ * Summary: EXAMPLES component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
   const EXAMPLES = {
     http: `upstream_services:
   - name: my-http-service

@@ -589,30 +589,18 @@ func Get[T ClosableClient](m *Manager, name string) (Pool[T], bool) {
 	return pool, ok
 }
 
-// CloseAll iterates through all registered pools in the manager and closes them. Summary: Closes all managed pools.
+// CloseAll closeAll close all.
+//
+// Summary: CloseAll close all.
 //
 // Parameters:
-//   - None
+//   None.
 //
 // Returns:
-//   - None
+//   None.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes CloseAll operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

@@ -36,6 +36,19 @@ interface McpContentRendererProps {
     content: McpContent[];
 }
 
+/**
+ * Summary: McpContentRenderer component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.content: The content property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 function McpContentRenderer({ content }: McpContentRendererProps) {
     return (
         <div className="space-y-6 p-4">

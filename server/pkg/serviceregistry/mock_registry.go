@@ -18,31 +18,22 @@ type MockServiceRegistry struct {
 	mock.Mock
 }
 
-// RegisterService registers a new upstream service based on the provided configuration.
+// RegisterService registerService register service.
+//
+// Summary: RegisterService register service.
 //
 // Parameters:
-//   - ctx (context.Context): The registration context.
-//   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the service.
+//   - ctx (context.Context): The context for the request.
+//   - serviceConfig (*configv1.UpstreamServiceConfig): The service config.
 //
 // Returns:
-//   - string: The unique service ID.
-//   - []*configv1.ToolDefinition: A list of discovered tools.
-//   - []*configv1.ResourceDefinition: A list of discovered resources.
-//   - error: An error if registration fails.
-//
-// Side Effects:
-//   - Records method call for mock.
-//
-// Summary: Executes RegisterService operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - string: The result.
+//   - []*configv1.ToolDefinition: The result.
+//   - []*configv1.ResourceDefinition: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -51,28 +42,19 @@ func (m *MockServiceRegistry) RegisterService(ctx context.Context, serviceConfig
 	return args.String(0), args.Get(1).([]*configv1.ToolDefinition), args.Get(2).([]*configv1.ResourceDefinition), args.Error(3)
 }
 
-// UnregisterService removes a service from the registry.
+// UnregisterService unregisterService unregister service.
+//
+// Summary: UnregisterService unregister service.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the unregistration.
-//   - serviceName (string): The name of the service to remove.
+//   - ctx (context.Context): The context for the request.
+//   - serviceName (string): The service name.
 //
 // Returns:
-//   - error: An error if the service is not found or shutdown fails.
-//
-// Side Effects:
-//   - Records method call for mock.
-//
-// Summary: Executes UnregisterService operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -81,25 +63,19 @@ func (m *MockServiceRegistry) UnregisterService(ctx context.Context, serviceName
 	return args.Error(0)
 }
 
-// GetAllServices returns a list of all currently registered services.
+// GetAllServices retrieves the all services.
 //
-// Returns:
-//   - []*configv1.UpstreamServiceConfig: A list of all registered service configurations.
-//   - error: An error if retrieval fails.
-//
-// Side Effects:
-//   - Records method call for mock.
-//
-// Summary: Retrieves GetAllServices operation.
+// Summary: Retrieves the all services.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - []*configv1.UpstreamServiceConfig: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -111,28 +87,19 @@ func (m *MockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfi
 	return args.Get(0).([]*configv1.UpstreamServiceConfig), args.Error(1)
 }
 
-// GetServiceInfo retrieves the metadata for a service by its ID.
+// GetServiceInfo retrieves the service info.
+//
+// Summary: Retrieves the service info.
 //
 // Parameters:
-//   - serviceID (string): The unique identifier of the service.
+//   - serviceID (string): The service id.
 //
 // Returns:
-//   - *tool.ServiceInfo: The service metadata.
-//   - bool: True if the service was found, false otherwise.
-//
-// Side Effects:
-//   - Records method call for mock.
-//
-// Summary: Retrieves GetServiceInfo operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - *tool.ServiceInfo: The result.
+//   - bool: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -144,28 +111,19 @@ func (m *MockServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInf
 	return nil, args.Bool(1)
 }
 
-// GetServiceConfig returns the configuration for a given service ID.
+// GetServiceConfig retrieves the service config.
+//
+// Summary: Retrieves the service config.
 //
 // Parameters:
-//   - serviceID (string): The unique identifier of the service.
+//   - serviceID (string): The service id.
 //
 // Returns:
-//   - *configv1.UpstreamServiceConfig: The service configuration.
-//   - bool: True if the service was found, false otherwise.
-//
-// Side Effects:
-//   - Records method call for mock.
-//
-// Summary: Retrieves GetServiceConfig operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - *configv1.UpstreamServiceConfig: The result.
+//   - bool: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -177,28 +135,19 @@ func (m *MockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.Upst
 	return nil, args.Bool(1)
 }
 
-// GetServiceError returns the last known registration or health error for a service.
+// GetServiceError retrieves the service error.
+//
+// Summary: Retrieves the service error.
 //
 // Parameters:
-//   - serviceID (string): The unique identifier of the service.
+//   - serviceID (string): The service id.
 //
 // Returns:
-//   - string: The error message.
-//   - bool: True if an error is present, false otherwise.
-//
-// Side Effects:
-//   - Records method call for mock.
-//
-// Summary: Retrieves GetServiceError operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - string: The result.
+//   - bool: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

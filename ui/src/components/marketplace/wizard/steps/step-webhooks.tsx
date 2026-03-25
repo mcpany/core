@@ -12,8 +12,16 @@ import { Plus, Trash2, Webhook } from "lucide-react";
 import { WizardWebhook } from "../wizard-context";
 
 /**
- * StepWebhooks component.
- * @returns The rendered component.
+ * Summary: StepWebhooks component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function StepWebhooks() {
   const { state, updateConfig } = useWizard();

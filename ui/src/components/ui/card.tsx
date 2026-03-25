@@ -8,10 +8,17 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 /**
- * Card component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: Card component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const Card = React.forwardRef<
   HTMLDivElement,
@@ -29,10 +36,17 @@ const Card = React.forwardRef<
 Card.displayName = "Card"
 
 /**
- * CardHeader component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: CardHeader component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const CardHeader = React.forwardRef<
   HTMLDivElement,
@@ -47,10 +61,17 @@ const CardHeader = React.forwardRef<
 CardHeader.displayName = "CardHeader"
 
 /**
- * CardTitle component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: CardTitle component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const CardTitle = React.forwardRef<
   HTMLDivElement,
@@ -68,10 +89,17 @@ const CardTitle = React.forwardRef<
 CardTitle.displayName = "CardTitle"
 
 /**
- * CardDescription component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: CardDescription component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const CardDescription = React.forwardRef<
   HTMLDivElement,
@@ -86,10 +114,17 @@ const CardDescription = React.forwardRef<
 CardDescription.displayName = "CardDescription"
 
 /**
- * CardContent component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: CardContent component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const CardContent = React.forwardRef<
   HTMLDivElement,
@@ -100,10 +135,17 @@ const CardContent = React.forwardRef<
 CardContent.displayName = "CardContent"
 
 /**
- * CardFooter component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: CardFooter component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const CardFooter = React.forwardRef<
   HTMLDivElement,

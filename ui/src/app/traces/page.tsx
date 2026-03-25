@@ -14,8 +14,16 @@ import { Loader2 } from "lucide-react";
 import { usePolling } from "@/hooks/use-polling";
 
 /**
- * TracesPage component.
- * @returns The rendered component.
+ * Summary: TracesPage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function TracesPage() {
   const [traces, setTraces] = useState<Trace[]>([]);

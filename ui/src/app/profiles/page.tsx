@@ -16,8 +16,16 @@ import { ProfileEditor, Profile } from "@/components/profiles/profile-editor";
 import { WizardDialog } from "@/components/profiles/wizard/wizard-dialog";
 
 /**
- * ProfilesPage component.
- * @returns The rendered component.
+ * Summary: ProfilesPage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function ProfilesPage() {
   const [profiles, setProfiles] = useState<Profile[]>([]);

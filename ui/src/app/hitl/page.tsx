@@ -6,6 +6,18 @@
 import React from "react";
 import { HitlDashboard } from "@/components/hitl/hitl-dashboard";
 
+/**
+ * Summary: HitlPage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 export default function HitlPage() {
     return (
         <div className="container py-6 space-y-6">

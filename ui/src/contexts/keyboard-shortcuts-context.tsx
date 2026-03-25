@@ -38,13 +38,32 @@ type KeyboardShortcutsContextType = {
   getKeys: (id: string) => string[]
 }
 
+/**
+ * Summary: KeyboardShortcutsContext component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const KeyboardShortcutsContext = React.createContext<KeyboardShortcutsContextType | null>(null)
 
 /**
- * STORAGE_KEY component.
- * @param props - The component props.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * Summary: STORAGE_KEY component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.children: The child components.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const STORAGE_KEY = "mcp_any_shortcut_overrides"
 

@@ -11,9 +11,34 @@ import {
 import { cn } from "@/lib/utils"
 
 // Lazy load Virtuoso to avoid SSR issues
+/**
+ * Summary: Virtuoso component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.default: The default property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const Virtuoso = lazy(() => import('react-virtuoso').then((m) => ({ default: m.Virtuoso })));
 
 // Lazy load the syntax highlighter
+/**
+ * Summary: JsonViewer component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const JsonViewer = lazy(() => import('./json-viewer'));
 
 /**
@@ -215,12 +240,19 @@ const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRe
 LogRow.displayName = 'LogRow'
 
 /**
- * LogViewer component.
- * @param props - The component props.
- * @param props.logs - The list of log entries to display.
- * @param props.highlightRegex - The regex to use for highlighting text.
- * @param props.isPaused - Whether the log stream is paused.
- * @returns The rendered component.
+ * Summary: LogViewer component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.logs: The logs property.
+ *   - props.highlightRegex: The highlightRegex property.
+ *   - props.isPaused: The isPaused property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function LogViewer({ logs, highlightRegex, isPaused }: LogViewerProps) {
   return (

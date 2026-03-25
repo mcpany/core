@@ -18,6 +18,18 @@ import { SmartTable } from "@/components/tools/smart-table";
 // ⚡ BOLT: Lazy load SyntaxHighlighter to reduce initial bundle size.
 // Randomized Selection from Top 5 High-Impact Targets (Assets/Bundle)
 // Optimized version uses Light build with only JSON registered.
+/**
+ * Summary: SyntaxHighlighter component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const SyntaxHighlighter = lazy(() => import('./optimized-syntax-highlighter'));
 
 interface JsonViewProps {
@@ -65,15 +77,21 @@ const getTableData = (data: unknown, smartTable: boolean) => {
 };
 
 /**
- * JsonView component.
- * Renders data with interactive tree view, optional smart table view, and raw syntax highlighting.
+ * Summary: JsonView component.
  *
- * @param props - The component props.
- * @param props.data - The data to display.
- * @param props.className - The className.
- * @param props.smartTable - Whether to attempt smart table rendering.
- * @param props.maxHeight - Max height before collapsing (only applies to Raw/Table views, Tree handles its own).
- * @returns The rendered component.
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.data: The data to display.
+ *   - props.className: The name of the class.
+ *   - props.smartTable: The smartTable property.
+ *   - props.maxHeight: The maxHeight property.
+ *   - props.defaultExpandedLevel: The defaultExpandedLevel property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function JsonView({ data, className, smartTable = false, maxHeight = 400, defaultExpandedLevel = 1 }: JsonViewProps) {
     // Calculate initial state lazily

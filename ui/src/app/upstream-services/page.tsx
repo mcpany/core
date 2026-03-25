@@ -40,8 +40,16 @@ import { applyTemplateFields } from "@/lib/template-utils";
 
 
 /**
- * ServicesPage component.
- * @returns The rendered component.
+ * Summary: ServicesPage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function ServicesPage() {
   const [services, setServices] = useState<UpstreamServiceConfig[]>([]);

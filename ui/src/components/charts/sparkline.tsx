@@ -19,15 +19,22 @@ interface SparklineProps {
 
 // ⚡ Bolt Optimization: Memoized to prevent re-renders when parent updates (e.g. selection) but chart data is stable.
 /**
- * Sparkline component.
- * @param props - The component props.
- * @param props.data - The data to display.
- * @param props.width - The width of the chart.
- * @param props.height - The height of the chart.
- * @param props.className - Additional CSS classes.
- * @param props.color - The line color.
- * @param props.max - The maximum value for scaling.
- * @returns The rendered component.
+ * Summary: Sparkline component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.data: The data to display.
+ *   - props.width: The unique identifier for wth.
+ *   - props.height: The height property.
+ *   - props.className: The name of the class.
+ *   - props.color: The color property.
+ *   - props.max: The max property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export const Sparkline = memo(function Sparkline({ data, width = 60, height = 24, className, color = "#22c55e", max }: SparklineProps) {
     const { path, fillPath, gradientId } = useMemo(() => {

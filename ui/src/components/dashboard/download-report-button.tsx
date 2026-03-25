@@ -10,8 +10,16 @@ import { useToast } from "@/hooks/use-toast";
 import { apiClient } from "@/lib/client";
 
 /**
- * A button component that fetches dashboard metrics and downloads them as a JSON report.
- * @returns The rendered component.
+ * Summary: DownloadReportButton component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function DownloadReportButton() {
     const [isDownloading, setIsDownloading] = useState(false);

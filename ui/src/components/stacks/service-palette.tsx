@@ -42,6 +42,18 @@ const iconMap: Record<string, React.ElementType> = {
 };
 
 // Fallback icon
+/**
+ * Summary: DefaultIcon component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const DefaultIcon = Server;
 
 interface ServicePaletteProps {
@@ -196,6 +208,18 @@ export function ServicePalette({ onTemplateSelect }: ServicePaletteProps) {
                 ) : (
                     <div className="p-3 grid gap-2">
                         {filtered.map(template => {
+/**
+ * Summary: Icon component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
                             const Icon = getIcon(template);
                             return (
                                 <Card

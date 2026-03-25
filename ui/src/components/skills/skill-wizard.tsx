@@ -14,11 +14,31 @@ import { Skill, SkillService } from '@/lib/skill-service';
 import { toast } from 'sonner';
 import { ChevronRight, ChevronLeft, Save, Upload } from 'lucide-react';
 
+/**
+ * Summary: STEPS component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const STEPS = ['Metadata', 'Instructions', 'Assets'];
 
 /**
- * SkillWizard component.
- * @returns The rendered component.
+ * Summary: SkillWizard component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function SkillWizard() {
   const params = useParams();

@@ -17,10 +17,19 @@ interface TemplateConfigFormProps {
 }
 
 /**
- * TemplateConfigForm renders a form based on a service template definition.
- * It handles variable substitution inputs.
- * @param props - Component props.
- * @returns The TemplateConfigForm component.
+ * Summary: TemplateConfigForm component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.template: The template property.
+ *   - props.onCancel: The onCancel property.
+ *   - props.onSubmit: The onSubmit property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function TemplateConfigForm({ template, onCancel, onSubmit }: TemplateConfigFormProps) {
   const [values, setValues] = useState<Record<string, string>>({});

@@ -9,72 +9,121 @@ import { Check, ChevronRight, Circle } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 /**
- * ContextMenu component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.inset - The inset property.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * Summary: ContextMenu component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *   - props.inset: The inset property.
+ *   - props.children: The child components.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const ContextMenu = ContextMenuPrimitive.Root
 
 /**
- * ContextMenuTrigger component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.inset - The inset property.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * Summary: ContextMenuTrigger component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *   - props.inset: The inset property.
+ *   - props.children: The child components.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const ContextMenuTrigger = ContextMenuPrimitive.Trigger
 
 /**
- * ContextMenuGroup component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.inset - The inset property.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * Summary: ContextMenuGroup component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *   - props.inset: The inset property.
+ *   - props.children: The child components.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const ContextMenuGroup = ContextMenuPrimitive.Group
 
 /**
- * ContextMenuPortal component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.inset - The inset property.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * Summary: ContextMenuPortal component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *   - props.inset: The inset property.
+ *   - props.children: The child components.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const ContextMenuPortal = ContextMenuPrimitive.Portal
 
 /**
- * ContextMenuSub component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.inset - The inset property.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * Summary: ContextMenuSub component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *   - props.inset: The inset property.
+ *   - props.children: The child components.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const ContextMenuSub = ContextMenuPrimitive.Sub
 
 /**
- * ContextMenuRadioGroup component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.inset - The inset property.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * Summary: ContextMenuRadioGroup component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *   - props.inset: The inset property.
+ *   - props.children: The child components.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const ContextMenuRadioGroup = ContextMenuPrimitive.RadioGroup
 
 /**
- * ContextMenuSubTrigger component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.inset - The inset property.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * Summary: ContextMenuSubTrigger component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *   - props.inset: The inset property.
+ *   - props.children: The child components.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const ContextMenuSubTrigger = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.SubTrigger>,
@@ -98,10 +147,17 @@ const ContextMenuSubTrigger = React.forwardRef<
 ContextMenuSubTrigger.displayName = ContextMenuPrimitive.SubTrigger.displayName
 
 /**
- * ContextMenuSubContent component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: ContextMenuSubContent component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const ContextMenuSubContent = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.SubContent>,
@@ -119,10 +175,17 @@ const ContextMenuSubContent = React.forwardRef<
 ContextMenuSubContent.displayName = ContextMenuPrimitive.SubContent.displayName
 
 /**
- * ContextMenuContent component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: ContextMenuContent component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const ContextMenuContent = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.Content>,
@@ -142,11 +205,18 @@ const ContextMenuContent = React.forwardRef<
 ContextMenuContent.displayName = ContextMenuPrimitive.Content.displayName
 
 /**
- * ContextMenuItem component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.inset - The inset property.
- * @returns The rendered component.
+ * Summary: ContextMenuItem component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *   - props.inset: The inset property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const ContextMenuItem = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.Item>,
@@ -167,12 +237,19 @@ const ContextMenuItem = React.forwardRef<
 ContextMenuItem.displayName = ContextMenuPrimitive.Item.displayName
 
 /**
- * ContextMenuCheckboxItem component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.children - The child components.
- * @param props.checked - The checked property.
- * @returns The rendered component.
+ * Summary: ContextMenuCheckboxItem component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *   - props.children: The child components.
+ *   - props.checked: The checked property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const ContextMenuCheckboxItem = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.CheckboxItem>,
@@ -199,11 +276,18 @@ ContextMenuCheckboxItem.displayName =
   ContextMenuPrimitive.CheckboxItem.displayName
 
 /**
- * ContextMenuRadioItem component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * Summary: ContextMenuRadioItem component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *   - props.children: The child components.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const ContextMenuRadioItem = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.RadioItem>,
@@ -228,11 +312,18 @@ const ContextMenuRadioItem = React.forwardRef<
 ContextMenuRadioItem.displayName = ContextMenuPrimitive.RadioItem.displayName
 
 /**
- * ContextMenuLabel component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.inset - The inset property.
- * @returns The rendered component.
+ * Summary: ContextMenuLabel component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *   - props.inset: The inset property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const ContextMenuLabel = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.Label>,
@@ -253,10 +344,17 @@ const ContextMenuLabel = React.forwardRef<
 ContextMenuLabel.displayName = ContextMenuPrimitive.Label.displayName
 
 /**
- * ContextMenuSeparator component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: ContextMenuSeparator component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const ContextMenuSeparator = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.Separator>,
@@ -271,10 +369,17 @@ const ContextMenuSeparator = React.forwardRef<
 ContextMenuSeparator.displayName = ContextMenuPrimitive.Separator.displayName
 
 /**
- * ContextMenuShortcut component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: ContextMenuShortcut component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const ContextMenuShortcut = ({
   className,

@@ -53,11 +53,31 @@ import { estimateTokens, formatTokenCount } from "@/lib/tokens";
 import { OptimizationTab } from "./optimization-tab";
 
 // Tool usage colors
+/**
+ * Summary: COLORS component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#ec4899', '#6366f1'];
 
 /**
- * AnalyticsDashboard component.
- * @returns The rendered component.
+ * Summary: AnalyticsDashboard component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function AnalyticsDashboard() {
     const [timeRange, setTimeRange] = useState("1h");

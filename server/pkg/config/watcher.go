@@ -32,31 +32,19 @@ type Watcher struct {
 	timer   *time.Timer
 }
 
-// NewWatcher creates a new file watcher.
+// NewWatcher creates a new watcher.
+//
+// Summary: Creates a new watcher.
 //
 // Parameters:
-//   - None
+//   None.
 //
 // Returns:
-//   - *Watcher: The resulting *Watcher.
+//   - *Watcher: The result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes NewWatcher operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -201,21 +189,18 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 	return nil
 }
 
-// Close stops the file watcher and releases resources.
+// Close close close.
+//
+// Summary: Close close.
 //
 // Parameters:
-//   - None.
-//
-// Summary: Executes Close operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
+//   None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

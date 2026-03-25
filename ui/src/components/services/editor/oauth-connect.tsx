@@ -18,12 +18,19 @@ interface OAuthConnectProps {
 }
 
 /**
- * OAuthConnect component.
- * @param props - The component props.
- * @param props.serviceId - The unique identifier for service.
- * @param props.serviceName - The name of the service.
- * @param props.isSaved - The issaved property.
- * @returns The rendered component.
+ * Summary: OAuthConnect component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.serviceId: The unique identifier for service.
+ *   - props.serviceName: The name of the service.
+ *   - props.isSaved: The isSaved property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function OAuthConnect({ serviceId, serviceName, isSaved }: OAuthConnectProps) {
     const [loading, setLoading] = useState(false);

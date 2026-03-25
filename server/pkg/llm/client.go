@@ -71,31 +71,19 @@ type OpenAIClient struct {
 	client  *http.Client
 }
 
-// NewOpenAIClient creates a new OpenAIClient.
+// NewOpenAIClient creates a new open ai client.
+//
+// Summary: Creates a new open ai client.
 //
 // Parameters:
-//   - apiKey (string): The apiKey parameter.
-//   - baseURL (string): The baseURL parameter.
+//   - apiKey (string): The api key.
+//   - baseURL (string): The base url.
 //
 // Returns:
-//   - *OpenAIClient: The resulting *OpenAIClient.
+//   - *OpenAIClient: The result.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes NewOpenAIClient operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -126,32 +114,20 @@ type openAIChatResponse struct {
 	} `json:"error,omitempty"`
 }
 
-// ChatCompletion performs a chat completion request.
+// ChatCompletion chatCompletion chat completion.
+//
+// Summary: ChatCompletion chat completion.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - req (ChatRequest): The request object.
+//   - req (ChatRequest): The req.
 //
 // Returns:
-//   - *ChatResponse: The resulting *ChatResponse.
+//   - *ChatResponse: The result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes ChatCompletion operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

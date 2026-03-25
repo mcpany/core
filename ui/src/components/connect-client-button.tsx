@@ -16,10 +16,16 @@ import { Link as LinkIcon, Check, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 /**
- * ConnectClientButton component.
- * Provides a modal with configuration snippets for connecting various MCP clients.
+ * Summary: ConnectClientButton component.
  *
- * @returns {JSX.Element} The rendered component.
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function ConnectClientButton() {
   const [isOpen, setIsOpen] = useState(false);

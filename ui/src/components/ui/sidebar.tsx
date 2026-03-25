@@ -22,10 +22,70 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 
+/**
+ * Summary: SIDEBAR_COOKIE_NAME component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
+/**
+ * Summary: SIDEBAR_COOKIE_MAX_AGE component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
+/**
+ * Summary: SIDEBAR_WIDTH component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const SIDEBAR_WIDTH = "16rem"
+/**
+ * Summary: SIDEBAR_WIDTH_MOBILE component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const SIDEBAR_WIDTH_MOBILE = "18rem"
+/**
+ * Summary: SIDEBAR_WIDTH_ICON component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const SIDEBAR_WIDTH_ICON = "3rem"
 
 type SidebarContext = {
@@ -38,6 +98,18 @@ type SidebarContext = {
   toggleSidebar: () => void
 }
 
+/**
+ * Summary: SidebarContext component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const SidebarContext = React.createContext<SidebarContext | null>(null)
 
 function useSidebar() {
@@ -50,9 +122,16 @@ function useSidebar() {
 }
 
 /**
- * SidebarProvider component.
- * @param props - The component props.
- * @returns The rendered component.
+ * Summary: SidebarProvider component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const SidebarProvider = React.forwardRef<
   HTMLDivElement,
@@ -156,14 +235,21 @@ const SidebarProvider = React.forwardRef<
 SidebarProvider.displayName = "SidebarProvider"
 
 /**
- * Sidebar component.
- * @param props - The component props.
- * @param props.side - The unique identifier for se.
- * @param props.variant - The variant property.
- * @param props.collapsible - The collapsible property.
- * @param props.className - The name of the class.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * Summary: Sidebar component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.side: The unique identifier for se.
+ *   - props.variant: The variant property.
+ *   - props.collapsible: The collapsible property.
+ *   - props.className: The name of the class.
+ *   - props.children: The child components.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const Sidebar = React.forwardRef<
   HTMLDivElement,
@@ -269,11 +355,18 @@ const Sidebar = React.forwardRef<
 Sidebar.displayName = "Sidebar"
 
 /**
- * SidebarTrigger component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.onClick - The onClick property.
- * @returns The rendered component.
+ * Summary: SidebarTrigger component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *   - props.onClick: The onClick property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const SidebarTrigger = React.forwardRef<
   React.ElementRef<typeof Button>,
@@ -302,10 +395,17 @@ const SidebarTrigger = React.forwardRef<
 SidebarTrigger.displayName = "SidebarTrigger"
 
 /**
- * SidebarRail component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: SidebarRail component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const SidebarRail = React.forwardRef<
   HTMLButtonElement,
@@ -337,10 +437,17 @@ const SidebarRail = React.forwardRef<
 SidebarRail.displayName = "SidebarRail"
 
 /**
- * SidebarInset component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: SidebarInset component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const SidebarInset = React.forwardRef<
   HTMLDivElement,
@@ -361,10 +468,17 @@ const SidebarInset = React.forwardRef<
 SidebarInset.displayName = "SidebarInset"
 
 /**
- * SidebarInput component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: SidebarInput component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const SidebarInput = React.forwardRef<
   React.ElementRef<typeof Input>,
@@ -385,10 +499,17 @@ const SidebarInput = React.forwardRef<
 SidebarInput.displayName = "SidebarInput"
 
 /**
- * SidebarHeader component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: SidebarHeader component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const SidebarHeader = React.forwardRef<
   HTMLDivElement,
@@ -406,10 +527,17 @@ const SidebarHeader = React.forwardRef<
 SidebarHeader.displayName = "SidebarHeader"
 
 /**
- * SidebarFooter component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: SidebarFooter component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const SidebarFooter = React.forwardRef<
   HTMLDivElement,
@@ -427,10 +555,17 @@ const SidebarFooter = React.forwardRef<
 SidebarFooter.displayName = "SidebarFooter"
 
 /**
- * SidebarSeparator component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: SidebarSeparator component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const SidebarSeparator = React.forwardRef<
   React.ElementRef<typeof Separator>,
@@ -448,10 +583,17 @@ const SidebarSeparator = React.forwardRef<
 SidebarSeparator.displayName = "SidebarSeparator"
 
 /**
- * SidebarContent component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: SidebarContent component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const SidebarContent = React.forwardRef<
   HTMLDivElement,
@@ -472,10 +614,17 @@ const SidebarContent = React.forwardRef<
 SidebarContent.displayName = "SidebarContent"
 
 /**
- * SidebarGroup component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: SidebarGroup component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const SidebarGroup = React.forwardRef<
   HTMLDivElement,
@@ -493,16 +642,35 @@ const SidebarGroup = React.forwardRef<
 SidebarGroup.displayName = "SidebarGroup"
 
 /**
- * SidebarGroupLabel component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.asChild - The asChild property.
- * @returns The rendered component.
+ * Summary: SidebarGroupLabel component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *   - props.asChild: The asChild property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const SidebarGroupLabel = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> & { asChild?: boolean }
 >(({ className, asChild = false, ...props }, ref) => {
+/**
+ * Summary: Comp component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
   const Comp = asChild ? Slot : "div"
 
   return (
@@ -521,16 +689,35 @@ const SidebarGroupLabel = React.forwardRef<
 SidebarGroupLabel.displayName = "SidebarGroupLabel"
 
 /**
- * SidebarGroupAction component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.asChild - The asChild property.
- * @returns The rendered component.
+ * Summary: SidebarGroupAction component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *   - props.asChild: The asChild property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const SidebarGroupAction = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<"button"> & { asChild?: boolean }
 >(({ className, asChild = false, ...props }, ref) => {
+/**
+ * Summary: Comp component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
   const Comp = asChild ? Slot : "button"
 
   return (
@@ -551,10 +738,17 @@ const SidebarGroupAction = React.forwardRef<
 SidebarGroupAction.displayName = "SidebarGroupAction"
 
 /**
- * SidebarGroupContent component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: SidebarGroupContent component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const SidebarGroupContent = React.forwardRef<
   HTMLDivElement,
@@ -570,10 +764,17 @@ const SidebarGroupContent = React.forwardRef<
 SidebarGroupContent.displayName = "SidebarGroupContent"
 
 /**
- * SidebarMenu component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: SidebarMenu component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const SidebarMenu = React.forwardRef<
   HTMLUListElement,
@@ -589,10 +790,17 @@ const SidebarMenu = React.forwardRef<
 SidebarMenu.displayName = "SidebarMenu"
 
 /**
- * SidebarMenuItem component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: SidebarMenuItem component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const SidebarMenuItem = React.forwardRef<
   HTMLLIElement,
@@ -630,15 +838,22 @@ const sidebarMenuButtonVariants = cva(
 )
 
 /**
- * SidebarMenuButton component.
- * @param props - The component props.
- * @param props.asChild - The asChild property.
- * @param props.isActive - The isActive property.
- * @param props.variant - The variant property.
- * @param props.size - The size property.
- * @param props.tooltip - The tooltip property.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: SidebarMenuButton component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.asChild: The asChild property.
+ *   - props.isActive: The isActive property.
+ *   - props.variant: The variant property.
+ *   - props.size: The size property.
+ *   - props.tooltip: The tooltip property.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const SidebarMenuButton = React.forwardRef<
   HTMLButtonElement,
@@ -660,6 +875,18 @@ const SidebarMenuButton = React.forwardRef<
     },
     ref
   ) => {
+/**
+ * Summary: Comp component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
     const Comp = asChild ? Slot : "button"
     const { isMobile, state } = useSidebar()
 
@@ -700,12 +927,19 @@ const SidebarMenuButton = React.forwardRef<
 SidebarMenuButton.displayName = "SidebarMenuButton"
 
 /**
- * SidebarMenuAction component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.asChild - The asChild property.
- * @param props.showOnHover - The showOnHover property.
- * @returns The rendered component.
+ * Summary: SidebarMenuAction component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *   - props.asChild: The asChild property.
+ *   - props.showOnHover: The showOnHover property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const SidebarMenuAction = React.forwardRef<
   HTMLButtonElement,
@@ -714,6 +948,18 @@ const SidebarMenuAction = React.forwardRef<
     showOnHover?: boolean
   }
 >(({ className, asChild = false, showOnHover = false, ...props }, ref) => {
+/**
+ * Summary: Comp component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
   const Comp = asChild ? Slot : "button"
 
   return (
@@ -739,10 +985,17 @@ const SidebarMenuAction = React.forwardRef<
 SidebarMenuAction.displayName = "SidebarMenuAction"
 
 /**
- * SidebarMenuBadge component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: SidebarMenuBadge component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const SidebarMenuBadge = React.forwardRef<
   HTMLDivElement,
@@ -766,11 +1019,18 @@ const SidebarMenuBadge = React.forwardRef<
 SidebarMenuBadge.displayName = "SidebarMenuBadge"
 
 /**
- * SidebarMenuSkeleton component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.showIcon - The showIcon property.
- * @returns The rendered component.
+ * Summary: SidebarMenuSkeleton component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *   - props.showIcon: The showIcon property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const SidebarMenuSkeleton = React.forwardRef<
   HTMLDivElement,
@@ -811,10 +1071,17 @@ const SidebarMenuSkeleton = React.forwardRef<
 SidebarMenuSkeleton.displayName = "SidebarMenuSkeleton"
 
 /**
- * SidebarMenuSub component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: SidebarMenuSub component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const SidebarMenuSub = React.forwardRef<
   HTMLUListElement,
@@ -834,9 +1101,16 @@ const SidebarMenuSub = React.forwardRef<
 SidebarMenuSub.displayName = "SidebarMenuSub"
 
 /**
- * SidebarMenuSubItem component.
- * @param props - The component props.
- * @returns The rendered component.
+ * Summary: SidebarMenuSubItem component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const SidebarMenuSubItem = React.forwardRef<
   HTMLLIElement,
@@ -845,13 +1119,20 @@ const SidebarMenuSubItem = React.forwardRef<
 SidebarMenuSubItem.displayName = "SidebarMenuSubItem"
 
 /**
- * SidebarMenuSubButton component.
- * @param props - The component props.
- * @param props.asChild - The asChild property.
- * @param props.size - The size property.
- * @param props.isActive - The isActive property.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: SidebarMenuSubButton component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.asChild: The asChild property.
+ *   - props.size: The size property.
+ *   - props.isActive: The isActive property.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const SidebarMenuSubButton = React.forwardRef<
   HTMLAnchorElement,
@@ -861,6 +1142,18 @@ const SidebarMenuSubButton = React.forwardRef<
     isActive?: boolean
   }
 >(({ asChild = false, size = "md", isActive, className, ...props }, ref) => {
+/**
+ * Summary: Comp component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
   const Comp = asChild ? Slot : "a"
 
   return (

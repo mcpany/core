@@ -11,8 +11,16 @@ import { AlertCircle, CheckCircle2, AlertTriangle, Activity, Loader2 } from "luc
 import { apiClient } from "@/lib/client";
 
 /**
- * AlertStats component.
- * @returns The rendered component.
+ * Summary: AlertStats component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function AlertStats() {
   const [stats, setStats] = useState<{ activeCritical: number, activeWarning: number, mttr: string, totalToday: number } | null>(null);

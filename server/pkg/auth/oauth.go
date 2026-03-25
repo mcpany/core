@@ -22,28 +22,20 @@ type OAuth2Authenticator struct {
 	audiences []string
 }
 
-// NewOAuth2Authenticator creates a new OAuth2Authenticator with the provided
-// configuration. It initializes the OIDC provider and creates a verifier for
-// validating ID tokens.
+// NewOAuth2Authenticator creates a new o auth2 authenticator.
+//
+// Summary: Creates a new o auth2 authenticator.
 //
 // Parameters:
-//   - ctx: The context for the OIDC provider initialization.
-//   - config: The OAuth2 configuration, including the issuer URL and client ID.
+//   - ctx (context.Context): The context for the request.
+//   - config (*OAuth2Config): The config.
 //
 // Returns:
-//   - A new OAuth2Authenticator.
-//   - An error if the OIDC provider cannot be initialized.
-//
-// Summary: Initializes NewOAuth2Authenticator operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - *OAuth2Authenticator: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -75,28 +67,20 @@ func NewOAuth2Authenticator(ctx context.Context, config *OAuth2Config) (*OAuth2A
 	}, nil
 }
 
-// Authenticate validates the JWT from the Authorization header of the request.
-// It checks for a "Bearer" token and verifies its signature, expiration, and
-// claims against the OIDC provider.
+// Authenticate authenticate authenticate.
+//
+// Summary: Authenticate authenticate.
 //
 // Parameters:
-//   - ctx: The request context.
-//   - r: The HTTP request to authenticate.
+//   - ctx (context.Context): The context for the request.
+//   - r (*http.Request): The r.
 //
 // Returns:
-//   - The context with the user's identity (email) on success.
-//   - An error if authentication fails.
-//
-// Summary: Executes Authenticate operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - context.Context: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

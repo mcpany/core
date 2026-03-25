@@ -27,12 +27,19 @@ interface TraceListProps {
 // Optimization: Memoize TraceListItem to prevent re-renders of all items when one is selected.
 // Only the selected and previously selected items will re-render.
 /**
- * TraceListItem component.
- * @param props - The component props.
- * @param props.trace - The trace property.
- * @param props.isSelected - The isSelected property.
- * @param props.onSelect - The onSelect property.
- * @returns The rendered component.
+ * Summary: TraceListItem component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.trace: The trace property.
+ *   - props.isSelected: The isSelected property.
+ *   - props.onSelect: The onSelect property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const TraceListItem = memo(({ trace, isSelected, onSelect }: { trace: Trace, isSelected: boolean, onSelect: (id: string) => void }) => {
   return (
@@ -135,11 +142,18 @@ export function TraceList({ traces, selectedId, onSelect, searchQuery, onSearchC
 }
 
 /**
- * StatusIcon component.
- * @param props - The component props.
- * @param props.status - The current status.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: StatusIcon component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.status: The current status.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 function StatusIcon({ status, className }: { status: SpanStatus, className?: string }) {
   if (status === 'error') return <AlertCircle className={cn("text-destructive", className)} />;
@@ -148,11 +162,18 @@ function StatusIcon({ status, className }: { status: SpanStatus, className?: str
 }
 
 /**
- * TriggerIcon component.
- * @param props - The component props.
- * @param props.trigger - The trigger property.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: TriggerIcon component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.trigger: The trigger property.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 function TriggerIcon({ trigger, className }: { trigger: Trace['trigger'], className?: string }) {
     switch(trigger) {

@@ -39,12 +39,31 @@ const iconMap: Record<string, any> = {
 // ⚡ Bolt Optimization: Extracted and memoized MetricItem to prevent unnecessary re-renders
 // when only some metrics change during polling.
 /**
- * MetricItem component.
- * @param props - The component props.
- * @param props.metric - The metric property.
- * @returns The rendered component.
+ * Summary: MetricItem component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.metric: The metric property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const MetricItem = memo(function MetricItem({ metric }: { metric: Metric }) {
+/**
+ * Summary: Icon component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
   const Icon = iconMap[metric.icon] || Activity;
   const isPositiveTrend = metric.trend === "up";
   // For latency and errors, down is usually good (green), up is bad (red)
@@ -95,9 +114,16 @@ import { apiClient, Metric } from "@/lib/client";
 // ... (Icon map and MetricItem remain same)
 
 /**
- * MetricsOverview displays a grid of key system metrics (e.g., QPS, Latency, Users)
- * and the system health status. It fetches data periodically from the API.
- * @returns The rendered MetricsOverview component.
+ * Summary: MetricsOverview component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export const MetricsOverview = memo(function MetricsOverview() {
   const [metrics, setMetrics] = useState<Metric[]>([]);

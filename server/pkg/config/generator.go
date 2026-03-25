@@ -25,30 +25,18 @@ type Generator struct {
 	Reader *bufio.Reader
 }
 
-// NewGenerator creates a new Generator instance that reads from standard input.
+// NewGenerator creates a new generator.
+//
+// Summary: Creates a new generator.
 //
 // Parameters:
-//   - None
+//   None.
 //
 // Returns:
-//   - *Generator: The resulting *Generator.
+//   - *Generator: The result.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes NewGenerator operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -58,31 +46,19 @@ func NewGenerator() *Generator {
 	}
 }
 
-// Generate prompts the user for service details and returns the generated configuration as a byte slice.
+// Generate generate generate.
+//
+// Summary: Generate generate.
 //
 // Parameters:
-//   - None
+//   None.
 //
 // Returns:
-//   - []byte: The resulting []byte.
+//   - []byte: The result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Generate operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

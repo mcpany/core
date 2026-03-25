@@ -12,8 +12,16 @@ import { Trash2, Plus } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 /**
- * StepParameters component.
- * @returns The rendered component.
+ * Summary: StepParameters component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function StepParameters() {
     const { state, updateState, updateConfig } = useWizard();

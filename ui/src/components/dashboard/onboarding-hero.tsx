@@ -11,9 +11,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Plus, ShoppingBag, BookOpen, CheckCircle2, Circle } from "lucide-react";
 
 /**
- * OnboardingHero component.
- * Displays a welcome message and call-to-action for new users.
- * @returns The rendered component.
+ * Summary: OnboardingHero component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function OnboardingHero() {
   return (

@@ -31,8 +31,16 @@ import { apiClient } from "@/lib/client";
 import { Severity } from "./types";
 
 /**
- * CreateRuleDialog component.
- * @returns The rendered component.
+ * Summary: CreateRuleDialog component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function CreateRuleDialog() {
   const [open, setOpen] = useState(false);

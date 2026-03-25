@@ -21,6 +21,18 @@ import { ServiceHealthProvider } from "@/contexts/service-health-context";
 import { SystemStatusBanner } from "@/components/system-status-banner";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 
+/**
+ * Summary: PageFallback component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const PageFallback = () => (
   <div className="flex items-center justify-center h-full min-h-[200px]">
     <Loader2 className="animate-spin h-8 w-8 text-muted-foreground" />

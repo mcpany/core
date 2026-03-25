@@ -37,6 +37,18 @@ interface VirtuosoContext {
     toggleTool: (svcName: string, toolName: string, checked: boolean) => void;
 }
 
+/**
+ * Summary: ItemContent component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const ItemContent = (_: number, svc: UpstreamServiceConfig, context: VirtuosoContext) => {
     const {
         implicitlySelectedServices,

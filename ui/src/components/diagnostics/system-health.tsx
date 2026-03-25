@@ -26,8 +26,16 @@ import {
 import { cn } from "@/lib/utils";
 
 /**
- * SystemHealth component.
- * @returns The rendered component.
+ * Summary: SystemHealth component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function SystemHealth() {
   const [report, setReport] = useState<DoctorReport | null>(null);

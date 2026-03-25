@@ -15,11 +15,18 @@ interface OAuthConfigProps {
 }
 
 /**
- * OAuthConfig component.
- * @param props - The component props.
- * @param props.auth - The authentication configuration.
- * @param props.onChange - Callback function when value changes.
- * @returns The rendered component.
+ * Summary: OAuthConfig component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.auth: The authentication configuration.
+ *   - props.onChange: Callback function when value changes.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function OAuthConfig({ auth, onChange }: OAuthConfigProps) {
     const updateAuth = (updates: Partial<NonNullable<Authentication["oauth2"]>>) => {

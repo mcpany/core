@@ -35,8 +35,16 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { sanitizeServiceConfig, SecretHandlingMode } from "@/lib/config-utils"
 
 /**
- * ShareCollectionDialog component.
- * @returns The rendered component.
+ * Summary: ShareCollectionDialog component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function ShareCollectionDialog() {
   const [open, setOpen] = React.useState(false)

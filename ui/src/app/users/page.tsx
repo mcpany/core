@@ -15,8 +15,16 @@ import { Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 /**
- * UsersPage component.
- * @returns The rendered component.
+ * Summary: UsersPage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function UsersPage() {
     const [users, setUsers] = useState<User[]>([]);

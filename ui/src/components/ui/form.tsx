@@ -17,6 +17,18 @@ import {
 import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
 
+/**
+ * Summary: Form component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const Form = FormProvider
 
 type FormFieldContextValue<
@@ -26,10 +38,34 @@ type FormFieldContextValue<
   name: TName
 }
 
+/**
+ * Summary: FormFieldContext component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const FormFieldContext = React.createContext<FormFieldContextValue>(
   {} as FormFieldContextValue
 )
 
+/**
+ * Summary: FormField component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const FormField = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
@@ -70,15 +106,34 @@ type FormItemContextValue = {
   id: string
 }
 
+/**
+ * Summary: FormItemContext component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const FormItemContext = React.createContext<FormItemContextValue>(
   {} as FormItemContextValue
 )
 
 /**
- * FormItem component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: FormItem component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const FormItem = React.forwardRef<
   HTMLDivElement,
@@ -95,10 +150,17 @@ const FormItem = React.forwardRef<
 FormItem.displayName = "FormItem"
 
 /**
- * FormLabel component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: FormLabel component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const FormLabel = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,
@@ -118,9 +180,16 @@ const FormLabel = React.forwardRef<
 FormLabel.displayName = "FormLabel"
 
 /**
- * FormControl component.
- * @param props - The component props.
- * @returns The rendered component.
+ * Summary: FormControl component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const FormControl = React.forwardRef<
   React.ElementRef<typeof Slot>,
@@ -145,10 +214,17 @@ const FormControl = React.forwardRef<
 FormControl.displayName = "FormControl"
 
 /**
- * FormDescription component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: FormDescription component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const FormDescription = React.forwardRef<
   HTMLParagraphElement,
@@ -168,11 +244,18 @@ const FormDescription = React.forwardRef<
 FormDescription.displayName = "FormDescription"
 
 /**
- * FormMessage component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * Summary: FormMessage component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *   - props.children: The child components.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const FormMessage = React.forwardRef<
   HTMLParagraphElement,

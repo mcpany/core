@@ -35,6 +35,18 @@ const _SyntaxHighlighterLazy = lazy(
         return { default: mod.default };
     })
 );
+/**
+ * Summary: SyntaxHighlighter component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const SyntaxHighlighter = (props: any) => (
     <Suspense fallback={<div className="p-4 bg-[rgba(0,0,0,0.4)] h-12 animate-pulse rounded" />}>
         <_SyntaxHighlighterLazy {...props} />
@@ -42,6 +54,18 @@ const SyntaxHighlighter = (props: any) => (
 );
 
 const _DiffEditorLazy = lazy(() => import("@monaco-editor/react").then((mod) => ({ default: mod.DiffEditor })));
+/**
+ * Summary: DiffEditor component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const DiffEditor = (props: any) => (
     <Suspense fallback={<div className="h-full w-full bg-[#1e1e1e] animate-pulse rounded-md" />}>
         <_DiffEditorLazy {...props} />
@@ -341,10 +365,17 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
 }
 
 /**
- * HydrationSafeTime component.
- * @param props - The component props.
- * @param props.date - The date property.
- * @returns The rendered component.
+ * Summary: HydrationSafeTime component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.date: The date property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 function HydrationSafeTime({ date }: { date: Date }) {
     const [mounted, setMounted] = useState(false);

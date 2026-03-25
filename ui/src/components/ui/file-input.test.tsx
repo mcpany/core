@@ -29,6 +29,18 @@ describe("FileInput", () => {
 
     it("handles file drop", async () => {
         // Use a wrapper to simulate controlled component behavior
+/**
+ * Summary: Wrapper component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
         const Wrapper = () => {
              const [val, setVal] = React.useState<string | undefined>(undefined);
              return <FileInput value={val} onChange={setVal} />;

@@ -86,6 +86,18 @@ describe("ServiceHealthContext", () => {
         vi.useFakeTimers();
 
         let renderCount = 0;
+/**
+ * Summary: Consumer component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
         const Consumer = () => {
             useTopology();
             renderCount++;

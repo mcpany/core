@@ -31,30 +31,18 @@ type MockManagerInterfaceMockRecorder struct {
 	mock *MockManagerInterface
 }
 
-// NewMockManagerInterface creates a new mock instance. ctrl is the ctrl. Returns the result.
+// NewMockManagerInterface creates a new mock manager interface.
+//
+// Summary: Creates a new mock manager interface.
 //
 // Parameters:
-//   - ctrl (*gomock.Controller): The ctrl parameter.
+//   - ctrl (*gomock.Controller): The ctrl.
 //
 // Returns:
-//   - *MockManagerInterface: The resulting *MockManagerInterface.
+//   - *MockManagerInterface: The result.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes NewMockManagerInterface operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -64,30 +52,18 @@ func NewMockManagerInterface(ctrl *gomock.Controller) *MockManagerInterface {
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use. Returns the result.
+// EXPECT eXPECT expect.
+//
+// Summary: EXPECT expect.
 //
 // Parameters:
-//   - None
+//   None.
 //
 // Returns:
-//   - *MockManagerInterfaceMockRecorder: The resulting *MockManagerInterfaceMockRecorder.
+//   - *MockManagerInterfaceMockRecorder: The result.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes EXPECT operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -95,30 +71,18 @@ func (m *MockManagerInterface) EXPECT() *MockManagerInterfaceMockRecorder {
 	return m.recorder
 }
 
-// AddResource mocks base method. resource is the resource.
+// AddResource addResource add resource.
+//
+// Summary: AddResource add resource.
 //
 // Parameters:
-//   - resource (Resource): The resource parameter.
+//   - resource (Resource): The resource.
 //
 // Returns:
-//   - None
+//   None.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes AddResource operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -127,30 +91,18 @@ func (m *MockManagerInterface) AddResource(resource Resource) {
 	m.ctrl.Call(m, "AddResource", resource)
 }
 
-// AddResource indicates an expected call of AddResource. resource is the resource. Returns the result.
+// AddResource addResource add resource.
+//
+// Summary: AddResource add resource.
 //
 // Parameters:
-//   - resource (any): The resource parameter.
+//   - resource (any): The resource.
 //
 // Returns:
-//   - *gomock.Call: The resulting *gomock.Call.
+//   - *gomock.Call: The result.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes AddResource operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -159,30 +111,18 @@ func (mr *MockManagerInterfaceMockRecorder) AddResource(resource any) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddResource", reflect.TypeOf((*MockManagerInterface)(nil).AddResource), resource)
 }
 
-// Clear mocks base method.
+// Clear clear clear.
+//
+// Summary: Clear clear.
 //
 // Parameters:
-//   - None
+//   None.
 //
 // Returns:
-//   - None
+//   None.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Clear operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -191,30 +131,18 @@ func (m *MockManagerInterface) Clear() {
 	m.ctrl.Call(m, "Clear")
 }
 
-// Clear indicates an expected call of Clear. Returns the result.
+// Clear clear clear.
+//
+// Summary: Clear clear.
 //
 // Parameters:
-//   - None
+//   None.
 //
 // Returns:
-//   - *gomock.Call: The resulting *gomock.Call.
+//   - *gomock.Call: The result.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Clear operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -223,30 +151,18 @@ func (mr *MockManagerInterfaceMockRecorder) Clear() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Clear", reflect.TypeOf((*MockManagerInterface)(nil).Clear))
 }
 
-// ClearResourcesForService mocks base method. serviceID is the serviceID.
+// ClearResourcesForService clearResourcesForService clear resources for service.
+//
+// Summary: ClearResourcesForService clear resources for service.
 //
 // Parameters:
-//   - serviceID (string): The serviceID parameter.
+//   - serviceID (string): The service id.
 //
 // Returns:
-//   - None
+//   None.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes ClearResourcesForService operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -255,30 +171,18 @@ func (m *MockManagerInterface) ClearResourcesForService(serviceID string) {
 	m.ctrl.Call(m, "ClearResourcesForService", serviceID)
 }
 
-// ClearResourcesForService indicates an expected call of ClearResourcesForService. serviceID is the serviceID. Returns the result.
+// ClearResourcesForService clearResourcesForService clear resources for service.
+//
+// Summary: ClearResourcesForService clear resources for service.
 //
 // Parameters:
-//   - serviceID (any): The serviceID parameter.
+//   - serviceID (any): The service id.
 //
 // Returns:
-//   - *gomock.Call: The resulting *gomock.Call.
+//   - *gomock.Call: The result.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes ClearResourcesForService operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -287,31 +191,19 @@ func (mr *MockManagerInterfaceMockRecorder) ClearResourcesForService(serviceID a
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ClearResourcesForService", reflect.TypeOf((*MockManagerInterface)(nil).ClearResourcesForService), serviceID)
 }
 
-// GetResource mocks base method. uri is the uri. Returns the result. Returns true if successful.
+// GetResource retrieves the resource.
+//
+// Summary: Retrieves the resource.
 //
 // Parameters:
-//   - uri (string): The uri parameter.
+//   - uri (string): The uri.
 //
 // Returns:
-//   - Resource: The resulting Resource.
-//   - bool: True if successful, false otherwise.
+//   - Resource: The result.
+//   - bool: The result.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Retrieves GetResource operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -323,30 +215,18 @@ func (m *MockManagerInterface) GetResource(uri string) (Resource, bool) {
 	return ret0, ret1
 }
 
-// GetResource indicates an expected call of GetResource. uri is the uri. Returns the result.
+// GetResource retrieves the resource.
+//
+// Summary: Retrieves the resource.
 //
 // Parameters:
-//   - uri (any): The uri parameter.
+//   - uri (any): The uri.
 //
 // Returns:
-//   - *gomock.Call: The resulting *gomock.Call.
+//   - *gomock.Call: The result.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Retrieves GetResource operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -355,30 +235,18 @@ func (mr *MockManagerInterfaceMockRecorder) GetResource(uri any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetResource", reflect.TypeOf((*MockManagerInterface)(nil).GetResource), uri)
 }
 
-// ListResources mocks base method. Returns the result.
+// ListResources retrieves a list of resources.
+//
+// Summary: Retrieves a list of resources.
 //
 // Parameters:
-//   - None
+//   None.
 //
 // Returns:
-//   - []Resource: The resulting []Resource.
+//   - []Resource: The result.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes ListResources operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -389,30 +257,18 @@ func (m *MockManagerInterface) ListResources() []Resource {
 	return ret0
 }
 
-// ListResources indicates an expected call of ListResources. Returns the result.
+// ListResources retrieves a list of resources.
+//
+// Summary: Retrieves a list of resources.
 //
 // Parameters:
-//   - None
+//   None.
 //
 // Returns:
-//   - *gomock.Call: The resulting *gomock.Call.
+//   - *gomock.Call: The result.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes ListResources operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -421,30 +277,18 @@ func (mr *MockManagerInterfaceMockRecorder) ListResources() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListResources", reflect.TypeOf((*MockManagerInterface)(nil).ListResources))
 }
 
-// OnListChanged mocks base method. arg0 is the arg0.
+// OnListChanged onListChanged on list changed.
+//
+// Summary: OnListChanged on list changed.
 //
 // Parameters:
-//   - arg0 (func(): The arg0 parameter.
+//   - arg0 (func()): The arg0.
 //
 // Returns:
-//   - ): The resulting ).
+//   None.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes OnListChanged operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -453,30 +297,18 @@ func (m *MockManagerInterface) OnListChanged(arg0 func()) {
 	m.ctrl.Call(m, "OnListChanged", arg0)
 }
 
-// OnListChanged indicates an expected call of OnListChanged. arg0 is the arg0. Returns the result.
+// OnListChanged onListChanged on list changed.
+//
+// Summary: OnListChanged on list changed.
 //
 // Parameters:
-//   - arg0 (any): The arg0 parameter.
+//   - arg0 (any): The arg0.
 //
 // Returns:
-//   - *gomock.Call: The resulting *gomock.Call.
+//   - *gomock.Call: The result.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes OnListChanged operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -485,30 +317,18 @@ func (mr *MockManagerInterfaceMockRecorder) OnListChanged(arg0 any) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "OnListChanged", reflect.TypeOf((*MockManagerInterface)(nil).OnListChanged), arg0)
 }
 
-// RemoveResource mocks base method. uri is the uri.
+// RemoveResource removeResource remove resource.
+//
+// Summary: RemoveResource remove resource.
 //
 // Parameters:
-//   - uri (string): The uri parameter.
+//   - uri (string): The uri.
 //
 // Returns:
-//   - None
+//   None.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes RemoveResource operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -517,30 +337,18 @@ func (m *MockManagerInterface) RemoveResource(uri string) {
 	m.ctrl.Call(m, "RemoveResource", uri)
 }
 
-// RemoveResource indicates an expected call of RemoveResource. uri is the uri. Returns the result.
+// RemoveResource removeResource remove resource.
+//
+// Summary: RemoveResource remove resource.
 //
 // Parameters:
-//   - uri (any): The uri parameter.
+//   - uri (any): The uri.
 //
 // Returns:
-//   - *gomock.Call: The resulting *gomock.Call.
+//   - *gomock.Call: The result.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes RemoveResource operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

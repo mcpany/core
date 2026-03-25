@@ -12,8 +12,16 @@ import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
 /**
- * SkillList component.
- * @returns The rendered component.
+ * Summary: SkillList component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function SkillList() {
   const [skills, setSkills] = useState<Skill[]>([]);

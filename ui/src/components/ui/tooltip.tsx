@@ -8,38 +8,66 @@ import * as TooltipPrimitive from "@radix-ui/react-tooltip"
 import { cn } from "@/lib/utils"
 
 /**
- * TooltipProvider component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.sideOffset - The unique identifier for seOffset.
- * @returns The rendered component.
+ * Summary: TooltipProvider component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *   - props.sideOffset: The unique identifier for seOffset.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const TooltipProvider = TooltipPrimitive.Provider
 
 /**
- * Tooltip component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.sideOffset - The unique identifier for seOffset.
- * @returns The rendered component.
+ * Summary: Tooltip component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *   - props.sideOffset: The unique identifier for seOffset.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const Tooltip = TooltipPrimitive.Root
 
 /**
- * TooltipTrigger component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.sideOffset - The unique identifier for seOffset.
- * @returns The rendered component.
+ * Summary: TooltipTrigger component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *   - props.sideOffset: The unique identifier for seOffset.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const TooltipTrigger = TooltipPrimitive.Trigger
 
 /**
- * TooltipContent component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.sideOffset - The unique identifier for seOffset.
- * @returns The rendered component.
+ * Summary: TooltipContent component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *   - props.sideOffset: The unique identifier for seOffset.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const TooltipContent = React.forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Content>,

@@ -78,6 +78,18 @@ export function ServiceTemplateSelector({ onSelect }: ServiceTemplateSelectorPro
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-4">
         {filteredTemplates.map((template) => {
+/**
+ * Summary: Icon component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
           const Icon = template.icon;
           return (
             <div

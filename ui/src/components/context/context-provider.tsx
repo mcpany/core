@@ -27,6 +27,18 @@ interface ContextState {
     getToolCost: (tool: ToolDefinition) => number;
 }
 
+/**
+ * Summary: ContextContext component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const ContextContext = createContext<ContextState | undefined>(undefined);
 
 /**

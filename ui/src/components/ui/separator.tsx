@@ -8,12 +8,19 @@ import * as SeparatorPrimitive from "@radix-ui/react-separator"
 import { cn } from "@/lib/utils"
 
 /**
- * Separator component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.orientation - The orientation property.
- * @param props.decorative - The decorative property.
- * @returns The rendered component.
+ * Summary: Separator component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *   - props.orientation: The orientation property.
+ *   - props.decorative: The decorative property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const Separator = React.forwardRef<
   React.ElementRef<typeof SeparatorPrimitive.Root>,

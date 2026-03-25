@@ -16,27 +16,19 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// ConvertMCPToolToProto transforms an *mcp.Tool, which uses a flexible schema
-// representation, into a protobuf-defined *pb.Tool with a structured input
-// schema. This is used to standardize tool definitions within the system.
+// ConvertMCPToolToProto convertMCPToolToProto convert mcp tool to proto.
+//
+// Summary: ConvertMCPToolToProto convert mcp tool to proto.
 //
 // Parameters:
-//   - tool: *mcp.Tool. The MCP tool definition to convert.
+//   - tool (*mcp.Tool): The tool.
 //
 // Returns:
-//   - *pb.Tool: The corresponding protobuf tool definition.
-//   - error: An error if conversion fails (e.g. invalid schema).
-//
-// Summary: Executes ConvertMCPToolToProto operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - *pb.Tool: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -119,27 +111,19 @@ func convertJSONSchemaToStruct(schema any) (*structpb.Struct, error) {
 	return structpb.NewStruct(schemaMap)
 }
 
-// ConvertMcpFieldsToInputSchemaProperties converts a slice of McpField, which
-// represent fields from a protobuf message, into a structpb.Struct that can be
-// used as the `properties` field in a JSON schema.
+// ConvertMcpFieldsToInputSchemaProperties convertMcpFieldsToInputSchemaProperties convert mcp fields to input schema properties.
+//
+// Summary: ConvertMcpFieldsToInputSchemaProperties convert mcp fields to input schema properties.
 //
 // Parameters:
-//   - fields: []*protobufparser.McpField. The list of fields to convert.
+//   - fields ([]*protobufparser.McpField): The fields.
 //
 // Returns:
-//   - *structpb.Struct: A struct representing the properties JSON schema.
-//   - error: An error if conversion fails.
-//
-// Summary: Executes ConvertMcpFieldsToInputSchemaProperties operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - *structpb.Struct: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -166,28 +150,21 @@ func ConvertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) 
 	return properties, nil
 }
 
-// ConvertToolDefinitionToProto transforms a *configv1.ToolDefinition into a
-// *pb.Tool.
+// ConvertToolDefinitionToProto convertToolDefinitionToProto convert tool definition to proto.
+//
+// Summary: ConvertToolDefinitionToProto convert tool definition to proto.
 //
 // Parameters:
-//   - toolDef: *configv1.ToolDefinition. The tool definition from configuration.
-//   - inputSchema: *structpb.Struct. The input schema for the tool.
-//   - outputSchema: *structpb.Struct. The output schema for the tool.
+//   - toolDef (*configv1.ToolDefinition): The tool def.
+//   - inputSchema (unknown): The input schema.
+//   - outputSchema (*structpb.Struct): The output schema.
 //
 // Returns:
-//   - *pb.Tool: The protobuf tool definition.
-//   - error: An error if conversion fails.
-//
-// Summary: Executes ConvertToolDefinitionToProto operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - *pb.Tool: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -230,28 +207,20 @@ func ConvertToolDefinitionToProto(toolDef *configv1.ToolDefinition, inputSchema,
 	return builder.Build(), nil
 }
 
-// GetJSONSchemaForScalarType maps a protobuf scalar type (e.g., "TYPE_STRING",
-// "TYPE_INT32") to its corresponding JSON schema type ("string", "integer"). It
-// is a helper function for building JSON schemas from protobuf definitions.
+// GetJSONSchemaForScalarType retrieves the json schema for scalar type.
+//
+// Summary: Retrieves the json schema for scalar type.
 //
 // Parameters:
-//   - scalarType: string. The protobuf scalar type name.
-//   - description: string. The description for the schema.
+//   - scalarType (unknown): The scalar type.
+//   - description (string): The description.
 //
 // Returns:
-//   - *jsonschema.Schema: The generated JSON schema.
-//   - error: An error if the scalar type is unsupported.
-//
-// Summary: Retrieves GetJSONSchemaForScalarType operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - *jsonschema.Schema: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -279,27 +248,19 @@ func GetJSONSchemaForScalarType(scalarType, description string) (*jsonschema.Sch
 	return s, nil
 }
 
-// ConvertProtoToMCPTool transforms a protobuf-defined *pb.Tool into an
-// *mcp.Tool. This is the reverse of convertMCPToolToProto and is used when
-// exposing internally defined tools to the outside world.
+// ConvertProtoToMCPTool convertProtoToMCPTool convert proto to mcp tool.
+//
+// Summary: ConvertProtoToMCPTool convert proto to mcp tool.
 //
 // Parameters:
-//   - pbTool: *pb.Tool. The protobuf tool definition to convert.
+//   - pbTool (*pb.Tool): The pb tool.
 //
 // Returns:
-//   - *mcp.Tool: The corresponding MCP tool definition.
-//   - error: An error if conversion fails.
-//
-// Summary: Executes ConvertProtoToMCPTool operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - *mcp.Tool: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

@@ -14,8 +14,16 @@ import { Edit, ChevronLeft } from 'lucide-react';
 import { toast } from 'sonner';
 
 /**
- * SkillDetail component.
- * @returns The rendered component.
+ * Summary: SkillDetail component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function SkillDetail() {
   const params = useParams();

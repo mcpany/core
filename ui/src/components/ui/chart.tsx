@@ -8,6 +8,18 @@ import * as RechartsPrimitive from "recharts"
 import { cn } from "@/lib/utils"
 
 // Format: { THEME_NAME: CSS_SELECTOR }
+/**
+ * Summary: THEMES component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const THEMES = { light: "", dark: ".dark" } as const
 
 /**
@@ -27,6 +39,18 @@ type ChartContextProps = {
   config: ChartConfig
 }
 
+/**
+ * Summary: ChartContext component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const ChartContext = React.createContext<ChartContextProps | null>(null)
 
 function useChart() {
@@ -40,13 +64,20 @@ function useChart() {
 }
 
 /**
- * ChartContainer component.
- * @param props - The component props.
- * @param props.id - The unique identifier.
- * @param props.className - The name of the class.
- * @param props.children - The child components.
- * @param props.config - The configuration object.
- * @returns The rendered component.
+ * Summary: ChartContainer component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.id: The unique identifier.
+ *   - props.className: The name of the class.
+ *   - props.children: The child components.
+ *   - props.config: The configuration object.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const ChartContainer = React.forwardRef<
   HTMLDivElement,
@@ -82,11 +113,18 @@ const ChartContainer = React.forwardRef<
 ChartContainer.displayName = "Chart"
 
 /**
- * ChartStyle component.
- * @param props - The component props.
- * @param props.id - The unique identifier.
- * @param props.config - The configuration object.
- * @returns The rendered component.
+ * Summary: ChartStyle component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.id: The unique identifier.
+ *   - props.config: The configuration object.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
   const colorConfig = Object.entries(config).filter(
@@ -144,42 +182,56 @@ ${colorConfig
 }
 
 /**
- * ChartTooltip component.
- * @param props - The component props.
- * @param props.active - The active property.
- * @param props.payload - The payload property.
- * @param props.className - The name of the class.
- * @param props.indicator - The indicator property.
- * @param props.hideLabel - The unique identifier for heLabel.
- * @param props.hideIndicator - The unique identifier for heIndicator.
- * @param props.label - The label property.
- * @param props.labelFormatter - The labelFormatter property.
- * @param props.labelClassName - The name of the labelClass.
- * @param props.formatter - The formatter property.
- * @param props.color - The color property.
- * @param props.nameKey - The name of the Key.
- * @param props.labelKey - The labelKey property.
- * @returns The rendered component.
+ * Summary: ChartTooltip component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.active: The active property.
+ *   - props.payload: The payload property.
+ *   - props.className: The name of the class.
+ *   - props.indicator: The indicator property.
+ *   - props.hideLabel: The unique identifier for heLabel.
+ *   - props.hideIndicator: The unique identifier for heIndicator.
+ *   - props.label: The label property.
+ *   - props.labelFormatter: The labelFormatter property.
+ *   - props.labelClassName: The name of the labelClass.
+ *   - props.formatter: The formatter property.
+ *   - props.color: The color property.
+ *   - props.nameKey: The name of the Key.
+ *   - props.labelKey: The labelKey property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const ChartTooltip = RechartsPrimitive.Tooltip
 
 /**
- * ChartTooltipContent component.
- * @param props - The component props.
- * @param props.active - The active property.
- * @param props.payload - The payload property.
- * @param props.className - The name of the class.
- * @param props.indicator - The indicator property.
- * @param props.hideLabel - The unique identifier for heLabel.
- * @param props.hideIndicator - The unique identifier for heIndicator.
- * @param props.label - The label property.
- * @param props.labelFormatter - The labelFormatter property.
- * @param props.labelClassName - The name of the labelClass.
- * @param props.formatter - The formatter property.
- * @param props.color - The color property.
- * @param props.nameKey - The name of the Key.
- * @param props.labelKey - The labelKey property.
- * @returns The rendered component.
+ * Summary: ChartTooltipContent component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.active: The active property.
+ *   - props.payload: The payload property.
+ *   - props.className: The name of the class.
+ *   - props.indicator: The indicator property.
+ *   - props.hideLabel: The unique identifier for heLabel.
+ *   - props.hideIndicator: The unique identifier for heIndicator.
+ *   - props.label: The label property.
+ *   - props.labelFormatter: The labelFormatter property.
+ *   - props.labelClassName: The name of the labelClass.
+ *   - props.formatter: The formatter property.
+ *   - props.color: The color property.
+ *   - props.nameKey: The name of the Key.
+ *   - props.labelKey: The labelKey property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const ChartTooltipContent = React.forwardRef<
   HTMLDivElement,
@@ -336,26 +388,40 @@ const ChartTooltipContent = React.forwardRef<
 ChartTooltipContent.displayName = "ChartTooltip"
 
 /**
- * ChartLegend component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.hideIcon - The unique identifier for heIcon.
- * @param props.payload - The payload property.
- * @param props.verticalAlign - The verticalAlign property.
- * @param props.nameKey - The name of the Key.
- * @returns The rendered component.
+ * Summary: ChartLegend component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *   - props.hideIcon: The unique identifier for heIcon.
+ *   - props.payload: The payload property.
+ *   - props.verticalAlign: The verticalAlign property.
+ *   - props.nameKey: The name of the Key.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const ChartLegend = RechartsPrimitive.Legend
 
 /**
- * ChartLegendContent component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.hideIcon - The unique identifier for heIcon.
- * @param props.payload - The payload property.
- * @param props.verticalAlign - The verticalAlign property.
- * @param props.nameKey - The name of the Key.
- * @returns The rendered component.
+ * Summary: ChartLegendContent component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *   - props.hideIcon: The unique identifier for heIcon.
+ *   - props.payload: The payload property.
+ *   - props.verticalAlign: The verticalAlign property.
+ *   - props.nameKey: The name of the Key.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const ChartLegendContent = React.forwardRef<
   HTMLDivElement,

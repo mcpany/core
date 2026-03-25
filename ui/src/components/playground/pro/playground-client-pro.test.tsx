@@ -22,6 +22,18 @@ vi.mock('@/hooks/use-toast', () => ({
 }));
 
 vi.mock('@/hooks/use-local-storage', async () => {
+/**
+ * Summary: React component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
     const React = await import('react');
     return {
         useLocalStorage: (key: string, initialValue: any) => {

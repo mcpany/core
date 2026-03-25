@@ -6,10 +6,17 @@ import * as React from "react"
 import { ThemeProvider as NextThemesProvider } from "next-themes"
 
 /**
- * Provides theme context to the application using next-themes.
+ * Summary: ThemeProvider component.
  *
- * @param props - The properties for the ThemeProvider, including children and theme settings.
- * @returns The ThemeProvider component.
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.children: The child components.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function ThemeProvider({ children, ...props }: React.ComponentProps<typeof NextThemesProvider>) {
   return <NextThemesProvider {...props}>{children}</NextThemesProvider>

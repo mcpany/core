@@ -16,9 +16,16 @@ import { ContextTreemap } from "@/components/context/context-treemap";
 import { ContextSimulator } from "@/components/context/context-simulator";
 
 /**
- * ContextPage component.
- * Displays the Recursive Context Dashboard.
- * @returns The rendered component.
+ * Summary: ContextPage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function ContextPage() {
   const [seeding, setSeeding] = useState(false);

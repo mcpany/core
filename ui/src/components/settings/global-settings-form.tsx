@@ -41,8 +41,16 @@ const settingsSchema = z.object({
 type SettingsValues = z.infer<typeof settingsSchema>;
 
 /**
- * GlobalSettingsForm component.
- * @returns The rendered component.
+ * Summary: GlobalSettingsForm component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function GlobalSettingsForm() {
   const [loading, setLoading] = useState(false);

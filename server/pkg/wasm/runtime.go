@@ -59,21 +59,18 @@ type Plugin interface {
 // Summary: Represents a MockRuntime.
 type MockRuntime struct{}
 
-// NewMockRuntime creates a new MockRuntime.
+// NewMockRuntime creates a new mock runtime.
 //
-// Returns:
-//   - *MockRuntime: A new mock runtime instance.
-//
-// Summary: Initializes NewMockRuntime operation.
+// Summary: Creates a new mock runtime.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *MockRuntime: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -81,26 +78,20 @@ func NewMockRuntime() *MockRuntime {
 	return &MockRuntime{}
 }
 
-// LoadPlugin loads a plugin.
+// LoadPlugin loadPlugin load plugin.
+//
+// Summary: LoadPlugin load plugin.
 //
 // Parameters:
-//   - _ : The context (unused).
-//   - bytecode: The bytecode to load.
+//   - _ (context.Context): Unused parameter.
+//   - bytecode ([]byte): The bytecode.
 //
 // Returns:
-//   - Plugin: A mock plugin.
-//   - error: An error if the bytecode is empty.
-//
-// Summary: Executes LoadPlugin operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - Plugin: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -111,21 +102,18 @@ func (m *MockRuntime) LoadPlugin(_ context.Context, bytecode []byte) (Plugin, er
 	return &MockPlugin{}, nil
 }
 
-// Close closes the runtime.
+// Close close close.
 //
-// Returns:
-//   - error: Always returns nil.
-//
-// Summary: Executes Close operation.
+// Summary: Close close.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -138,27 +126,21 @@ func (m *MockRuntime) Close() error {
 // Summary: Represents a MockPlugin.
 type MockPlugin struct{}
 
-// Execute executes a function.
+// Execute executes the operation.
+//
+// Summary: Executes the operation.
 //
 // Parameters:
-//   - _ : The context (unused).
-//   - function: The function name to execute.
-//   - _ : The arguments (unused).
+//   - _ (context.Context): Unused parameter.
+//   - function (string): The function.
+//   - _ (...[]byte): Unused parameter.
 //
 // Returns:
-//   - []byte: The result ("success").
-//   - error: An error if the function name is "error".
-//
-// Summary: Executes Execute operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - []byte: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -169,21 +151,18 @@ func (p *MockPlugin) Execute(_ context.Context, function string, _ ...[]byte) ([
 	return []byte("success"), nil
 }
 
-// Close closes the plugin.
+// Close close close.
 //
-// Returns:
-//   - error: Always returns nil.
-//
-// Summary: Executes Close operation.
+// Summary: Close close.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

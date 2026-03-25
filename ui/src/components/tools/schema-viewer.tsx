@@ -52,11 +52,18 @@ const getTypeColor = (type?: string | string[]) => {
 };
 
 /**
- * TypeBadge component.
- * @param props - The component props.
- * @param props.type - The type definition.
- * @param props.format - The format property.
- * @returns The rendered component.
+ * Summary: TypeBadge component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.type: The type definition.
+ *   - props.format: The format property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const TypeBadge = ({ type, format }: { type?: string | string[], format?: string }) => {
   if (!type) return null;
@@ -71,13 +78,20 @@ const TypeBadge = ({ type, format }: { type?: string | string[], format?: string
 };
 
 /**
- * SchemaViewer component.
- * @param props - The component props.
- * @param props.schema - The schema definition.
- * @param props.name - The name.
- * @param props.required - Whether the field is required.
- * @param props.depth - The nesting depth.
- * @returns The rendered component.
+ * Summary: SchemaViewer component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.schema: The schema definition.
+ *   - props.name: The name.
+ *   - props.required: Whether the field is required.
+ *   - props.depth: The nesting depth.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function SchemaViewer({ schema, name, required = false, depth = 0 }: SchemaViewerProps) {
   const [isOpen, setIsOpen] = useState(true);

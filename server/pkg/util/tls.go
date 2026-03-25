@@ -14,30 +14,19 @@ import (
 	"github.com/mcpany/core/server/pkg/validation"
 )
 
-// NewHTTPClientWithTLS creates a new *http.Client configured with the specified
-// TLS settings. It supports setting a custom CA certificate, a client
-// certificate and key, the server name for SNI, and skipping verification.
+// NewHTTPClientWithTLS creates a new http client with tls.
 //
-// It also configures the client with a SafeDialer to prevent SSRF attacks against
-// cloud metadata services (LinkLocal addresses) and optionally private networks.
+// Summary: Creates a new http client with tls.
 //
 // Parameters:
-//   - tlsConfig: The TLS settings to apply to the HTTP client's transport.
+//   - tlsConfig (*configv1.TLSConfig): The tls config.
 //
 // Returns:
-//   - *http.Client: A configured *http.Client.
-//   - error: An error if the TLS configuration is invalid or files cannot be read.
-//
-// Summary: Initializes NewHTTPClientWithTLS operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - *http.Client: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

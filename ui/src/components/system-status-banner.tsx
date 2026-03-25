@@ -12,8 +12,16 @@ import { apiClient, DoctorReport } from "@/lib/client";
 import { usePolling } from "@/hooks/use-polling";
 
 /**
- * SystemStatusBanner component.
- * @returns The rendered component.
+ * Summary: SystemStatusBanner component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function SystemStatusBanner() {
   const [report, setReport] = useState<DoctorReport | null>(null);

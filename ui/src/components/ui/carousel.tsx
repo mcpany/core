@@ -32,6 +32,18 @@ type CarouselContextProps = {
   canScrollNext: boolean
 } & CarouselProps
 
+/**
+ * Summary: CarouselContext component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const CarouselContext = React.createContext<CarouselContextProps | null>(null)
 
 function useCarousel() {
@@ -45,15 +57,22 @@ function useCarousel() {
 }
 
 /**
- * Carousel component.
- * @param props - The component props.
- * @param props.orientation - The orientation property.
- * @param props.opts - The opts property.
- * @param props.setApi - The setApi property.
- * @param props.plugins - The plugins property.
- * @param props.className - The name of the class.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * Summary: Carousel component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.orientation: The orientation property.
+ *   - props.opts: The opts property.
+ *   - props.setApi: The setApi property.
+ *   - props.plugins: The plugins property.
+ *   - props.className: The name of the class.
+ *   - props.children: The child components.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const Carousel = React.forwardRef<
   HTMLDivElement,
@@ -164,10 +183,17 @@ const Carousel = React.forwardRef<
 Carousel.displayName = "Carousel"
 
 /**
- * CarouselContent component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: CarouselContent component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const CarouselContent = React.forwardRef<
   HTMLDivElement,
@@ -192,10 +218,17 @@ const CarouselContent = React.forwardRef<
 CarouselContent.displayName = "CarouselContent"
 
 /**
- * CarouselItem component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * Summary: CarouselItem component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const CarouselItem = React.forwardRef<
   HTMLDivElement,
@@ -220,12 +253,19 @@ const CarouselItem = React.forwardRef<
 CarouselItem.displayName = "CarouselItem"
 
 /**
- * CarouselPrevious component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.variant - The variant property.
- * @param props.size - The size property.
- * @returns The rendered component.
+ * Summary: CarouselPrevious component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *   - props.variant: The variant property.
+ *   - props.size: The size property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const CarouselPrevious = React.forwardRef<
   HTMLButtonElement,
@@ -257,12 +297,19 @@ const CarouselPrevious = React.forwardRef<
 CarouselPrevious.displayName = "CarouselPrevious"
 
 /**
- * CarouselNext component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.variant - The variant property.
- * @param props.size - The size property.
- * @returns The rendered component.
+ * Summary: CarouselNext component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *   - props.variant: The variant property.
+ *   - props.size: The size property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const CarouselNext = React.forwardRef<
   HTMLButtonElement,

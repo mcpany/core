@@ -65,10 +65,17 @@ interface NodeData extends Record<string, unknown> {
 }
 
 /**
- * NodeIcon component.
- * @param props - The component props.
- * @param props.type - The type definition.
- * @returns The rendered component.
+ * Summary: NodeIcon component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.type: The type definition.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const NodeIcon = React.memo(({ type }: { type: NodeType }) => {
     switch (type) {
@@ -87,10 +94,17 @@ const NodeIcon = React.memo(({ type }: { type: NodeType }) => {
 NodeIcon.displayName = 'NodeIcon';
 
 /**
- * StatusIcon component.
- * @param props - The component props.
- * @param props.status - The current status.
- * @returns The rendered component.
+ * Summary: StatusIcon component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.status: The current status.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const StatusIcon = React.memo(({ status }: { status: NodeStatus }) => {
     switch (status) {
@@ -120,10 +134,17 @@ export interface NetworkGraphFlowProps {
 }
 
 /**
- * NetworkGraphFlow component.
- * Renders the interactive network graph using ReactFlow.
- * @param props - The component props.
- * @returns The rendered component.
+ * Summary: NetworkGraphFlow component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.widgetMode: The unique identifier for wgetMode.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function NetworkGraphFlow({ widgetMode = false }: NetworkGraphFlowProps) {
     const router = useRouter();
@@ -405,13 +426,20 @@ export function NetworkGraphFlow({ widgetMode = false }: NetworkGraphFlowProps) 
 }
 
 /**
- * MetricCard component.
- * @param props - The component props.
- * @param props.label - The label property.
- * @param props.value - The current value.
- * @param props.unit - The unit property.
- * @param props.intent - The intent property.
- * @returns The rendered component.
+ * Summary: MetricCard component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.label: The label property.
+ *   - props.value: The current value.
+ *   - props.unit: The unit property.
+ *   - props.intent: The intent property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const MetricCard = React.memo(({ label, value, unit, intent = "neutral" }: { label: string, value?: string, unit: string, intent?: "neutral" | "danger" | "success" }) => {
     return (
@@ -426,8 +454,16 @@ const MetricCard = React.memo(({ label, value, unit, intent = "neutral" }: { lab
 MetricCard.displayName = 'MetricCard';
 
 /**
- * NetworkGraphClient component.
- * @returns The rendered component.
+ * Summary: NetworkGraphClient component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function NetworkGraphClient() {
     return (

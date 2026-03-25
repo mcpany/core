@@ -12,6 +12,18 @@ import { formatTokenCount } from "@/lib/tokens";
 import { ToolDefinition } from "@/lib/client";
 
 // Custom colors for different services (generated based on name or index)
+/**
+ * Summary: COLORS component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const COLORS = [
   "#3b82f6", // Blue
   "#10b981", // Emerald
@@ -33,6 +45,18 @@ interface TreemapNode {
     color?: string;
 }
 
+/**
+ * Summary: CustomizedContent component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const CustomizedContent = (props: any) => {
   const { root, depth, x, y, width, height, index, name, size } = props;
 
@@ -88,6 +112,20 @@ const CustomizedContent = (props: any) => {
   );
 };
 
+/**
+ * Summary: CustomTooltip component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.active: The active property.
+ *   - props.payload: The payload property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
         const data = payload[0].payload;

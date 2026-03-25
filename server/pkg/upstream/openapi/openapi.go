@@ -43,31 +43,18 @@ type OpenAPIUpstream struct { //nolint:revive
 	serviceID    string
 }
 
-// Shutdown gracefully terminates the OpenAPI upstream service. For HTTP-based
-// services, this typically means closing any persistent connections.
+// Shutdown shutdown shutdown.
+//
+// Summary: Shutdown shutdown.
 //
 // Parameters:
-//   - _ (context.Context): The parameter.
+//   - _ (context.Context): Unused parameter.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Shutdown operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -82,25 +69,18 @@ func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
-// NewOpenAPIUpstream creates a new instance of OpenAPIUpstream. It initializes a
-// cache for storing parsed OpenAPI documents to avoid redundant parsing.
+// NewOpenAPIUpstream creates a new open api upstream.
+//
+// Summary: Creates a new open api upstream.
+//
+// Parameters:
+//   None.
 //
 // Returns:
 //   - upstream.Upstream: The result.
 //
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewOpenAPIUpstream operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -330,32 +310,19 @@ type httpClientImpl struct {
 	client *http.Client
 }
 
-// Do sends an HTTP request and returns an HTTP response, fulfilling the
-// client.HTTPClient interface.
+// Do do do.
+//
+// Summary: Do do.
 //
 // Parameters:
-//   - req (*http.Request): The parameter.
+//   - req (*http.Request): The req.
 //
 // Returns:
 //   - *http.Response: The result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Do operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

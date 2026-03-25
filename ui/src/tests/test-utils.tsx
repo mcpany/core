@@ -26,6 +26,19 @@ export function render(
   options?: Omit<RenderOptions, 'wrapper'> & { wrapper?: React.ComponentType<{ children: React.ReactNode }> }
 ) {
   const { wrapper: Wrapper, ...rest } = options ?? {};
+/**
+ * Summary: WrapperComponent component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.children: The child components.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
   const WrapperComponent = ({ children }: { children: React.ReactNode }) => (
     <MemoryRouter>{Wrapper ? <Wrapper>{children}</Wrapper> : children}</MemoryRouter>
   );

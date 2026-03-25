@@ -28,8 +28,16 @@ import { Badge } from "@/components/ui/badge";
 import { SERVICE_REGISTRY } from "@/lib/service-registry";
 
 /**
- * MarketplacePage component.
- * @returns The rendered component.
+ * Summary: MarketplacePage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function MarketplacePage() {
   const { toast } = useToast();

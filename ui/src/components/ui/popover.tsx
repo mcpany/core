@@ -8,32 +8,53 @@ import * as PopoverPrimitive from "@radix-ui/react-popover"
 import { cn } from "@/lib/utils"
 
 /**
- * Popover component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.align - The align property.
- * @param props.sideOffset - The unique identifier for seOffset.
- * @returns The rendered component.
+ * Summary: Popover component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *   - props.align: The align property.
+ *   - props.sideOffset: The unique identifier for seOffset.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const Popover = PopoverPrimitive.Root
 
 /**
- * PopoverTrigger component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.align - The align property.
- * @param props.sideOffset - The unique identifier for seOffset.
- * @returns The rendered component.
+ * Summary: PopoverTrigger component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *   - props.align: The align property.
+ *   - props.sideOffset: The unique identifier for seOffset.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const PopoverTrigger = PopoverPrimitive.Trigger
 
 /**
- * PopoverContent component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.align - The align property.
- * @param props.sideOffset - The unique identifier for seOffset.
- * @returns The rendered component.
+ * Summary: PopoverContent component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *   - props.align: The align property.
+ *   - props.sideOffset: The unique identifier for seOffset.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const PopoverContent = React.forwardRef<
   React.ElementRef<typeof PopoverPrimitive.Content>,

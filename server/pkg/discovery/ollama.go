@@ -37,30 +37,18 @@ type OllamaProvider struct {
 	clientOnce sync.Once
 }
 
-// Name returns the name of the provider.
+// Name name name.
+//
+// Summary: Name name.
 //
 // Parameters:
-//   - None
+//   None.
 //
 // Returns:
-//   - string: The resulting string.
+//   - string: The result.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Name operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -68,31 +56,19 @@ func (p *OllamaProvider) Name() string {
 	return "ollama"
 }
 
-// Discover attempts to find local Ollama instances and return them as tools.
+// Discover discover discover.
+//
+// Summary: Discover discover.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //
 // Returns:
-//   - []*configv1.UpstreamServiceConfig: The resulting []*configv1.UpstreamServiceConfig.
+//   - []*configv1.UpstreamServiceConfig: The result.
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Discover operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

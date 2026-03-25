@@ -12,8 +12,16 @@ import { UpstreamServiceConfig } from "@/lib/types";
 import { useServiceSiblings } from "@/hooks/use-siblings";
 
 /**
- * PromptDetailPage component.
- * @returns The rendered component.
+ * Summary: PromptDetailPage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function PromptDetailPage() {
     const { id = "", name = "" } = useParams<{ id: string; name: string }>();

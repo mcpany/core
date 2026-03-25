@@ -7,6 +7,18 @@ import { renderHook, act } from '@testing-library/react';
 import { usePinnedTools } from './use-pinned-tools';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
+/**
+ * Summary: STORAGE_KEY component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const STORAGE_KEY = "mcpany-pinned-tools";
 
 describe('usePinnedTools', () => {

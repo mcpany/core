@@ -32,6 +32,21 @@ type HelloRequest struct {
 	sizeCache     protoimpl.SizeCache
 }
 
+// Reset reset reset.
+//
+// Summary: Reset reset.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (x *HelloRequest) Reset() {
 	*x = HelloRequest{}
 	mi := &file_greeter_proto_msgTypes[0]
@@ -39,12 +54,57 @@ func (x *HelloRequest) Reset() {
 	ms.StoreMessageInfo(mi)
 }
 
+// String string string.
+//
+// Summary: String string.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - string: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (x *HelloRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
+// ProtoMessage protoMessage proto message.
+//
+// Summary: ProtoMessage proto message.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (*HelloRequest) ProtoMessage() {}
 
+// ProtoReflect protoReflect proto reflect.
+//
+// Summary: ProtoReflect proto reflect.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - protoreflect.Message: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (x *HelloRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_greeter_proto_msgTypes[0]
 	if x != nil {
@@ -62,6 +122,21 @@ func (*HelloRequest) Descriptor() ([]byte, []int) {
 	return file_greeter_proto_rawDescGZIP(), []int{0}
 }
 
+// GetName retrieves the name.
+//
+// Summary: Retrieves the name.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - string: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (x *HelloRequest) GetName() string {
 	if x != nil {
 		return x.Name
@@ -77,6 +152,21 @@ type HelloReply struct {
 	sizeCache     protoimpl.SizeCache
 }
 
+// Reset reset reset.
+//
+// Summary: Reset reset.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (x *HelloReply) Reset() {
 	*x = HelloReply{}
 	mi := &file_greeter_proto_msgTypes[1]
@@ -84,12 +174,57 @@ func (x *HelloReply) Reset() {
 	ms.StoreMessageInfo(mi)
 }
 
+// String string string.
+//
+// Summary: String string.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - string: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (x *HelloReply) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
+// ProtoMessage protoMessage proto message.
+//
+// Summary: ProtoMessage proto message.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (*HelloReply) ProtoMessage() {}
 
+// ProtoReflect protoReflect proto reflect.
+//
+// Summary: ProtoReflect proto reflect.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - protoreflect.Message: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (x *HelloReply) ProtoReflect() protoreflect.Message {
 	mi := &file_greeter_proto_msgTypes[1]
 	if x != nil {
@@ -107,6 +242,21 @@ func (*HelloReply) Descriptor() ([]byte, []int) {
 	return file_greeter_proto_rawDescGZIP(), []int{1}
 }
 
+// GetMessage retrieves the message.
+//
+// Summary: Retrieves the message.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - string: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (x *HelloReply) GetMessage() string {
 	if x != nil {
 		return x.Message

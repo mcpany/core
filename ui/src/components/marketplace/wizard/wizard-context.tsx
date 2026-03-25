@@ -72,6 +72,18 @@ const defaultState: WizardState = {
     transformers: [],
 };
 
+/**
+ * Summary: WizardContext component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const WizardContext = createContext<WizardContextType | undefined>(undefined);
 
 /**

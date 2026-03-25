@@ -13,8 +13,16 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 
 /**
- * StepAuth component.
- * @returns The rendered component.
+ * Summary: StepAuth component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function StepAuth() {
   const { state, updateConfig, updateState } = useWizard();

@@ -35,8 +35,16 @@ interface WebhookConfig {
 }
 
 /**
- * WebhooksPage component.
- * @returns The rendered component.
+ * Summary: WebhooksPage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function WebhooksPage() {
     const [webhooks, setWebhooks] = useState<WebhookConfig[]>([]);

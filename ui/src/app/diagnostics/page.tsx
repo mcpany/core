@@ -7,8 +7,16 @@ import { SystemHealth } from "@/components/diagnostics/system-health";
 import { DiscoveryStatus } from "@/components/diagnostics/discovery-status";
 
 /**
- * DiagnosticsPage component.
- * @returns The rendered component.
+ * Summary: DiagnosticsPage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function DiagnosticsPage() {
   return (

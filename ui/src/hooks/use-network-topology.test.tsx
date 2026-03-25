@@ -17,6 +17,18 @@ vi.mock('../contexts/service-health-context', () => ({
 }));
 
 vi.mock('@xyflow/react', async () => {
+/**
+ * Summary: React component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
   const React = await import('react');
   return {
     useNodesState: (initial: any) => React.useState(initial),

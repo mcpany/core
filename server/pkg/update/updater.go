@@ -28,25 +28,19 @@ type Updater struct {
 	httpClient *http.Client
 }
 
-// NewUpdater creates a new Updater.
+// NewUpdater creates a new updater.
+//
+// Summary: Creates a new updater.
 //
 // Parameters:
-//   - httpClient: *http.Client. The HTTP client to use for network requests. If nil, http.DefaultClient is used.
-//   - githubAPIURL: string. Optional URL for the GitHub API (useful for Enterprise GitHub).
+//   - httpClient (*http.Client): The http client.
+//   - githubAPIURL (string): The github apiurl.
 //
 // Returns:
-//   - *Updater: A new Updater instance.
-//
-// Summary: Initializes NewUpdater operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - *Updater: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -67,31 +61,23 @@ func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 	return &Updater{client: client, httpClient: httpClient}
 }
 
-// CheckForUpdate checks for a new release on GitHub.
+// CheckForUpdate checkForUpdate check for update.
 //
-// It compares the provided current version tag with the latest release tag on the repository.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - owner: string. The GitHub repository owner (e.g., "mcpany").
-//   - repo: string. The GitHub repository name (e.g., "core").
-//   - currentVersion: string. The current version tag of the application.
-//
-// Returns:
-//   - *github.RepositoryRelease: The release information if an update is available, nil otherwise.
-//   - bool: True if a newer version is available, false otherwise.
-//   - error: An error if the check fails (e.g., network error, API rate limit).
-//
-// Summary: Executes CheckForUpdate operation.
+// Summary: CheckForUpdate check for update.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The context for the request.
+//   - owner (unknown): The owner.
+//   - repo (unknown): The repo.
+//   - currentVersion (string): The current version.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *github.RepositoryRelease: The result.
+//   - bool: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -108,35 +94,23 @@ func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersio
 	return release, true, nil
 }
 
-// UpdateTo downloads the new release, verifies its checksum, and replaces the current executable.
+// UpdateTo updates the to.
 //
-// It handles downloading artifacts, verifying SHA256 checksums, and safely swapping the binary.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - fs: afero.Fs. The file system abstraction (usually afero.NewOsFs()).
-//   - executablePath: string. The path to the currently running executable to replace.
-//   - release: *github.RepositoryRelease. The release object to update to.
-//   - assetName: string. The name of the binary asset to download.
-//   - checksumsAssetName: string. The name of the checksums file asset.
-//
-// Returns:
-//   - error: An error if any step of the update process fails (download, verify, replace).
-//
-// Side Effects:
-//   - Writes temporary files to disk.
-//   - Modifies the executable file on disk.
-//
-// Summary: Executes UpdateTo operation.
+// Summary: Updates the to.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The context for the request.
+//   - fs (afero.Fs): The fs.
+//   - executablePath (string): The executable path.
+//   - release (*github.RepositoryRelease): The release.
+//   - assetName (unknown): The asset name.
+//   - checksumsAssetName (string): The checksums asset name.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

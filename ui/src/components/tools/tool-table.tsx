@@ -34,9 +34,25 @@ interface ToolTableProps {
 // Memoization ensures table only updates when props change.
 
 /**
- * ToolTable component.
- * @param props - The component props.
- * @returns The rendered component.
+ * Summary: ToolTable component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.tools: The tools property.
+ *   - props.isCompact: The isCompact property.
+ *   - props.isPinned: The isPinned property.
+ *   - props.togglePin: The togglePin property.
+ *   - props.toggleTool: The toggleTool property.
+ *   - props.openInspector: Whether the component is open.
+ *   - props.usageStats: The usageStats property.
+ *   - props.onBulkToggle: The onBulkToggle property.
+ *   - props.onBulkPin: The onBulkPin property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export const ToolTable = memo(function ToolTable({
   tools,

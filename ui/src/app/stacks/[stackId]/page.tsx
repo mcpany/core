@@ -13,6 +13,18 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import * as yaml from "js-yaml";
 
+/**
+ * Summary: DEFAULT_TEMPLATE component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 const DEFAULT_TEMPLATE = `name: my-new-stack
 version: 1.0.0
 services:
@@ -22,9 +34,16 @@ services:
 `;
 
 /**
- * StackDetailPage component.
- * Displays the Stack Editor for creating or editing a stack.
- * @returns The rendered page.
+ * Summary: StackDetailPage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function StackDetailPage() {
   const params = useParams();

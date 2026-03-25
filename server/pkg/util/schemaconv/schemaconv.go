@@ -40,27 +40,19 @@ const (
 // Summary: Represents a MaxRecursionDepth.
 const MaxRecursionDepth = 10
 
-// MethodDescriptorToProtoProperties converts the fields of a method's input
-// message into a `structpb.Struct` for use as the `properties` field in a tool
-// input schema.
+// MethodDescriptorToProtoProperties methodDescriptorToProtoProperties method descriptor to proto properties.
+//
+// Summary: MethodDescriptorToProtoProperties method descriptor to proto properties.
 //
 // Parameters:
-//   - methodDesc: The method descriptor to convert.
+//   - methodDesc (protoreflect.MethodDescriptor): The method desc.
 //
 // Returns:
-//   - *structpb.Struct: The properties structure for the input schema.
-//   - error: An error if the conversion fails.
-//
-// Summary: Executes MethodDescriptorToProtoProperties operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - *structpb.Struct: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -68,27 +60,19 @@ func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor)
 	return fieldsToProperties(methodDesc.Input().Fields(), 0)
 }
 
-// MethodOutputDescriptorToProtoProperties converts the fields of a method's
-// output message into a `structpb.Struct` for use as the `properties` field in
-// a tool output schema.
+// MethodOutputDescriptorToProtoProperties methodOutputDescriptorToProtoProperties method output descriptor to proto properties.
+//
+// Summary: MethodOutputDescriptorToProtoProperties method output descriptor to proto properties.
 //
 // Parameters:
-//   - methodDesc: The method descriptor to convert.
+//   - methodDesc (protoreflect.MethodDescriptor): The method desc.
 //
 // Returns:
-//   - *structpb.Struct: The properties structure for the output schema.
-//   - error: An error if the conversion fails.
-//
-// Summary: Executes MethodOutputDescriptorToProtoProperties operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - *structpb.Struct: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

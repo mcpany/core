@@ -8,11 +8,18 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 /**
- * Input component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.type - The type definition.
- * @returns The rendered component.
+ * Summary: Input component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *   - props.type: The type definition.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
   ({ className, type, ...props }, ref) => {

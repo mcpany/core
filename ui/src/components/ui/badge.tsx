@@ -36,11 +36,18 @@ export interface BadgeProps
     VariantProps<typeof badgeVariants> {}
 
 /**
- * Badge component.
- * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.variant - The variant property.
- * @returns The rendered component.
+ * Summary: Badge component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.className: The name of the class.
+ *   - props.variant: The variant property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 function Badge({ className, variant, ...props }: BadgeProps) {
   return (

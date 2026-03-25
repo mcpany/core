@@ -33,8 +33,16 @@ import {
 import { useToast } from "@/hooks/use-toast";
 
 /**
- * ToolsPage component.
- * @returns The rendered component.
+ * Summary: ToolsPage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function ToolsPage() {
   const [tools, setTools] = useState<ToolDefinition[]>([]);

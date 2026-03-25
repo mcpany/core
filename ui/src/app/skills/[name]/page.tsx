@@ -8,8 +8,16 @@
 import SkillDetail from '@/components/skills/skill-detail';
 
 /**
- * SkillDetailPage component.
- * @returns The rendered component.
+ * Summary: SkillDetailPage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function SkillDetailPage() {
   return <SkillDetail />;

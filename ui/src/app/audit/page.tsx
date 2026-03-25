@@ -6,10 +6,16 @@
 import { AuditLogViewer } from "@/components/audit/audit-log-viewer";
 
 /**
- * AuditPage component.
- * Renders the audit logs page, which includes the AuditLogViewer.
+ * Summary: AuditPage component.
  *
- * @returns The rendered AuditPage component.
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function AuditPage() {
     return (

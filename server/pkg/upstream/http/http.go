@@ -68,33 +68,18 @@ type Upstream struct {
 	mu          sync.RWMutex
 }
 
-// CheckHealth performs a health check on the upstream service.
+// CheckHealth checkHealth check health.
 //
-// It uses a configured health checker if available, or falls back to a basic
-// TCP connection check to the service address.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the health check.
-//
-// Returns:
-//   - error: An error if the service is unhealthy or unreachable.
-//
-// Errors:
-//   - Returns an error if the health check fails or the address is not configured.
-//
-// Side Effects:
-//   - May establish a network connection to the service.
-//
-// Summary: Executes CheckHealth operation.
+// Summary: CheckHealth check health.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The context for the request.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -117,29 +102,18 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 	return util.CheckConnection(ctx, address)
 }
 
-// Shutdown gracefully terminates the HTTP upstream service by shutting down the
-// associated connection pool.
+// Shutdown shutdown shutdown.
+//
+// Summary: Shutdown shutdown.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the shutdown operation (currently unused).
+//   - _ (context.Context): Unused parameter.
 //
 // Returns:
-//   - error: Always returns nil.
-//
-// Side Effects:
-//   - Stops the health checker.
-//   - Deregisters the connection pool.
-//
-// Summary: Executes Shutdown operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -157,27 +131,18 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
-// NewUpstream creates a new instance of Upstream.
+// NewUpstream creates a new upstream.
+//
+// Summary: Creates a new upstream.
 //
 // Parameters:
-//   - poolManager (*pool.Manager): The connection pool manager to be used for managing HTTP connections.
+//   - poolManager (*pool.Manager): The pool manager.
 //
 // Returns:
-//   - upstream.Upstream: An implementation of the upstream.Upstream interface.
-//
-// Side Effects:
-//   - Allocates memory for the Upstream struct.
-//
-// Summary: Initializes NewUpstream operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - upstream.Upstream: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

@@ -32,13 +32,20 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { LogViewer, LogEntry, timeFormatter } from "./log-viewer"
 
 /**
- * LogStream component.
- * @param props - The component props.
- * @param props.source - Optional source to filter by initially.
- * @param props.traceId - Optional trace ID to filter logs by (requires support in log metadata).
- * @param props.traceStartTime - Optional start time of the trace for time-window filtering.
- * @param props.traceEndTime - Optional end time of the trace for time-window filtering.
- * @returns The rendered component.
+ * Summary: LogStream component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.source: The source property.
+ *   - props.traceId: The unique identifier for trace.
+ *   - props.traceStartTime: The traceStartTime property.
+ *   - props.traceEndTime: The traceEndTime property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export function LogStream({
   source,
@@ -91,6 +98,18 @@ export function LogStream({
         setLogs((prev) => {
           const buffer = logBufferRef.current
           logBufferRef.current = [] // Clear buffer
+/**
+ * Summary: MAX_LOGS component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
           const MAX_LOGS = 2000 // Increased limit to allow for more history
 
           // Optimization: Efficient array handling to minimize memory allocation and gc pressure.

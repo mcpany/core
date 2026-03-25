@@ -29,8 +29,16 @@ const loginSchema = z.object({
 type LoginValues = z.infer<typeof loginSchema>;
 
 /**
- * LoginPage component.
- * @returns The rendered component.
+ * Summary: LoginPage component.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);

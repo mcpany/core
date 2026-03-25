@@ -28,10 +28,17 @@ import { LogStream } from "@/components/logs/log-stream";
 import { ReplayDiffDialog } from "@/components/traces/replay-diff-dialog";
 
 /**
- * SpanIcon component.
- * @param props - The component props.
- * @param props.type - The type definition.
- * @returns The rendered component.
+ * Summary: SpanIcon component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.type: The type definition.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 function SpanIcon({ type }: { type: Span['type'] }) {
     switch (type) {
@@ -45,13 +52,20 @@ function SpanIcon({ type }: { type: Span['type'] }) {
 }
 
 /**
- * WaterfallItem component.
- * @param props - The component props.
- * @param props.span - The span property.
- * @param props.depth - The nesting depth.
- * @param props.traceStart - The traceStart property.
- * @param props.traceDuration - The traceDuration property.
- * @returns The rendered component.
+ * Summary: WaterfallItem component.
+ *
+ * Parameters:
+ *   - props (Object): The component props.
+ *   - props.span: The span property.
+ *   - props.depth: The nesting depth.
+ *   - props.traceStart: The traceStart property.
+ *   - props.traceDuration: The traceDuration property.
+ *
+ * Returns:
+ *   - React.ReactNode: The rendered component.
+ *
+ * Throws/Errors:
+ *   - None.
  */
 function WaterfallItem({
     span,
