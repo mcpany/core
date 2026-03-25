@@ -6,7 +6,6 @@ package main
 import (
 	"encoding/json"
 	"log"
-	"net"
 	"net/http"
 	"sync"
 	"time"
