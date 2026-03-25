@@ -97,6 +97,9 @@ paths:
 
 	u := NewOpenAPIUpstream()
 
+	// Need to allow loopback for the httptest server to work
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+
 	config := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("remote-service"),
 		OpenapiService: configv1.OpenapiUpstreamService_builder{
