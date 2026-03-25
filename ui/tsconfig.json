@@ -11,19 +11,14 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
+    "jsx": "react-jsx",
     "types": ["node", "jest", "@testing-library/jest-dom", "vitest/globals"],
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
       "github.com/mcpany/core/*": ["../*"],
       "@proto/*": [
+        "../bazel-out/k8-fastbuild/bin/proto/*",
         "../proto/*"
       ],
       "@bufbuild/protobuf/wire": ["./node_modules/@bufbuild/protobuf/dist/esm/wire/index.js"],
@@ -33,6 +28,6 @@
     },
     "rootDirs": [".", ".."]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "../proto/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": ["**/*.ts", "**/*.tsx", "../proto/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
 }

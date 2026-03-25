@@ -5,7 +5,7 @@
 
 import tsParser from "@typescript-eslint/parser";
 import tsPlugin from "@typescript-eslint/eslint-plugin";
-import nextPlugin from "@next/eslint-plugin-next";
+import nextPlugin from "@next/eslint-plugin-next/dist/index.js";
 
 export default [
   {
