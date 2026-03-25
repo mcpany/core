@@ -1175,11 +1175,11 @@
 ## Evolution: [2026-03-24] Updates
 
 ### Proposed Additions
-- **Relational PoI Validator**: (P0) Extends PoI validation to verify the entire "Intent Chain," ensuring subagents cannot be coerced into actions outside the parent's verified goal.
-- **BSH State Buffer**: (P1) High-speed memory-mapped buffer for binary state handoffs between agents to minimize context transfer latency.
-- **Ghost Shell Hook Profiler**: (P0) Instrumented sandbox for behavioral profiling of un-attested configuration hooks, detecting "Binary Smuggling" before host execution.
-- **Shared State Arbiter (SSA)**: (P0) Authoritative lock and state coordinator for multi-agent "Blackboard" access, preventing circular reasoning loops.
+- **Autonomous Intent Reconciliation (AIR) Hub**: (P0) Authoritative coordination layer for the Blackboard that resolves teammate conflicts via hardware-attested quorums.
+- **Multimodal Trace Entanglement Provider**: (P0) Security middleware that cryptographically binds non-textual reasoning traces to the mission root.
+- **Cognitive Stall Arbitrator**: (P0) Stability middleware that monitors semantic entropy to detect and break infinite refinement loops.
+- **CRDT-Native Mailbox Hub**: (P1) High-performance coordination service using Conflict-Free Replicated Data Types to resolve lock exhaustion in horizontal swarms.
 
 ### Priority Shifts
-- **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
-- **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.
+- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Now designated as the primary backend for the new AIR Hub.
+- **Teammate-to-Teammate Encryption Bridge**: (Re-affirmed P0) Elevated with the requirement for lock-free CRDT-native task list synchronization.

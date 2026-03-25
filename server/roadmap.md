@@ -661,6 +661,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Cross-Mesh Command Sovereignty (CMCS) Provider**: Hardware-attested "Mesh Tokens" for inter-teammate mailbox validation in horizontal swarms. (Added: 2026-05-29)
 *   **[P0] Atomic Teammate Handshake (ATH) Gateway**: Mandatory identity exchange before teammate task delegation in horizontal teams. (Added: 2026-05-29)
 *   **[P0] Mesh-Bound Context Sovereignty Bridge**: Semantic fragment analysis across teammate boundaries for horizontal team stability. (Added: 2026-05-29)
-*   **[P0] Relational PoI Validator**: Implementation of Relational Intent Integrity to bind tool calls to verified mission-root intents. (Added: 2026-03-24)
-*   **[P0] Shared State Arbiter (SSA)**: Authoritative lock manager and deadlock resolver for the Shared KV Store. (Added: 2026-03-24)
-*   **[P1] BSH State Buffer**: High-speed memory-mapped buffer for binary state transfer in deep swarms. (Added: 2026-03-24)
+
+#### Upcoming (2026-03-24 Evolution - Submission Redux)
+*   **[P0] AIR (Autonomous Intent Reconciliation) Hub**: Authoritative arbitration for teammate state conflicts. (Added: 2026-03-24)
+*   **[P0] Multimodal State Entanglement**: Cryptographic binding of non-textual traces to the mission root. (Added: 2026-03-24)
+*   **[P1] CRDT-Native Mailbox Hub**: Lock-free state synchronization for horizontal meshes. (Added: 2026-03-24)
