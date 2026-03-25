@@ -174,26 +174,20 @@ export default function ToolsPage() {
   // ⚡ BOLT: Memoize expensive tool filtering and grouping logic to prevent O(N log N) sorts and filtering on every render.
   // Randomized Selection from Top 5 High-Impact Targets (React/View)
   const filteredTools = React.useMemo(() => {
-    // ⚡ BOLT: Pre-compute lowercase string for O(N) search and fallback to faster comparisons
-    // Randomized Selection from Top 5 High-Impact Targets (Algorithmic)
-    const lowerQuery = searchQuery.toLowerCase();
-
     return tools
       .filter((t) => !showPinnedOnly || isPinned(t.name))
       .filter((t) => selectedService === "all" || t.serviceId === selectedService)
       .filter((t) =>
         searchQuery === "" ||
-        t.name.toLowerCase().includes(lowerQuery) ||
-        t.description.toLowerCase().includes(lowerQuery)
+        t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        t.description.toLowerCase().includes(searchQuery.toLowerCase())
       )
       .sort((a, b) => {
         const aPinned = isPinned(a.name);
         const bPinned = isPinned(b.name);
         if (aPinned && !bPinned) return -1;
         if (!aPinned && bPinned) return 1;
-        // localeCompare is very expensive in large datasets.
-        // Since names are usually ascii/english, a simple string comparison is faster.
-        return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
+        return a.name.localeCompare(b.name);
       });
   }, [tools, showPinnedOnly, isPinned, selectedService, searchQuery]);
 
@@ -243,7 +237,7 @@ export default function ToolsPage() {
             onToolSelect={openInspector}
           />
           <div className="flex items-center space-x-2">
-            <Select value={groupBy} onValueChange={(v: "service" | "category" | "none") => setGroupBy(v)}>
+            <Select value={groupBy} onValueChange={(v: any) => setGroupBy(v)}>
               <SelectTrigger className="w-[180px] backdrop-blur-sm bg-background/50">
                 <Layers className="mr-2 h-4 w-4" />
                 <SelectValue placeholder="Group By" />

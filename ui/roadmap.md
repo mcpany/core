@@ -728,3 +728,8 @@
 - [ ] **[P0] Relational Intent Tracer**: Visual debugger for verifying the cryptographic lineage of tool-bound intents back to the mission root. (Added: 2026-03-25)
 - [ ] **[P0] Memfd Shard Inspector**: Real-time visualization of shared memory mappings and byte-level sanitization status. (Added: 2026-03-25)
 - [ ] **[P1] Optimistic Attestation Widget**: Dashboard indicator for speculatively loaded tool contexts and background verification progress. (Added: 2026-03-25)
+
+#### Upcoming (2026-03-25 Iteration 4)
+- [ ] **[P0] Lineage-Bound Scoping Viewer**: Visual debugger for tracking subagent capability restrictions across the intent chain. (Added: 2026-03-25)
+- [ ] **[P0] Zero-Copy BSH Heatmap**: Real-time performance visualization of `memfd` segments and WASM sanitization latency. (Added: 2026-03-25)
+- [ ] **[P0] Hardware Depth-Counter Widget**: Status indicator for TPM-bound monotonic delegation limits. (Added: 2026-03-25)
