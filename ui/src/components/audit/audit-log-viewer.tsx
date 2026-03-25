@@ -25,7 +25,9 @@ import { format } from "date-fns";
 import { CalendarIcon, Search, RefreshCw, Eye, AlertTriangle, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
-import { JsonView } from "@/components/ui/json-view";
+import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light';
+import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
+import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
 
 interface AuditLogEntry {
     timestamp: string;
@@ -46,6 +48,7 @@ interface AuditLogEntry {
  * @returns The rendered AuditLogViewer component.
  */
 export function AuditLogViewer() {
+    SyntaxHighlighter.registerLanguage('json', json);
     const [logs, setLogs] = useState<AuditLogEntry[]>([]);
     const [loading, setLoading] = useState(true);
     const [exporting, setExporting] = useState(false);
@@ -61,7 +64,7 @@ export function AuditLogViewer() {
     const fetchLogs = useCallback(async () => {
         setLoading(true);
         try {
-            const filters: Record<string, string | number> = {
+            const filters: any = {
                 limit: 50,
                 offset: 0
             };
@@ -95,7 +98,7 @@ export function AuditLogViewer() {
     const handleExport = async () => {
         setExporting(true);
         try {
-            const filters: Record<string, string> = {};
+            const filters: any = {};
             if (toolName) filters.tool_name = toolName;
             if (userId) filters.user_id = userId;
             if (startDate) filters.start_time = startDate.toISOString();
@@ -106,12 +109,11 @@ export function AuditLogViewer() {
                 title: "Export Successful",
                 description: "Audit logs have been exported.",
             });
-        } catch (e: unknown) {
+        } catch (e: any) {
             console.error("Failed to export audit logs", e);
-            const err = e as Error;
             toast({
                 title: "Export Failed",
-                description: err.message || "Failed to export audit logs.",
+                description: e.message || "Failed to export audit logs.",
                 variant: "destructive",
             });
         } finally {
@@ -122,8 +124,9 @@ export function AuditLogViewer() {
     const formatJson = (jsonStr: string) => {
         if (!jsonStr) return null;
         try {
-            return JSON.parse(jsonStr);
-        } catch (_e) {
+            const obj = JSON.parse(jsonStr);
+            return JSON.stringify(obj, null, 2);
+        } catch (e) {
             return jsonStr;
         }
     };
@@ -307,20 +310,26 @@ export function AuditLogViewer() {
                             <div>
                                 <h4 className="text-sm font-medium mb-2">Arguments</h4>
                                 <div className="rounded-md overflow-hidden border">
-                                    <JsonView
-                                        data={formatJson(selectedLog.arguments) || {}}
-                                        maxHeight={400}
-                                    />
+                                    <SyntaxHighlighter
+                                        language="json"
+                                        style={vs2015}
+                                        customStyle={{ margin: 0, fontSize: '12px' }}
+                                    >
+                                        {formatJson(selectedLog.arguments) || "{}"}
+                                    </SyntaxHighlighter>
                                 </div>
                             </div>
 
                             <div>
                                 <h4 className="text-sm font-medium mb-2">Result</h4>
                                 <div className="rounded-md overflow-hidden border">
-                                    <JsonView
-                                        data={formatJson(selectedLog.result) || (selectedLog.error ? null : {})}
-                                        maxHeight={400}
-                                    />
+                                    <SyntaxHighlighter
+                                        language="json"
+                                        style={vs2015}
+                                        customStyle={{ margin: 0, fontSize: '12px', maxHeight: '300px' }}
+                                    >
+                                        {formatJson(selectedLog.result) || (selectedLog.error ? "null" : "{}")}
+                                    </SyntaxHighlighter>
                                 </div>
                             </div>
                         </div>
