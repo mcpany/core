@@ -2,42 +2,25 @@ diff --git a/server/pkg/app/api.go b/server/pkg/app/api.go
 index 0e90956..ab24e4c 100644
 --- a/server/pkg/app/api.go
 +++ b/server/pkg/app/api.go
-@@ -1011,7 +1011,11 @@ func (a *Application) handleSecrets(store storage.Storage) http.HandlerFunc {
-				if i > 0 {
-					buf = append(buf, ',')
-				}
--				b, _ := opts.Marshal(s)
-+				b, err := opts.Marshal(s)
-+				if err != nil {
-+					http.Error(w, "Failed to marshal", http.StatusInternalServerError)
-+					return
-+				}
-				buf = append(buf, b...)
-			}
+@@ -779,9 +779,7 @@ func (a *Application) handleTools() http.HandlerFunc {
 			buf = append(buf, ']')
-@@ -1194,7 +1198,11 @@ func (a *Application) handleProfiles(store storage.Storage) http.HandlerFunc {
-				if i > 0 {
-					buf = append(buf, ',')
-				}
--				b, _ := opts.Marshal(p)
-+				b, err := opts.Marshal(p)
-+				if err != nil {
-+					http.Error(w, "Failed to marshal", http.StatusInternalServerError)
-+					return
-+				}
-				buf = append(buf, b...)
+
+			w.Header().Set("Content-Type", "application/json")
+-			if _, err := w.Write(buf); err != nil {
+-				logging.GetLogger().Error("failed to write response", "error", err.Error())
+-			}
++			_, _ = w.Write(buf)
+
+		case http.MethodPut:
+			var req struct {
+@@ -900,9 +898,7 @@ func (a *Application) handleTools() http.HandlerFunc {
 			}
-			buf = append(buf, ']')
-@@ -1351,7 +1359,11 @@ func (a *Application) handleCollections(store storage.Storage) http.HandlerFunc
-				if i > 0 {
-					buf = append(buf, ',')
-				}
--				b, _ := opts.Marshal(c)
-+				b, err := opts.Marshal(c)
-+				if err != nil {
-+					http.Error(w, "Failed to marshal", http.StatusInternalServerError)
-+					return
-+				}
-				buf = append(buf, b...)
-			}
-			buf = append(buf, ']')
+
+			w.WriteHeader(http.StatusOK)
+-			if _, err := w.Write([]byte("{}")); err != nil {
+-				logging.GetLogger().Error("failed to write response", "error", err.Error())
+-			}
++			_, _ = w.Write([]byte("{}"))
+
+		default:
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
