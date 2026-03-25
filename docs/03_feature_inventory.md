@@ -1374,3 +1374,10 @@
 - **Injection-Shielding Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory **RSIS** integration to counter CVE-2026-30741.
 - **Teammate-to-Teammate (T2T) Encryption Bridge**: (Re-affirmed P0) Evolving to support the new **Lock-Free Coordination Buffers** requirement.
 - **SRM Provider**: (Re-affirmed P0) Elevated with the requirement for mandatory **LSV** integration to ensure pre-thought governance.
+
+## Evolution: [2026-06-18] Updates
+- **Teammate Sovereignty Enforcer (TSE)**: (P0) Authoritative isolation kernel providing cryptographically bound isolation.
+- **Logic-Sovereignty Validator (LSV)**: (P0) Real-time logic guard performing reasoning path deconstruction.
+- **Request-Side Injection Shield (RSIS)**: (P0) Advanced security middleware to block CVE-2026-30741.
+- **HADM Discovery Provider**: (P1) Upgrade for hardware-attested discovery manifests.
+- **Lock-Free Coordination Buffers**: (P0) High-performance coordination service for parallel teams.

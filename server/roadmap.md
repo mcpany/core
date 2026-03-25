@@ -758,3 +758,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Teammate Sovereignty Enforcer (TSE)**: Authoritative isolation kernel providing cryptographically bound isolation for parallel teams. (Added: 2026-06-18)
 *   **[P0] Logic-Sovereignty Validator (LSV)**: Real-time semantic deconstruction of reasoning paths. (Added: 2026-06-18)
 *   **[P0] Request-Side Injection Shield (RSIS)**: Advanced scanning for AI-generated code to block request-side prompt injection (CVE-2026-30741). (Added: 2026-06-18)
+
+#### Upcoming (2026-06-18 Evolution)
+*   **[P0] Teammate Sovereignty Enforcer (TSE)**: Authoritative isolation kernel for parallel teams. (Added: 2026-06-18)
+*   **[P0] Logic-Sovereignty Validator (LSV)**: Real-time reasoning path deconstruction. (Added: 2026-06-18)
+*   **[P0] Request-Side Injection Shield (RSIS)**: Block request-side prompt injection. (Added: 2026-06-18)
