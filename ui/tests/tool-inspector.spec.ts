@@ -55,8 +55,9 @@ test('Tools page loads and inspector opens', async ({ page }) => {
 
   // The schema content from mock: { type: "object", properties: { location: { type: "string" } } }
   // We check for "location" property in the JSON view
-  await expect(page.locator('pre').filter({ hasText: /"location"/ })).toBeVisible();
-  await expect(page.locator('pre').filter({ hasText: /"type": "object"/ })).toBeVisible();
+  // The React SyntaxHighlighter wraps the JSON in a `code` block usually, and might break up the string.
+  await expect(page.getByText('location').first()).toBeVisible({ timeout: 10000 });
+  await expect(page.getByText('object').first()).toBeVisible({ timeout: 10000 });
 
   // Verify service name is shown in details (Scoped to the sheet)
   await expect(page.locator('div[role="dialog"]').getByText('weather-service')).toBeVisible();

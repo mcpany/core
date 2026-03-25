@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SchemaViewer } from "@/components/tools/schema-viewer";
 import { UniversalSchemaForm as SchemaForm, Schema } from "@/components/shared/universal-schema-form";
+import { JsonView } from "@/components/ui/json-view";
 import { RichResultViewer } from "@/components/tools/rich-result-viewer";
 import { Switch } from "@/components/ui/switch";
 import { generateCurlCommand, generatePythonCode } from "@/lib/code-generator";
@@ -403,7 +404,7 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
                       </TabsContent>
                       <TabsContent value="json" className="flex-1 overflow-hidden rounded-md border bg-muted/50 mt-0">
                         <ScrollArea className="h-full w-full p-4">
-                            <pre className="text-xs font-mono">{JSON.stringify(tool.inputSchema, null, 2)}</pre>
+                            <JsonView data={tool.inputSchema} />
                         </ScrollArea>
                       </TabsContent>
                     </Tabs>
