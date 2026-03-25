@@ -39,6 +39,9 @@ go_deps.gazelle_override(
     ],
     path = "github.com/bufbuild/protocompile",
 )
+go_deps.gazelle_override(
+    path = "google.golang.org/genproto/googleapis/api",
+)
 
 # Add required direct dependencies from go.mod manually or via use_repo
 # For now, let's let Gazelle handle it.
@@ -132,6 +135,7 @@ use_repo(
     "io_opentelemetry_go_otel_sdk",
     "io_opentelemetry_go_otel_sdk_metric",
     "org_golang_google_api",
+    "org_golang_google_genproto_googleapis_api",
     "org_golang_google_grpc",
     "org_golang_google_grpc_cmd_protoc_gen_go_grpc",
     "org_golang_google_protobuf",
@@ -154,7 +158,6 @@ oci.pull(
         "linux/arm64",
     ],
 )
-
 # Distroless Node.js 24 image used as the base for the UI container (vite preview).
 oci.pull(
     name = "distroless_nodejs24",

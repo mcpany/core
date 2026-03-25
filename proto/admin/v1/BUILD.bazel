@@ -29,7 +29,7 @@ go_proto_library(
     deps = [
         "//proto/config/v1:config",
         "//proto/mcp_router/v1:mcp_router",
-        "@googleapis//google/api:annotations_go_proto",
+        "@org_golang_google_genproto_googleapis_api//annotations",
         "@org_golang_google_protobuf//types/gofeaturespb",
     ],
 )

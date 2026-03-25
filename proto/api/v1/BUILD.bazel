@@ -40,7 +40,7 @@ go_proto_library(
     visibility = ["//visibility:public"],
     deps = [
         "//proto/config/v1:config",
-        "@googleapis//google/api:annotations_go_proto",
+        "@org_golang_google_genproto_googleapis_api//annotations",
         "@org_golang_google_protobuf//types/gofeaturespb",
     ],
 )
