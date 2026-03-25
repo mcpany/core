@@ -55,8 +55,3 @@ As agent swarms grow in depth and complexity, the overhead of transferring massi
         * **Context**: OpenClaw v2.5 and UACO v1.8 emphasize the risk of "Binary Context Poisoning" in deep swarms.
         * **Architecture Adjustment**: Integrated a pluggable WASM sandbox into the BSH handoff flow. Binary buffers are now validated against a signed Protobuf schema within the sandbox before being mapped to the target agent.
         * **Security Impact**: Neutralizes "State Injection" attacks while maintaining the performance benefits of Zero-Copy transport.
-    ### Update: 2026-03-24 (v2) - BSH Efficiency & Token Storm Mitigation
-    **Context:** Today's findings confirm that JSON-based state transfer is causing "Token Storms" in swarms of 10+ agents.
-    **Architecture Adjustment:** * Transitioning to Protobuf-based Binary State Handoffs (BSH).
-    * Introducing a high-speed "BSH State Buffer" using memory-mapped regions.
-    **Performance Impact:** Eliminates JSON serialization overhead and reduces inter-agent latency by 50%.

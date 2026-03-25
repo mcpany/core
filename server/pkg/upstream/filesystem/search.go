@@ -17,22 +17,6 @@ import (
 	"github.com/spf13/afero"
 )
 
-// searchFilesTool creates a tool for searching files.
-//
-// Summary: Creates search files tool.
-//
-// Parameters:
-//   - prov (provider.Provider): The filesystem provider.
-//   - fs (afero.Fs): The filesystem instance.
-//
-// Returns:
-//   - filesystemToolDef: The tool definition.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func searchFilesTool(prov provider.Provider, fs afero.Fs) filesystemToolDef {
 	return filesystemToolDef{
 		Name:        "search_files",

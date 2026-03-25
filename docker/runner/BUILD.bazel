@@ -1,24 +1,7 @@
-load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
-load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
 
-pkg_tar(
-    name = "bazelisk_tar",
-    srcs = select({
-        "@rules_go//go/platform:linux_amd64": ["@bazelisk_linux_amd64//file:bazelisk"],
-        "@rules_go//go/platform:linux_arm64": ["@bazelisk_linux_arm64//file:bazelisk"],
-    }),
-    mode = "0755",
-    package_dir = "/usr/local/bin",
-)
-
-oci_image(
-    name = "runner_image",
-    base = "@debian_bookworm_slim",
-    tars = [":bazelisk_tar"],
-)
-
-oci_load(
-    name = "runner_load",
-    image = ":runner_image",
-    repo_tags = ["mcp-any/runner:latest"],
-)
+# Exposes the runner Dockerfile as a Bazel target.
+# This image is non-hermetic and must be built via `docker build` or the Makefile —
+# it requires network access for Go, Node, Playwright, Docker CLI, and apt packages.
+exports_files(["Dockerfile"])
