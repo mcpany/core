@@ -1,17 +1,3 @@
-# Copyright 2026 MCP Any Authors
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 # Design Doc: Prompt Path Protection
 **Status:** Draft
 **Created:** 2026-03-13
@@ -63,11 +49,3 @@ As agents become more autonomous, they increasingly consume untrusted data (web 
 ## 7. Evolutionary Changelog
 * **2026-03-13:** Initial Document Creation.
 * **2026-03-14:** Added "Semantic Boundary Detection" to counter advanced hijacking hidden in multimodal metadata (SVG, CSS). The scanner now includes a "Visual Intent Parser" that checks if rendered components contain instructions that conflict with the agent's primary mission.
-
-### Update: 2026-06-03 - Project Metadata Shielding
-**Context:** The "oh-my-opencode" exploit pattern (CVE-2026-11822) proves that the project's own metadata is now a weaponized input.
-**Architecture Adjustment:**
-* Expanding the `Output Interceptor` to include `Project Metadata Scanning`.
-* All project-local metadata files (`.gitignore`, `.env`, `.github/`) are now treated as "Untrusted Tool Outputs" and subject to the Source-Instruction Integrity Guard (SIIG).
-* Any instructions found in these files that attempt to override the user's mission are redacted.
-**Security Impact:** Neutralizes indirect prompt injection from within the local project structure.

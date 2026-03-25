@@ -1,17 +1,3 @@
-# Copyright 2026 MCP Any Authors
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 # Design Doc: Machine-Speed Swarm Quarantine (MSSQ)
 **Status:** Draft
 **Created:** 2026-06-01
@@ -65,10 +51,3 @@ The 2026 Armis Cyberwarfare Report highlights a critical collapse in Mean Time t
         * Implementing "Reasoning-Aware Timing Jitter" for all quarantine revocation signals.
         * Decoupling the "Kill Switch" bitset update from the network notification loop to prevent timing correlation.
     * **Security Impact:** Neutralizes subagent ability to probe quarantine thresholds via ARE header timing analysis.
-
-### Update: 2026-06-03 - Source-Instruction Integrity Integration
-**Context:** Today's market sync revealed the "oh-my-opencode" exploit pattern where malicious instructions are hidden in project-local metadata files (CVE-2026-11822).
-**Architecture Adjustment:**
-* Integrating the Source-Instruction Integrity Guard (SIIG) as a mandatory trigger for MSSQ.
-* Any detected "Hidden System Prompt" in `.gitignore` or `.env` files now triggers an immediate Mission-Wide Quarantine for the current `mission_id`.
-**Security Impact:** Prevents "Source-Instruction Smuggling" from hijacking the swarm's primary mission intent by isolating the sub-mesh before the context is ingested.
