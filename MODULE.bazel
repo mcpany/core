@@ -28,10 +28,7 @@ go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
 go_sdk.download(version = "1.26.1")
 
 go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
-go_deps.from_file(go_mod = "//:go.mod")
 go_deps.from_file(go_mod = "//server:go.mod")
-go_deps.from_file(go_mod = "//k8s/operator:go.mod")
-go_deps.from_file(go_mod = "//proto:go.mod")
 go_deps.gazelle_override(
     directives = [
         "gazelle:proto disable_global",
@@ -58,6 +55,7 @@ go_deps.gazelle_override(
     build_file_generation = "off",
     path = "github.com/grpc-ecosystem/grpc-gateway/v2",
 )
+
 go_deps.module_override(
     patch_strip = 1,
     patches = [
@@ -95,6 +93,8 @@ use_repo(
     "com_github_getkin_kin_openapi",
     "com_github_gin_gonic_gin",
     "com_github_go_jose_go_jose_v4",
+    "com_github_go_logr_logr",
+    "com_github_go_logr_zapr",
     "com_github_go_redis_redismock_v9",
     "com_github_go_sql_driver_mysql",
     "com_github_golang_jwt_jwt_v5",
@@ -116,6 +116,8 @@ use_repo(
     "com_github_lib_pq",
     "com_github_machinebox_graphql",
     "com_github_masterminds_semver_v3",
+    "com_github_mcpany_core",
+    "com_github_mcpany_core_proto",
     "com_github_milvus_io_milvus_sdk_go_v2",
     "com_github_modelcontextprotocol_go_sdk",
     "com_github_nats_io_nats_go",
@@ -343,3 +345,21 @@ pip.parse(
     requirements_lock = "//server/tests/integration/examples:requirements_lock.txt",
 )
 use_repo(pip, "cowsay_server_deps", "timeserver_deps")
+
+http_file = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file")
+
+http_file(
+    name = "bazelisk_linux_amd64",
+    downloaded_file_path = "bazelisk",
+    executable = True,
+    sha256 = "22e7d3a188699982f661cf4687137ee52d1f24fec1ec893d91a6c4d791a75de8",
+    urls = ["https://github.com/bazelbuild/bazelisk/releases/download/v1.28.1/bazelisk-linux-amd64"],
+)
+
+http_file(
+    name = "bazelisk_linux_arm64",
+    downloaded_file_path = "bazelisk",
+    executable = True,
+    sha256 = "8ded44b58a0d9425a4178af26cf17693feac3b87bdcfef0a2a0898fcd1afc9f2",
+    urls = ["https://github.com/bazelbuild/bazelisk/releases/download/v1.28.1/bazelisk-linux-arm64"],
+)
