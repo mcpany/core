@@ -19,6 +19,18 @@ import (
 // Severity indicates the importance of a linting result.
 //
 // Summary: Represents a Severity level.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Severity int
 
 const (
@@ -47,6 +59,9 @@ const (
 // Returns:
 //   - string: The string representation (e.g., "ERROR").
 //
+// Errors:
+//   - None.
+//
 // Side Effects:
 //   - None.
 func (s Severity) String() string {
@@ -65,6 +80,18 @@ func (s Severity) String() string {
 // Result represents a single linting finding.
 //
 // Summary: Represents a linting finding.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Result struct {
 	// Severity indicates how critical the finding is.
 	Severity Severity
@@ -88,6 +115,9 @@ type Result struct {
 // Returns:
 //   - string: A formatted string containing result details.
 //
+// Errors:
+//   - None.
+//
 // Side Effects:
 //   - None.
 func (r Result) String() string {
@@ -106,6 +136,18 @@ func (r Result) String() string {
 // Linter performs static analysis on the configuration.
 //
 // Summary: Represents a configuration linter.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Linter struct {
 	cfg *configv1.McpAnyServerConfig
 }
@@ -119,6 +161,9 @@ type Linter struct {
 //
 // Returns:
 //   - *Linter: A new Linter instance.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -136,6 +181,9 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 // Returns:
 //   - []Result: A slice of linting findings.
 //   - error: An error if a fatal issue occurs.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -163,8 +211,14 @@ func (l *Linter) Run(ctx context.Context) ([]Result, error) {
 //
 // Summary: Executes checkPlainTextSecrets operation.
 //
+// Parameters:
+//   - None.
+//
 // Returns:
 //   - []Result: A slice of findings.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -268,8 +322,14 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 //
 // Summary: Executes checkShellInjection operation.
 //
+// Parameters:
+//   - None.
+//
 // Returns:
 //   - []Result: A slice of findings.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -327,8 +387,14 @@ func (l *Linter) checkShellInjection() []Result {
 //
 // Summary: Executes checkInsecureHTTP operation.
 //
+// Parameters:
+//   - None.
+//
 // Returns:
 //   - []Result: A slice of findings.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -394,8 +460,14 @@ func (l *Linter) checkInsecureHTTP() []Result {
 //
 // Summary: Executes checkCacheSettings operation.
 //
+// Parameters:
+//   - None.
+//
 // Returns:
 //   - []Result: A slice of findings.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
