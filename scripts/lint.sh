@@ -121,36 +121,25 @@ fi
 #    the path set by $GOLANGCI_LINT_BIN, then a local install, then
 #    build/env/bin/ (populated by `make prepare`).
 # ---------------------------------------------------------------------------
-SKIP_GO=0
-for arg in "$@"; do
-    if [[ "$arg" == "--skip-go" ]]; then
-        SKIP_GO=1
-    fi
-done
+echo "==> Running golangci-lint..."
+if [[ -z "${GOLANGCI_LINT_BIN:-}" ]]; then
+    GOLANGCI_LINT_BIN="$(find_tool golangci-lint)"
+fi
 
-if [[ "$SKIP_GO" -eq 1 ]]; then
-    echo "==> Skipping golangci-lint (--skip-go provided)..."
+if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
+    # Change to server directory so golangci-lint finds the correct go.mod
+    cd "$PROJECT_ROOT/server"
+    export GO111MODULE=on
+    export GOTOOLCHAIN=auto
+
+    # Run golangci-lint directly but skip errors, as it keeps OOM'ing in circleci
+    "$GOLANGCI_LINT_BIN" run --timeout 20m --fix \
+        ./cmd/... ./pkg/... ./tests/... ../examples/... || true
+    cd "$PROJECT_ROOT"
+    echo "    golangci-lint finished."
 else
-    echo "==> Running golangci-lint..."
-    if [[ -z "${GOLANGCI_LINT_BIN:-}" ]]; then
-        GOLANGCI_LINT_BIN="$(find_tool golangci-lint)"
-    fi
-
-    if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
-        # Change to server directory so golangci-lint finds the correct go.mod
-        cd "$PROJECT_ROOT/server"
-        export GO111MODULE=on
-        export GOTOOLCHAIN=auto
-
-        # For now, let golangci-lint OOM gracefully since CI runner doesn't have 8gb
-        "$GOLANGCI_LINT_BIN" run --timeout 20m --fix \
-            ./cmd/... ./pkg/... ./tests/... ../examples/... || echo "golangci-lint exited with error (likely OOM), but continuing"
-        cd "$PROJECT_ROOT"
-        echo "    golangci-lint finished."
-    else
-        echo "    Warning: golangci-lint not found (skipping Go linting)."
-        echo "    To enable, add a :golangci_lint_bin data dep or run 'make prepare'."
-    fi
+    echo "    Warning: golangci-lint not found (skipping Go linting)."
+    echo "    To enable, add a :golangci_lint_bin data dep or run 'make prepare'."
 fi
 
 echo "==> Lint complete."
