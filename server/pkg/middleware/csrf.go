@@ -43,6 +43,10 @@
 //   - Logs warnings for blocked requests.
 // Errors:
 //   - triggers relevant error states on failure.
+package middleware
+
+package middleware
+
 func (m *CSRFMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// 1. Safe Methods are always allowed

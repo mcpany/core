@@ -34,6 +34,10 @@
 //   - triggers relevant error states on failure.
 // Side Effects:
 //   - updates relevant subsystem state or network conditions.
+package middleware
+
+package middleware
+
 func (m *HTTPCORSMiddleware) Update(allowedOrigins []string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()

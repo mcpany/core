@@ -19,6 +19,12 @@
 //   - None.
 // Side Effects:
 //   - None.
+package webhooks
+
+package webhooks
+
+package webhooks
+
 type WebhookConfig struct {
 	ID            string    `json:"id"`
 	URL           string    `json:"url"`

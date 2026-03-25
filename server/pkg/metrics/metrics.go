@@ -35,6 +35,10 @@
 //   - triggers relevant error states on failure.
 // Side Effects:
 //   - updates relevant subsystem state or network conditions.
+package metrics
+
+package metrics
+
 func Initialize() error {
 	var err error
 	initOnce.Do(func() {

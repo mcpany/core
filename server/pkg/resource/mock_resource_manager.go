@@ -9,6 +9,8 @@
 // Package resource is a generated GoMock package.
 package resource
 
+package resource
+
 import (
 	reflect "reflect"
 // MockManagerInterface is a mock of ManagerInterface interface.

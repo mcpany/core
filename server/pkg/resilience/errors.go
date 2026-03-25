@@ -31,6 +31,10 @@
 //   - triggers relevant error states on failure.
 // Side Effects:
 //   - updates relevant subsystem state or network conditions.
+package resilience
+
+package resilience
+
 func (e *PermanentError) Unwrap() error {
 	return e.Err
 }

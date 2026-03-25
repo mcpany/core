@@ -20,6 +20,10 @@
 //   - None.
 // Side Effects:
 //   - None.
+package config
+
+package config
+
 type Watcher struct {
 	watcher *fsnotify.Watcher
 	done    chan bool

@@ -12,6 +12,10 @@
 //   - None.
 // Side Effects:
 //   - None.
+package auth
+
+package auth
+
 type MockUpstreamAuthenticator struct {
 	AuthenticateFunc func(req *http.Request) error
 }

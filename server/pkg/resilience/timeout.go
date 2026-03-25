@@ -18,6 +18,10 @@
 //   - triggers relevant error states on failure.
 // Side Effects:
 //   - updates relevant subsystem state or network conditions.
+package resilience
+
+package resilience
+
 func NewTimeout(duration *durationpb.Duration) *Timeout {
 	return &Timeout{
 		duration: duration,

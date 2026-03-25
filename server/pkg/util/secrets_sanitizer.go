@@ -12,6 +12,10 @@
 //   - triggers relevant error states on failure.
 // Side Effects:
 //   - updates relevant subsystem state or network conditions.
+package util
+
+package util
+
 func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 	if svc == nil {
 		return

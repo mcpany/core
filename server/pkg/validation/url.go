@@ -17,6 +17,10 @@
 //   - None.
 // Side Effects:
 //   - None.
+package validation
+
+package validation
+
 var IsSafeIP = func(ipStr string) error {
 	// Bypass if explicitly allowed (for testing/development)
 	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == trueVal {

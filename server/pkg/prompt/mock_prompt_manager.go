@@ -9,6 +9,8 @@
 // Package prompt is a generated GoMock package.
 package prompt
 
+package prompt
+
 import (
 	reflect "reflect"
 // NewMockManagerInterface creates a new mock instance.

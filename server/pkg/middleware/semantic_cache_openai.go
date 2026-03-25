@@ -22,6 +22,10 @@
 //   - Initializes an HTTP client with a timeout.
 // Errors:
 //   - triggers relevant error states on failure.
+package middleware
+
+package middleware
+
 func NewOpenAIEmbeddingProvider(apiKey, model string) *OpenAIEmbeddingProvider {
 	if model == "" {
 		model = "text-embedding-3-small"

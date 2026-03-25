@@ -9,6 +9,8 @@
 // Package tool is a generated GoMock package.
 package tool
 
+package tool
+
 import (
 	context "context"
 	reflect "reflect"

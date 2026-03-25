@@ -45,6 +45,10 @@
 //   - standard arguments based on function signature.
 // Errors:
 //   - triggers relevant error states on failure.
+package postgres
+
+package postgres
+
 func (s *Store) HasConfigSources() bool {
 	return true
 }

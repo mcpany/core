@@ -10,6 +10,10 @@
 //   - None.
 // Side Effects:
 //   - None.
+package config
+
+package config
+
 type MockWatcher struct {
 	WatchFunc func(paths []string, reloadFunc func())
 	CloseFunc func()

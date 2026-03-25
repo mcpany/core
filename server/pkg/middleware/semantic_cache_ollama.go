@@ -21,6 +21,10 @@
 //   - Sets default values for baseURL and model if not provided.
 // Errors:
 //   - triggers relevant error states on failure.
+package middleware
+
+package middleware
+
 func NewOllamaEmbeddingProvider(baseURL, model string) *OllamaEmbeddingProvider {
 	if baseURL == "" {
 		baseURL = "http://localhost:11434"
