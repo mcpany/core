@@ -93,9 +93,11 @@ export function AnalyticsDashboard() {
                 setToolUsageData(formattedTools);
 
                 const usageMap: Record<string, ToolAnalytics> = {};
-                (toolUsageStats || []).forEach((s: ToolAnalytics) => {
+                const statsArr = toolUsageStats || [];
+                for (let i = 0; i < statsArr.length; i++) {
+                    const s = statsArr[i];
                     usageMap[`${s.name}@${s.serviceId}`] = s;
-                });
+                }
                 setToolUsageMap(usageMap);
 
                 // Calculate Context Usage
@@ -105,7 +107,10 @@ export function AnalyticsDashboard() {
                 const serviceMap: Record<string, number> = {};
                 const toolTokens: { name: string, tokens: number, service: string }[] = [];
 
-                allTools.forEach(tool => {
+                // ⚡ BOLT: [Render Optimization] Use traditional for loop instead of forEach
+                // Randomized Selection from Top 5 High-Impact Targets (Algorithmic)
+                for (let i = 0; i < allTools.length; i++) {
+                    const tool = allTools[i];
                     // Estimate tokens for the tool definition
                     const json = JSON.stringify(tool);
                     const tokens = estimateTokens(json);
@@ -115,7 +120,7 @@ export function AnalyticsDashboard() {
                     serviceMap[serviceId] = (serviceMap[serviceId] || 0) + tokens;
 
                     toolTokens.push({ name: tool.name, tokens, service: serviceId });
-                });
+                }
 
                 setContextTotal(totalTokens);
 
