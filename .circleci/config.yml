@@ -37,6 +37,9 @@ jobs:
             curl -fsSL https://deb.nodesource.com/setup_23.x | sudo -E bash -
             sudo apt-get install -y nodejs
             sudo npm install -g @bazel/bazelisk
+            curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.64.5
+            export PATH=$PATH:$(go env GOPATH)/bin
+            echo "export PATH=$PATH:$(go env GOPATH)/bin" >> $BASH_ENV
       - restore_cache:
           keys:
             - v1-bazel-lint-{{ checksum "MODULE.bazel" }}
