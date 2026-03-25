@@ -1,5 +1,12 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-03] Updates
+
+### Proposed Additions
+- **ContextEngine Hook Adapter**: (P0) Authoritative middleware implementing OpenClaw-compatible `bootstrap`, `ingest`, and `assemble` hooks to enforce security policies across the context lifecycle.
+- **T2T Mesh Messaging Gateway**: (P0) Infrastructure for secure, authenticated peer-to-peer (Teammate-to-Teammate) messaging between disparate agent frameworks in horizontal meshes.
+- **High-Entropy Semantic Sanitizer (HESS)**: (P1) Advanced scanning module for the SITS pivot that detects "Deceptive Context" in natural-language natural context files (e.g., `GEMINI.md`).
+
 ## Evolution: [2026-03-24] Updates
 
 ### Proposed Additions

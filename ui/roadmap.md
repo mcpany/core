@@ -3,6 +3,10 @@
 ## Status: Active Development
 
 ### Universal Agent Bus (New Strategic Priorities)
+- [ ] **[P0] Context Lifecycle Inspector**: Visual debugger for pluggable context hooks (`bootstrap`, `ingest`, `assemble`) and SITS results. (Added: 2026-07-03)
+- [ ] **[P0] T2T Mesh Messaging Monitor**: Real-time visualization of direct peer-to-peer teammate coordination and task exchanges. (Added: 2026-07-03)
+- [ ] **[P1] Semantic Sanitization Alert Hub**: UI for reviewing high-entropy instruction detections and blocked deceptive context. (Added: 2026-07-03)
+- [ ] **[P0] Skill Provenance Viewer**: Dashboard for verifying hardware-attested HASP manifests and skill signing status. (Added: 2026-07-03)
 - [ ] **[P0] Recursive Context Dashboard**: Visualize state inheritance and session tokens across agent swarms. (Added: 2026-02-23)
 - [ ] **[P0] Multi-Agent Session Timeline**: Visual tracking of agent handoffs and shared tool state. (Added: 2026-02-24)
 - [ ] **[P1] Unified Discovery Manager**: UI for managing and auto-discovering MCP servers across transports. (Added: 2026-02-24)

@@ -11,6 +11,12 @@
 
 ### Status: Active Development
 
+#### Upcoming (2026-07-03 Evolution)
+*   **[P0] Standardized Context Lifecycle (SCL) Adapter**: Authoritative host for pluggable context hooks (`bootstrap`, `ingest`, `assemble`) with security enforcement. (Added: 2026-07-03)
+*   **[P0] Teammate-to-Teammate (T2T) Direct Messaging Gateway**: Secure, authenticated bridge for peer-to-peer teammate coordination in horizontal meshes. (Added: 2026-07-03)
+*   **[P1] Semantic Inference-Time Sanitization (SITS)**: High-entropy analysis middleware to block deceptive natural-language instructions in large context. (Added: 2026-07-03)
+*   **[P0] Hardware-Attested Skill Provenance (HASP)**: Mandatory TPM-signed manifests for all MCP servers and skills to neutralize supply-chain attacks. (Added: 2026-07-03)
+
 #### Upcoming (2026-02-23 Evolution)
 *   **[P0] Recursive Context Protocol**: Finalize header-based context inheritance for swarms.
 *   **[x] [P0] Zero-Trust Subagent Scoping**: Implement intent-bound capability tokens.
