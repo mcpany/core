@@ -479,3 +479,7 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] A2A Replay Guard Middleware**: Implementation of monotonic nonces and session-bound validation for the A2A Messaging Hub. (Added: 2026-04-22)
 *   **[P0] Adaptive Context Compaction Engine**: WebSocket-native compaction supporting Gemini-style reasoning effort headers. (Added: 2026-04-22)
 *   **[P1] Cognitive Fragment Reconciler**: Background service for synchronizing encrypted monologues across agent sessions. (Added: 2026-04-22)
+### Evolution: [2026-05-02] Updates
+*   **Contextual Quorum (CQ) Hub Integration**: (P0) Coordinate multi-agent voting on tool execution requests.
+*   **Adaptive Intent Budgeting (AIB) Middleware**: (P0) Implement dynamic token and compute lease scaling.
+*   **Kernel-Bound Intent (KBI) Broker**: (P0) Translate KBIA tokens into hardware-bound resource quotas.
