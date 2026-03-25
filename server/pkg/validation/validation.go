@@ -21,10 +21,10 @@ import (
 //
 // Summary: Validates a bind address string.
 //
-// Parameters: - None.
+// Parameters:
 //   - s: string. The address string to validate.
 //
-// Returns: - None.
+// Returns:
 //   - error: An error if validation fails.
 func IsValidBindAddress(s string) error {
 	_, port, err := net.SplitHostPort(s)
@@ -67,10 +67,10 @@ func IsValidBindAddress(s string) error {
 //
 // Summary: Checks for path traversal attempts.
 //
-// Parameters: - None.
+// Parameters:
 //   - path: string. The path to check.
 //
-// Returns: - None.
+// Returns:
 //   - error: An error if the path is insecure.
 //
 // IsSecurePath is a variable to allow mocking in tests.
@@ -142,7 +142,7 @@ var (
 //
 // Summary: Sets the global allowed paths list.
 //
-// Parameters: - None.
+// Parameters:
 //   - paths: []string. The list of allowed paths.
 func SetAllowedPaths(paths []string) {
 	allowedPaths = paths
@@ -324,10 +324,10 @@ var allowedOpaqueSchemes = map[string]bool{
 //
 // Summary: Validates a URL string.
 //
-// Parameters: - None.
+// Parameters:
 //   - s: string. The URL string.
 //
-// Returns: - None.
+// Returns:
 //   - bool: True if valid.
 func IsValidURL(s string) bool {
 	if len(s) > 2048 || strings.TrimSpace(s) != s {
@@ -379,10 +379,10 @@ func IsValidURL(s string) bool {
 //
 // Summary: Validates an HTTP service definition.
 //
-// Parameters: - None.
+// Parameters:
 //   - def: *configv1.HttpCallDefinition. The definition to validate.
 //
-// Returns: - None.
+// Returns:
 //   - error: An error if validation fails.
 func ValidateHTTPServiceDefinition(def *configv1.HttpCallDefinition) error {
 	if def == nil {

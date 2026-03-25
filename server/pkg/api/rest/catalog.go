@@ -23,17 +23,17 @@ type CatalogServer struct {
 //
 // Summary: Initializes a new CatalogServer.
 //
-// Parameters: - None.
+// Parameters:
 //   - manager (*catalog.Manager): The catalog manager instance.
 //
-// Returns: - None.
+// Returns:
 //   - (*CatalogServer): The initialized server instance.
 //
-// Errors: - None.
+// Errors:
 //
 //	None.
 //
-// Side Effects: - None.
+// Side Effects:
 //
 //	None.
 func NewCatalogServer(manager *catalog.Manager) *CatalogServer {
@@ -44,18 +44,18 @@ func NewCatalogServer(manager *catalog.Manager) *CatalogServer {
 //
 // Summary: Lists available catalog services.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The request context.
 //   - _ (*apiv1.ListCatalogServicesRequest): The request object (currently unused).
 //
-// Returns: - None.
+// Returns:
 //   - (*apiv1.ListCatalogServicesResponse): The response containing the list of services.
 //   - (error): An error if the listing fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if the underlying manager fails to list services.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Fetches services from the catalog manager.
 func (s *CatalogServer) ListServices(ctx context.Context, _ *apiv1.ListCatalogServicesRequest) (*apiv1.ListCatalogServicesResponse, error) {
 	services, err := s.manager.ListServices(ctx)

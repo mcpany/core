@@ -44,10 +44,10 @@ var (
 //
 // Summary: Returns a singleton instance of TextParser.
 //
-// Returns: - None.
+// Returns:
 //   - *TextParser: The singleton instance.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Initializes the singleton on first call.
 func NewTextParser() *TextParser {
 	defaultTextParserOnce.Do(func() {
@@ -63,11 +63,11 @@ func NewTextParser() *TextParser {
 //
 // Summary: Delegates to the internal Transformer to render templates.
 //
-// Parameters: - None.
+// Parameters:
 //   - templateStr: string. The Go template.
 //   - data: any. The context data.
 //
-// Returns: - None.
+// Returns:
 //   - []byte: The rendered output.
 //   - error: An error if transformation fails.
 func (p *TextParser) Transform(templateStr string, data any) ([]byte, error) {
@@ -79,17 +79,17 @@ func (p *TextParser) Transform(templateStr string, data any) ([]byte, error) {
 //
 // Summary: Parses input data according to rules defined in config or query.
 //
-// Parameters: - None.
+// Parameters:
 //   - inputType: string. One of "json", "xml", "text", "jq".
 //   - input: []byte. The raw input data.
 //   - config: map[string]string. Extraction rules (key -> path/regex). Used for json, xml, text.
 //   - jqQuery: string. The JQ query string. Used for jq type.
 //
-// Returns: - None.
+// Returns:
 //   - any: The extracted data (usually map[string]any or any for jq).
 //   - error: An error if parsing fails or input type is unsupported.
 //
-// Errors: - None.
+// Errors:
 //   - Returns error if input format is invalid.
 //   - Returns error if extraction rules fail.
 //   - Returns "unsupported input type" for unknown types.

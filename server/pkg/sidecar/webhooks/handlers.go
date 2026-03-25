@@ -33,15 +33,15 @@ type MarkdownHandler struct{}
 //
 // Summary: Handles the markdown conversion request.
 //
-// Parameters: - None.
+// Parameters:
 //   - w: http.ResponseWriter. The HTTP response writer.
 //   - r: *http.Request. The HTTP request.
 //
-// Returns: - None.
+// Returns:
 //
 //	None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Writes the converted Markdown to the response.
 func (h *MarkdownHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
@@ -106,15 +106,15 @@ type TruncateHandler struct{}
 //
 // Summary: Handles the text truncation request.
 //
-// Parameters: - None.
+// Parameters:
 //   - w: http.ResponseWriter. The HTTP response writer.
 //   - r: *http.Request. The HTTP request.
 //
-// Returns: - None.
+// Returns:
 //
 //	None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Writes the truncated text to the response.
 func (h *TruncateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
@@ -185,15 +185,15 @@ type PaginateHandler struct{}
 //
 // Summary: Handles the pagination request.
 //
-// Parameters: - None.
+// Parameters:
 //   - w: http.ResponseWriter. The HTTP response writer.
 //   - r: *http.Request. The HTTP request.
 //
-// Returns: - None.
+// Returns:
 //
 //	None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Writes the paginated content to the response.
 func (h *PaginateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {

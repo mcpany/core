@@ -25,7 +25,7 @@ type MockTool struct {
 //
 // Summary: Retrieves the mock tool definition.
 //
-// Returns: - None.
+// Returns:
 //   - *v1.Tool: The tool definition.
 func (m *MockTool) Tool() *v1.Tool {
 	if m.ToolFunc != nil {
@@ -38,7 +38,7 @@ func (m *MockTool) Tool() *v1.Tool {
 //
 // Summary: Retrieves the MCP tool definition.
 //
-// Returns: - None.
+// Returns:
 //   - *mcp.Tool: The MCP tool definition.
 func (m *MockTool) MCPTool() *mcp.Tool {
 	if m.MCPToolFunc != nil {
@@ -51,11 +51,11 @@ func (m *MockTool) MCPTool() *mcp.Tool {
 //
 // Summary: Executes the mock tool.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx: context.Context. The execution context.
 //   - req: *ExecutionRequest. The execution request.
 //
-// Returns: - None.
+// Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
 func (m *MockTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
@@ -69,7 +69,7 @@ func (m *MockTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 //
 // Summary: Retrieves the cache configuration.
 //
-// Returns: - None.
+// Returns:
 //   - *configv1.CacheConfig: The cache configuration.
 func (m *MockTool) GetCacheConfig() *configv1.CacheConfig {
 	if m.GetCacheConfigFunc != nil {

@@ -20,16 +20,31 @@ type BundleLocalTransport struct {
 	WorkingDir string
 }
 
-// Connect connect connect.
+// Connect establishes a connection to the local process.
 //
-// Summary: Connect connect.
-//
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the request.
 //
-// Returns: - None.
+// Returns:
 //   - mcp.Connection: The result.
 //   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the command fails to start.
+//
+// Side Effects:
+//   - Starts a local process.
+//
+// Summary: Executes Connect operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func (t *BundleLocalTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	cmd := exec.CommandContext(ctx, t.Command, t.Args...) //nolint:gosec // Trusted configuration
 	cmd.Env = t.Env

@@ -43,15 +43,31 @@ type OpenAPIUpstream struct { //nolint:revive
 	serviceID    string
 }
 
-// Shutdown shutdown shutdown.
+// Shutdown gracefully terminates the OpenAPI upstream service. For HTTP-based
+// services, this typically means closing any persistent connections.
 //
-// Summary: Shutdown shutdown.
+// Parameters:
+//   - _ (context.Context): The parameter.
 //
-// Parameters: - None.
-//   - _ (context.Context): Unused parameter.
-//
-// Returns: - None.
+// Returns:
 //   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Shutdown operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -63,15 +79,25 @@ func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
-// NewOpenAPIUpstream creates a new open api upstream.
+// NewOpenAPIUpstream creates a new instance of OpenAPIUpstream. It initializes a
+// cache for storing parsed OpenAPI documents to avoid redundant parsing.
 //
-// Summary: Creates a new open api upstream.
+// Returns:
+//   - upstream.Upstream: The result.
 //
-// Parameters: - None.
+// Side Effects:
 //   - None.
 //
-// Returns: - None.
-//   - upstream.Upstream: The result.
+// Summary: Initializes NewOpenAPIUpstream operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func NewOpenAPIUpstream() upstream.Upstream {
 	cache := ttlcache.New[string, *openapi3.T](
 		ttlcache.WithTTL[string, *openapi3.T](5 * time.Minute),
@@ -86,7 +112,7 @@ func NewOpenAPIUpstream() upstream.Upstream {
 
 // Register processes an OpenAPI service configuration. It parses the OpenAPI specification, extracts the operations, converts them into tools, and registers them with the tool manager.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
 //   - toolManager (tool.ManagerInterface): The toolManager parameter.
@@ -94,27 +120,27 @@ func NewOpenAPIUpstream() upstream.Upstream {
 //   - resourceManager (resource.ManagerInterface): The resourceManager parameter.
 //   - isReload (bool): The isReload parameter.
 //
-// Returns: - None.
+// Returns:
 //   - string: The resulting string.
 //   - []*configv1.ToolDefinition: The resulting []*configv1.ToolDefinition.
 //   - []*configv1.ResourceDefinition: The resulting []*configv1.ResourceDefinition.
 //   - error: An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if the operation fails or is invalid.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes Register operation.
 //
-// Parameters: - None.
+// Parameters:
 //
-// Returns: - None.
+// Returns:
 //
-// Errors: - None.
+// Errors:
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (u *OpenAPIUpstream) Register(
 	ctx context.Context,
@@ -295,16 +321,32 @@ type httpClientImpl struct {
 	client *http.Client
 }
 
-// Do do do.
+// Do sends an HTTP request and returns an HTTP response, fulfilling the
+// client.HTTPClient interface.
 //
-// Summary: Do do.
+// Parameters:
+//   - req (*http.Request): The parameter.
 //
-// Parameters: - None.
-//   - req (*http.Request): The req.
-//
-// Returns: - None.
+// Returns:
 //   - *http.Response: The result.
 //   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Do operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func (c *httpClientImpl) Do(req *http.Request) (*http.Response, error) {
 	return c.client.Do(req)
 }

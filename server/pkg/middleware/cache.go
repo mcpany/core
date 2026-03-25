@@ -51,15 +51,30 @@ type CachingMiddleware struct {
 	hasherPool      *sync.Pool
 }
 
-// NewCachingMiddleware creates a new caching middleware.
+// NewCachingMiddleware creates a new CachingMiddleware. toolManager is the toolManager. Returns the result.
 //
-// Summary: Creates a new caching middleware.
+// Parameters:
+//   - toolManager (tool.ManagerInterface): The toolManager parameter.
 //
-// Parameters: - None.
-//   - toolManager (tool.ManagerInterface): The tool manager.
+// Returns:
+//   - *CachingMiddleware: The resulting *CachingMiddleware.
 //
-// Returns: - None.
-//   - *CachingMiddleware: The result.
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Initializes NewCachingMiddleware operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware {
 	goCacheStore := gocache_store.NewGoCache(go_cache.New(5*time.Minute, 10*time.Minute))
 	cacheManager := cache.New[any](goCacheStore)
@@ -118,31 +133,61 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 	}
 }
 
-// SetProviderFactory setProviderFactory set provider factory.
+// SetProviderFactory allows overriding the default provider factory for testing. factory is the factory.
 //
-// Summary: SetProviderFactory set provider factory.
+// Parameters:
+//   - factory (ProviderFactory): The factory parameter.
 //
-// Parameters: - None.
-//   - factory (ProviderFactory): The factory.
+// Returns:
+//   - None.
 //
-// Returns: - None.
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Updates SetProviderFactory operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
 //   - None.
 func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 	m.providerFactory = factory
 }
 
-// Execute executes the operation.
+// Execute executes the caching middleware. ctx is the context for the request. req is the request object. next is the next. Returns the result. Returns an error if the operation fails.
 //
-// Summary: Executes the operation.
-//
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The req.
-//   - next (tool.ExecutionFunc): The next.
+//   - req (*tool.ExecutionRequest): The request object.
+//   - next (tool.ExecutionFunc): The next parameter.
 //
-// Returns: - None.
-//   - any: The result.
+// Returns:
+//   - any: The resulting any.
 //   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Execute operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := tool.GetFromContext(ctx)
 	if !ok {
@@ -435,15 +480,30 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 	return sb.String()
 }
 
-// Clear clear clear.
+// Clear clears the cache. ctx is the context for the request. Returns an error if the operation fails.
 //
-// Summary: Clear clear.
-//
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the request.
 //
-// Returns: - None.
+// Returns:
 //   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Clear operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func (m *CachingMiddleware) Clear(ctx context.Context) error {
 	return m.cache.Clear(ctx)
 }

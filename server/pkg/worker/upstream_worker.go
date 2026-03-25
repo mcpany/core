@@ -27,16 +27,25 @@ type UpstreamWorker struct {
 	wg          sync.WaitGroup
 }
 
-// NewUpstreamWorker creates a new upstream worker.
+// NewUpstreamWorker creates a new UpstreamWorker.
 //
-// Summary: Creates a new upstream worker.
+// Parameters:
+//   - bus: The event bus used for receiving requests and publishing results.
+//   - toolManager: The tool manager that will handle the actual tool execution.
 //
-// Parameters: - None.
-//   - bus (*bus.Provider): The bus.
-//   - toolManager (tool.ManagerInterface): The tool manager.
+// Returns:
+//   - *UpstreamWorker: A new upstream worker.
 //
-// Returns: - None.
-//   - *UpstreamWorker: The result.
+// Summary: Initializes NewUpstreamWorker operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *UpstreamWorker {
 	return &UpstreamWorker{
 		bus:         bus,
@@ -44,14 +53,22 @@ func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *Up
 	}
 }
 
-// Start start start.
+// Start launches the worker in a new goroutine. It subscribes to tool execution
+// requests on the event bus and will continue to process them until the
+// provided context is canceled.
 //
-// Summary: Start start.
+// Parameters:
+//   - ctx: The context that controls the lifecycle of the worker.
 //
-// Parameters: - None.
-//   - ctx (context.Context): The context for the request.
+// Summary: Executes Start operation.
 //
-// Returns: - None.
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
 //   - None.
 func (w *UpstreamWorker) Start(ctx context.Context) {
 	w.wg.Add(1)
@@ -104,14 +121,29 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 	}()
 }
 
-// Stop stop stop.
+// Stop waits for the worker to stop.
 //
-// Summary: Stop stop.
-//
-// Parameters: - None.
+// Parameters:
 //   - None.
 //
-// Returns: - None.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Stop operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
 //   - None.
 func (w *UpstreamWorker) Stop() {
 	w.wg.Wait()

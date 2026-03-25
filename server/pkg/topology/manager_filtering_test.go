@@ -36,7 +36,7 @@ func TestManager_Filtering(t *testing.T) {
 	assert.Equal(t, int64(3), globalStats.TotalRequests)
 	// Latency: (100 + 200 + 50) / 3 = 116.66
 	assert.Equal(t, 350*time.Millisecond/3, globalStats.AvgLatency)
-	// Errors: 1 / 3
+	// Errors: 1 / .
 	assert.InDelta(t, 0.333, globalStats.ErrorRate, 0.01)
 
 	// Test Service A Stats

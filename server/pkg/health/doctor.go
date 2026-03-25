@@ -48,10 +48,10 @@ type Doctor struct {
 //
 // Summary: Initializes a new Doctor instance.
 //
-// Returns: - None.
+// Returns:
 //   - *Doctor: The initialized doctor registry.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Initializes internal maps and HTTP client.
 func NewDoctor() *Doctor {
 	return &Doctor{
@@ -64,11 +64,11 @@ func NewDoctor() *Doctor {
 //
 // Summary: Registers a custom health check function.
 //
-// Parameters: - None.
+// Parameters:
 //   - name: string. The unique name of the check.
 //   - check: CheckFunc. The function to execute.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Updates the internal checks map.
 func (d *Doctor) AddCheck(name string, check CheckFunc) {
 	d.mu.Lock()
@@ -80,10 +80,10 @@ func (d *Doctor) AddCheck(name string, check CheckFunc) {
 //
 // Summary: Returns an HTTP handler that runs all checks and returns a JSON report.
 //
-// Returns: - None.
+// Returns:
 //   - http.HandlerFunc: The HTTP handler.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Executes all registered health checks.
 //   - Makes an external network call to google.com (connectivity check).
 //   - Reads environment variables (Auth checks).

@@ -14,15 +14,30 @@ type ResourceMCPServer struct {
 	Enabled bool
 }
 
-// Schema schema schema.
+// Schema returns the Terraform schema definition (Mock). Returns the result.
 //
-// Summary: Schema schema.
-//
-// Parameters: - None.
+// Parameters:
 //   - None.
 //
-// Returns: - None.
-//   - map[string]interface: The result.
+// Returns:
+//   - map[string]interface: The resulting map[string]interface.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Schema operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func Schema() map[string]interface{} {
 	return map[string]interface{}{
 		"name": map[string]interface{}{
@@ -45,30 +60,60 @@ func Schema() map[string]interface{} {
 	}
 }
 
-// Create persists the .
+// Create mimics the Create operation of a Terraform resource. _ is an unused parameter. Returns an error if the operation fails.
 //
-// Summary: Persists the .
+// Parameters:
+//   - _ (*ResourceMCPServer): The _ parameter.
 //
-// Parameters: - None.
-//   - _ (*ResourceMCPServer): Unused parameter.
-//
-// Returns: - None.
+// Returns:
 //   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Initializes Create operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func Create(_ *ResourceMCPServer) error {
 	// Simulate API call to provision resources
 	return nil
 }
 
-// Read read read.
+// Read mimics the Read operation. name is the name of the resource. Returns the result. Returns an error if the operation fails.
 //
-// Summary: Read read.
+// Parameters:
+//   - name (string): The name parameter.
 //
-// Parameters: - None.
-//   - name (string): The name.
-//
-// Returns: - None.
-//   - *ResourceMCPServer: The result.
+// Returns:
+//   - *ResourceMCPServer: The resulting *ResourceMCPServer.
 //   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Retrieves Read operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func Read(name string) (*ResourceMCPServer, error) {
 	return &ResourceMCPServer{
 		Name:    name,

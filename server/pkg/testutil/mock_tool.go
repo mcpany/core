@@ -24,7 +24,7 @@ type MockTool struct {
 //
 // Summary: Returns the tool definition.
 //
-// Returns: - None.
+// Returns:
 //   - *v1.Tool: A minimal tool definition.
 func (m *MockTool) Tool() *v1.Tool {
 	return v1.Tool_builder{
@@ -36,15 +36,15 @@ func (m *MockTool) Tool() *v1.Tool {
 //
 // Summary: Executes the mock tool logic.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx: context.Context. The execution context.
 //   - req: *tool.ExecutionRequest. The tool execution request.
 //
-// Returns: - None.
+// Returns:
 //   - any: The result from ExecuteFunc.
 //   - error: The error from ExecuteFunc.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Invokes the injected ExecuteFunc.
 func (m *MockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	if m.ExecuteFunc != nil {
@@ -57,7 +57,7 @@ func (m *MockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any
 //
 // Summary: Returns cache configuration (nil for mock).
 //
-// Returns: - None.
+// Returns:
 //   - *configv1.CacheConfig: Always nil.
 func (m *MockTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil

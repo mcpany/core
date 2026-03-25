@@ -21,7 +21,7 @@ import (
 //
 // Summary: Creates a placeholder MCP CORS middleware.
 //
-// Returns: - None.
+// Returns:
 //   - (mcp.Middleware): The middleware function.
 func CORSMiddleware() mcp.Middleware {
 	// Log a warning once when the middleware is created to inform the user.

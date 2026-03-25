@@ -23,45 +23,85 @@ type ConnectionFactory struct {
 	dialer func(context.Context, string) (net.Conn, error)
 }
 
-// NewConnectionFactory creates a new connection factory.
+// NewConnectionFactory creates and returns a new ConnectionFactory with default
+// settings.
 //
-// Summary: Creates a new connection factory.
+// Returns:
+//   - *ConnectionFactory: The result.
 //
-// Parameters: - None.
+// Side Effects:
 //   - None.
 //
-// Returns: - None.
-//   - *ConnectionFactory: The result.
+// Summary: Initializes NewConnectionFactory operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func NewConnectionFactory() *ConnectionFactory {
 	return &ConnectionFactory{}
 }
 
-// WithDialer withDialer with dialer.
+// WithDialer sets a custom dialer function for the ConnectionFactory. This is
+// useful for tests that need to mock the network connection.
 //
-// Summary: WithDialer with dialer.
+// Parameters:
+//   - dialer func(context.Context (string): The parameter.
+//   - (string): The parameter.
 //
-// Parameters: - None.
-//   - dialer func(context.Context (string): The dialer func(context. context.
-//   -  (string): The .
-//
-// Returns: - None.
+// Returns:
 //   - net.Conn: The result.
 //   - error): The result.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes WithDialer operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func (f *ConnectionFactory) WithDialer(dialer func(context.Context, string) (net.Conn, error)) {
 	f.dialer = dialer
 }
 
-// NewConnection creates a new connection.
+// NewConnection establishes a new gRPC client connection to the specified
+// target address. It uses insecure credentials by default. If a custom dialer
+// has been set, it will be used for the connection.
 //
-// Summary: Creates a new connection.
+// Parameters:
+//   - _ (context.Context): The parameter.
+//   - targetAddress (string): The parameter.
 //
-// Parameters: - None.
-//   - _ (context.Context): Unused parameter.
-//   - targetAddress (string): The target address.
-//
-// Returns: - None.
+// Returns:
 //   - *grpc.ClientConn: The result.
 //   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Initializes NewConnection operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func (f *ConnectionFactory) NewConnection(_ context.Context, targetAddress string) (*grpc.ClientConn, error) {
 	opts := []grpc.DialOption{
 		grpc.WithTransportCredentials(insecure.NewCredentials()),

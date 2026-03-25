@@ -11,7 +11,7 @@ import (
 //
 // Summary: Removes sensitive information from service configuration.
 //
-// Parameters: - None.
+// Parameters:
 //   - svc (*configv1.UpstreamServiceConfig): The upstream service configuration to strip secrets from.
 func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 	if svc == nil {
@@ -65,7 +65,7 @@ func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 //
 // Summary: Removes sensitive information from profile definition.
 //
-// Parameters: - None.
+// Parameters:
 //   - profile (*configv1.ProfileDefinition): The profile definition to strip secrets from.
 func StripSecretsFromProfile(profile *configv1.ProfileDefinition) {
 	if profile == nil {
@@ -80,7 +80,7 @@ func StripSecretsFromProfile(profile *configv1.ProfileDefinition) {
 //
 // Summary: Removes sensitive information from service collection.
 //
-// Parameters: - None.
+// Parameters:
 //   - collection (*configv1.Collection): The service collection to strip secrets from.
 func StripSecretsFromCollection(collection *configv1.Collection) {
 	if collection == nil {
@@ -95,7 +95,7 @@ func StripSecretsFromCollection(collection *configv1.Collection) {
 //
 // Summary: Removes sensitive values from authentication config.
 //
-// Parameters: - None.
+// Parameters:
 //   - auth (*configv1.Authentication): The authentication configuration to strip secrets from.
 func StripSecretsFromAuth(auth *configv1.Authentication) {
 	if auth == nil {
@@ -312,7 +312,7 @@ func scrubSecretValue(sv *configv1.SecretValue) {
 //
 // Summary: Populates service configuration with resolved secret values.
 //
-// Parameters: - None.
+// Parameters:
 //   - svc (*configv1.UpstreamServiceConfig): The upstream service configuration to hydrate secrets into.
 //   - secrets (map[string]*configv1.SecretValue): A map of resolved secret values.
 func HydrateSecretsInService(svc *configv1.UpstreamServiceConfig, secrets map[string]*configv1.SecretValue) {

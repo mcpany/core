@@ -35,27 +35,57 @@ type BaseMessage struct {
 	CID string `json:"cid"`
 }
 
-// CorrelationID correlationID correlation id.
+// CorrelationID returns the correlation ID of the message. This ID is used to associate requests with their corresponding responses in asynchronous workflows.
 //
-// Summary: CorrelationID correlation id.
-//
-// Parameters: - None.
+// Parameters:
 //   - None.
 //
-// Returns: - None.
-//   - string: The result.
+// Returns:
+//   - string: The resulting string.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes CorrelationID operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func (m *BaseMessage) CorrelationID() string {
 	return m.CID
 }
 
-// SetCorrelationID setCorrelationID set correlation id.
+// SetCorrelationID sets the correlation ID for the message. This is typically called by the message publisher to assign a unique ID to a request.
 //
-// Summary: SetCorrelationID set correlation id.
+// Parameters:
+//   - id (string): The id parameter.
 //
-// Parameters: - None.
-//   - id (string): The unique identifier.
+// Returns:
+//   - None.
 //
-// Returns: - None.
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Updates SetCorrelationID operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
 //   - None.
 func (m *BaseMessage) SetCorrelationID(id string) {
 	m.CID = id

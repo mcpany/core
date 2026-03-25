@@ -26,12 +26,12 @@ type Bus[T any] interface {
 	// is sent to each subscriber's channel, and the handler is invoked by a
 	// dedicated goroutine for that subscriber.
 	//
-	// Parameters: - None.
+	// Parameters:
 	//   - ctx: context.Context. Controls the lifecycle of the publish operation (e.g. timeouts).
 	//   - topic: string. The destination topic for the message.
 	//   - msg: T. The payload message to be broadcasted.
 	//
-	// Returns: - None.
+	// Returns:
 	//   - error: An error if the publish operation fails (e.g. underlying transport error).
 	Publish(ctx context.Context, topic string, msg T) error
 
@@ -39,13 +39,13 @@ type Bus[T any] interface {
 	// dedicated goroutine for the subscription to process messages from a
 	// channel.
 	//
-	// Parameters: - None.
-	//   - ctx: context.Context. Controls the setup of the subscription. Note that context cancellation
+	// Parameters:
+	//   - ctx: context.Context. Controls the setup of the subscription. Note that context cancellation.
 	//     may not automatically unsubscribe depending on implementation; use the returned unsubscribe function..
 	//   - topic: string. The topic to listen to.
 	//   - handler: func(T). The callback function invoked for each received message.
 	//
-	// Returns: - None.
+	// Returns:
 	//   - func(): A cleanup function that removes the subscription when called.
 	Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func())
 
@@ -53,12 +53,12 @@ type Bus[T any] interface {
 	// for a given topic. After the handler is called, the subscription is
 	// automatically removed.
 	//
-	// Parameters: - None.
+	// Parameters:
 	//   - ctx: context.Context. Controls the setup of the subscription.
 	//   - topic: string. The topic to listen to.
 	//   - handler: func(T). The callback function invoked for the single received message.
 	//
-	// Returns: - None.
+	// Returns:
 	//   - func(): A cleanup function that removes the subscription if called before the first message.
 	SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func())
 }
@@ -83,16 +83,28 @@ type Provider struct {
 // Summary: Represents a NewProviderHook.
 var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 
-// NewProvider creates a new provider.
+// NewProvider creates and returns a new Provider, which is used to manage
+// multiple topic-based bus instances.
 //
-// Summary: Creates a new provider.
+// Parameters:
 //
-// Parameters: - None.
-//   - messageBus (*bus.MessageBus): The message bus.
+//	messageBus: The configuration for the message bus.
 //
-// Returns: - None.
-//   - *Provider: The result.
-//   - error: An error if the operation fails.
+// Returns:
+//
+//	*Provider: The created Provider.
+//	error: An error if creation fails.
+//
+// Summary: Initializes NewProvider operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 	if NewProviderHook != nil {
 		return NewProviderHook(messageBus)
@@ -138,25 +150,25 @@ var GetBusHook func(p *Provider, topic string) (any, error)
 // The type parameter T specifies the message type for the bus, ensuring
 // type safety for each topic.
 //
-// Parameters: - None.
+// Parameters:
 //
 //	p: The Provider instance.
 //	topic: The topic name.
 //
-// Returns: - None.
+// Returns:
 //
 //	Bus[T]: The requested Bus instance.
 //	error: An error if retrieval or creation fails.
 //
 // Summary: Retrieves GetBus operation.
 //
-// Parameters: - None.
+// Parameters:
 //
-// Returns: - None.
+// Returns:
 //
-// Errors: - None.
+// Errors:
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func GetBus[T any](p *Provider, topic string) (Bus[T], error) {
 	if GetBusHook != nil {

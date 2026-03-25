@@ -41,15 +41,21 @@ var (
 	}
 )
 
-// Register register register.
+// Register registers a HTTP middleware factory.
 //
-// Summary: Register register.
-//
-// Parameters: - None.
-//   - name (string): The name.
+// Parameters:
+//   - name (string): The name of the resource.
 //   - factory (Factory): The factory.
 //
-// Returns: - None.
+// Summary: Executes Register operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
 //   - None.
 func Register(name string, factory Factory) {
 	globalRegistry.mu.Lock()
@@ -57,15 +63,21 @@ func Register(name string, factory Factory) {
 	globalRegistry.factories[name] = factory
 }
 
-// RegisterMCP registerMCP register mcp.
+// RegisterMCP registers an MCP middleware factory.
 //
-// Summary: RegisterMCP register mcp.
-//
-// Parameters: - None.
-//   - name (string): The name.
+// Parameters:
+//   - name (string): The name of the resource.
 //   - factory (MCPFactory): The factory.
 //
-// Returns: - None.
+// Summary: Executes RegisterMCP operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
 //   - None.
 func RegisterMCP(name string, factory MCPFactory) {
 	globalRegistry.mu.Lock()
@@ -73,15 +85,24 @@ func RegisterMCP(name string, factory MCPFactory) {
 	globalRegistry.mcpFactories[name] = factory
 }
 
-// GetHTTPMiddlewares retrieves the http middlewares.
+// GetHTTPMiddlewares returns a sorted list of HTTP middlewares based on configuration.
 //
-// Summary: Retrieves the http middlewares.
+// Parameters:
+//   - configs ([]*configv1.Middleware): The configs.
 //
-// Parameters: - None.
-//   - configs []*configv1.Middleware) ([]func(http.Handler): The configs []*configv1. middleware).
+// Returns:
+//   - ([]func(http.Handler) http.Handler): The result.
 //
-// Returns: - None.
-//   - http.Handler: The result.
+// Summary: Retrieves GetHTTPMiddlewares operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) http.Handler {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()
@@ -105,15 +126,24 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 	return middlewares
 }
 
-// GetMCPMiddlewares retrieves the mcp middlewares.
+// GetMCPMiddlewares returns a sorted list of MCP middlewares based on configuration.
 //
-// Summary: Retrieves the mcp middlewares.
+// Parameters:
+//   - configs ([]*configv1.Middleware): The configs.
 //
-// Parameters: - None.
-//   - configs []*configv1.Middleware) ([]func(mcp.MethodHandler): The configs []*configv1. middleware).
+// Returns:
+//   - ([]func(mcp.MethodHandler) mcp.MethodHandler): The result.
 //
-// Returns: - None.
-//   - mcp.MethodHandler: The result.
+// Summary: Retrieves GetMCPMiddlewares operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler) mcp.MethodHandler {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()
@@ -153,7 +183,7 @@ type StandardMiddlewares struct {
 
 // InitStandardMiddlewares registers standard middlewares.
 //
-// Parameters: - None.
+// Parameters:
 //   - authManager (*auth.Manager): The authManager.
 //   - toolManager (tool.ManagerInterface): The toolManager.
 //   - auditConfig (*configv1.AuditConfig): The auditConfig.
@@ -164,19 +194,19 @@ type StandardMiddlewares struct {
 //   - debuggerConfig (*configv1.DebuggerConfig): The debuggerConfig.
 //   - smartRecoveryConfig (*configv1.SmartRecoveryConfig): The smartRecoveryConfig.
 //
-// Returns: - None.
+// Returns:
 //   - (*StandardMiddlewares): The result.
 //   - (error): An error if the operation fails.
 //
 // Summary: Executes InitStandardMiddlewares operation.
 //
-// Parameters: - None.
+// Parameters:
 //
-// Returns: - None.
+// Returns:
 //
-// Errors: - None.
+// Errors:
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func InitStandardMiddlewares(
 	authManager *auth.Manager,

@@ -15,18 +15,18 @@ import (
 //
 // Summary: Reads the tail of a file.
 //
-// Parameters: - None.
+// Parameters:
 //   - path: string. The path to the file.
 //   - n: int. The number of lines to read.
 //
-// Returns: - None.
+// Returns:
 //   - [][]byte: A slice of byte slices representing the lines.
 //   - error: An error if the file cannot be opened or read.
 //
-// Errors: - None.
+// Throws/Errors:
 //   - Returns error if file open or seek fails.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Opens and reads the specified file from the filesystem.
 func ReadLastNLines(path string, n int) ([][]byte, error) {
 	if n <= 0 {

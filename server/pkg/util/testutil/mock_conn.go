@@ -20,15 +20,24 @@ type MockClientConn struct {
 	clients map[string]interface{}
 }
 
-// NewMockClientConn creates a new mock client conn.
+// NewMockClientConn creates a new mock client connection.
 //
-// Summary: Creates a new mock client conn.
+// Parameters:
+//   - t: The testing instance.
 //
-// Parameters: - None.
-//   - t (*testing.T): The t.
+// Returns:
+//   - *MockClientConn: A new mock client connection.
 //
-// Returns: - None.
-//   - *MockClientConn: The result.
+// Summary: Initializes NewMockClientConn operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func NewMockClientConn(t *testing.T) *MockClientConn {
 	return &MockClientConn{
 		t:       t,
@@ -36,51 +45,75 @@ func NewMockClientConn(t *testing.T) *MockClientConn {
 	}
 }
 
-// SetClient setClient set client.
+// SetClient sets a mock client for a given type.
 //
-// Summary: SetClient set client.
+// Parameters:
+//   - method: The method to mock.
+//   - client: The mock client implementation.
 //
-// Parameters: - None.
-//   - method (string): The method.
-//   - client (interface{}): The client.
+// Summary: Updates SetClient operation.
 //
-// Returns: - None.
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
 //   - None.
 func (m *MockClientConn) SetClient(method string, client interface{}) {
 	m.clients[method] = client
 }
 
-// Invoke invoke invoke.
+// Invoke is a mock implementation of the Invoke method.
 //
-// Summary: Invoke invoke.
+// Parameters:
+//   - ctx: The context for the call.
+//   - method: The method being invoked.
+//   - args: The arguments for the method.
+//   - reply: The reply structure to fill.
+//   - opts: The call options.
 //
-// Parameters: - None.
-//   - _ (context.Context): Unused parameter.
-//   - _ (string): Unused parameter.
-//   - _ (interface{}): Unused parameter.
-//   - _ (interface{}): Unused parameter.
-//   - _ (...grpc.CallOption): Unused parameter.
+// Returns:
+//   - error: An error if the invocation fails.
 //
-// Returns: - None.
-//   - error: An error if the operation fails.
+// Summary: Executes Invoke operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func (m *MockClientConn) Invoke(_ context.Context, _ string, _ interface{}, _ interface{}, _ ...grpc.CallOption) error {
 	// Not implemented for this mock
 	return nil
 }
 
-// NewStream creates a new stream.
+// NewStream is a mock implementation of the NewStream method.
 //
-// Summary: Creates a new stream.
+// Parameters:
+//   - ctx: The context for the stream.
+//   - desc: The stream description.
+//   - method: The method being called.
+//   - opts: The call options.
 //
-// Parameters: - None.
-//   - _ (context.Context): Unused parameter.
-//   - _ (*grpc.StreamDesc): Unused parameter.
-//   - method (string): The method.
-//   - _ (...grpc.CallOption): Unused parameter.
+// Returns:
+//   - grpc.ClientStream: The client stream.
+//   - error: An error if the stream creation fails.
 //
-// Returns: - None.
-//   - grpc.ClientStream: The result.
-//   - error: An error if the operation fails.
+// Summary: Initializes NewStream operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func (m *MockClientConn) NewStream(_ context.Context, _ *grpc.StreamDesc, method string, _ ...grpc.CallOption) (grpc.ClientStream, error) {
 	if client, ok := m.clients[method]; ok {
 		return client.(grpc.ClientStream), nil

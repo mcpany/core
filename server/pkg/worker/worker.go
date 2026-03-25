@@ -36,11 +36,11 @@ type Worker struct {
 //
 // Summary: Initializes a new Worker.
 //
-// Parameters: - None.
+// Parameters:
 //   - busProvider: *bus.Provider. The bus provider.
 //   - cfg: *Config. The worker configuration.
 //
-// Returns: - None.
+// Returns:
 //   - *Worker: The initialized worker.
 func New(busProvider *bus.Provider, cfg *Config) *Worker {
 	return &Worker{
@@ -56,21 +56,36 @@ func New(busProvider *bus.Provider, cfg *Config) *Worker {
 //
 // Summary: Starts the worker processing loop.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx: context.Context. The context for the worker.
 func (w *Worker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	go w.startToolExecutionWorker(ctx)
 }
 
-// Stop stop stop.
+// Stop stops the worker and cleans up resources. Summary: Stops the worker. Side Effects: - Waits for pending jobs. - Unsubscribes from the bus.
 //
-// Summary: Stop stop.
-//
-// Parameters: - None.
+// Parameters:
 //   - None.
 //
-// Returns: - None.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Stop operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
 //   - None.
 func (w *Worker) Stop() {
 	w.wg.Wait() // Wait for the subscription to be set up

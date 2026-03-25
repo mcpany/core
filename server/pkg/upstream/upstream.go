@@ -23,23 +23,23 @@ import (
 type Upstream interface {
 	// Shutdown gracefully terminates the upstream service.
 	//
-	// Parameters: - None.
+	// Parameters:
 	//   - ctx (context.Context): The context for the request.
 	//
-	// Returns: - None.
+	// Returns:
 	//   - error: An error if the operation fails.
 	//
-	// Errors: - None.
+	// Errors:
 	//   - Returns error if shutdown fails.
 	//
-	// Side Effects: - None.
+	// Side Effects:
 	//   - Closes network connections and releases resources.
 	Shutdown(ctx context.Context) error
 
 	// Register inspects the upstream service defined by the serviceConfig,
 	// discovers its capabilities, and registers them.
 	//
-	// Parameters: - None.
+	// Parameters:
 	//   - ctx (context.Context): The context for the registration process.
 	//   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
 	//   - toolManager (tool.ManagerInterface): The manager where discovered tools will be registered.
@@ -47,16 +47,16 @@ type Upstream interface {
 	//   - resourceManager (resource.ManagerInterface): The manager where discovered resources will be registered.
 	//   - isReload (bool): Indicates whether this is an initial registration or a reload.
 	//
-	// Returns: - None.
+	// Returns:
 	//   - string: A unique service key.
 	//   - []*configv1.ToolDefinition: A list of discovered tool definitions.
 	//   - []*configv1.ResourceDefinition: A list of discovered resource definitions.
 	//   - error: An error if registration fails.
 	//
-	// Errors: - None.
+	// Errors:
 	//   - Returns error if connection or discovery fails.
 	//
-	// Side Effects: - None.
+	// Side Effects:
 	//   - Establishes connection to the upstream service.
 	//   - Populates managers with capabilities.
 	Register(
@@ -76,16 +76,16 @@ type Upstream interface {
 type HealthChecker interface {
 	// CheckHealth performs a health check on the upstream service.
 	//
-	// Parameters: - None.
+	// Parameters:
 	//   - ctx (context.Context): The check context.
 	//
-	// Returns: - None.
+	// Returns:
 	//   - error: nil if healthy, error if unhealthy.
 	//
-	// Errors: - None.
+	// Errors:
 	//   - Returns error if the service is unhealthy or unreachable.
 	//
-	// Side Effects: - None.
+	// Side Effects:
 	//   - May send a heartbeat or ping request to the upstream service.
 	CheckHealth(ctx context.Context) error
 }

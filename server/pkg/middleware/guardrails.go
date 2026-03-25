@@ -23,10 +23,10 @@ type GuardrailsConfig struct {
 //
 // Summary: Initializes the guardrails middleware for blocking malicious prompts.
 //
-// Parameters: - None.
+// Parameters:
 //   - config: GuardrailsConfig. The configuration for blocking patterns.
 //
-// Returns: - None.
+// Returns:
 //   - gin.HandlerFunc: The Gin middleware handler.
 func NewGuardrailsMiddleware(config GuardrailsConfig) gin.HandlerFunc {
 	return func(c *gin.Context) {

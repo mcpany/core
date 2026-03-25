@@ -12,15 +12,30 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// DebugMiddleware debugMiddleware debug middleware.
+// DebugMiddleware returns a middleware function that logs the full request and response of each MCP method call. This is useful for debugging and understanding the flow of data through the server.
 //
-// Summary: DebugMiddleware debug middleware.
-//
-// Parameters: - None.
+// Parameters:
 //   - None.
 //
-// Returns: - None.
-//   - mcp.Middleware: The result.
+// Returns:
+//   - mcp.Middleware: The resulting mcp.Middleware.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes DebugMiddleware operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func DebugMiddleware() mcp.Middleware {
 	return func(next mcp.MethodHandler) mcp.MethodHandler {
 		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {

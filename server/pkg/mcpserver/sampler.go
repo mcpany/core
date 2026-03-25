@@ -22,10 +22,10 @@ type MCPSession struct {
 //
 // Summary: Initializes a new MCPSession instance.
 //
-// Parameters: - None.
+// Parameters:
 //   - session: *mcp.ServerSession. The underlying MCP server session.
 //
-// Returns: - None.
+// Returns:
 //   - *MCPSession: A new instance of MCPSession.
 func NewMCPSession(session *mcp.ServerSession) *MCPSession {
 	return &MCPSession{session: session}
@@ -35,13 +35,13 @@ func NewMCPSession(session *mcp.ServerSession) *MCPSession {
 //
 // Summary: Creates a new MCPSession (deprecated alias).
 //
-// Parameters: - None.
+// Parameters:
 //   - session: *mcp.ServerSession. The underlying MCP server session.
 //
-// Returns: - None.
+// Returns:
 //   - *MCPSession: A new instance of MCPSession.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - This function is deprecated and should be replaced by NewMCPSession.
 func NewMCPSampler(session *mcp.ServerSession) *MCPSession {
 	return NewMCPSession(session)
@@ -51,15 +51,15 @@ func NewMCPSampler(session *mcp.ServerSession) *MCPSession {
 //
 // Summary: Requests the client to create a message, effectively sampling the LLM.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx: context.Context. The context for the request.
 //   - params: *mcp.CreateMessageParams. The parameters for the message creation request.
 //
-// Returns: - None.
+// Returns:
 //   - *mcp.CreateMessageResult: The result of the message creation from the client.
 //   - error: An error if no active session is available or if the request fails.
 //
-// Errors: - None.
+// Throws/Errors:
 //   - Returns an error if the session is nil.
 func (s *MCPSession) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
 	if s.session == nil {
@@ -72,14 +72,14 @@ func (s *MCPSession) CreateMessage(ctx context.Context, params *mcp.CreateMessag
 //
 // Summary: Requests the list of root directories from the client.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx: context.Context. The context for the request.
 //
-// Returns: - None.
+// Returns:
 //   - *mcp.ListRootsResult: The list of roots returned by the client.
 //   - error: An error if no active session is available or if the request fails.
 //
-// Errors: - None.
+// Throws/Errors:
 //   - Returns an error if the session is nil.
 func (s *MCPSession) ListRoots(ctx context.Context) (*mcp.ListRootsResult, error) {
 	if s.session == nil {

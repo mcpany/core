@@ -30,28 +30,52 @@ type Upstream struct {
 	mu sync.Mutex
 }
 
-// NewUpstream creates a new upstream.
+// NewUpstream creates a new SQL upstream.
 //
-// Summary: Creates a new upstream.
+// Returns:
+//   - *Upstream: The result.
 //
-// Parameters: - None.
+// Side Effects:
 //   - None.
 //
-// Returns: - None.
-//   - *Upstream: The result.
+// Summary: Initializes NewUpstream operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func NewUpstream() *Upstream {
 	return &Upstream{}
 }
 
-// Shutdown shutdown shutdown.
+// Shutdown closes the database connection.
 //
-// Summary: Shutdown shutdown.
+// Parameters:
+//   - _ (context.Context): The parameter.
 //
-// Parameters: - None.
-//   - _ (context.Context): Unused parameter.
-//
-// Returns: - None.
+// Returns:
 //   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Shutdown operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -67,7 +91,7 @@ func ptr(s string) *string {
 
 // Register discovers and registers tools from the SQL configuration. ctx is the context for the request. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
 //   - toolManager (tool.ManagerInterface): The toolManager parameter.
@@ -75,27 +99,27 @@ func ptr(s string) *string {
 //   - _ (resource.ManagerInterface): The _ parameter.
 //   - _ (bool): The _ parameter.
 //
-// Returns: - None.
+// Returns:
 //   - string: The resulting string.
 //   - []*configv1.ToolDefinition: The resulting []*configv1.ToolDefinition.
 //   - []*configv1.ResourceDefinition: The resulting []*configv1.ResourceDefinition.
 //   - error: An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if the operation fails or is invalid.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes Register operation.
 //
-// Parameters: - None.
+// Parameters:
 //
-// Returns: - None.
+// Returns:
 //
-// Errors: - None.
+// Errors:
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (u *Upstream) Register(
 	ctx context.Context,

@@ -51,15 +51,27 @@ type Upstream struct {
 	mu              sync.RWMutex
 }
 
-// CheckHealth checkHealth check health.
+// CheckHealth performs a health check on the upstream service.
 //
-// Summary: CheckHealth check health.
+// Parameters:
+//   - ctx (context.Context): The context for the health check.
 //
-// Parameters: - None.
-//   - ctx (context.Context): The context for the request.
+// Returns:
+//   - error: An error if the service is unhealthy.
 //
-// Returns: - None.
-//   - error: An error if the operation fails.
+// Side Effects:
+//   - Performs a health check RPC.
+//
+// Summary: Executes CheckHealth operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -75,15 +87,27 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 	return nil
 }
 
-// NewUpstream creates a new upstream.
+// NewUpstream creates a new instance of Upstream.
 //
-// Summary: Creates a new upstream.
+// Parameters:
+//   - poolManager (*pool.Manager): The connection pool manager to be used for managing gRPC connections.
 //
-// Parameters: - None.
-//   - poolManager (*pool.Manager): The pool manager.
+// Returns:
+//   - upstream.Upstream: An implementation of the upstream.Upstream interface.
 //
-// Returns: - None.
-//   - upstream.Upstream: The result.
+// Side Effects:
+//   - Starts a background cache cleaner.
+//
+// Summary: Initializes NewUpstream operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	cache := ttlcache.New[string, *descriptorpb.FileDescriptorSet](
 		ttlcache.WithTTL[string, *descriptorpb.FileDescriptorSet](5 * time.Minute),
@@ -96,15 +120,30 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	}
 }
 
-// Shutdown shutdown shutdown.
+// Shutdown gracefully terminates the gRPC upstream service by shutting down the
+// associated connection pool.
 //
-// Summary: Shutdown shutdown.
+// Parameters:
+//   - ctx (context.Context): The context for the shutdown operation (currently unused).
 //
-// Parameters: - None.
-//   - _ (context.Context): Unused parameter.
+// Returns:
+//   - error: Always returns nil.
 //
-// Returns: - None.
-//   - error: An error if the operation fails.
+// Side Effects:
+//   - Stops the health checker.
+//   - Stops the reflection cache.
+//   - Deregisters the connection pool.
+//
+// Summary: Executes Shutdown operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -125,7 +164,7 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // definitions, and then creates and registers tools based on the discovered
 // methods and any MCP annotations.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The registration context.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the service.
 //   - toolManager (tool.ManagerInterface): The manager for tools.
@@ -133,26 +172,26 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //   - resourceManager (resource.ManagerInterface): The manager for resources.
 //   - isReload (bool): Indicates whether this is a reload.
 //
-// Returns: - None.
+// Returns:
 //   - string: The unique service ID.
 //   - []*configv1.ToolDefinition: Discovered tools.
 //   - []*configv1.ResourceDefinition: Discovered resources (currently unused for gRPC).
 //   - error: An error if registration fails.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Creates a gRPC connection pool.
 //   - Fetches and caches service descriptors (via reflection or config).
 //   - Registers tools and prompts.
 //
 // Summary: Executes Register operation.
 //
-// Parameters: - None.
+// Parameters:
 //
-// Returns: - None.
+// Returns:
 //
-// Errors: - None.
+// Errors:
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (u *Upstream) Register(
 	ctx context.Context,

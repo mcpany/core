@@ -40,13 +40,13 @@ type GlobalRateLimitMiddleware struct {
 //
 // Summary: Initializes the global rate limit middleware with the provided configuration.
 //
-// Parameters: - None.
+// Parameters:
 //   - config: *configv1.RateLimitConfig. The rate limit configuration settings.
 //
-// Returns: - None.
+// Returns:
 //   - *GlobalRateLimitMiddleware: The initialized middleware instance.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Initializes internal caches for limiters.
 func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateLimitMiddleware {
 	return &GlobalRateLimitMiddleware{
@@ -59,10 +59,10 @@ func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateL
 //
 // Summary: Updates the rate limit configuration at runtime.
 //
-// Parameters: - None.
+// Parameters:
 //   - config: *configv1.RateLimitConfig. The new configuration settings.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Acquires a lock to safely update the configuration.
 //   - Effectively changes rate limiting behavior for subsequent requests.
 func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfig) {
@@ -78,20 +78,20 @@ func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfi
 //
 // Summary: Intercepts requests and enforces the configured rate limits.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx: context.Context. The request context.
 //   - method: string. The MCP method being called.
 //   - req: mcp.Request. The request payload.
 //   - next: mcp.MethodHandler. The next handler in the chain.
 //
-// Returns: - None.
+// Returns:
 //   - mcp.Result: The result of the next handler if allowed.
 //   - error: An error if the rate limit is exceeded or the next handler fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns "global rate limit exceeded" if the request is blocked.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Records metrics for allowed and blocked requests.
 //   - May update the state of the rate limiter (e.g., consume tokens).
 func (m *GlobalRateLimitMiddleware) Execute(ctx context.Context, method string, req mcp.Request, next mcp.MethodHandler) (mcp.Result, error) {

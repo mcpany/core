@@ -26,29 +26,29 @@ var ErrPromptNotFound = errors.New("prompt not found")
 type Prompt interface {
 	// Prompt returns the MCP prompt definition.
 	//
-	// Returns: - None.
+	// Returns:
 	//   - *mcp.Prompt: The MCP prompt definition.
 	Prompt() *mcp.Prompt
 
 	// Service returns the ID of the service that provides this prompt.
 	//
-	// Returns: - None.
+	// Returns:
 	//   - string: The service ID.
 	Service() string
 
 	// Definition returns the raw configuration definition of the prompt.
 	//
-	// Returns: - None.
+	// Returns:
 	//   - *configv1.PromptDefinition: The prompt definition.
 	Definition() *configv1.PromptDefinition
 
 	// Get executes the prompt with the provided arguments.
 	//
-	// Parameters: - None.
+	// Parameters:
 	//   - ctx: The context for the request.
 	//   - args: The arguments for the prompt as a raw JSON message.
 	//
-	// Returns: - None.
+	// Returns:
 	//   - *mcp.GetPromptResult: The result of the prompt execution.
 	//   - error: An error if the operation fails.
 	Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error)
@@ -62,7 +62,7 @@ type Prompt interface {
 type MCPServerProvider interface {
 	// Server returns the underlying MCP server instance.
 	//
-	// Returns: - None.
+	// Returns:
 	//   - *mcp.Server: The MCP server instance.
 	Server() *mcp.Server
 }
@@ -80,18 +80,18 @@ type TemplatedPrompt struct {
 //
 // Summary: Initializes a new TemplatedPrompt.
 //
-// Parameters: - None.
+// Parameters:
 //   - definition: The prompt definition from configuration.
 //   - serviceID: The ID of the service providing the prompt.
 //
-// Returns: - None.
+// Returns:
 //   - *TemplatedPrompt: The initialized TemplatedPrompt.
 //   - error: An error if the prompt templates cannot be compiled.
 //
-// Errors: - None.
+// Errors:
 //   - Returns error if template parsing fails.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Compiles all message templates.
 func NewTemplatedPrompt(definition *configv1.PromptDefinition, serviceID string) (*TemplatedPrompt, error) {
 	// ⚡ BOLT: Pre-compile templates to avoid parsing on every request.
@@ -118,7 +118,7 @@ func NewTemplatedPrompt(definition *configv1.PromptDefinition, serviceID string)
 //
 // Summary: Retrieves the MCP prompt definition.
 //
-// Returns: - None.
+// Returns:
 //   - *mcp.Prompt: The MCP prompt definition.
 func (p *TemplatedPrompt) Prompt() *mcp.Prompt {
 	args := make([]*mcp.PromptArgument, 0)
@@ -177,7 +177,7 @@ func (p *TemplatedPrompt) Prompt() *mcp.Prompt {
 //
 // Summary: Retrieves the service ID.
 //
-// Returns: - None.
+// Returns:
 //   - string: The service ID.
 func (p *TemplatedPrompt) Service() string {
 	return p.serviceID
@@ -187,7 +187,7 @@ func (p *TemplatedPrompt) Service() string {
 //
 // Summary: Retrieves the prompt configuration definition.
 //
-// Returns: - None.
+// Returns:
 //   - *configv1.PromptDefinition: The definition proto.
 func (p *TemplatedPrompt) Definition() *configv1.PromptDefinition {
 	return p.definition
@@ -199,15 +199,15 @@ func (p *TemplatedPrompt) Definition() *configv1.PromptDefinition {
 //
 // It renders the prompt template using the provided arguments.
 //
-// Parameters: - None.
+// Parameters:
 //   - _: The context (unused in this implementation).
 //   - args: The arguments for the prompt as a raw JSON message.
 //
-// Returns: - None.
+// Returns:
 //   - *mcp.GetPromptResult: The result of the prompt execution.
 //   - error: An error if the operation fails (e.g., template rendering error).
 //
-// Errors: - None.
+// Errors:
 //   - Returns error if args cannot be unmarshaled.
 //   - Returns error if template rendering fails.
 func (p *TemplatedPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
@@ -242,11 +242,11 @@ func (p *TemplatedPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.Get
 //
 // Summary: Creates a Prompt from configuration.
 //
-// Parameters: - None.
+// Parameters:
 //   - definition: The prompt definition from configuration.
 //   - serviceID: The ID of the service providing the prompt.
 //
-// Returns: - None.
+// Returns:
 //   - Prompt: The created Prompt instance.
 //   - error: An error if the prompt cannot be created.
 func NewPromptFromConfig(definition *configv1.PromptDefinition, serviceID string) (Prompt, error) {

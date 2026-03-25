@@ -22,18 +22,18 @@ type Client interface {
 	//
 	// Summary: Sends a chat completion request to the configured LLM provider.
 	//
-	// Parameters: - None.
+	// Parameters:
 	//   - ctx: context.Context. The context for the request.
 	//   - req: ChatRequest. The chat request parameters.
 	//
-	// Returns: - None.
+	// Returns:
 	//   - *ChatResponse: The chat response from the LLM.
 	//   - error: An error if the request fails or the response is invalid.
 	//
-	// Errors: - None.
+	// Errors:
 	//   - Returns error if marshaling fails, network request fails, or API returns non-200 status.
 	//
-	// Side Effects: - None.
+	// Side Effects:
 	//   - Makes a network request to the LLM provider.
 	ChatCompletion(ctx context.Context, req ChatRequest) (*ChatResponse, error)
 }
@@ -70,16 +70,31 @@ type OpenAIClient struct {
 	client  *http.Client
 }
 
-// NewOpenAIClient creates a new open ai client.
+// NewOpenAIClient creates a new OpenAIClient.
 //
-// Summary: Creates a new open ai client.
+// Parameters:
+//   - apiKey (string): The apiKey parameter.
+//   - baseURL (string): The baseURL parameter.
 //
-// Parameters: - None.
-//   - apiKey (string): The api key.
-//   - baseURL (string): The base url.
+// Returns:
+//   - *OpenAIClient: The resulting *OpenAIClient.
 //
-// Returns: - None.
-//   - *OpenAIClient: The result.
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Initializes NewOpenAIClient operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func NewOpenAIClient(apiKey string, baseURL string) *OpenAIClient {
 	if baseURL == "" {
 		baseURL = "https://api.openai.com/v1"
@@ -107,17 +122,32 @@ type openAIChatResponse struct {
 	} `json:"error,omitempty"`
 }
 
-// ChatCompletion chatCompletion chat completion.
+// ChatCompletion performs a chat completion request.
 //
-// Summary: ChatCompletion chat completion.
-//
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - req (ChatRequest): The req.
+//   - req (ChatRequest): The request object.
 //
-// Returns: - None.
-//   - *ChatResponse: The result.
+// Returns:
+//   - *ChatResponse: The resulting *ChatResponse.
 //   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes ChatCompletion operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func (c *OpenAIClient) ChatCompletion(ctx context.Context, req ChatRequest) (*ChatResponse, error) {
 	reqBody := openAIChatRequest(req)
 	bodyBytes, err := json.Marshal(reqBody)

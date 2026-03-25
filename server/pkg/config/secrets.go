@@ -13,18 +13,18 @@ import (
 //
 // Summary: Removes sensitive information from service configuration.
 //
-// Parameters: - None.
+// Parameters:
 //   - svc (*configv1.UpstreamServiceConfig): The upstream service configuration to modify.
 //
-// Returns: - None.
+// Returns:
 //
 //	None.
 //
-// Errors: - None.
+// Errors:
 //
 //	None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Modifies the provided service configuration in place.
 func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 	util.StripSecretsFromService(svc)
@@ -34,18 +34,18 @@ func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 //
 // Summary: Removes sensitive information from profile definition.
 //
-// Parameters: - None.
+// Parameters:
 //   - profile (*configv1.ProfileDefinition): The profile definition to modify.
 //
-// Returns: - None.
+// Returns:
 //
 //	None.
 //
-// Errors: - None.
+// Errors:
 //
 //	None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Modifies the provided profile definition in place.
 func StripSecretsFromProfile(profile *configv1.ProfileDefinition) {
 	util.StripSecretsFromProfile(profile)
@@ -55,18 +55,18 @@ func StripSecretsFromProfile(profile *configv1.ProfileDefinition) {
 //
 // Summary: Removes sensitive information from service collection.
 //
-// Parameters: - None.
+// Parameters:
 //   - collection (*configv1.Collection): The service collection to modify.
 //
-// Returns: - None.
+// Returns:
 //
 //	None.
 //
-// Errors: - None.
+// Errors:
 //
 //	None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Modifies the provided service collection in place.
 func StripSecretsFromCollection(collection *configv1.Collection) {
 	util.StripSecretsFromCollection(collection)
@@ -76,18 +76,18 @@ func StripSecretsFromCollection(collection *configv1.Collection) {
 //
 // Summary: Removes sensitive values from authentication config.
 //
-// Parameters: - None.
+// Parameters:
 //   - auth (*configv1.Authentication): The authentication configuration to modify.
 //
-// Returns: - None.
+// Returns:
 //
 //	None.
 //
-// Errors: - None.
+// Errors:
 //
 //	None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Modifies the provided authentication configuration in place.
 func StripSecretsFromAuth(auth *configv1.Authentication) {
 	util.StripSecretsFromAuth(auth)
@@ -97,19 +97,19 @@ func StripSecretsFromAuth(auth *configv1.Authentication) {
 //
 // Summary: Populates service configuration with resolved secret values.
 //
-// Parameters: - None.
+// Parameters:
 //   - svc (*configv1.UpstreamServiceConfig): The upstream service configuration to modify.
 //   - secrets (map[string]*configv1.SecretValue): The resolved secret values map.
 //
-// Returns: - None.
+// Returns:
 //
 //	None.
 //
-// Errors: - None.
+// Errors:
 //
 //	None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Modifies the provided service configuration in place.
 func HydrateSecretsInService(svc *configv1.UpstreamServiceConfig, secrets map[string]*configv1.SecretValue) {
 	util.HydrateSecretsInService(svc, secrets)

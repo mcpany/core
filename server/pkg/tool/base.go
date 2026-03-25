@@ -38,7 +38,7 @@ func newBaseTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.Upstr
 //
 // Summary: Retrieves the protobuf definition.
 //
-// Returns: - None.
+// Returns:
 //   - *v1.Tool: The protobuf tool definition.
 func (t *baseTool) Tool() *v1.Tool {
 	return t.tool
@@ -48,10 +48,10 @@ func (t *baseTool) Tool() *v1.Tool {
 //
 // Summary: Retrieves the MCP-compliant tool definition.
 //
-// Returns: - None.
+// Returns:
 //   - *mcp.Tool: The MCP tool definition.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Lazily converts the proto definition to MCP format on first call.
 func (t *baseTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
@@ -68,7 +68,7 @@ func (t *baseTool) MCPTool() *mcp.Tool {
 //
 // Summary: Retrieves the cache configuration (always nil for baseTool).
 //
-// Returns: - None.
+// Returns:
 //   - *configv1.CacheConfig: Always returns nil.
 func (t *baseTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil

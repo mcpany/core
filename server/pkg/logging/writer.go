@@ -16,16 +16,31 @@ type RedactingWriter struct {
 	w io.Writer
 }
 
-// Write write write.
+// Write implements io.Writer.
 //
-// Summary: Write write.
+// Parameters:
+//   - p ([]byte): The p parameter.
 //
-// Parameters: - None.
-//   - p ([]byte): The p.
-//
-// Returns: - None.
-//   - int: The result.
+// Returns:
+//   - int: The resulting int.
 //   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Updates Write operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func (w *RedactingWriter) Write(p []byte) (n int, err error) {
 	// Attempt to redact JSON. RedactJSON handles validation internally.
 	// If it's not valid JSON (e.g. partial write), it returns original input.

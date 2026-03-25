@@ -20,28 +20,58 @@ type ActionableError struct {
 	Suggestion string
 }
 
-// Error error error.
+// Error implements the error interface. Side Effects: - None.
 //
-// Summary: Error error.
-//
-// Parameters: - None.
+// Parameters:
 //   - None.
 //
-// Returns: - None.
-//   - string: The result.
+// Returns:
+//   - string: The resulting string.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Error operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func (e *ActionableError) Error() string {
 	return fmt.Sprintf("%v\n\t-> Fix: %s", e.Err, e.Suggestion)
 }
 
-// Unwrap unwrap unwrap.
+// Unwrap returns the underlying error. Side Effects: - None.
 //
-// Summary: Unwrap unwrap.
-//
-// Parameters: - None.
+// Parameters:
 //   - None.
 //
-// Returns: - None.
+// Returns:
 //   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Unwrap operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func (e *ActionableError) Unwrap() error {
 	return e.Err
 }
@@ -53,14 +83,14 @@ func (e *ActionableError) Unwrap() error {
 // If the cause is an ActionableError, it returns a new ActionableError with the context added to the error message.
 // Otherwise, it returns a standard wrapped error.
 //
-// Parameters: - None.
+// Parameters:
 //   - context (string): The context message to prefix to the error.
 //   - err (error): The error to wrap.
 //
-// Returns: - None.
+// Returns:
 //   - error: The wrapped error.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func WrapActionableError(context string, err error) error {
 	if err == nil {

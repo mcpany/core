@@ -16,58 +16,103 @@ type TmpfsProvider struct {
 	fs afero.Fs
 }
 
-// NewTmpfsProvider creates a new tmpfs provider.
+// NewTmpfsProvider creates a new TmpfsProvider.
 //
-// Summary: Creates a new tmpfs provider.
+// Returns:
+//   - *TmpfsProvider: The result.
 //
-// Parameters: - None.
+// Side Effects:
 //   - None.
 //
-// Returns: - None.
-//   - *TmpfsProvider: The result.
+// Summary: Initializes NewTmpfsProvider operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func NewTmpfsProvider() *TmpfsProvider {
 	return &TmpfsProvider{
 		fs: afero.NewMemMapFs(),
 	}
 }
 
-// GetFs retrieves the fs.
+// GetFs returns the underlying filesystem.
 //
-// Summary: Retrieves the fs.
+// Returns:
+//   - afero.Fs: The result.
 //
-// Parameters: - None.
+// Side Effects:
 //   - None.
 //
-// Returns: - None.
-//   - afero.Fs: The result.
+// Summary: Retrieves GetFs operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func (p *TmpfsProvider) GetFs() afero.Fs {
 	return p.fs
 }
 
-// ResolvePath resolvePath resolve path.
+// ResolvePath resolves the virtual path to a real path.
 //
-// Summary: ResolvePath resolve path.
+// Parameters:
+//   - virtualPath (string): The parameter.
 //
-// Parameters: - None.
-//   - virtualPath (string): The virtual path.
-//
-// Returns: - None.
+// Returns:
 //   - string: The result.
 //   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes ResolvePath operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func (p *TmpfsProvider) ResolvePath(virtualPath string) (string, error) {
 	// For MemMapFs, just clean the path. It's virtual.
 	return filepath.Clean(virtualPath), nil
 }
 
-// Close close close.
+// Close closes the provider.
 //
-// Summary: Close close.
+// Returns:
+//   - error: An error if the operation fails.
 //
-// Parameters: - None.
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
 //   - None.
 //
-// Returns: - None.
-//   - error: An error if the operation fails.
+// Summary: Executes Close operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func (p *TmpfsProvider) Close() error {
 	return nil
 }

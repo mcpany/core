@@ -32,14 +32,14 @@ type Executor interface {
 	//
 	// Summary: Executes a command.
 	//
-	// Parameters: - None.
+	// Parameters:
 	//   - ctx (context.Context): The context for the request.
 	//   - command (string): The command to execute.
 	//   - args ([]string): The arguments for the command.
 	//   - workingDir (string): The working directory for execution.
 	//   - env ([]string): The environment variables.
 	//
-	// Returns: - None.
+	// Returns:
 	//   - stdout (io.ReadCloser): The standard output stream.
 	//   - stderr (io.ReadCloser): The standard error stream.
 	//   - exitCode (<-chan int): A channel that receives the exit code.
@@ -49,14 +49,14 @@ type Executor interface {
 	//
 	// Summary: Executes a command with full I/O streams.
 	//
-	// Parameters: - None.
+	// Parameters:
 	//   - ctx (context.Context): The context for the request.
 	//   - command (string): The command to execute.
 	//   - args ([]string): The arguments for the command.
 	//   - workingDir (string): The working directory for execution.
 	//   - env ([]string): The environment variables.
 	//
-	// Returns: - None.
+	// Returns:
 	//   - stdin (io.WriteCloser): The standard input stream.
 	//   - stdout (io.ReadCloser): The standard output stream.
 	//   - stderr (io.ReadCloser): The standard error stream.
@@ -69,13 +69,13 @@ type Executor interface {
 //
 // Summary: Creates a new command executor (local or docker).
 //
-// Parameters: - None.
+// Parameters:
 //   - containerEnv (*configv1.ContainerEnvironment): The container environment configuration (if any).
 //
-// Returns: - None.
+// Returns:
 //   - Executor: A new Executor instance.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - May initialize a Docker client.
 func NewExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 	if containerEnv != nil && containerEnv.GetImage() != "" {
@@ -88,13 +88,13 @@ func NewExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 //
 // Summary: Creates a new local command executor.
 //
-// Parameters: - None.
+// Parameters:
 //   - None.
 //
-// Returns: - None.
+// Returns:
 //   - Executor: A new local Executor instance.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func NewLocalExecutor() Executor {
 	return &localExecutor{}
@@ -106,20 +106,20 @@ type localExecutor struct{}
 //
 // Summary: Executes a command on the local system.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - command (string): The command to execute.
 //   - args ([]string): The arguments for the command.
 //   - workingDir (string): The working directory for execution.
 //   - env ([]string): The environment variables.
 //
-// Returns: - None.
+// Returns:
 //   - io.ReadCloser: The standard output stream.
 //   - io.ReadCloser: The standard error stream.
 //   - <-chan int: A channel that receives the exit code.
 //   - error: An error if the operation fails.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Spawns a subprocess.
 func (e *localExecutor) Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	if workingDir != "" {
@@ -170,21 +170,21 @@ func (e *localExecutor) Execute(ctx context.Context, command string, args []stri
 //
 // Summary: Executes a command on the local system with full I/O streams.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - command (string): The command to execute.
 //   - args ([]string): The arguments for the command.
 //   - workingDir (string): The working directory for execution.
 //   - env ([]string): The environment variables.
 //
-// Returns: - None.
+// Returns:
 //   - io.WriteCloser: The standard input stream.
 //   - io.ReadCloser: The standard output stream.
 //   - io.ReadCloser: The standard error stream.
 //   - <-chan int: A channel that receives the exit code.
 //   - error: An error if the operation fails.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Spawns a subprocess.
 func (e *localExecutor) ExecuteWithStdIO(ctx context.Context, command string, args []string, workingDir string, env []string) (io.WriteCloser, io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	if workingDir != "" {
@@ -257,20 +257,20 @@ func newDockerExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 //
 // Summary: Executes a command inside a Docker container.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - command (string): The command to execute.
 //   - args ([]string): The arguments for the command.
 //   - workingDir (string): The working directory for execution.
 //   - env ([]string): The environment variables.
 //
-// Returns: - None.
+// Returns:
 //   - io.ReadCloser: The standard output stream.
 //   - io.ReadCloser: The standard error stream.
 //   - <-chan int: A channel that receives the exit code.
 //   - error: An error if the operation fails.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Creates and starts a Docker container.
 func (e *dockerExecutor) Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	log := logging.GetLogger()
@@ -393,21 +393,21 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 //
 // Summary: Executes a command inside a Docker container with full I/O streams.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - command (string): The command to execute.
 //   - args ([]string): The arguments for the command.
 //   - workingDir (string): The working directory for execution.
 //   - env ([]string): The environment variables.
 //
-// Returns: - None.
+// Returns:
 //   - io.WriteCloser: The standard input stream.
 //   - io.ReadCloser: The standard output stream.
 //   - io.ReadCloser: The standard error stream.
 //   - <-chan int: A channel that receives the exit code.
 //   - error: An error if the operation fails.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Creates and starts a Docker container.
 func (e *dockerExecutor) ExecuteWithStdIO(ctx context.Context, command string, args []string, workingDir string, env []string) (io.WriteCloser, io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	log := logging.GetLogger()
@@ -532,14 +532,14 @@ type closeWriter struct {
 //
 // Summary: Writes data to the underlying connection.
 //
-// Parameters: - None.
+// Parameters:
 //   - p ([]byte): The data to write.
 //
-// Returns: - None.
+// Returns:
 //   - int: The number of bytes written.
 //   - error: An error if the write fails.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Writes to the network connection.
 func (c *closeWriter) Write(p []byte) (n int, err error) {
 	return c.conn.Write(p)
@@ -549,13 +549,13 @@ func (c *closeWriter) Write(p []byte) (n int, err error) {
 //
 // Summary: Closes the write side of the connection.
 //
-// Parameters: - None.
+// Parameters:
 //   - None.
 //
-// Returns: - None.
+// Returns:
 //   - error: An error if closing fails.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Closes the connection writer.
 func (c *closeWriter) Close() error {
 	if cw, ok := c.conn.(interface{ CloseWrite() error }); ok {

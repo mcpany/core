@@ -31,15 +31,30 @@ type Worker struct {
 	config Config
 }
 
-// New creates a new .
+// New creates a new GC Worker. config holds the configuration settings. Returns the result.
 //
-// Summary: Creates a new .
+// Parameters:
+//   - config (Config): The config parameter.
 //
-// Parameters: - None.
-//   - config (Config): The config.
+// Returns:
+//   - *Worker: The resulting *Worker.
 //
-// Returns: - None.
-//   - *Worker: The result.
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Initializes New operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func New(config Config) *Worker {
 	if config.Interval <= 0 {
 		config.Interval = 1 * time.Hour // Default 1 hour
@@ -52,14 +67,29 @@ func New(config Config) *Worker {
 	}
 }
 
-// Start start start.
+// Start runs the GC worker in the background. It returns immediately and runs cleanup periodically until the context is canceled.
 //
-// Summary: Start start.
-//
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the request.
 //
-// Returns: - None.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Start operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
 //   - None.
 func (w *Worker) Start(ctx context.Context) {
 	if !w.config.Enabled {

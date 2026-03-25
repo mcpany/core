@@ -24,19 +24,31 @@ type LocalProvider struct {
 	symlinkMode  configv1.FilesystemUpstreamService_SymlinkMode
 }
 
-// NewLocalProvider creates a new local provider.
+// NewLocalProvider creates a new LocalProvider from the given configuration.
 //
-// Summary: Creates a new local provider.
+// Parameters:
+//   - _ (*configv1.OsFs): The parameter.
+//   - rootPaths (map[string]string): The parameter.
+//   - (allowedPaths): The parameter.
+//   - deniedPaths ([]string): The parameter.
+//   - symlinkMode (configv1.FilesystemUpstreamService_SymlinkMode): The parameter.
 //
-// Parameters: - None.
-//   - _ (*configv1.OsFs): Unused parameter.
-//   - rootPaths (map[string]string): The root paths.
-//   - allowedPaths (unknown): The allowed paths.
-//   - deniedPaths ([]string): The denied paths.
-//   - symlinkMode (configv1.FilesystemUpstreamService_SymlinkMode): The symlink mode.
-//
-// Returns: - None.
+// Returns:
 //   - *LocalProvider: The result.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Initializes NewLocalProvider operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string, allowedPaths, deniedPaths []string, symlinkMode configv1.FilesystemUpstreamService_SymlinkMode) *LocalProvider {
 	return &LocalProvider{
 		fs:           afero.NewOsFs(),
@@ -47,29 +59,53 @@ func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string, allowedPath
 	}
 }
 
-// GetFs retrieves the fs.
+// GetFs returns the underlying filesystem.
 //
-// Summary: Retrieves the fs.
+// Returns:
+//   - afero.Fs: The result.
 //
-// Parameters: - None.
+// Side Effects:
 //   - None.
 //
-// Returns: - None.
-//   - afero.Fs: The result.
+// Summary: Retrieves GetFs operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func (p *LocalProvider) GetFs() afero.Fs {
 	return p.fs
 }
 
-// ResolvePath resolvePath resolve path.
+// ResolvePath resolves the virtual path to a real path in the local filesystem.
 //
-// Summary: ResolvePath resolve path.
+// Parameters:
+//   - virtualPath (string): The parameter.
 //
-// Parameters: - None.
-//   - virtualPath (string): The virtual path.
-//
-// Returns: - None.
+// Returns:
 //   - string: The result.
 //   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes ResolvePath operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func (p *LocalProvider) ResolvePath(virtualPath string) (string, error) {
 	if len(p.rootPaths) == 0 {
 		return "", fmt.Errorf("no root paths defined")
@@ -319,15 +355,27 @@ func (p *LocalProvider) containsSymlink(virtualPath, bestMatchVirtual, bestMatch
 	return false, nil
 }
 
-// Close close close.
+// Close closes the provider.
 //
-// Summary: Close close.
+// Returns:
+//   - error: An error if the operation fails.
 //
-// Parameters: - None.
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
 //   - None.
 //
-// Returns: - None.
-//   - error: An error if the operation fails.
+// Summary: Executes Close operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func (p *LocalProvider) Close() error {
 	return nil
 }

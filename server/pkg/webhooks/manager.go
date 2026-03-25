@@ -45,10 +45,10 @@ type Manager struct {
 //
 // Summary: Creates a new Manager.
 //
-// Returns: - None.
+// Returns:
 //   - *Manager: A pointer to the newly created Manager.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Initializes internal maps and HTTP client.
 func NewManager() *Manager {
 	return &Manager{
@@ -61,7 +61,7 @@ func NewManager() *Manager {
 //
 // Summary: Lists all webhooks.
 //
-// Returns: - None.
+// Returns:
 //   - []*WebhookConfig: A list of webhook configurations.
 func (m *Manager) ListWebhooks() []*WebhookConfig {
 	m.mu.RLock()
@@ -77,10 +77,10 @@ func (m *Manager) ListWebhooks() []*WebhookConfig {
 //
 // Summary: Adds or updates a webhook.
 //
-// Parameters: - None.
+// Parameters:
 //   - w (*WebhookConfig): The webhook configuration to add.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Updates the internal webhook map.
 //   - Generates an ID if one is not provided.
 func (m *Manager) AddWebhook(w *WebhookConfig) {
@@ -97,10 +97,10 @@ func (m *Manager) AddWebhook(w *WebhookConfig) {
 //
 // Summary: Retrieves a webhook by ID.
 //
-// Parameters: - None.
+// Parameters:
 //   - id (string): The webhook ID.
 //
-// Returns: - None.
+// Returns:
 //   - *WebhookConfig: The webhook configuration.
 //   - bool: True if found, false otherwise.
 func (m *Manager) GetWebhook(id string) (*WebhookConfig, bool) {
@@ -114,10 +114,10 @@ func (m *Manager) GetWebhook(id string) (*WebhookConfig, bool) {
 //
 // Summary: Deletes a webhook.
 //
-// Parameters: - None.
+// Parameters:
 //   - id (string): The webhook ID to delete.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Removes the webhook from the internal map.
 func (m *Manager) DeleteWebhook(id string) {
 	m.mu.Lock()
@@ -129,18 +129,18 @@ func (m *Manager) DeleteWebhook(id string) {
 //
 // Summary: Tests a webhook.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - id (string): The webhook ID to test.
 //
-// Returns: - None.
+// Returns:
 //   - error: An error if the test fails or the webhook is not found.
 //
-// Errors: - None.
+// Errors:
 //   - Returns error if webhook not found.
 //   - Returns error if HTTP request fails or returns non-2xx status.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Sends an HTTP POST request to the webhook URL.
 //   - Updates the webhook status.
 func (m *Manager) TestWebhook(ctx context.Context, id string) error {

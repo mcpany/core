@@ -17,10 +17,10 @@ import (
 //
 // Summary: Retrieves the authenticated user's profile.
 //
-// Parameters: - None.
+// Parameters:
 //   - store: storage.Storage. The storage interface.
 //
-// Returns: - None.
+// Returns:
 //   - http.HandlerFunc: The HTTP handler function.
 func (a *Application) handleUserMe(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

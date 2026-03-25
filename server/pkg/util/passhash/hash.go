@@ -10,16 +10,25 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// Password password password.
+// Password hashes a password using bcrypt.
 //
-// Summary: Password password.
+// Parameters:
+//   - password: The password to hash.
 //
-// Parameters: - None.
-//   - password (string): The password.
+// Returns:
+//   - string: The hashed password.
+//   - error: An error if the hashing fails.
 //
-// Returns: - None.
-//   - string: The result.
-//   - error: An error if the operation fails.
+// Summary: Executes Password operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func Password(password string) (string, error) {
 	// Increase cost to 12 for better security (default is 10)
 	const cost = 12
@@ -30,16 +39,25 @@ func Password(password string) (string, error) {
 	return string(bytes), nil
 }
 
-// CheckPassword checkPassword check password.
+// CheckPassword checks if a password matches a hash.
 //
-// Summary: CheckPassword check password.
+// Parameters:
+//   - password: The password to check.
+//   - hash: The hash to compare against.
 //
-// Parameters: - None.
-//   - password (unknown): The password.
-//   - hash (string): The hash.
+// Returns:
+//   - bool: True if the password matches the hash, false otherwise.
 //
-// Returns: - None.
-//   - bool: The result.
+// Summary: Executes CheckPassword operation.
+//
+// Parameters:
+//
+// Returns:
+//
+// Errors:
+//
+// Side Effects:
+//   - None.
 func CheckPassword(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
