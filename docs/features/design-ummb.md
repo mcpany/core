@@ -53,3 +53,4 @@ The Universal Multimodal Memory Bus (UMMB) implements a hardware-attested, inten
 
 ## 7. Evolutionary Changelog
 * **2026-07-01:** Initial Document Creation.
+* **2026-07-03:** Appending mandatory **Multimodal Hash-Chaining (MHC)** requirement to Section 4. Every non-textual fragment must now be cryptographically linked to its predecessor to prevent "Logic Grafting" during inter-framework handoffs.
