@@ -2,8 +2,6 @@ module github.com/mcpany/core/server
 
 go 1.24.0
 
-
-
 replace github.com/mcpany/core => ../
 
 require (
@@ -74,7 +72,6 @@ require (
 	github.com/segmentio/kafka-go v0.4.49
 	github.com/spf13/afero v1.15.0
 	github.com/spf13/cobra v1.9.1
-	github.com/spf13/pflag v1.0.6
 	github.com/spf13/viper v1.18.2
 	github.com/standard-webhooks/standard-webhooks/libraries v0.0.0-20251210175704-b03a68fe8b19
 	github.com/stretchr/testify v1.11.1
@@ -258,6 +255,7 @@ require (
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/cast v1.6.0 // indirect
+	github.com/spf13/pflag v1.0.6 // indirect
 	github.com/spiffe/go-spiffe/v2 v2.6.0 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
