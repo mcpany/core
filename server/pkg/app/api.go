@@ -751,7 +751,6 @@ func (a *Application) handleTools() http.HandlerFunc {
 		*mcp.Tool
 		ServiceID string `json:"service_id,omitempty"`
 	}
-
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
