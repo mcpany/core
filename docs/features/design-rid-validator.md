@@ -76,3 +76,18 @@ MCP Any needs to implement a **Recursive Intent Delegation (RID) Validator** tha
 *   Implementing **Relational PoI Chain Verification**. Every tool call must carry the full cryptographic lineage back to the user's mission root, ensuring that "Ghost Intents" cannot shadow authorized goals.
 *   Introducing **Parental Intent Revocation (PIR)**. The mission root can broadcast a hardware-signed revocation signal that forcefully terminates all delegated intents across the mesh instantly.
 **Security Impact**: Provides deterministic protection against infinite delegation loops and absolute sovereignty over autonomous swarm behavior.
+
+### Update: 2026-03-25 (Iteration 4) - Hardware-Attested Physical Boundaries
+**Context:** The finalization of UACO v1.8 RID standardizes physical enforcement of delegation limits.
+**Architecture Adjustment:**
+* Mandatory integration with TPM/Secure Enclave for **Monotonic Depth-Counters**.
+* The validator now blocks any subagent creation if the hardware counter reaches zero, independent of software-level intent metadata.
+**Security Impact:** Prevents "Recursive Intent Poisoning" attacks by anchoring swarm stability to immutable hardware limits.
+
+### Update: 2026-03-25 (Iteration 5) - SDK-Driven Intent Boundary Enforcement
+**Context:** Programmatic agent control via the OpenCode SDK allows for rapid intent mutation that can bypass traditional chat-based observation.
+**Architecture Adjustment:**
+* Integration of RID validation directly into the OpenCode SDK client library.
+* Mandating hardware-attested "Mission Context" headers for all programmatic SDK requests.
+* The validator now performs real-time semantic analysis of SDK-injected intents to ensure they remain within the mission-root manifest.
+**Security Impact:** Neutralizes the risk of automated agents diverging from their mission via programmatic instruction injection.
