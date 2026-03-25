@@ -211,8 +211,12 @@ export function useRealTimeTopology() {
                 rawEdges.length === edgesRef.current.length;
 
             if (isSameStructure) {
-                const prevNodeSet = new Set(nodesRef.current.map(n => n.id));
-                const prevEdgeSet = new Set(edgesRef.current.map(e => e.id));
+                // ⚡ BOLT: [Render Optimization] Prevent O(N) array allocation overhead during Set/Map initialization
+                // Randomized Selection from Top 5 High-Impact Targets (Algorithmic)
+                const prevNodeSet = new Set();
+                for(let i=0; i<nodesRef.current.length; i++) prevNodeSet.add(nodesRef.current[i].id);
+                const prevEdgeSet = new Set();
+                for(let i=0; i<edgesRef.current.length; i++) prevEdgeSet.add(edgesRef.current[i].id);
                 for (let i = 0; i < rawNodes.length; i++) {
                     if (!prevNodeSet.has(rawNodes[i].id)) {
                         isSameStructure = false;
@@ -231,7 +235,10 @@ export function useRealTimeTopology() {
 
             if (isSameStructure) {
                 // Structure matches, only update data (metrics) and preserve positions
-                const currentNodesMap = new Map(nodesRef.current.map(n => [n.id, n]));
+                // ⚡ BOLT: [Render Optimization] Prevent O(N) array allocation overhead during Set/Map initialization
+                // Randomized Selection from Top 5 High-Impact Targets (Algorithmic)
+                const currentNodesMap = new Map();
+                for(let i=0; i<nodesRef.current.length; i++) currentNodesMap.set(nodesRef.current[i].id, nodesRef.current[i]);
 
                 const updatedNodes = rawNodes.map(node => {
                     const existing = currentNodesMap.get(node.id);
