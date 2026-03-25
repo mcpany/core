@@ -1316,8 +1316,8 @@
 
 ## Evolution: [2026-06-14] Updates
 
-### Proposed Additions (2026-06-14)
+### Proposed Additions
 - **MRA-Backed Lineage Provider**: (P0) Hardware-bound.
 
-### Priority Shifts (2026-06-14)
+### Priority Shifts
 - **Shadow Coordination Interceptor (SCI)**: (Re-affirmed P0).
