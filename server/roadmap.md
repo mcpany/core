@@ -137,6 +137,12 @@
 *   **[P0] Mission-Root Budget Enforcer**: Resource management for reasoning effort and token limits based on process-bound agency. (Added: 2026-03-20)
 *   **[P1] A2A Multi-Channel Inbox Bridge**: Secure coordination and translation for handling 20+ messaging platforms simultaneously. (Added: 2026-03-20)
 
+#### Upcoming (2026-07-05 Evolution)
+*   **[P0] Physical Shard Sovereignty (PSS) Provider**: Cryptographically pin context shards to specific hardware Enclave IDs to neutralize shard-hopping. (Added: 2026-07-05)
+*   **[P0] Multi-Modal Stylometric Integrity (MMSI) Validator**: Real-time stylometric analysis for SVG logic diagrams and audio reasoning traces within SBF. (Added: 2026-07-05)
+*   **[P0] Quorum-Bound Summarization (QBS) Hub**: Distributed service requiring multi-agent consensus (Mission-Root + Auditor) on context compaction. (Added: 2026-07-05)
+*   **[P1] Adaptive Jitter Profiler**: Performance-optimizing middleware for risk-aware timing variations in enclave handoffs. (Added: 2026-07-05)
+
 #### Upcoming (2026-07-04 Evolution)
 *   **[P0] Stylometric Behavioral Firewall (SBF)**: Authoritative linguistic broker with integrated paraphrasing sandbox. (Added: 2026-07-04)
 *   **[P0] Distributed Memory Enclave (DME) Broker**: Hardware-enclave (TPM/SEP) bound coordination for cross-framework memory isolation. (Added: 2026-07-04)
