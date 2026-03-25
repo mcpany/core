@@ -111,12 +111,6 @@ func TestUpstreamService_TheMealDB(t *testing.T) {
 	err = json.Unmarshal([]byte(textContent.Text), &theMealDBResponse)
 	require.NoError(t, err, "Failed to unmarshal JSON response")
 
-	if _, ok := theMealDBResponse["meals"].(string); ok {
-
-	}
-	if theMealDBResponse["meals"] == nil {
-
-	}
 	meals, ok := theMealDBResponse["meals"].([]interface{})
 	require.True(t, ok, "The meals should be an array")
 	require.True(t, len(meals) > 0, "The response should contain at least one meal")

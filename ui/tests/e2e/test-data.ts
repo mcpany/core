@@ -10,7 +10,7 @@ const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
 const ECHO_SERVER_BASE_URL = process.env.UI_HTTP_ECHO_BASE_URL || 'http://ui-http-echo-server:5678';
 const HEADERS = { 'X-API-Key': API_KEY, 'Content-Type': 'application/json' };
 
-export const seedGlobalState = async (requestContext?: APIRequestContext) => {
+export const seedGlobalState = async (_requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
 
     const services = [
@@ -174,7 +174,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
         }
     ];
 
-        const traces = [
+        const _traces = [
         {
             id: 'trace-1',
             rootSpan: {
@@ -209,7 +209,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             throw new Error(`Failed to seed global state: ${res.status()} ${text}`);
         }
         console.log("Global state seeded successfully.");
-    } catch (e) {
+    } catch (_e) {
         console.log(`Failed to seed global state: ${e}`);
         throw e;
     }
@@ -222,7 +222,7 @@ export const seedTraffic = async (requestContext?: APIRequestContext) => {
     ];
     try {
         await context.post('/api/v1/debug/seed_traffic', { data: points, headers: HEADERS });
-    } catch (e) {
+    } catch (_e) {
         console.log(`Failed to seed traffic: ${e}`);
     }
 };
@@ -233,7 +233,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
     await seedGlobalState(requestContext);
 };
 
-export const seedUser = async (requestContext: APIRequestContext | undefined, username: string) => {
+export const seedUser = async (_requestContext: APIRequestContext | undefined, username: string) => {
     // We create a specific user if requested, in addition to the core user.
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const user = {
@@ -256,40 +256,40 @@ export const seedUser = async (requestContext: APIRequestContext | undefined, us
             // If this is called AFTER seedGlobalState, it adds a user.
             console.log(`Failed to create user ${username}: ${res.status()}`);
         }
-    } catch (e) {
-        console.log(`Error seeding user ${username}: ${e}`);
+    } catch (_e) {
+        console.log(`Error seeding user ${username}`);
     }
 };
 
-export const cleanupServices = async (requestContext?: APIRequestContext) => {
+export const cleanupServices = async (_requestContext?: APIRequestContext) => {
     // No-op
 };
 
-export const cleanupUser = async (requestContext: APIRequestContext | undefined, username: string) => {
+export const cleanupUser = async (_requestContext: APIRequestContext | undefined, _username: string) => {
     // No-op
 };
 
-export const seedProfiles = async (requestContext?: APIRequestContext) => {
+export const seedProfiles = async (_requestContext?: APIRequestContext) => {
     // Included in seedGlobalState (empty profiles list currently, but we can add if needed)
 };
 
-export const cleanupProfiles = async (requestContext?: APIRequestContext) => {
+export const cleanupProfiles = async (_requestContext?: APIRequestContext) => {
     // No-op
 };
 
-export const seedPrompts = async (requestContext?: APIRequestContext) => {
+export const seedPrompts = async (_requestContext?: APIRequestContext) => {
     // No-op
 };
 
-export const cleanupPrompts = async (requestContext?: APIRequestContext) => {
+export const cleanupPrompts = async (_requestContext?: APIRequestContext) => {
     // No-op
 };
 
-export const seedWebhooks = async (requestContext?: APIRequestContext) => {
+export const seedWebhooks = async (_requestContext?: APIRequestContext) => {
     // No-op
 };
 
-export const seedCollection = async (name?: string, requestContext?: APIRequestContext) => {
+export const seedCollection = async (name?: string, _requestContext?: APIRequestContext) => {
     if (!name) return;
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     try {
@@ -313,7 +313,7 @@ export const seedCollection = async (name?: string, requestContext?: APIRequestC
             const text = await res.text();
             console.log(`seedCollection: POST /api/v1/collections => ${res.status()} ${text}`);
         }
-    } catch (e) {
+    } catch (_e) {
         console.log(`seedCollection failed: ${e}`);
     }
 };
@@ -323,7 +323,7 @@ export const cleanupCollection = async (name?: string, requestContext?: APIReque
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     try {
         await context.delete(`/api/v1/collections/${name}`, { headers: HEADERS });
-    } catch (e) {
+    } catch (_e) {
         // Ignore cleanup errors (collection may not exist)
     }
 };
@@ -349,7 +349,7 @@ export const seedTraces = async (requestContext?: APIRequestContext) => {
     };
     try {
         await context.post('/api/v1/debug/traces', { data: [trace], headers: HEADERS });
-    } catch (e) {
+    } catch (_e) {
         console.log(`Failed to seed trace: ${e}`);
     }
 };
