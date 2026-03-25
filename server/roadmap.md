@@ -755,11 +755,6 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
 
 #### Upcoming (2026-06-18 Evolution)
-*   **[P0] Teammate Sovereignty Enforcer (TSE)**: Authoritative isolation kernel providing cryptographically bound isolation for parallel teams. (Added: 2026-06-18)
-*   **[P0] Logic-Sovereignty Validator (LSV)**: Real-time semantic deconstruction of reasoning paths. (Added: 2026-06-18)
-*   **[P0] Request-Side Injection Shield (RSIS)**: Advanced scanning for AI-generated code to block request-side prompt injection. (Added: 2026-06-18)
-
-#### Upcoming (2026-06-18 Evolution)
 *   **[P0] Teammate Sovereignty Enforcer (TSE)**: Isolation kernel for parallel teams. (Added: 2026-06-18)
 *   **[P0] Logic-Sovereignty Validator (LSV)**: Reasoning path deconstruction. (Added: 2026-06-18)
 *   **[P0] Request-Side Injection Shield (RSIS)**: Block CVE-2026-30741. (Added: 2026-06-18)

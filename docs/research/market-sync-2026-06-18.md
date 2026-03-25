@@ -18,3 +18,8 @@ SPDX-License-Identifier: Apache-2.0
 ### 3. Gemini CLI: Authenticated Agent Card Discovery
 **Details:** Mandates hardware-attested cards.
 **Implications:** Accelerate authenticated discovery features.
+
+## Summary of Autonomous Agent Pain Points
+- **Teammate Isolation:** Parallel agents lack isolation, leading to "State Smearing."
+- **Coordination Latency:** Lock-based coordination causing "Cognitive Stall."
+- **Request-Side Exploitation:** Direct RCE via un-sanitized code generation.
