@@ -24,6 +24,17 @@
 - **Relational PoI Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory mission-root chain verification to counter "Intent Ghosting" vulnerabilities.
 - **Binary State Handoff (BSH) Gateway**: (Re-affirmed P0) Evolving into the **Zero-Copy Transport** architecture with integrated WASM-based "Point-in-Time" binary scanning.
 
+## Evolution: [2026-03-25] (Iteration 2) Updates
+
+### Proposed Additions
+- **Optimistic Attestation Middleware**: (P1) Predictive tool registry facilitating parallel context preparation and background discovery attestation.
+- **Relational PoI Chain Validator**: (P0) Core security service mandating cryptographic lineage verification for every intent-bound tool call.
+- **Memfd-Bound BSH Sanitizer**: (P0) Integration of WASM-based binary scanning directly into zero-copy shared memory segments.
+
+### Priority Shifts
+- **WASM-BSH State Sanitizer**: (Re-affirmed P0) Evolving into the **Memfd-Bound Sanitizer** to eliminate intermediate copies.
+- **RID Validator**: (Re-affirmed P0) Elevated with mandatory monotonic depth-counter enforcement.
+
 
 ### Proposed Additions
 - **Discovery-Phase Sandbox Middleware**: (P0) A secure, ephemeral execution environment for MCP discovery commands, preventing host-level "Ghost-Execution" exploits (Gemini CLI / OpenClaw CVE defense).

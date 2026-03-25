@@ -660,6 +660,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **WASM-Bound BSH Sanitization**: We are integrating a WASM-based "State Sanitizer" into the BSH Gateway. All binary state handoffs will be processed in an isolated WASM sandbox to ensure they conform to the target agent's schema and security profile before memory ingestion.
 - **Zero-Copy Memory-Mapped Transport**: To eliminate the "Cognitive Stall" in deep swarms, MCP Any will implement a Zero-Copy BSH transport utilizing shared memory regions. This allows multi-gigabyte context objects to be "handed off" with sub-millisecond latency.
 
+## Strategic Evolution: [2026-03-25] (Iteration 2)
+### Focus: Relational Intent Integrity & Kernel-Mediated State Handoffs
+**Context**: Further analysis of UACO v1.8 and the emergence of "Intent Ghosting" vulnerabilities confirm that transport security must move to **Relational Integrity**. Simultaneously, the maturation of zero-copy buffers demands that the Universal Agent Bus moves from passive routing to active **Kernel-Mediated State Handoffs**.
+**Strategic Pivot**:
+- **Relational PoI Enforcement**: MCP Any will pivot to a "Relational Security" model where every tool call is validated against a cryptographically signed "Intent Chain." This ensures that subagents cannot be coerced into actions that diverge from the parent's verified mission root.
+- **Memfd-Bound BSH Sanitization**: We are evolving the WASM-BSH gateway to utilize Linux `memfd_create`. This allows the sanitizer to operate directly on shared memory segments, eliminating intermediate buffer copies and neutralizing "TOCTOU" context smearing.
+- **Optimistic Attestation Middleware**: Supporting the efficiency of speculative reasoning, MCP Any will implement an "Optimistic Attestation" layer. This allows agents to speculatively prepare tool contexts while discovery quorums perform background attestation in parallel.
+
 ---
 
 ## Strategic Evolution: [2026-03-26]
