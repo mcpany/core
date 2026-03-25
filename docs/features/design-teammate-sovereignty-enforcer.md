@@ -7,10 +7,9 @@ With the transition to "Agent Teams," parallel teammates require cryptographical
 
 ## 2. Goals & Non-Goals
 * **Goals:**
-    * Provide cryptographically bound isolation for parallel teammates.
-    * Enforce "Auth-at-the-Pipe" for inter-agent communication.
-    * Bind teammate identities to hardware-attested (TPM) tokens.
-    * Integrate with the Logic-Sovereignty Validator (LSV).
+    * Provide cryptographically bound isolation.
+    * Enforce "Auth-at-the-Pipe" for teammate comms.
+    * Bind identities to TPM mission-root tokens.
 * **Non-Goals:**
     * OS-level virtualization.
 
