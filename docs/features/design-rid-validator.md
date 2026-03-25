@@ -60,3 +60,19 @@ MCP Any needs to implement a **Recursive Intent Delegation (RID) Validator** tha
 * Introducing "Immutable Mutation Boundaries" that prevent subagents from expanding their intent scope beyond their hardware-attested parent lineage.
 * Mandating Relational PoI verification, where every tool call must provide the complete cryptographic lineage back to the mission root.
 **Security Impact:** Neutralizes "Intent Ghosting" and prevents privilege escalation in deep, autonomous agent swarms.
+
+### Update: 2026-03-25 (Iteration 2) - Monotonic Depth Counters & Relational Verification
+**Context:** Industry analysis of UACO v1.8 confirms that stateless intent validation is insufficient against "Recursive Intent Poisoning."
+**Architecture Adjustment:**
+* Mandating hardware-attested **Monotonic Depth Counters** for all RID tokens.
+* Evolving the validator to require **Relational PoI Chain** verification, ensuring every tool call carries the full parentage of intents back to the mission root.
+* Introducing "Parental Intent Overrides" that allow the mission root to forcefully revoke sub-delegated intents across the mesh.
+**Security Impact:** Eliminates infinite delegation loops and provides absolute mission-root sovereignty over autonomous swarms.
+
+### Update: 2026-03-25 (Iteration 3) - Absolute Mission Sovereignty & Depth Attestation
+**Context**: Further analysis of UACO v1.8 and the disclosure of "Recursive Intent Poisoning" confirm that stateless depth limits are bypassable.
+**Architecture Adjustment**:
+*   Mandating **Hardware-Attested Monotonic Depth-Counters**. Every subagent spawn must decrement a TPM-bound counter inherited from the mission root, providing physical enforcement of delegation limits.
+*   Implementing **Relational PoI Chain Verification**. Every tool call must carry the full cryptographic lineage back to the user's mission root, ensuring that "Ghost Intents" cannot shadow authorized goals.
+*   Introducing **Parental Intent Revocation (PIR)**. The mission root can broadcast a hardware-signed revocation signal that forcefully terminates all delegated intents across the mesh instantly.
+**Security Impact**: Provides deterministic protection against infinite delegation loops and absolute sovereignty over autonomous swarm behavior.
