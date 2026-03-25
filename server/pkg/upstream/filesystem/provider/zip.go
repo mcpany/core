@@ -25,28 +25,28 @@ type ZipProvider struct {
 
 // NewZipProvider creates a new ZipProvider from the given configuration.
 //
-// Parameters:
+// Parameters: - None.
 //   - config (*configv1.ZipFs): The parameter.
 //
-// Returns:
+// Returns: - None.
 //   - *ZipProvider: The result.
 //   - error: An error if the operation fails.
 //
-// Errors:
+// Errors: - None.
 //   - Returns an error if ...
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 //
 // Summary: Initializes NewZipProvider operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func NewZipProvider(config *configv1.ZipFs) (*ZipProvider, error) {
 	if err := validation.IsAllowedPath(config.GetFilePath()); err != nil {
@@ -80,21 +80,21 @@ func NewZipProvider(config *configv1.ZipFs) (*ZipProvider, error) {
 
 // GetFs returns the underlying filesystem.
 //
-// Returns:
+// Returns: - None.
 //   - afero.Fs: The result.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 //
 // Summary: Retrieves GetFs operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (p *ZipProvider) GetFs() afero.Fs {
 	return p.fs
@@ -102,28 +102,28 @@ func (p *ZipProvider) GetFs() afero.Fs {
 
 // ResolvePath resolves the virtual path to a real path in the zip.
 //
-// Parameters:
+// Parameters: - None.
 //   - virtualPath (string): The parameter.
 //
-// Returns:
+// Returns: - None.
 //   - string: The result.
 //   - error: An error if the operation fails.
 //
-// Errors:
+// Errors: - None.
 //   - Returns an error if ...
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 //
 // Summary: Executes ResolvePath operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (p *ZipProvider) ResolvePath(virtualPath string) (string, error) {
 	// For ZipFs, just clean the path. It's virtual (based on zip contents).
@@ -132,24 +132,24 @@ func (p *ZipProvider) ResolvePath(virtualPath string) (string, error) {
 
 // Close closes the underlying zip file.
 //
-// Returns:
+// Returns: - None.
 //   - error: An error if the operation fails.
 //
-// Errors:
+// Errors: - None.
 //   - Returns an error if ...
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 //
 // Summary: Executes Close operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (p *ZipProvider) Close() error {
 	if p.closer != nil {

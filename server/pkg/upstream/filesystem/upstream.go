@@ -43,21 +43,21 @@ type Upstream struct {
 
 // NewUpstream creates a new instance of FilesystemUpstream.
 //
-// Returns:
+// Returns: - None.
 //   - upstream.Upstream: A new instance of the filesystem upstream.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 //
 // Summary: Initializes NewUpstream operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{
@@ -67,25 +67,25 @@ func NewUpstream() upstream.Upstream {
 
 // Shutdown implements the upstream.Upstream interface.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx (context.Context): The context for the shutdown operation (currently unused).
 //
-// Returns:
+// Returns: - None.
 //   - error: Always returns nil.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Stops the health checker.
 //   - Closes all registered filesystem providers.
 //
 // Summary: Executes Shutdown operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
@@ -102,7 +102,7 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 
 // Register processes the configuration for a filesystem service.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx (context.Context): The context for the registration process.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
 //   - toolManager (tool.ManagerInterface): The manager where discovered tools will be registered.
@@ -110,26 +110,26 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //   - _ (resource.ManagerInterface): Unused resource manager.
 //   - _ (bool): Unused reload flag.
 //
-// Returns:
+// Returns: - None.
 //   - string: The unique service ID.
 //   - []*configv1.ToolDefinition: A list of registered tool definitions.
 //   - []*configv1.ResourceDefinition: Always nil.
 //   - error: An error if registration fails.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Creates a filesystem provider.
 //   - Starts a health checker.
 //   - Registers tools with the tool manager.
 //
 // Summary: Executes Register operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (u *Upstream) Register(
 	ctx context.Context,
@@ -250,11 +250,11 @@ type fsCallable struct {
 //
 // Summary: Executes a filesystem tool.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx: context.Context. The execution context.
 //   - req: *tool.ExecutionRequest. The request containing arguments.
 //
-// Returns:
+// Returns: - None.
 //   - any: The result of the execution.
 //   - error: An error if execution fails.
 func (c *fsCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {

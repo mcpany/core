@@ -33,11 +33,11 @@ const maxSecretRecursionDepth = 10
 //
 // Summary: Resolves a secret configuration into a string value.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx (context.Context): The context for the secret resolution.
 //   - secret (*configv1.SecretValue): The configuration object to resolve.
 //
-// Returns:
+// Returns: - None.
 //   - string: The resolved secret string.
 //   - error: An error if resolution fails.
 func ResolveSecret(ctx context.Context, secret *configv1.SecretValue) (string, error) {
@@ -303,12 +303,12 @@ func resolveSecretImpl(ctx context.Context, secret *configv1.SecretValue, depth 
 //
 // Summary: Resolves a map of secrets and merges with plain values.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx (context.Context): The context for the secret resolution.
 //   - secretMap (map[string]*configv1.SecretValue): A map of keys to SecretValue objects.
 //   - plainMap (map[string]string): A map of keys to plain string values.
 //
-// Returns:
+// Returns: - None.
 //   - map[string]string: A single map containing all keys with their resolved string values.
 //   - error: An error if any secret resolution fails.
 func ResolveSecretMap(ctx context.Context, secretMap map[string]*configv1.SecretValue, plainMap map[string]string) (map[string]string, error) {

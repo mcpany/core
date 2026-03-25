@@ -27,18 +27,18 @@ type FileAuditStore struct {
 //
 // Summary: Initializes a new FileAuditStore.
 //
-// Parameters:
+// Parameters: - None.
 //   - path: string. The file path for the audit log (or empty for stdout).
 //
-// Returns:
+// Returns: - None.
 //   - *FileAuditStore: The initialized store.
 //   - error: An error if the path is invalid or file cannot be opened.
 //
-// Errors:
+// Errors: - None.
 //   - Returns error if path validation fails.
 //   - Returns error if file creation/opening fails.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Opens (or creates) the specified file in append mode.
 func NewFileAuditStore(path string) (*FileAuditStore, error) {
 	var f *os.File
@@ -62,14 +62,14 @@ func NewFileAuditStore(path string) (*FileAuditStore, error) {
 //
 // Summary: Appends a JSON-marshaled audit entry to the configured output.
 //
-// Parameters:
+// Parameters: - None.
 //   - _: context.Context. Unused.
 //   - entry: Entry. The audit entry to write.
 //
-// Returns:
+// Returns: - None.
 //   - error: An error if writing fails.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Writes data to the file or stdout.
 func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 	// ⚡ BOLT: Serialize JSON outside the lock to reduce critical section duration.
@@ -99,11 +99,11 @@ func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 //
 // Summary: Reads audit entries (Not implemented).
 //
-// Parameters:
+// Parameters: - None.
 //   - _: context.Context. Unused.
 //   - _: Filter. Unused.
 //
-// Returns:
+// Returns: - None.
 //   - []Entry: Nil.
 //   - error: Always returns "not implemented".
 func (s *FileAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
@@ -114,10 +114,10 @@ func (s *FileAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 //
 // Summary: Closes the underlying file handle if one exists.
 //
-// Returns:
+// Returns: - None.
 //   - error: An error if closing the file fails.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Closes the file descriptor.
 func (s *FileAuditStore) Close() error {
 	s.mu.Lock()

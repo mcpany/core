@@ -23,10 +23,10 @@ import (
 //
 // Summary: Manages the collection of users.
 //
-// Parameters:
+// Parameters: - None.
 //   - store: storage.Storage. The storage interface for user persistence.
 //
-// Returns:
+// Returns: - None.
 //   - http.HandlerFunc: The HTTP handler function.
 func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -143,10 +143,10 @@ func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 //
 // Summary: Manages a single user resource (get, update, delete).
 //
-// Parameters:
+// Parameters: - None.
 //   - store: storage.Storage. The storage interface.
 //
-// Returns:
+// Returns: - None.
 //   - http.HandlerFunc: The HTTP handler function.
 func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -279,12 +279,12 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 //
 // Summary: Hashes the user's password or restores the existing hash if redacted.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx: context.Context. The context for the operation.
 //   - user: *configv1.User. The user object containing the password to hash.
 //   - store: storage.Storage. The storage to fetch the existing user from.
 //
-// Returns:
+// Returns: - None.
 //   - error: An error if hashing or fetching fails.
 func hashUserPassword(ctx context.Context, user *configv1.User, store storage.Storage, existingUser *configv1.User) error {
 	if user.GetAuthentication() != nil && user.GetAuthentication().GetBasicAuth() != nil {

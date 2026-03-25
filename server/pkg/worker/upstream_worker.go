@@ -29,22 +29,22 @@ type UpstreamWorker struct {
 
 // NewUpstreamWorker creates a new UpstreamWorker.
 //
-// Parameters:
+// Parameters: - None.
 //   - bus: The event bus used for receiving requests and publishing results.
 //   - toolManager: The tool manager that will handle the actual tool execution.
 //
-// Returns:
+// Returns: - None.
 //   - *UpstreamWorker: A new upstream worker.
 //
 // Summary: Initializes NewUpstreamWorker operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *UpstreamWorker {
 	return &UpstreamWorker{
@@ -57,18 +57,18 @@ func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *Up
 // requests on the event bus and will continue to process them until the
 // provided context is canceled.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx: The context that controls the lifecycle of the worker.
 //
 // Summary: Executes Start operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (w *UpstreamWorker) Start(ctx context.Context) {
 	w.wg.Add(1)
@@ -123,27 +123,27 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 
 // Stop waits for the worker to stop.
 //
-// Parameters:
+// Parameters: - None.
 //   - None.
 //
-// Returns:
+// Returns: - None.
 //   - None.
 //
-// Errors:
+// Errors: - None.
 //   - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 //
 // Summary: Executes Stop operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (w *UpstreamWorker) Stop() {
 	w.wg.Wait()

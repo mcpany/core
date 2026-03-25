@@ -23,10 +23,10 @@ type ResilienceMiddleware struct {
 //
 // Summary: Initializes the ResilienceMiddleware with a tool manager.
 //
-// Parameters:
+// Parameters: - None.
 //   - toolManager: tool.ManagerInterface. The manager for retrieving tool and service information.
 //
-// Returns:
+// Returns: - None.
 //   - *ResilienceMiddleware: The initialized middleware.
 func NewResilienceMiddleware(toolManager tool.ManagerInterface) *ResilienceMiddleware {
 	return &ResilienceMiddleware{
@@ -38,16 +38,16 @@ func NewResilienceMiddleware(toolManager tool.ManagerInterface) *ResilienceMiddl
 //
 // Summary: Executes the tool call within a resilience wrapper (circuit breaker, retry).
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx: context.Context. The execution context.
 //   - req: *tool.ExecutionRequest. The tool execution request.
 //   - next: tool.ExecutionFunc. The next handler in the chain.
 //
-// Returns:
+// Returns: - None.
 //   - any: The execution result.
 //   - error: An error if the execution or resilience policy fails.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Checks circuit breaker state.
 //   - May retry the execution on failure.
 //   - Records success/failure to update circuit breaker stats.

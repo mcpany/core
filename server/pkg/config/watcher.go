@@ -34,28 +34,28 @@ type Watcher struct {
 
 // NewWatcher creates a new file watcher.
 //
-// Parameters:
+// Parameters: - None.
 //   - None.
 //
-// Returns:
+// Returns: - None.
 //   - *Watcher: The resulting *Watcher.
 //   - error: An error if the operation fails.
 //
-// Errors:
+// Errors: - None.
 //   - Returns an error if the operation fails or is invalid.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 //
 // Summary: Initializes NewWatcher operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func NewWatcher() (*Watcher, error) {
 	watcher, err := fsnotify.NewWatcher()
@@ -73,17 +73,17 @@ func NewWatcher() (*Watcher, error) {
 //
 // Summary: Starts watching the specified paths for changes.
 //
-// Parameters:
+// Parameters: - None.
 //   - paths ([]string): A slice of file or directory paths to watch.
 //   - reloadFunc (func()): The function to call when a change is detected.
 //
-// Returns:
+// Returns: - None.
 //   - error: An error if adding paths to the watcher fails.
 //
-// Errors:
+// Errors: - None.
 //   - Returns an error if adding a path to the watcher fails.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Starts a goroutine to process file events.
 //   - Registers directories with the OS watcher.
 func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
@@ -200,18 +200,18 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 
 // Close stops the file watcher and releases resources.
 //
-// Parameters:
+// Parameters: - None.
 //   - None.
 //
 // Summary: Executes Close operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (w *Watcher) Close() {
 	close(w.done)

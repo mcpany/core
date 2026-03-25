@@ -22,10 +22,10 @@ type Manager struct {
 //
 // Summary: Initializes a new Resilience Manager.
 //
-// Parameters:
+// Parameters: - None.
 //   - config: *configv1.ResilienceConfig. The resilience configuration.
 //
-// Returns:
+// Returns: - None.
 //   - *Manager: The initialized manager, or nil if no resilience features are enabled.
 func NewManager(config *configv1.ResilienceConfig) *Manager {
 	if config == nil {
@@ -62,14 +62,14 @@ func NewManager(config *configv1.ResilienceConfig) *Manager {
 //
 // Summary: Executes the work function with configured resilience policies (timeout, retry, circuit breaker).
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx: context.Context. The context for the request.
 //   - work: func(context.Context) error. The operation to execute.
 //
-// Returns:
+// Returns: - None.
 //   - error: An error if the operation fails after all resilience attempts.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Applies timeout context.
 //   - Retries operation on failure.
 //   - Checks and updates circuit breaker state.

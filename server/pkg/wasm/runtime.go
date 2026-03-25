@@ -15,18 +15,18 @@ import (
 type Runtime interface {
 	// LoadPlugin loads a WASM plugin from bytecode.
 	//
-	// Parameters:
+	// Parameters: - None.
 	//   - ctx: The context for the request.
 	//   - bytecode: The WASM bytecode to load.
 	//
-	// Returns:
+	// Returns: - None.
 	//   - Plugin: The instantiated plugin.
 	//   - error: An error if the operation fails.
 	LoadPlugin(ctx context.Context, bytecode []byte) (Plugin, error)
 
 	// Close closes the runtime and releases resources.
 	//
-	// Returns:
+	// Returns: - None.
 	//   - error: An error if the operation fails.
 	Close() error
 }
@@ -37,19 +37,19 @@ type Runtime interface {
 type Plugin interface {
 	// Execute runs a function exported by the WASM module
 	//
-	// Parameters:
+	// Parameters: - None.
 	//   - ctx: The context for the request.
 	//   - function: The name of the function to execute.
 	//   - args: The arguments to pass to the function.
 	//
-	// Returns:
+	// Returns: - None.
 	//   - []byte: The result of the execution.
 	//   - error: An error if the operation fails.
 	Execute(ctx context.Context, function string, args ...[]byte) ([]byte, error)
 
 	// Close closes the plugin instance.
 	//
-	// Returns:
+	// Returns: - None.
 	//   - error: An error if the operation fails.
 	Close() error
 }
@@ -61,18 +61,18 @@ type MockRuntime struct{}
 
 // NewMockRuntime creates a new MockRuntime.
 //
-// Returns:
+// Returns: - None.
 //   - *MockRuntime: A new mock runtime instance.
 //
 // Summary: Initializes NewMockRuntime operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func NewMockRuntime() *MockRuntime {
 	return &MockRuntime{}
@@ -80,23 +80,23 @@ func NewMockRuntime() *MockRuntime {
 
 // LoadPlugin loads a plugin.
 //
-// Parameters:
+// Parameters: - None.
 //   - _ : The context (unused).
 //   - bytecode: The bytecode to load.
 //
-// Returns:
+// Returns: - None.
 //   - Plugin: A mock plugin.
 //   - error: An error if the bytecode is empty.
 //
 // Summary: Executes LoadPlugin operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (m *MockRuntime) LoadPlugin(_ context.Context, bytecode []byte) (Plugin, error) {
 	if len(bytecode) == 0 {
@@ -107,18 +107,18 @@ func (m *MockRuntime) LoadPlugin(_ context.Context, bytecode []byte) (Plugin, er
 
 // Close closes the runtime.
 //
-// Returns:
+// Returns: - None.
 //   - error: Always returns nil.
 //
 // Summary: Executes Close operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (m *MockRuntime) Close() error {
 	return nil
@@ -131,24 +131,24 @@ type MockPlugin struct{}
 
 // Execute executes a function.
 //
-// Parameters:
+// Parameters: - None.
 //   - _ : The context (unused).
 //   - function: The function name to execute.
 //   - _ : The arguments (unused).
 //
-// Returns:
+// Returns: - None.
 //   - []byte: The result ("success").
 //   - error: An error if the function name is "error".
 //
 // Summary: Executes Execute operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (p *MockPlugin) Execute(_ context.Context, function string, _ ...[]byte) ([]byte, error) {
 	if function == "error" {
@@ -159,18 +159,18 @@ func (p *MockPlugin) Execute(_ context.Context, function string, _ ...[]byte) ([
 
 // Close closes the plugin.
 //
-// Returns:
+// Returns: - None.
 //   - error: Always returns nil.
 //
 // Summary: Executes Close operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (p *MockPlugin) Close() error {
 	return nil

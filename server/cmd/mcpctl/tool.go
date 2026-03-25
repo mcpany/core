@@ -19,7 +19,7 @@ import (
 // This command provides subcommands for managing and inspecting tools,
 // such as calculating integrity hashes for tool definitions.
 //
-// Returns:
+// Returns: - None.
 //   - *cobra.Command: The configured tool command.
 func newToolCmd() *cobra.Command {
 	toolCmd := &cobra.Command{

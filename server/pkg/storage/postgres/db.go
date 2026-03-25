@@ -24,14 +24,14 @@ type DB struct {
 //
 // Summary: Initializes a PostgreSQL database connection.
 //
-// Parameters:
+// Parameters: - None.
 //   - dsn (string): The data source name (connection string).
 //
-// Returns:
+// Returns: - None.
 //   - *DB: The database connection.
 //   - error: An error if the connection fails.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Opens a network connection to the database.
 func NewDB(dsn string) (*DB, error) {
 	return NewDBWithDriver("postgres", dsn)
@@ -41,15 +41,15 @@ func NewDB(dsn string) (*DB, error) {
 //
 // Summary: Initializes a database connection with a custom driver.
 //
-// Parameters:
+// Parameters: - None.
 //   - driver (string): The database driver name.
 //   - dsn (string): The data source name.
 //
-// Returns:
+// Returns: - None.
 //   - *DB: The database connection.
 //   - error: An error if the connection fails.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Opens a network connection to the database.
 //   - Initializes the schema.
 func NewDBWithDriver(driver, dsn string) (*DB, error) {
@@ -82,14 +82,14 @@ func NewDBWithDriver(driver, dsn string) (*DB, error) {
 //
 // Summary: Wraps an existing sql.DB connection.
 //
-// Parameters:
+// Parameters: - None.
 //   - db (*sql.DB): The existing database connection.
 //
-// Returns:
+// Returns: - None.
 //   - *DB: The wrapped database connection.
 //   - error: An error if the connection is invalid (ping fails).
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Pings the database.
 //   - Initializes the schema.
 func NewDBFromSQLDB(db *sql.DB) (*DB, error) {

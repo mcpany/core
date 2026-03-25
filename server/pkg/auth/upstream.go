@@ -39,11 +39,11 @@ type UpstreamAuthenticator interface {
 // returns `nil, nil`. If the configuration is invalid (e.g., missing required
 // fields), an error is returned.
 //
-// Parameters:
+// Parameters: - None.
 //   - authConfig: The configuration that specifies the authentication method.
 //     and its parameters.
 //
-// Returns:
+// Returns: - None.
 //   - An `UpstreamAuthenticator` implementation, or nil if no auth is configured.
 //   - An error if the configuration is invalid.
 //
@@ -56,23 +56,23 @@ type UpstreamAuthenticator interface {
 // returns `nil, nil`. If the configuration is invalid (e.g., missing required
 // fields), an error is returned.
 //
-// Parameters:
+// Parameters: - None.
 //   - authConfig: The configuration that specifies the authentication method.
 //     and its parameters.
 //
-// Returns:
+// Returns: - None.
 //   - An `UpstreamAuthenticator` implementation, or nil if no auth is configured.
 //   - An error if the configuration is invalid.
 //
 // Summary: Initializes NewUpstreamAuthenticator operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func NewUpstreamAuthenticator(authConfig *configv1.Authentication) (UpstreamAuthenticator, error) {
 	if authConfig == nil {
@@ -149,21 +149,21 @@ type APIKeyAuth struct {
 
 // Authenticate adds the configured API key to the request's header, query, or cookie.
 //
-// Parameters:
+// Parameters: - None.
 //   - req: The HTTP request to be modified.
 //
-// Returns:
+// Returns: - None.
 //   - nil on success, or an error if the secret cannot be resolved.
 //
 // Summary: Executes Authenticate operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (a *APIKeyAuth) Authenticate(req *http.Request) error {
 	if a.Value == nil {
@@ -202,21 +202,21 @@ type BearerTokenAuth struct {
 
 // Authenticate adds the bearer token to the request's "Authorization" header.
 //
-// Parameters:
+// Parameters: - None.
 //   - req: The HTTP request to be modified.
 //
-// Returns:
+// Returns: - None.
 //   - nil on success, or an error if the secret cannot be resolved.
 //
 // Summary: Executes Authenticate operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (b *BearerTokenAuth) Authenticate(req *http.Request) error {
 	if b.Token == nil {
@@ -241,21 +241,21 @@ type BasicAuth struct {
 
 // Authenticate sets the request's basic authentication credentials.
 //
-// Parameters:
+// Parameters: - None.
 //   - req: The HTTP request to be modified.
 //
-// Returns:
+// Returns: - None.
 //   - nil on success, or an error if the secret cannot be resolved.
 //
 // Summary: Executes Authenticate operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (b *BasicAuth) Authenticate(req *http.Request) error {
 	if b.Password == nil {
@@ -306,21 +306,21 @@ func (o *OAuth2Auth) getTokenURL(ctx context.Context) (string, error) {
 
 // Authenticate fetches a token and adds it to the request's "Authorization" header.
 //
-// Parameters:
+// Parameters: - None.
 //   - req: The HTTP request to be modified.
 //
-// Returns:
+// Returns: - None.
 //   - nil on success, or an error if the token cannot be obtained.
 //
 // Summary: Executes Authenticate operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (o *OAuth2Auth) Authenticate(req *http.Request) error {
 	tokenURL, err := o.getTokenURL(req.Context())

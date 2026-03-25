@@ -1,43 +1,41 @@
-# Design Doc: MCLB (Mesh-Resident Cognitive Load Balancer)
+# Design Doc: Mesh-Resident Cognitive Load Balancing (MCLB)
 **Status:** Draft
 **Created:** 2026-06-18
 
 ## 1. Context and Scope
-In heterogeneous swarms, reasoning capacity varies wildly between agents (e.g., GPT-4o-based specialists vs. local-LLM monitors). Without coordination, "reasoning stalls" occur when high-intensity tasks are assigned to under-resourced agents. MCP Any needs to treat cognitive load as a dynamically balanced mesh resource.
+Deep agent swarms often suffer from "Reasoning Stall" where a single parent agent becomes a bottleneck for coordinating sub-tasks. MCLB allows MCP Any to dynamically redistribute cognitive tasks (reasoning-intensive tool calls) across the agent mesh based on real-time capacity.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
-    * Monitor real-time cognitive utilization across the agent mesh.
-    * Proactively redistribute task bidding (UACO) based on available ARE (Reasoning Effort) budgets.
-    * Reduce overall swarm latency by minimizing "Refinement Drift" in low-capacity nodes.
+    * Collect real-time latency and "Cognitive Load" (tokens/sec) metrics from connected agents.
+    * Provide a redistribution broker for `TeammateTool` requests.
 * **Non-Goals:**
-    * Automatically upgrading agent models (e.g., GPT-3 to GPT-4).
-    * Managing compute/GPU allocation directly (handled at the model provider layer).
+    * Automatically spawning new agent instances (handled by the Orchestrator).
+    * Modifying agent internal reasoning paths.
 
 ## 3. Critical User Journey (CUJ)
-* **User Persona:** Local LLM Swarm Orchestrator
-* **Primary Goal:** Maintain swarm throughput when a local specialist agent is overwhelmed by complex reasoning.
+* **User Persona:** High-Scale Agentic Developer
+* **Primary Goal:** Maintain low-latency swarms even when 50+ specialized subagents are active.
 * **The Happy Path (Tasks):**
-    1. MCLB detects a "Cognitive Stall" signal from a specialist agent (high latency, low reasoning confidence).
-    2. MCLB queries the UACO registry for alternative agents with available ARE budget.
-    3. MCLB triggers a "Task Re-Auction" for the stalled intent branch.
-    4. A more capable (or less loaded) agent claims the task, restoring mesh performance.
+    1. Subagents report "Heartbeat" metrics to MCLB.
+    2. Orchestrator submits a high-volume task list.
+    3. MCLB routes tasks to the "coolest" (lowest load) authorized subagents.
 
 ## 4. Design & Architecture
 * **System Flow:**
-    `Agent Telemetry -> MCLB (Load Analysis) -> UACO Broker (Task Redistribution) -> Optimized Mesh Execution`
+    `[Agents] --Metrics--> [MCLB Hub] <--Task Request-- [Orchestrator]`
 * **APIs / Interfaces:**
-    * `GET /v1/mclb/metrics`: Retrieve mesh-wide cognitive utilization.
-    * `POST /v1/mclb/rebalance`: Manually trigger a mesh rebalancing cycle.
-* **Data Storage/State:** Real-time load metrics are stored in an in-memory, high-speed shard of the Blackboard.
+    * `GET /mclb/mesh-load`: Retrieve the current load map.
+    * `POST /mclb/route`: Negotiate the best teammate for a task.
+* **Data Storage/State:**
+    In-memory Load Map with 10-second TTL for freshness.
 
 ## 5. Alternatives Considered
-* **Static Priority Queuing**: Rejected because it cannot adapt to dynamic changes in reasoning complexity or model availability.
-* **User-Managed Load Balancing**: Rejected due to the high MTTC (Mean Time To Coordinate) in autonomous swarms.
+* **Round-Robin Routing:** Rejected because it ignores the actual reasoning complexity of the tasks.
 
 ## 6. Cross-Cutting Concerns
-* **Security (Zero Trust):** Rebalancing triggers must be RIA-attested to prevent "Load-Shedding" DoS attacks.
-* **Observability:** Load balancing dashboards are provided in the UI for real-time mesh monitoring.
+* **Security (Zero Trust):** Routing is only permitted between agents with a shared RIA mission token.
+* **Observability:** Mesh load dashboards are integrated into the UI.
 
 ## 7. Evolutionary Changelog
 * **2026-06-18:** Initial Document Creation.

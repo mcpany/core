@@ -43,25 +43,25 @@ var (
 //
 // It updates the thread-safe global configuration used for sending alerts on health status changes.
 //
-// Parameters:
+// Parameters: - None.
 //   - cfg: *configv1.AlertConfig. The new alert configuration.
 //
-// Returns:
+// Returns: - None.
 //
 //	None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Updates a global variable protected by a mutex.
 //
 // Summary: Updates SetGlobalAlertConfig operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func SetGlobalAlertConfig(cfg *configv1.AlertConfig) {
 	globalAlertConfigMu.Lock()
@@ -75,12 +75,12 @@ func SetGlobalAlertConfig(cfg *configv1.AlertConfig) {
 type HTTPServiceWithHealthCheck interface {
 	// GetAddress returns the address of the service.
 	//
-	// Returns:
+	// Returns: - None.
 	//   - string: The network address of the service.
 	GetAddress() string
 	// GetHealthCheck returns the HTTP health check configuration for the service.
 	//
-	// Returns:
+	// Returns: - None.
 	//   - *configv1.HttpHealthCheck: The health check configuration.
 	GetHealthCheck() *configv1.HttpHealthCheck
 }
@@ -90,24 +90,24 @@ type HTTPServiceWithHealthCheck interface {
 // It determines the type of service (HTTP, gRPC, etc.) and creates an appropriate
 // health check strategy wrapped with latency metrics and status change listeners.
 //
-// Parameters:
+// Parameters: - None.
 //   - uc: *configv1.UpstreamServiceConfig. The configuration of the upstream service to check.
 //
-// Returns:
+// Returns: - None.
 //   - health.Checker: A configured health checker instance. Returns nil if the configuration is nil or invalid.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Registers metrics for the health check.
 //
 // Summary: Initializes NewChecker operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 	if uc == nil {

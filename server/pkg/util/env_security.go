@@ -20,10 +20,10 @@ import (
 //  2. Allow explicitly whitelisted variables via `MCPANY_ALLOWED_ENV` (comma-separated).
 //  3. In Strict Mode (`MCPANY_STRICT_ENV_MODE=true`), block ALL variables unless whitelisted.
 //
-// Parameters:
+// Parameters: - None.
 //   - name: The name of the environment variable to check.
 //
-// Returns:
+// Returns: - None.
 //   - bool: True if the environment variable is allowed, false otherwise.
 func IsEnvVarAllowed(name string) bool {
 	// 1. Check Allowlist

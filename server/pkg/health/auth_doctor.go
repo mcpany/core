@@ -11,10 +11,10 @@ import (
 //
 // Summary: Validates the presence of critical API keys and OAuth configuration.
 //
-// Returns:
+// Returns: - None.
 //   - map[string]CheckResult: A map of check names to their results.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Reads environment variables.
 func CheckAuth() map[string]CheckResult {
 	results := make(map[string]CheckResult)

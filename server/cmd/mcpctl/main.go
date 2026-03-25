@@ -25,7 +25,7 @@ var Version = "dev"
 //
 // It executes the root command and exits with a non-zero status code on error.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Executes the CLI command.
 //   - May terminate the process.
 func main() {
@@ -38,7 +38,7 @@ func main() {
 //
 // It configures the main entry point and registers all subcommands (validate, doctor, tool, version).
 //
-// Returns:
+// Returns: - None.
 //   - *cobra.Command: The configured root command.
 func newRootCmd() *cobra.Command {
 	rootCmd := &cobra.Command{

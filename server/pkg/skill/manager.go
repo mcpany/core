@@ -39,28 +39,28 @@ type Manager struct {
 
 // NewManager creates a new Skill Manager. rootDir is the directory where skills are stored.
 //
-// Parameters:
+// Parameters: - None.
 //   - rootDir (string): The rootDir parameter.
 //
-// Returns:
+// Returns: - None.
 //   - *Manager: The resulting *Manager.
 //   - error: An error if the operation fails.
 //
-// Errors:
+// Errors: - None.
 //   - Returns an error if the operation fails or is invalid.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 //
 // Summary: Initializes NewManager operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func NewManager(rootDir string) (*Manager, error) {
 	if err := os.MkdirAll(rootDir, 0755); err != nil {
@@ -73,28 +73,28 @@ func NewManager(rootDir string) (*Manager, error) {
 
 // ListSkills returns all available skills. It scans the root directory for subdirectories containing SKILL.md.
 //
-// Parameters:
+// Parameters: - None.
 //   - None.
 //
-// Returns:
+// Returns: - None.
 //   - []*Skill: The resulting []*Skill.
 //   - error: An error if the operation fails.
 //
-// Errors:
+// Errors: - None.
 //   - Returns an error if the operation fails or is invalid.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 //
 // Summary: Executes ListSkills operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (m *Manager) ListSkills() ([]*Skill, error) {
 	// ⚡ BOLT: Optimization - Cached skill listing to avoid redundant I/O.
@@ -138,28 +138,28 @@ func (m *Manager) ListSkills() ([]*Skill, error) {
 
 // GetSkill retrieves a specific skill by name. name is the name of the resource. Returns the result. Returns an error if the operation fails.
 //
-// Parameters:
+// Parameters: - None.
 //   - name (string): The name parameter.
 //
-// Returns:
+// Returns: - None.
 //   - *Skill: The resulting *Skill.
 //   - error: An error if the operation fails.
 //
-// Errors:
+// Errors: - None.
 //   - Returns an error if the operation fails or is invalid.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 //
 // Summary: Retrieves GetSkill operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (m *Manager) GetSkill(name string) (*Skill, error) {
 	m.mu.RLock()
@@ -169,27 +169,27 @@ func (m *Manager) GetSkill(name string) (*Skill, error) {
 
 // CreateSkill creates a new skill. It ensures the name is valid and the directory doesn't already exist.
 //
-// Parameters:
+// Parameters: - None.
 //   - skill (*Skill): The skill parameter.
 //
-// Returns:
+// Returns: - None.
 //   - error: An error if the operation fails.
 //
-// Errors:
+// Errors: - None.
 //   - Returns an error if the operation fails or is invalid.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 //
 // Summary: Initializes CreateSkill operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (m *Manager) CreateSkill(skill *Skill) error {
 	m.mu.Lock()
@@ -221,28 +221,28 @@ func (m *Manager) CreateSkill(skill *Skill) error {
 
 // UpdateSkill updates an existing skill. If the name has changed, it renames the directory.
 //
-// Parameters:
+// Parameters: - None.
 //   - originalName (string): The originalName parameter.
 //   - skill (*Skill): The skill parameter.
 //
-// Returns:
+// Returns: - None.
 //   - error: An error if the operation fails.
 //
-// Errors:
+// Errors: - None.
 //   - Returns an error if the operation fails or is invalid.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 //
 // Summary: Executes UpdateSkill operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (m *Manager) UpdateSkill(originalName string, skill *Skill) error {
 	m.mu.Lock()
@@ -277,27 +277,27 @@ func (m *Manager) UpdateSkill(originalName string, skill *Skill) error {
 
 // DeleteSkill deletes a skill. name is the name of the resource. Returns an error if the operation fails.
 //
-// Parameters:
+// Parameters: - None.
 //   - name (string): The name parameter.
 //
-// Returns:
+// Returns: - None.
 //   - error: An error if the operation fails.
 //
-// Errors:
+// Errors: - None.
 //   - Returns an error if the operation fails or is invalid.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 //
 // Summary: Executes DeleteSkill operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (m *Manager) DeleteSkill(name string) error {
 	m.mu.Lock()
@@ -317,29 +317,29 @@ func (m *Manager) DeleteSkill(name string) error {
 
 // SaveAsset saves an asset file (script, reference, etc.) for a skill. path is relative to the skill root (e.g. "scripts/myscript.py").
 //
-// Parameters:
+// Parameters: - None.
 //   - skillName (string): The skillName parameter.
 //   - relPath (string): The relPath parameter.
 //   - content ([]byte): The content parameter.
 //
-// Returns:
+// Returns: - None.
 //   - error: An error if the operation fails.
 //
-// Errors:
+// Errors: - None.
 //   - Returns an error if the operation fails or is invalid.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 //
 // Summary: Executes SaveAsset operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (m *Manager) SaveAsset(skillName string, relPath string, content []byte) error {
 	m.mu.Lock()

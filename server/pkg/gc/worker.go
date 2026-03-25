@@ -33,27 +33,27 @@ type Worker struct {
 
 // New creates a new GC Worker. config holds the configuration settings. Returns the result.
 //
-// Parameters:
+// Parameters: - None.
 //   - config (Config): The config parameter.
 //
-// Returns:
+// Returns: - None.
 //   - *Worker: The resulting *Worker.
 //
-// Errors:
+// Errors: - None.
 //   - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 //
 // Summary: Initializes New operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func New(config Config) *Worker {
 	if config.Interval <= 0 {
@@ -69,27 +69,27 @@ func New(config Config) *Worker {
 
 // Start runs the GC worker in the background. It returns immediately and runs cleanup periodically until the context is canceled.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx (context.Context): The context for the request.
 //
-// Returns:
+// Returns: - None.
 //   - None.
 //
-// Errors:
+// Errors: - None.
 //   - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 //
 // Summary: Executes Start operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (w *Worker) Start(ctx context.Context) {
 	if !w.config.Enabled {

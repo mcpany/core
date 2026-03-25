@@ -73,27 +73,27 @@ type Upstream struct {
 // It uses a configured health checker if available, or falls back to a basic
 // TCP connection check to the service address.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx (context.Context): The context for the health check.
 //
-// Returns:
+// Returns: - None.
 //   - error: An error if the service is unhealthy or unreachable.
 //
-// Errors:
+// Errors: - None.
 //   - Returns an error if the health check fails or the address is not configured.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - May establish a network connection to the service.
 //
 // Summary: Executes CheckHealth operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
@@ -117,25 +117,25 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 // Shutdown gracefully terminates the HTTP upstream service by shutting down the
 // associated connection pool.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx (context.Context): The context for the shutdown operation (currently unused).
 //
-// Returns:
+// Returns: - None.
 //   - error: Always returns nil.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Stops the health checker.
 //   - Deregisters the connection pool.
 //
 // Summary: Executes Shutdown operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
@@ -153,24 +153,24 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 
 // NewUpstream creates a new instance of Upstream.
 //
-// Parameters:
+// Parameters: - None.
 //   - poolManager (*pool.Manager): The connection pool manager to be used for managing HTTP connections.
 //
-// Returns:
+// Returns: - None.
 //   - upstream.Upstream: An implementation of the upstream.Upstream interface.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Allocates memory for the Upstream struct.
 //
 // Summary: Initializes NewUpstream operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
@@ -182,7 +182,7 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 // pool for it, and then creates and registers tools for each call definition
 // specified in the configuration.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx (context.Context): The context for the registration process.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
 //   - toolManager (tool.ManagerInterface): The manager where discovered tools will be registered.
@@ -190,30 +190,30 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 //   - resourceManager (resource.ManagerInterface): The manager where discovered resources will be registered.
 //   - isReload (bool): Indicates whether this is a configuration reload.
 //
-// Returns:
+// Returns: - None.
 //   - string: The unique service ID.
 //   - []*configv1.ToolDefinition: A list of registered tool definitions.
 //   - []*configv1.ResourceDefinition: A list of registered resource definitions.
 //   - error: An error if registration fails.
 //
-// Errors:
+// Errors: - None.
 //   - Returns error if service configuration is invalid (e.g., missing address).
 //   - Returns error if connection pool creation fails.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Creates and registers a new HTTP connection pool.
 //   - Starts a health checker for the service.
 //   - Registers tools and prompts with their respective managers.
 //
 // Summary: Executes Register operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (u *Upstream) Register(
 	ctx context.Context,

@@ -21,13 +21,13 @@ type OpenAPIProvider struct {
 //
 // Summary: Executes Name operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (p *OpenAPIProvider) Name() string {
 	return "openapi"
@@ -37,13 +37,13 @@ func (p *OpenAPIProvider) Name() string {
 //
 // Summary: Executes Discover operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (p *OpenAPIProvider) Discover(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	if p.Endpoint == "" {

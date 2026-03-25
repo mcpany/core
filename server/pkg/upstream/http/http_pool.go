@@ -28,21 +28,21 @@ type httpPool struct {
 
 // Close closes the connection pool and the idle connections.
 //
-// Returns:
+// Returns: - None.
 //   - error: An error if the pool cannot be closed.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Closes idle network connections.
 //
 // Summary: Executes Close operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (p *httpPool) Close() error {
 	if err := p.Pool.Close(); err != nil {
@@ -56,21 +56,21 @@ func (p *httpPool) Close() error {
 //
 // It is defined as a variable to allow for easy mocking in tests.
 //
-// Parameters:
+// Parameters: - None.
 //   - minSize (int): The initial number of clients to create.
 //   - maxSize (int): The maximum number of clients the pool can hold.
 //   - idleTimeout (time.Duration): The duration after which an idle client may be closed.
 //   - config (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
 //
-// Returns:
+// Returns: - None.
 //   - pool.Pool[*client.HTTPClientWrapper]: The created pool.
 //   - error: An error if the pool cannot be created.
 //
-// Errors:
+// Errors: - None.
 //   - Returns error if TLS configuration is invalid (e.g., certificate files missing).
 //   - Returns error if pool creation fails.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Reads certificate files if mTLS is configured.
 //   - Initializes a new http.Transport and http.Client.
 //

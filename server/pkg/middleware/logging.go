@@ -20,25 +20,25 @@ import (
 // This is useful for debugging and monitoring the flow of requests through the
 // server.
 //
-// Parameters:
+// Parameters: - None.
 //   - log (*slog.Logger): The logger to be used. If `nil`, the default global logger will be used.
 //
-// Returns:
+// Returns: - None.
 //   - mcp.Middleware: The logging middleware function.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Logs request start and end.
 //   - Updates metrics.
 //
 // Summary: Executes LoggingMiddleware operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func LoggingMiddleware(log *slog.Logger) mcp.Middleware {
 	if log == nil {

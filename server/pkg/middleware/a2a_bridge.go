@@ -23,27 +23,27 @@ type A2ABridgeMiddleware struct {
 
 // NewA2ABridgeMiddleware creates a new A2ABridgeMiddleware.
 //
-// Parameters:
+// Parameters: - None.
 //   - contextManager (*RecursiveContextManager): The manager for A2A session tokens.
 //
-// Returns:
+// Returns: - None.
 //   - *A2ABridgeMiddleware: The newly created middleware.
 //
-// Errors:
+// Errors: - None.
 //   - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Allocates memory for the middleware struct.
 //
 // Summary: Initializes NewA2ABridgeMiddleware operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func NewA2ABridgeMiddleware(contextManager *RecursiveContextManager) *A2ABridgeMiddleware {
 	return &A2ABridgeMiddleware{
@@ -53,31 +53,31 @@ func NewA2ABridgeMiddleware(contextManager *RecursiveContextManager) *A2ABridgeM
 
 // Execute processes the MCP request and intercepts A2A agent calls.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx (context.Context): The context for the request.
 //   - method (string): The MCP method being called.
 //   - req (mcp.Request): The incoming MCP request.
 //   - next (mcp.MethodHandler): The next handler in the middleware chain.
 //
-// Returns:
+// Returns: - None.
 //   - mcp.Result: The result of the request, either intercepted or from the next handler.
 //   - error: Any error that occurred during processing.
 //
-// Errors:
+// Errors: - None.
 //   - Returns errors from the next handler if the request is not intercepted.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - May create a new session in the RecursiveContextManager if intercepted.
 //
 // Summary: Executes Execute operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (m *A2ABridgeMiddleware) Execute(ctx context.Context, method string, req mcp.Request, next mcp.MethodHandler) (mcp.Result, error) {
 	if method != "tools/call" {

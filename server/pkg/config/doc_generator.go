@@ -28,18 +28,18 @@ import (
 // It iterates through the configured upstream services, registers their tools, and produces a
 // Markdown formatted string describing each tool and its input schema.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx (context.Context): The context for the operation.
 //   - cfg (*configv1.McpAnyServerConfig): The server configuration containing upstream service definitions.
 //
-// Returns:
+// Returns: - None.
 //   - string: A string containing the generated Markdown documentation.
 //   - error: An error if documentation generation fails (e.g., if a service cannot be initialized).
 //
-// Errors:
+// Errors: - None.
 //   - Returns an error if an upstream service factory fails to create an upstream.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Initializes upstream services which may have side effects (though typically only on execution).
 //   - Prints warnings to stderr if service registration fails.
 func GenerateDocumentation(ctx context.Context, cfg *configv1.McpAnyServerConfig) (string, error) {

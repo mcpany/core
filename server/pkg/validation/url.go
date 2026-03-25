@@ -19,10 +19,10 @@ const trueVal = "true"
 //
 // Summary: Validates an IP address string against security policies.
 //
-// Parameters:
+// Parameters: - None.
 //   - ipStr: string. The IP address to check.
 //
-// Returns:
+// Returns: - None.
 //   - error: An error if the IP is invalid or forbidden.
 //
 // IsSafeIP is a variable to allow mocking in tests.
@@ -66,19 +66,19 @@ var lookupIPFunc = func(ctx context.Context, network, host string) ([]net.IP, er
 // It is susceptible to DNS rebinding attacks if the check is separated from the connection.
 // For critical security, use a custom Dialer that validates the IP after resolution.
 //
-// Parameters:
+// Parameters: - None.
 //   - urlStr: string. The URL to check.
 //
-// Returns:
+// Returns: - None.
 //   - error: An error if the URL is invalid or points to a forbidden destination.
 //
-// Errors:
+// Errors: - None.
 //   - Returns error if URL parsing fails.
 //   - Returns error if scheme is not http/https.
 //   - Returns error if host resolution fails or returns no IPs.
 //   - Returns error if any resolved IP is unsafe.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Performs DNS lookup.
 //
 // IsSafeURL is a variable to allow mocking in tests.
@@ -140,12 +140,12 @@ var IsSafeURL = func(urlStr string) error {
 //
 // Summary: Internal helper to validate an IP address against forbidden ranges.
 //
-// Parameters:
+// Parameters: - None.
 //   - ip: net.IP. The IP address to check.
 //   - allowLoopback: bool. Whether to allow loopback addresses.
 //   - allowPrivate: bool. Whether to allow private network addresses.
 //
-// Returns:
+// Returns: - None.
 //   - error: An error if the IP matches a forbidden range.
 func ValidateIP(ip net.IP, allowLoopback, allowPrivate bool) error {
 	if !allowLoopback && (ip.IsLoopback() || IsNAT64Loopback(ip) || (IsIPv4Compatible(ip) && ip[12] == 127)) {

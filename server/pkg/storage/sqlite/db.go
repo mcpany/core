@@ -25,14 +25,14 @@ type DB struct {
 //
 // Summary: Initializes a SQLite database connection.
 //
-// Parameters:
+// Parameters: - None.
 //   - path (string): The file path to the SQLite database.
 //
-// Returns:
+// Returns: - None.
 //   - *DB: The database connection.
 //   - error: An error if the database cannot be opened or initialized.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Creates the database file and directories if they don't exist.
 //   - Initializes the database schema.
 func NewDB(path string) (*DB, error) {

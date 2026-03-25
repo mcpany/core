@@ -29,28 +29,28 @@ type SmartRecoveryMiddleware struct {
 
 // NewSmartRecoveryMiddleware creates a new SmartRecoveryMiddleware.
 //
-// Parameters:
+// Parameters: - None.
 //   - config (*configv1.SmartRecoveryConfig): The config parameter.
 //   - toolManager (tool.ManagerInterface): The toolManager parameter.
 //
-// Returns:
+// Returns: - None.
 //   - *SmartRecoveryMiddleware: The resulting *SmartRecoveryMiddleware.
 //
-// Errors:
+// Errors: - None.
 //   - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 //
 // Summary: Initializes NewSmartRecoveryMiddleware operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManager tool.ManagerInterface) *SmartRecoveryMiddleware {
 	return &SmartRecoveryMiddleware{
@@ -61,30 +61,30 @@ func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManage
 
 // Execute executes the middleware logic.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx (context.Context): The context for the request.
 //   - req (*tool.ExecutionRequest): The request object.
 //   - next (tool.ExecutionFunc): The next parameter.
 //
-// Returns:
+// Returns: - None.
 //   - any: The resulting any.
 //   - error: An error if the operation fails.
 //
-// Errors:
+// Errors: - None.
 //   - Returns an error if the operation fails or is invalid.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 //
 // Summary: Executes Execute operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (m *SmartRecoveryMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	if m.config == nil || !m.config.GetEnabled() {

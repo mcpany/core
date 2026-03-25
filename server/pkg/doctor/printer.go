@@ -14,26 +14,26 @@ import (
 //
 // It formats the check results with status icons and alignment for readability.
 //
-// Parameters:
+// Parameters: - None.
 //   - w: io.Writer. The writer to output the results to (e.g., os.Stdout). If nil, defaults to os.Stdout.
 //   - results: []CheckResult. The list of check results to print.
 //
-// Returns:
+// Returns: - None.
 //
 //	None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Writes formatted text to the provided writer.
 //
 // Summary: Executes PrintResults operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func PrintResults(w io.Writer, results []CheckResult) {
 	if w == nil {

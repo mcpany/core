@@ -49,13 +49,13 @@ const (
 //
 // Summary: Loads environment variables from a file.
 //
-// Parameters:
+// Parameters: - None.
 //   - cmd (*cobra.Command): The command instance to check for the --env-file flag.
 //
-// Returns:
+// Returns: - None.
 //   - error: An error if the specified file cannot be loaded or if the default .env file is present but invalid.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Sets environment variables in the current process.
 func loadEnv(cmd *cobra.Command) error {
 	envFile, _ := cmd.Flags().GetString("env-file")
@@ -84,10 +84,10 @@ func loadEnv(cmd *cobra.Command) error {
 //
 // Summary: Creates the root command hierarchy.
 //
-// Returns:
+// Returns: - None.
 //   - *cobra.Command: The configured root command.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Configures global flags and subcommands.
 func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expected to be complex
 	rootCmd := &cobra.Command{
@@ -606,7 +606,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 //
 // Summary: Entry point for the application.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Executes the root command.
 //   - Exits the process.
 func main() {

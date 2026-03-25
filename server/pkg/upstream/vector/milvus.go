@@ -24,28 +24,28 @@ type MilvusClient struct {
 
 // NewMilvusClient creates a new Milvus client.
 //
-// Parameters:
+// Parameters: - None.
 //   - config (*configv1.MilvusVectorDB): The parameter.
 //
-// Returns:
+// Returns: - None.
 //   - *MilvusClient: The result.
 //   - error: An error if the operation fails.
 //
-// Errors:
+// Errors: - None.
 //   - Returns an error if ...
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 //
 // Summary: Initializes NewMilvusClient operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func NewMilvusClient(config *configv1.MilvusVectorDB) (*MilvusClient, error) {
 	if config.GetAddress() == "" {
@@ -89,28 +89,28 @@ func NewMilvusClient(config *configv1.MilvusVectorDB) (*MilvusClient, error) {
 
 // Query searches for similar vectors.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx (context.Context): The context for the request.
 //   - vector ([]float32): The parameter.
 //   - topK (int64): The parameter.
 //   - filter (map[string]interface{}): The parameter.
 //   - namespace (string): The parameter.
 //
-// Returns:
+// Returns: - None.
 //   - (map[string]interface: The result.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 //
 // Summary: Executes Query operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (c *MilvusClient) Query(ctx context.Context, vector []float32, topK int64, filter map[string]interface{}, namespace string) (map[string]interface{}, error) {
 	// Milvus uses partitions as namespaces usually, or just metadata fields.
@@ -225,26 +225,26 @@ func (c *MilvusClient) Query(ctx context.Context, vector []float32, topK int64, 
 
 // Upsert inserts or updates vectors.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx (context.Context): The context for the request.
 //   - vectors ([]map[string]interface{}): The parameter.
 //   - namespace (string): The parameter.
 //
-// Returns:
+// Returns: - None.
 //   - (map[string]interface: The result.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 //
 // Summary: Executes Upsert operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (c *MilvusClient) Upsert(ctx context.Context, vectors []map[string]interface{}, namespace string) (map[string]interface{}, error) {
 	// Milvus Upsert (v2.3+)
@@ -451,27 +451,27 @@ func fillMetadataColumn(col entity.Column, i int, val interface{}) {
 
 // Delete removes vectors.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx (context.Context): The context for the request.
 //   - ids ([]string): The parameter.
 //   - namespace (string): The parameter.
 //   - filter (map[string]interface{}): The parameter.
 //
-// Returns:
+// Returns: - None.
 //   - (map[string]interface: The result.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 //
 // Summary: Executes Delete operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (c *MilvusClient) Delete(ctx context.Context, ids []string, namespace string, filter map[string]interface{}) (map[string]interface{}, error) {
 	// Construct expression
@@ -533,25 +533,25 @@ func (c *MilvusClient) Delete(ctx context.Context, ids []string, namespace strin
 
 // DescribeIndexStats returns statistics about the index.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx (context.Context): The context for the request.
 //   - _ (map[string]interface{}): The parameter.
 //
-// Returns:
+// Returns: - None.
 //   - (map[string]interface: The result.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 //
 // Summary: Executes DescribeIndexStats operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (c *MilvusClient) DescribeIndexStats(ctx context.Context, _ map[string]interface{}) (map[string]interface{}, error) {
 	coll, err := c.client.DescribeCollection(ctx, c.config.GetCollectionName())

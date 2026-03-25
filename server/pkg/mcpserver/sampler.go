@@ -22,10 +22,10 @@ type MCPSession struct {
 //
 // Summary: Initializes a new MCPSession instance.
 //
-// Parameters:
+// Parameters: - None.
 //   - session: *mcp.ServerSession. The underlying MCP server session.
 //
-// Returns:
+// Returns: - None.
 //   - *MCPSession: A new instance of MCPSession.
 func NewMCPSession(session *mcp.ServerSession) *MCPSession {
 	return &MCPSession{session: session}
@@ -35,13 +35,13 @@ func NewMCPSession(session *mcp.ServerSession) *MCPSession {
 //
 // Summary: Creates a new MCPSession (deprecated alias).
 //
-// Parameters:
+// Parameters: - None.
 //   - session: *mcp.ServerSession. The underlying MCP server session.
 //
-// Returns:
+// Returns: - None.
 //   - *MCPSession: A new instance of MCPSession.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - This function is deprecated and should be replaced by NewMCPSession.
 func NewMCPSampler(session *mcp.ServerSession) *MCPSession {
 	return NewMCPSession(session)
@@ -51,11 +51,11 @@ func NewMCPSampler(session *mcp.ServerSession) *MCPSession {
 //
 // Summary: Requests the client to create a message, effectively sampling the LLM.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx: context.Context. The context for the request.
 //   - params: *mcp.CreateMessageParams. The parameters for the message creation request.
 //
-// Returns:
+// Returns: - None.
 //   - *mcp.CreateMessageResult: The result of the message creation from the client.
 //   - error: An error if no active session is available or if the request fails.
 //
@@ -72,10 +72,10 @@ func (s *MCPSession) CreateMessage(ctx context.Context, params *mcp.CreateMessag
 //
 // Summary: Requests the list of root directories from the client.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx: context.Context. The context for the request.
 //
-// Returns:
+// Returns: - None.
 //   - *mcp.ListRootsResult: The list of roots returned by the client.
 //   - error: An error if no active session is available or if the request fails.
 //

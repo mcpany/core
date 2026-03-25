@@ -21,13 +21,13 @@ type GRPCProvider struct {
 //
 // Summary: Executes Name operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (p *GRPCProvider) Name() string {
 	return "grpc"
@@ -37,13 +37,13 @@ func (p *GRPCProvider) Name() string {
 //
 // Summary: Executes Discover operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (p *GRPCProvider) Discover(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	if p.Endpoint == "" {

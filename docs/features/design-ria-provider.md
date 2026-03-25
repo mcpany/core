@@ -3,41 +3,40 @@
 **Created:** 2026-06-18
 
 ## 1. Context and Scope
-As agent swarms become deeper and more autonomous, the risk of "intent spoofing" and "hallucination hijacking" increases. Traditional attestation only verifies the identity of the immediate caller. MCP Any needs a way to mathematically prove that every sub-task in a chain is a legitimate descendant of the original, user-authorized mission root.
+As agent swarms become deeper (multi-hop delegation), the risk of "Intent-Grafting" increases, where a compromised subagent injects unauthorized instructions into a valid chain. MCP Any needs a way to mathematically prove that every sub-intent in a multi-hop chain is a direct, authorized descendant of the user's root mission.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
-    * Provide a cryptographic chain of custody for agentic intent.
-    * Enable agents to verify the provenance of received instructions across multiple framework hops.
-    * Support auto-revocation of sub-intents if the parent intent is pruned.
+    * Implement a cryptographic hash-chaining mechanism for intent lineage.
+    * Provide a verification API for agents to validate peer lineage.
+    * Support hardware-bound (TPM) root signing.
 * **Non-Goals:**
-    * Replacing existing transport-layer security (mTLS/TLSB).
-    * Enforcing reasoning-level semantic alignment (handled by AIA Broker).
+    * Encrypting the actual intent content (handled by T2T).
+    * Managing LLM context windows (handled by CWP).
 
 ## 3. Critical User Journey (CUJ)
-* **User Persona:** Security-Conscious Swarm Architect
-* **Primary Goal:** Ensure that a 3rd-hop subagent cannot perform unauthorized filesystem edits by claiming it was ordered to do so.
+* **User Persona:** Security-Conscious Enterprise Architect
+* **Primary Goal:** Ensure that a 3rd-level subagent cannot call a destructive "Delete DB" tool without a verified path from the user.
 * **The Happy Path (Tasks):**
-    1. Primary Agent requests a new sub-intent token from the RIA Provider, providing its own root-signed token.
-    2. RIA Provider verifies the lineage and issues a cryptographically linked sub-token.
-    3. Subagent presents this token to a local tool.
-    4. Local tool validates the entire RIA chain against the mission-root via MCP Any before execution.
+    1. Orchestrator creates a TPM-signed Root Intent.
+    2. Subagent A requests a derived sub-intent token from RIA Provider.
+    3. Subagent B receives the token and verifies the chain back to the root before execution.
 
 ## 4. Design & Architecture
 * **System Flow:**
-    `User -> Mission Root (Signed) -> RIA Token A -> RIA Token B (Linked to A) -> Tool Execution (Verified Chain)`
+    `[Mission Root] -> [RIA Token (Depth 0)] -> [Sub-Task A] -> [RIA Token (Depth 1)]`
 * **APIs / Interfaces:**
-    * `POST /v1/ria/token/issue`: Request a new sub-intent token.
-    * `POST /v1/ria/token/verify`: Validate a full RIA chain.
-* **Data Storage/State:** RIA tokens are ephemeral and stored in a versioned, hardware-attested shard of the Blackboard.
+    * `POST /ria/issue`: Generate a derived token.
+    * `POST /ria/verify`: Validate a multi-hop token chain.
+* **Data Storage/State:**
+    Tokens are stateless but rely on the hardware-bound Root Key for verification.
 
 ## 5. Alternatives Considered
-* **Flat Session Tokens**: Rejected because they do not provide provenance beyond the immediate parent.
-* **Full Monologue Signing**: Rejected due to prohibitive latency and token overhead.
+* **Flat JWTs:** Rejected because they don't capture the recursive "derivation" required for multi-hop swarms.
 
 ## 6. Cross-Cutting Concerns
-* **Security (Zero Trust):** RIA tokens are hardware-bound and expire upon task completion.
-* **Observability:** RIA chain events are logged to the tamper-evident audit log for full auditability.
+* **Security (Zero Trust):** Tokens include monotonic nonces to prevent replay attacks.
+* **Observability:** Every RIA derivation is logged in the CoC Lineage Tracker.
 
 ## 7. Evolutionary Changelog
 * **2026-06-18:** Initial Document Creation.

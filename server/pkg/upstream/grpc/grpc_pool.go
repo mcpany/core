@@ -33,21 +33,21 @@ type poolWithChecker[T pool.ClosableClient] struct {
 
 // Close stops the health checker and closes the underlying pool.
 //
-// Returns:
+// Returns: - None.
 //   - error: An error if the operation fails.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Stops the health checker.
 //
 // Summary: Executes Close operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (p *poolWithChecker[T]) Close() error {
 	if p.checker != nil {
@@ -61,7 +61,7 @@ func (p *poolWithChecker[T]) Close() error {
 // It configures the pool with a factory function that establishes new gRPC connections with the
 // specified address, dialer, and credentials.
 //
-// Parameters:
+// Parameters: - None.
 //   - minSize (int): The initial number of connections to create.
 //   - maxSize (int): The maximum number of connections the pool can hold.
 //   - idleTimeout (time.Duration): The duration after which an idle connection may be closed.
@@ -70,27 +70,27 @@ func (p *poolWithChecker[T]) Close() error {
 //   - config (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
 //   - disableHealthCheck (bool): Whether to disable the health check.
 //
-// Returns:
+// Returns: - None.
 //   - pool.Pool[*client.GrpcClientWrapper]: The created pool.
 //   - error: An error if the pool cannot be created.
 //
-// Errors:
+// Errors: - None.
 //   - Returns error if config is nil or invalid.
 //   - Returns error if TLS configuration is invalid.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Reads certificate files if mTLS is configured.
 //   - Initializes gRPC clients.
 //
 // Summary: Initializes NewGrpcPool operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func NewGrpcPool(
 	minSize, maxSize int,

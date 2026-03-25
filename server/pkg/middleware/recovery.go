@@ -15,13 +15,13 @@ import (
 //
 // Summary: Middleware to recover from panics.
 //
-// Parameters:
+// Parameters: - None.
 //   - next (http.Handler): The next handler in the chain.
 //
-// Returns:
+// Returns: - None.
 //   - http.Handler: A handler that wraps the next handler with recovery logic.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Logs panic details if a panic occurs.
 //   - Writes a 500 Internal Server Error response to the client on panic.
 func RecoveryMiddleware(next http.Handler) http.Handler {

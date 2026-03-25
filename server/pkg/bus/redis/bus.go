@@ -23,22 +23,22 @@ type Bus[T any] struct {
 
 // New creates and initializes a new RedisBus.
 //
-// Parameters:
+// Parameters: - None.
 //   - redisConfig: *bus.RedisBus. The configuration settings for the Redis bus.
 //
-// Returns:
+// Returns: - None.
 //   - *Bus[T]: A pointer to the initialized Redis bus.
 //   - error: An error if initialization fails (currently always nil).
 //
 // Summary: Initializes New operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func New[T any](redisConfig *bus.RedisBus) (*Bus[T], error) {
 	options := redis.Options{
@@ -56,21 +56,21 @@ func New[T any](redisConfig *bus.RedisBus) (*Bus[T], error) {
 
 // NewWithClient creates a new RedisBus with an existing Redis client.
 //
-// Parameters:
+// Parameters: - None.
 //   - client: *redis.Client. The existing Redis client instance.
 //
-// Returns:
+// Returns: - None.
 //   - *Bus[T]: A pointer to the initialized Redis bus.
 //
 // Summary: Initializes NewWithClient operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func NewWithClient[T any](client *redis.Client) *Bus[T] {
 	return &Bus[T]{
@@ -82,23 +82,23 @@ func NewWithClient[T any](client *redis.Client) *Bus[T] {
 //
 // The message is marshaled to JSON before being published.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx: context.Context. The context for the request.
 //   - topic: string. The topic (channel) to publish to.
 //   - msg: T. The message payload.
 //
-// Returns:
+// Returns: - None.
 //   - error: An error if marshaling or publishing fails.
 //
 // Summary: Executes Publish operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 	payload, err := json.Marshal(msg)
@@ -113,23 +113,23 @@ func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 // It starts a goroutine that continuously receives messages from the channel
 // and invokes the provided handler.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx: context.Context. The context for the subscription.
 //   - topic: string. The topic (channel) to subscribe to.
 //   - handler: func(T). The callback function invoked for each message.
 //
-// Returns:
+// Returns: - None.
 //   - func(): A function that unsubscribes the handler when called.
 //
 // Summary: Executes Subscribe operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
@@ -184,23 +184,23 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 //
 // It ensures that the handler is called only once for the next message received.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx: context.Context. The context for the subscription.
 //   - topic: string. The topic (channel) to subscribe to.
 //   - handler: func(T). The callback function invoked for the single message.
 //
-// Returns:
+// Returns: - None.
 //   - func(): A function that unsubscribes the handler if called before the message is received.
 //
 // Summary: Executes SubscribeOnce operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
@@ -237,7 +237,7 @@ func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T
 //
 // Summary: Closes the Redis connection.
 //
-// Returns:
+// Returns: - None.
 //   - error: An error if closing fails.
 func (b *Bus[T]) Close() error {
 	return b.client.Close()

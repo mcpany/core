@@ -38,13 +38,13 @@ type SplunkAuditStore struct {
 //
 // Summary: Initializes a new SplunkAuditStore with background workers.
 //
-// Parameters:
+// Parameters: - None.
 //   - config: *configv1.SplunkConfig. The Splunk HEC configuration.
 //
-// Returns:
+// Returns: - None.
 //   - *SplunkAuditStore: The initialized store.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Starts background workers.
 func NewSplunkAuditStore(config *configv1.SplunkConfig) *SplunkAuditStore {
 	if config == nil {
@@ -109,17 +109,17 @@ func (e *SplunkAuditStore) worker() {
 //
 // Summary: Queues an audit entry for sending to Splunk.
 //
-// Parameters:
+// Parameters: - None.
 //   - _: context.Context. Unused.
 //   - entry: Entry. The audit entry.
 //
-// Returns:
+// Returns: - None.
 //   - error: An error if the queue is full.
 //
-// Errors:
+// Errors: - None.
 //   - Returns "audit queue full" if the buffer is exhausted.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Sends entry to a buffered channel.
 func (e *SplunkAuditStore) Write(_ context.Context, entry Entry) error {
 	select {
@@ -180,11 +180,11 @@ func (e *SplunkAuditStore) sendBatch(batch []Entry) {
 //
 // Summary: Reads audit entries (Not implemented).
 //
-// Parameters:
+// Parameters: - None.
 //   - _: context.Context. Unused.
 //   - _: Filter. Unused.
 //
-// Returns:
+// Returns: - None.
 //   - []Entry: Nil.
 //   - error: Always returns "not implemented".
 func (e *SplunkAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
@@ -195,10 +195,10 @@ func (e *SplunkAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 //
 // Summary: Shuts down the Splunk audit store.
 //
-// Returns:
+// Returns: - None.
 //   - error: Always nil.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Closes channels.
 //   - Flushes pending batches.
 func (e *SplunkAuditStore) Close() error {

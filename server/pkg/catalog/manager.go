@@ -33,11 +33,11 @@ type Manager struct {
 //
 // Summary: Initializes a new Catalog Manager.
 //
-// Parameters:
+// Parameters: - None.
 //   - fs: afero.Fs. The filesystem to scan.
 //   - catalogPath: string. The path to the catalog directory.
 //
-// Returns:
+// Returns: - None.
 //   - *Manager: The initialized manager.
 func NewManager(fs afero.Fs, catalogPath string) *Manager {
 	return &Manager{
@@ -50,13 +50,13 @@ func NewManager(fs afero.Fs, catalogPath string) *Manager {
 //
 // Summary: Loads service configurations from the catalog directory.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx: context.Context. The context for the operation.
 //
-// Returns:
+// Returns: - None.
 //   - error: An error if the directory walk fails (individual config load errors are logged but do not abort).
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Updates the internal list of services.
 //   - Reads files from the filesystem.
 func (m *Manager) Load(ctx context.Context) error {
@@ -131,10 +131,10 @@ func (m *Manager) Load(ctx context.Context) error {
 //
 // Summary: Retrieves the list of loaded services.
 //
-// Parameters:
+// Parameters: - None.
 //   - _ context.Context: The context (unused).
 //
-// Returns:
+// Returns: - None.
 //   - []*configv1.UpstreamServiceConfig: A slice of service configurations.
 //   - error: Always nil.
 func (m *Manager) ListServices(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {

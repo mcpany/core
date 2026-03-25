@@ -18,11 +18,11 @@ type Session interface {
 	//
 	// Summary: Requests message creation.
 	//
-	// Parameters:
+	// Parameters: - None.
 	//   - ctx: context.Context. The context for the request.
 	//   - params: *mcp.CreateMessageParams. The parameters for message creation.
 	//
-	// Returns:
+	// Returns: - None.
 	//   - *mcp.CreateMessageResult: The result of the message creation.
 	//   - error: An error if the operation fails.
 	CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error)
@@ -31,10 +31,10 @@ type Session interface {
 	//
 	// Summary: Requests roots list.
 	//
-	// Parameters:
+	// Parameters: - None.
 	//   - ctx: context.Context. The context for the request.
 	//
-	// Returns:
+	// Returns: - None.
 	//   - *mcp.ListRootsResult: The list of roots.
 	//   - error: An error if the operation fails.
 	ListRoots(ctx context.Context) (*mcp.ListRootsResult, error)
@@ -51,11 +51,11 @@ type sessionContextKey struct{}
 //
 // Summary: Injects Session into context.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx: context.Context. The parent context.
 //   - s: Session. The session to inject.
 //
-// Returns:
+// Returns: - None.
 //   - context.Context: The new context.
 func NewContextWithSession(ctx context.Context, s Session) context.Context {
 	return context.WithValue(ctx, sessionContextKey{}, s)
@@ -65,10 +65,10 @@ func NewContextWithSession(ctx context.Context, s Session) context.Context {
 //
 // Summary: Retrieves Session from context.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx: context.Context. The context.
 //
-// Returns:
+// Returns: - None.
 //   - Session: The session if found.
 //   - bool: True if the session exists.
 func GetSession(ctx context.Context) (Session, bool) {
@@ -82,11 +82,11 @@ func GetSession(ctx context.Context) (Session, bool) {
 //
 // Deprecated: Use NewContextWithSession instead.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx: context.Context. The parent context.
 //   - s: Sampler. The sampler to inject.
 //
-// Returns:
+// Returns: - None.
 //   - context.Context: The new context.
 func NewContextWithSampler(ctx context.Context, s Sampler) context.Context {
 	return NewContextWithSession(ctx, s)
@@ -98,10 +98,10 @@ func NewContextWithSampler(ctx context.Context, s Sampler) context.Context {
 //
 // Deprecated: Use GetSession instead.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx: context.Context. The context.
 //
-// Returns:
+// Returns: - None.
 //   - Sampler: The sampler if found.
 //   - bool: True if the sampler exists.
 func GetSampler(ctx context.Context) (Sampler, bool) {

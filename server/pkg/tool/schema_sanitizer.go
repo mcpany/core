@@ -20,17 +20,17 @@ const maxRecursionDepth = 100
 //
 // Summary: Sanitizes and converts a JSON schema into a Struct protobuf.
 //
-// Parameters:
+// Parameters: - None.
 //   - schema: any. The input schema (typically map[string]interface{}).
 //
-// Returns:
+// Returns: - None.
 //   - *structpb.Struct: The sanitized schema as a protobuf Struct.
 //   - error: An error if deep copying or processing fails.
 //
-// Errors:
+// Errors: - None.
 //   - Returns error if deep copy fails or recursion limit exceeded.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Performs a deep copy of the input schema.
 func SanitizeJSONSchema(schema any) (*structpb.Struct, error) {
 	if schema == nil {

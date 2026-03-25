@@ -18,14 +18,14 @@ import (
 //
 // Summary: Retrieves all service templates from the PostgreSQL database.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx: context.Context. The request context.
 //
-// Returns:
+// Returns: - None.
 //   - []*configv1.ServiceTemplate: A list of service templates.
 //   - error: An error if the database operation fails.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Executes a SELECT query.
 func (s *Store) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTemplate, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM service_templates")
@@ -57,15 +57,15 @@ func (s *Store) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTe
 //
 // Summary: Retrieves a single service template by ID.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx: context.Context. The request context.
 //   - id: string. The template ID.
 //
-// Returns:
+// Returns: - None.
 //   - *configv1.ServiceTemplate: The requested template, or nil if not found.
 //   - error: An error if the query fails.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Executes a SELECT query.
 func (s *Store) GetServiceTemplate(ctx context.Context, id string) (*configv1.ServiceTemplate, error) {
 	query := "SELECT config_json FROM service_templates WHERE id = $1"
@@ -90,17 +90,17 @@ func (s *Store) GetServiceTemplate(ctx context.Context, id string) (*configv1.Se
 //
 // Summary: Inserts or updates a service template in the database.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx: context.Context. The request context.
 //   - template: *configv1.ServiceTemplate. The template to save.
 //
-// Returns:
+// Returns: - None.
 //   - error: An error if validation or storage fails.
 //
-// Errors:
+// Errors: - None.
 //   - Returns "template ID is required" if ID is missing.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Executes an INSERT ... ON CONFLICT UPDATE query.
 func (s *Store) SaveServiceTemplate(ctx context.Context, template *configv1.ServiceTemplate) error {
 	if template.GetId() == "" {

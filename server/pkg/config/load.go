@@ -19,12 +19,12 @@ import (
 //
 // Summary: Loads and validates the server configuration.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx: context.Context. The context for the operation.
 //   - store: Store. The configuration store from which to load the configuration.
 //   - binaryType: string. The type of binary running the code (e.g., "server", "worker").
 //
-// Returns:
+// Returns: - None.
 //   - *configv1.McpAnyServerConfig: A validated configuration object.
 //   - error: An error if loading or validation fails.
 func LoadServices(ctx context.Context, store Store, binaryType string) (*configv1.McpAnyServerConfig, error) {
@@ -106,11 +106,11 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 //
 // Summary: Loads configuration with merging and defaults but without strict validation.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx: context.Context. The context for the operation.
 //   - store: Store. The configuration store.
 //
-// Returns:
+// Returns: - None.
 //   - *configv1.McpAnyServerConfig: The resolved configuration.
 //   - error: An error if loading fails.
 func LoadResolvedConfig(ctx context.Context, store Store) (*configv1.McpAnyServerConfig, error) {

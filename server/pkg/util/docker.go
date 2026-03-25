@@ -38,7 +38,7 @@ var initDockerClientDefault = func() {
 //
 // Summary: Checks if the Docker daemon is accessible.
 //
-// Returns:
+// Returns: - None.
 //   - bool: True if the Docker daemon is accessible, false otherwise.
 func IsDockerSocketAccessible() bool {
 	return IsDockerSocketAccessibleFunc()
@@ -46,27 +46,27 @@ func IsDockerSocketAccessible() bool {
 
 // CloseDockerClient closes the shared Docker client. Summary: Closes the shared Docker client. Side Effects: - Closes the Docker client connection.
 //
-// Parameters:
+// Parameters: - None.
 //   - None.
 //
-// Returns:
+// Returns: - None.
 //   - None.
 //
-// Errors:
+// Errors: - None.
 //   - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 //
 // Summary: Executes CloseDockerClient operation.
 //
-// Parameters:
+// Parameters: - None.
 //
-// Returns:
+// Returns: - None.
 //
-// Errors:
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func CloseDockerClient() {
 	if dockerClient != nil {
