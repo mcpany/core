@@ -51,6 +51,9 @@ go_test(
         "prompt_test.go",
         "prompts_e2e_test.go",
         "redaction_log_test.go",
+        "marketplace_e2e_test.go",
+
+
         "redis_test.go",
         "transformer_e2e_test.go",
     ],
