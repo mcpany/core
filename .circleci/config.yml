@@ -57,11 +57,7 @@ jobs:
             . venv/bin/activate
             # Ensure PATH includes tool install dir
             export PATH=$PWD/build/env/bin:$PATH
-
-            # Use go 1.26.1 context for go version issue
-            cd server
-            go mod tidy
-            golangci-lint run
+            make lint
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
