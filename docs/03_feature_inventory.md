@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-05] Updates
+
+### Proposed Additions
+- **Physical Shard Sovereignty (PSS) Provider**: (P0) Advanced security service that cryptographically pins sharded context fragments to specific hardware enclave IDs.
+- **Multi-Modal Stylometric Integrity (MMSI) Validator**: (P0) Upgrade for the SBF providing real-time stylometric analysis of SVG logic diagrams and audio reasoning traces.
+- **Quorum-Bound Summarization (QBS) Hub**: (P0) Distributed coordination service requiring multi-agent consensus (Mission-Root + Auditor) on all context compaction events.
+- **Adaptive Jitter Profiler**: (P1) Performance-optimizing middleware that dynamically scales timing variations based on shard sensitivity and trust levels.
+
+### Priority Shifts
+- **Stylometric Behavioral Firewall (SBF)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **MMSI** integration.
+- **Distributed Memory Enclave (DME) Broker**: (Re-affirmed P0) Designated as the primary enforcement point for **PSS-compliant** shard anchoring.
+
 ## Evolution: [2026-07-04] Updates
 
 ### Proposed Additions

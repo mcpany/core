@@ -55,3 +55,9 @@ The Distributed Memory Enclave (DME) Broker solves this by leveraging hardware-e
 
 ## 7. Evolutionary Changelog
 * **2026-07-04:** Initial Document Creation.
+* **2026-07-05: Resolving Shard-Hopping via Physical Shard Sovereignty (PSS)**
+    * **Context**: Today's market sync revealed a new "Shard-Hopping" exploit pattern in multi-tenant enclaves.
+    * **Architecture Adjustment**:
+        * Upgrading `CreateEnclave` in Section 4 to include mandatory **Physical Shard Sovereignty (PSS)**.
+        * Shards are now cryptographically pinned to specific hardware Enclave IDs using TPM-bound nonces.
+    * **Security Impact**: Prevents a compromised subagent from mounting a sibling shard by spoofing enclave-local metadata.
