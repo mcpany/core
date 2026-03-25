@@ -1,5 +1,15 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-06] Updates
+
+### Proposed Additions
+- **Attention Reinforcement Token (ART) Injector**: (P1) Security middleware that injects high-priority tokens during multimodal synchronization to maintain mission-root focus.
+- **Pre-Attested Trust Bridge**: (P1) Performance-optimizing coordination service that caches hardware-bound identity proofs for sub-millisecond local teammate handoffs.
+
+### Priority Shifts
+- **Quorum-Bound Summarization (QBS) Hub**: (Re-affirmed P0) Elevated following OpenClaw 3.5.0-rc1 benchmarks and the "Summarization Ghosting" report.
+- **Adaptive Jitter Profiler**: (Re-affirmed P1) Designated as the primary solution for the "Coordination Tax" identified in Gemini CLI v0.48.0.
+
 ## Evolution: [2026-07-05] Updates
 
 ### Proposed Additions

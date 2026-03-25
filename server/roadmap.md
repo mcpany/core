@@ -137,6 +137,11 @@
 *   **[P0] Mission-Root Budget Enforcer**: Resource management for reasoning effort and token limits based on process-bound agency. (Added: 2026-03-20)
 *   **[P1] A2A Multi-Channel Inbox Bridge**: Secure coordination and translation for handling 20+ messaging platforms simultaneously. (Added: 2026-03-20)
 
+#### Upcoming (2026-07-06 Evolution)
+*   **[P0] Quorum-Bound Summarization (QBS) Hub**: Authoritative compaction arbiter requiring multi-agent consensus to prevent mission-root erasure.
+*   **[P1] Adaptive Jitter Profiler**: Risk-aware timing jitter middleware to reduce coordination tax in high-trust local handoffs.
+*   **[P1] Attention Reinforcement Token (ART) Injector**: Security middleware for maintaining mission-root focus during multimodal trace processing.
+
 #### Upcoming (2026-07-05 Evolution)
 *   **[P0] Physical Shard Sovereignty (PSS) Provider**: Cryptographically pin context shards to specific hardware Enclave IDs to neutralize shard-hopping. (Added: 2026-07-05)
 *   **[P0] Multi-Modal Stylometric Integrity (MMSI) Validator**: Real-time stylometric analysis for SVG logic diagrams and audio reasoning traces within SBF. (Added: 2026-07-05)
