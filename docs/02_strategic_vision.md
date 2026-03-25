@@ -1260,3 +1260,12 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Relational PoI Enforcement**: MCP Any will evolve to verify the entire cryptographic chain of custody for intents, ensuring that "Ghost" intents cannot shadow authorized mission roots.
 - **WASM-BSH Active Sanitizer**: We are mandating WASM-based sanitization for all binary state handoffs to ensure schema compliance and detect "State Injection" at the byte level.
 - **Memfd-Native BSH Buffers**: To support multi-gigabyte context transfer, we are adopting Linux `memfd_create` for zero-copy shared memory handoffs, mediated by the MCP Any gateway.
+
+## Strategic Evolution: [2026-03-25]
+### Focus: Recursive Intent Integrity & WASM-Bound Binary State
+**Context**: Today's leak of UACO v1.8 and the OpenClaw v2.5 roadmap mark a shift toward "Active State Governance." As agent swarms grow deeper, the risk of "Intent Hijacking" via "Intent Ghosting" and "Binary Context Poisoning" becomes critical. The "Universal Agent Bus" must move beyond passive validation to active, sandboxed state mediation and zero-copy performance.
+**Strategic Pivot**:
+- **Recursive Intent Delegation (RID)**: MCP Any will natively support UACO v1.8 RID, allowing parents to define strict cryptographic boundaries on how subagents can mutate intents and limit delegation depth. This eliminates the "Intent Ghosting" and hijacking vulnerabilities.
+- **WASM-Bound BSH Sanitization**: We are integrating a pluggable WASM-based "State Sanitizer" into the Binary State Handoff (BSH) Gateway. All binary state fragments will be processed in an isolated WASM sandbox to ensure they conform to signed schemas before memory ingestion, neutralizing context smearing.
+- **Zero-Copy Shared Memory Transport**: To eliminate the "Cognitive Stall" in deep swarms, MCP Any will implement a Zero-Copy BSH transport utilizing Linux `memfd_create` and shared memory regions. This allows multi-gigabyte context objects to be "handed off" with sub-millisecond latency.
+- **Relational PoI Chain Enforcement**: We are mandating the validation of the entire "Intent Chain" for every high-risk tool call. This ensures that subagents cannot bypass security by shadowing mission-root intents with unauthorized, transient goals.

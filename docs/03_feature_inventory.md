@@ -3,13 +3,13 @@
 ## Evolution: [2026-03-25] Updates
 
 ### Proposed Additions
-- **Recursive Intent Delegation (RID) Validator**: (P0) Middleware for enforcing depth-limited intent mutations and cryptographic mission boundaries.
-- **WASM-BSH State Sanitizer**: (P0) Pluggable WASM sandbox for binary context validation and schema-based state sanitization.
-- **Zero-Copy Shared Memory Transport**: (P0) High-performance BSH transport using Linux `memfd_create` to eliminate serialization overhead.
+- **Recursive Intent Delegation (RID) Validator**: (P0) Middleware for enforcing depth-limited intent mutations and cryptographic mission boundaries for UACO v1.8 compliance.
+- **WASM-BSH State Sanitizer**: (P0) Pluggable WASM sandbox for binary context validation and Protobuf schema-based state sanitization to align with OpenClaw v2.5.
+- **Zero-Copy Shared Memory Transport**: (P0) High-performance BSH transport using Linux `memfd_create` to eliminate serialization overhead and "Cognitive Stall" in deep swarms.
 
 ### Priority Shifts
-- **Relational PoI Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory mission-root chain verification to counter "Intent Ghosting".
-- **Binary State Handoff (BSH) Gateway**: (Re-affirmed P0) Evolving into the **Zero-Copy Transport** architecture.
+- **Relational PoI Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory mission-root chain verification to counter "Intent Ghosting" vulnerabilities.
+- **Binary State Handoff (BSH) Gateway**: (Re-affirmed P0) Evolving into the **Zero-Copy Transport** architecture with integrated WASM-based "Point-in-Time" binary scanning.
 
 
 ### Proposed Additions
