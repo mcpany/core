@@ -154,9 +154,23 @@ func TestServiceRegistry_RegisterAndGetService(t *testing.T) {
 	assert.False(t, ok)
 
 	t.Run("with OAuth2 authenticator", func(t *testing.T) {
-		// Mock out OIDC discovery logic by starting a test server if needed
-		// For unit test simplicity, we skip OIDC in pure offline sandbox
-		t.Skip("Skipping OAuth2 test that depends on external OIDC discovery")
+		serviceConfig := configv1.UpstreamServiceConfig_builder{
+			Name: proto.String("oauth2-service"),
+			HttpService: configv1.HttpUpstreamService_builder{
+				Address: proto.String("http://127.0.0.1"),
+			}.Build(),
+			Authentication: configv1.Authentication_builder{
+				Oauth2: configv1.OAuth2Auth_builder{
+					IssuerUrl: proto.String("https://accounts.google.com"),
+					Audience:  proto.String("test-audience"),
+				}.Build(),
+			}.Build(),
+		}.Build()
+		serviceID, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
+		require.NoError(t, err)
+
+		_, ok := am.GetAuthenticator(serviceID)
+		assert.True(t, ok, "OAuth2 authenticator should have been added")
 	})
 }
 
