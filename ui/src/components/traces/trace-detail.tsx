@@ -18,6 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import React from "react";
 import { useNavigate as useRouter } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { JsonView } from "@/components/ui/json-view";
 import { RichResultViewer } from "@/components/tools/rich-result-viewer";
 import { analyzeTrace } from "@/lib/diagnostics";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -384,13 +385,21 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                                 <h3 className="text-sm font-medium flex items-center gap-2 text-primary">
                                     <Code className="h-4 w-4" /> Request Payload
                                 </h3>
-                                <RichResultViewer result={trace.rootSpan.input} />
+                                {typeof trace.rootSpan.input === 'object' && trace.rootSpan.input !== null && 'table' in trace.rootSpan.input ? (
+                                    <RichResultViewer result={trace.rootSpan.input} />
+                                ) : (
+                                    <JsonView data={trace.rootSpan.input} maxHeight={400} />
+                                )}
                             </div>
                             <div className="space-y-2">
                                 <h3 className="text-sm font-medium flex items-center gap-2 text-primary">
                                     <Terminal className="h-4 w-4" /> Response Payload
                                 </h3>
-                                <RichResultViewer result={trace.rootSpan.output} />
+                                {typeof trace.rootSpan.output === 'object' && trace.rootSpan.output !== null && 'table' in trace.rootSpan.output ? (
+                                    <RichResultViewer result={trace.rootSpan.output} />
+                                ) : (
+                                    <JsonView data={trace.rootSpan.output} maxHeight={400} />
+                                )}
                             </div>
                         </div>
                      </ScrollArea>
