@@ -20,19 +20,19 @@ import (
 )
 
 func TestExampleConfigs(t *testing.T) {
-	// Set dummy API key for validation to pass
+	// Set dummy API key for validation to pass.
 	t.Setenv("GEMINI_API_KEY", "dummy-key")
-	projectRoot, err := sourceProjectRoot()
-	require.NoError(t, err)
+	projectRoot, rootErr := sourceProjectRoot()
+	require.NoError(t, rootErr)
 	runtimeRoot := filepath.Join(t.TempDir(), "server")
 	examplesDir := filepath.Join(runtimeRoot, "examples")
 	require.NoError(t, copyDir(filepath.Join(projectRoot, "examples"), examplesDir))
 
-	// Change to project root so that relative paths in configs (e.g. "./examples/...") resolve correctly
-	err = os.Chdir(runtimeRoot)
-	require.NoError(t, err)
+	// Change to project root so that relative paths in configs (e.g. "./examples/...") resolve correctly.
+	chdirErr := os.Chdir(runtimeRoot)
+	require.NoError(t, chdirErr)
 
-	// Ensure stdio example binary is built, as Config validation checks for its existence
+	// Ensure stdio example binary is built, as Config validation checks for its existence.
 	// This makes the test robust against sharding/environment where build-examples might not have run.
 	stdioBinPath := filepath.Join(runtimeRoot, "examples", "demo", "stdio", "my-tool-bin")
 	if _, statErr := os.Stat(stdioBinPath); os.IsNotExist(statErr) {
@@ -48,15 +48,15 @@ func TestExampleConfigs(t *testing.T) {
 		}
 	}
 
-	// Walk through examples directory
-	err = filepath.Walk(examplesDir, func(path string, info os.FileInfo, walkDirErr error) error {
+	// Walk through examples directory.
+	walkErr := filepath.Walk(examplesDir, func(path string, info os.FileInfo, walkDirErr error) error {
 		if walkDirErr != nil {
 			return walkDirErr
 		}
 
-		// Check for config.yaml
+		// Check for config.yaml.
 		if !info.IsDir() && filepath.Base(path) == "config.yaml" {
-			// Trim project root from path for cleaner test name
+			// Trim project root from path for cleaner test name.
 			testName := path
 			if strings.HasPrefix(path, projectRoot) {
 				testName = strings.TrimPrefix(path, projectRoot)
@@ -67,7 +67,7 @@ func TestExampleConfigs(t *testing.T) {
 		}
 		return nil
 	})
-	require.NoError(t, err)
+	require.NoError(t, walkErr)
 }
 
 func sourceProjectRoot() (string, error) {
@@ -122,8 +122,8 @@ func copyDir(src, dst string) error {
 func validateConfig(t *testing.T, configPath string) {
 	osFs := afero.NewOsFs()
 
-	// Set dummy values for all required environment variables found in failure logs
-	// This allows the strict config validation to pass during tests
+	// Set dummy values for all required environment variables found in failure logs.
+	// This allows the strict config validation to pass during tests.
 	requiredEnvVars := []string{
 		"AIRTABLE_API_TOKEN",
 		"FIGMA_API_TOKEN",
@@ -148,22 +148,17 @@ func validateConfig(t *testing.T, configPath string) {
 		t.Setenv(v, "dummy-val")
 	}
 
-	// Create a store that points to this config file
+	// Create a store that points to this config file.
 	store := config.NewFileStore(osFs, []string{configPath})
 
-	// Load services
-	// The second argument "server" matches what the CLI uses for validation context if any
-	configs, err := config.LoadServices(context.Background(), store, "server")
-	if err != nil {
-		// Some configs might require env vars which validly fail if missing.
-		// However, LoadServices typically parses the YAML/Proto.
-		// If it fails due to missing env vars that are required for *parsing* (if any), that might be acceptable if we can detect it.
-		// But usually configs placeholders are just strings unless they are used in a way that breaks parsing.
-		// Let's see if we fail on basic loading.
-		t.Fatalf("Failed to load config %s: %v", configPath, err)
+	// Load services.
+	// The second argument "server" matches what the CLI uses for validation context if any.
+	configs, loadErr := config.LoadServices(context.Background(), store, "server")
+	if loadErr != nil {
+		t.Fatalf("Failed to load config %s: %v", configPath, loadErr)
 	}
 
-	// Validate
+	// Validate.
 	validationErrors := config.Validate(context.Background(), configs, config.Server)
 	assert.Empty(t, validationErrors, "Config validation failed for %s", configPath)
 }
