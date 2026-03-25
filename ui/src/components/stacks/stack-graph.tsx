@@ -186,11 +186,16 @@ export function StackGraph({ yamlContent }: StackGraphProps) {
         }));
 
         const newEdges: Edge[] = [];
-        services.forEach((svc) => {
+        // ⚡ BOLT: [Render Optimization] Use O(1) map for dependency validation to prevent O(N^2) renders
+        // Randomized Selection from Top 5 High-Impact Targets (Algorithmic)
+        const serviceNames = new Set(services.map(s => s.name));
+        for (let i = 0; i < services.length; i++) {
+            const svc = services[i];
             if (svc.dependsOn) {
-                svc.dependsOn.forEach((dep) => {
-                    // Check if dependency exists
-                    if (services.some(s => s.name === dep)) {
+                for (let j = 0; j < svc.dependsOn.length; j++) {
+                    const dep = svc.dependsOn[j];
+                    // Check if dependency exists using O(1) Set instead of O(N) some()
+                    if (serviceNames.has(dep)) {
                         newEdges.push({
                             id: `${svc.name}-${dep}`,
                             source: dep, // Dependency is source (must start first)
@@ -198,9 +203,9 @@ export function StackGraph({ yamlContent }: StackGraphProps) {
                             animated: true,
                         });
                     }
-                });
+                }
             }
-        });
+        }
 
         const layouted = getLayoutedElements(newNodes, newEdges);
         setNodes(layouted.nodes);
