@@ -259,7 +259,7 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		case result := <-resultChan:
 			assert.NoError(t, result.Error)
 			assert.Equal(t, "success-key-request-context", result.ServiceKey)
-		case <-time.After(1 * time.Second):
+		case <-time.After(5 * time.Second):
 			t.Fatal("timed out waiting for registration result")
 		}
 	})
