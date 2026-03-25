@@ -21,7 +21,9 @@ interface RequestPreviewProps {
     call: HttpCallDefinition;
     tool: ToolDefinition;
     serviceName?: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onExecute?: (args: any) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     executionResult?: any;
     isExecuting?: boolean;
 }
@@ -62,6 +64,7 @@ export function RequestPreview({ call, tool: _tool, serviceName: _serviceName, o
     // Initialize args with defaults if empty
     useEffect(() => {
         if (argsJson === "{}" && call.parameters && call.parameters.length > 0) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const defaults: Record<string, any> = {};
             call.parameters.forEach((p: HttpParameterMapping) => {
                 if (p.schema?.name) {
@@ -77,11 +80,12 @@ export function RequestPreview({ call, tool: _tool, serviceName: _serviceName, o
     }, [call.parameters]);
 
     const preview = useMemo(() => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let args: any = {};
         try {
             args = JSON.parse(argsJson);
             setArgsError(null);
-        } catch (e) {
+        } catch (_e) {
             // Don't update error state immediately while typing partial JSON?
             // Actually, for preview, we need valid JSON.
             // We'll just return null or previous valid state?
