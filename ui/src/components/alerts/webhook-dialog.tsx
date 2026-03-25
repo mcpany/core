@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -33,8 +35,7 @@ export function WebhookDialog() {
   useEffect(() => {
     if (open) {
       setLoading(true);
-      apiClient
-        .getWebhookURL()
+      apiClient.getWebhookURL()
         .then((data) => setUrl(data.url))
         .catch(() => {
           toast({
@@ -57,7 +58,7 @@ export function WebhookDialog() {
       });
       setOpen(false);
     } catch (error) {
-      console.error(error);
+        console.error(error);
       toast({
         title: "Error",
         description: "Failed to save webhook URL",
@@ -72,15 +73,14 @@ export function WebhookDialog() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" className="gap-2">
-          <Webhook className="h-4 w-4" /> Configure Webhook
+            <Webhook className="h-4 w-4" /> Configure Webhook
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px] bg-background">
         <DialogHeader>
           <DialogTitle>Configure Global Webhook</DialogTitle>
           <DialogDescription>
-            Enter a URL to receive notifications when upstream service health
-            changes (alerts).
+            Enter a URL to receive notifications when upstream service health changes (alerts).
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -89,21 +89,19 @@ export function WebhookDialog() {
               Webhook URL
             </Label>
             <Input
-              id="url"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              placeholder="https://example.com/webhook"
-              className="col-span-3"
+                id="url"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="https://example.com/webhook"
+                className="col-span-3"
             />
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>
-            Cancel
-          </Button>
-          <Button onClick={handleSave} disabled={loading}>
-            {loading ? "Saving..." : "Save Configuration"}
-          </Button>
+            <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+            <Button onClick={handleSave} disabled={loading}>
+                {loading ? "Saving..." : "Save Configuration"}
+            </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

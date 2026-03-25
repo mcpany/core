@@ -27,20 +27,20 @@ describe("applyTemplateFields", () => {
       description: "Test",
       icon: null,
       config: {
-        name: "test",
-        commandLineService: {
-          env: { API_KEY: "" },
+          name: "test",
+          commandLineService: {
+              env: { "API_KEY": "" }
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } as any,
+          } as any
       },
       fields: [
         {
           name: "apiKey",
           label: "API Key",
           placeholder: "",
-          key: "commandLineService.env.API_KEY",
-        },
-      ],
+          key: "commandLineService.env.API_KEY"
+        }
+      ]
     };
 
     const result = applyTemplateFields(template, { apiKey: "secret-123" });
@@ -55,11 +55,11 @@ describe("applyTemplateFields", () => {
       description: "Test",
       icon: null,
       config: {
-        name: "test",
-        commandLineService: {
-          command: "run {{ARG}}",
+          name: "test",
+          commandLineService: {
+              command: "run {{ARG}}"
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } as any,
+          } as any
       },
       fields: [
         {
@@ -67,9 +67,9 @@ describe("applyTemplateFields", () => {
           label: "Arg",
           placeholder: "",
           key: "commandLineService.command",
-          replaceToken: "{{ARG}}",
-        },
-      ],
+          replaceToken: "{{ARG}}"
+        }
+      ]
     };
 
     const result = applyTemplateFields(template, { arg: "my-value" });
@@ -78,24 +78,24 @@ describe("applyTemplateFields", () => {
   });
 
   it("should handle nested object creation if path does not exist", () => {
-    const template: ServiceTemplate = {
-      id: "test",
-      name: "Test",
-      description: "Test",
-      icon: null,
-      config: { name: "test" },
-      fields: [
-        {
-          name: "deep",
-          label: "Deep",
-          placeholder: "",
-          key: "a.b.c",
-        },
-      ],
-    };
+      const template: ServiceTemplate = {
+        id: "test",
+        name: "Test",
+        description: "Test",
+        icon: null,
+        config: { name: "test" },
+        fields: [
+            {
+                name: "deep",
+                label: "Deep",
+                placeholder: "",
+                key: "a.b.c"
+            }
+        ]
+      };
 
-    const result = applyTemplateFields(template, { deep: "val" });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect((result as any).a.b.c).toBe("val");
+      const result = applyTemplateFields(template, { deep: "val" });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect((result as any).a.b.c).toBe("val");
   });
 });

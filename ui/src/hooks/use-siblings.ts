@@ -13,22 +13,19 @@ import { UpstreamServiceConfig, ToolDefinition } from "@/lib/types";
  * @param currentServiceId - The currentServiceId.
  */
 export function useServiceSiblings(currentServiceId: string) {
-  const [siblings, setSiblings] = useState<{ label: string; href: string }[]>(
-    [],
-  );
+    const [siblings, setSiblings] = useState<{ label: string; href: string }[]>([]);
 
-  useEffect(() => {
-    apiClient.listServices().then((services: UpstreamServiceConfig[]) => {
-      const list = Array.isArray(services) ? services : [];
-      setSiblings(
-        list
-          .filter((s) => s.id !== currentServiceId)
-          .map((s) => ({ label: s.name, href: `/service/${s.id}` })),
-      );
-    });
-  }, [currentServiceId]);
+    useEffect(() => {
+        apiClient.listServices().then((services: UpstreamServiceConfig[]) => {
+            const list = Array.isArray(services) ? services : [];
+            setSiblings(list
+                .filter((s) => s.id !== currentServiceId)
+                .map((s) => ({ label: s.name, href: `/service/${s.id}` }))
+            );
+        });
+    }, [currentServiceId]);
 
-  return siblings;
+    return siblings;
 }
 
 /**
@@ -38,24 +35,18 @@ export function useServiceSiblings(currentServiceId: string) {
  * @param currentToolName - The currentToolName.
  */
 export function useToolSiblings(serviceId: string, currentToolName: string) {
-  const [siblings, setSiblings] = useState<{ label: string; href: string }[]>(
-    [],
-  );
+    const [siblings, setSiblings] = useState<{ label: string; href: string }[]>([]);
 
-  useEffect(() => {
-    apiClient.listTools().then((res: { tools?: ToolDefinition[] }) => {
-      const tools = res.tools || [];
-      const decodedName = decodeURIComponent(currentToolName);
-      setSiblings(
-        tools
-          .filter((t) => t.serviceId === serviceId && t.name !== decodedName)
-          .map((t) => ({
-            label: t.name,
-            href: `/service/${serviceId}/tool/${t.name}`,
-          })),
-      );
-    });
-  }, [serviceId, currentToolName]);
+    useEffect(() => {
+        apiClient.listTools().then((res: { tools?: ToolDefinition[] }) => {
+            const tools = res.tools || [];
+            const decodedName = decodeURIComponent(currentToolName);
+            setSiblings(tools
+                .filter((t) => t.serviceId === serviceId && t.name !== decodedName)
+                .map((t) => ({ label: t.name, href: `/service/${serviceId}/tool/${t.name}` }))
+            );
+        });
+    }, [serviceId, currentToolName]);
 
-  return siblings;
+    return siblings;
 }

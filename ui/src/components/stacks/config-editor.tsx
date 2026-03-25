@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+
+
 import React, { useEffect, useRef } from "react";
 import Editor, { useMonaco, OnMount } from "@monaco-editor/react";
 import { useTheme } from "next-themes";
@@ -21,12 +23,7 @@ interface ConfigEditorProps {
  *
  * @param readOnly = false - The readOnly = false.
  */
-export function ConfigEditor({
-  value,
-  onChange,
-  language = "yaml",
-  readOnly = false,
-}: ConfigEditorProps) {
+export function ConfigEditor({ value, onChange, language = "yaml", readOnly = false }: ConfigEditorProps) {
   const { theme, systemTheme } = useTheme();
   const monaco = useMonaco();
   const editorRef = useRef<Parameters<OnMount>[0] | null>(null);
@@ -38,74 +35,72 @@ export function ConfigEditor({
 
   useEffect(() => {
     if (monaco && language === "yaml") {
-      // Configure JSON Validation for YAML?
-      // Monaco's YAML support is limited out of the box.
-      // We can try to use setDiagnosticsOptions for json if we were editing JSON.
-      // But for YAML, we rely on basic highlighting.
-      // However, if we change language to 'json', we get schema validation.
-      // Since we are strictly doing YAML, we'll skip deep schema validation *inside* Monaco
-      // unless we bring in a YAML worker (complex).
-      // Instead, we rely on the parent component's js-yaml validation to show errors.
+        // Configure JSON Validation for YAML?
+        // Monaco's YAML support is limited out of the box.
+        // We can try to use setDiagnosticsOptions for json if we were editing JSON.
+        // But for YAML, we rely on basic highlighting.
+        // However, if we change language to 'json', we get schema validation.
+        // Since we are strictly doing YAML, we'll skip deep schema validation *inside* Monaco
+        // unless we bring in a YAML worker (complex).
+        // Instead, we rely on the parent component's js-yaml validation to show errors.
 
-      // But we CAN add custom completion providers for YAML!
-      const disposable = monaco.languages.registerCompletionItemProvider(
-        "yaml",
-        {
-          provideCompletionItems: (model, position) => {
-            const word = model.getWordUntilPosition(position);
-            const range = {
-              startLineNumber: position.lineNumber,
-              endLineNumber: position.lineNumber,
-              startColumn: word.startColumn,
-              endColumn: word.endColumn,
-            };
+        // But we CAN add custom completion providers for YAML!
+        const disposable = monaco.languages.registerCompletionItemProvider("yaml", {
+            provideCompletionItems: (model, position) => {
+                const word = model.getWordUntilPosition(position);
+                const range = {
+                    startLineNumber: position.lineNumber,
+                    endLineNumber: position.lineNumber,
+                    startColumn: word.startColumn,
+                    endColumn: word.endColumn,
+                };
 
-            // Basic suggestions based on our schema
-            const suggestions = [
-              {
-                label: "services",
-                kind: monaco.languages.CompletionItemKind.Keyword,
-                insertText: "services:\n  ",
-                documentation: "Define services block",
-                range,
-              },
-              {
-                label: "version",
-                kind: monaco.languages.CompletionItemKind.Keyword,
-                insertText: 'version: "1.0"',
-                documentation: "Stack configuration version",
-                range,
-              },
-              {
-                label: "image",
-                kind: monaco.languages.CompletionItemKind.Property,
-                insertText: "image: ",
-                documentation: "Docker image",
-                range,
-              },
-              {
-                label: "command",
-                kind: monaco.languages.CompletionItemKind.Property,
-                insertText: "command: ",
-                documentation: "Command to execute",
-                range,
-              },
-              {
-                label: "environment",
-                kind: monaco.languages.CompletionItemKind.Property,
-                insertText: "environment:\n    - KEY=VALUE",
-                documentation: "Environment variables",
-                range,
-              },
-            ];
-            return { suggestions };
-          },
-        },
-      );
+                // Basic suggestions based on our schema
+                const suggestions = [
+                    {
+                        label: "services",
+                        kind: monaco.languages.CompletionItemKind.Keyword,
+                        insertText: "services:\n  ",
+                        documentation: "Define services block",
+                        range
+                    },
+                    {
+                        label: "version",
+                        kind: monaco.languages.CompletionItemKind.Keyword,
+                        insertText: 'version: "1.0"',
+                        documentation: "Stack configuration version",
+                        range
+                    },
+                    {
+                        label: "image",
+                        kind: monaco.languages.CompletionItemKind.Property,
+                        insertText: "image: ",
+                        documentation: "Docker image",
+                        range
+                    },
+                    {
+                        label: "command",
+                        kind: monaco.languages.CompletionItemKind.Property,
+                        insertText: "command: ",
+                        documentation: "Command to execute",
+                        range
+                    },
+                    {
+                        label: "environment",
+                        kind: monaco.languages.CompletionItemKind.Property,
+                        insertText: "environment:\n    - KEY=VALUE",
+                        documentation: "Environment variables",
+                        range
+                    }
+                ];
+                return { suggestions };
+            }
+        });
 
-      return () => disposable.dispose();
+        return () => disposable.dispose();
     }
   }, [monaco, language]);
+
 
   const handleEditorDidMount: OnMount = (editor, _monaco) => {
     editorRef.current = editor;
@@ -141,11 +136,7 @@ export function ConfigEditor({
           lineDecorationsWidth: 16, // minimal width for line numbers
           folding: true,
         }}
-        loading={
-          <div className="flex items-center justify-center h-full text-muted-foreground text-xs">
-            Loading Editor...
-          </div>
-        }
+        loading={<div className="flex items-center justify-center h-full text-muted-foreground text-xs">Loading Editor...</div>}
       />
     </div>
   );

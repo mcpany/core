@@ -3,17 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+
+
 import { apiClient, ToolDefinition } from "@/lib/client";
 
 import { useState, useRef, useEffect, useMemo } from "react";
-import {
-  Send,
-  Loader2,
-  Sparkles,
-  Terminal,
-  PanelLeftClose,
-  PanelLeftOpen,
-} from "lucide-react";
+import { Send, Loader2, Sparkles, Terminal, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -24,7 +19,7 @@ import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from "@/components/ui/resizable";
+} from "@/components/ui/resizable"
 
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -34,7 +29,7 @@ import { ChatMessage, Message } from "./chat-message";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ToolRunner } from "@/components/playground/tool-runner";
 import { Zap } from "lucide-react";
@@ -44,47 +39,39 @@ import { Zap } from "lucide-react";
  * @returns The rendered component.
  */
 export function PlaygroundClientPro() {
-  const [messages, setMessages, isInitialized] = useLocalStorage<Message[]>(
-    "playground-messages",
-    [],
-  );
+  const [messages, setMessages, isInitialized] = useLocalStorage<Message[]>("playground-messages", []);
   const [input, setInput] = useState("");
   const [searchParams] = useSearchParams();
 
   // Initialize with welcome message
   useEffect(() => {
     if (isInitialized) {
-      const hasKey =
-        typeof window !== "undefined" &&
-        window.localStorage.getItem("playground-messages") !== null;
+        const hasKey = typeof window !== "undefined" && window.localStorage.getItem("playground-messages") !== null;
 
-      if (!hasKey && messages.length === 0) {
-        setMessages([
-          {
-            id: "1",
-            type: "assistant",
-            content:
-              "Hello! I am your MCP Assistant. Select a tool from the sidebar to configure and execute it, or type a command directly.",
-            timestamp: new Date(),
-          },
-        ]);
-      }
+        if (!hasKey && messages.length === 0) {
+            setMessages([
+                {
+                    id: "1",
+                    type: "assistant",
+                    content: "Hello! I am your MCP Assistant. Select a tool from the sidebar to configure and execute it, or type a command directly.",
+                    timestamp: new Date(),
+                }
+            ]);
+        }
     }
   }, [isInitialized]);
 
   // Revive dates from stored messages (JSON strings)
   const displayMessages = useMemo(() => {
-    return messages.map((m) => ({
-      ...m,
-      timestamp: new Date(m.timestamp),
-    }));
+      return messages.map(m => ({
+          ...m,
+          timestamp: new Date(m.timestamp)
+      }));
   }, [messages]);
 
   const [isLoading, setIsLoading] = useState(false);
   const [availableTools, setAvailableTools] = useState<ToolDefinition[]>([]);
-  const [toolToConfigure, setToolToConfigure] = useState<ToolDefinition | null>(
-    null,
-  );
+  const [toolToConfigure, setToolToConfigure] = useState<ToolDefinition | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -97,58 +84,50 @@ export function PlaygroundClientPro() {
   const [mode, setMode] = useState<"console" | "runner">("console");
 
   const currentTokens = useMemo(() => estimateTokens(input), [input]);
-  const historyTokens = useMemo(
-    () => estimateMessageTokens(displayMessages),
-    [displayMessages],
-  );
+  const historyTokens = useMemo(() => estimateMessageTokens(displayMessages), [displayMessages]);
 
   // Autocomplete state
-  const [filteredSuggestions, setFilteredSuggestions] = useState<
-    ToolDefinition[]
-  >([]);
+  const [filteredSuggestions, setFilteredSuggestions] = useState<ToolDefinition[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   useEffect(() => {
-    apiClient
-      .listTools()
-      .then((data) => setAvailableTools(data.tools || []))
-      .catch((err) => console.error("Failed to load tools:", err));
+    apiClient.listTools()
+        .then(data => setAvailableTools(data.tools || []))
+        .catch(err => console.error("Failed to load tools:", err));
   }, []);
 
   useEffect(() => {
-    if (isMobile) setSidebarOpen(false);
+      if (isMobile) setSidebarOpen(false);
   }, [isMobile]);
 
   useEffect(() => {
-    const toolName = searchParams.get("tool");
-    const args = searchParams.get("args");
+    const toolName = searchParams.get('tool');
+    const args = searchParams.get('args');
     if (toolName) {
-      if (args) {
-        // If args are present, assume it's for console replay
-        let command = toolName;
-        command += ` ${args}`;
-        setInput(command);
-        setMode("console");
-      } else {
-        // If just tool name, open runner
-        const tool = availableTools.find((t) => t.name === toolName);
-        if (tool) {
-          setToolToConfigure(tool);
-          setMode("runner");
+        if (args) {
+             // If args are present, assume it's for console replay
+             let command = toolName;
+             command += ` ${args}`;
+             setInput(command);
+             setMode("console");
+        } else {
+            // If just tool name, open runner
+            const tool = availableTools.find(t => t.name === toolName);
+            if (tool) {
+                setToolToConfigure(tool);
+                setMode("runner");
+            }
         }
-      }
     }
   }, [searchParams, availableTools]);
 
   // Auto-scroll to bottom
   useEffect(() => {
     if (scrollAreaRef.current) {
-      const scrollContainer = scrollAreaRef.current.querySelector(
-        "[data-radix-scroll-area-viewport]",
-      );
-      if (scrollContainer) {
-        scrollContainer.scrollTop = scrollContainer.scrollHeight;
-      }
+        const scrollContainer = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
+        if (scrollContainer) {
+            scrollContainer.scrollTop = scrollContainer.scrollHeight;
+        }
     }
   }, [displayMessages]);
 
@@ -171,131 +150,111 @@ export function PlaygroundClientPro() {
   };
 
   const handleInputChange = (value: string) => {
-    setInput(value);
-    if (value.trim()) {
-      const suggestions = availableTools.filter((t) =>
-        t.name.toLowerCase().includes(value.toLowerCase()),
-      );
-      setFilteredSuggestions(suggestions);
-      setShowSuggestions(suggestions.length > 0);
-    } else {
-      setShowSuggestions(false);
-    }
+      setInput(value);
+      if (value.trim()) {
+          const suggestions = availableTools.filter(t => t.name.toLowerCase().includes(value.toLowerCase()));
+          setFilteredSuggestions(suggestions);
+          setShowSuggestions(suggestions.length > 0);
+      } else {
+          setShowSuggestions(false);
+      }
   };
 
   const selectSuggestion = (tool: ToolDefinition) => {
-    setToolToConfigure(tool);
-    setMode("runner");
-    setShowSuggestions(false);
+      setToolToConfigure(tool);
+      setMode("runner");
+      setShowSuggestions(false);
   };
 
   const handleReplay = (toolName: string, args: Record<string, unknown>) => {
-    const tool = availableTools.find((t) => t.name === toolName);
-    if (tool) {
-      // Switch to runner and pre-fill?
-      // For now, keep replay in console as it was.
-      const command = `${toolName} ${JSON.stringify(args)}`;
-      setInput(command);
-      inputRef.current?.focus();
-    }
+      const tool = availableTools.find(t => t.name === toolName);
+      if (tool) {
+          // Switch to runner and pre-fill?
+          // For now, keep replay in console as it was.
+          const command = `${toolName} ${JSON.stringify(args)}`;
+          setInput(command);
+          inputRef.current?.focus();
+      }
   };
 
   const processResponse = async (userInput: string) => {
-    const firstSpaceIndex = userInput.indexOf(" ");
-    let toolName = userInput;
-    let toolArgs = {};
+      const firstSpaceIndex = userInput.indexOf(' ');
+      let toolName = userInput;
+      let toolArgs = {};
 
-    if (firstSpaceIndex > 0) {
-      toolName = userInput.substring(0, firstSpaceIndex).trim();
-      const argsStr = userInput.substring(firstSpaceIndex + 1).trim();
-      if (argsStr) {
-        try {
-          toolArgs = JSON.parse(argsStr);
-        } catch {
-          setMessages((prev) => [
-            ...prev,
-            {
-              id: Date.now().toString(),
-              type: "error",
-              content:
-                'Invalid JSON arguments. Use format: tool_name {"key": "value"}',
-              timestamp: new Date(),
-            },
-          ]);
-          setIsLoading(false);
-          return;
-        }
-      }
-    }
-
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: Date.now().toString() + "-tool",
-        type: "tool-call",
-        toolName: toolName,
-        toolArgs: toolArgs,
-        timestamp: new Date(),
-      },
-    ]);
-
-    try {
-      const result = await apiClient.executeTool(
-        {
-          name: toolName,
-          arguments: toolArgs,
-        },
-        isDryRun,
-      );
-
-      // Find previous execution for diffing
-      let previousResult: unknown | undefined;
-      const reversedMessages = [...messages].reverse();
-      const previousCall = reversedMessages.find(
-        (m) =>
-          m.type === "tool-call" &&
-          m.toolName === toolName &&
-          JSON.stringify(m.toolArgs) === JSON.stringify(toolArgs),
-      );
-
-      if (previousCall) {
-        const callIndex = messages.findIndex((m) => m.id === previousCall.id);
-        if (callIndex !== -1 && callIndex + 1 < messages.length) {
-          const resultMsg = messages[callIndex + 1];
-          if (resultMsg.type === "tool-result") {
-            previousResult = resultMsg.toolResult;
+      if (firstSpaceIndex > 0) {
+          toolName = userInput.substring(0, firstSpaceIndex).trim();
+          const argsStr = userInput.substring(firstSpaceIndex + 1).trim();
+          if (argsStr) {
+             try {
+                toolArgs = JSON.parse(argsStr);
+            } catch {
+                 setMessages(prev => [...prev, {
+                    id: Date.now().toString(),
+                    type: "error",
+                    content: "Invalid JSON arguments. Use format: tool_name {\"key\": \"value\"}",
+                    timestamp: new Date(),
+                }]);
+                setIsLoading(false);
+                return;
+            }
           }
-        }
       }
 
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: Date.now().toString() + "-result",
-          type: "tool-result",
-          toolName: toolName,
-          toolResult: result,
-          previousResult,
-          timestamp: new Date(),
-        },
-      ]);
-    } catch (err: unknown) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: Date.now().toString(),
-          type: "error",
-          content:
-            (err instanceof Error ? err.message : String(err)) ||
-            "Tool execution failed",
+      setMessages(prev => [...prev, {
+          id: Date.now().toString() + "-tool",
+          type: "tool-call",
           toolName: toolName,
           toolArgs: toolArgs,
           timestamp: new Date(),
-        },
-      ]);
-    } finally {
-      setIsLoading(false);
-    }
+      }]);
+
+      try {
+          const result = await apiClient.executeTool({
+              name: toolName,
+              arguments: toolArgs
+          }, isDryRun);
+
+          // Find previous execution for diffing
+          let previousResult: unknown | undefined;
+          const reversedMessages = [...messages].reverse();
+          const previousCall = reversedMessages.find(m =>
+              m.type === "tool-call" &&
+              m.toolName === toolName &&
+              JSON.stringify(m.toolArgs) === JSON.stringify(toolArgs)
+          );
+
+          if (previousCall) {
+              const callIndex = messages.findIndex(m => m.id === previousCall.id);
+              if (callIndex !== -1 && callIndex + 1 < messages.length) {
+                  const resultMsg = messages[callIndex + 1];
+                  if (resultMsg.type === "tool-result") {
+                      previousResult = resultMsg.toolResult;
+                  }
+              }
+          }
+
+          setMessages(prev => [...prev, {
+              id: Date.now().toString() + "-result",
+              type: "tool-result",
+              toolName: toolName,
+              toolResult: result,
+              previousResult,
+              timestamp: new Date(),
+          }]);
+
+      } catch (err: unknown) {
+          setMessages(prev => [...prev, {
+              id: Date.now().toString(),
+              type: "error",
+              content: (err instanceof Error ? err.message : String(err)) || "Tool execution failed",
+              toolName: toolName,
+              toolArgs: toolArgs,
+              timestamp: new Date(),
+          }]);
+      } finally {
+          setIsLoading(false);
+      }
   };
 
   const handleExportHistory = () => {
@@ -304,15 +263,15 @@ export function PlaygroundClientPro() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `playground-history-${new Date().toISOString().split("T")[0]}.json`;
+    link.download = `playground-history-${new Date().toISOString().split('T')[0]}.json`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 
     toast({
-      title: "History Exported",
-      description: "Your playground session has been saved to a JSON file.",
+        title: "History Exported",
+        description: "Your playground session has been saved to a JSON file."
     });
   };
 
@@ -332,329 +291,253 @@ export function PlaygroundClientPro() {
 
         // Basic validation
         if (!Array.isArray(importedMessages)) {
-          throw new Error("Invalid format: Root must be an array");
+            throw new Error("Invalid format: Root must be an array");
         }
 
         setMessages(importedMessages);
         toast({
-          title: "History Imported",
-          description: `Successfully loaded ${importedMessages.length} messages.`,
+            title: "History Imported",
+            description: `Successfully loaded ${importedMessages.length} messages.`
         });
       } catch (err) {
         toast({
-          title: "Import Failed",
-          description:
-            "Failed to parse the file. Ensure it is a valid JSON export.",
-          variant: "destructive",
+            title: "Import Failed",
+            description: "Failed to parse the file. Ensure it is a valid JSON export.",
+            variant: "destructive"
         });
         console.error("Import error:", err);
       }
     };
     reader.readAsText(file);
-    event.target.value = "";
+    event.target.value = '';
   };
 
   const handleShareUrl = () => {
-    const url = new URL(window.location.href);
-    // If the input starts with a tool name, we can try to parse it
-    const parts = input.trim().split(/\s+(.*)/);
-    if (parts[0] && availableTools.some((t) => t.name === parts[0])) {
-      url.searchParams.set("tool", parts[0]);
-      if (parts[1]) {
-        url.searchParams.set("args", parts[1]);
+      const url = new URL(window.location.href);
+      // If the input starts with a tool name, we can try to parse it
+      const parts = input.trim().split(/\s+(.*)/);
+      if (parts[0] && availableTools.some(t => t.name === parts[0])) {
+          url.searchParams.set("tool", parts[0]);
+          if (parts[1]) {
+              url.searchParams.set("args", parts[1]);
+          }
       }
-    }
 
-    navigator.clipboard.writeText(url.toString());
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+      navigator.clipboard.writeText(url.toString());
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
 
-    toast({
-      title: "URL Copied",
-      description:
-        "A sharable link with your current tool configuration has been copied to clipboard.",
-    });
+      toast({
+          title: "URL Copied",
+          description: "A sharable link with your current tool configuration has been copied to clipboard."
+      });
   };
 
   return (
     <div className="flex flex-col h-full bg-background">
-      <ResizablePanelGroup
-        direction="horizontal"
-        className="h-full items-stretch"
-      >
-        <ResizablePanel
-          defaultSize={25}
-          minSize={20}
-          maxSize={40}
-          collapsible={true}
-          collapsedSize={0}
-          className={!sidebarOpen ? "hidden" : ""}
-          onCollapse={() => setSidebarOpen(false)}
-          onExpand={() => setSidebarOpen(true)}
-        >
-          <ToolSidebar
-            tools={availableTools}
-            onSelectTool={(tool) => {
-              setToolToConfigure(tool);
-              setMode("runner");
-            }}
-          />
-        </ResizablePanel>
+      <ResizablePanelGroup direction="horizontal" className="h-full items-stretch">
+         <ResizablePanel
+            defaultSize={25}
+            minSize={20}
+            maxSize={40}
+            collapsible={true}
+            collapsedSize={0}
+            className={!sidebarOpen ? "hidden" : ""}
+            onCollapse={() => setSidebarOpen(false)}
+            onExpand={() => setSidebarOpen(true)}
+         >
+             <ToolSidebar
+                tools={availableTools}
+                onSelectTool={(tool) => {
+                    setToolToConfigure(tool);
+                    setMode("runner");
+                }}
+             />
+         </ResizablePanel>
 
-        <ResizableHandle
-          withHandle={!isMobile}
-          className={!sidebarOpen ? "hidden" : ""}
-        />
+         <ResizableHandle withHandle={!isMobile} className={!sidebarOpen ? "hidden" : ""} />
 
-        <ResizablePanel defaultSize={75}>
-          <div className="flex flex-col h-full relative bg-muted/5">
-            <Tabs
-              value={mode}
-              onValueChange={(v) => setMode(v as "console" | "runner")}
-              className="h-full flex flex-col"
-            >
-              {/* Header */}
-              <div className="h-14 border-b flex items-center justify-between px-4 bg-background/80 backdrop-blur-sm sticky top-0 z-10 shrink-0">
-                <div className="flex items-center gap-4">
-                  {!sidebarOpen && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setSidebarOpen(true)}
-                      className="h-8 w-8"
-                    >
-                      <PanelLeftOpen className="h-4 w-4" />
-                    </Button>
-                  )}
-                  {sidebarOpen && isMobile && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setSidebarOpen(false)}
-                      className="h-8 w-8"
-                    >
-                      <PanelLeftClose className="h-4 w-4" />
-                    </Button>
-                  )}
+         <ResizablePanel defaultSize={75}>
+            <div className="flex flex-col h-full relative bg-muted/5">
+                <Tabs value={mode} onValueChange={(v) => setMode(v as "console" | "runner")} className="h-full flex flex-col">
+                    {/* Header */}
+                    <div className="h-14 border-b flex items-center justify-between px-4 bg-background/80 backdrop-blur-sm sticky top-0 z-10 shrink-0">
+                        <div className="flex items-center gap-4">
+                            {!sidebarOpen && (
+                                <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(true)} className="h-8 w-8">
+                                    <PanelLeftOpen className="h-4 w-4" />
+                                </Button>
+                            )}
+                            {sidebarOpen && isMobile && (
+                                <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(false)} className="h-8 w-8">
+                                    <PanelLeftClose className="h-4 w-4" />
+                                </Button>
+                            )}
 
-                  <TabsList>
-                    <TabsTrigger
-                      value="console"
-                      className="flex items-center gap-2"
-                    >
-                      <Terminal className="h-4 w-4" />
-                      Console
-                    </TabsTrigger>
-                    <TabsTrigger
-                      value="runner"
-                      className="flex items-center gap-2"
-                    >
-                      <Sparkles className="h-4 w-4" />
-                      Tool Runner
-                    </TabsTrigger>
-                  </TabsList>
-                </div>
-                {mode === "console" && (
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-7 text-xs flex items-center gap-1"
-                      onClick={handleShareUrl}
-                    >
-                      {copied ? (
-                        <Check className="h-3 w-3" />
-                      ) : (
-                        <Share2 className="h-3 w-3" />
-                      )}
-                      Share
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-7 text-xs flex items-center gap-1"
-                      onClick={handleExportHistory}
-                      disabled={displayMessages.length === 0}
-                    >
-                      <Download className="h-3 w-3" />
-                      Export
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-7 text-xs flex items-center gap-1"
-                      onClick={handleImportClick}
-                    >
-                      <Upload className="h-3 w-3" />
-                      Import
-                    </Button>
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      className="hidden"
-                      accept=".json"
-                      onChange={handleFileChange}
-                    />
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-7 text-xs"
-                      onClick={() => setMessages([])}
-                      disabled={displayMessages.length === 0}
-                    >
-                      Clear
-                    </Button>
-                  </div>
-                )}
-              </div>
-
-              <TabsContent
-                value="console"
-                className="flex-1 flex flex-col overflow-hidden m-0 data-[state=inactive]:hidden"
-              >
-                {/* Chat Area */}
-                <div className="flex-1 overflow-hidden relative">
-                  <ScrollArea className="h-full p-4" ref={scrollAreaRef}>
-                    <div className="max-w-4xl mx-auto pb-10 space-y-4">
-                      {displayMessages.map((msg) => (
-                        <ChatMessage
-                          key={msg.id}
-                          message={msg}
-                          onReplay={handleReplay}
-                          onRetry={handleReplay}
-                        />
-                      ))}
-                      {isLoading && (
-                        <div className="flex items-center gap-2 text-muted-foreground text-xs animate-pulse pl-12">
-                          <Sparkles className="size-3 text-primary" />
-                          <span className="italic">
-                            Processing execution...
-                          </span>
+                            <TabsList>
+                                <TabsTrigger value="console" className="flex items-center gap-2">
+                                    <Terminal className="h-4 w-4" />
+                                    Console
+                                </TabsTrigger>
+                                <TabsTrigger value="runner" className="flex items-center gap-2">
+                                    <Sparkles className="h-4 w-4" />
+                                    Tool Runner
+                                </TabsTrigger>
+                            </TabsList>
                         </div>
-                      )}
-                      <div className="h-4" /> {/* Spacer */}
+                        {mode === 'console' && (
+                            <div className="flex items-center gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-7 text-xs flex items-center gap-1"
+                                    onClick={handleShareUrl}
+                                >
+                                    {copied ? <Check className="h-3 w-3" /> : <Share2 className="h-3 w-3" />}
+                                    Share
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-7 text-xs flex items-center gap-1"
+                                    onClick={handleExportHistory}
+                                    disabled={displayMessages.length === 0}
+                                >
+                                    <Download className="h-3 w-3" />
+                                    Export
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-7 text-xs flex items-center gap-1"
+                                    onClick={handleImportClick}
+                                >
+                                    <Upload className="h-3 w-3" />
+                                    Import
+                                </Button>
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    className="hidden"
+                                    accept=".json"
+                                    onChange={handleFileChange}
+                                />
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-7 text-xs"
+                                    onClick={() => setMessages([])}
+                                    disabled={displayMessages.length === 0}
+                                >
+                                    Clear
+                                </Button>
+                            </div>
+                        )}
                     </div>
-                  </ScrollArea>
-                </div>
 
-                {/* Input Area */}
-                <div className="p-4 bg-background border-t">
-                  <div className="max-w-4xl mx-auto flex gap-3 relative">
-                    <div className="flex-1 relative">
-                      <Input
-                        ref={inputRef}
-                        placeholder="Enter command or select a tool..."
-                        value={input}
-                        onChange={(e) => handleInputChange(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                        disabled={isLoading}
-                        className="pr-12 font-mono text-sm bg-muted/20 focus-visible:bg-background transition-colors h-11"
-                        autoFocus
-                      />
-                      {showSuggestions && (
-                        <div className="absolute bottom-full left-0 w-full bg-popover border rounded-md shadow-md mb-2 overflow-hidden z-20">
-                          <div className="p-1">
-                            {filteredSuggestions.map((tool) => (
-                              <div
-                                key={tool.name}
-                                className="px-2 py-1.5 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-sm flex items-center justify-between"
-                                onClick={() => selectSuggestion(tool)}
-                              >
-                                <span className="font-medium">{tool.name}</span>
-                                <span className="text-xs text-muted-foreground">
-                                  {tool.serviceId || "core"}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
+                    <TabsContent value="console" className="flex-1 flex flex-col overflow-hidden m-0 data-[state=inactive]:hidden">
+                        {/* Chat Area */}
+                        <div className="flex-1 overflow-hidden relative">
+                            <ScrollArea className="h-full p-4" ref={scrollAreaRef}>
+                                <div className="max-w-4xl mx-auto pb-10 space-y-4">
+                                    {displayMessages.map((msg) => (
+                                        <ChatMessage key={msg.id} message={msg} onReplay={handleReplay} onRetry={handleReplay} />
+                                    ))}
+                                    {isLoading && (
+                                        <div className="flex items-center gap-2 text-muted-foreground text-xs animate-pulse pl-12">
+                                            <Sparkles className="size-3 text-primary" />
+                                            <span className="italic">Processing execution...</span>
+                                        </div>
+                                    )}
+                                    <div className="h-4" /> {/* Spacer */}
+                                </div>
+                            </ScrollArea>
                         </div>
-                      )}
-                      <div className="absolute right-1 top-1.5">
-                        <Button
-                          size="sm"
-                          className="h-8 w-8 p-0 rounded-md"
-                          onClick={handleSend}
-                          disabled={isLoading || !input.trim()}
-                          aria-label="Send"
-                        >
-                          {isLoading ? (
-                            <Loader2 className="size-4 animate-spin" />
-                          ) : (
-                            <Send className="size-4" />
-                          )}
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="max-w-4xl mx-auto mt-2 flex justify-between items-center text-[10px] text-muted-foreground px-1">
-                    <div className="flex items-center gap-4">
-                      <span>
-                        Format:{" "}
-                        <code className="bg-muted px-1 rounded text-primary">
-                          tool_name {"{json_args}"}
-                        </code>
-                      </span>
-                      <div className="flex items-center gap-1.5 border-l pl-4">
-                        <Switch
-                          id="console-dry-run"
-                          checked={isDryRun}
-                          onCheckedChange={setIsDryRun}
-                          className="scale-75 origin-left"
-                        />
-                        <Label
-                          htmlFor="console-dry-run"
-                          className="cursor-pointer text-[10px]"
-                        >
-                          Dry Run
-                        </Label>
-                      </div>
-                      <div className="flex items-center gap-1.5 border-l pl-4">
-                        <Info className="h-3 w-3 text-muted-foreground" />
-                        <span title="Approximate tokens based on character count and words">
-                          ~{currentTokens} tokens
-                        </span>
-                        <span className="text-[9px] opacity-60 ml-1">
-                          (Session: ~{historyTokens})
-                        </span>
-                      </div>
-                    </div>
-                    <span className="hidden sm:inline">
-                      Press Enter to execute
-                    </span>
-                  </div>
-                </div>
-              </TabsContent>
 
-              <TabsContent
-                value="runner"
-                className="flex-1 overflow-hidden m-0 data-[state=inactive]:hidden"
-              >
-                {toolToConfigure ? (
-                  <ToolRunner
-                    tool={toolToConfigure}
-                    onClose={() => setMode("console")}
-                  />
-                ) : (
-                  <div className="h-full flex flex-col items-center justify-center text-muted-foreground p-8">
-                    <Zap className="h-12 w-12 stroke-[1] mb-4 opacity-50" />
-                    <h3 className="text-lg font-medium">No Tool Selected</h3>
-                    <p className="text-sm max-w-sm text-center">
-                      Select a tool from the sidebar to start the Tool Runner,
-                      or switch to Console mode.
-                    </p>
-                    <Button
-                      variant="outline"
-                      className="mt-4"
-                      onClick={() => setSidebarOpen(true)}
-                    >
-                      Browse Tools
-                    </Button>
-                  </div>
-                )}
-              </TabsContent>
-            </Tabs>
-          </div>
-        </ResizablePanel>
+                        {/* Input Area */}
+                        <div className="p-4 bg-background border-t">
+                            <div className="max-w-4xl mx-auto flex gap-3 relative">
+                                <div className="flex-1 relative">
+                                    <Input
+                                        ref={inputRef}
+                                        placeholder="Enter command or select a tool..."
+                                        value={input}
+                                        onChange={(e) => handleInputChange(e.target.value)}
+                                        onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                                        disabled={isLoading}
+                                        className="pr-12 font-mono text-sm bg-muted/20 focus-visible:bg-background transition-colors h-11"
+                                        autoFocus
+                                    />
+                                    {showSuggestions && (
+                                        <div className="absolute bottom-full left-0 w-full bg-popover border rounded-md shadow-md mb-2 overflow-hidden z-20">
+                                            <div className="p-1">
+                                                {filteredSuggestions.map(tool => (
+                                                    <div
+                                                        key={tool.name}
+                                                        className="px-2 py-1.5 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-sm flex items-center justify-between"
+                                                        onClick={() => selectSuggestion(tool)}
+                                                    >
+                                                        <span className="font-medium">{tool.name}</span>
+                                                        <span className="text-xs text-muted-foreground">{tool.serviceId || 'core'}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                    <div className="absolute right-1 top-1.5">
+                                        <Button
+                                            size="sm"
+                                            className="h-8 w-8 p-0 rounded-md"
+                                            onClick={handleSend}
+                                            disabled={isLoading || !input.trim()}
+                                            aria-label="Send"
+                                        >
+                                            {isLoading ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="max-w-4xl mx-auto mt-2 flex justify-between items-center text-[10px] text-muted-foreground px-1">
+                                <div className="flex items-center gap-4">
+                                    <span>Format: <code className="bg-muted px-1 rounded text-primary">tool_name {"{json_args}"}</code></span>
+                                    <div className="flex items-center gap-1.5 border-l pl-4">
+                                        <Switch id="console-dry-run" checked={isDryRun} onCheckedChange={setIsDryRun} className="scale-75 origin-left" />
+                                        <Label htmlFor="console-dry-run" className="cursor-pointer text-[10px]">Dry Run</Label>
+                                    </div>
+                                    <div className="flex items-center gap-1.5 border-l pl-4">
+                                        <Info className="h-3 w-3 text-muted-foreground" />
+                                        <span title="Approximate tokens based on character count and words">
+                                            ~{currentTokens} tokens
+                                        </span>
+                                        <span className="text-[9px] opacity-60 ml-1">
+                                        (Session: ~{historyTokens})
+                                        </span>
+                                    </div>
+                                </div>
+                                <span className="hidden sm:inline">Press Enter to execute</span>
+                            </div>
+                        </div>
+                    </TabsContent>
+
+                    <TabsContent value="runner" className="flex-1 overflow-hidden m-0 data-[state=inactive]:hidden">
+                        {toolToConfigure ? (
+                            <ToolRunner tool={toolToConfigure} onClose={() => setMode("console")} />
+                        ) : (
+                            <div className="h-full flex flex-col items-center justify-center text-muted-foreground p-8">
+                                <Zap className="h-12 w-12 stroke-[1] mb-4 opacity-50" />
+                                <h3 className="text-lg font-medium">No Tool Selected</h3>
+                                <p className="text-sm max-w-sm text-center">
+                                    Select a tool from the sidebar to start the Tool Runner, or switch to Console mode.
+                                </p>
+                                <Button variant="outline" className="mt-4" onClick={() => setSidebarOpen(true)}>
+                                    Browse Tools
+                                </Button>
+                            </div>
+                        )}
+                    </TabsContent>
+                </Tabs>
+            </div>
+         </ResizablePanel>
       </ResizablePanelGroup>
     </div>
   );

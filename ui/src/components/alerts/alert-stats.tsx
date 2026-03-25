@@ -3,15 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  AlertCircle,
-  CheckCircle2,
-  AlertTriangle,
-  Activity,
-  Loader2,
-} from "lucide-react";
+import { AlertCircle, CheckCircle2, AlertTriangle, Activity, Loader2 } from "lucide-react";
 import { apiClient } from "@/lib/client";
 
 /**
@@ -19,12 +15,7 @@ import { apiClient } from "@/lib/client";
  * @returns The rendered component.
  */
 export function AlertStats() {
-  const [stats, setStats] = useState<{
-    activeCritical: number;
-    activeWarning: number;
-    mttr: string;
-    totalToday: number;
-  } | null>(null);
+  const [stats, setStats] = useState<{ activeCritical: number, activeWarning: number, mttr: string, totalToday: number } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -61,10 +52,10 @@ export function AlertStats() {
           <AlertCircle className="h-4 w-4 text-red-500" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-red-500">
-            {stats.activeCritical}
-          </div>
-          <p className="text-xs text-muted-foreground">+1 since last hour</p>
+          <div className="text-2xl font-bold text-red-500">{stats.activeCritical}</div>
+          <p className="text-xs text-muted-foreground">
+            +1 since last hour
+          </p>
         </CardContent>
       </Card>
       <Card>
@@ -73,10 +64,10 @@ export function AlertStats() {
           <AlertTriangle className="h-4 w-4 text-yellow-500" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-yellow-500">
-            {stats.activeWarning}
-          </div>
-          <p className="text-xs text-muted-foreground">-2 since last hour</p>
+          <div className="text-2xl font-bold text-yellow-500">{stats.activeWarning}</div>
+          <p className="text-xs text-muted-foreground">
+            -2 since last hour
+          </p>
         </CardContent>
       </Card>
       <Card>
@@ -86,7 +77,9 @@ export function AlertStats() {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{stats.mttr}</div>
-          <p className="text-xs text-muted-foreground">-2m from yesterday</p>
+          <p className="text-xs text-muted-foreground">
+            -2m from yesterday
+          </p>
         </CardContent>
       </Card>
       <Card>
@@ -96,7 +89,9 @@ export function AlertStats() {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{stats.totalToday}</div>
-          <p className="text-xs text-muted-foreground">+12% from average</p>
+          <p className="text-xs text-muted-foreground">
+            +12% from average
+          </p>
         </CardContent>
       </Card>
     </div>

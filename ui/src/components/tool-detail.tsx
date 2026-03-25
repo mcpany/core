@@ -3,14 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+
+
 import { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { UpstreamServiceConfig, ToolDefinition } from "@/lib/types";
 import { apiClient } from "@/lib/client";
@@ -28,13 +24,7 @@ import { SchemaViewer } from "./tools/schema-viewer";
  * @param props.toolName - The name of the tool to display.
  * @returns The rendered tool detail card, or null/error state.
  */
-export function ToolDetail({
-  serviceId,
-  toolName,
-}: {
-  serviceId: string;
-  toolName: string;
-}) {
+export function ToolDetail({ serviceId, toolName }: { serviceId: string, toolName: string }) {
   const [tool, setTool] = useState<ToolDefinition | null>(null);
   const [service, setService] = useState<UpstreamServiceConfig | null>(null);
   const [metrics, setMetrics] = useState<Record<string, number> | null>(null);
@@ -51,10 +41,10 @@ export function ToolDetail({
         // This removes the waterfall where we waited for service details before fetching metrics.
         const [serviceRes, statusRes] = await Promise.allSettled([
           apiClient.getService(serviceId),
-          apiClient.getServiceStatus(serviceId),
+          apiClient.getServiceStatus(serviceId)
         ]);
 
-        if (serviceRes.status === "rejected") {
+        if (serviceRes.status === 'rejected') {
           throw serviceRes.reason;
         }
 
@@ -62,38 +52,26 @@ export function ToolDetail({
         setService(serviceDetails || null);
 
         if (!serviceDetails) {
-          setError("Service not found");
-          setIsLoading(false);
-          return;
+            setError("Service not found");
+            setIsLoading(false);
+            return;
         }
-        const serviceData =
-          serviceDetails.grpcService ||
-          serviceDetails.httpService ||
-          serviceDetails.commandLineService ||
-          serviceDetails.openapiService ||
-          serviceDetails.websocketService ||
-          serviceDetails.webrtcService ||
-          serviceDetails.graphqlService ||
-          serviceDetails.mcpService;
+        const serviceData = serviceDetails.grpcService || serviceDetails.httpService || serviceDetails.commandLineService || serviceDetails.openapiService || serviceDetails.websocketService || serviceDetails.webrtcService || serviceDetails.graphqlService || serviceDetails.mcpService;
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const foundTool = (serviceData as any)?.tools?.find(
-          (t: ToolDefinition) => t.name === toolName,
-        );
+        const foundTool = (serviceData as any)?.tools?.find((t: ToolDefinition) => t.name === toolName);
 
         if (foundTool) {
           setTool(foundTool);
 
           // Only set metrics if the status fetch succeeded
-          if (statusRes.status === "fulfilled") {
-            setMetrics(statusRes.value.metrics);
+          if (statusRes.status === 'fulfilled') {
+             setMetrics(statusRes.value.metrics);
           } else {
-            console.warn("Failed to fetch service metrics", statusRes.reason);
+             console.warn("Failed to fetch service metrics", statusRes.reason);
           }
         } else {
-          throw new Error(
-            `Tool "${toolName}" not found in service "${serviceDetails.name}".`,
-          );
+          throw new Error(`Tool "${toolName}" not found in service "${serviceDetails.name}".`);
         }
       } catch (e) {
         const errorMessage = e instanceof Error ? e.message : String(e);
@@ -117,15 +95,15 @@ export function ToolDetail({
     return (
       <Card className="w-full max-w-4xl">
         <CardHeader>
-          <Skeleton className="h-8 w-3/4" />
-          <Skeleton className="h-4 w-1/2" />
+           <Skeleton className="h-8 w-3/4" />
+           <Skeleton className="h-4 w-1/2" />
         </CardHeader>
         <CardContent className="grid gap-6">
-          <Skeleton className="h-32 w-full" />
-          <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-32 w-full" />
+            <Skeleton className="h-24 w-full" />
         </CardContent>
       </Card>
-    );
+    )
   }
 
   if (error) {
@@ -144,7 +122,7 @@ export function ToolDetail({
     return null;
   }
 
-  const usageCount = metrics?.[`tool_usage:${tool.name}`] ?? "N/A";
+  const usageCount = metrics?.[`tool_usage:${tool.name}`] ?? 'N/A';
 
   return (
     <Card className="w-full max-w-4xl shadow-2xl shadow-primary/5">
@@ -153,22 +131,15 @@ export function ToolDetail({
           <Wrench className="text-primary size-8" /> {tool.name}
         </CardTitle>
         <CardDescription className="mt-1">
-          Part of the{" "}
-          <code className="bg-muted px-1 py-0.5 rounded-sm">
-            {service.name}
-          </code>{" "}
-          service.
+          Part of the <code className="bg-muted px-1 py-0.5 rounded-sm">{service.name}</code> service.
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-6">
-        <ServicePropertyCard
-          title="Tool Definition"
-          data={{
-            Name: tool.name,
-            Description: tool.description || "N/A",
+        <ServicePropertyCard title="Tool Definition" data={{
+            "Name": tool.name,
+            "Description": tool.description || "N/A",
             //"Source": tool.source || "N/A"
-          }}
-        />
+        }} />
 
         <Card>
           <CardHeader>
@@ -177,29 +148,23 @@ export function ToolDetail({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-            <SchemaViewer
-              schema={tool.inputSchema || (tool as any).input_schema}
-            />
+             {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+             <SchemaViewer schema={tool.inputSchema || (tool as any).input_schema} />
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle className="text-xl flex items-center gap-2">
-              <TrendingUp /> Usage Metrics
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <dl className="space-y-2">
-              <div className="flex justify-between items-start">
-                <dt className="text-muted-foreground">Total Calls</dt>
-                <dd className="text-right font-mono text-sm">
-                  {usageCount.toLocaleString()}
-                </dd>
-              </div>
-            </dl>
-          </CardContent>
+            <CardHeader>
+                <CardTitle className="text-xl flex items-center gap-2"><TrendingUp /> Usage Metrics</CardTitle>
+            </CardHeader>
+            <CardContent>
+                 <dl className="space-y-2">
+                    <div className="flex justify-between items-start">
+                        <dt className="text-muted-foreground">Total Calls</dt>
+                        <dd className="text-right font-mono text-sm">{usageCount.toLocaleString()}</dd>
+                    </div>
+                 </dl>
+            </CardContent>
         </Card>
       </CardContent>
     </Card>

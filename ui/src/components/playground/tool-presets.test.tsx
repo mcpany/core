@@ -25,9 +25,7 @@ global.ResizeObserver = class ResizeObserver {
 
 // Mock ScrollArea to avoid complexities with Radix ScrollArea in JSDOM
 vi.mock("@/components/ui/scroll-area", () => ({
-  ScrollArea: ({ children }: { children: React.ReactNode }) => (
-    <div>{children}</div>
-  ),
+  ScrollArea: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 
 describe("ToolPresets", () => {
@@ -38,35 +36,21 @@ describe("ToolPresets", () => {
   beforeEach(() => {
     localStorage.clear();
     vi.clearAllMocks();
-    vi.spyOn(window, "confirm").mockImplementation(() => true);
+    vi.spyOn(window, 'confirm').mockImplementation(() => true);
   });
 
   test("renders empty state", () => {
-    render(
-      <ToolPresets
-        toolName={toolName}
-        currentData={currentData}
-        onSelect={onSelect}
-      />,
-    );
+    render(<ToolPresets toolName={toolName} currentData={currentData} onSelect={onSelect} />);
 
     // Open popover
     fireEvent.click(screen.getByRole("button", { name: /Manage Presets/i }));
 
     expect(screen.getByText("Presets")).toBeInTheDocument();
-    expect(
-      screen.getByText("No saved presets for this tool."),
-    ).toBeInTheDocument();
+    expect(screen.getByText("No saved presets for this tool.")).toBeInTheDocument();
   });
 
   test("saves a new preset", async () => {
-    render(
-      <ToolPresets
-        toolName={toolName}
-        currentData={currentData}
-        onSelect={onSelect}
-      />,
-    );
+    render(<ToolPresets toolName={toolName} currentData={currentData} onSelect={onSelect} />);
 
     // Open popover
     fireEvent.click(screen.getByRole("button", { name: /Manage Presets/i }));
@@ -82,9 +66,7 @@ describe("ToolPresets", () => {
     fireEvent.keyDown(input, { key: "Enter" });
 
     await waitFor(() => {
-      expect(localStorage.getItem(`mcpany-presets-${toolName}`)).toContain(
-        "My Preset",
-      );
+        expect(localStorage.getItem(`mcpany-presets-${toolName}`)).toContain("My Preset");
     });
 
     expect(toast.success).toHaveBeenCalledWith("Preset saved");
@@ -95,13 +77,7 @@ describe("ToolPresets", () => {
     const presets = [{ name: "Existing", data: { a: 1 } }];
     localStorage.setItem(`mcpany-presets-${toolName}`, JSON.stringify(presets));
 
-    render(
-      <ToolPresets
-        toolName={toolName}
-        currentData={currentData}
-        onSelect={onSelect}
-      />,
-    );
+    render(<ToolPresets toolName={toolName} currentData={currentData} onSelect={onSelect} />);
 
     // Open popover
     fireEvent.click(screen.getByRole("button", { name: /Manage Presets/i }));
@@ -114,25 +90,19 @@ describe("ToolPresets", () => {
   });
 
   test("deletes a preset", () => {
-    const presets = [{ name: "To Delete", data: { a: 1 } }];
-    localStorage.setItem(`mcpany-presets-${toolName}`, JSON.stringify(presets));
+      const presets = [{ name: "To Delete", data: { a: 1 } }];
+      localStorage.setItem(`mcpany-presets-${toolName}`, JSON.stringify(presets));
 
-    render(
-      <ToolPresets
-        toolName={toolName}
-        currentData={currentData}
-        onSelect={onSelect}
-      />,
-    );
+      render(<ToolPresets toolName={toolName} currentData={currentData} onSelect={onSelect} />);
 
-    // Open popover
-    fireEvent.click(screen.getByRole("button", { name: /Manage Presets/i }));
+      // Open popover
+      fireEvent.click(screen.getByRole("button", { name: /Manage Presets/i }));
 
-    // Find delete button by title
-    const deleteBtn = screen.getByTitle("Delete Preset");
-    fireEvent.click(deleteBtn);
+      // Find delete button by title
+      const deleteBtn = screen.getByTitle("Delete Preset");
+      fireEvent.click(deleteBtn);
 
-    expect(localStorage.getItem(`mcpany-presets-${toolName}`)).toBe("[]");
-    expect(screen.queryByText("To Delete")).not.toBeInTheDocument();
+      expect(localStorage.getItem(`mcpany-presets-${toolName}`)).toBe("[]");
+      expect(screen.queryByText("To Delete")).not.toBeInTheDocument();
   });
 });

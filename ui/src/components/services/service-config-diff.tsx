@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+
+
 import React from "react";
 import { DiffEditor } from "@monaco-editor/react";
 import { useTheme } from "next-themes";
@@ -22,10 +24,7 @@ interface ServiceConfigDiffProps {
  * @param props.modified - The modified property.
  * @returns The rendered component.
  */
-export function ServiceConfigDiff({
-  original,
-  modified,
-}: ServiceConfigDiffProps) {
+export function ServiceConfigDiff({ original, modified }: ServiceConfigDiffProps) {
   const { theme, systemTheme } = useTheme();
 
   // Calculate actual theme
@@ -36,16 +35,8 @@ export function ServiceConfigDiff({
 
   // Dump to YAML
   // We use simple sorting to ensure keys are in consistent order for better diffs
-  const originalYaml = yaml.dump(original, {
-    sortKeys: true,
-    indent: 2,
-    lineWidth: -1,
-  });
-  const modifiedYaml = yaml.dump(modified, {
-    sortKeys: true,
-    indent: 2,
-    lineWidth: -1,
-  });
+  const originalYaml = yaml.dump(original, { sortKeys: true, indent: 2, lineWidth: -1 });
+  const modifiedYaml = yaml.dump(modified, { sortKeys: true, indent: 2, lineWidth: -1 });
 
   return (
     <div className="h-[400px] w-full overflow-hidden rounded-md border border-input bg-background">
@@ -72,11 +63,7 @@ export function ServiceConfigDiff({
           automaticLayout: true,
           diffCodeLens: true,
         }}
-        loading={
-          <div className="flex items-center justify-center h-full text-muted-foreground text-xs">
-            Loading Diff...
-          </div>
-        }
+        loading={<div className="flex items-center justify-center h-full text-muted-foreground text-xs">Loading Diff...</div>}
       />
     </div>
   );

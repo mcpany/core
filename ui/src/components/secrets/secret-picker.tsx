@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+
+
 import * as React from "react";
 import { Check, Key, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -44,7 +46,7 @@ export function SecretPicker({
   placeholder = "Select secret...",
   disabled,
   className,
-  children,
+  children
 }: SecretPickerProps) {
   const [open, setOpen] = React.useState(false);
   const [secrets, setSecrets] = React.useState<SecretDefinition[]>([]);
@@ -53,16 +55,15 @@ export function SecretPicker({
   React.useEffect(() => {
     if (open) {
       setLoading(true);
-      apiClient
-        .listSecrets()
+      apiClient.listSecrets()
         .then((data) => {
-          setSecrets(data);
+            setSecrets(data);
         })
         .catch((err) => {
-          console.error("Failed to load secrets", err);
+            console.error("Failed to load secrets", err);
         })
         .finally(() => {
-          setLoading(false);
+            setLoading(false);
         });
     }
   }, [open]);
@@ -71,37 +72,35 @@ export function SecretPicker({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         {children ? (
-          children
+            children
         ) : (
-          <Button
+            <Button
             variant="outline"
             role="combobox"
             aria-expanded={open}
             className={cn("w-full justify-between", className)}
             disabled={disabled}
-          >
+            >
             {value ? (
-              <span className="flex items-center gap-2 truncate">
-                <Key className="h-4 w-4 text-primary" />
-                {value}
-              </span>
+                <span className="flex items-center gap-2 truncate">
+                    <Key className="h-4 w-4 text-primary" />
+                    {value}
+                </span>
             ) : (
-              <span className="text-muted-foreground flex items-center gap-2">
-                <Key className="h-4 w-4" />
-                {placeholder}
-              </span>
+                <span className="text-muted-foreground flex items-center gap-2">
+                    <Key className="h-4 w-4" />
+                    {placeholder}
+                </span>
             )}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-          </Button>
+            </Button>
         )}
       </PopoverTrigger>
       <PopoverContent className="w-[300px] p-0" align="start">
         <Command>
           <CommandInput placeholder="Search secrets..." />
           <CommandList>
-            <CommandEmpty>
-              {loading ? "Loading..." : "No secrets found."}
-            </CommandEmpty>
+            <CommandEmpty>{loading ? "Loading..." : "No secrets found."}</CommandEmpty>
             <CommandGroup>
               {secrets.map((secret) => (
                 <CommandItem
@@ -116,14 +115,12 @@ export function SecretPicker({
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === secret.key ? "opacity-100" : "opacity-0",
+                      value === secret.key ? "opacity-100" : "opacity-0"
                     )}
                   />
                   <div className="flex flex-col">
-                    <span className="font-medium">{secret.name}</span>
-                    <span className="text-xs text-muted-foreground font-mono">
-                      {secret.key}
-                    </span>
+                      <span className="font-medium">{secret.name}</span>
+                      <span className="text-xs text-muted-foreground font-mono">{secret.key}</span>
                   </div>
                 </CommandItem>
               ))}

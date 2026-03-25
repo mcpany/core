@@ -3,7 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Link } from "react-router-dom";
+
+
+import { Link } from 'react-router-dom';
 import { Fragment } from "react";
 import { ChevronRight, ChevronDown, Home, History } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -19,22 +21,22 @@ import {
  * Represents a single item in the breadcrumb navigation.
  */
 export interface BreadcrumbItem {
-  /** The label to display for the breadcrumb. */
-  label: string;
-  /** The URL link for the breadcrumb. */
-  href: string;
-  /** Optional list of sibling items for navigation. */
-  siblings?: { label: string; href: string }[];
+    /** The label to display for the breadcrumb. */
+    label: string;
+    /** The URL link for the breadcrumb. */
+    href: string;
+    /** Optional list of sibling items for navigation. */
+    siblings?: { label: string; href: string }[];
 }
 
 /**
  * Props for the Breadcrumbs component.
  */
 interface BreadcrumbsProps {
-  /** The list of breadcrumb items to display. */
-  items: BreadcrumbItem[];
-  /** Optional CSS class names. */
-  className?: string;
+    /** The list of breadcrumb items to display. */
+    items: BreadcrumbItem[];
+    /** Optional CSS class names. */
+    className?: string;
 }
 
 /**
@@ -46,125 +48,105 @@ interface BreadcrumbsProps {
  * @returns {JSX.Element} The rendered breadcrumbs navigation.
  */
 export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
-  const [history, setHistory] = useState<BreadcrumbItem[]>([]);
+    const [history, setHistory] = useState<BreadcrumbItem[]>([]);
 
-  useEffect(() => {
-    if (items.length === 0) return;
+    useEffect(() => {
+        if (items.length === 0) return;
 
-    // Save current path to history
-    const lastItem = items[items.length - 1];
-    let savedHistory: BreadcrumbItem[] = [];
-    try {
-      const stored = localStorage.getItem("breadcrumb_history");
-      if (stored) {
-        savedHistory = JSON.parse(stored);
-      }
-    } catch (e) {
-      console.warn("Failed to parse breadcrumb history from localStorage", e);
-    }
+        // Save current path to history
+        const lastItem = items[items.length - 1];
+        let savedHistory: BreadcrumbItem[] = [];
+        try {
+            const stored = localStorage.getItem("breadcrumb_history");
+            if (stored) {
+                savedHistory = JSON.parse(stored);
+            }
+        } catch (e) {
+            console.warn("Failed to parse breadcrumb history from localStorage", e);
+        }
 
-    if (!Array.isArray(savedHistory)) savedHistory = [];
+        if (!Array.isArray(savedHistory)) savedHistory = [];
 
-    // Filter out existing and keep only unique hrefs
-    const updatedHistory = [
-      lastItem,
-      ...savedHistory.filter((h) => h && h.href !== lastItem.href),
-    ].slice(0, 10); // Keep last 10
+        // Filter out existing and keep only unique hrefs
+        const updatedHistory = [
+            lastItem,
+            ...savedHistory.filter(h => h && h.href !== lastItem.href)
+        ].slice(0, 10); // Keep last 10
 
-    localStorage.setItem("breadcrumb_history", JSON.stringify(updatedHistory));
-    setHistory(updatedHistory);
-  }, [items]);
+        localStorage.setItem("breadcrumb_history", JSON.stringify(updatedHistory));
+        setHistory(updatedHistory);
+    }, [items]);
 
-  return (
-    <nav
-      aria-label="Breadcrumb"
-      className={cn("w-full max-w-6xl mb-4", className)}
-    >
-      <ol className="flex items-center gap-1 text-sm text-muted-foreground">
-        <li>
-          <Link
-            to="/"
-            className="flex items-center gap-1.5 font-semibold text-foreground/80 hover:text-foreground transition-colors"
-          >
-            <Home className="size-4" />
-            <span className="sr-only">Home</span>
-          </Link>
-        </li>
-        {history.length > 0 && (
-          <li>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-1.5 p-1 rounded-sm hover:bg-muted transition-colors text-muted-foreground/70 hover:text-foreground">
-                  <History className="size-4" />
-                  <span className="sr-only">History</span>
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56">
-                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">
-                  Recent History
-                </div>
-                {history.map((h) => (
-                  <DropdownMenuItem key={h.href} asChild>
-                    <Link to={h.href} className="cursor-pointer truncate">
-                      {h.label}
+    return (
+        <nav aria-label="Breadcrumb" className={cn("w-full max-w-6xl mb-4", className)}>
+            <ol className="flex items-center gap-1 text-sm text-muted-foreground">
+                <li>
+                    <Link to="/" className="flex items-center gap-1.5 font-semibold text-foreground/80 hover:text-foreground transition-colors">
+                        <Home className="size-4" />
+                        <span className="sr-only">Home</span>
                     </Link>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </li>
-        )}
-        {items.map((item, index) => (
-          <Fragment key={item.href}>
-            <li className="flex items-center gap-1">
-              <ChevronRight className="size-4 text-muted-foreground/50" />
-              <div className="flex items-center gap-0.5">
-                <Link
-                  to={item.href}
-                  aria-current={index === items.length - 1 ? "page" : undefined}
-                  className={cn(
-                    "font-medium transition-colors hover:text-foreground",
-                    index === items.length - 1
-                      ? "text-foreground"
-                      : "text-foreground/80",
-                  )}
-                >
-                  {item.label}
-                </Link>
-                {item.siblings && item.siblings.length > 0 && (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <button className="p-0.5 rounded-sm hover:bg-muted focus:outline-none transition-colors">
-                        <ChevronDown className="size-3 text-muted-foreground/70" />
-                        <span className="sr-only">More options</span>
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      align="start"
-                      className="max-h-[300px] overflow-y-auto"
-                    >
-                      {item.siblings.map((sibling) => (
-                        <DropdownMenuItem key={sibling.href} asChild>
-                          <Link
-                            to={sibling.href}
-                            className={cn(
-                              "cursor-pointer",
-                              sibling.href === item.href &&
-                                "font-semibold bg-accent",
-                            )}
-                          >
-                            {sibling.label}
-                          </Link>
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                </li>
+                {history.length > 0 && (
+                    <li>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <button className="flex items-center gap-1.5 p-1 rounded-sm hover:bg-muted transition-colors text-muted-foreground/70 hover:text-foreground">
+                                    <History className="size-4" />
+                                    <span className="sr-only">History</span>
+                                </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start" className="w-56">
+                                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">Recent History</div>
+                                {history.map((h) => (
+                                    <DropdownMenuItem key={h.href} asChild>
+                                        <Link to={h.href} className="cursor-pointer truncate">
+                                            {h.label}
+                                        </Link>
+                                    </DropdownMenuItem>
+                                ))}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </li>
                 )}
-              </div>
-            </li>
-          </Fragment>
-        ))}
-      </ol>
-    </nav>
-  );
+                {items.map((item, index) => (
+                    <Fragment key={item.href}>
+                        <li className="flex items-center gap-1">
+                             <ChevronRight className="size-4 text-muted-foreground/50" />
+                             <div className="flex items-center gap-0.5">
+                                <Link
+                                    to={item.href}
+                                    aria-current={index === items.length - 1 ? "page" : undefined}
+                                    className={cn(
+                                        "font-medium transition-colors hover:text-foreground",
+                                        index === items.length - 1 ? "text-foreground" : "text-foreground/80"
+                                    )}
+                                >
+                                    {item.label}
+                                </Link>
+                                {item.siblings && item.siblings.length > 0 && (
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <button className="p-0.5 rounded-sm hover:bg-muted focus:outline-none transition-colors">
+                                                <ChevronDown className="size-3 text-muted-foreground/70" />
+                                                <span className="sr-only">More options</span>
+                                            </button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="start" className="max-h-[300px] overflow-y-auto">
+                                            {item.siblings.map((sibling) => (
+                                                <DropdownMenuItem key={sibling.href} asChild>
+                                                    <Link to={sibling.href} className={cn("cursor-pointer", sibling.href === item.href && "font-semibold bg-accent")}>
+                                                        {sibling.label}
+                                                    </Link>
+                                                </DropdownMenuItem>
+                                            ))}
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                )}
+                            </div>
+                        </li>
+                    </Fragment>
+                ))}
+            </ol>
+        </nav>
+    );
 }

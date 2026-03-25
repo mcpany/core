@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+
+
 import {
   Select,
   SelectContent,
@@ -24,7 +26,10 @@ export function TimeRangeFilter() {
   return (
     <div className="flex items-center space-x-2">
       <Clock className="h-4 w-4 text-muted-foreground" />
-      <Select value={timeRange} onValueChange={setTimeRange}>
+      <Select
+        value={timeRange}
+        onValueChange={setTimeRange}
+      >
         <SelectTrigger className="w-[120px] h-8">
           <SelectValue placeholder="Time Range" />
         </SelectTrigger>

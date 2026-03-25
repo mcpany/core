@@ -4,7 +4,7 @@
  */
 
 /* Load fonts from Google Fonts (was previously handled by next/font/google) */
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -13,10 +13,10 @@
 @layer base {
   :root {
     /* Unifi-inspired Light Theme (Enterprise) */
-    --background: 210 20% 98%;
-    /* Light cool gray */
-    --foreground: 220 15% 15%;
-    /* Soft dark text */
+      --background: 210 20% 98%;
+      /* Light cool gray */
+      --foreground: 220 15% 15%;
+      /* Soft dark text */
 
     --card: 0 0% 100%;
     --card-foreground: 220 15% 15%;
@@ -25,66 +25,66 @@
     --popover-foreground: 220 15% 15%;
 
     --primary: 221 83% 53%;
-    /* Unifi Blue */
-    --primary-foreground: 0 0% 100%;
+      /* Unifi Blue */
+      --primary-foreground: 0 0% 100%;
 
     --secondary: 210 20% 96%;
-    --secondary-foreground: 220 15% 15%;
+      --secondary-foreground: 220 15% 15%;
 
     --muted: 210 20% 96%;
-    --muted-foreground: 220 10% 45%;
+      --muted-foreground: 220 10% 45%;
 
     --accent: 210 20% 94%;
-    --accent-foreground: 220 15% 15%;
+      --accent-foreground: 220 15% 15%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 221 83% 53%;
+      --input: 220 13% 91%;
+      --ring: 221 83% 53%;
 
     --radius: 0.5rem;
-    /* Slightly more rounded for modern feel */
+      /* Slightly more rounded for modern feel */
     --sidebar-background: 0 0% 98%;
-    /* Light background to match minimal theme */
-    --sidebar-foreground: 240 5.3% 26.1%;
+      /* Light background to match minimal theme */
+      --sidebar-foreground: 240 5.3% 26.1%;
   }
 
   .dark {
     /* Unifi-inspired Dark Theme */
-    --background: 222 15% 10%;
-    /* Deep dark gray */
-    --foreground: 210 20% 90%;
+      --background: 222 15% 10%;
+      /* Deep dark gray */
+      --foreground: 210 20% 90%;
 
     --card: 222 15% 13%;
-    /* Slightly lighter than bg */
-    --card-foreground: 210 20% 90%;
+      /* Slightly lighter than bg */
+      --card-foreground: 210 20% 90%;
 
     --popover: 222 15% 13%;
-    --popover-foreground: 210 20% 90%;
+      --popover-foreground: 210 20% 90%;
 
     --primary: 221 83% 53%;
-    --primary-foreground: 0 0% 100%;
+      --primary-foreground: 0 0% 100%;
 
     --secondary: 217 19% 27%;
-    --secondary-foreground: 210 20% 90%;
+      --secondary-foreground: 210 20% 90%;
 
     --muted: 217 19% 20%;
-    --muted-foreground: 215 20% 65%;
+      --muted-foreground: 215 20% 65%;
 
     --accent: 217 19% 27%;
-    --accent-foreground: 210 20% 90%;
+      --accent-foreground: 210 20% 90%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 20% 98%;
 
     --border: 217 19% 20%;
-    --input: 217 19% 20%;
-    --ring: 221 83% 53%;
+      --input: 217 19% 20%;
+      --ring: 221 83% 53%;
     --sidebar-background: 222 15% 10%;
-    /* Matches background in dark mode or slightly darker */
-    --sidebar-foreground: 210 20% 90%;
+      /* Matches background in dark mode or slightly darker */
+      --sidebar-foreground: 210 20% 90%;
   }
 }
 

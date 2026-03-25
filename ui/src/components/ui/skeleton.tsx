@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"
 
 /**
  * Skeleton component.
@@ -20,7 +20,7 @@ function Skeleton({
       className={cn("animate-pulse rounded-md bg-muted", className)}
       {...props}
     />
-  );
+  )
 }
 
-export { Skeleton };
+export { Skeleton }

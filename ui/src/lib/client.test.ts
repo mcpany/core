@@ -3,10 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { apiClient } from "./client";
-import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
 
-describe("apiClient Request Deduplication", () => {
+import { apiClient } from './client';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+
+describe('apiClient Request Deduplication', () => {
   const fetchMock = vi.fn();
 
   beforeEach(() => {
@@ -16,10 +17,10 @@ describe("apiClient Request Deduplication", () => {
       json: async () => ({}),
       text: async () => "{}",
     } as Response);
-    vi.stubGlobal("fetch", fetchMock);
+    vi.stubGlobal('fetch', fetchMock);
 
     // Clear localStorage mock if needed
-    vi.stubGlobal("localStorage", {
+    vi.stubGlobal('localStorage', {
       getItem: vi.fn(),
       setItem: vi.fn(),
     });
@@ -29,7 +30,7 @@ describe("apiClient Request Deduplication", () => {
     vi.unstubAllGlobals();
   });
 
-  it("should call fetch ONCE for concurrent requests AFTER optimization", async () => {
+  it('should call fetch ONCE for concurrent requests AFTER optimization', async () => {
     // This test documents optimized behavior (deduplication)
     // We expect fetch to be called ONCE.
 

@@ -3,15 +3,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { renderHook, act } from "@testing-library/react";
-import { usePolling } from "./use-polling";
-import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
+import { renderHook, act } from '@testing-library/react';
+import { usePolling } from './use-polling';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
-describe("usePolling", () => {
+describe('usePolling', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     // Reset document.hidden mock
-    Object.defineProperty(document, "hidden", {
+    Object.defineProperty(document, 'hidden', {
       configurable: true,
       get: () => false,
     });
@@ -22,7 +22,7 @@ describe("usePolling", () => {
     vi.useRealTimers();
   });
 
-  it("polls at the specified interval", () => {
+  it('polls at the specified interval', () => {
     const callback = vi.fn();
     renderHook(() => usePolling(callback, 1000));
 
@@ -41,7 +41,7 @@ describe("usePolling", () => {
     expect(callback).toHaveBeenCalledTimes(3);
   });
 
-  it("stops polling when document is hidden", () => {
+  it('stops polling when document is hidden', () => {
     const callback = vi.fn();
     renderHook(() => usePolling(callback, 1000));
 
@@ -51,11 +51,11 @@ describe("usePolling", () => {
     expect(callback).toHaveBeenCalledTimes(1);
 
     // Simulate hiding the document
-    Object.defineProperty(document, "hidden", {
+    Object.defineProperty(document, 'hidden', {
       configurable: true,
       get: () => true,
     });
-    const event = new Event("visibilitychange");
+    const event = new Event('visibilitychange');
     document.dispatchEvent(event);
 
     act(() => {
@@ -66,7 +66,7 @@ describe("usePolling", () => {
     expect(callback).toHaveBeenCalledTimes(1);
   });
 
-  it("resumes polling when document becomes visible", () => {
+  it('resumes polling when document becomes visible', () => {
     const callback = vi.fn();
     renderHook(() => usePolling(callback, 1000));
 
@@ -77,11 +77,11 @@ describe("usePolling", () => {
     expect(callback).toHaveBeenCalledTimes(1);
 
     // Hide
-    Object.defineProperty(document, "hidden", {
+    Object.defineProperty(document, 'hidden', {
       configurable: true,
       get: () => true,
     });
-    document.dispatchEvent(new Event("visibilitychange"));
+    document.dispatchEvent(new Event('visibilitychange'));
 
     act(() => {
       vi.advanceTimersByTime(5000);
@@ -89,11 +89,11 @@ describe("usePolling", () => {
     expect(callback).toHaveBeenCalledTimes(1);
 
     // Show again
-    Object.defineProperty(document, "hidden", {
+    Object.defineProperty(document, 'hidden', {
       configurable: true,
       get: () => false,
     });
-    document.dispatchEvent(new Event("visibilitychange"));
+    document.dispatchEvent(new Event('visibilitychange'));
 
     // Should call immediately on resume
     expect(callback).toHaveBeenCalledTimes(2); // +1 immediate
@@ -105,7 +105,7 @@ describe("usePolling", () => {
     expect(callback).toHaveBeenCalledTimes(3);
   });
 
-  it("does not poll if delay is null", () => {
+  it('does not poll if delay is null', () => {
     const callback = vi.fn();
     renderHook(() => usePolling(callback, null));
 

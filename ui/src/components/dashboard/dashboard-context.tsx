@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+
+
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 interface DashboardContextType {
@@ -12,9 +14,7 @@ interface DashboardContextType {
   setTimeRange: (range: string) => void;
 }
 
-const DashboardContext = createContext<DashboardContextType | undefined>(
-  undefined,
-);
+const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
 
 /**
  * Provides dashboard context to children, allowing them to access and update shared state
@@ -29,9 +29,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   const [timeRange, setTimeRange] = useState<string>("24h");
 
   return (
-    <DashboardContext.Provider
-      value={{ serviceId, setServiceId, timeRange, setTimeRange }}
-    >
+    <DashboardContext.Provider value={{ serviceId, setServiceId, timeRange, setTimeRange }}>
       {children}
     </DashboardContext.Provider>
   );

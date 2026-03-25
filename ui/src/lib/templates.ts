@@ -4,20 +4,7 @@
  */
 
 import { UpstreamServiceConfig } from "@/lib/types";
-import {
-  Database,
-  FileText,
-  Github,
-  Globe,
-  Server,
-  Activity,
-  Cloud,
-  MessageSquare,
-  Map,
-  Clock,
-  Zap,
-  CheckCircle2,
-} from "lucide-react";
+import { Database, FileText, Github, Globe, Server, Activity, Cloud, MessageSquare, Map, Clock, Zap, CheckCircle2 } from "lucide-react";
 
 /**
  * A template for creating a new service configuration.
@@ -90,26 +77,26 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
       httpService: {
         address: "https://wttr.in",
         tools: [
-          {
-            name: "get_weather",
-            description: "Get the weather forecast for a location.",
-            call_id: "get_weather_call",
-          },
+            {
+                name: "get_weather",
+                description: "Get the weather forecast for a location.",
+                call_id: "get_weather_call"
+            }
         ],
         calls: {
-          get_weather_call: {
-            endpoint_path: "/{{location}}?format=j1",
-            method: "HTTP_METHOD_GET",
-            input_schema: {
-              type: "object",
-              properties: {
-                location: { type: "string", description: "City name" },
-              },
-              required: ["location"],
-            },
-          },
-        },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            "get_weather_call": {
+                endpoint_path: "/{{location}}?format=j1",
+                method: "HTTP_METHOD_GET",
+                input_schema: {
+                    type: "object",
+                    properties: {
+                        location: { type: "string", description: "City name" }
+                    },
+                    required: ["location"]
+                }
+            }
+        }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     },
   },
@@ -124,9 +111,9 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
       commandLineService: {
         command: "npx -y @modelcontextprotocol/server-google-maps",
         env: {
-          GOOGLE_MAPS_API_KEY: "",
+            "GOOGLE_MAPS_API_KEY": ""
         },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     },
     fields: [
@@ -135,9 +122,9 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
         label: "Google Maps API Key",
         placeholder: "AIza...",
         key: "commandLineService.env.GOOGLE_MAPS_API_KEY",
-        type: "password",
-      },
-    ],
+        type: "password"
+      }
+    ]
   },
   {
     id: "slack",
@@ -150,10 +137,10 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
       commandLineService: {
         command: "npx -y @modelcontextprotocol/server-slack",
         env: {
-          SLACK_BOT_TOKEN: "",
-          SLACK_TEAM_ID: "",
+            "SLACK_BOT_TOKEN": "",
+            "SLACK_TEAM_ID": ""
         },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     },
     fields: [
@@ -162,15 +149,15 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
         label: "Slack Bot Token",
         placeholder: "xoxb-...",
         key: "commandLineService.env.SLACK_BOT_TOKEN",
-        type: "password",
+        type: "password"
       },
       {
         name: "teamId",
         label: "Slack Team ID",
         placeholder: "T...",
-        key: "commandLineService.env.SLACK_TEAM_ID",
-      },
-    ],
+        key: "commandLineService.env.SLACK_TEAM_ID"
+      }
+    ]
   },
   {
     id: "linear",
@@ -183,9 +170,9 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
       commandLineService: {
         command: "npx -y @modelcontextprotocol/server-linear",
         env: {
-          LINEAR_API_KEY: "",
+            "LINEAR_API_KEY": ""
         },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     },
     fields: [
@@ -194,9 +181,9 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
         label: "Linear API Key",
         placeholder: "lin_api_...",
         key: "commandLineService.env.LINEAR_API_KEY",
-        type: "password",
-      },
-    ],
+        type: "password"
+      }
+    ]
   },
   {
     id: "time",
@@ -209,7 +196,7 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
       commandLineService: {
         command: "npx -y @modelcontextprotocol/server-time",
         env: {},
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     },
   },
@@ -222,10 +209,9 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
     config: {
       name: "postgres-db",
       commandLineService: {
-        command:
-          "npx -y @modelcontextprotocol/server-postgres {{CONNECTION_STRING}}",
+        command: "npx -y @modelcontextprotocol/server-postgres {{CONNECTION_STRING}}",
         env: {},
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     },
     fields: [
@@ -235,8 +221,8 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
         placeholder: "postgresql://user:password@localhost:5432/dbname",
         key: "commandLineService.command",
         replaceToken: "{{CONNECTION_STRING}}",
-      },
-    ],
+      }
+    ]
   },
   {
     id: "sqlite",
@@ -249,7 +235,7 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
       commandLineService: {
         command: "npx -y @modelcontextprotocol/server-sqlite {{DB_PATH}}",
         env: {},
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     },
     fields: [
@@ -259,8 +245,8 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
         placeholder: "/path/to/database.db",
         key: "commandLineService.command",
         replaceToken: "{{DB_PATH}}",
-      },
-    ],
+      }
+    ]
   },
   {
     id: "filesystem",
@@ -271,10 +257,9 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
     config: {
       name: "local-files",
       commandLineService: {
-        command:
-          "npx -y @modelcontextprotocol/server-filesystem {{ALLOWED_DIRECTORIES}}",
+        command: "npx -y @modelcontextprotocol/server-filesystem {{ALLOWED_DIRECTORIES}}",
         env: {},
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     },
     fields: [
@@ -284,8 +269,8 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
         placeholder: "/path/to/folder1 /path/to/folder2",
         key: "commandLineService.command",
         replaceToken: "{{ALLOWED_DIRECTORIES}}",
-      },
-    ],
+      }
+    ]
   },
   {
     id: "github",
@@ -298,9 +283,9 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
       commandLineService: {
         command: "npx -y @modelcontextprotocol/server-github",
         env: {
-          GITHUB_PERSONAL_ACCESS_TOKEN: "",
+            "GITHUB_PERSONAL_ACCESS_TOKEN": ""
         },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     },
     fields: [
@@ -309,9 +294,9 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
         label: "GitHub Personal Access Token",
         placeholder: "ghp_...",
         key: "commandLineService.env.GITHUB_PERSONAL_ACCESS_TOKEN",
-        type: "password",
-      },
-    ],
+        type: "password"
+      }
+    ]
   },
   {
     id: "sentry",
@@ -324,9 +309,9 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
       commandLineService: {
         command: "npx -y @modelcontextprotocol/server-sentry",
         env: {
-          SENTRY_AUTH_TOKEN: "",
+            "SENTRY_AUTH_TOKEN": ""
         },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     },
     fields: [
@@ -335,9 +320,9 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
         label: "Sentry Auth Token",
         placeholder: "Enter your Sentry Auth Token",
         key: "commandLineService.env.SENTRY_AUTH_TOKEN",
-        type: "password",
-      },
-    ],
+        type: "password"
+      }
+    ]
   },
   {
     id: "cloudflare",
@@ -350,10 +335,10 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
       commandLineService: {
         command: "npx -y @cloudflare/mcp-server-cloudflare",
         env: {
-          CLOUDFLARE_API_TOKEN: "",
-          CLOUDFLARE_ACCOUNT_ID: "",
+            "CLOUDFLARE_API_TOKEN": "",
+            "CLOUDFLARE_ACCOUNT_ID": ""
         },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     },
     fields: [
@@ -362,15 +347,15 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
         label: "Cloudflare API Token",
         placeholder: "Enter your Cloudflare API Token",
         key: "commandLineService.env.CLOUDFLARE_API_TOKEN",
-        type: "password",
+        type: "password"
       },
       {
         name: "accountId",
         label: "Cloudflare Account ID",
         placeholder: "Enter your Cloudflare Account ID",
         key: "commandLineService.env.CLOUDFLARE_ACCOUNT_ID",
-      },
-    ],
+      }
+    ]
   },
   {
     id: "web-search",
@@ -383,9 +368,9 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
       commandLineService: {
         command: "npx -y @modelcontextprotocol/server-brave-search",
         env: {
-          BRAVE_API_KEY: "",
+            "BRAVE_API_KEY": ""
         },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     },
     fields: [
@@ -394,9 +379,9 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
         label: "Brave API Key",
         placeholder: "BSA...",
         key: "commandLineService.env.BRAVE_API_KEY",
-        type: "password",
-      },
-    ],
+        type: "password"
+      }
+    ]
   },
   {
     id: "puppeteer",
@@ -409,7 +394,7 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
       commandLineService: {
         command: "npx -y @modelcontextprotocol/server-puppeteer",
         env: {},
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     },
   },
@@ -424,7 +409,7 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
       commandLineService: {
         command: "npx -y @modelcontextprotocol/server-everything",
         env: {},
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     },
   },

@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+
+
 import { useEffect, useState } from "react";
 import {
   Select,
@@ -43,9 +45,7 @@ export function ServiceFilter() {
       <Filter className="h-4 w-4 text-muted-foreground" />
       <Select
         value={serviceId || "all"}
-        onValueChange={(value) =>
-          setServiceId(value === "all" ? undefined : value)
-        }
+        onValueChange={(value) => setServiceId(value === "all" ? undefined : value)}
       >
         <SelectTrigger className="w-[200px] h-8">
           <SelectValue placeholder="All Services" />

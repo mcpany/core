@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { CredentialList } from "@/components/credentials/credential-list";
-import { Separator } from "@/components/ui/separator";
+import { CredentialList } from "@/components/credentials/credential-list"
+import { Separator } from "@/components/ui/separator"
 
 /**
  * CredentialsPage component.
@@ -15,9 +15,7 @@ export default function CredentialsPage() {
     <div className="h-full flex-1 flex-col space-y-8 p-8 md:flex">
       <div className="flex items-center justify-between space-y-2">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">
-            External Authentication
-          </h2>
+          <h2 className="text-2xl font-bold tracking-tight">External Authentication</h2>
           <p className="text-muted-foreground">
             Manage reusable authentication credentials for upstream services.
           </p>
@@ -26,5 +24,5 @@ export default function CredentialsPage() {
       <Separator />
       <CredentialList />
     </div>
-  );
+  )
 }

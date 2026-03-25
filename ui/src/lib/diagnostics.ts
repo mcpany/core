@@ -10,7 +10,7 @@ import { Trace } from "@/types/trace";
  */
 export interface Diagnostic {
   /** The severity of the diagnostic. */
-  type: "error" | "warning" | "info";
+  type: 'error' | 'warning' | 'info';
   /** A concise title for the diagnostic. */
   title: string;
   /** A detailed message explaining the issue. */
@@ -33,103 +33,96 @@ export function analyzeTrace(trace: Trace): Diagnostic[] {
   const diagnostics: Diagnostic[] = [];
   const rootSpan = trace.rootSpan;
 
-  if (trace.status !== "error" && rootSpan.status !== "error") {
+  if (trace.status !== 'error' && rootSpan.status !== 'error') {
     return diagnostics;
   }
 
-  const errorMessage =
-    rootSpan.errorMessage ||
-    (typeof rootSpan.output?.error === "string"
-      ? rootSpan.output.error
-      : null) ||
-    (typeof rootSpan.output?.message === "string"
-      ? rootSpan.output.message
-      : null) ||
-    "";
+  const errorMessage = rootSpan.errorMessage ||
+                       (typeof rootSpan.output?.error === 'string' ? rootSpan.output.error : null) ||
+                       (typeof rootSpan.output?.message === 'string' ? rootSpan.output.message : null) ||
+                       '';
 
   const lowerMsg = errorMessage.toLowerCase();
 
   // 1. Schema Validation Errors
   if (
-    lowerMsg.includes("schema validation") ||
-    lowerMsg.includes("validation error") ||
-    lowerMsg.includes("invalid input") ||
-    lowerMsg.includes("zoderror")
+    lowerMsg.includes('schema validation') ||
+    lowerMsg.includes('validation error') ||
+    lowerMsg.includes('invalid input') ||
+    lowerMsg.includes('zoderror')
   ) {
     diagnostics.push({
-      type: "error",
-      title: "Schema Validation Error",
-      message: "The tool arguments did not match the expected schema.",
-      suggestion:
-        'Check the "Payload" tab to see the input arguments. Compare them against the tool definition in the "Tools" page.',
+      type: 'error',
+      title: 'Schema Validation Error',
+      message: 'The tool arguments did not match the expected schema.',
+      suggestion: 'Check the "Payload" tab to see the input arguments. Compare them against the tool definition in the "Tools" page.'
     });
   }
 
   // 2. Permission Errors
   if (
-    lowerMsg.includes("eperm") ||
-    lowerMsg.includes("eacces") ||
-    lowerMsg.includes("permission denied") ||
-    lowerMsg.includes("access denied")
+    lowerMsg.includes('eperm') ||
+    lowerMsg.includes('eacces') ||
+    lowerMsg.includes('permission denied') ||
+    lowerMsg.includes('access denied')
   ) {
     diagnostics.push({
-      type: "error",
-      title: "Permission Denied",
-      message: "The server does not have permission to perform this action.",
-      suggestion:
-        "If using the filesystem server, ensure it has access to the target directory. You may need to run the server with different permissions or update the configuration.",
+      type: 'error',
+      title: 'Permission Denied',
+      message: 'The server does not have permission to perform this action.',
+      suggestion: 'If using the filesystem server, ensure it has access to the target directory. You may need to run the server with different permissions or update the configuration.'
     });
   }
 
   // 3. JSON Parsing Errors
   if (
-    lowerMsg.includes("json parse error") ||
-    lowerMsg.includes("syntaxerror") ||
-    lowerMsg.includes("unexpected token")
+    lowerMsg.includes('json parse error') ||
+    lowerMsg.includes('syntaxerror') ||
+    lowerMsg.includes('unexpected token')
   ) {
     diagnostics.push({
-      type: "error",
-      title: "JSON Parsing Error",
-      message: "The server received or produced invalid JSON.",
-      suggestion:
-        "Check the upstream service response. It might be returning HTML or non-JSON data.",
+      type: 'error',
+      title: 'JSON Parsing Error',
+      message: 'The server received or produced invalid JSON.',
+      suggestion: 'Check the upstream service response. It might be returning HTML or non-JSON data.'
     });
   }
 
   // 4. Timeout Errors
-  if (lowerMsg.includes("timeout") || lowerMsg.includes("deadline exceeded")) {
+  if (
+    lowerMsg.includes('timeout') ||
+    lowerMsg.includes('deadline exceeded')
+  ) {
     diagnostics.push({
-      type: "error",
-      title: "Operation Timed Out",
-      message: "The operation took too long to complete.",
-      suggestion:
-        "The upstream service might be slow or unresponsive. Try increasing the timeout in the server configuration.",
+      type: 'error',
+      title: 'Operation Timed Out',
+      message: 'The operation took too long to complete.',
+      suggestion: 'The upstream service might be slow or unresponsive. Try increasing the timeout in the server configuration.'
     });
   }
 
   // 5. Connection Errors
   if (
-    lowerMsg.includes("connection refused") ||
-    lowerMsg.includes("failed to connect") ||
-    lowerMsg.includes("econnrefused")
+    lowerMsg.includes('connection refused') ||
+    lowerMsg.includes('failed to connect') ||
+    lowerMsg.includes('econnrefused')
   ) {
     diagnostics.push({
-      type: "error",
-      title: "Connection Failed",
-      message: "Could not connect to the upstream service.",
-      suggestion:
-        "Ensure the upstream service is running and accessible from the MCP Any server container.",
+      type: 'error',
+      title: 'Connection Failed',
+      message: 'Could not connect to the upstream service.',
+      suggestion: 'Ensure the upstream service is running and accessible from the MCP Any server container.'
     });
   }
 
   // Fallback if we have an error but matched nothing
   if (diagnostics.length === 0 && errorMessage) {
-    diagnostics.push({
-      type: "error",
-      title: "Unknown Error",
-      message: errorMessage,
-      suggestion: "Review the logs for more context.",
-    });
+      diagnostics.push({
+          type: 'error',
+          title: 'Unknown Error',
+          message: errorMessage,
+          suggestion: 'Review the logs for more context.'
+      });
   }
 
   return diagnostics;

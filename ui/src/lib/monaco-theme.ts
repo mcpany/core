@@ -44,11 +44,7 @@ export function defineDraculaTheme(monaco: Monaco) {
       { token: "string", foreground: "f1fa8c" },
       { token: "string.template", foreground: "f1fa8c" },
       { token: "punctuation.definition.string", foreground: "f1fa8c" },
-      {
-        token: "variable.parameter",
-        foreground: "ffb86c",
-        fontStyle: "italic",
-      },
+      { token: "variable.parameter", foreground: "ffb86c", fontStyle: "italic" },
       { token: "variable.name", foreground: "f8f8f2" },
       { token: "support.function", foreground: "8be9fd" },
       { token: "support.variable", foreground: "8be9fd" },

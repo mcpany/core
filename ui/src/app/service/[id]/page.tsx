@@ -21,19 +21,14 @@ export default function ServiceDetailPage() {
   const siblings = useServiceSiblings(id ?? "");
 
   useEffect(() => {
-    if (id)
-      apiClient.getService(id).then((res) => setService(res.service || null));
+    if (id) apiClient.getService(id).then(res => setService(res.service || null));
   }, [id]);
 
-  const breadcrumbItems: BreadcrumbItem[] = service
-    ? [
-        {
-          label: service.name,
-          href: `/service/${id}`,
-          siblings: siblings,
-        },
-      ]
-    : [];
+  const breadcrumbItems: BreadcrumbItem[] = service ? [{
+      label: service.name,
+      href: `/service/${id}`,
+      siblings: siblings
+  }] : [];
 
   return (
     <main className="flex min-h-screen flex-col items-center bg-background p-4 sm:p-8">

@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GlobalSettingsForm } from "@/components/settings/global-settings-form";
 import { AuthSettingsForm } from "@/components/settings/auth-settings";
@@ -24,10 +26,10 @@ export default function SettingsPage() {
           <TabsTrigger value="auth">Authentication</TabsTrigger>
         </TabsList>
         <TabsContent value="auth">
-          <AuthSettingsForm />
+            <AuthSettingsForm />
         </TabsContent>
         <TabsContent value="general">
-          <GlobalSettingsForm />
+             <GlobalSettingsForm />
         </TabsContent>
       </Tabs>
     </div>

@@ -3,14 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Bookmark, Trash2, Save, Plus } from "lucide-react";
 import { toast } from "sonner";
@@ -34,11 +32,7 @@ interface ToolPresetsProps {
  * @param props.onSelect - The onSelect property.
  * @returns The rendered component.
  */
-export function ToolPresets({
-  toolName,
-  currentData,
-  onSelect,
-}: ToolPresetsProps) {
+export function ToolPresets({ toolName, currentData, onSelect }: ToolPresetsProps) {
   const [presets, setPresets] = useState<Preset[]>([]);
   const [newPresetName, setNewPresetName] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -72,7 +66,7 @@ export function ToolPresets({
 
     if (existingIndex >= 0) {
       if (!confirm(`Overwrite existing preset "${newPreset.name}"?`)) {
-        return;
+          return;
       }
       updatedPresets = [...presets];
       updatedPresets[existingIndex] = newPreset;
@@ -96,20 +90,12 @@ export function ToolPresets({
   };
 
   return (
-    <Popover
-      open={isOpen}
-      onOpenChange={(open) => {
+    <Popover open={isOpen} onOpenChange={(open) => {
         setIsOpen(open);
         if (!open) setIsSaveMode(false);
-      }}
-    >
+    }}>
       <PopoverTrigger asChild>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 w-8 p-0"
-          title="Manage Presets"
-        >
+        <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Manage Presets">
           <Bookmark className="h-4 w-4" />
         </Button>
       </PopoverTrigger>
@@ -117,42 +103,31 @@ export function ToolPresets({
         <div className="flex items-center justify-between p-3 border-b bg-muted/30">
           <h4 className="font-medium text-sm">Presets</h4>
           {!isSaveMode && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6"
-              onClick={() => setIsSaveMode(true)}
-              title="Create New Preset"
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
+              <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setIsSaveMode(true)} title="Create New Preset">
+                  <Plus className="h-4 w-4" />
+              </Button>
           )}
         </div>
 
         {isSaveMode && (
-          <div className="p-3 border-b bg-muted/50">
-            <div className="flex gap-2">
-              <Input
-                value={newPresetName}
-                onChange={(e) => setNewPresetName(e.target.value)}
-                placeholder="Preset Name"
-                className="h-8 text-xs"
-                autoFocus
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") savePreset();
-                  if (e.key === "Escape") setIsSaveMode(false);
-                }}
-              />
-              <Button
-                size="sm"
-                className="h-8 w-8 p-0"
-                onClick={savePreset}
-                disabled={!newPresetName.trim()}
-              >
-                <Save className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
+             <div className="p-3 border-b bg-muted/50">
+                <div className="flex gap-2">
+                    <Input
+                        value={newPresetName}
+                        onChange={(e) => setNewPresetName(e.target.value)}
+                        placeholder="Preset Name"
+                        className="h-8 text-xs"
+                        autoFocus
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') savePreset();
+                            if (e.key === 'Escape') setIsSaveMode(false);
+                        }}
+                    />
+                    <Button size="sm" className="h-8 w-8 p-0" onClick={savePreset} disabled={!newPresetName.trim()}>
+                        <Save className="h-4 w-4" />
+                    </Button>
+                </div>
+             </div>
         )}
 
         <ScrollArea className="h-[200px]">
@@ -167,14 +142,12 @@ export function ToolPresets({
                   key={preset.name}
                   className="flex items-center justify-between p-2 hover:bg-muted rounded-md cursor-pointer group transition-colors"
                   onClick={() => {
-                    onSelect(preset.data);
-                    setIsOpen(false);
-                    toast.success(`Loaded preset: ${preset.name}`);
+                      onSelect(preset.data);
+                      setIsOpen(false);
+                      toast.success(`Loaded preset: ${preset.name}`);
                   }}
                 >
-                  <span className="text-sm truncate max-w-[180px]">
-                    {preset.name}
-                  </span>
+                  <span className="text-sm truncate max-w-[180px]">{preset.name}</span>
                   <Button
                     variant="ghost"
                     size="sm"

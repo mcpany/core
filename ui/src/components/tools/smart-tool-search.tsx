@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+
+
 import { useState, useRef, useEffect, useMemo } from "react";
 import {
   Command,
@@ -48,10 +50,7 @@ export function SmartToolSearch({
   // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (
-        wrapperRef.current &&
-        !wrapperRef.current.contains(event.target as Node)
-      ) {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
         setOpen(false);
       }
     }
@@ -85,19 +84,16 @@ export function SmartToolSearch({
 
   return (
     <div ref={wrapperRef} className="relative w-[250px] group">
-      <Command
-        className="rounded-lg border shadow-sm overflow-visible bg-background/50 backdrop-blur-sm"
-        shouldFilter={true}
-      >
+      <Command className="rounded-lg border shadow-sm overflow-visible bg-background/50 backdrop-blur-sm" shouldFilter={true}>
         <CommandInput
-          placeholder="Search tools..."
-          value={searchQuery}
-          onValueChange={(val) => {
-            setSearchQuery(val);
-            if (!open) setOpen(true);
-          }}
-          onFocus={() => setOpen(true)}
-          className="h-9"
+            placeholder="Search tools..."
+            value={searchQuery}
+            onValueChange={(val) => {
+                setSearchQuery(val);
+                if (!open) setOpen(true);
+            }}
+            onFocus={() => setOpen(true)}
+            className="h-9"
         />
 
         {open && (
@@ -131,12 +127,12 @@ export function SmartToolSearch({
                     className="flex justify-between"
                   >
                     <div className="flex items-center">
-                      <Wrench className="mr-2 h-4 w-4 opacity-70" />
-                      <span>{tool.name}</span>
+                        <Wrench className="mr-2 h-4 w-4 opacity-70" />
+                        <span>{tool.name}</span>
                     </div>
                     {/* Show service ID as subtext */}
                     <span className="ml-2 text-xs text-muted-foreground truncate max-w-[80px]">
-                      {tool.serviceId}
+                        {tool.serviceId}
                     </span>
                   </CommandItem>
                 ))}

@@ -3,44 +3,18 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+
+
 import { useMemo, useState, memo, useCallback, useEffect } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Link } from "react-router-dom";
-import {
-  Settings,
-  Trash2,
-  CheckCircle,
-  XCircle,
-  AlertTriangle,
-  MoreHorizontal,
-  Copy,
-  Download,
-  Filter,
-  PlayCircle,
-  PauseCircle,
-  Activity,
-  RefreshCw,
-  Terminal,
-  ShieldCheck,
-  ShieldAlert,
-} from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Link } from 'react-router-dom';
+import { Settings, Trash2, CheckCircle, XCircle, AlertTriangle, MoreHorizontal, Copy, Download, Filter, PlayCircle, PauseCircle, Activity, RefreshCw, Terminal, ShieldCheck, ShieldAlert } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -48,7 +22,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu"
 import { UpstreamServiceConfig } from "@/lib/client";
 import { ConnectionDiagnosticDialog } from "@/components/diagnostics/connection-diagnostic";
 import { ServiceHealthSparkline } from "@/components/services/service-health-sparkline";
@@ -61,6 +35,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+
 
 interface ServiceListProps {
   services: UpstreamServiceConfig[];
@@ -82,20 +57,7 @@ interface ServiceListProps {
  *
  * @param onExport - The onExport.
  */
-export function ServiceList({
-  services,
-  isLoading,
-  onToggle,
-  onEdit,
-  onDelete,
-  onDuplicate,
-  onExport,
-  onBulkToggle,
-  onBulkDelete,
-  onLogin,
-  onRestart,
-  onBulkEdit,
-}: ServiceListProps) {
+export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, onDuplicate, onExport, onBulkToggle, onBulkDelete, onLogin, onRestart, onBulkEdit }: ServiceListProps) {
   const [tagFilter, setTagFilter] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [isBulkEditDialogOpen, setIsBulkEditDialogOpen] = useState(false);
@@ -103,129 +65,95 @@ export function ServiceList({
 
   const filteredServices = useMemo(() => {
     if (!tagFilter) return services;
-    return services.filter((s) =>
-      s.tags?.some((tag: string) =>
-        tag.toLowerCase().includes(tagFilter.toLowerCase()),
-      ),
-    );
+    return services.filter(s => s.tags?.some((tag: string) => tag.toLowerCase().includes(tagFilter.toLowerCase())));
   }, [services, tagFilter]);
 
   // Reset selection when filtering changes or services change
   useEffect(() => {
-    setSelected(new Set());
+      setSelected(new Set());
   }, [tagFilter]);
 
-  const handleSelectAll = useCallback(
-    (checked: boolean) => {
-      if (checked) {
-        setSelected(new Set(filteredServices.map((s) => s.name)));
-      } else {
-        setSelected(new Set());
-      }
-    },
-    [filteredServices],
-  );
+  const handleSelectAll = useCallback((checked: boolean) => {
+    if (checked) {
+      setSelected(new Set(filteredServices.map(s => s.name)));
+    } else {
+      setSelected(new Set());
+    }
+  }, [filteredServices]);
 
   const handleSelectOne = useCallback((name: string, checked: boolean) => {
-    setSelected((prev) => {
-      const newSelected = new Set(prev);
-      if (checked) {
-        newSelected.add(name);
-      } else {
-        newSelected.delete(name);
-      }
-      return newSelected;
+    setSelected(prev => {
+        const newSelected = new Set(prev);
+        if (checked) {
+          newSelected.add(name);
+        } else {
+          newSelected.delete(name);
+        }
+        return newSelected;
     });
   }, []);
 
-  const isAllSelected =
-    filteredServices.length > 0 && selected.size === filteredServices.length;
+  const isAllSelected = filteredServices.length > 0 && selected.size === filteredServices.length;
 
   if (isLoading) {
-    return (
-      <div className="space-y-4">
-        {[...Array(3)].map((_, i) => (
-          <div
-            key={i}
-            className="w-full h-12 bg-muted animate-pulse rounded-md"
-          />
-        ))}
-      </div>
-    );
+      return (
+          <div className="space-y-4">
+               {[...Array(3)].map((_, i) => (
+                  <div key={i} className="w-full h-12 bg-muted animate-pulse rounded-md" />
+               ))}
+          </div>
+      );
   }
 
   if (services.length === 0) {
-    return (
-      <div className="text-center py-10 text-muted-foreground">
-        No services registered.
-      </div>
-    );
+      return <div className="text-center py-10 text-muted-foreground">No services registered.</div>;
   }
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2 w-full md:w-1/3">
-          <Filter className="h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Filter by tag..."
-            value={tagFilter}
-            onChange={(e) => setTagFilter(e.target.value)}
-            className="h-8"
-          />
-        </div>
-
-        {selected.size > 0 && (
-          <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-4 duration-300">
-            <span className="text-sm text-muted-foreground mr-2">
-              {selected.size} selected
-            </span>
-            {onBulkToggle && (
-              <>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {
-                    onBulkToggle(Array.from(selected), true);
-                    setSelected(new Set());
-                  }}
-                >
-                  <PlayCircle className="mr-2 h-4 w-4 text-green-600" /> Enable
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {
-                    onBulkToggle(Array.from(selected), false);
-                    setSelected(new Set());
-                  }}
-                >
-                  <PauseCircle className="mr-2 h-4 w-4 text-amber-600" />{" "}
-                  Disable
-                </Button>
-              </>
-            )}
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setIsBulkEditDialogOpen(true)}
-            >
-              <Settings className="mr-2 h-4 w-4" /> Bulk Edit
-            </Button>
-            {onBulkDelete && (
-              <Button
-                size="sm"
-                variant="destructive"
-                onClick={() => {
-                  onBulkDelete(Array.from(selected));
-                  setSelected(new Set());
-                }}
-              >
-                <Trash2 className="mr-2 h-4 w-4" /> Delete
-              </Button>
-            )}
+          <div className="flex items-center space-x-2 w-full md:w-1/3">
+            <Filter className="h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Filter by tag..."
+              value={tagFilter}
+              onChange={(e) => setTagFilter(e.target.value)}
+              className="h-8"
+            />
           </div>
-        )}
+
+                   {selected.size > 0 && (
+                       <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-4 duration-300">
+                           <span className="text-sm text-muted-foreground mr-2">{selected.size} selected</span>
+                           {onBulkToggle && (
+                               <>
+                                 <Button size="sm" variant="outline" onClick={() => {
+                                     onBulkToggle(Array.from(selected), true);
+                                     setSelected(new Set());
+                                 }}>
+                                     <PlayCircle className="mr-2 h-4 w-4 text-green-600" /> Enable
+                                 </Button>
+                                 <Button size="sm" variant="outline" onClick={() => {
+                                     onBulkToggle(Array.from(selected), false);
+                                     setSelected(new Set());
+                                 }}>
+                                     <PauseCircle className="mr-2 h-4 w-4 text-amber-600" /> Disable
+                                 </Button>
+                               </>
+                           )}
+                           <Button size="sm" variant="outline" onClick={() => setIsBulkEditDialogOpen(true)}>
+                               <Settings className="mr-2 h-4 w-4" /> Bulk Edit
+                           </Button>
+                           {onBulkDelete && (
+                               <Button size="sm" variant="destructive" onClick={() => {
+                                   onBulkDelete(Array.from(selected));
+                                   setSelected(new Set());
+                               }}>
+                                   <Trash2 className="mr-2 h-4 w-4" /> Delete
+                               </Button>
+                           )}
+                       </div>
+                   )}
       </div>
 
       <div className="rounded-md border">
@@ -233,11 +161,11 @@ export function ServiceList({
           <TableHeader>
             <TableRow>
               <TableHead className="w-[50px]">
-                <Checkbox
-                  checked={isAllSelected}
-                  onCheckedChange={(checked) => handleSelectAll(!!checked)}
-                  aria-label="Select all"
-                />
+                  <Checkbox
+                    checked={isAllSelected}
+                    onCheckedChange={(checked) => handleSelectAll(!!checked)}
+                    aria-label="Select all"
+                  />
               </TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Name</TableHead>
@@ -253,19 +181,19 @@ export function ServiceList({
           </TableHeader>
           <TableBody>
             {filteredServices.map((service) => (
-              <ServiceRow
-                key={service.name}
-                service={service}
-                isSelected={selected.has(service.name)}
-                onSelect={handleSelectOne}
-                onToggle={onToggle}
-                onEdit={onEdit}
-                onDelete={onDelete}
-                onDuplicate={onDuplicate}
-                onExport={onExport}
-                onLogin={onLogin}
-                onRestart={onRestart}
-              />
+               <ServiceRow
+                  key={service.name}
+                  service={service}
+                  isSelected={selected.has(service.name)}
+                  onSelect={handleSelectOne}
+                  onToggle={onToggle}
+                  onEdit={onEdit}
+                  onDelete={onDelete}
+                  onDuplicate={onDuplicate}
+                  onExport={onExport}
+                  onLogin={onLogin}
+                  onRestart={onRestart}
+               />
             ))}
             {filteredServices.length === 0 && (
               <TableRow>
@@ -277,54 +205,36 @@ export function ServiceList({
           </TableBody>
         </Table>
       </div>
-      <Dialog
-        open={isBulkEditDialogOpen}
-        onOpenChange={setIsBulkEditDialogOpen}
-      >
+      <Dialog open={isBulkEditDialogOpen} onOpenChange={setIsBulkEditDialogOpen}>
         <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Bulk Edit Services</DialogTitle>
-            <DialogDescription>
-              Update {selected.size} selected services. Currently only supports
-              updating tags.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="bulk-tags">Add Tags (comma separated)</Label>
-              <Input
-                id="bulk-tags"
-                placeholder="production, web, internal"
-                value={bulkTags}
-                onChange={(e) => setBulkTags(e.target.value)}
-              />
+            <DialogHeader>
+                <DialogTitle>Bulk Edit Services</DialogTitle>
+                <DialogDescription>
+                    Update {selected.size} selected services. Currently only supports updating tags.
+                </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                    <Label htmlFor="bulk-tags">Add Tags (comma separated)</Label>
+                    <Input
+                        id="bulk-tags"
+                        placeholder="production, web, internal"
+                        value={bulkTags}
+                        onChange={(e) => setBulkTags(e.target.value)}
+                    />
+                </div>
             </div>
-          </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setIsBulkEditDialogOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={() => {
-                if (onBulkEdit) {
-                  onBulkEdit(Array.from(selected), {
-                    tags: bulkTags
-                      .split(",")
-                      .map((t) => t.trim())
-                      .filter(Boolean),
-                  });
-                }
-                setIsBulkEditDialogOpen(false);
-                setSelected(new Set());
-                setBulkTags("");
-              }}
-            >
-              Apply Changes
-            </Button>
-          </DialogFooter>
+            <DialogFooter>
+                <Button variant="outline" onClick={() => setIsBulkEditDialogOpen(false)}>Cancel</Button>
+                <Button onClick={() => {
+                    if (onBulkEdit) {
+                        onBulkEdit(Array.from(selected), { tags: bulkTags.split(",").map(t => t.trim()).filter(Boolean) });
+                    }
+                    setIsBulkEditDialogOpen(false);
+                    setSelected(new Set());
+                    setBulkTags("");
+                }}>Apply Changes</Button>
+            </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
@@ -345,253 +255,209 @@ export function ServiceList({
  * @param props.onLogin - The onLogin property.
  * @returns The rendered component.
  */
-const ServiceRow = memo(function ServiceRow({
-  service,
-  isSelected,
-  onSelect,
-  onToggle,
-  onEdit,
-  onDelete,
-  onDuplicate,
-  onExport,
-  onLogin,
-  onRestart,
-}: {
-  service: UpstreamServiceConfig;
-  isSelected: boolean;
-  onSelect: (name: string, checked: boolean) => void;
-  onToggle?: (name: string, enabled: boolean) => void;
-  onEdit?: (service: UpstreamServiceConfig) => void;
-  onDelete?: (name: string) => void;
-  onDuplicate?: (service: UpstreamServiceConfig) => void;
-  onExport?: (service: UpstreamServiceConfig) => void;
-  onLogin?: (service: UpstreamServiceConfig) => void;
-  onRestart?: (name: string) => void;
+const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onToggle, onEdit, onDelete, onDuplicate, onExport, onLogin, onRestart }: {
+    service: UpstreamServiceConfig,
+    isSelected: boolean,
+    onSelect: (name: string, checked: boolean) => void,
+    onToggle?: (name: string, enabled: boolean) => void,
+    onEdit?: (service: UpstreamServiceConfig) => void,
+    onDelete?: (name: string) => void,
+    onDuplicate?: (service: UpstreamServiceConfig) => void,
+    onExport?: (service: UpstreamServiceConfig) => void,
+    onLogin?: (service: UpstreamServiceConfig) => void,
+    onRestart?: (name: string) => void
 }) {
-  const type = useMemo(() => {
-    if (service.httpService) return "HTTP";
-    if (service.grpcService) return "gRPC";
-    if (service.commandLineService) return "CLI";
-    if (service.mcpService) return "MCP";
-    return "Other";
-  }, [service]);
+    const type = useMemo(() => {
+        if (service.httpService) return "HTTP";
+        if (service.grpcService) return "gRPC";
+        if (service.commandLineService) return "CLI";
+        if (service.mcpService) return "MCP";
+        return "Other";
+    }, [service]);
 
-  const address = useMemo(() => {
+    const address = useMemo(() => {
+         return service.grpcService?.address ||
+            service.httpService?.address ||
+            service.commandLineService?.command ||
+            service.mcpService?.httpConnection?.httpAddress ||
+            service.mcpService?.stdioConnection?.command ||
+            "-";
+    }, [service]);
+
+    const secure = useMemo(() => {
+        return !!(service.grpcService?.tlsConfig || service.httpService?.tlsConfig || service.mcpService?.httpConnection?.tlsConfig);
+    }, [service]);
+
     return (
-      service.grpcService?.address ||
-      service.httpService?.address ||
-      service.commandLineService?.command ||
-      service.mcpService?.httpConnection?.httpAddress ||
-      service.mcpService?.stdioConnection?.command ||
-      "-"
+        <TableRow className={service.disable ? "opacity-60 bg-muted/40" : ""}>
+             <TableCell>
+                 <Checkbox
+                    checked={isSelected}
+                    onCheckedChange={(checked) => onSelect(service.name, !!checked)}
+                    aria-label={`Select ${service.name}`}
+                 />
+             </TableCell>
+             <TableCell>
+                 <div className="flex items-center gap-2">
+                    {onToggle && (
+                        <Switch
+                            checked={!service.disable}
+                            onCheckedChange={(checked) => onToggle(service.name, checked)}
+                        />
+                    )}
+                    {service.lastError && (
+                        <ConnectionDiagnosticDialog
+                            service={service}
+                            trigger={
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-6 w-6 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                    title="View Error & Troubleshoot"
+                                >
+                                    <AlertTriangle className="h-4 w-4" />
+                                </Button>
+                            }
+                        />
+                    )}
+                 </div>
+             </TableCell>
+             <TableCell className="font-medium">
+                 <div className="flex items-center gap-2">
+                     <Link to={`/upstream-services/${service.name}`} className="hover:underline font-semibold text-primary">
+                        {service.name}
+                     </Link>
+                     {service.lastError && (
+                         <Tooltip>
+                             <TooltipTrigger asChild>
+                                 <Badge variant="destructive" className="ml-2 text-[10px] px-1 h-5 cursor-pointer">Error</Badge>
+                             </TooltipTrigger>
+                             <TooltipContent>
+                                 <p className="max-w-xs break-words text-xs">{service.lastError}</p>
+                             </TooltipContent>
+                         </Tooltip>
+                     )}
+                 </div>
+             </TableCell>
+             <TableCell>
+                  {service.provenance?.verified ? (
+                      <Tooltip>
+                          <TooltipTrigger>
+                              <div className="flex items-center gap-1 text-green-600">
+                                  <ShieldCheck className="h-4 w-4" />
+                                  <span className="text-xs font-medium">Verified</span>
+                              </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                              <p className="font-semibold">Verified Source</p>
+                              <p className="text-xs text-muted-foreground">Signer: {service.provenance.signerIdentity}</p>
+                          </TooltipContent>
+                      </Tooltip>
+                  ) : (
+                      <Tooltip>
+                          <TooltipTrigger>
+                              <div className="flex items-center gap-1 text-muted-foreground opacity-50">
+                                  <ShieldAlert className="h-4 w-4" />
+                                  <span className="text-xs">Unverified</span>
+                              </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                              <p>Unverified Source</p>
+                          </TooltipContent>
+                      </Tooltip>
+                  )}
+             </TableCell>
+             <TableCell>
+                 <Badge variant="outline">{type}</Badge>
+             </TableCell>
+             <TableCell>
+                <div className="w-[80px] h-[24px]">
+                    <ServiceHealthSparkline serviceName={service.name} disabled={service.disable} />
+                </div>
+             </TableCell>
+             <TableCell>
+                 <div className="flex flex-wrap gap-1">
+                     {service.tags?.map((tag: string) => (
+                         <Badge key={tag} variant="secondary" className="text-xs px-1 py-0 h-5">
+                             {tag}
+                         </Badge>
+                     ))}
+                 </div>
+             </TableCell>
+             <TableCell className="font-mono text-xs max-w-[200px] truncate" title={address}>
+                 {address}
+             </TableCell>
+             <TableCell>
+                 {service.version}
+             </TableCell>
+             <TableCell className="text-center">
+                 {secure ? <CheckCircle className="h-4 w-4 text-green-500 mx-auto" /> : <XCircle className="h-4 w-4 text-muted-foreground mx-auto" />}
+             </TableCell>
+             <TableCell className="text-right">
+                 <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <ConnectionDiagnosticDialog
+                            service={service}
+                            trigger={
+                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                    <Activity className="mr-2 h-4 w-4" />
+                                    Diagnose
+                                </DropdownMenuItem>
+                            }
+                        />
+                        <DropdownMenuItem asChild>
+                            <Link to={`/logs?source=${encodeURIComponent(service.name)}`}>
+                                <Terminal className="mr-2 h-4 w-4" />
+                                View Logs
+                            </Link>
+                        </DropdownMenuItem>
+                        {onRestart && (
+                            <DropdownMenuItem onClick={() => onRestart(service.name)}>
+                                <RefreshCw className="mr-2 h-4 w-4" />
+                                Restart
+                            </DropdownMenuItem>
+                        )}
+                        {onEdit && (
+                            <DropdownMenuItem onClick={() => onEdit(service)}>
+                                <Settings className="mr-2 h-4 w-4" />
+                                Edit
+                            </DropdownMenuItem>
+                        )}
+                        {onDuplicate && (
+                             <DropdownMenuItem onClick={() => onDuplicate(service)}>
+                                <Copy className="mr-2 h-4 w-4" />
+                                Duplicate
+                            </DropdownMenuItem>
+                        )}
+                        {onExport && (
+                             <DropdownMenuItem onClick={() => onExport(service)}>
+                                <Download className="mr-2 h-4 w-4" />
+                                Export
+                            </DropdownMenuItem>
+                        )}
+                        {onLogin && service.upstreamAuth?.oauth2 && (
+                             <DropdownMenuItem onClick={() => onLogin(service)}>
+                                <CheckCircle className="mr-2 h-4 w-4" />
+                                Log In
+                            </DropdownMenuItem>
+                        )}
+                        <DropdownMenuSeparator />
+                        {onDelete && (
+                            <DropdownMenuItem onClick={() => onDelete(service.name)} className="text-destructive focus:text-destructive">
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Delete
+                            </DropdownMenuItem>
+                        )}
+                    </DropdownMenuContent>
+                 </DropdownMenu>
+             </TableCell>
+        </TableRow>
     );
-  }, [service]);
-
-  const secure = useMemo(() => {
-    return !!(
-      service.grpcService?.tlsConfig ||
-      service.httpService?.tlsConfig ||
-      service.mcpService?.httpConnection?.tlsConfig
-    );
-  }, [service]);
-
-  return (
-    <TableRow className={service.disable ? "opacity-60 bg-muted/40" : ""}>
-      <TableCell>
-        <Checkbox
-          checked={isSelected}
-          onCheckedChange={(checked) => onSelect(service.name, !!checked)}
-          aria-label={`Select ${service.name}`}
-        />
-      </TableCell>
-      <TableCell>
-        <div className="flex items-center gap-2">
-          {onToggle && (
-            <Switch
-              checked={!service.disable}
-              onCheckedChange={(checked) => onToggle(service.name, checked)}
-            />
-          )}
-          {service.lastError && (
-            <ConnectionDiagnosticDialog
-              service={service}
-              trigger={
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6 text-destructive hover:text-destructive hover:bg-destructive/10"
-                  title="View Error & Troubleshoot"
-                >
-                  <AlertTriangle className="h-4 w-4" />
-                </Button>
-              }
-            />
-          )}
-        </div>
-      </TableCell>
-      <TableCell className="font-medium">
-        <div className="flex items-center gap-2">
-          <Link
-            to={`/upstream-services/${service.name}`}
-            className="hover:underline font-semibold text-primary"
-          >
-            {service.name}
-          </Link>
-          {service.lastError && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Badge
-                  variant="destructive"
-                  className="ml-2 text-[10px] px-1 h-5 cursor-pointer"
-                >
-                  Error
-                </Badge>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p className="max-w-xs break-words text-xs">
-                  {service.lastError}
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          )}
-        </div>
-      </TableCell>
-      <TableCell>
-        {service.provenance?.verified ? (
-          <Tooltip>
-            <TooltipTrigger>
-              <div className="flex items-center gap-1 text-green-600">
-                <ShieldCheck className="h-4 w-4" />
-                <span className="text-xs font-medium">Verified</span>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p className="font-semibold">Verified Source</p>
-              <p className="text-xs text-muted-foreground">
-                Signer: {service.provenance.signerIdentity}
-              </p>
-            </TooltipContent>
-          </Tooltip>
-        ) : (
-          <Tooltip>
-            <TooltipTrigger>
-              <div className="flex items-center gap-1 text-muted-foreground opacity-50">
-                <ShieldAlert className="h-4 w-4" />
-                <span className="text-xs">Unverified</span>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Unverified Source</p>
-            </TooltipContent>
-          </Tooltip>
-        )}
-      </TableCell>
-      <TableCell>
-        <Badge variant="outline">{type}</Badge>
-      </TableCell>
-      <TableCell>
-        <div className="w-[80px] h-[24px]">
-          <ServiceHealthSparkline
-            serviceName={service.name}
-            disabled={service.disable}
-          />
-        </div>
-      </TableCell>
-      <TableCell>
-        <div className="flex flex-wrap gap-1">
-          {service.tags?.map((tag: string) => (
-            <Badge
-              key={tag}
-              variant="secondary"
-              className="text-xs px-1 py-0 h-5"
-            >
-              {tag}
-            </Badge>
-          ))}
-        </div>
-      </TableCell>
-      <TableCell
-        className="font-mono text-xs max-w-[200px] truncate"
-        title={address}
-      >
-        {address}
-      </TableCell>
-      <TableCell>{service.version}</TableCell>
-      <TableCell className="text-center">
-        {secure ? (
-          <CheckCircle className="h-4 w-4 text-green-500 mx-auto" />
-        ) : (
-          <XCircle className="h-4 w-4 text-muted-foreground mx-auto" />
-        )}
-      </TableCell>
-      <TableCell className="text-right">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <ConnectionDiagnosticDialog
-              service={service}
-              trigger={
-                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                  <Activity className="mr-2 h-4 w-4" />
-                  Diagnose
-                </DropdownMenuItem>
-              }
-            />
-            <DropdownMenuItem asChild>
-              <Link to={`/logs?source=${encodeURIComponent(service.name)}`}>
-                <Terminal className="mr-2 h-4 w-4" />
-                View Logs
-              </Link>
-            </DropdownMenuItem>
-            {onRestart && (
-              <DropdownMenuItem onClick={() => onRestart(service.name)}>
-                <RefreshCw className="mr-2 h-4 w-4" />
-                Restart
-              </DropdownMenuItem>
-            )}
-            {onEdit && (
-              <DropdownMenuItem onClick={() => onEdit(service)}>
-                <Settings className="mr-2 h-4 w-4" />
-                Edit
-              </DropdownMenuItem>
-            )}
-            {onDuplicate && (
-              <DropdownMenuItem onClick={() => onDuplicate(service)}>
-                <Copy className="mr-2 h-4 w-4" />
-                Duplicate
-              </DropdownMenuItem>
-            )}
-            {onExport && (
-              <DropdownMenuItem onClick={() => onExport(service)}>
-                <Download className="mr-2 h-4 w-4" />
-                Export
-              </DropdownMenuItem>
-            )}
-            {onLogin && service.upstreamAuth?.oauth2 && (
-              <DropdownMenuItem onClick={() => onLogin(service)}>
-                <CheckCircle className="mr-2 h-4 w-4" />
-                Log In
-              </DropdownMenuItem>
-            )}
-            <DropdownMenuSeparator />
-            {onDelete && (
-              <DropdownMenuItem
-                onClick={() => onDelete(service.name)}
-                className="text-destructive focus:text-destructive"
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                Delete
-              </DropdownMenuItem>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </TableCell>
-    </TableRow>
-  );
 });

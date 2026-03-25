@@ -32,8 +32,8 @@ const mockServices: UpstreamServiceConfig[] = [
       tools: [],
       calls: {},
       resources: [],
-      prompts: [],
-    },
+      prompts: []
+    }
   },
   {
     id: "s2",
@@ -57,17 +57,19 @@ const mockServices: UpstreamServiceConfig[] = [
       tools: [],
       calls: {},
       resources: [],
-      prompts: [],
-    },
-  },
+      prompts: []
+    }
+  }
 ];
 
 describe("ServiceList", () => {
   const renderWithProvider = (component: React.ReactNode) => {
     return render(
       <TooltipProvider>
-        <ServiceHealthProvider>{component}</ServiceHealthProvider>
-      </TooltipProvider>,
+        <ServiceHealthProvider>
+          {component}
+        </ServiceHealthProvider>
+      </TooltipProvider>
     );
   };
 
@@ -105,8 +107,6 @@ describe("ServiceList", () => {
 
     expect(screen.queryByText("Service 1")).not.toBeInTheDocument();
     expect(screen.queryByText("Service 2")).not.toBeInTheDocument();
-    expect(
-      screen.getByText("No services match the tag filter."),
-    ).toBeInTheDocument();
+    expect(screen.getByText("No services match the tag filter.")).toBeInTheDocument();
   });
 });

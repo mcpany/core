@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+
+
 import { JsonView } from "@/components/ui/json-view";
 
 interface JsonViewerProps {
@@ -18,5 +20,7 @@ interface JsonViewerProps {
  * @returns A syntax-highlighted JSON view.
  */
 export default function JsonViewer({ data }: JsonViewerProps) {
-  return <JsonView data={data} />;
+  return (
+    <JsonView data={data} />
+  );
 }

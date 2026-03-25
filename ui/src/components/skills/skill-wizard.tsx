@@ -1,24 +1,20 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Skill, SkillService } from "@/lib/skill-service";
-import { toast } from "sonner";
-import { ChevronRight, ChevronLeft, Save, Upload } from "lucide-react";
 
-const STEPS = ["Metadata", "Instructions", "Assets"];
+
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from "react-router-dom";
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skill, SkillService } from '@/lib/skill-service';
+import { toast } from 'sonner';
+import { ChevronRight, ChevronLeft, Save, Upload } from 'lucide-react';
+
+const STEPS = ['Metadata', 'Instructions', 'Assets'];
 
 /**
  * SkillWizard component.
@@ -33,11 +29,10 @@ export default function SkillWizard() {
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [skill, setSkill] = useState<Skill>({
-    name: "",
-    description: "",
-    license: "",
-    instructions:
-      "# Skill Instructions\n\nProvide step-by-step instructions for the model here.",
+    name: '',
+    description: '',
+    license: '',
+    instructions: '# Skill Instructions\n\nProvide step-by-step instructions for the model here.',
     allowedTools: [],
     assets: [],
     metadata: {},
@@ -56,8 +51,8 @@ export default function SkillWizard() {
       const data = await SkillService.get(skillName);
       setSkill(data);
     } catch (err: any) {
-      toast.error("Failed to load skill: " + err.message);
-      navigate("/skills");
+      toast.error('Failed to load skill: ' + err.message);
+      navigate('/skills');
     } finally {
       setLoading(false);
     }
@@ -84,10 +79,10 @@ export default function SkillWizard() {
       setLoading(true);
       if (isEdit && name) {
         await SkillService.update(name, skill);
-        toast.success("Skill updated successfully");
+        toast.success('Skill updated successfully');
       } else {
         await SkillService.create(skill);
-        toast.success("Skill created successfully");
+        toast.success('Skill created successfully');
       }
 
       // Upload pending files if any
@@ -97,20 +92,16 @@ export default function SkillWizard() {
         const targetName = isEdit ? name : skill.name;
 
         for (const file of files) {
-          // Default to scripts/ folder for simplicity for now, or just root?
-          // Provide a way to specify path? For now simple upload to scripts/
-          await SkillService.uploadAsset(
-            targetName!,
-            `scripts/${file.name}`,
-            file,
-          );
+           // Default to scripts/ folder for simplicity for now, or just root?
+           // Provide a way to specify path? For now simple upload to scripts/
+           await SkillService.uploadAsset(targetName!, `scripts/${file.name}`, file);
         }
-        toast.success("Assets uploaded");
+        toast.success('Assets uploaded');
       }
 
-      navigate("/skills");
+      navigate('/skills');
     } catch (err: any) {
-      toast.error("Failed to save skill: " + err.message);
+      toast.error('Failed to save skill: ' + err.message);
     } finally {
       setLoading(false);
     }
@@ -123,20 +114,20 @@ export default function SkillWizard() {
   };
 
   if (loading && isEdit && !skill.name) {
-    return <div>Loading...</div>;
+     return <div>Loading...</div>;
   }
 
   return (
     <div className="container mx-auto py-8 max-w-3xl">
       <Card>
         <CardHeader>
-          <CardTitle>{isEdit ? "Edit Skill" : "Create New Skill"}</CardTitle>
+          <CardTitle>{isEdit ? 'Edit Skill' : 'Create New Skill'}</CardTitle>
           <div className="flex gap-2 mt-4">
             {STEPS.map((step, idx) => (
               <div
                 key={step}
                 className={`flex-1 h-2 rounded-full ${
-                  idx <= currentStep ? "bg-primary" : "bg-secondary"
+                  idx <= currentStep ? 'bg-primary' : 'bg-secondary'
                 }`}
               />
             ))}
@@ -153,7 +144,7 @@ export default function SkillWizard() {
                 <Input
                   id="name"
                   value={skill.name}
-                  onChange={(e) => handleChange("name", e.target.value)}
+                  onChange={(e) => handleChange('name', e.target.value)}
                   placeholder="e.g. data-processing"
                   disabled={loading} // ID immutable on edit? Backend supports rename. But safe to allow.
                 />
@@ -166,25 +157,17 @@ export default function SkillWizard() {
                 <Textarea
                   id="description"
                   value={skill.description}
-                  onChange={(e) => handleChange("description", e.target.value)}
+                  onChange={(e) => handleChange('description', e.target.value)}
                   placeholder="Briefly describe what this skill does."
                 />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="tools">Allowed Tools (comma separated)</Label>
                 <Input
-                  id="tools"
-                  value={skill.allowedTools?.join(", ") || ""}
-                  onChange={(e) =>
-                    handleChange(
-                      "allowedTools",
-                      e.target.value
-                        .split(",")
-                        .map((s) => s.trim())
-                        .filter(Boolean),
-                    )
-                  }
-                  placeholder="tool1, tool2"
+                    id="tools"
+                    value={skill.allowedTools?.join(', ') || ''}
+                    onChange={(e) => handleChange('allowedTools', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
+                    placeholder="tool1, tool2"
                 />
               </div>
             </div>
@@ -196,51 +179,36 @@ export default function SkillWizard() {
               <Textarea
                 className="flex-1 font-mono text-sm leading-relaxed"
                 value={skill.instructions}
-                onChange={(e) => handleChange("instructions", e.target.value)}
+                onChange={(e) => handleChange('instructions', e.target.value)}
               />
             </div>
           )}
 
           {currentStep === 2 && (
             <div className="space-y-4">
-              <div>
-                <h3 className="font-medium mb-2">Existing Assets</h3>
-                {skill.assets && skill.assets.length > 0 ? (
-                  <ul className="list-disc pl-5">
-                    {skill.assets.map((a: string) => (
-                      <li key={a}>{a}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-sm text-muted-foreground">
-                    No assets uploaded.
-                  </p>
-                )}
-              </div>
+               <div>
+                  <h3 className="font-medium mb-2">Existing Assets</h3>
+                  {skill.assets && skill.assets.length > 0 ? (
+                      <ul className="list-disc pl-5">
+                          {skill.assets.map((a: string) => <li key={a}>{a}</li>)}
+                      </ul>
+                  ) : <p className="text-sm text-muted-foreground">No assets uploaded.</p>}
+               </div>
 
-              <div className="border-t pt-4">
-                <Label htmlFor="file-upload">Upload New Assets (Scripts)</Label>
-                <div className="flex gap-2 items-center mt-2">
-                  <Input
-                    id="file-upload"
-                    type="file"
-                    multiple
-                    onChange={handleFileSelect}
-                  />
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Files will be uploaded to the `scripts/` directory upon save.
-                </p>
-              </div>
+               <div className="border-t pt-4">
+                  <Label htmlFor="file-upload">Upload New Assets (Scripts)</Label>
+                  <div className="flex gap-2 items-center mt-2">
+                     <Input id="file-upload" type="file" multiple onChange={handleFileSelect} />
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                      Files will be uploaded to the `scripts/` directory upon save.
+                  </p>
+               </div>
             </div>
           )}
         </CardContent>
         <CardFooter className="flex justify-between">
-          <Button
-            variant="outline"
-            onClick={handlePrev}
-            disabled={currentStep === 0}
-          >
+          <Button variant="outline" onClick={handlePrev} disabled={currentStep === 0}>
             <ChevronLeft className="mr-2 h-4 w-4" /> Back
           </Button>
 
@@ -250,8 +218,7 @@ export default function SkillWizard() {
             </Button>
           ) : (
             <Button onClick={handleSave} disabled={loading}>
-              <Save className="mr-2 h-4 w-4" />{" "}
-              {isEdit ? "Update Skill" : "Create Skill"}
+              <Save className="mr-2 h-4 w-4" /> {isEdit ? 'Update Skill' : 'Create Skill'}
             </Button>
           )}
         </CardFooter>

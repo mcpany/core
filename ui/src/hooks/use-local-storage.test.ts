@@ -32,9 +32,7 @@ describe("useLocalStorage", () => {
     });
 
     expect(result.current[0]).toBe("new-value");
-    expect(window.localStorage.getItem("test-key")).toBe(
-      JSON.stringify("new-value"),
-    );
+    expect(window.localStorage.getItem("test-key")).toBe(JSON.stringify("new-value"));
   });
 
   it("should support functional updates", () => {
@@ -49,7 +47,7 @@ describe("useLocalStorage", () => {
   });
 
   it("should handle initialization status", () => {
-    const { result } = renderHook(() => useLocalStorage("test-key", "default"));
-    expect(result.current[2]).toBe(true); // Should be initialized after mount (useEffect runs)
+     const { result } = renderHook(() => useLocalStorage("test-key", "default"));
+     expect(result.current[2]).toBe(true); // Should be initialized after mount (useEffect runs)
   });
 });

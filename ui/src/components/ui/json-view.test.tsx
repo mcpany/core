@@ -3,17 +3,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from "react";
-import { render, screen, fireEvent, act } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
-import { JsonView } from "./json-view";
+import React from 'react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { JsonView } from './json-view';
 
 // Avoid lazy-loading issues in jsdom – replace the real syntax highlighter with
 // a lightweight synchronous stub so tests don't hit Suspense boundaries.
-vi.mock("./optimized-syntax-highlighter", () => ({
-  default: ({ children }: { children: React.ReactNode }) => (
-    <pre data-testid="syntax-highlighter">{children}</pre>
-  ),
+vi.mock('./optimized-syntax-highlighter', () => ({
+  default: ({ children }: { children: React.ReactNode }) => <pre data-testid="syntax-highlighter">{children}</pre>,
 }));
 
 // Mock clipboard
@@ -31,48 +29,48 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
   disconnect: vi.fn(),
 }));
 
-describe("JsonView", () => {
-  it("renders JSON string correctly", () => {
-    const data = { key: "value" };
+describe('JsonView', () => {
+  it('renders JSON string correctly', () => {
+    const data = { key: 'value' };
     render(<JsonView data={data} />);
     // SyntaxHighlighter might break it up into spans, so we search for text parts
     expect(screen.getByText(/"key"/)).toBeInTheDocument();
     expect(screen.getByText(/"value"/)).toBeInTheDocument();
   });
 
-  it("renders null correctly", () => {
+  it('renders null correctly', () => {
     render(<JsonView data={null} />);
-    expect(screen.getByText("null")).toBeInTheDocument();
+    expect(screen.getByText('null')).toBeInTheDocument();
   });
 
-  it("copies to clipboard", () => {
-    const data = { foo: "bar" };
+  it('copies to clipboard', () => {
+    const data = { foo: 'bar' };
     render(<JsonView data={data} />);
 
     // The copy button is initially hidden (opacity 0) but present in DOM
-    const copyButton = screen.getByTitle("Copy JSON");
+    const copyButton = screen.getByTitle('Copy JSON');
     fireEvent.click(copyButton);
 
     expect(mockWriteText).toHaveBeenCalledWith(JSON.stringify(data, null, 2));
   });
 
-  it("supports smart table view", async () => {
+  it('supports smart table view', async () => {
     const data = [
-      { id: 1, name: "Alice" },
-      { id: 2, name: "Bob" },
+        { id: 1, name: 'Alice' },
+        { id: 2, name: 'Bob' }
     ];
     render(<JsonView data={data} smartTable={true} />);
 
     // Should render table button
-    expect(screen.getByText("Table")).toBeInTheDocument();
+    expect(screen.getByText('Table')).toBeInTheDocument();
 
     // Default mode is Smart (Table)
-    expect(screen.getByText("Alice")).toBeInTheDocument();
-    expect(screen.getByText("Bob")).toBeInTheDocument();
+    expect(screen.getByText('Alice')).toBeInTheDocument();
+    expect(screen.getByText('Bob')).toBeInTheDocument();
 
     // Switch to JSON (Raw) - use act to handle the Suspense boundary of the
     // lazily-loaded SyntaxHighlighter component
-    const jsonBtn = screen.getByText("Raw");
+    const jsonBtn = screen.getByText('Raw');
     await act(async () => {
       fireEvent.click(jsonBtn);
     });
@@ -80,22 +78,22 @@ describe("JsonView", () => {
     expect(await screen.findByText(/"Alice"/)).toBeInTheDocument();
   });
 
-  it("collapses long content", () => {
-    // We can't easily test visual height in jsdom, but we can check if the collapse button renders
-    // and toggles state.
-    const data = { key: "very long content" };
-    // maxHeight defaults to 400.
+  it('collapses long content', () => {
+      // We can't easily test visual height in jsdom, but we can check if the collapse button renders
+      // and toggles state.
+      const data = { key: 'very long content' };
+      // maxHeight defaults to 400.
 
-    render(<JsonView data={data} maxHeight={100} />);
+      render(<JsonView data={data} maxHeight={100} />);
 
-    // The button "Show More" should be present if we force it?
-    // Wait, render logic says:
-    // const showCollapse = maxHeight > 0;
-    // ... {showCollapse && ( ... button ... )}
+      // The button "Show More" should be present if we force it?
+      // Wait, render logic says:
+      // const showCollapse = maxHeight > 0;
+      // ... {showCollapse && ( ... button ... )}
 
-    // So the button is ALWAYS rendered if maxHeight > 0?
-    // Yes, my implementation:
-    /*
+      // So the button is ALWAYS rendered if maxHeight > 0?
+      // Yes, my implementation:
+      /*
         {showCollapse && (
             <div className="...">
                 <Button ...>
@@ -104,15 +102,15 @@ describe("JsonView", () => {
             </div>
         )}
       */
-    // Wait, checking my implementation:
-    // It renders the button unconditionally if showCollapse is true?
-    // Yes. It doesn't check if the content *actually* exceeds maxHeight.
-    // This is a known limitation I accepted in comments:
-    // "Calculate approximate lines to guess if we need expand button without rendering? Hard to do accurately."
+      // Wait, checking my implementation:
+      // It renders the button unconditionally if showCollapse is true?
+      // Yes. It doesn't check if the content *actually* exceeds maxHeight.
+      // This is a known limitation I accepted in comments:
+      // "Calculate approximate lines to guess if we need expand button without rendering? Hard to do accurately."
 
-    expect(screen.getByText("Show More")).toBeInTheDocument();
+      expect(screen.getByText('Show More')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByText("Show More"));
-    expect(screen.getByText("Show Less")).toBeInTheDocument();
+      fireEvent.click(screen.getByText('Show More'));
+      expect(screen.getByText('Show Less')).toBeInTheDocument();
   });
 });

@@ -57,16 +57,16 @@ export interface ExternalServer {
  * A server discovered from the Community (Awesome List).
  */
 export interface CommunityServer {
-  /** The category or section where this server was found (e.g., "Browser Automation"). */
-  category: string;
-  /** The name of the server. */
-  name: string;
-  /** The URL to the server's repository or documentation. */
-  url: string;
-  /** A brief description of the server's capabilities. */
-  description: string;
-  /** A list of tags or keywords associated with the server (e.g., emojis). */
-  tags: string[];
+    /** The category or section where this server was found (e.g., "Browser Automation"). */
+    category: string;
+    /** The name of the server. */
+    name: string;
+    /** The URL to the server's repository or documentation. */
+    url: string;
+    /** A brief description of the server's capabilities. */
+    description: string;
+    /** A list of tags or keywords associated with the server (e.g., emojis). */
+    tags: string[];
 }
 
 const PUBLIC_MARKETPLACES: ExternalMarketplace[] = [
@@ -75,15 +75,15 @@ const PUBLIC_MARKETPLACES: ExternalMarketplace[] = [
     name: "MCP Market",
     url: "https://mcpmarket.com", // We might use a proxy or API if available
     description: "Community curated MCP servers.",
-    icon: "Globe",
+    icon: "Globe"
   },
   {
-    id: "smithery",
-    name: "Smithery",
-    url: "https://smithery.ai",
-    description: "Discover and manage AI agents and tools.",
-    icon: "Box",
-  },
+      id: "smithery",
+      name: "Smithery",
+      url: "https://smithery.ai",
+      description: "Discover and manage AI agents and tools.",
+      icon: "Box"
+  }
 ];
 
 /**
@@ -96,11 +96,11 @@ export const marketplaceService = {
    */
   fetchOfficialCollections: async (): Promise<ServiceCollection[]> => {
     try {
-      const collections = await apiClient.listCollections();
-      return collections as ServiceCollection[];
+        const collections = await apiClient.listCollections();
+        return collections as ServiceCollection[];
     } catch (e) {
-      console.error("Failed to fetch official collections", e);
-      return [];
+        console.error("Failed to fetch official collections", e);
+        return [];
     }
   },
 
@@ -117,50 +117,49 @@ export const marketplaceService = {
    * @param marketplaceId The ID of the marketplace to query.
    * @returns A promise that resolves to a list of external servers.
    */
-  fetchExternalServers: async (
-    marketplaceId: string,
-  ): Promise<ExternalServer[]> => {
+  fetchExternalServers: async (marketplaceId: string): Promise<ExternalServer[]> => {
     // Mock fetching from external source
     // Real implementation would scrape or use API of the target marketplace
-    if (marketplaceId === "mcpmarket") {
-      return [
-        {
-          id: "linear",
-          name: "Linear",
-          description: "Linear issue tracking integration",
-          author: "Figma",
-          config: {
-            id: "linear",
-            name: "Linear",
-            version: "1.0.0",
-            commandLineService: {
-              command: "npx -y @modelcontextprotocol/server-linear",
-              env: { LINEAR_API_KEY: { plainText: "", validationRegex: "" } },
-              workingDirectory: "",
-              tools: [],
-              resources: [],
-              prompts: [],
-              calls: {},
-              communicationProtocol: 0,
-              local: false,
-            },
-            disable: false,
-            sanitizedName: "linear",
-            priority: 0,
-            loadBalancingStrategy: 0,
-            callPolicies: [],
-            preCallHooks: [],
-            postCallHooks: [],
-            prompts: [],
+    if (marketplaceId === 'mcpmarket') {
+        return [
+            {
+                id: 'linear',
+                name: 'Linear',
+                description: 'Linear issue tracking integration',
+                author: 'Figma',
+                config: {
+                    id: 'linear',
+                    name: 'Linear',
+                    version: '1.0.0',
+                    commandLineService: {
+                        command: 'npx -y @modelcontextprotocol/server-linear',
+                        env: { "LINEAR_API_KEY": { plainText: "", validationRegex: "" } },
+                        workingDirectory: "",
+                        tools: [],
+                        resources: [],
+                        prompts: [],
+                        calls: {},
+                        communicationProtocol: 0,
+                        local: false
+                    },
+                    disable: false,
+                    sanitizedName: "linear",
+                    priority: 0,
+                    loadBalancingStrategy: 0,
+                    callPolicies: [],
+                    preCallHooks: [],
+                    postCallHooks: [],
+                    prompts: [],
 
-            autoDiscoverTool: false,
-            configError: "",
-            configurationSchema: "",
-            readOnly: false,
-            tags: [],
-          },
-        },
-      ];
+                    autoDiscoverTool: false,
+                    configError: "",
+                    configurationSchema: "",
+                    readOnly: false,
+                    tags: []
+                }
+
+            }
+        ];
     }
     return [];
   },
@@ -170,68 +169,63 @@ export const marketplaceService = {
    * @returns A promise that resolves to a list of CommunityServer objects.
    */
   fetchCommunityServers: async (): Promise<CommunityServer[]> => {
-    try {
-      const response = await fetch(
-        "https://raw.githubusercontent.com/punkpeye/awesome-mcp-servers/main/README.md",
-      );
-      if (!response.ok) throw new Error("Failed to fetch Awesome list");
-      const markdown = await response.text();
+      try {
+          const response = await fetch('https://raw.githubusercontent.com/punkpeye/awesome-mcp-servers/main/README.md');
+          if (!response.ok) throw new Error('Failed to fetch Awesome list');
+          const markdown = await response.text();
 
-      const servers: CommunityServer[] = [];
-      const lines = markdown.split("\n");
-      let currentCategory = "Uncategorized";
+          const servers: CommunityServer[] = [];
+          const lines = markdown.split('\n');
+          let currentCategory = "Uncategorized";
 
-      // Regex to match: * [Name](URL) Tags - Description OR - [Name](URL) Tags - Description
-      const itemRegex =
-        /^\s*[\-\*]\s+\[([^\]]+)\]\(([^)]+)\)\s*(.*?)\s*-\s*(.*)$/;
+          // Regex to match: * [Name](URL) Tags - Description OR - [Name](URL) Tags - Description
+          const itemRegex = /^\s*[\-\*]\s+\[([^\]]+)\]\(([^)]+)\)\s*(.*?)\s*-\s*(.*)$/;
 
-      // Regex to match category headers (e.g., "## 📂 File Systems") or "📂 File Systems" inside a list if structured differently
-      // The structure seems to be:
-      // * 📂 - [Browser Automation](#-browser-automation)
-      // ...
-      // ## 📂 Browser Automation
+          // Regex to match category headers (e.g., "## 📂 File Systems") or "📂 File Systems" inside a list if structured differently
+          // The structure seems to be:
+          // * 📂 - [Browser Automation](#-browser-automation)
+          // ...
+          // ## 📂 Browser Automation
 
-      for (const line of lines) {
-        if (line.startsWith("## ") || line.startsWith("### ")) {
-          // Clean up header to get category name
-          currentCategory = line.replace(/^#+\s*/, "").trim();
-          // Remove links in headers if any
-          currentCategory = currentCategory.replace(
-            /\[([^\]]+)\]\([^)]+\)/g,
-            "$1",
-          );
-          continue;
-        }
+          for (const line of lines) {
+              if (line.startsWith('## ') || line.startsWith('### ')) {
+                  // Clean up header to get category name
+                  currentCategory = line.replace(/^#+\s*/, '').trim();
+                  // Remove links in headers if any
+                  currentCategory = currentCategory.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+                  continue;
+              }
 
-        const match = line.match(itemRegex);
-        if (match) {
-          const name = match[1].trim();
-          const url = match[2].trim();
-          const tagsRaw = match[3].trim();
-          const description = match[4].trim();
+              const match = line.match(itemRegex);
+              if (match) {
+                  const name = match[1].trim();
+                  const url = match[2].trim();
+                  const tagsRaw = match[3].trim();
+                  const description = match[4].trim();
 
-          // Extract emojis as tags
-          // Simple heuristic: split by space, keep if it's emoji-like or short code
-          const tags = tagsRaw.split(/\s+/).filter((t) => t.length > 0);
+                  // Extract emojis as tags
+                  // Simple heuristic: split by space, keep if it's emoji-like or short code
+                  const tags = tagsRaw.split(/\s+/).filter(t => t.length > 0);
 
-          // Filter out "TOC" items which might look like servers but point to anchors
-          if (url.startsWith("#")) continue;
+                  // Filter out "TOC" items which might look like servers but point to anchors
+                  if (url.startsWith('#')) continue;
 
-          servers.push({
-            category: currentCategory,
-            name,
-            url,
-            description,
-            tags,
-          });
-        }
+                  servers.push({
+                      category: currentCategory,
+                      name,
+                      url,
+                      description,
+                      tags
+                  });
+              }
+          }
+          return servers;
+      } catch (error) {
+          console.error("Error fetching community servers:", error);
+          return [];
       }
-      return servers;
-    } catch (error) {
-      console.error("Error fetching community servers:", error);
-      return [];
-    }
   },
+
 
   /**
    * Imports a collection from a URL.
@@ -239,15 +233,15 @@ export const marketplaceService = {
    * @returns A promise that resolves to the imported collection.
    */
   importCollection: async (url: string): Promise<ServiceCollection> => {
-    // Fetch from URL, validate, return
-    // Mock for now
-    return {
-      name: "Imported Collection",
-      description: `Imported from ${url}`,
-      author: "Unknown",
-      version: "0.0.1",
-      services: [],
-    };
+     // Fetch from URL, validate, return
+     // Mock for now
+     return {
+         name: "Imported Collection",
+         description: `Imported from ${url}`,
+         author: "Unknown",
+         version: "0.0.1",
+         services: []
+     };
   },
 
   // Local Storage Logic
@@ -257,14 +251,14 @@ export const marketplaceService = {
    * @returns A list of locally stored service collections.
    */
   fetchLocalCollections: (): ServiceCollection[] => {
-    if (typeof window === "undefined") return [];
-    try {
-      const stored = localStorage.getItem("mcp_local_collections");
-      return stored ? JSON.parse(stored) : [];
-    } catch (e) {
-      console.error("Failed to parse local collections", e);
-      return [];
-    }
+      if (typeof window === 'undefined') return [];
+      try {
+          const stored = localStorage.getItem('mcp_local_collections');
+          return stored ? JSON.parse(stored) : [];
+      } catch (e) {
+          console.error("Failed to parse local collections", e);
+          return [];
+      }
   },
 
   /**
@@ -272,16 +266,16 @@ export const marketplaceService = {
    * @param collection The collection to save.
    */
   saveLocalCollection: (collection: ServiceCollection) => {
-    if (typeof window === "undefined") return;
-    const current = marketplaceService.fetchLocalCollections();
-    // Update if exists or append
-    const idx = current.findIndex((c) => c.name === collection.name); // Simple dedupe by name for now
-    if (idx >= 0) {
-      current[idx] = collection;
-    } else {
-      current.push(collection);
-    }
-    localStorage.setItem("mcp_local_collections", JSON.stringify(current));
+      if (typeof window === 'undefined') return;
+      const current = marketplaceService.fetchLocalCollections();
+      // Update if exists or append
+      const idx = current.findIndex(c => c.name === collection.name); // Simple dedupe by name for now
+      if (idx >= 0) {
+          current[idx] = collection;
+      } else {
+          current.push(collection);
+      }
+      localStorage.setItem('mcp_local_collections', JSON.stringify(current));
   },
 
   /**
@@ -289,9 +283,9 @@ export const marketplaceService = {
    * @param name The name of the collection to delete.
    */
   deleteLocalCollection: (name: string) => {
-    if (typeof window === "undefined") return;
-    const current = marketplaceService.fetchLocalCollections();
-    const newCols = current.filter((c) => c.name !== name);
-    localStorage.setItem("mcp_local_collections", JSON.stringify(newCols));
-  },
+      if (typeof window === 'undefined') return;
+      const current = marketplaceService.fetchLocalCollections();
+      const newCols = current.filter(c => c.name !== name);
+      localStorage.setItem('mcp_local_collections', JSON.stringify(newCols));
+  }
 };

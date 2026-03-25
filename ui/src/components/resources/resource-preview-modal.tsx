@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+
+
 import * as React from "react";
 import {
   Dialog,
@@ -122,75 +124,42 @@ export function ResourcePreviewModal({
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-4xl h-[85vh] flex flex-col p-0 gap-0">
         <DialogHeader className="p-4 border-b flex flex-row items-center justify-between space-y-0">
-          <div className="flex flex-col gap-1 overflow-hidden">
-            <div className="flex items-center gap-3">
-              <DialogTitle className="truncate" title={resource.name}>
-                {resource.name}
-              </DialogTitle>
-              <Badge
-                variant="outline"
-                className="text-xs font-normal whitespace-nowrap"
-              >
-                {content?.mimeType || resource.mimeType}
-              </Badge>
+            <div className="flex flex-col gap-1 overflow-hidden">
+                <div className="flex items-center gap-3">
+                    <DialogTitle className="truncate" title={resource.name}>{resource.name}</DialogTitle>
+                    <Badge variant="outline" className="text-xs font-normal whitespace-nowrap">
+                        {content?.mimeType || resource.mimeType}
+                    </Badge>
+                </div>
+                <DialogDescription className="sr-only">
+                    Preview of resource {resource.name}
+                </DialogDescription>
             </div>
-            <DialogDescription className="sr-only">
-              Preview of resource {resource.name}
-            </DialogDescription>
-          </div>
 
-          <div className="flex items-center gap-1 pl-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8"
-              onClick={() => fetchContent(resource.uri)}
-              title="Refresh"
-            >
-              <RefreshCw
-                className={`h-4 w-4 ${loading ? "animate-spin" : ""}`}
-              />
-            </Button>
-            <div className="h-4 w-px bg-border mx-1" />
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 px-2 text-xs"
-              onClick={handleCopyContent}
-              disabled={!content?.text}
-            >
-              <Copy className="h-3 w-3 mr-1" /> Copy
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 px-2 text-xs"
-              onClick={handleDownload}
-              disabled={!content}
-            >
-              <Download className="h-3 w-3 mr-1" /> Download
-            </Button>
-            <div className="h-4 w-px bg-border mx-1" />
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8"
-              onClick={onClose}
-              title="Close"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+            <div className="flex items-center gap-1 pl-2">
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => fetchContent(resource.uri)} title="Refresh">
+                    <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                </Button>
+                <div className="h-4 w-px bg-border mx-1" />
+                 <Button variant="ghost" size="sm" className="h-8 px-2 text-xs" onClick={handleCopyContent} disabled={!content?.text}>
+                    <Copy className="h-3 w-3 mr-1" /> Copy
+                </Button>
+                <Button variant="ghost" size="sm" className="h-8 px-2 text-xs" onClick={handleDownload} disabled={!content}>
+                    <Download className="h-3 w-3 mr-1" /> Download
+                </Button>
+                <div className="h-4 w-px bg-border mx-1" />
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onClose} title="Close">
+                    <X className="h-4 w-4" />
+                </Button>
+            </div>
         </DialogHeader>
 
         <div className="flex-1 overflow-hidden relative bg-muted/5">
-          <ResourceViewer content={content} loading={loading} />
+             <ResourceViewer content={content} loading={loading} />
         </div>
 
         <div className="p-2 border-t bg-muted/20 text-xs text-muted-foreground px-4 flex items-center gap-2">
-          <span className="font-mono bg-muted px-1.5 py-0.5 rounded select-all truncate max-w-2xl">
-            {resource.uri}
-          </span>
+            <span className="font-mono bg-muted px-1.5 py-0.5 rounded select-all truncate max-w-2xl">{resource.uri}</span>
         </div>
       </DialogContent>
     </Dialog>

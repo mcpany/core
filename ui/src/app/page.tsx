@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+
+
 import { useState, useEffect } from "react";
 import { DashboardGrid } from "@/components/dashboard/dashboard-grid";
 import { Button } from "@/components/ui/button";
@@ -24,30 +26,30 @@ export default function DashboardPage() {
 
   useEffect(() => {
     async function checkServices() {
-      try {
-        const services = await apiClient.listServices();
-        setHasServices(services && services.length > 0);
-      } catch (e) {
-        console.error("Failed to check services", e);
-        // Default to showing dashboard if error, to avoid getting stuck on hero
-        setHasServices(true);
-      } finally {
-        setLoading(false);
-      }
+        try {
+            const services = await apiClient.listServices();
+            setHasServices(services && services.length > 0);
+        } catch (e) {
+            console.error("Failed to check services", e);
+            // Default to showing dashboard if error, to avoid getting stuck on hero
+            setHasServices(true);
+        } finally {
+            setLoading(false);
+        }
     }
     checkServices();
   }, []);
 
   if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
-    );
+      return (
+          <div className="flex h-screen items-center justify-center">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+      );
   }
 
   if (!hasServices) {
-    return <OnboardingHero />;
+      return <OnboardingHero />;
   }
 
   return (

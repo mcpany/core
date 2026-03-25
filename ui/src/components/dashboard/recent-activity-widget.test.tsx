@@ -55,8 +55,8 @@ describe("RecentActivityWidget", () => {
     render(<RecentActivityWidget />);
 
     await waitFor(() => {
-      expect(screen.getByText("get_weather")).toBeInTheDocument();
-      expect(screen.getByText("list_users")).toBeInTheDocument();
+        expect(screen.getByText("get_weather")).toBeInTheDocument();
+        expect(screen.getByText("list_users")).toBeInTheDocument();
     });
 
     // Check for success/error indicators (indirectly via text content or class presence if we query by role, but simple text check is good for now)
@@ -74,9 +74,7 @@ describe("RecentActivityWidget", () => {
     render(<RecentActivityWidget />);
 
     await waitFor(() => {
-      expect(
-        screen.getByText("No recent activity recorded."),
-      ).toBeInTheDocument();
+        expect(screen.getByText("No recent activity recorded.")).toBeInTheDocument();
     });
   });
 
@@ -89,7 +87,7 @@ describe("RecentActivityWidget", () => {
     render(<RecentActivityWidget />);
 
     await waitFor(() => {
-      expect(screen.getByText("Failed to load activity.")).toBeInTheDocument();
+        expect(screen.getByText("Failed to load activity.")).toBeInTheDocument();
     });
   });
 });

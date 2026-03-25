@@ -2,7 +2,7 @@
  * Copyright 2025 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast"
 import {
   Toast,
   ToastClose,
@@ -10,14 +10,14 @@ import {
   ToastProvider,
   ToastTitle,
   ToastViewport,
-} from "@/components/ui/toast";
+} from "@/components/ui/toast"
 
 /**
  * Toaster component.
  * @returns The rendered component.
  */
 export function Toaster() {
-  const { toasts } = useToast();
+  const { toasts } = useToast()
 
   return (
     <ToastProvider>
@@ -33,9 +33,9 @@ export function Toaster() {
             {action}
             <ToastClose />
           </Toast>
-        );
+        )
       })}
       <ToastViewport />
     </ToastProvider>
-  );
+  )
 }

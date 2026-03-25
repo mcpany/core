@@ -19,9 +19,7 @@ export default function PlaygroundPage() {
         fallback={
           <div className="flex items-center justify-center h-full">
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-            <span className="ml-2 text-muted-foreground">
-              Loading playground...
-            </span>
+            <span className="ml-2 text-muted-foreground">Loading playground...</span>
           </div>
         }
       >

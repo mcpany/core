@@ -1,19 +1,15 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "@/components/ui/card";
-import { Plus, Trash2, Edit } from "lucide-react";
-import { Skill, SkillService } from "@/lib/skill-service";
-import { Link } from "react-router-dom";
-import { toast } from "sonner";
+
+
+import React, { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardDescription, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Plus, Trash2, Edit } from 'lucide-react';
+import { Skill, SkillService } from '@/lib/skill-service';
+import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
 
 /**
  * SkillList component.
@@ -32,21 +28,20 @@ export default function SkillList() {
       const list = await SkillService.list();
       setSkills(list);
     } catch (err: any) {
-      toast.error("Failed to load skills: " + err.message);
+      toast.error('Failed to load skills: ' + err.message);
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (name: string) => {
-    if (!confirm(`Are you sure you want to delete the skill "${name}"?`))
-      return;
+    if (!confirm(`Are you sure you want to delete the skill "${name}"?`)) return;
     try {
       await SkillService.delete(name);
-      toast.success("Skill deleted");
+      toast.success('Skill deleted');
       loadSkills();
     } catch (err: any) {
-      toast.error("Failed to delete skill: " + err.message);
+      toast.error('Failed to delete skill: ' + err.message);
     }
   };
 
@@ -103,10 +98,7 @@ export default function SkillList() {
                     {skill.assets.length} Assets
                   </span>
                 )}
-                <Link
-                  to={`/skills/${skill.name}`}
-                  className="ml-auto text-primary hover:underline"
-                >
+                <Link to={`/skills/${skill.name}`} className="ml-auto text-primary hover:underline">
                   View Details
                 </Link>
               </div>

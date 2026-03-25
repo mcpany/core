@@ -11,14 +11,8 @@ import { vi } from "vitest";
 // Mock log-viewer module to avoid next/dynamic issues with Virtuoso in tests
 vi.mock("./log-viewer", () => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const React = require("react");
-  const HighlightText = ({
-    text,
-    regex,
-  }: {
-    text: string;
-    regex: RegExp | null;
-  }) => {
+  const React = require('react');
+  const HighlightText = ({ text, regex }: { text: string; regex: RegExp | null }) => {
     if (!regex || !text) return React.createElement(React.Fragment, null, text);
     const parts = text.split(regex);
     return React.createElement(
@@ -26,22 +20,16 @@ vi.mock("./log-viewer", () => {
       null,
       parts.map((part: string, i: number) =>
         i % 2 === 1
-          ? React.createElement(
-              "mark",
-              { key: i, className: "bg-yellow-500/40" },
-              part,
-            )
-          : part,
-      ),
+          ? React.createElement('mark', { key: i, className: 'bg-yellow-500/40' }, part)
+          : part
+      )
     );
   };
 
   const isLikelyJson = (str: string) => {
-    const trimmed = (str || "").trim();
-    return (
-      (trimmed.startsWith("{") && trimmed.endsWith("}")) ||
-      (trimmed.startsWith("[") && trimmed.endsWith("]"))
-    );
+    const trimmed = (str || '').trim();
+    return (trimmed.startsWith('{') && trimmed.endsWith('}')) ||
+           (trimmed.startsWith('[') && trimmed.endsWith(']'));
   };
 
   const LogRowComponent = ({ log, highlightRegex }: any) => {
@@ -49,47 +37,32 @@ vi.mock("./log-viewer", () => {
     const isPotentialJson = isLikelyJson(log.message);
     let jsonContent = null;
     if (isExpanded && isPotentialJson) {
-      try {
-        jsonContent = JSON.parse(log.message);
-      } catch {
-        jsonContent = null;
-      }
+      try { jsonContent = JSON.parse(log.message); } catch { jsonContent = null; }
     }
     return React.createElement(
-      "div",
-      { "data-testid": `log-row-${log.id}` },
-      isPotentialJson &&
-        React.createElement("button", {
-          "aria-label": isExpanded ? "Collapse JSON" : "Expand JSON",
-          onClick: () => setIsExpanded(!isExpanded),
-        }),
-      React.createElement(
-        "span",
-        null,
-        React.createElement(HighlightText, {
-          text: log.message,
-          regex: highlightRegex,
-        }),
+      'div',
+      { 'data-testid': `log-row-${log.id}` },
+      isPotentialJson && React.createElement(
+        'button',
+        {
+          'aria-label': isExpanded ? 'Collapse JSON' : 'Expand JSON',
+          onClick: () => setIsExpanded(!isExpanded)
+        }
       ),
-      isExpanded &&
-        isPotentialJson &&
-        !jsonContent &&
-        React.createElement("div", null, "Invalid JSON"),
+      React.createElement('span', null, React.createElement(HighlightText, { text: log.message, regex: highlightRegex })),
+      isExpanded && isPotentialJson && !jsonContent &&
+        React.createElement('div', null, 'Invalid JSON')
     );
   };
 
   return {
     LogViewer: ({ logs, highlightRegex }: any) =>
       React.createElement(
-        "div",
-        { "data-testid": "log-viewer" },
+        'div',
+        { 'data-testid': 'log-viewer' },
         logs.map((log: any) =>
-          React.createElement(LogRowComponent, {
-            key: log.id,
-            log,
-            highlightRegex,
-          }),
-        ),
+          React.createElement(LogRowComponent, { key: log.id, log, highlightRegex })
+        )
       ),
     timeFormatter: null,
     LogEntry: {},
@@ -98,12 +71,12 @@ vi.mock("./log-viewer", () => {
 
 // Mock next/navigation
 vi.mock("next/navigation", () => ({
-  useSearchParams: () => ({
-    get: (key: string) => {
-      if (key === "source") return null;
-      return null;
-    },
-  }),
+    useSearchParams: () => ({
+        get: (key: string) => {
+            if (key === "source") return null;
+            return null;
+        }
+    })
 }));
 
 describe("LogStream", () => {
@@ -120,8 +93,8 @@ describe("LogStream", () => {
       onerror: null,
     };
 
-    global.WebSocket = vi.fn(function () {
-      return mockWebSocket;
+    global.WebSocket = vi.fn(function() {
+        return mockWebSocket;
     }) as any;
   });
 
@@ -150,9 +123,7 @@ describe("LogStream", () => {
 
   it("connects to the correct WebSocket URL", () => {
     render(<LogStream />);
-    expect(global.WebSocket).toHaveBeenCalledWith(
-      expect.stringContaining("/api/v1/ws/logs"),
-    );
+    expect(global.WebSocket).toHaveBeenCalledWith(expect.stringContaining("/api/v1/ws/logs"));
   });
 
   it("stops processing logs when paused", async () => {
@@ -170,17 +141,16 @@ describe("LogStream", () => {
       timestamp: new Date().toISOString(),
       level: "INFO",
       message: "First Log",
-      source: "test",
+      source: "test"
     };
 
     act(() => {
-      if (mockWebSocket.onmessage)
-        mockWebSocket.onmessage({ data: JSON.stringify(log1) });
+      if (mockWebSocket.onmessage) mockWebSocket.onmessage({ data: JSON.stringify(log1) });
     });
 
     // Advance time to flush buffer (100ms interval)
     act(() => {
-      vi.advanceTimersByTime(500);
+        vi.advanceTimersByTime(500);
     });
 
     expect(screen.getByText("First Log")).toBeInTheDocument();
@@ -198,17 +168,16 @@ describe("LogStream", () => {
       timestamp: new Date().toISOString(),
       level: "INFO",
       message: "Second Log",
-      source: "test",
+      source: "test"
     };
 
     act(() => {
-      if (mockWebSocket.onmessage)
-        mockWebSocket.onmessage({ data: JSON.stringify(log2) });
+      if (mockWebSocket.onmessage) mockWebSocket.onmessage({ data: JSON.stringify(log2) });
     });
 
     // Advance time
     act(() => {
-      vi.advanceTimersByTime(500);
+        vi.advanceTimersByTime(500);
     });
 
     // Should NOT be in document
@@ -224,17 +193,16 @@ describe("LogStream", () => {
       timestamp: new Date().toISOString(),
       level: "INFO",
       message: "Third Log",
-      source: "test",
+      source: "test"
     };
 
     act(() => {
-      if (mockWebSocket.onmessage)
-        mockWebSocket.onmessage({ data: JSON.stringify(log3) });
+      if (mockWebSocket.onmessage) mockWebSocket.onmessage({ data: JSON.stringify(log3) });
     });
 
     // Advance time
     act(() => {
-      vi.advanceTimersByTime(500);
+        vi.advanceTimersByTime(500);
     });
 
     expect(screen.getByText("Third Log")).toBeInTheDocument();
@@ -257,7 +225,7 @@ describe("LogStream", () => {
       timestamp: new Date().toISOString(),
       level: "INFO",
       message: "Log from Service A",
-      source: "service-a",
+      source: "service-a"
     };
 
     const logB = {
@@ -265,19 +233,19 @@ describe("LogStream", () => {
       timestamp: new Date().toISOString(),
       level: "INFO",
       message: "Log from Service B",
-      source: "service-b",
+      source: "service-b"
     };
 
     act(() => {
       if (mockWebSocket.onmessage) {
-        mockWebSocket.onmessage({ data: JSON.stringify(logA) });
-        mockWebSocket.onmessage({ data: JSON.stringify(logB) });
+          mockWebSocket.onmessage({ data: JSON.stringify(logA) });
+          mockWebSocket.onmessage({ data: JSON.stringify(logB) });
       }
     });
 
     // Advance time to flush buffer
     act(() => {
-      vi.advanceTimersByTime(500);
+        vi.advanceTimersByTime(500);
     });
 
     // Verify both logs are present initially
@@ -289,12 +257,12 @@ describe("LogStream", () => {
     // Find the Selects. There are two (Source and Level).
     // We can find the one that contains the "service-a" option.
     const selects = screen.getAllByTestId("mock-select");
-    const sourceSelect = selects.find((select) =>
-      select.innerHTML.includes("service-a"),
+    const sourceSelect = selects.find(select =>
+      select.innerHTML.includes("service-a")
     );
 
     if (!sourceSelect) {
-      throw new Error("Could not find Source select");
+        throw new Error("Could not find Source select");
     }
 
     // Change value
@@ -319,16 +287,15 @@ describe("LogStream", () => {
       timestamp: new Date().toISOString(),
       level: "INFO",
       message: JSON.stringify(jsonMessage),
-      source: "json-test",
+      source: "json-test"
     };
 
     act(() => {
-      if (mockWebSocket.onmessage)
-        mockWebSocket.onmessage({ data: JSON.stringify(jsonLog) });
+      if (mockWebSocket.onmessage) mockWebSocket.onmessage({ data: JSON.stringify(jsonLog) });
     });
 
     act(() => {
-      vi.advanceTimersByTime(500);
+        vi.advanceTimersByTime(500);
     });
 
     // Check if the expand button exists
@@ -361,16 +328,15 @@ describe("LogStream", () => {
       timestamp: new Date().toISOString(),
       level: "INFO",
       message: "An error occurred in the system",
-      source: "backend",
+      source: "backend"
     };
 
     act(() => {
-      if (mockWebSocket.onmessage)
-        mockWebSocket.onmessage({ data: JSON.stringify(log) });
+      if (mockWebSocket.onmessage) mockWebSocket.onmessage({ data: JSON.stringify(log) });
     });
 
     act(() => {
-      vi.advanceTimersByTime(500);
+        vi.advanceTimersByTime(500);
     });
 
     // Enter search term
@@ -379,7 +345,7 @@ describe("LogStream", () => {
 
     // Advance time to allow for any deferred updates (useDeferredValue)
     act(() => {
-      vi.advanceTimersByTime(500);
+        vi.advanceTimersByTime(500);
     });
 
     // We expect the word "error" to be wrapped in a <mark> tag
@@ -404,16 +370,15 @@ describe("LogStream", () => {
       timestamp: new Date().toISOString(),
       level: "INFO",
       message: invalidJsonMessage,
-      source: "test",
+      source: "test"
     };
 
     act(() => {
-      if (mockWebSocket.onmessage)
-        mockWebSocket.onmessage({ data: JSON.stringify(log) });
+      if (mockWebSocket.onmessage) mockWebSocket.onmessage({ data: JSON.stringify(log) });
     });
 
     act(() => {
-      vi.advanceTimersByTime(500);
+        vi.advanceTimersByTime(500);
     });
 
     // Check if the expand button exists (heuristic should pass)

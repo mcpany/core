@@ -3,13 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { StackEditor } from "@/components/stacks/stack-editor";
-import { apiClient } from "@/lib/client";
-import { vi } from "vitest";
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { StackEditor } from '@/components/stacks/stack-editor';
+import { apiClient } from '@/lib/client';
+import { vi } from 'vitest';
 
 // Mock the API client
-vi.mock("@/lib/client", () => ({
+vi.mock('@/lib/client', () => ({
   apiClient: {
     getStackConfig: vi.fn(),
     saveStackConfig: vi.fn(),
@@ -19,14 +19,8 @@ vi.mock("@/lib/client", () => ({
 }));
 
 // Mock ConfigEditor to render a simple textarea for testing
-vi.mock("@/components/stacks/config-editor", () => ({
-  ConfigEditor: ({
-    value,
-    onChange,
-  }: {
-    value: string;
-    onChange: (val: string) => void;
-  }) => (
+vi.mock('@/components/stacks/config-editor', () => ({
+  ConfigEditor: ({ value, onChange }: { value: string; onChange: (val: string) => void }) => (
     <textarea
       value={value}
       onChange={(e) => onChange(e.target.value)}
@@ -36,17 +30,17 @@ vi.mock("@/components/stacks/config-editor", () => ({
 }));
 
 // Mock ServicePalette to show expected text
-vi.mock("@/components/stacks/service-palette", () => ({
+vi.mock('@/components/stacks/service-palette', () => ({
   ServicePalette: ({ onTemplateSelect }: any) => (
     <div data-testid="service-palette">Service Palette</div>
   ),
 }));
 
 // Mock StackVisualizer to show expected text based on YAML content
-vi.mock("@/components/stacks/stack-visualizer", () => ({
+vi.mock('@/components/stacks/stack-visualizer', () => ({
   StackVisualizer: ({ yamlContent }: { yamlContent: string }) => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const yaml = require("js-yaml");
+    const yaml = require('js-yaml');
     let hasServices = false;
     try {
       const doc = yaml.load(yamlContent) as any;
@@ -67,68 +61,63 @@ global.ResizeObserver = class ResizeObserver {
   disconnect() {}
 };
 
-describe("StackEditor", () => {
+describe('StackEditor', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("loads and displays configuration", async () => {
+  it('loads and displays configuration', async () => {
     (apiClient.getCollection as any).mockResolvedValue({
-      name: "test-stack",
-      services: [],
+      name: 'test-stack',
+      services: []
     });
 
     render(<StackEditor stackId="test-stack" />);
 
     await waitFor(() => {
-      expect(screen.getByText("config.yaml")).toBeInTheDocument();
+      expect(screen.getByText('config.yaml')).toBeInTheDocument();
       // The content will be a yaml dump of the collection.
       // Since services is empty array, it might be just "name: test-stack\nservices: {}\n" or similar.
       // Let's just check for the presence of the editor mock.
-      expect(screen.getByTestId("config-editor-mock")).toBeInTheDocument();
+      expect(screen.getByTestId('config-editor-mock')).toBeInTheDocument();
     });
   });
 
-  it("validates YAML content", async () => {
+  it('validates YAML content', async () => {
     (apiClient.getCollection as any).mockResolvedValue({
-      name: "test-stack",
-      services: [],
+      name: 'test-stack',
+      services: []
     });
 
     const { container } = render(<StackEditor stackId="test-stack" />);
 
     // Find textarea by selector if role is elusive
-    await waitFor(() =>
-      expect(screen.getByTestId("config-editor-mock")).toBeInTheDocument(),
-    );
-    const textarea = screen.getByTestId("config-editor-mock");
+    await waitFor(() => expect(screen.getByTestId('config-editor-mock')).toBeInTheDocument());
+    const textarea = screen.getByTestId('config-editor-mock');
 
     // Valid YAML
-    fireEvent.change(textarea, { target: { value: "key: value" } });
+    fireEvent.change(textarea, { target: { value: 'key: value' } });
     await waitFor(() => {
-      expect(screen.getByText("Valid YAML")).toBeInTheDocument();
+        expect(screen.getByText('Valid YAML')).toBeInTheDocument();
     });
 
     // Invalid YAML
     fireEvent.change(textarea, { target: { value: 'key: "unclosed quote' } });
 
     await waitFor(() => {
-      expect(screen.getByText("Invalid YAML")).toBeInTheDocument();
+         expect(screen.getByText('Invalid YAML')).toBeInTheDocument();
     });
   });
 
-  it("toggles palette and visualizer", async () => {
-    (apiClient.getCollection as any).mockResolvedValue({
-      name: "test-stack",
-      services: [],
-    });
+  it('toggles palette and visualizer', async () => {
+    (apiClient.getCollection as any).mockResolvedValue({ name: 'test-stack', services: [] });
     render(<StackEditor stackId="test-stack" />);
 
     // Wait for the component to finish loading
     await waitFor(() => {
-      expect(screen.getByText("Service Palette")).toBeInTheDocument();
+      expect(screen.getByText('Service Palette')).toBeInTheDocument();
     });
     // Since config is empty, visualizer shows "No services defined"
-    expect(screen.getByText("No services defined")).toBeInTheDocument();
+    expect(screen.getByText('No services defined')).toBeInTheDocument();
   });
 });

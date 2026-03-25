@@ -2,11 +2,11 @@
  * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
-import * as React from "react";
-import { Check, Copy, ExternalLink, Share2, AlertTriangle } from "lucide-react";
-import * as jsyaml from "js-yaml";
+import * as React from "react"
+import { Check, Copy, ExternalLink, Share2, AlertTriangle } from "lucide-react"
+import * as jsyaml from "js-yaml"
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -15,7 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/components/ui/dialog"
 import {
   Table,
   TableBody,
@@ -23,106 +23,104 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Textarea } from "@/components/ui/textarea";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { apiClient, UpstreamServiceConfig } from "@/lib/client";
-import { useToast } from "@/hooks/use-toast";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { sanitizeServiceConfig, SecretHandlingMode } from "@/lib/config-utils";
+} from "@/components/ui/table"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Textarea } from "@/components/ui/textarea"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Label } from "@/components/ui/label"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { apiClient, UpstreamServiceConfig } from "@/lib/client"
+import { useToast } from "@/hooks/use-toast"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { sanitizeServiceConfig, SecretHandlingMode } from "@/lib/config-utils"
 
 /**
  * ShareCollectionDialog component.
  * @returns The rendered component.
  */
 export function ShareCollectionDialog() {
-  const [open, setOpen] = React.useState(false);
-  const [services, setServices] = React.useState<UpstreamServiceConfig[]>([]);
-  const [selected, setSelected] = React.useState<Set<string>>(new Set());
-  const [generatedConfig, setGeneratedConfig] = React.useState("");
-  const [loading, setLoading] = React.useState(false);
-  const [secretMode, setSecretMode] =
-    React.useState<SecretHandlingMode>("redact");
-  const { toast } = useToast();
+  const [open, setOpen] = React.useState(false)
+  const [services, setServices] = React.useState<UpstreamServiceConfig[]>([])
+  const [selected, setSelected] = React.useState<Set<string>>(new Set())
+  const [generatedConfig, setGeneratedConfig] = React.useState("")
+  const [loading, setLoading] = React.useState(false)
+  const [secretMode, setSecretMode] = React.useState<SecretHandlingMode>('redact')
+  const { toast } = useToast()
 
   React.useEffect(() => {
     if (open) {
-      setLoading(true);
-      apiClient
-        .listServices()
+      setLoading(true)
+      apiClient.listServices()
         .then((data) => {
-          const list = Array.isArray(data) ? data : data.services || [];
-          setServices(list);
-          // Default Select All? Or None? Let's say None.
+             const list = Array.isArray(data) ? data : (data.services || []);
+             setServices(list);
+             // Default Select All? Or None? Let's say None.
         })
         .catch((err) => {
-          console.error("Failed to list services", err);
-          toast({
-            title: "Error fetching services",
-            description: "Could not load current services.",
-            variant: "destructive",
-          });
+            console.error("Failed to list services", err)
+            toast({
+                title: "Error fetching services",
+                description: "Could not load current services.",
+                variant: "destructive"
+            })
         })
-        .finally(() => setLoading(false));
+        .finally(() => setLoading(false))
     }
-  }, [open, toast]);
+  }, [open, toast])
 
   const toggleSelect = (name: string) => {
-    const newSelected = new Set(selected);
+    const newSelected = new Set(selected)
     if (newSelected.has(name)) {
-      newSelected.delete(name);
+      newSelected.delete(name)
     } else {
-      newSelected.add(name);
+      newSelected.add(name)
     }
-    setSelected(newSelected);
-  };
+    setSelected(newSelected)
+  }
 
   const toggleSelectAll = () => {
     if (selected.size === services.length) {
-      setSelected(new Set());
+      setSelected(new Set())
     } else {
-      setSelected(new Set(services.map((s) => s.name)));
+      setSelected(new Set(services.map(s => s.name)))
     }
-  };
+  }
 
   const generateConfig = () => {
-    const selectedServices = services.filter((s) => selected.has(s.name));
+    const selectedServices = services.filter(s => selected.has(s.name))
     // Clean up for export - remove IDs if they are system generated?
     // Usually keep basic config.
     // Helper to sanitize
-    const sanitized = selectedServices.map((s) => {
-      // Create a clean copy conformant to UpstreamServiceConfig for export
-      // We might want to remove 'connectionPool' status etc.
-      const { connectionPool, id, ...rest } = s as any;
-      // Apply secret sanitization
-      return sanitizeServiceConfig(rest, secretMode);
-    });
+    const sanitized = selectedServices.map(s => {
+        // Create a clean copy conformant to UpstreamServiceConfig for export
+        // We might want to remove 'connectionPool' status etc.
+        const { connectionPool, id, ...rest } = s as any;
+        // Apply secret sanitization
+        return sanitizeServiceConfig(rest, secretMode);
+    })
 
     const collection = {
-      name: "My Shared Collection",
-      description: "Exported from My MCP Any Instance",
-      services: sanitized,
-    };
+        name: "My Shared Collection",
+        description: "Exported from My MCP Any Instance",
+        services: sanitized
+    }
 
     try {
-      const yamlStr = jsyaml.dump(collection);
-      setGeneratedConfig(yamlStr);
-    } catch (e) {
-      console.error("YAML dump failed", e);
-      setGeneratedConfig(JSON.stringify(collection, null, 2));
+        const yamlStr = jsyaml.dump(collection)
+        setGeneratedConfig(yamlStr)
+    } catch(e) {
+        console.error("YAML dump failed", e)
+        setGeneratedConfig(JSON.stringify(collection, null, 2))
     }
-  };
+  }
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(generatedConfig);
+    navigator.clipboard.writeText(generatedConfig)
     toast({
       title: "Copied!",
       description: "Collection configuration copied to clipboard.",
-    });
-  };
+    })
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -141,157 +139,121 @@ export function ShareCollectionDialog() {
         </DialogHeader>
 
         {!generatedConfig ? (
-          <div className="grid gap-4 py-4">
+            <div className="grid gap-4 py-4">
             <div className="rounded-md border max-h-[300px] overflow-auto">
-              <Table>
+                <Table>
                 <TableHeader>
-                  <TableRow>
+                    <TableRow>
                     <TableHead className="w-[50px]">
-                      <Checkbox
-                        checked={
-                          services.length > 0 &&
-                          selected.size === services.length
-                        }
-                        onCheckedChange={toggleSelectAll}
-                      />
+                        <Checkbox
+                            checked={services.length > 0 && selected.size === services.length}
+                            onCheckedChange={toggleSelectAll}
+                        />
                     </TableHead>
                     <TableHead>Service Name</TableHead>
                     <TableHead>Type</TableHead>
-                  </TableRow>
+                    </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {loading ? (
-                    <TableRow>
-                      <TableCell colSpan={3} className="text-center">
-                        Loading...
-                      </TableCell>
-                    </TableRow>
-                  ) : services.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={3} className="text-center">
-                        No services found.
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    services.map((service) => (
-                      <TableRow key={service.name}>
-                        <TableCell>
-                          <Checkbox
-                            checked={selected.has(service.name)}
-                            onCheckedChange={() => toggleSelect(service.name)}
-                          />
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          {service.name}
-                        </TableCell>
-                        <TableCell>
-                          {service.commandLineService
-                            ? "Command"
-                            : service.httpService
-                              ? "HTTP"
-                              : service.grpcService
-                                ? "gRPC"
-                                : service.mcpService
-                                  ? "MCP"
-                                  : "Unknown"}
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
+                    {loading ? (
+                        <TableRow>
+                            <TableCell colSpan={3} className="text-center">Loading...</TableCell>
+                        </TableRow>
+                    ) : services.length === 0 ? (
+                        <TableRow>
+                            <TableCell colSpan={3} className="text-center">No services found.</TableCell>
+                        </TableRow>
+                    ) : (
+                        services.map((service) => (
+                        <TableRow key={service.name}>
+                            <TableCell>
+                            <Checkbox
+                                checked={selected.has(service.name)}
+                                onCheckedChange={() => toggleSelect(service.name)}
+                            />
+                            </TableCell>
+                            <TableCell className="font-medium">{service.name}</TableCell>
+                            <TableCell>
+                                {service.commandLineService ? "Command" :
+                                 service.httpService ? "HTTP" :
+                                 service.grpcService ? "gRPC" :
+                                 service.mcpService ? "MCP" : "Unknown"}
+                            </TableCell>
+                        </TableRow>
+                        ))
+                    )}
                 </TableBody>
-              </Table>
+                </Table>
             </div>
             <div className="py-4 border-t">
-              <Label className="mb-2 block text-sm font-medium">
-                Secret Handling
-              </Label>
-              <RadioGroup
-                value={secretMode}
-                onValueChange={(v) => setSecretMode(v as SecretHandlingMode)}
-                className="grid grid-cols-1 gap-2"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="redact" id="redact" />
-                  <Label
-                    htmlFor="redact"
-                    className="font-normal cursor-pointer"
-                  >
-                    Redact Secrets{" "}
-                    <span className="text-muted-foreground text-xs">
-                      (Replaces with &lt;REDACTED&gt;)
-                    </span>
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="template" id="template" />
-                  <Label
-                    htmlFor="template"
-                    className="font-normal cursor-pointer"
-                  >
-                    Template Variables{" "}
-                    <span className="text-muted-foreground text-xs">
-                      (Replaces with {"${VAR_NAME}"})
-                    </span>
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="unsafe" id="unsafe" />
-                  <Label
-                    htmlFor="unsafe"
-                    className="font-normal cursor-pointer text-amber-500"
-                  >
-                    Unsafe Export{" "}
-                    <span className="text-muted-foreground text-xs">
-                      (Keeps original values - Use with caution)
-                    </span>
-                  </Label>
-                </div>
-              </RadioGroup>
+                <Label className="mb-2 block text-sm font-medium">Secret Handling</Label>
+                <RadioGroup value={secretMode} onValueChange={(v) => setSecretMode(v as SecretHandlingMode)} className="grid grid-cols-1 gap-2">
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="redact" id="redact" />
+                        <Label htmlFor="redact" className="font-normal cursor-pointer">
+                            Redact Secrets <span className="text-muted-foreground text-xs">(Replaces with &lt;REDACTED&gt;)</span>
+                        </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="template" id="template" />
+                        <Label htmlFor="template" className="font-normal cursor-pointer">
+                            Template Variables <span className="text-muted-foreground text-xs">(Replaces with {'${VAR_NAME}'})</span>
+                        </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="unsafe" id="unsafe" />
+                        <Label htmlFor="unsafe" className="font-normal cursor-pointer text-amber-500">
+                            Unsafe Export <span className="text-muted-foreground text-xs">(Keeps original values - Use with caution)</span>
+                        </Label>
+                    </div>
+                </RadioGroup>
 
-              {secretMode === "unsafe" && (
-                <Alert variant="destructive" className="mt-4">
-                  <AlertTriangle className="h-4 w-4" />
-                  <AlertTitle>Warning: Security Risk</AlertTitle>
-                  <AlertDescription>
-                    You are about to export a configuration containing your raw
-                    API keys and secrets. Do not share this file publicly.
-                  </AlertDescription>
-                </Alert>
-              )}
+                {secretMode === 'unsafe' && (
+                    <Alert variant="destructive" className="mt-4">
+                        <AlertTriangle className="h-4 w-4" />
+                        <AlertTitle>Warning: Security Risk</AlertTitle>
+                        <AlertDescription>
+                            You are about to export a configuration containing your raw API keys and secrets.
+                            Do not share this file publicly.
+                        </AlertDescription>
+                    </Alert>
+                )}
             </div>
 
             <DialogFooter>
-              <Button onClick={generateConfig} disabled={selected.size === 0}>
-                Generate Configuration
-              </Button>
+                <Button onClick={generateConfig} disabled={selected.size === 0}>
+                    Generate Configuration
+                </Button>
             </DialogFooter>
-          </div>
+            </div>
         ) : (
-          <div className="grid gap-4 py-4">
-            <div className="relative">
-              <Textarea
-                value={generatedConfig}
-                readOnly
-                className="min-h-[300px] font-mono text-xs"
-              />
-              <Button
-                size="icon"
-                variant="ghost"
-                className="absolute right-2 top-2 h-8 w-8 bg-muted/50 hover:bg-muted"
-                onClick={copyToClipboard}
-              >
-                <Copy className="h-4 w-4" />
-              </Button>
+            <div className="grid gap-4 py-4">
+                <div className="relative">
+                    <Textarea
+                        value={generatedConfig}
+                        readOnly
+                        className="min-h-[300px] font-mono text-xs"
+                    />
+                    <Button
+                        size="icon"
+                        variant="ghost"
+                        className="absolute right-2 top-2 h-8 w-8 bg-muted/50 hover:bg-muted"
+                        onClick={copyToClipboard}
+                    >
+                        <Copy className="h-4 w-4" />
+                    </Button>
+                </div>
+                <DialogFooter>
+                    <Button variant="ghost" onClick={() => setGeneratedConfig("")}>
+                        Back to Selection
+                    </Button>
+                    <Button onClick={() => setOpen(false)}>
+                        Done
+                    </Button>
+                </DialogFooter>
             </div>
-            <DialogFooter>
-              <Button variant="ghost" onClick={() => setGeneratedConfig("")}>
-                Back to Selection
-              </Button>
-              <Button onClick={() => setOpen(false)}>Done</Button>
-            </DialogFooter>
-          </div>
         )}
       </DialogContent>
     </Dialog>
-  );
+  )
 }

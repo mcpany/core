@@ -3,18 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {
-  render,
-  screen,
-  fireEvent,
-  waitFor,
-  act,
-} from "../../tests/test-utils";
+import { render, screen, fireEvent, waitFor, act } from "../../tests/test-utils";
 import { DashboardGrid } from "./dashboard-grid";
 import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
 
 // Mock next/navigation for NetworkGraphFlow and other components
-vi.mock("next/navigation", () => ({
+vi.mock('next/navigation', () => ({
   useRouter: () => ({
     push: vi.fn(),
     replace: vi.fn(),
@@ -24,85 +18,46 @@ vi.mock("next/navigation", () => ({
   useSearchParams: () => ({
     get: vi.fn().mockReturnValue(null),
   }),
-  usePathname: () => "/",
+  usePathname: () => '/',
 }));
 
 // Mock NetworkGraphWidget which uses next/router internally
 vi.mock("@/components/dashboard/network-graph-widget", () => ({
-  NetworkGraphWidget: () => (
-    <div data-testid="widget-network-topology">Network Topology Widget</div>
-  ),
+  NetworkGraphWidget: () => <div data-testid="widget-network-topology">Network Topology Widget</div>
 }));
 
 // Mock Child Widgets
 vi.mock("@/components/dashboard/metrics-overview", () => ({
-  MetricsOverview: () => (
-    <div data-testid="widget-metrics">Metrics Overview Widget</div>
-  ),
+  MetricsOverview: () => <div data-testid="widget-metrics">Metrics Overview Widget</div>
 }));
 vi.mock("@/components/dashboard/service-health-widget", () => ({
-  ServiceHealthWidget: () => (
-    <div data-testid="widget-service-health">Service Health Widget</div>
-  ),
+  ServiceHealthWidget: () => <div data-testid="widget-service-health">Service Health Widget</div>
 }));
 vi.mock("@/components/dashboard/lazy-charts", () => ({
-  LazyRequestVolumeChart: () => (
-    <div data-testid="widget-request-volume">Request Volume Widget</div>
-  ),
-  LazyTopToolsWidget: () => (
-    <div data-testid="widget-top-tools">Top Tools Widget</div>
-  ),
-  LazyHealthHistoryChart: () => (
-    <div data-testid="widget-uptime">System Uptime Widget</div>
-  ),
-  LazyRecentActivityWidget: () => (
-    <div data-testid="widget-recent-activity">Recent Activity Widget</div>
-  ),
-  LazyAuditLogWidget: () => (
-    <div data-testid="widget-audit-log">Audit Log Widget</div>
-  ),
+  LazyRequestVolumeChart: () => <div data-testid="widget-request-volume">Request Volume Widget</div>,
+  LazyTopToolsWidget: () => <div data-testid="widget-top-tools">Top Tools Widget</div>,
+  LazyHealthHistoryChart: () => <div data-testid="widget-uptime">System Uptime Widget</div>,
+  LazyRecentActivityWidget: () => <div data-testid="widget-recent-activity">Recent Activity Widget</div>,
+  LazyAuditLogWidget: () => <div data-testid="widget-audit-log">Audit Log Widget</div>
 }));
 vi.mock("@/components/dashboard/tool-failure-rate-widget", () => ({
-  ToolFailureRateWidget: () => (
-    <div data-testid="widget-failure-rate">Tool Failure Rate Widget</div>
-  ),
+  ToolFailureRateWidget: () => <div data-testid="widget-failure-rate">Tool Failure Rate Widget</div>
 }));
 
 // Mock Drag and Drop
 vi.mock("@hello-pangea/dnd", () => ({
-  DragDropContext: ({ children }: { children: React.ReactNode }) => (
-    <div>{children}</div>
-  ),
-  Droppable: ({
-    children,
-  }: {
-    children: (args: {
-      droppableProps: object;
-      innerRef: null;
-      placeholder: null;
-    }) => React.ReactNode;
-  }) => children({ droppableProps: {}, innerRef: null, placeholder: null }),
-  Draggable: ({
-    children,
-  }: {
-    children: (
-      args: { draggableProps: object; dragHandleProps: object; innerRef: null },
-      snapshot: { isDragging: boolean },
-    ) => React.ReactNode;
-  }) =>
-    children(
-      { draggableProps: {}, dragHandleProps: {}, innerRef: null },
-      { isDragging: false },
-    ),
+  DragDropContext: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  Droppable: ({ children }: { children: (args: { droppableProps: object; innerRef: null; placeholder: null }) => React.ReactNode }) => children({ droppableProps: {}, innerRef: null, placeholder: null }),
+  Draggable: ({ children }: { children: (args: { draggableProps: object; dragHandleProps: object; innerRef: null }, snapshot: { isDragging: boolean }) => React.ReactNode }) => children({ draggableProps: {}, dragHandleProps: {}, innerRef: null }, { isDragging: false }),
 }));
 
-vi.mock("@/components/dashboard/add-widget-sheet", () => ({
-  AddWidgetSheet: ({ onAdd }: { onAdd: (type: string) => void }) => (
-    <button onClick={() => onAdd("metrics")} data-testid="add-widget">
-      Add Widget
-    </button>
-  ),
-}));
+vi.mock('@/components/dashboard/add-widget-sheet', () => ({
+    AddWidgetSheet: ({ onAdd }: { onAdd: (type: string) => void }) => (
+      <button onClick={() => onAdd('metrics')} data-testid="add-widget">
+        Add Widget
+      </button>
+    ),
+  }));
 
 // Mock ResizeObserver
 global.ResizeObserver = class ResizeObserver {
@@ -112,19 +67,19 @@ global.ResizeObserver = class ResizeObserver {
 };
 
 describe("DashboardGrid", () => {
-  beforeEach(() => {
-    vi.useFakeTimers({ shouldAdvanceTime: true });
-    localStorage.clear();
-  });
+    beforeEach(() => {
+        vi.useFakeTimers({ shouldAdvanceTime: true });
+        localStorage.clear();
+      });
 
-  afterEach(() => {
-    vi.useRealTimers();
-  });
+      afterEach(() => {
+        vi.useRealTimers();
+      });
 
   it("renders all default widgets initially", async () => {
     render(<DashboardGrid />);
     await waitFor(() => {
-      expect(screen.getByTestId("widget-metrics")).toBeInTheDocument();
+        expect(screen.getByTestId("widget-metrics")).toBeInTheDocument();
     });
     expect(screen.getByTestId("widget-recent-activity")).toBeInTheDocument();
     expect(screen.getByTestId("widget-uptime")).toBeInTheDocument();
@@ -133,26 +88,14 @@ describe("DashboardGrid", () => {
   it("loads layout from localStorage", async () => {
     // Note: The DashboardGrid expects instanceId, but handles legacy format where id=type
     const savedLayout = [
-      {
-        instanceId: "1",
-        type: "metrics",
-        title: "Metrics Overview",
-        size: "full",
-        hidden: true,
-      }, // Hidden
-      {
-        instanceId: "2",
-        type: "recent-activity",
-        title: "Recent Activity",
-        size: "half",
-        hidden: false,
-      },
+        { instanceId: "1", type: "metrics", title: "Metrics Overview", size: "full", hidden: true }, // Hidden
+        { instanceId: "2", type: "recent-activity", title: "Recent Activity", size: "half", hidden: false }
     ];
     localStorage.setItem("dashboard-layout", JSON.stringify(savedLayout));
 
     render(<DashboardGrid />);
     await waitFor(() => {
-      expect(screen.queryByTestId("widget-metrics")).not.toBeInTheDocument();
+        expect(screen.queryByTestId("widget-metrics")).not.toBeInTheDocument();
     });
     expect(screen.getByTestId("widget-recent-activity")).toBeInTheDocument();
   });
@@ -160,22 +103,20 @@ describe("DashboardGrid", () => {
   it("migrates old layout schema", async () => {
     // Old schema: type="wide" (mapped to full), missing hidden
     const oldLayout = [
-      { id: "metrics", title: "Metrics Overview", type: "wide" },
+        { id: "metrics", title: "Metrics Overview", type: "wide" }
     ];
     localStorage.setItem("dashboard-layout", JSON.stringify(oldLayout));
 
     render(<DashboardGrid />);
     await waitFor(() => {
-      expect(screen.getByTestId("widget-metrics")).toBeInTheDocument();
+        expect(screen.getByTestId("widget-metrics")).toBeInTheDocument();
     });
     // Verify it updated localStorage with new schema
     // Wait for debounce
     act(() => {
-      vi.advanceTimersByTime(1000);
+        vi.advanceTimersByTime(1000);
     });
-    const updated = JSON.parse(
-      localStorage.getItem("dashboard-layout") || "[]",
-    );
+    const updated = JSON.parse(localStorage.getItem("dashboard-layout") || "[]");
     // Debug log
     console.log("Updated layout:", updated);
     // The migration logic in `useEffect` runs only on mount.
@@ -279,7 +220,7 @@ describe("DashboardGrid", () => {
   it("opens customization menu", async () => {
     render(<DashboardGrid />);
     await waitFor(() => {
-      expect(screen.getByText("Layout")).toBeInTheDocument();
+        expect(screen.getByText("Layout")).toBeInTheDocument();
     });
 
     const customizeBtn = screen.getByText("Layout");
@@ -296,7 +237,7 @@ describe("DashboardGrid", () => {
 
     // Wait for load
     await waitFor(() => {
-      expect(screen.getByTestId("widget-metrics")).toBeInTheDocument();
+        expect(screen.getByTestId("widget-metrics")).toBeInTheDocument();
     });
 
     // Initially visible
@@ -311,34 +252,34 @@ describe("DashboardGrid", () => {
 
     // Should be hidden
     await waitFor(() => {
-      expect(screen.queryByTestId("widget-metrics")).not.toBeInTheDocument();
+        expect(screen.queryByTestId("widget-metrics")).not.toBeInTheDocument();
     });
 
     // Toggle on
     fireEvent.click(label);
 
     await waitFor(() => {
-      expect(screen.getByTestId("widget-metrics")).toBeInTheDocument();
+        expect(screen.getByTestId("widget-metrics")).toBeInTheDocument();
     });
   });
 
   it("debounces localStorage writes", async () => {
     // Mock fetch to succeed so localStorage.setItem is reached in the try block
     const mockFetch = vi.fn().mockResolvedValue({ ok: true, json: vi.fn() });
-    vi.stubGlobal("fetch", mockFetch);
+    vi.stubGlobal('fetch', mockFetch);
 
     render(<DashboardGrid />);
 
     // Wait for initial load to complete
     await waitFor(() => {
-      expect(screen.getByTestId("add-widget")).toBeInTheDocument();
+        expect(screen.getByTestId("add-widget")).toBeInTheDocument();
     });
 
     // Clear any previous writes
-    vi.spyOn(Storage.prototype, "setItem");
+    vi.spyOn(Storage.prototype, 'setItem');
     vi.mocked(localStorage.setItem).mockClear();
 
-    const addButton = screen.getByTestId("add-widget");
+    const addButton = screen.getByTestId('add-widget');
 
     // Trigger update 1
     act(() => {
