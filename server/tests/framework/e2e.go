@@ -386,8 +386,8 @@ func BuildStdioDockerServer(_ *testing.T) *integration.ManagedProcess {
 // _ is an unused parameter.
 func RegisterStdioDockerService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, _ string) {
 	const serviceID = "e2e-cowsay-server"
-	command := "python3"
-	args := []string{"-u", "main.py", "--mcp-stdio"}
+	command := "/app/cowsay_server_bin"
+	args := []string{"--mcp-stdio"}
 	// setupCommands := []string{"pip install -q cowsay"}
 	integration.RegisterStdioServiceWithSetup(
 		t,

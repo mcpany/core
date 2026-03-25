@@ -6,6 +6,8 @@ package terraform
 
 // ResourceMCPServer represents the configuration schema for an MCP Server resource
 // This would map to hashicorp/terraform-plugin-sdk in a real provider.
+//
+// Summary: Represents a ResourceMCPServer.
 type ResourceMCPServer struct {
 	Name    string
 	Port    int
@@ -25,6 +27,20 @@ type ResourceMCPServer struct {
 //
 // Side Effects:
 //   - None
+//
+// Summary: Executes Schema operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func Schema() map[string]interface{} {
 	return map[string]interface{}{
 		"name": map[string]interface{}{
@@ -60,6 +76,20 @@ func Schema() map[string]interface{} {
 //
 // Side Effects:
 //   - None
+//
+// Summary: Initializes Create operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func Create(_ *ResourceMCPServer) error {
 	// Simulate API call to provision resources
 	return nil
@@ -79,6 +109,20 @@ func Create(_ *ResourceMCPServer) error {
 //
 // Side Effects:
 //   - None
+//
+// Summary: Retrieves Read operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func Read(name string) (*ResourceMCPServer, error) {
 	return &ResourceMCPServer{
 		Name:    name,

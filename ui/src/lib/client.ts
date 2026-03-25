@@ -126,7 +126,14 @@ const rpc = new GrpcWebImpl(getBaseUrl(), {
 });
 const registrationClient = new RegistrationServiceClientImpl(rpc);
 
-const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
+/**
+ * Fetches data with authentication headers attached.
+ *
+ * @param input The request info or URL.
+ * @param init The request initialization options.
+ * @returns The response from the fetch request.
+ */
+export const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
     const headers = new Headers(init?.headers);
     // Inject Authorization header from localStorage if available
     if (typeof window !== 'undefined') {
@@ -349,6 +356,15 @@ const getMetadata = () => {
  * API Client for interacting with the MCP Any server.
  */
 export const apiClient = {
+    /**
+     * Retrieves the current active intent alignment status.
+     * @returns A promise that resolves to an array of SubagentStatus.
+     */
+    getActiveIntentAlignment: async () => {
+        const res = await fetchWithAuth('/api/v1/alignment/status');
+        if (!res.ok) throw new Error('Failed to fetch intent alignment status');
+        return res.json();
+    },
     // Services (Migrated to gRPC)
 
     /**
@@ -2063,6 +2079,23 @@ export const apiClient = {
         const res = await fetchWithAuth(url);
         if (!res.ok) throw new Error('Failed to fetch traces');
         return res.json();
+    },
+
+    /**
+     * Clears all execution traces.
+     *
+     * Summary: Clears traces history.
+     *
+     * @returns A promise that resolves when the traces are cleared.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a DELETE request to /api/v1/traces.
+     */
+    clearTraces: async () => {
+        const res = await fetchWithAuth('/api/v1/traces', {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to clear traces');
     },
 
     /**
