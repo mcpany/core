@@ -71,7 +71,8 @@ func TestLinter_Run_AllAuthTypes_PlainText(t *testing.T) {
 			count++
 		}
 	}
-	assert.Equal(t, 4, count, "Expected 4 warnings about plain text secrets")
+	assert.Equal(t, 4, count,
+		"Expected 4 warnings about plain text secrets")
 }
 
 func TestLinter_Run_EnvVars_PlainText(t *testing.T) {
@@ -212,5 +213,6 @@ func TestLinter_Run_ShellInjection_Extra(t *testing.T) {
 			break
 		}
 	}
-	assert.True(t, found, "Expected warning about shell injection in MCP Stdio")
+	assert.True(t, found,
+		"Expected warning about shell injection in MCP Stdio")
 }

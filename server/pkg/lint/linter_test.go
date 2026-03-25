@@ -59,7 +59,8 @@ func TestLinter_Run_ShellInjection(t *testing.T) {
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
 			configv1.UpstreamServiceConfig_builder{
 				Id: ptr("risky-service"),
-				CommandLineService: configv1.CommandLineUpstreamService_builder{
+				CommandLineService: configv1.
+					CommandLineUpstreamService_builder{
 					Command: ptr("sh -c 'echo hello'"),
 				}.Build(),
 			}.Build(),
@@ -129,7 +130,8 @@ func TestLinter_Run_CacheTTL(t *testing.T) {
 	found := false
 	for _, r := range results {
 		if r.Severity == Info &&
-			strings.Contains(r.Message, "Cache is configured but has 0 TTL") {
+			strings.Contains(r.Message,
+				"Cache is configured but has 0 TTL") {
 			found = true
 			break
 		}
