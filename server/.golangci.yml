@@ -4,6 +4,7 @@
 run:
   timeout: 5m
   tests: false
+  modules-download-mode: readonly
 
 linters:
   enable:
@@ -41,6 +42,7 @@ issues:
     - vendor
     - node_modules
     - .cache
+    - bazel-.*
   exclude-rules:
     - path: "_test.go"
       linters:
@@ -49,10 +51,6 @@ issues:
       linters:
         - "revive"
       text: "var-naming: avoid meaningless package names"
-  skip-files:
-    - '.*\.pb\.go$'
-    - lll
-    - funlen
-    - wsl
-    - gci
-    - gofumpt
+  exclude-files:
+    - ".*\\.pb\\.go$"
+    - ".*\\.pb\\.gw\\.go$"
