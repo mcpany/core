@@ -1319,3 +1319,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Kernel-Resident Active Sanitization**: Upgrading the WASM-BSH gateway to utilize `memfd_create` with read-only mappings. This achieves an 80% reduction in coordination latency while providing deterministic protection against TOCTOU context smearing.
 - **Hardware-Locked Physical Boundaries**: Mandating TPM-bound monotonic depth counters for all delegations. This anchors swarm stability to physical hardware limits, making "Recursive Intent Poisoning" physically impossible.
 - **Speculative Safety Orchestration**: Implementing "Optimistic Attestation" as the default coordination pattern, allowing parallel teammate reasoning to proceed while discovery quorums perform background validation.
+
+---
+
+## Strategic Evolution: [2026-03-25] (Iteration 5)
+### Focus: Programmatic Governance & Persistent Session Sovereignty
+**Context**: The release of the OpenCode SDK and the standardization of SQLite-based session tracking in top-tier agents mark a transition from chat-mediated interactions to **Programmatic Orchestration** and **Long-Term Persistence**. Simultaneously, the demand for **Non-Interactive Mode** confirms that the Universal Agent Bus must now move beyond per-call approvals to **Pre-Flight Manifest Authorization**.
+**Strategic Pivot**:
+- **SDK-Aware Governance Engine**: MCP Any will evolve to act as the authoritative proxy for SDK-driven agent interactions. We will implement mandatory security gating for programmatic tool calls and context injections, ensuring they are subject to the same Zero-Trust policies as human-initiated sessions.
+- **Hardware-Bound Session Sovereignty**: To protect persistent SQLite session state, we are introducing "Session Sovereignty." All local session data must be cryptographically bound to the user's hardware identity (TPM), preventing unauthorized resumption of persistent agent sessions.
+- **Pre-Flight Manifest Authorization (PFMA)**: Supporting "Non-Interactive Mode," MCP Any will implement PFMA. All potential tool calls and subagent delegations must be authorized based on a cryptographically signed mission-root manifest *before* execution begins, enabling safe headless automation.
+- **Programmatic Intent Boundary Enforcement**: Leveraging the OpenCode SDK, we will implement sub-millisecond intent boundary checks that are integrated directly into the agent's programmatic loop, neutralizing intent drift in automated scripts.

@@ -977,9 +977,16 @@
 - **BSH State Buffer**: (P1) High-speed memory-mapped buffer for binary state handoffs between agents to minimize context transfer latency.
 - **Ghost Shell Hook Profiler**: (P0) Instrumented sandbox for behavioral profiling of un-attested configuration hooks, detecting "Binary Smuggling" before host execution.
 
+## Evolution: [2026-03-25] (Iteration 5) Updates
+
+### Proposed Additions
+- **Programmatic SDK Bridge**: (P0) Mandatory security proxy for all SDK-driven agent interactions, enforcing Zero-Trust policies on programmatic tool calls.
+- **Persistent Session Sovereignty Hub**: (P1) Cryptographic attestation service that binds local SQLite session state to hardware identity (TPM) to prevent unauthorized session resumption.
+- **Non-Interactive Mode Security Guard**: (P0) Pre-execution authorization engine that validates all potential tool calls against a mission-root manifest for headless automation.
+
 ### Priority Shifts
-- **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
-- **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.
+- **Binary State Handoff (BSH) Gateway**: (Re-affirmed P0) Elevated to support sub-millisecond transfers for high-frequency SDK programmatic loops.
+- **Relational PoI Chain Validator**: (Re-affirmed P0) Now designated as the primary enforcement mechanism for SDK-driven intent boundaries.
 
 ## Evolution: [2026-03-25] (Iteration 4) Updates
 

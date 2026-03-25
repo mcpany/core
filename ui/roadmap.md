@@ -733,3 +733,8 @@
 - [ ] **[P0] Lineage-Bound Scoping Viewer**: Visual debugger for tracking subagent capability restrictions across the intent chain. (Added: 2026-03-25)
 - [ ] **[P0] Zero-Copy BSH Heatmap**: Real-time performance visualization of `memfd` segments and WASM sanitization latency. (Added: 2026-03-25)
 - [ ] **[P0] Hardware Depth-Counter Widget**: Status indicator for TPM-bound monotonic delegation limits. (Added: 2026-03-25)
+
+#### Upcoming (2026-03-25 Iteration 5)
+- [ ] **[P0] Programmatic SDK Monitor**: Real-time visualization of SDK-driven agent interactions and Zero-Trust gate status. (Added: 2026-03-25)
+- [ ] **[P1] Session Sovereignty Dashboard**: UI for monitoring hardware-bound SQLite session state and attestation status. (Added: 2026-03-25)
+- [ ] **[P0] Pre-Flight Manifest Reviewer**: Visual workspace for reviewing and approving cryptographically signed mission-root manifests for non-interactive execution. (Added: 2026-03-25)
