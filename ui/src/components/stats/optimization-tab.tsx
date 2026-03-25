@@ -47,11 +47,8 @@ export function OptimizationTab({ tools, toolUsage, onToggleTool }: Optimization
         let totalWastedTokens = 0;
         let potentialSavings = 0;
 
-        // ⚡ BOLT: [Render Optimization] Replace Array.forEach with traditional loop
-        // Randomized Selection from Top 5 High-Impact Targets (Algorithmic)
-        for (let i = 0; i < tools.length; i++) {
-            const tool = tools[i];
-            if (tool.disable) continue; // Skip already disabled tools
+        tools.forEach((tool) => {
+            if (tool.disable) return; // Skip already disabled tools
 
             const tokens = estimateTokens(JSON.stringify(tool));
             const usageKey = `${tool.name}@${tool.serviceId}`;
@@ -61,12 +58,13 @@ export function OptimizationTab({ tools, toolUsage, onToggleTool }: Optimization
             // Definition of a "Ghost Tool":
             // 1. Large definition (> 500 tokens) AND 0 calls
             // 2. OR Very large definition (> 2000 tokens) AND low calls (< 5)
-            if ((tokens > 500 && calls === 0) || (tokens > 2000 && calls < 5)) {
+            const isGhost = (tokens > 500 && calls === 0) || (tokens > 2000 && calls < 5);
+
+            if (isGhost) {
                 ghostTools.push({ tool, tokens });
                 totalWastedTokens += tokens;
-                potentialSavings += ((tokens / 1000) * 0.005); // Base cost assumption
             }
-        }
+        });
 
         // Sort by tokens descending
         ghostTools.sort((a, b) => b.tokens - a.tokens);
