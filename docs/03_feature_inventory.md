@@ -1362,7 +1362,6 @@
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
 
 ## Evolution: [2026-06-18] Updates
-- **Teammate Sovereignty Enforcer (TSE)**: (P0) Authoritative isolation kernel providing cryptographically bound isolation.
-- **Logic-Sovereignty Validator (LSV)**: (P0) Real-time logic guard performing reasoning path deconstruction.
-- **Request-Side Injection Shield (RSIS)**: (P0) Advanced security middleware to block CVE-2026-30741.
-- **Lock-Free Coordination Buffers**: (P0) High-performance coordination service for parallel teams.
+- **Teammate Sovereignty Enforcer (TSE)**: (P0) Cryptographically bound isolation for teammates.
+- **Logic-Sovereignty Validator (LSV)**: (P0) Real-time logic guard.
+- **Request-Side Injection Shield (RSIS)**: (P0) Advanced security middleware.
