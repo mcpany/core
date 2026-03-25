@@ -9,7 +9,7 @@ load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
 go_library(
     name = "operator_cmd_lib",
     srcs = ["main.go"],
-    importpath = "github.com/mcpany/core/k8s/operator/cmd",
+    importpath = "github.com/mcpany/core/operator/cmd",
     visibility = ["//visibility:private"],
     deps = [
         "//k8s/operator/api/v1alpha1",

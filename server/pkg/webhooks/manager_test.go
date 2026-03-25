@@ -1,7 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package webhooks provides a manager for webhook lifecycle and execution.
+// Package webhooks provides tests for the webhook manager.
 package webhooks
 
 import (

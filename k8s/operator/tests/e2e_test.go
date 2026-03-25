@@ -46,22 +46,17 @@ func TestOperatorE2E(t *testing.T) {
 	}
 	t.Logf("Project root detected: %s", rootDir)
 
-	// 3. Clean up existing cluster to ensure fresh state and free ports
 	if clusterExists(ctx, t, clusterName) {
 		t.Logf("Deleting existing cluster %s to ensure clean state...", clusterName)
 		runCommand(ctx, t, rootDir, "kind", "delete", "cluster", "--name", clusterName)
 	}
 
-	// 4. Get a free port for the host side of NodePort
 	hostPort, err := getFreePort()
 	if err != nil {
 		t.Fatalf("Failed to get free port: %v", err)
 	}
 	t.Logf("Using host port %d for UI access (mapped to NodePort 30000)", hostPort)
 
-	// 5. Create Kind Cluster
-	t.Logf("Creating Kind cluster %s...", clusterName)
-	// Generate temporary kind config with port mapping
 	kindConfigContent := fmt.Sprintf(`kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 networking:
@@ -83,9 +78,6 @@ nodes:
 		t.Fatalf("Failed to create kind cluster: %v", err)
 	}
 
-	// 6. Build Images
-	// Server, UI, and http-echo-server images are built and tagged via Bazel.
-	// Only operator still uses a Docker build here.
 	ensureBazelImageLoaded(t, filepath.Join("server", "cmd", "server", "server_tarball.sh"), "mcpany/server")
 	ensureBazelImageLoaded(t, filepath.Join("ui", "ui_tarball.sh"), "mcpany/ui")
 	ensureBazelImageLoaded(t, filepath.Join("server", "tests", "integration", "cmd", "mocks", "http_echo_server", "http_echo_server_tarball.sh"), "mcpany/http-echo-server")
@@ -94,12 +86,8 @@ nodes:
 		if err := runCommand(ctx, t, rootDir, "docker", "build", "-t", fmt.Sprintf("mcpany/operator:%s", tag), "-f", "k8s/operator/Dockerfile", "."); err != nil {
 			t.Fatalf("Failed to build operator image: %v", err)
 		}
-	} else {
-		t.Log("Skipping operator image build (SKIP_IMAGE_BUILD=true). Assuming images exist.")
 	}
 
-	// 7. Load Images into Kind
-	t.Log("Loading images into Kind...")
 	if err := runCommand(ctx, t, rootDir, "kind", "load", "docker-image", fmt.Sprintf("mcpany/server:%s", tag), "--name", clusterName); err != nil {
 		t.Fatalf("Failed to load server image: %v", err)
 	}
@@ -113,9 +101,6 @@ nodes:
 		t.Fatalf("Failed to load http-echo-server image: %v", err)
 	}
 
-	// 6. Install Helm Chart
-	t.Log("Installing Helm chart...")
-	// Helm upgrade --install
 	if err := runCommand(ctx, t, rootDir, "helm", "upgrade", "--install", "mcpany", "k8s/helm/mcpany",
 		"--namespace", namespace,
 		"--create-namespace",
@@ -142,15 +127,10 @@ nodes:
 		t.Fatalf("Failed to install helm chart: %v", err)
 	}
 
-	t.Log("Deployment successful!")
-
-	// 7. Verify Pods
-	t.Log("Verifying pods...")
 	if err := runCommand(ctx, t, rootDir, "kubectl", "wait", "--for=condition=ready", "pod", "-l", "app.kubernetes.io/name=mcpany", "-n", namespace, "--timeout=60s"); err != nil {
 		t.Fatalf("Failed to wait for pods: %v", err)
 	}
 
-	t.Log("Deploying http-echo-server...")
 	if err := runCommand(ctx, t, rootDir, "kubectl", "run", "ui-http-echo-server", "--image=mcpany/http-echo-server:latest", "--image-pull-policy=Never", "--restart=Always", "-n", namespace); err != nil {
 		t.Fatalf("Failed to deploy http-echo-server: %v", err)
 	}
@@ -161,17 +141,10 @@ nodes:
 		t.Fatalf("Failed to wait for http-echo-server: %v", err)
 	}
 
-	// 8. Run UI Tests
-	t.Logf("Using host port %d for UI tests (NodePort)", hostPort)
-
-	// Wait for NodePort to be accessible
-	// Since we mapped it in Kind, it should be reachable on localhost:hostPort
 	if err := waitForPort(ctx, t, fmt.Sprintf("127.0.0.1:%d", hostPort), 60*time.Second); err != nil {
 		t.Fatalf("NodePort failed to become accessible: %v", err)
 	}
 
-	// Run Playwright tests
-	// We assume 'npx' is available and we are in the root or can find ui dir
 	uiDir := filepath.Join(rootDir, "ui")
 	workers := "4"
 	if w := os.Getenv("PLAYWRIGHT_WORKERS"); w != "" {
@@ -191,11 +164,7 @@ nodes:
 	playwrightCmd.Stdout = os.Stdout
 	playwrightCmd.Stderr = os.Stderr
 
-	t.Log("Executing npx playwright test in", uiDir)
 	if err := playwrightCmd.Run(); err != nil {
-		cmd := exec.Command("sh", "-c", "kubectl get pods -n mcp-system; kubectl logs -n mcp-system -l app.kubernetes.io/name=server --all-containers=true --tail=1000")
-		out, _ := cmd.CombinedOutput()
-		t.Logf("Server Logs:\n%s", out)
 		t.Fatalf("UI Tests failed: %v", err)
 	}
 }
@@ -209,11 +178,10 @@ func checkPrerequisites(t *testing.T) {
 	}
 }
 
-func clusterExists(ctx context.Context, t *testing.T, name string) bool {
+func clusterExists(ctx context.Context, _ *testing.T, name string) bool {
 	cmd := exec.CommandContext(ctx, "kind", "get", "clusters")
 	out, err := cmd.Output()
 	if err != nil {
-		t.Logf("Failed to get clusters: %v", err)
 		return false
 	}
 	clusters := strings.Split(string(out), "\n")
@@ -244,16 +212,8 @@ func getRootDir() (string, error) {
 			return candidate, nil
 		}
 	}
-
-	// Assuming test is run from k8s/operator/tests, go up 3 levels to find root
-	// Or better, find go.mod file
-	dir, err := os.Getwd()
-	if err != nil {
-		return "", err
-	}
-	// Walk up until we find go.work, which should be in the root
+	dir, _ := os.Getwd()
 	for i := 0; i < 10; i++ {
-		// Check for go.work or Makefile which should be in root
 		if isProjectRoot(dir) {
 			return dir, nil
 		}
@@ -263,7 +223,7 @@ func getRootDir() (string, error) {
 		}
 		dir = parent
 	}
-	return "", fmt.Errorf("could not find project root (go.work or Makefile+server) from %s", dir)
+	return "", fmt.Errorf("could not find project root")
 }
 
 func isProjectRoot(dir string) bool {
@@ -301,30 +261,25 @@ func ensureBazelImageLoaded(t *testing.T, loaderRelPath, imageName string) {
 		if err != nil {
 			t.Fatalf("Failed to load Bazel-built %s image: %v\n%s", imageName, err, string(out))
 		}
-		t.Logf("Loaded %s image via %s", imageName, loader)
 		return
 	}
-	t.Logf("Bazel image loader not found for %s (%s)", imageName, loaderRelPath)
 }
 
-func runCommand(ctx context.Context, t *testing.T, dir string, name string, args ...string) error {
+func runCommand(ctx context.Context, _ *testing.T, dir string, name string, args ...string) error {
 	cmd := exec.CommandContext(ctx, name, args...)
 	cmd.Dir = dir
-	// Force Docker API version to 1.44 to avoid "client version too old" errors
 	cmd.Env = append(os.Environ(), "DOCKER_API_VERSION=1.44")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	t.Logf("Running: %s %v", name, args)
 	return cmd.Run()
 }
 
-func waitForPort(ctx context.Context, t *testing.T, addr string, timeout time.Duration) error {
+func waitForPort(ctx context.Context, _ *testing.T, addr string, timeout time.Duration) error {
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
 	timeoutTimer := time.NewTimer(timeout)
 	defer timeoutTimer.Stop()
 
-	t.Logf("Waiting for %s to become available...", addr)
 	for {
 		select {
 		case <-ctx.Done():
@@ -335,7 +290,6 @@ func waitForPort(ctx context.Context, t *testing.T, addr string, timeout time.Du
 			conn, err := net.DialTimeout("tcp", addr, 500*time.Millisecond)
 			if err == nil {
 				conn.Close()
-				t.Logf("Successfully connected to %s", addr)
 				return nil
 			}
 		}
@@ -347,7 +301,6 @@ func getFreePort() (int, error) {
 	if err != nil {
 		return 0, err
 	}
-
 	l, err := net.ListenTCP("tcp", addr)
 	if err != nil {
 		return 0, err

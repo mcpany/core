@@ -14,6 +14,10 @@
 - **Temporal Decay Orchestrator**: (P1) Lifecycle management service for the Temporal Sovereignty Controller that handles "Graceful Mission Decay" signals and manages restricted agency transitions.
 - **Fragment-Level Sovereignty Attestation Provider**: (P0) Advanced security service mandating ARI-attestation for all A2A-compliant teammates to access shared shards.
 
+### Priority Shifts
+- **Mailbox Integrity Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory **ARI** integration to counter fragment-level state-splicing.
+- **Mission-Locked Execution (MLE) Gateway**: (Re-affirmed P0) Designated as the primary enforcement point for **HAMM-compliant** mission manifests.
+
 ## Evolution: [2026-06-07] Updates
 
 ### Proposed Additions
@@ -1275,14 +1279,7 @@
 - **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **L7SIH** integration to counter high-entropy noise injection.
 - **Ephemeral Privilege Manager (EPM)**: (Re-affirmed P0) Evolving to act as the primary enforcement point for **ESE-compliant** environment scrubbing.
 
-## Evolution: [2026-06-11] Updates
-
-### Proposed Additions
-- **Layer-7 Semantic Inspection Hub (L7SIH)**: (P0) Advanced security middleware providing real-time, high-entropy semantic analysis of inter-agent coordination to neutralizing REE attacks.
-- **Environment Sovereignty Enforcer (ESE)**: (P0) Core security service mandating hardware-attested "Environment Scrubbing" to prevent ILPE exfiltration from sub-process environments.
-- **Attention-Gated State Provider**: (P0) Infrastructure for supporting OpenClaw AGSR, providing "Attention Decay" monitoring for prioritized state retrieval.
-- **Reasoning Effort Cap (REC) Controller**: (P0) Resource management service that enforces hardware-attested reasoning budgets to prevent unbounded cognitive loops.
-
-### Priority Shifts
-- **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **L7SIH** integration to counter semantic noise injection.
-- **Ephemeral Privilege Manager (EPM)**: (Re-affirmed P0) Evolving to act as the primary enforcement point for **ESE-compliant** environment scrubbing.
+## Strategic Evolution Updates: 2026-06-11
+### New Priority Features (P0/P1)
+- **Layer-7 Semantic Inspection Hub (L7SIH) [P0]:** Middleware to detect reasoning loops and semantic drift in multi-agent chains.
+- **Environment Sovereignty Enforcer (ESE) [P1]:** Dynamic scrubbing of environment variables and local context during agent-to-agent tool handoffs.

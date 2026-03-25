@@ -551,7 +551,6 @@
 - [ ] **[P0] Environment Isolation Dashboard**: (P0) Visual tracker for hardware-attested environment scrubbing and metadata wipe events. (Added: 2026-06-10)
 - [ ] **[P0] Mission-Root Registry Viewer**: (P0) Authoritative UI for reviewing and auditing the hardware-attested Mission-Root Attestation Registry. (Added: 2026-06-10)
 
-## 2026-06-11 Updates
-- [Upcoming] Visualizer for hardware-attested Chain-of-Thought (CoT) Lineage.
-- [Upcoming] Dashboard for real-time Reasoning Entropy (REE) monitoring.
-- [Upcoming] Governance UI for REC (Reasoning Effort Cap) policy management.
+### Upcoming (Q3 2026) - Strategic Evolution
+- [ ] **CoT Lineage Visualizer:** Real-time graph showing reasoning lineage across agent swarms.
+- [ ] **Entropy Dashboard:** Monitoring tool for detecting reasoning degradation in long-running tasks.

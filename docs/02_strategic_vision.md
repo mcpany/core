@@ -973,8 +973,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Continuous Fragment-Integrity Attestation (CFIA)**: Supporting the stability of long-running meshes, MCP Any will implement CFIA. This provides a cryptographically signed proof of shard-level integrity that is re-attested periodically, ensuring that "Dormant" Logic Bombs cannot be triggered by predictable mission-root state shifts.
 - **Mission-Root Attestation Registry**: To counter "Lineage Hijacking," we are mandating a centralized Mesh-Resident Attestation Registry. This authoritative hub will manage hardware-attested identity fragments and their environmental bounds, ensuring that high-trust identities remain anchored to the verified mission root and its authorized execution environment.
 
-## Strategic Evolution: [2026-06-11]
-Today's strategic shift focuses on **"Layer-7 Semantic Sovereignty"** and **"Environmental Isolation."**
-As agents move from single-task execution to complex multi-agent reasoning, the security boundary must move from the transport layer to the semantic layer.
-- **Key Strategy:** Implementing Active Intent-Deconstruction (AID) to counter REE (Reasoning Entropy Exhaustion).
-- **Key Strategy:** Enforcing Environment Sovereignty to prevent ILPE (Identity Leakage via Process Environment).
+## Strategic Evolution: 2026-06-11
+### Layer-7 Semantic Sovereignty
+As the agent ecosystem matures from single-purpose bots to complex swarms (OpenClaw, CrewAI), the primary bottleneck has shifted from "capability" to "governance." MCP Any is evolving into the **Universal Agent Bus**, specifically targeting the mitigation of **Reasoning Entropy Exhaustion (REE)**. By implementing semantic loop detection and environment sovereignty at the protocol level, we ensure that subagent chains remain deterministic and secure.

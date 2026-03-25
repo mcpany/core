@@ -88,12 +88,11 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	if err := yaml.Unmarshal(b, &yamlMap); err != nil {
 		if strings.Contains(err.Error(), "found character that cannot start any token") {
 			if bytes.Contains(b, []byte("\t")) {
-				// revive:disable:error-strings
-				return fmt.Errorf("failed to unmarshal YAML: %w\n\nHint: YAML files cannot contain tabs. Please use spaces for indentation.", err)
-				// revive:enable:error-strings
+				// revive:disable-next-line:error-strings
+				return fmt.Errorf("failed to unmarshal yaml: %w\n\nhint: yaml files cannot contain tabs, please use spaces for indentation", err)
 			}
 		}
-		return fmt.Errorf("failed to unmarshal YAML: %w", err)
+		return fmt.Errorf("failed to unmarshal yaml: %w", err)
 	}
 
 	return e.unmarshalInternal(yamlMap, v, b)
@@ -137,21 +136,18 @@ func (e *yamlEngine) unmarshalInternal(yamlMap map[string]interface{}, v proto.M
 		}
 
 		if strings.Contains(err.Error(), "unknown field \"mcpServers\"") {
-			// revive:disable:error-strings
-			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? It looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure. See documentation for details.", err)
-			// revive:enable:error-strings
+			// revive:disable-next-line:error-strings
+			return fmt.Errorf("%w\n\ndid you mean \"upstream_services\"? it looks like you might be using a Claude Desktop configuration format, MCP Any uses a different configuration structure, see documentation for details", err)
 		}
 
 		if strings.Contains(err.Error(), "unknown field \"services\"") {
-			// revive:disable:error-strings
-			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? \"services\" is not a valid top-level key.", err)
-			// revive:enable:error-strings
+			// revive:disable-next-line:error-strings
+			return fmt.Errorf("%w\n\ndid you mean \"upstream_services\"? \"services\" is not a valid top-level key", err)
 		}
 
 		if strings.Contains(err.Error(), "unknown field \"service_config\"") {
-			// revive:disable:error-strings
-			return fmt.Errorf("%w\n\nIt looks like you are using 'service_config' as a wrapper key. In MCP Any configuration, you should place the service type (e.g., 'http_service', 'grpc_service') directly under the service definition, without a 'service_config' wrapper.", err)
-			// revive:enable:error-strings
+			// revive:disable-next-line:error-strings
+			return fmt.Errorf("%w\n\nit looks like you are using 'service_config' as a wrapper key, in MCP Any configuration, you should place the service type directly under the service definition, without a 'service_config' wrapper", err)
 		}
 
 		if strings.Contains(err.Error(), "unknown field") {
@@ -198,15 +194,13 @@ type jsonEngine struct{}
 func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 	if err := protojson.Unmarshal(b, v); err != nil {
 		if strings.Contains(err.Error(), "unknown field \"mcpServers\"") {
-			// revive:disable:error-strings
-			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? It looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure. See documentation for details.", err)
-			// revive:enable:error-strings
+			// revive:disable-next-line:error-strings
+			return fmt.Errorf("%w\n\ndid you mean \"upstream_services\"? it looks like you might be using a Claude Desktop configuration format, MCP Any uses a different configuration structure, see documentation for details", err)
 		}
 
 		if strings.Contains(err.Error(), "unknown field \"services\"") {
-			// revive:disable:error-strings
-			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? \"services\" is not a valid top-level key.", err)
-			// revive:enable:error-strings
+			// revive:disable-next-line:error-strings
+			return fmt.Errorf("%w\n\ndid you mean \"upstream_services\"? \"services\" is not a valid top-level key", err)
 		}
 
 		if strings.Contains(err.Error(), "unknown field") {
@@ -294,9 +288,8 @@ func expandRecursive(b []byte, depth int) ([]byte, error) {
 	}
 
 	if missingCount > 0 {
-		// revive:disable:error-strings
-		return buf.Bytes(), fmt.Errorf("missing environment variables:%s\n    -> Fix: Set these environment variables in your shell or .env file, or provide a default value (e.g., ${VAR:default}).", missingErrBuilder.String())
-		// revive:enable:error-strings
+		// revive:disable-next-line:error-strings
+		return buf.Bytes(), fmt.Errorf("missing environment variables:%s\n    -> fix: set these environment variables in your shell or .env file, or provide a default value (e.g., ${VAR:default})", missingErrBuilder.String())
 	}
 
 	return buf.Bytes(), nil

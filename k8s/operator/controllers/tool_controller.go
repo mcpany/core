@@ -21,12 +21,11 @@ type ToolReconciler struct {
 	Scheme *runtime.Scheme
 }
 
-// Reconcile is part of the main kubernetes reconciliation loop which aims to
-// move the current state of the cluster closer to the desired state.
-//
-// +kubebuilder:rbac:groups=mcpany.mcp.so,resources=tools,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=mcpany.mcp.so,resources=tools/status,verbs=get;update;patch
-// +kubebuilder:rbac:groups=mcpany.mcp.so,resources=tools/finalizers,verbs=update
+//+kubebuilder:rbac:groups=mcpany.mcp.so,resources=tools,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=mcpany.mcp.so,resources=tools/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=mcpany.mcp.so,resources=tools/finalizers,verbs=update
+
+// Reconcile handles the Tool resource reconciliation.
 func (r *ToolReconciler) Reconcile(ctx context.Context, _ ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
 	return ctrl.Result{}, nil

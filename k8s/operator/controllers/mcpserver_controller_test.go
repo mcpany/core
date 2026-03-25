@@ -1,57 +1,160 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package controllers provides the controller logic for the MCP Operator.
 package controllers
 
 import (
 	"context"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	mcpv1alpha1 "github.com/mcpany/core/operator/api/v1alpha1"
+	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
-	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
+	"k8s.io/client-go/kubernetes/scheme"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
-
-	mcpv1alpha1 "github.com/mcpany/core/k8s/operator/api/v1alpha1"
 )
 
 func TestMCPServerReconciler_Reconcile(t *testing.T) {
-	// Setup
+	// Register operator types with the scheme
+	s := scheme.Scheme
+	_ = mcpv1alpha1.SchemeBuilder.AddToScheme(s)
+
+	replicas := int32(2)
+
+	// Create a dummy MCPServer object
 	mcpServer := &mcpv1alpha1.MCPServer{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      "test-mcp",
+			Name:      "test-mcp-server",
 			Namespace: "default",
 		},
 		Spec: mcpv1alpha1.MCPServerSpec{
-			Image:    "mcp-any:latest",
-			Replicas: func(i int32) *int32 { return &i }(1),
+			Replicas:    &replicas,
+			Image:       "mcpany/server:latest",
+			ServiceType: "ClusterIP",
 		},
 	}
 
-	scheme := runtime.NewScheme()
-	_ = clientgoscheme.AddToScheme(scheme)
-	_ = mcpv1alpha1.AddToScheme(scheme)
+	// Create a fake client to mock API calls
+	cl := fake.NewClientBuilder().WithScheme(s).WithRuntimeObjects(mcpServer).Build()
 
-	objs := []runtime.Object{mcpServer}
-	cl := fake.NewClientBuilder().WithScheme(scheme).WithRuntimeObjects(objs...).Build()
+	// Create a ReconcileMCPServer object with the scheme and fake client
+	r := &MCPServerReconciler{
+		Client: cl,
+		Scheme: s,
+	}
 
-	r := &MCPServerReconciler{Client: cl, Scheme: scheme}
-
+	// Mock request to simulate Reconcile() being called on an event for a watched resource
 	req := reconcile.Request{
 		NamespacedName: types.NamespacedName{
-			Name:      "test-mcp",
+			Name:      "test-mcp-server",
 			Namespace: "default",
 		},
 	}
 
-	// Execute
+	// Execute Reconcile
 	res, err := r.Reconcile(context.Background(), req)
+	if err != nil {
+		t.Fatalf("reconcile: (%v)", err)
+	}
 
-	// Verify
-	assert.NoError(t, err)
-	assert.True(t, res.Requeue) // Should requeue because it creates a deployment
+	// Check the result of reconciliation
+	// nolint:staticcheck
+	if !res.Requeue {
+		// Just a simple check, ignoring deprecation for test simplicity
+		t.Error("reconcile did not requeue request as expected (Deployment creation)")
+	}
+
+	// Reconcile again to create Service (second pass)
+	res, err = r.Reconcile(context.Background(), req)
+	if err != nil {
+		t.Fatalf("reconcile 2: (%v)", err)
+	}
+
+	// Check if Deployment was created
+	found := &appsv1.Deployment{}
+	err = cl.Get(context.Background(), types.NamespacedName{Name: "test-mcp-server", Namespace: "default"}, found)
+	if err != nil {
+		t.Fatalf("get deployment: (%v)", err)
+	}
+
+	// Verify Deployment Spec
+	if *found.Spec.Replicas != replicas {
+		t.Errorf("expected replicas %d, got %d", replicas, *found.Spec.Replicas)
+	}
+
+	// Check container image
+	if len(found.Spec.Template.Spec.Containers) == 0 {
+		t.Fatal("no containers found in deployment")
+	}
+	container := found.Spec.Template.Spec.Containers[0]
+	if container.Image != "mcpany/server:latest" {
+		t.Errorf("expected image mcpany/server:latest, got %s", container.Image)
+	}
+
+	// Verify Volume Mounts
+	foundVolumeMount := false
+	for _, vm := range container.VolumeMounts {
+		if vm.Name == "config-volume" && vm.MountPath == "/etc/mcp" {
+			foundVolumeMount = true
+			break
+		}
+	}
+	if !foundVolumeMount {
+		t.Error("expected config-volume mount at /etc/mcp")
+	}
+
+	// Verify Arguments
+	foundArgs := false
+	for i, arg := range container.Args {
+		if arg == "--config-path" && i+1 < len(container.Args) && container.Args[i+1] == "/etc/mcp/config.yaml" {
+			foundArgs = true
+			break
+		}
+	}
+	if !foundArgs {
+		t.Error("expected --config-path /etc/mcp/config.yaml argument")
+	}
+
+	// Verify Volumes
+	foundVolume := false
+	for _, v := range found.Spec.Template.Spec.Volumes {
+		// Use simple nil check to satisfy staticcheck QF1008
+		if v.Name == "config-volume" && v.ConfigMap != nil {
+			if v.ConfigMap.Name == "my-config-map" {
+				foundVolume = true
+				break
+			}
+		}
+	}
+	if !foundVolume {
+		t.Error("expected config-volume from ConfigMap my-config-map")
+	}
+
+	// Check if Service was created
+	foundService := &corev1.Service{}
+	err = cl.Get(context.Background(), types.NamespacedName{Name: "test-mcp-server", Namespace: "default"}, foundService)
+	if err != nil {
+		t.Fatalf("get service: (%v)", err)
+	}
+
+	// Verify Service Spec
+	if foundService.Spec.Type != corev1.ServiceTypeClusterIP {
+		t.Errorf("expected service type ClusterIP, got %s", foundService.Spec.Type)
+	}
+
+	if len(foundService.Spec.Ports) != 1 {
+		t.Errorf("expected 1 port, got %d", len(foundService.Spec.Ports))
+	}
+
+	if foundService.Spec.Ports[0].Port != 8080 {
+		t.Errorf("expected port 8080, got %d", foundService.Spec.Ports[0].Port)
+	}
+
+	if foundService.Spec.Selector["app"] != "mcp-server" {
+		t.Errorf("expected selector app=mcp-server, got %s", foundService.Spec.Selector["app"])
+	}
+
 }

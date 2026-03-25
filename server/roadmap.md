@@ -713,7 +713,6 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Environment Sovereignty Enforcer (ESE)**: (P0) Core security service for the EPM and LOWA providers mandating hardware-attested "Environment Scrubbing" to prevent ILPE exfiltration. (Added: 2026-06-10)
 - **Mission-Root Attestation Registry**: (P0) Authoritative registry for hardware-attested identity fragments and their environmental bounds. (Added: 2026-06-10)
 
-## 2026-06-11 Updates
-- [Upcoming] Implement L7SIH Semantic Entropy Profiler for high-density swarms.
-- [Upcoming] Integrate ESE Environment Scrubbing into the EPM lifecycle.
-- [Upcoming] Add REC (Reasoning Effort Cap) support for hardware-attested token budgeting.
+### Upcoming (Q3 2026) - Strategic Evolution
+- [ ] **L7SIH Implementation:** Core semantic inspection middleware for reasoning loop detection.
+- [ ] **ESE Integration:** Automated environment scrubbing for subagent tool routing.
