@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package prompt implements the prompt subsystem.
 package prompt
 
 import (
@@ -113,19 +112,6 @@ func NewTemplatedPrompt(definition *configv1.PromptDefinition, serviceID string)
 	}, nil
 }
 
-// Prompt handles prompt.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *mcp.Prompt: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // Prompt returns the MCP prompt definition.
 //
 // Summary: Retrieves the MCP prompt definition.
@@ -185,19 +171,6 @@ func (p *TemplatedPrompt) Prompt() *mcp.Prompt {
 	}
 }
 
-// Service handles service.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - string: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // Service returns the ID of the service that provides this prompt.
 //
 // Summary: Retrieves the service ID.
@@ -208,19 +181,6 @@ func (p *TemplatedPrompt) Service() string {
 	return p.serviceID
 }
 
-// Definition handles definition.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *configv1.PromptDefinition: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // Definition returns the raw configuration definition of the prompt.
 //
 // Summary: Retrieves the prompt configuration definition.

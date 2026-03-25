@@ -91,19 +91,6 @@ const introspectionQuery = `
 // Upstream implements the upstream.Upstream interface for GraphQL services.
 type Upstream struct{}
 
-// NewGraphQLUpstream initializes and returns a new graph q l upstream instance.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - upstream.Upstream: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // NewGraphQLUpstream creates a new GraphQL upstream.
 //
 // Returns:

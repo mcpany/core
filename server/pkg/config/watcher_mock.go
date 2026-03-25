@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package config implements the config subsystem.
 package config
 
 // MockWatcher is a mock implementation of the Watcher for testing.
@@ -10,19 +9,6 @@ type MockWatcher struct {
 	CloseFunc func()
 }
 
-// NewMockWatcher initializes and returns a new mock watcher instance.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *MockWatcher: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // NewMockWatcher creates a new mock watcher.
 //
 // Returns:

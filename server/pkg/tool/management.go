@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package tool implements the tool subsystem.
 package tool
 
 import (
@@ -856,19 +855,6 @@ func (tm *Manager) GetServiceInfo(serviceID string) (*ServiceInfo, bool) {
 	return &clonedInfo, true
 }
 
-// ListServices returns a collection of services.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - []*ServiceInfo: A slice containing the requested elements.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // ListServices returns a list of all currently registered services.
 //
 // Summary: Lists all services.
@@ -1103,19 +1089,6 @@ func (tm *Manager) GetTool(toolName string) (Tool, bool) {
 	return nil, false
 }
 
-// ListTools returns a collection of tools.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - []Tool: A slice containing the requested elements.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // ListTools returns a list of all tools currently registered with the manager.
 //
 // Summary: Lists all tools.
@@ -1166,19 +1139,6 @@ func (tm *Manager) rebuildCachedTools() []Tool {
 	return tools
 }
 
-// ListMCPTools returns a collection of m c p tools.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - []*mcp.Tool: A slice containing the requested elements.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // ListMCPTools returns a slice containing all the tools currently registered with
 // the manager in MCP format.
 //

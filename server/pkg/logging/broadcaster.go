@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package logging implements the logging subsystem.
 package logging
 
 import (
@@ -18,7 +17,6 @@ type Broadcaster struct {
 	limit       int
 }
 
-// GlobalBroadcaster defines a constant or variable for global broadcaster.
 var (
 	// GlobalBroadcaster is the shared broadcaster instance for logs.
 	GlobalBroadcaster = NewBroadcaster()

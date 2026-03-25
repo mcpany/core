@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package middleware implements the middleware subsystem.
 package middleware
 
 import (
@@ -266,19 +265,6 @@ func (l *RedisLimiter) Update(rps float64, burst int) {
 	l.burst = burst
 }
 
-// GetConfigHash retrieves the config hash.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - string: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // GetConfigHash returns a hash string representing the underlying Redis configuration.
 // This is used to detect configuration changes that might require a client reconnection.
 //
@@ -290,19 +276,6 @@ func (l *RedisLimiter) GetConfigHash() string {
 	return l.configHash
 }
 
-// Close handles close.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - error: Returns an error if the execution fails or validation does not pass.
-//
-// Errors:
-//   - Returns an error if the input is malformed, dependencies are unreachable, or state validation fails.
-//
-// Side Effects:
-//   - None.
 // Close terminates the Redis client connection and releases resources.
 //
 // Summary: Closes the Redis client connection.

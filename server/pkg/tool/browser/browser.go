@@ -44,19 +44,6 @@ type Provider struct {
 	fetcher PageFetcher // nil → default playwrightFetcher
 }
 
-// NewProvider initializes and returns a new provider instance.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *Provider: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // NewProvider creates a new Provider.
 //
 // Summary: Initializes a new browser provider.
@@ -97,19 +84,6 @@ func (b *Provider) BrowsePage(ctx context.Context, url string) (string, error) {
 	return strings.TrimSpace(content), nil
 }
 
-// ToolDefinition handles tool definition.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - map[string]interface{}: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // ToolDefinition returns the MCP tool definition.
 //
 // Summary: Defines the metadata for the browse_page tool.

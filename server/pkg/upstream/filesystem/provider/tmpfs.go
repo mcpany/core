@@ -1,7 +1,6 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package provider implements the provider subsystem.
 package provider
 
 import (
@@ -15,19 +14,6 @@ type TmpfsProvider struct {
 	fs afero.Fs
 }
 
-// NewTmpfsProvider initializes and returns a new tmpfs provider instance.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *TmpfsProvider: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // NewTmpfsProvider creates a new TmpfsProvider.
 //
 // Returns:
@@ -41,19 +27,6 @@ func NewTmpfsProvider() *TmpfsProvider {
 	}
 }
 
-// GetFs retrieves the fs.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - afero.Fs: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // GetFs returns the underlying filesystem.
 //
 // Returns:
@@ -84,19 +57,6 @@ func (p *TmpfsProvider) ResolvePath(virtualPath string) (string, error) {
 	return filepath.Clean(virtualPath), nil
 }
 
-// Close handles close.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - error: Returns an error if the execution fails or validation does not pass.
-//
-// Errors:
-//   - Returns an error if the input is malformed, dependencies are unreachable, or state validation fails.
-//
-// Side Effects:
-//   - None.
 // Close closes the provider.
 //
 // Returns:

@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package audit implements the audit subsystem.
 package audit
 
 import (
@@ -312,20 +311,6 @@ func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, er
 	return entries, nil
 }
 
-// Verify handles verify.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - bool: A boolean indicating the result of the condition.
-//   - error: Returns an error if the execution fails or validation does not pass.
-//
-// Errors:
-//   - Returns an error if the input is malformed, dependencies are unreachable, or state validation fails.
-//
-// Side Effects:
-//   - None.
 // Verify checks the integrity of the audit logs.
 //
 // Summary: Validates the cryptographic hash chain of all audit entries.
@@ -386,19 +371,6 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 	return true, nil
 }
 
-// Close handles close.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - error: Returns an error if the execution fails or validation does not pass.
-//
-// Errors:
-//   - Returns an error if the input is malformed, dependencies are unreachable, or state validation fails.
-//
-// Side Effects:
-//   - None.
 // Close closes the database connection.
 //
 // Summary: Closes the SQLite database connection.

@@ -1,17 +1,8 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package bus implements the bus subsystem.
 package bus
 
-// ToolExecutionResultTopic defines a constant or variable for tool execution result topic.
-// ToolExecutionRequestTopic defines a constant or variable for tool execution request topic.
-// ServiceGetResultTopic defines a constant or variable for service get result topic.
-// ServiceGetRequestTopic defines a constant or variable for service get request topic.
-// ServiceListResultTopic defines a constant or variable for service list result topic.
-// ServiceListRequestTopic defines a constant or variable for service list request topic.
-// ServiceRegistrationResultTopic defines a constant or variable for service registration result topic.
-// ServiceRegistrationRequestTopic defines a constant or variable for service registration request topic.
 const (
 	// ServiceRegistrationRequestTopic defines the NATS subject for publishing service registration requests.
 	ServiceRegistrationRequestTopic = "service_registration_requests"

@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package util implements the util subsystem.
 package util //nolint:revive,nolintlint // Package name 'util' is common in this codebase
 
 import (
@@ -18,19 +17,6 @@ type WrappedServerStream struct {
 	Ctx context.Context
 }
 
-// Context handles context.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - context.Context: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // Context returns the modified context.
 //
 // Summary: Returns the context associated with the stream.

@@ -4,26 +4,6 @@
 // Package consts defines common constants used across the application.
 package consts
 
-// ContentTypeTextEventStream defines a constant or variable for content type text event stream.
-// HeaderMcpSessionID defines a constant or variable for header mcp session i d.
-// MethodConfigureCache defines a constant or variable for method configure cache.
-// ContextKeyRemoteAddr defines a constant or variable for context key remote addr.
-// DefaultMaxHTTPResponseBytes defines a constant or variable for default max h t t p response bytes.
-// DefaultMaxCommandOutputBytes defines a constant or variable for default max command output bytes.
-// DefaultBindPort defines a constant or variable for default bind port.
-// NotificationResourcesListChanged defines a constant or variable for notification resources list changed.
-// NotificationPromptsListChanged defines a constant or variable for notification prompts list changed.
-// MethodResourcesSubscribe defines a constant or variable for method resources subscribe.
-// OauthCallbackPath defines a constant or variable for oauth callback path.
-// MethodResourcesList defines a constant or variable for method resources list.
-// ContentTypeApplicationJSON defines a constant or variable for content type application j s o n.
-// MethodPromptsList defines a constant or variable for method prompts list.
-// MethodToolsList defines a constant or variable for method tools list.
-// MethodToolsCall defines a constant or variable for method tools call.
-// ToolNameServiceSeparator defines a constant or variable for tool name service separator.
-// DefaultOriginAllow defines a constant or variable for default origin allow.
-// MethodResourcesRead defines a constant or variable for method resources read.
-// MethodPromptsGet defines a constant or variable for method prompts get.
 const (
 	// ContentTypeApplicationJSON defines the standard "application/json" content type.
 	ContentTypeApplicationJSON = "application/json"
@@ -74,9 +54,6 @@ const (
 	ContextKeyRemoteAddr = "remote_addr"
 )
 
-// CommandStatusError defines a constant or variable for command status error.
-// CommandStatusTimeout defines a constant or variable for command status timeout.
-// CommandStatusSuccess defines a constant or variable for command status success.
 const (
 	// CommandStatusSuccess represents the status for a successful command execution.
 	CommandStatusSuccess = "SUCCESS"

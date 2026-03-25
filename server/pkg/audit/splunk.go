@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package audit implements the audit subsystem.
 package audit
 
 import (
@@ -193,19 +192,6 @@ func (e *SplunkAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for splunk audit store")
 }
 
-// Close handles close.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - error: Returns an error if the execution fails or validation does not pass.
-//
-// Errors:
-//   - Returns an error if the input is malformed, dependencies are unreachable, or state validation fails.
-//
-// Side Effects:
-//   - None.
 // Close closes the queue and waits for workers to finish.
 //
 // Summary: Shuts down the Splunk audit store.

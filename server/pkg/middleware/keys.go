@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package middleware implements the middleware subsystem.
 package middleware
 
 // contextKey is a custom type for context keys to prevent collisions.

@@ -1,7 +1,6 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package middleware implements the middleware subsystem.
 package middleware
 
 import (
@@ -189,7 +188,6 @@ func (m *RecursiveContextManager) APIHandler() http.HandlerFunc {
 // RecursiveContextKeyType is a custom type for context keys to avoid collisions.
 type RecursiveContextKeyType string
 
-// RecursiveContextDataKey defines a constant or variable for recursive context data key.
 const (
 	// RecursiveContextDataKey is the key used to store the recursive context data in the request context.
 	RecursiveContextDataKey RecursiveContextKeyType = "recursive_context_data"

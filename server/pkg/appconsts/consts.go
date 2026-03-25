@@ -1,10 +1,8 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package appconsts implements the appconsts subsystem.
 package appconsts
 
-// Name defines a constant or variable for name.
 const (
 	// Name is the name of the MCP Any server. This is used in help messages and
 	// other user-facing output.

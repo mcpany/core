@@ -28,10 +28,6 @@ import (
 // It is an enumerated string type used to indicate the outcome of a health or connectivity check.
 type Status string
 
-// StatusSkipped defines a constant or variable for status skipped.
-// StatusError defines a constant or variable for status error.
-// StatusWarning defines a constant or variable for status warning.
-// StatusOk defines a constant or variable for status ok.
 const (
 	// StatusOk indicates the check passed successfully.
 	StatusOk Status = "OK"

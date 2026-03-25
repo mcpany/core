@@ -59,19 +59,6 @@ func NewGcsProvider(_ context.Context, config *configv1.GcsFs) (*GcsProvider, er
 	}, nil
 }
 
-// GetFs retrieves the fs.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - afero.Fs: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // GetFs returns the underlying filesystem.
 //
 // Returns:
@@ -108,19 +95,6 @@ func (p *GcsProvider) ResolvePath(virtualPath string) (string, error) {
 	return cleanPath, nil
 }
 
-// Close handles close.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - error: Returns an error if the execution fails or validation does not pass.
-//
-// Errors:
-//   - Returns an error if the input is malformed, dependencies are unreachable, or state validation fails.
-//
-// Side Effects:
-//   - None.
 // Close closes the GCS client.
 //
 // Returns:
@@ -361,19 +335,6 @@ func (fs *gcsFs) Stat(name string) (os.FileInfo, error) {
 	}, nil
 }
 
-// Name handles name.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - string: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // Name returns the name of this file system.
 //
 // Returns:
@@ -448,19 +409,6 @@ type gcsFile struct {
 	writer *storage.Writer
 }
 
-// Close handles close.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - error: Returns an error if the execution fails or validation does not pass.
-//
-// Errors:
-//   - Returns an error if the input is malformed, dependencies are unreachable, or state validation fails.
-//
-// Side Effects:
-//   - None.
 // Close closes the file.
 //
 // Returns:
@@ -588,19 +536,6 @@ func (f *gcsFile) WriteAt(_ []byte, _ int64) (n int, err error) {
 	return 0, fmt.Errorf("writeat not supported")
 }
 
-// Name handles name.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - string: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // Name returns the name of the file as presented to Open.
 //
 // Returns:
@@ -696,20 +631,6 @@ func (f *gcsFile) Readdirnames(n int) ([]string, error) {
 	return names, nil
 }
 
-// Stat handles stat.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - os.FileInfo: The generated or retrieved entity.
-//   - error: Returns an error if the execution fails or validation does not pass.
-//
-// Errors:
-//   - Returns an error if the input is malformed, dependencies are unreachable, or state validation fails.
-//
-// Side Effects:
-//   - None.
 // Stat returns the FileInfo structure describing file.
 //
 // Returns:
@@ -742,19 +663,6 @@ func (f *gcsFile) Stat() (os.FileInfo, error) {
 	return f.fs.Stat(f.name)
 }
 
-// Sync handles sync.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - error: Returns an error if the execution fails or validation does not pass.
-//
-// Errors:
-//   - Returns an error if the input is malformed, dependencies are unreachable, or state validation fails.
-//
-// Side Effects:
-//   - None.
 // Sync commits the current contents of the file to stable storage.
 //
 // Returns:
@@ -811,19 +719,6 @@ type gcsFileInfo struct {
 	isDir   bool
 }
 
-// Name handles name.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - string: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // Name returns the base name of the file.
 //
 // Returns:
@@ -835,19 +730,6 @@ func (fi *gcsFileInfo) Name() string {
 	return fi.name
 }
 
-// Size handles size.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - int64: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // Size returns the length in bytes for regular files; system-dependent for others.
 //
 // Returns:
@@ -859,19 +741,6 @@ func (fi *gcsFileInfo) Size() int64 {
 	return fi.size
 }
 
-// Mode handles mode.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - os.FileMode: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // Mode returns file mode bits.
 //
 // Returns:
@@ -886,19 +755,6 @@ func (fi *gcsFileInfo) Mode() os.FileMode {
 	return 0644
 }
 
-// ModTime handles mod time.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - time.Time: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // ModTime returns the modification time.
 //
 // Returns:
@@ -910,19 +766,6 @@ func (fi *gcsFileInfo) ModTime() time.Time {
 	return fi.modTime
 }
 
-// IsDir checks if the condition is dir is met.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - bool: A boolean indicating the result of the condition.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // IsDir returns true if the file is a directory.
 //
 // Returns:
@@ -934,19 +777,6 @@ func (fi *gcsFileInfo) IsDir() bool {
 	return fi.isDir
 }
 
-// Sys handles sys.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - interface{}: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // Sys returns underlying data source (can return nil).
 //
 // Returns:

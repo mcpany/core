@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package resilience implements the resilience subsystem.
 package resilience
 
 import (
@@ -17,9 +16,6 @@ import (
 // State represents the current state of the circuit breaker.
 type State int32
 
-// StateHalfOpen defines a constant or variable for state half open.
-// StateOpen defines a constant or variable for state open.
-// StateClosed defines a constant or variable for state closed.
 const (
 	// StateClosed represents the state where the circuit breaker allows requests to pass through.
 	StateClosed State = iota

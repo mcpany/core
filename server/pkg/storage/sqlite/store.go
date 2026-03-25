@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package sqlite implements the sqlite subsystem.
 package sqlite
 
 import (
@@ -39,19 +38,6 @@ func NewStore(db *DB) *Store {
 	return &Store{db: db}
 }
 
-// Close handles close.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - error: Returns an error if the execution fails or validation does not pass.
-//
-// Errors:
-//   - Returns an error if the input is malformed, dependencies are unreachable, or state validation fails.
-//
-// Side Effects:
-//   - None.
 // Close closes the underlying database connection.
 //
 // Summary: Closes the database connection.
@@ -68,19 +54,6 @@ func (s *Store) Close() error {
 	return s.db.Close()
 }
 
-// HasConfigSources checks if the condition has config sources is met.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - bool: A boolean indicating the result of the condition.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // HasConfigSources returns true if the store has configuration sources (e.g., file paths) configured.
 //
 // Summary: Checks if the store has configuration sources.

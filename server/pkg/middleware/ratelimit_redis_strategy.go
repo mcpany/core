@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package middleware implements the middleware subsystem.
 package middleware
 
 import (
@@ -23,19 +22,6 @@ type RedisStrategy struct {
 	redisClients sync.Map
 }
 
-// NewRedisStrategy initializes and returns a new redis strategy instance.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *RedisStrategy: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // NewRedisStrategy creates a new RedisStrategy.
 //
 // Summary: Initializes a new RedisStrategy.

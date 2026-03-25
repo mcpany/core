@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package alerts implements the alerts subsystem.
 package alerts
 
 import "time"
@@ -12,12 +11,6 @@ type Severity string
 // Status represents the status of an alert.
 type Status string
 
-// StatusResolved defines a constant or variable for status resolved.
-// StatusAcknowledged defines a constant or variable for status acknowledged.
-// StatusActive defines a constant or variable for status active.
-// SeverityInfo defines a constant or variable for severity info.
-// SeverityWarning defines a constant or variable for severity warning.
-// SeverityCritical defines a constant or variable for severity critical.
 const (
 	// SeverityCritical indicates a critical issue.
 	SeverityCritical Severity = "critical"

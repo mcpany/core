@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package serviceregistry implements the serviceregistry subsystem.
 package serviceregistry
 
 import (
@@ -52,20 +51,6 @@ func (m *MockServiceRegistry) UnregisterService(ctx context.Context, serviceName
 	return args.Error(0)
 }
 
-// GetAllServices retrieves the all services.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - []*configv1.UpstreamServiceConfig: A slice containing the requested elements.
-//   - error: Returns an error if the execution fails or validation does not pass.
-//
-// Errors:
-//   - Returns an error if the input is malformed, dependencies are unreachable, or state validation fails.
-//
-// Side Effects:
-//   - None.
 // GetAllServices returns a list of all currently registered services.
 //
 // Returns:

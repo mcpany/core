@@ -22,9 +22,6 @@ import (
 	webhook "github.com/standard-webhooks/standard-webhooks/libraries/go"
 )
 
-// HeaderWebhookSignature defines a constant or variable for header webhook signature.
-// HeaderWebhookTimestamp defines a constant or variable for header webhook timestamp.
-// HeaderWebhookID defines a constant or variable for header webhook i d.
 const (
 	// HeaderWebhookID is the header name for the webhook ID.
 	HeaderWebhookID = webhook.HeaderWebhookID

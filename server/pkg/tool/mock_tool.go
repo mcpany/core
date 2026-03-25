@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package tool implements the tool subsystem.
 package tool
 
 import (
@@ -22,19 +21,6 @@ type MockTool struct {
 	GetCacheConfigFunc func() *configv1.CacheConfig
 }
 
-// Tool handles tool.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *v1.Tool: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // Tool returns the protobuf definition of the mock tool.
 //
 // Summary: Retrieves the mock tool definition.
@@ -48,19 +34,6 @@ func (m *MockTool) Tool() *v1.Tool {
 	return &v1.Tool{}
 }
 
-// MCPTool handles m c p tool.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *mcp.Tool: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // MCPTool returns the MCP tool definition.
 //
 // Summary: Retrieves the MCP tool definition.
@@ -92,19 +65,6 @@ func (m *MockTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	return nil, nil
 }
 
-// GetCacheConfig retrieves the cache config.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *configv1.CacheConfig: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // GetCacheConfig calls the mock GetCacheConfigFunc if set, otherwise returns nil.
 //
 // Summary: Retrieves the cache configuration.

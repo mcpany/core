@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package tool implements the tool subsystem.
 package tool
 
 import (
@@ -44,7 +43,6 @@ import (
 	"google.golang.org/protobuf/types/dynamicpb"
 )
 
-// HealthStatusUnhealthy defines a constant or variable for health status unhealthy.
 const (
 	contentTypeJSON     = "application/json"
 	redactedPlaceholder = "[REDACTED]"
@@ -263,10 +261,6 @@ type Callable interface {
 // Summary: Enumeration of possible hook actions.
 type Action int
 
-// ActionAllow defines a constant or variable for action allow.
-// ActionDeny defines a constant or variable for action deny.
-// ActionSaveCache defines a constant or variable for action save cache.
-// ActionDeleteCache defines a constant or variable for action delete cache.
 const (
 	// ActionAllow indicates that the action is allowed to proceed.
 	//
@@ -387,19 +381,6 @@ func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, met
 	}
 }
 
-// Tool handles tool.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *v1.Tool: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // Tool returns the protobuf definition of the gRPC tool.
 //
 // Returns:
@@ -408,19 +389,6 @@ func (t *GRPCTool) Tool() *v1.Tool {
 	return t.tool
 }
 
-// MCPTool handles m c p tool.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *mcp.Tool: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // MCPTool returns the MCP-compliant tool definition.
 //
 // It lazily converts the internal protobuf definition to the MCP format on first access.
@@ -438,19 +406,6 @@ func (t *GRPCTool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
 
-// GetCacheConfig retrieves the cache config.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *configv1.CacheConfig: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // GetCacheConfig returns the cache configuration for the gRPC tool.
 //
 // Returns:
@@ -699,19 +654,6 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 	return t
 }
 
-// Tool handles tool.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *v1.Tool: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // Tool returns the protobuf definition of the HTTP tool.
 //
 // Returns:
@@ -720,19 +662,6 @@ func (t *HTTPTool) Tool() *v1.Tool {
 	return t.tool
 }
 
-// MCPTool handles m c p tool.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *mcp.Tool: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // MCPTool returns the MCP-compliant tool definition.
 //
 // It lazily converts the internal protobuf definition to the MCP format on first access.
@@ -750,19 +679,6 @@ func (t *HTTPTool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
 
-// GetCacheConfig retrieves the cache config.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *configv1.CacheConfig: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // GetCacheConfig returns the cache configuration for the HTTP tool.
 //
 // Returns:
@@ -1445,19 +1361,6 @@ func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1
 	return t
 }
 
-// Tool handles tool.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *v1.Tool: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // Tool returns the protobuf definition of the MCP tool.
 //
 // Returns:
@@ -1466,19 +1369,6 @@ func (t *MCPTool) Tool() *v1.Tool {
 	return t.tool
 }
 
-// MCPTool handles m c p tool.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *mcp.Tool: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // MCPTool returns the MCP-compliant tool definition.
 //
 // It lazily converts the internal protobuf definition to the MCP format on first access.
@@ -1496,19 +1386,6 @@ func (t *MCPTool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
 
-// GetCacheConfig retrieves the cache config.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *configv1.CacheConfig: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // GetCacheConfig returns the cache configuration for the MCP tool.
 //
 // Returns:
@@ -1726,19 +1603,6 @@ func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[s
 	return t
 }
 
-// Tool handles tool.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *v1.Tool: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // Tool returns the protobuf definition of the OpenAPI tool.
 //
 // Returns:
@@ -1747,19 +1611,6 @@ func (t *OpenAPITool) Tool() *v1.Tool {
 	return t.tool
 }
 
-// MCPTool handles m c p tool.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *mcp.Tool: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // MCPTool returns the MCP-compliant tool definition.
 //
 // It lazily converts the internal protobuf definition to the MCP format on first access.
@@ -1777,19 +1628,6 @@ func (t *OpenAPITool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
 
-// GetCacheConfig retrieves the cache config.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *configv1.CacheConfig: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // GetCacheConfig returns the cache configuration for the OpenAPI tool.
 //
 // Returns:
@@ -2124,19 +1962,6 @@ func NewLocalCommandTool(
 	return t
 }
 
-// Tool handles tool.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *v1.Tool: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // Tool returns the protobuf definition of the command-line tool.
 //
 // Returns:
@@ -2145,19 +1970,6 @@ func (t *LocalCommandTool) Tool() *v1.Tool {
 	return t.tool
 }
 
-// MCPTool handles m c p tool.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *mcp.Tool: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // MCPTool returns the MCP-compliant tool definition.
 //
 // It lazily converts the internal protobuf definition to the MCP format on first access.
@@ -2175,19 +1987,6 @@ func (t *LocalCommandTool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
 
-// GetCacheConfig retrieves the cache config.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *configv1.CacheConfig: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // GetCacheConfig returns the cache configuration for the command-line tool.
 //
 // Returns:
@@ -2533,19 +2332,6 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	return result, nil
 }
 
-// Tool handles tool.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *v1.Tool: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // Tool returns the protobuf definition of the command-line tool.
 //
 // Returns:
@@ -2554,19 +2340,6 @@ func (t *CommandTool) Tool() *v1.Tool {
 	return t.tool
 }
 
-// MCPTool handles m c p tool.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *mcp.Tool: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // MCPTool returns the MCP-compliant tool definition.
 //
 // It lazily converts the internal protobuf definition to the MCP format on first access.
@@ -2584,19 +2357,6 @@ func (t *CommandTool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
 
-// GetCacheConfig retrieves the cache config.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *configv1.CacheConfig: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // GetCacheConfig returns the cache configuration for the command-line tool.
 //
 // Returns:
@@ -2975,19 +2735,6 @@ func (tsb *threadSafeBuffer) Write(p []byte) (n int, err error) {
 	return tsb.b.Write(p)
 }
 
-// String handles string.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - string: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // String returns the contents of the buffer as a string in a thread-safe manner.
 //
 // Returns:

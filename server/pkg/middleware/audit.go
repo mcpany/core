@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package middleware implements the middleware subsystem.
 package middleware
 
 import (
@@ -301,20 +300,6 @@ func (m *AuditMiddleware) writeLog(ctx context.Context, store audit.Store, entry
 	}
 }
 
-// SubscribeWithHistory handles subscribe with history.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - chan any: The generated or retrieved entity.
-//   - []any: A slice containing the requested elements.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // SubscribeWithHistory returns a channel that will receive broadcast messages,
 // and the current history of messages.
 //
@@ -330,19 +315,6 @@ func (m *AuditMiddleware) SubscribeWithHistory() (chan any, []any) {
 	return m.broadcaster.SubscribeWithHistory()
 }
 
-// GetHistory retrieves the history.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - []any: A slice containing the requested elements.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // GetHistory returns the current broadcast history.
 //
 // Summary: Retrieves the audit history from the broadcaster.
@@ -397,19 +369,6 @@ func (m *AuditMiddleware) Read(ctx context.Context, filter audit.Filter) ([]audi
 	return store.Read(ctx, filter)
 }
 
-// Close handles close.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - error: Returns an error if the execution fails or validation does not pass.
-//
-// Errors:
-//   - Returns an error if the input is malformed, dependencies are unreachable, or state validation fails.
-//
-// Side Effects:
-//   - None.
 // Close closes the underlying store.
 //
 // Summary: Closes the audit store.

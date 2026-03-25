@@ -1,7 +1,6 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package app implements the app subsystem.
 package app
 
 import (
@@ -127,19 +126,6 @@ func (tm *TemplateManager) save() error {
 	return os.WriteFile(tm.filePath, data, 0600)
 }
 
-// ListTemplates returns a collection of templates.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - []*configv1.UpstreamServiceConfig: A slice containing the requested elements.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // ListTemplates returns a list of all stored templates.
 //
 // Summary: Retrieves all managed templates.

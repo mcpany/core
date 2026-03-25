@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package webhooks implements the webhooks subsystem.
 package webhooks
 
 import (
@@ -42,19 +41,6 @@ type Manager struct {
 	httpClient *http.Client
 }
 
-// NewManager initializes and returns a new manager instance.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *Manager: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // NewManager creates a new Webhook Manager.
 //
 // Summary: Creates a new Manager.
@@ -71,19 +57,6 @@ func NewManager() *Manager {
 	}
 }
 
-// ListWebhooks returns a collection of webhooks.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - []*WebhookConfig: A slice containing the requested elements.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // ListWebhooks returns all configured webhooks.
 //
 // Summary: Lists all webhooks.

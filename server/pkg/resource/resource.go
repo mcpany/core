@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package resource implements the resource subsystem.
 package resource
 
 import (
@@ -127,19 +126,6 @@ type Manager struct {
 	cachedResources   []Resource
 }
 
-// NewManager initializes and returns a new manager instance.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *Manager: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // NewManager creates and returns a new, empty Manager.
 //
 // Summary: Creates a new resource manager.
@@ -225,19 +211,6 @@ func (rm *Manager) RemoveResource(uri string) {
 	}
 }
 
-// ListResources returns a collection of resources.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - []Resource: A slice containing the requested elements.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // ListResources returns a slice containing all the resources currently registered in the manager.
 //
 // Summary: Lists all managed resources.

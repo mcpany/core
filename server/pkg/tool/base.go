@@ -34,19 +34,6 @@ func newBaseTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.Upstr
 	}, nil
 }
 
-// Tool handles tool.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *v1.Tool: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // Tool returns the protobuf definition of the tool.
 //
 // Summary: Retrieves the protobuf definition.
@@ -57,19 +44,6 @@ func (t *baseTool) Tool() *v1.Tool {
 	return t.tool
 }
 
-// MCPTool handles m c p tool.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *mcp.Tool: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // MCPTool returns the MCP tool definition.
 //
 // Summary: Retrieves the MCP-compliant tool definition.
@@ -90,19 +64,6 @@ func (t *baseTool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
 
-// GetCacheConfig retrieves the cache config.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *configv1.CacheConfig: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // GetCacheConfig returns the cache configuration for the tool, or nil if caching is disabled.
 //
 // Summary: Retrieves the cache configuration (always nil for baseTool).

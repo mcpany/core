@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package http implements the http subsystem.
 package http //nolint:revive,nolintlint // Package name 'http' is intentional for this directory structure.
 
 import (

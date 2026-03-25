@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package audit implements the audit subsystem.
 package audit
 
 import (
@@ -205,20 +204,6 @@ func (s *PostgresAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) 
 	return nil, fmt.Errorf("read not implemented for postgres audit store")
 }
 
-// Verify handles verify.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - bool: A boolean indicating the result of the condition.
-//   - error: Returns an error if the execution fails or validation does not pass.
-//
-// Errors:
-//   - Returns an error if the input is malformed, dependencies are unreachable, or state validation fails.
-//
-// Side Effects:
-//   - None.
 // Verify checks the integrity of the audit logs.
 //
 // Summary: Verifies the cryptographic chain of the audit logs.
@@ -296,19 +281,6 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 	return true, nil
 }
 
-// Close handles close.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - error: Returns an error if the execution fails or validation does not pass.
-//
-// Errors:
-//   - Returns an error if the input is malformed, dependencies are unreachable, or state validation fails.
-//
-// Side Effects:
-//   - None.
 // Close closes the database connection.
 //
 // Summary: Closes the PostgreSQL database connection.

@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package resource implements the resource subsystem.
 package resource
 
 import (
@@ -50,19 +49,6 @@ func NewStaticResource(def *configv1.ResourceDefinition, serviceID string) *Stat
 	}
 }
 
-// Resource handles resource.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *mcp.Resource: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // Resource returns the MCP representation of the resource.
 //
 // Summary: Retrieves the MCP resource metadata.
@@ -73,19 +59,6 @@ func (r *StaticResource) Resource() *mcp.Resource {
 	return r.resource
 }
 
-// Service handles service.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - string: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // Service returns the ID of the service that provides this resource.
 //
 // Summary: Retrieves the service ID.

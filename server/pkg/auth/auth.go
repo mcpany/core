@@ -21,9 +21,6 @@ import (
 
 type authContextKey string
 
-// APIKeyContextKey defines a constant or variable for a p i key context key.
-// ProfileIDContextKey defines a constant or variable for profile i d context key.
-// UserContextKey defines a constant or variable for user context key.
 const (
 	// UserContextKey is the context key for the user ID.
 	UserContextKey authContextKey = "user_id"
@@ -328,19 +325,6 @@ type Manager struct {
 	storage storage.Storage
 }
 
-// NewManager initializes and returns a new manager instance.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *Manager: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // NewManager creates and initializes a new Manager with an empty authenticator registry.
 //
 // Summary: Initializes a new Authentication Manager.

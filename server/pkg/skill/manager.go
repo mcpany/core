@@ -1,7 +1,6 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package skill implements the skill subsystem.
 package skill
 
 import (
@@ -17,7 +16,6 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// SkillFileName defines a constant or variable for skill file name.
 const (
 	// SkillFileName is the name of the main skill file.
 	SkillFileName = "SKILL.md"

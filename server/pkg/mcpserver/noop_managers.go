@@ -1,7 +1,6 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package mcpserver implements the mcpserver subsystem.
 package mcpserver
 
 import (

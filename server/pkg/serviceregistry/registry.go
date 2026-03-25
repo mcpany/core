@@ -550,20 +550,6 @@ func (r *ServiceRegistry) Close(ctx context.Context) error {
 	return nil
 }
 
-// GetAllServices retrieves the all services.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - []*config.UpstreamServiceConfig: A slice containing the requested elements.
-//   - error: Returns an error if the execution fails or validation does not pass.
-//
-// Errors:
-//   - Returns an error if the input is malformed, dependencies are unreachable, or state validation fails.
-//
-// Side Effects:
-//   - None.
 // GetAllServices returns a list of all registered services.
 //
 // Returns:

@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package health implements the health subsystem.
 package health
 
 import (
@@ -75,19 +74,6 @@ func AddHealthStatus(serviceName string, status string) {
 	}
 }
 
-// GetHealthHistory retrieves the health history.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - map[string][]HistoryPoint: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // GetHealthHistory returns the history for all services.
 //
 // Summary: Retrieves the complete health history map.

@@ -61,19 +61,6 @@ type McpField struct {
 	IsRepeated  bool
 }
 
-// GetName retrieves the name.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - string: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // GetName returns the name of the McpField.
 //
 // Returns:
@@ -85,19 +72,6 @@ func (f *McpField) GetName() string {
 	return f.Name
 }
 
-// GetDescription retrieves the description.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - string: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // GetDescription returns the description of the McpField.
 //
 // Returns:
@@ -109,19 +83,6 @@ func (f *McpField) GetDescription() string {
 	return f.Description
 }
 
-// GetType retrieves the type.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - string: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // GetType returns the type of the McpField.
 //
 // Returns:
@@ -133,19 +94,6 @@ func (f *McpField) GetType() string {
 	return f.Type
 }
 
-// GetIsRepeated retrieves the is repeated.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - bool: A boolean indicating the result of the condition.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // GetIsRepeated returns true if the McpField is a repeated field.
 //
 // Returns:

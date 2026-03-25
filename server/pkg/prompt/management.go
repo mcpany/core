@@ -67,19 +67,6 @@ type Manager struct {
 	cachedPrompts []Prompt
 }
 
-// NewManager initializes and returns a new manager instance.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *Manager: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // NewManager creates and returns a new, empty Manager.
 //
 // Returns:
@@ -155,19 +142,6 @@ func (pm *Manager) GetPrompt(name string) (Prompt, bool) {
 	return prompt, ok
 }
 
-// ListPrompts returns a collection of prompts.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - []Prompt: A slice containing the requested elements.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // ListPrompts returns a slice containing all the prompts currently registered.
 //
 // It uses a read-through cache to improve performance.

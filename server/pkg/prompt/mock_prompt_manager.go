@@ -46,19 +46,6 @@ func NewMockManagerInterface(ctrl *gomock.Controller) *MockManagerInterface {
 	return mock
 }
 
-// EXPECT handles e x p e c t.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *MockManagerInterfaceMockRecorder: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // EXPECT returns an object that allows the caller to indicate expected use.
 //
 // Summary: Returns the recorder for setting expectations.
@@ -112,19 +99,6 @@ func (m *MockManagerInterface) Clear() {
 	m.ctrl.Call(m, "Clear")
 }
 
-// Clear handles clear.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *gomock.Call: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // Clear indicates an expected call of Clear.
 //
 // Summary: Records an expectation for Clear.
@@ -193,19 +167,6 @@ func (mr *MockManagerInterfaceMockRecorder) GetPrompt(name any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPrompt", reflect.TypeOf((*MockManagerInterface)(nil).GetPrompt), name)
 }
 
-// ListPrompts returns a collection of prompts.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - []Prompt: A slice containing the requested elements.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // ListPrompts mocks base method.
 //
 // Summary: Mocks ListPrompts.
@@ -219,19 +180,6 @@ func (m *MockManagerInterface) ListPrompts() []Prompt {
 	return ret0
 }
 
-// ListPrompts returns a collection of prompts.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *gomock.Call: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // ListPrompts indicates an expected call of ListPrompts.
 //
 // Summary: Records an expectation for ListPrompts.

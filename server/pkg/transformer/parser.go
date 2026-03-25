@@ -40,19 +40,6 @@ var (
 	defaultTextParserOnce sync.Once
 )
 
-// NewTextParser initializes and returns a new text parser instance.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *TextParser: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // NewTextParser returns a shared instance of TextParser.
 //
 // Summary: Returns a singleton instance of TextParser.

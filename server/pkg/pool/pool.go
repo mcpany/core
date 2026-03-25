@@ -17,8 +17,6 @@ import (
 	"github.com/samber/lo"
 )
 
-// ErrPoolFull defines a constant or variable for err pool full.
-// ErrPoolClosed defines a constant or variable for err pool closed.
 var (
 	// ErrPoolClosed is returned when an operation is attempted on a closed pool.
 	ErrPoolClosed = fmt.Errorf("pool has been closed")
@@ -444,19 +442,6 @@ func (p *poolImpl[T]) Put(client T) {
 	}
 }
 
-// Close handles close.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - error: Returns an error if the execution fails or validation does not pass.
-//
-// Errors:
-//   - Returns an error if the input is malformed, dependencies are unreachable, or state validation fails.
-//
-// Side Effects:
-//   - None.
 // Close shuts down the pool, closing all idle clients.
 //
 // Summary: Closes the pool.
@@ -493,19 +478,6 @@ func (p *poolImpl[T]) Close() error {
 	return nil
 }
 
-// Len handles len.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - int: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // Len returns the current number of idle clients in the pool.
 //
 // Summary: Returns idle client count.
@@ -538,19 +510,6 @@ type Manager struct {
 	mu    sync.RWMutex
 }
 
-// NewManager initializes and returns a new manager instance.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *Manager: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // NewManager creates and returns a new pool Manager.
 //
 // Summary: Initializes a new Pool Manager.

@@ -21,19 +21,6 @@ type ConnectionFactory struct {
 	dialer func(context.Context, string) (net.Conn, error)
 }
 
-// NewConnectionFactory initializes and returns a new connection factory instance.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *ConnectionFactory: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // NewConnectionFactory creates and returns a new ConnectionFactory with default
 // settings.
 //

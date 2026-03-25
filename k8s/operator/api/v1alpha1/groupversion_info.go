@@ -10,9 +10,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/scheme"
 )
 
-// AddToScheme defines a constant or variable for add to scheme.
-// SchemeBuilder defines a constant or variable for scheme builder.
-// GroupVersion defines a constant or variable for group version.
 var (
 	// GroupVersion is group version used to register these objects.
 	//

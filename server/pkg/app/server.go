@@ -309,19 +309,6 @@ type statsCacheEntry struct {
 	ExpiresAt time.Time
 }
 
-// NewApplication initializes and returns a new application instance.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *Application: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // NewApplication creates a new Application with default dependencies.
 //
 // Summary: Initializes a new Application instance.

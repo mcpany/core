@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package app implements the app subsystem.
 package app
 
 import (
@@ -82,19 +81,6 @@ func (m *GlobalSettingsManager) Update(settings *config_v1.GlobalSettings, expli
 	m.allowedOrigins.Store(origins)
 }
 
-// GetAPIKey retrieves the a p i key.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - string: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // GetAPIKey returns the current API key.
 //
 // Summary: Retrieves the active API key.
@@ -109,19 +95,6 @@ func (m *GlobalSettingsManager) GetAPIKey() string {
 	return val.(string)
 }
 
-// GetAllowedIPs retrieves the allowed i ps.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - []string: A slice containing the requested elements.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // GetAllowedIPs returns the current allowed IPs.
 //
 // Summary: Retrieves the list of allowed IP addresses.
@@ -136,19 +109,6 @@ func (m *GlobalSettingsManager) GetAllowedIPs() []string {
 	return val.([]string)
 }
 
-// GetAllowedOrigins retrieves the allowed origins.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - []string: A slice containing the requested elements.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // GetAllowedOrigins returns the current allowed origins.
 //
 // Summary: Retrieves the list of allowed CORS origins.

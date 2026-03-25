@@ -20,20 +20,6 @@ import (
 // Label is an alias for metrics.Label. It represents a key-value pair for labeling metrics.
 type Label = metrics.Label
 
-// NewPrometheusSink initializes and returns a new prometheus sink instance.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *prometheus.PrometheusSink: The generated or retrieved entity.
-//   - error: Returns an error if the execution fails or validation does not pass.
-//
-// Errors:
-//   - Returns an error if the input is malformed, dependencies are unreachable, or state validation fails.
-//
-// Side Effects:
-//   - None.
 // NewPrometheusSink creates a new Prometheus sink for metrics collection.
 //
 // Summary: Creates a Prometheus sink.
@@ -47,19 +33,6 @@ func NewPrometheusSink() (*prometheus.PrometheusSink, error) {
 
 var initOnce sync.Once
 
-// Initialize handles initialize.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - error: Returns an error if the execution fails or validation does not pass.
-//
-// Errors:
-//   - Returns an error if the input is malformed, dependencies are unreachable, or state validation fails.
-//
-// Side Effects:
-//   - None.
 // Initialize prepares the metrics system with a Prometheus sink.
 //
 // Summary: Initializes the global metrics collector.
@@ -91,19 +64,6 @@ func Initialize() error {
 	return err
 }
 
-// Handler handles handler.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - http.Handler: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // Handler returns an http.Handler for the /metrics endpoint.
 //
 // Summary: Retrieves the metrics HTTP handler.

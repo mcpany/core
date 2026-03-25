@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package tool implements the tool subsystem.
 package tool
 
 import (
@@ -30,19 +29,6 @@ type peerConnectionWrapper struct {
 	*webrtc.PeerConnection
 }
 
-// Close handles close.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - error: Returns an error if the execution fails or validation does not pass.
-//
-// Errors:
-//   - Returns an error if the input is malformed, dependencies are unreachable, or state validation fails.
-//
-// Side Effects:
-//   - None.
 // Close closes the peer connection.
 //
 // Summary: Closes the peer connection.
@@ -164,19 +150,6 @@ func (t *WebrtcTool) newPeerConnection(_ context.Context) (*peerConnectionWrappe
 	return &peerConnectionWrapper{PeerConnection: pc}, nil
 }
 
-// Tool handles tool.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *v1.Tool: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // Tool returns the protobuf definition of the WebRTC tool.
 //
 // Summary: Returns the protobuf tool definition.
@@ -187,19 +160,6 @@ func (t *WebrtcTool) Tool() *v1.Tool {
 	return t.tool
 }
 
-// MCPTool handles m c p tool.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *mcp.Tool: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // MCPTool returns the MCP tool definition.
 //
 // Summary: Returns the MCP tool definition.
@@ -217,19 +177,6 @@ func (t *WebrtcTool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
 
-// GetCacheConfig retrieves the cache config.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *configv1.CacheConfig: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // GetCacheConfig returns the cache configuration for the WebRTC tool.
 //
 // Summary: Returns the cache configuration.
@@ -402,19 +349,6 @@ func (t *WebrtcTool) executeWithPeerConnection(ctx context.Context, req *Executi
 	}
 }
 
-// Close handles close.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - error: Returns an error if the execution fails or validation does not pass.
-//
-// Errors:
-//   - Returns an error if the input is malformed, dependencies are unreachable, or state validation fails.
-//
-// Side Effects:
-//   - None.
 // Close is a placeholder for any cleanup logic.
 //
 // Summary: Cleans up the WebrtcTool.

@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package prompt implements the prompt subsystem.
 package prompt
 
 import (
@@ -12,19 +11,6 @@ type mcpServerProvider struct {
 	server *mcp.Server
 }
 
-// Server handles server.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *mcp.Server: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // Server returns the underlying MCP server instance.
 //
 // Summary: Retrieves the MCP server.

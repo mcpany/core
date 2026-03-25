@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package middleware implements the middleware subsystem.
 package middleware
 
 import (
@@ -80,19 +79,6 @@ func (l *LocalLimiter) Update(rps float64, burst int) {
 // Summary: Strategy for creating local rate limiters.
 type LocalStrategy struct{}
 
-// NewLocalStrategy initializes and returns a new local strategy instance.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *LocalStrategy: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // NewLocalStrategy creates a new LocalStrategy.
 //
 // Summary: Initializes a new LocalStrategy.

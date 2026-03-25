@@ -20,19 +20,6 @@ type MockTool struct {
 	ExecuteFunc func(ctx context.Context, req *tool.ExecutionRequest) (any, error)
 }
 
-// Tool handles tool.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *v1.Tool: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // Tool returns a basic tool definition for the mock tool.
 //
 // Summary: Returns the tool definition.
@@ -66,19 +53,6 @@ func (m *MockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any
 	return nil, nil
 }
 
-// GetCacheConfig retrieves the cache config.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *configv1.CacheConfig: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // GetCacheConfig returns nil for the mock tool.
 //
 // Summary: Returns cache configuration (nil for mock).

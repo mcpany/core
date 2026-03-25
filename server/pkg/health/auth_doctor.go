@@ -1,26 +1,12 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package health implements the health subsystem.
 package health
 
 import (
 	"os"
 )
 
-// CheckAuth handles check auth.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - map[string]CheckResult: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // CheckAuth performs health checks for authentication configuration.
 //
 // Summary: Validates the presence of critical API keys and OAuth configuration.

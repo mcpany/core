@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package mcpserver implements the mcpserver subsystem.
 package mcpserver
 
 import (
@@ -73,19 +72,6 @@ type Server struct {
 	debug           bool
 }
 
-// Server handles server.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *mcp.Server: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // Server returns the underlying *mcp.Server instance.
 //
 // It provides access to the core MCP server functionality, which can be used for advanced
@@ -589,19 +575,6 @@ func (s *Server) ReadResource(
 	return r.Read(ctx)
 }
 
-// AuthManager handles auth manager.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *auth.Manager: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // AuthManager returns the server's authentication manager.
 //
 // It provides access to the authentication manager, which is responsible for handling
@@ -616,19 +589,6 @@ func (s *Server) AuthManager() *auth.Manager {
 	return s.authManager
 }
 
-// ToolManager handles tool manager.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - tool.ManagerInterface: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // ToolManager returns the server's tool manager.
 //
 // It provides access to the tool manager, which is responsible for managing the lifecycle
@@ -643,19 +603,6 @@ func (s *Server) ToolManager() tool.ManagerInterface {
 	return s.toolManager
 }
 
-// PromptManager handles prompt manager.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - prompt.ManagerInterface: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // PromptManager returns the server's prompt manager.
 //
 // It provides access to the prompt manager, which is responsible for managing the lifecycle
@@ -670,19 +617,6 @@ func (s *Server) PromptManager() prompt.ManagerInterface {
 	return s.promptManager
 }
 
-// ResourceManager handles resource manager.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - resource.ManagerInterface: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // ResourceManager returns the server's resource manager.
 //
 // It provides access to the resource manager, which is responsible for managing the lifecycle
@@ -697,19 +631,6 @@ func (s *Server) ResourceManager() resource.ManagerInterface {
 	return s.resourceManager
 }
 
-// ServiceRegistry handles service registry.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *serviceregistry.ServiceRegistry: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // ServiceRegistry returns the server's service registry.
 //
 // It provides access to the service registry, which keeps track of all registered upstream services.
@@ -750,19 +671,6 @@ func (s *Server) GetTool(toolName string) (tool.Tool, bool) {
 	return s.toolManager.GetTool(toolName)
 }
 
-// ListTools returns a collection of tools.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - []tool.Tool: A slice containing the requested elements.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // ListTools returns a list of all available tools.
 //
 // Returns:
@@ -1121,19 +1029,6 @@ func convertMapToCallToolResult(m map[string]any) (*mcp.CallToolResult, error) {
 // its JSON content only when logged.
 type LazyRedact []byte
 
-// LogValue handles log value.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - slog.Value: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // LogValue implements slog.LogValuer.
 //
 // It returns a redacted log value.
@@ -1155,19 +1050,6 @@ type LazyLogResult struct {
 	Value any
 }
 
-// LogValue handles log value.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - slog.Value: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // LogValue implements slog.LogValuer.
 //
 // It returns a summarized or redacted log value.

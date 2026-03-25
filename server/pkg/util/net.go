@@ -78,19 +78,6 @@ type SafeDialer struct {
 	Dialer NetDialer
 }
 
-// NewSafeDialer initializes and returns a new safe dialer instance.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *SafeDialer: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // NewSafeDialer creates a new SafeDialer with strict default security settings.
 //
 // Summary: Initializes a SafeDialer with secure defaults.
@@ -199,19 +186,6 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 	return NewSafeDialer().DialContext(ctx, network, addr)
 }
 
-// NewSafeHTTPClient initializes and returns a new safe h t t p client instance.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *http.Client: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // NewSafeHTTPClient creates a new HTTP client configured to prevent SSRF attacks.
 //
 // Summary: Creates a secure HTTP client.

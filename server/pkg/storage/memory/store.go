@@ -39,19 +39,6 @@ type Store struct {
 	logs               []*logging.LogEntry
 }
 
-// NewStore initializes and returns a new store instance.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *Store: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // NewStore creates a new memory store.
 //
 // Summary: Initializes a new, empty in-memory store.
@@ -327,19 +314,6 @@ func (s *Store) DeleteService(_ context.Context, name string) error {
 	return nil
 }
 
-// Close handles close.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - error: Returns an error if the execution fails or validation does not pass.
-//
-// Errors:
-//   - Returns an error if the input is malformed, dependencies are unreachable, or state validation fails.
-//
-// Side Effects:
-//   - None.
 // Close closes the underlying storage connection.
 //
 // Summary: No-op for in-memory store.
@@ -350,19 +324,6 @@ func (s *Store) Close() error {
 	return nil
 }
 
-// HasConfigSources checks if the condition has config sources is met.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - bool: A boolean indicating the result of the condition.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // HasConfigSources returns true if the store has configuration sources (e.g., file paths) configured.
 //
 // Summary: Indicates if the store supports config sources (always true for this mock).

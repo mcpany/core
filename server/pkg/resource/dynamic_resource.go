@@ -52,19 +52,6 @@ func NewDynamicResource(def *configv1.ResourceDefinition, t tool.Tool) (*Dynamic
 	}, nil
 }
 
-// Resource handles resource.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *mcp.Resource: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // Resource returns the MCP representation of the resource.
 //
 // Summary: Retrieves the MCP resource metadata.
@@ -75,19 +62,6 @@ func (r *DynamicResource) Resource() *mcp.Resource {
 	return r.resource
 }
 
-// Service handles service.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - string: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // Service returns the ID of the service that provides this resource.
 //
 // Summary: Retrieves the service ID.

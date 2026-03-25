@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package tool implements the tool subsystem.
 package tool
 
 import (
@@ -54,19 +53,6 @@ func (t *CallableTool) Execute(ctx context.Context, req *ExecutionRequest) (any,
 	return t.callable.Call(ctx, req)
 }
 
-// Callable handles callable.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - Callable: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // Callable returns the underlying Callable of the tool.
 //
 // Summary: Retrieves the underlying Callable interface.

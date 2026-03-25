@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package main implements the main subsystem.
 package main
 
 import (
@@ -21,21 +20,6 @@ type server struct {
 	pb.UnimplementedGreeterServer
 }
 
-// SayHello handles say hello.
-//
-// Parameters:
-//   - ctx (context.Context): The execution context for managing deadlines and cancellations.
-//   - in (*pb.HelloRequest): The in input required for processing.
-//
-// Returns:
-//   - *pb.HelloReply: The generated or retrieved entity.
-//   - error: Returns an error if the execution fails or validation does not pass.
-//
-// Errors:
-//   - Returns an error if the input is malformed, dependencies are unreachable, or state validation fails.
-//
-// Side Effects:
-//   - None.
 // SayHello implements greeter.GreeterServer
 //
 // ctx is the context for the request.

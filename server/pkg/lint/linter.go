@@ -19,9 +19,6 @@ import (
 // It is used to categorize findings based on their impact and urgency.
 type Severity int
 
-// Info defines a constant or variable for info.
-// Warning defines a constant or variable for warning.
-// Error defines a constant or variable for error.
 const (
 	// Error indicates a critical issue that must be fixed for the system to function correctly or securely.
 	Error Severity = iota
@@ -31,19 +28,6 @@ const (
 	Info
 )
 
-// String handles string.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - string: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // String returns the string representation of the severity.
 //
 // It converts the Severity enum to its string counterpart (ERROR, WARNING, INFO).
@@ -77,19 +61,6 @@ type Result struct {
 	Path string
 }
 
-// String handles string.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - string: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // String returns the string representation of the result.
 //
 // It formats the result into a human-readable string suitable for CLI output.

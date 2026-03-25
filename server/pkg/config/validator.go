@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package config implements the config subsystem.
 package config
 
 import (
@@ -35,9 +34,6 @@ const (
 	schemeHTTPS = "https"
 )
 
-// Client defines a constant or variable for client.
-// Worker defines a constant or variable for worker.
-// Server defines a constant or variable for server.
 const (
 	// Server represents the server binary.
 	Server BinaryType = iota
@@ -52,8 +48,6 @@ const (
 // Summary: Enumeration of authentication validation contexts.
 type AuthValidationContext int
 
-// AuthValidationContextOutgoing defines a constant or variable for auth validation context outgoing.
-// AuthValidationContextIncoming defines a constant or variable for auth validation context incoming.
 const (
 	// AuthValidationContextIncoming represents incoming authentication (e.g., Users).
 	AuthValidationContextIncoming AuthValidationContext = iota
@@ -63,8 +57,6 @@ const (
 
 type contextKey string
 
-// SkipFilesystemCheckKey defines a constant or variable for skip filesystem check key.
-// SkipSecretValidationKey defines a constant or variable for skip secret validation key.
 const (
 	// SkipSecretValidationKey is the context key to skip secret validation (e.g. for config check API).
 	// Value should be a boolean.

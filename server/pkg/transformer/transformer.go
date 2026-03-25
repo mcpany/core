@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package transformer implements the transformer subsystem.
 package transformer
 
 import (
@@ -25,19 +24,6 @@ type Transformer struct {
 	pool  sync.Pool
 }
 
-// NewTransformer initializes and returns a new transformer instance.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *Transformer: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // NewTransformer creates and returns a new instance of Transformer.
 //
 // Summary: Initializes a new Transformer.

@@ -11,7 +11,6 @@ import (
 	"github.com/docker/docker/client"
 )
 
-// IsDockerSocketAccessibleFunc defines a constant or variable for is docker socket accessible func.
 var (
 	// IsDockerSocketAccessibleFunc is a variable to allow mocking in tests.
 	// It checks if the Docker socket is accessible.
@@ -34,19 +33,6 @@ var initDockerClientDefault = func() {
 	}
 }
 
-// IsDockerSocketAccessible checks if the condition is docker socket accessible is met.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - bool: A boolean indicating the result of the condition.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // IsDockerSocketAccessible checks if the Docker daemon is accessible through the socket.
 //
 // Summary: Checks if the Docker daemon is accessible.

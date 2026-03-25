@@ -136,19 +136,6 @@ func Init(level slog.Level, output io.Writer, logFilePath string, format ...stri
 	// Init complete
 }
 
-// GetLogger retrieves the logger.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *slog.Logger: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // GetLogger returns the shared global logger instance.
 //
 // If the logger has not yet been initialized through a call to `Init`, this function will

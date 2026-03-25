@@ -1,7 +1,6 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package health implements the health subsystem.
 package health
 
 import (
@@ -45,19 +44,6 @@ type Doctor struct {
 	httpClient *http.Client
 }
 
-// NewDoctor initializes and returns a new doctor instance.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *Doctor: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // NewDoctor creates a new Doctor.
 //
 // Summary: Initializes a new Doctor instance.
@@ -90,19 +76,6 @@ func (d *Doctor) AddCheck(name string, check CheckFunc) {
 	d.checks[name] = check
 }
 
-// Handler handles handler.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - http.HandlerFunc: The generated or retrieved entity.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 // Handler returns the http handler.
 //
 // Summary: Returns an HTTP handler that runs all checks and returns a JSON report.
