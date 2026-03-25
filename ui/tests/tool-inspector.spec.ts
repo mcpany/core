@@ -6,18 +6,17 @@
 
 import { test, expect } from '@playwright/test';
 
-test('Tools page loads and inspector opens', async ({ page, request }) => {
-  // Seed a real service with a tool
-  const serviceName = 'weather-service';
-  await request.post('/api/v1/services', {
-    data: {
-      name: serviceName,
-      command_line_service: {
-        command: 'echo',
+test('Tools page loads and inspector opens', async ({ page }) => {
+  // Mock tools endpoint
+  await page.route((url) => url.pathname.includes('/api/v1/tools'), async (route) => {
+    await route.fulfill({
+      json: {
         tools: [
           {
             name: 'get_weather',
             description: 'Get weather for a location',
+            source: 'configured',
+            serviceId: 'weather-service',
             inputSchema: {
                type: "object",
                properties: {
@@ -25,10 +24,9 @@ test('Tools page loads and inspector opens', async ({ page, request }) => {
                }
             }
           }
-        ],
-        calls: { 'get_weather': { args: ['{}'] } }
+        ]
       }
-    }
+    });
   });
 
   await page.goto('/tools');

@@ -31,7 +31,7 @@ class MockPointerEvent extends Event {
     this.pointerType = props.pointerType || 'mouse';
   }
 }
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 window.PointerEvent = MockPointerEvent as any;
 window.HTMLElement.prototype.scrollIntoView = vi.fn();
 window.HTMLElement.prototype.releasePointerCapture = vi.fn();

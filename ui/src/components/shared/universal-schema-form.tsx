@@ -161,7 +161,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
                 });
                 setSelectedIndex(bestIdx);
             }
-        }, []);
+        }, []); // eslint-disable-line
 
         const selectedSchema = options[selectedIndex];
 

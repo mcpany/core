@@ -49,7 +49,7 @@ export function ResourceDetail({ serviceId, resourceName }: { serviceId: string,
             serviceDetails.graphqlService ||
             serviceDetails.mcpService;
 
-
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const foundResource = (serviceData as any)?.resources?.find((r: any) => r.name === resourceName);
 
         if (foundResource) {

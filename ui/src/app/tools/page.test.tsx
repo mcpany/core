@@ -35,7 +35,7 @@ vi.mock('@/hooks/use-pinned-tools', () => ({
 }));
 
 // Mock Select component to avoid Radix UI interaction issues in JSDOM
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 vi.mock('@/components/ui/select', () => ({
     Select: ({ value, onValueChange, children }: { value: string; onValueChange: (val: string) => void; children: React.ReactNode }) => (
         <div data-testid={`select-mock-${value}`}>

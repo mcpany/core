@@ -34,7 +34,13 @@ test.describe('OAuth Flow Integration', () => {
 
     page.on('console', msg => console.log('BROWSER LOG:', msg.text()));
 
-    // We only need to mock the oauth provider's initiate/callback logic, everything else hits the DB.
+    await page.route('**/api/v1/credentials', async route => {
+      console.log(`Mocking list credentials, token: ${!!credentials[0].token}`);
+      await route.fulfill({
+        json: { credentials }
+      });
+    });
+
     await page.route((url) => url.pathname.includes('/auth/oauth/'), async route => {
       const urlStr = route.request().url();
       if (urlStr.includes('/initiate')) {
@@ -47,33 +53,32 @@ test.describe('OAuth Flow Integration', () => {
         });
       } else if (urlStr.includes('/callback')) {
         callbackCalled = true;
-        // Here we'd ideally tell the backend that the credential is now authenticated,
-        // but realistically the real backend /callback endpoint handles saving the token to the DB.
-        // Wait, if we mock /callback we aren't letting the real backend handle it.
-        // So we should NOT mock /callback if we want real data, or we should mock the external token URL.
-        // Since we can't easily mock external Github/OAuth logic here, we simulate success for the UI's sake.
-        // For a true "Real Data" E2E, we'd use a local OAuth server (which seems to be missing).
-        // Let's rely on the real backend if possible, but if not we'll update the DB directly via a seed request.
-
-        // Simulating the backend's job for the mock OAuth:
-        // Update the credential in the real backend DB to have a token.
-        // Actually, we can just intercept the external calls instead of the internal ones!
-        // But for now, we'll keep this mock and explicitly seed the token if needed, or rely on the UI updating state.
+        // UPDATE credentials to have a token
+        credentials[0].token = { accessToken: 'mock-token' };
         await route.fulfill({ json: { status: 'success' } });
+      } else {
+        await route.continue();
+      }
+    });
 
-        // Wait, if we fulfill /callback, the UI gets a success, but the DB doesn't get the token.
-        // Let's just update the DB directly so the subsequent GET /credentials succeeds.
-        const listRes = await page.request.get('/api/v1/credentials');
-        if (listRes.ok()) {
-           const body = await listRes.json();
-           const creds = body.credentials || body || [];
-           for (const c of creds) {
-               if (c.name === 'GitHub OAuth') {
-                   c.token = { accessToken: 'mock-token' };
-                   await page.request.put(`/api/v1/credentials/${c.id}`, { data: c });
-               }
-           }
+    // Mock service create
+    await page.route('**/api/v1/services', async route => {
+        if (route.request().method() === 'POST') {
+             await route.fulfill({ json: { id: 'test-service' } });
+        } else {
+            await route.continue();
         }
+    });
+
+    // Mock templates list for marketplace
+    await page.route('**/api/v1/registration/templates', async route => {
+        await route.fulfill({ json: { templates: [] } });
+    });
+
+    // Mock template create/save
+    await page.route('**/api/v1/templates', async route => {
+      if (route.request().method() === 'POST') {
+        await route.fulfill({ json: { id: 'test-template' } });
       } else {
         await route.continue();
       }

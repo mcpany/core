@@ -10,7 +10,7 @@ import { vi } from "vitest";
 
 // Mock log-viewer module to avoid next/dynamic issues with Virtuoso in tests
 vi.mock("./log-viewer", () => {
-
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const React = require('react');
   const HighlightText = ({ text, regex }: { text: string; regex: RegExp | null }) => {
     if (!regex || !text) return React.createElement(React.Fragment, null, text);

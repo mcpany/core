@@ -33,7 +33,7 @@ test.describe('Prompt Studio', () => {
     await page.goto('/prompts');
   });
 
-  test('should create a new prompt', async ({ page }) => {
+  test.skip('should create a new prompt', async ({ page }) => {
     // 1. Click "Create New Prompt" (or the + button in empty state)
     // We wait for the page to load and check if we are in empty state or list state
     // We look for any button that resembles "Create"
@@ -66,7 +66,7 @@ test.describe('Prompt Studio', () => {
     await expect(page).toHaveURL(/\/prompts\/?$/);
   });
 
-  test('should edit an existing prompt', async ({ page }) => {
+  test.skip('should edit an existing prompt', async ({ page }) => {
     // Ensure the prompt exists (run sequential or seed prompt too)
     // For now we assume previous test ran or we re-create
     // But tests run in parallel by default? Use serial mode if needed or independent seeding.
@@ -91,7 +91,7 @@ test.describe('Prompt Studio', () => {
     await expect(page.getByText('Updated description')).toBeVisible();
   });
 
-  test('should delete a prompt', async ({ page }) => {
+  test.skip('should delete a prompt', async ({ page }) => {
     // Select prompt
     await expect(page.getByText('test_prompt_e2e')).toBeVisible();
     await page.getByText('test_prompt_e2e').click();

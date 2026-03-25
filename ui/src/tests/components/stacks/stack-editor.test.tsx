@@ -39,7 +39,7 @@ vi.mock('@/components/stacks/service-palette', () => ({
 // Mock StackVisualizer to show expected text based on YAML content
 vi.mock('@/components/stacks/stack-visualizer', () => ({
   StackVisualizer: ({ yamlContent }: { yamlContent: string }) => {
-
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const yaml = require('js-yaml');
     let hasServices = false;
     try {

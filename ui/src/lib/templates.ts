@@ -17,7 +17,7 @@ export interface ServiceTemplate {
   /** Description of what the template provides. */
   description: string;
   /** Icon component for the template. */
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   icon: any; // Lucide icon component
   /** Partial configuration provided by the template. */
   config: Partial<UpstreamServiceConfig>;
@@ -61,7 +61,7 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
     icon: Server,
     config: {
       name: "",
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       httpService: { address: "" } as any,
     },
   },
@@ -96,7 +96,7 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
                 }
             }
         }
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     },
   },
@@ -113,7 +113,7 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
         env: {
             "GOOGLE_MAPS_API_KEY": ""
         },
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     },
     fields: [
@@ -140,7 +140,7 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
             "SLACK_BOT_TOKEN": "",
             "SLACK_TEAM_ID": ""
         },
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     },
     fields: [
@@ -172,7 +172,7 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
         env: {
             "LINEAR_API_KEY": ""
         },
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     },
     fields: [
@@ -196,7 +196,7 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
       commandLineService: {
         command: "npx -y @modelcontextprotocol/server-time",
         env: {},
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     },
   },
@@ -211,7 +211,7 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
       commandLineService: {
         command: "npx -y @modelcontextprotocol/server-postgres {{CONNECTION_STRING}}",
         env: {},
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     },
     fields: [
@@ -235,7 +235,7 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
       commandLineService: {
         command: "npx -y @modelcontextprotocol/server-sqlite {{DB_PATH}}",
         env: {},
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     },
     fields: [
@@ -259,7 +259,7 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
       commandLineService: {
         command: "npx -y @modelcontextprotocol/server-filesystem {{ALLOWED_DIRECTORIES}}",
         env: {},
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     },
     fields: [
@@ -285,7 +285,7 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
         env: {
             "GITHUB_PERSONAL_ACCESS_TOKEN": ""
         },
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     },
     fields: [
@@ -311,7 +311,7 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
         env: {
             "SENTRY_AUTH_TOKEN": ""
         },
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     },
     fields: [
@@ -338,7 +338,7 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
             "CLOUDFLARE_API_TOKEN": "",
             "CLOUDFLARE_ACCOUNT_ID": ""
         },
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     },
     fields: [
@@ -370,7 +370,7 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
         env: {
             "BRAVE_API_KEY": ""
         },
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     },
     fields: [
@@ -394,7 +394,7 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
       commandLineService: {
         command: "npx -y @modelcontextprotocol/server-puppeteer",
         env: {},
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     },
   },
@@ -409,7 +409,7 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
       commandLineService: {
         command: "npx -y @modelcontextprotocol/server-everything",
         env: {},
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     },
   },

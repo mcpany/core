@@ -41,7 +41,7 @@ export function applyTemplateFields(
  * If replaceToken is provided, it performs a string replacement on the target value.
  */
 function applyValueToConfig(
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   obj: Record<string, any>,
   path: string,
   value: string,

@@ -123,7 +123,7 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
         try {
             const result = await apiClient.validateService(service);
             if (result.valid) {
-
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const tools = (result as any).discoveredTools;
                 if (tools && tools.length > 0) {
                     setDiscoveredTools(tools);

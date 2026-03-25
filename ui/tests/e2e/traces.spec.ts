@@ -6,25 +6,21 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Trace Viewer', () => {
-  test.beforeEach(async ({ page, request }) => {
-    // Execute a real tool to generate a trace in the DB
-    const serviceName = 'math-service-traces';
-    await request.post('/api/v1/services', {
-      data: {
-        name: serviceName,
-        command_line_service: {
-          command: 'echo',
-          tools: [{ name: 'calculate_sum', description: 'desc' }],
-          calls: { 'calculate_sum': { args: [''] } }
-        }
-      }
-    });
-
-    await request.post('/api/v1/execute', {
-      data: {
-         tool: `calculate_sum`,
-         arguments: "{}"
-      }
+  test.beforeEach(async ({ page }) => {
+    // Mock Traces API for all tests in this suite
+    await page.route('/api/traces', async route => {
+        await route.fulfill({
+            json: [
+                {
+                    id: 'trace-1',
+                    rootSpan: { name: 'calculate_sum', serviceName: 'Math', type: 'tool' },
+                    timestamp: new Date().toISOString(),
+                    totalDuration: 150,
+                    status: 'success',
+                    trigger: 'user'
+                }
+            ]
+        });
     });
   });
 

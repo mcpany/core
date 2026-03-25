@@ -58,7 +58,7 @@ export function ToolDetail({ serviceId, toolName }: { serviceId: string, toolNam
         }
         const serviceData = serviceDetails.grpcService || serviceDetails.httpService || serviceDetails.commandLineService || serviceDetails.openapiService || serviceDetails.websocketService || serviceDetails.webrtcService || serviceDetails.graphqlService || serviceDetails.mcpService;
 
-
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const foundTool = (serviceData as any)?.tools?.find((t: ToolDefinition) => t.name === toolName);
 
         if (foundTool) {
@@ -148,7 +148,7 @@ export function ToolDetail({ serviceId, toolName }: { serviceId: string, toolNam
             </CardTitle>
           </CardHeader>
           <CardContent>
-             { }
+             {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
              <SchemaVisualizer schema={tool.inputSchema || (tool as any).input_schema} />
           </CardContent>
         </Card>
