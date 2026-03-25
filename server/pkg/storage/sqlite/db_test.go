@@ -21,7 +21,7 @@ func TestNewDB_Success(t *testing.T) {
 	db, err := NewDB(dbPath)
 	require.NoError(t, err)
 	require.NotNil(t, db)
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	// Verify database file exists
 	_, err = os.Stat(dbPath)
@@ -74,7 +74,7 @@ func TestInitSchema_TablesExist(t *testing.T) {
 	db, err := NewDB(dbPath)
 	require.NoError(t, err)
 	require.NotNil(t, db)
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	expectedTables := []string{
 		"upstream_services",

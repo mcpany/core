@@ -1,5 +1,19 @@
 # Coverage Intervention Report
 
+## Top 10 Most Critical Untested Components
+
+Based on a risk profile analysis (combining cyclomatic complexity, lack of coverage, and structural role), the following 10 components were identified as highest risk:
+1. `server/pkg/storage/interface.go` (Complexity: High, Role: Core Storage Abstraction)
+2. `server/tools/license/remove.go` (Complexity: Medium, Role: Build tools)
+3. `server/tools/check_doc.go` (Complexity: Medium, Role: Build tools)
+4. `server/pkg/tool/websocket.go` (Complexity: Medium, Role: Protocol logic)
+5. `server/pkg/serviceregistry/mock_registry.go` (Complexity: Medium, Role: Testing mocks)
+6. `server/examples/upstream_service_demo/webrtc/server/main.go` (Complexity: Medium)
+7. `server/examples/upstream_service_demo/webrtc/client/main.go` (Complexity: Medium)
+8. `server/tests/integration/cmd/mocks/webrtc_weather_server/main.go` (Complexity: Low)
+9. `server/tests/integration/cmd/mocks/grpc_authed_weather_server/main.go` (Complexity: Low)
+10. `server/tests/integration/cmd/mocks/http_echo_server/main.go` (Complexity: Low)
+
 * **Target:** `server/pkg/storage/sqlite/db.go`
 * **Risk Profile:** This file was selected because it is a critical initialization component for the entire SQLite storage backend. With a cyclomatic complexity of 12 and zero test coverage, any failure to correctly initialize the schema, set proper directory permissions, or apply essential performance and safety PRAGMAs (like WAL mode, synchronous=NORMAL, and a strict connection limit) could lead to catastrophic data corruption or application startup failure. Testing this ensures the fundamental database layer is rock solid.
 * **New Coverage:**
