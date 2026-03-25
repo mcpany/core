@@ -42,7 +42,7 @@ test.describe('Authentication and User Management', () => {
       await page.getByLabel('Username').fill(USER_ID);
       await page.getByLabel('Password').fill('password123');
       await Promise.all([
-        page.waitForURL('/**' , { timeout: 30000, waitUntil: 'domcontentloaded' }),
+        page.waitForURL('/', { timeout: 30000 }),
         page.getByRole('button', { name: 'Sign in' }).click({ force: true })
       ]);
       await expect(page).toHaveURL('/', { timeout: 15000 });

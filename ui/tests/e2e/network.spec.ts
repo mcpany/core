@@ -16,7 +16,7 @@ test.describe('Network Topology', () => {
       await page.fill('input[name="username"]', 'e2e-admin-core'); // Matches seedGlobalState user
       await page.fill('input[name="password"]', 'password');
     await Promise.all([
-      page.waitForURL('/**' , { timeout: 30000, waitUntil: 'domcontentloaded' }),
+      page.waitForURL('/', { timeout: 30000 }),
       page.click('button[type="submit"]', { force: true })
     ]);
 

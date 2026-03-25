@@ -18,7 +18,7 @@ test.describe('Dashboard Real Data', () => {
         await page.fill('input[name="username"]', "e2e-admin-dashboard");
         await page.fill('input[name="password"]', 'password');
     await Promise.all([
-      page.waitForURL('/**' , { timeout: 30000, waitUntil: 'domcontentloaded' }),
+      page.waitForURL('/', { timeout: 30000 }),
       page.click('button[type="submit"]', { force: true })
     ]);
         await expect(page).toHaveURL('/', { timeout: 15000 });

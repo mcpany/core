@@ -17,7 +17,7 @@ test.describe('MCP Any Profile & Collection Tests', () => {
     await page.fill('input[name="username"]', 'profile-admin-e2e');
     await page.fill('input[name="password"]', 'password');
     await Promise.all([
-      page.waitForURL('/**' , { timeout: 30000, waitUntil: 'domcontentloaded' }),
+      page.waitForURL('/', { timeout: 30000 }),
       page.click('button[type="submit"]', { force: true })
     ]);
   });

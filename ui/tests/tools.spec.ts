@@ -17,7 +17,7 @@ test.describe('Tool Exploration', () => {
         await page.goto('/login');
         await page.fill('input[name="username"]', 'e2e-tools-admin');
         await page.fill('input[name="password"]', 'password');
-        await Promise.all([page.waitForURL('/**', { timeout: 30000, waitUntil: 'domcontentloaded' }), page.click('button[type="submit"]')]);
+        await page.click('button[type="submit"]');
         await expect(page).toHaveURL('/', { timeout: 15000 });
     });
 
@@ -167,4 +167,3 @@ test.describe('Tool Exploration', () => {
         }
     });
 });
-// force build cache
