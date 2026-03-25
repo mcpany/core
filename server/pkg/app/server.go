@@ -2112,11 +2112,9 @@ func (a *Application) runServerMode(
 
 	// Register Debugger API if enabled
 
-	// Register Recursive Context Manager
-	if standardMiddlewares != nil && standardMiddlewares.RecursiveContext == nil {
-		standardMiddlewares.RecursiveContext = middleware.NewRecursiveContextManager()
-	}
-	if standardMiddlewares != nil {
+
+	// Register Context API
+	if standardMiddlewares != nil && standardMiddlewares.RecursiveContext != nil {
 		mux.Handle("/context/session", authMiddleware(standardMiddlewares.RecursiveContext.APIHandler()))
 		mux.Handle("/context/session/", authMiddleware(standardMiddlewares.RecursiveContext.APIHandler()))
 	}
@@ -2162,16 +2160,15 @@ func (a *Application) runServerMode(
 		if standardMiddlewares.ContextOptimizer != nil {
 			finalHandler = standardMiddlewares.ContextOptimizer.Handler(finalHandler)
 		}
-		// Debugger (outer to capture optimized response)
-		// Recursive Context
+		// Recursive Context (outer to provide context for handlers)
 		if standardMiddlewares.RecursiveContext != nil {
 			finalHandler = standardMiddlewares.RecursiveContext.HandleContext(finalHandler)
 		}
+		// Debugger (outermost to capture all details)
 		if standardMiddlewares.Debugger != nil {
 			finalHandler = standardMiddlewares.Debugger.Handler(finalHandler)
 		}
 	}
-
 	// Middleware order: SecurityHeaders -> CORS -> CSRF -> JSONRPCCompliance -> Recovery -> IPAllowList -> RateLimit -> (Debugger -> Optimizer -> Mux)
 	// We wrap everything with a debug logger to see what's coming in
 	handler := middleware.HTTPSecurityHeadersMiddleware(

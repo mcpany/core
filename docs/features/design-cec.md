@@ -21,58 +21,58 @@ the primary intent.
 ## 2. Goals & Non-Goals
 
 * **Goals:**
-    * Real-time calculation of semantic entropy for reasoning fragments.
-    * Hardware-acceleration using TPM/GPU for sub-10ms latency.
-    * Configurable entropy thresholds pinned to the mission root.
-    * Automated quarantine of high-entropy fragments.
+ * Real-time calculation of semantic entropy for reasoning fragments.
+ * Hardware-acceleration using TPM/GPU for sub-10ms latency.
+ * Configurable entropy thresholds pinned to the mission root.
+ * Automated quarantine of high-entropy fragments.
 * **Non-Goals:**
-    * Automatically rewriting or "correcting" reasoning traces.
-    * Managing token budgets (handled by RBF).
+ * Automatically rewriting or "correcting" reasoning traces.
+ * Managing token budgets (handled by RBF).
 
 ## 3. Critical User Journey (CUJ)
 
 * **User Persona:** Security Auditor for Autonomous Swarms.
 * **Primary Goal:** Prevent a specialized subagent from "blinding" the
-  parent agent via high-entropy noise injection.
+ parent agent via high-entropy noise injection.
 * **The Happy Path (Tasks):**
-    1. The Auditor defines an entropy policy for the mission.
-    2. A subagent generates a reasoning trace with anomalous noise.
-    3. CEC intercepts the fragment in the middleware chain.
-    4. CEC utilizes the TPM to calculate fragment entropy.
-    5. Entropy exceeds the threshold; CEC flags and quarantines the fragment.
-    6. The parent agent receives a "Security Alert" instead of the noise.
+ 1. The Auditor defines an entropy policy for the mission.
+ 2. A subagent generates a reasoning trace with anomalous noise.
+ 3. CEC intercepts the fragment in the middleware chain.
+ 4. CEC utilizes the TPM to calculate fragment entropy.
+ 5. Entropy exceeds the threshold; CEC flags and quarantines the fragment.
+ 6. The parent agent receives a "Security Alert" instead of the noise.
 
 ## 4. Design & Architecture
 
 * **System Flow:**
-    ```mermaid
-    graph LR
-        A[Agent] -->|Reasoning Trace| M[CEC Middleware]
-        M -->|Calculate| H[Hardware Accelerator]
-        H -->|Entropy Score| M
-        M -->|Verify| P[Mission Policy]
-        P -->|Valid| O[Tool/Next]
-        P -->|High Entropy| Q[Quarantine Hub]
-    ```
+ ```mermaid
+ graph LR
+  A[Agent] -->|Reasoning Trace| M[CEC Middleware]
+  M -->|Calculate| H[Hardware Accelerator]
+  H -->|Entropy Score| M
+  M -->|Verify| P[Mission Policy]
+  P -->|Valid| O[Tool/Next]
+  P -->|High Entropy| Q[Quarantine Hub]
+ ```
 * **APIs / Interfaces:**
-    * `POST /v1/entropy/calculate`: Calculate entropy for a text fragment.
-    * `GET /v1/entropy/thresholds`: Retrieve active thresholds for mission.
+ * `POST /v1/entropy/calculate`: Calculate entropy for a text fragment.
+ * `GET /v1/entropy/thresholds`: Retrieve active thresholds for mission.
 * **Data Storage/State:**
-    * Entropy metrics are stored in the Mesh-Resident Lineage Tracker.
+ * Entropy metrics are stored in the Mesh-Resident Lineage Tracker.
 
 ## 5. Alternatives Considered
 
 * **Software-based Entropy Calculation:** Rejected due to high latency
-  blocking real-time agent coordination.
+ blocking real-time agent coordination.
 * **Post-hoc Audit Logs:** Rejected because they don't prevent the immediate
-  exploitation of the parent's context window.
+ exploitation of the parent's context window.
 
 ## 6. Cross-Cutting Concerns
 
 * **Security (Zero Trust):** Entropy thresholds are cryptographically signed
-  at mission boot and cannot be modified by subagents.
+ at mission boot and cannot be modified by subagents.
 * **Observability:** Real-time entropy scores are exported to the
-  Entropy Monitor Dashboard.
+ Entropy Monitor Dashboard.
 
 ## 7. Evolutionary Changelog
 
