@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { apiClient, UpstreamServiceConfig, ToolAnalytics } from "@/lib/client";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -187,22 +187,27 @@ export default function ToolsPage() {
       return a.name.localeCompare(b.name);
     });
 
-  // Grouping logic
-  const groupedTools = filteredTools.reduce((acc, tool) => {
-    let key = "Other";
-    if (groupBy === "service") {
-      const service = services.find((s) => s.id === tool.serviceId);
-      key = service ? service.name : tool.serviceId || "Unknown Service";
-    } else if (groupBy === "category") {
-      key = tool.tags && tool.tags.length > 0 ? tool.tags[0] : "Uncategorized";
-    }
+  // ⚡ BOLT: [Render Optimization] Memoize grouping to prevent O(N^2) renders and redundant O(N) Array.find calls
+  // Randomized Selection from Top 5 High-Impact Targets
+  const groupedTools = useMemo(() => {
+    const serviceMap = new Map(services.map(s => [s.id, s.name]));
 
-    if (!acc[key]) {
-      acc[key] = [];
-    }
-    acc[key].push(tool);
-    return acc;
-  }, {} as Record<string, ToolDefinition[]>);
+    return filteredTools.reduce((acc, tool) => {
+      let key = "Other";
+      if (groupBy === "service") {
+        const sName = serviceMap.get(tool.serviceId);
+        key = sName ? sName : tool.serviceId || "Unknown Service";
+      } else if (groupBy === "category") {
+        key = tool.tags && tool.tags.length > 0 ? tool.tags[0] : "Uncategorized";
+      }
+
+      if (!acc[key]) {
+        acc[key] = [];
+      }
+      acc[key].push(tool);
+      return acc;
+    }, {} as Record<string, ToolDefinition[]>);
+  }, [filteredTools, services, groupBy]);
 
 
   if (!isLoaded) {
