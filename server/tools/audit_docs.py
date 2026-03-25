@@ -90,6 +90,7 @@ def check_file(filepath):
                 j -= 1
 
             # Validate
+            print(f"DEBUG: Symbol={symbol} Kind={kind} Params={repr(params_str)}")
             reasons = []
             if not doc_lines:
                 reasons.append("Missing documentation")

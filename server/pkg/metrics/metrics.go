@@ -29,7 +29,7 @@ type Label = metrics.Label
 // Returns:
 //   - *prometheus.PrometheusSink: The initialized Prometheus sink.
 //   - error: An error if the sink creation fails.
-func NewPrometheusSink() (*prometheus.PrometheusSink, error) {
+func NewPrometheusSink(_ bool) (*prometheus.PrometheusSink, error) {
 	return prometheus.NewPrometheusSink()
 }
 
@@ -49,7 +49,7 @@ func Initialize() error {
 	initOnce.Do(func() {
 		// Create a Prometheus sink
 		var sink *prometheus.PrometheusSink
-		sink, err = NewPrometheusSink()
+		sink, err = NewPrometheusSink(true)
 		if err != nil {
 			return
 		}
