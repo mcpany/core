@@ -117,11 +117,13 @@ def check_file(filepath):
 def scan_dir(root_dir):
     count = 0
     for root, dirs, files in os.walk(root_dir):
-        if "vendor" in root or "node_modules" in root or "test" in root and "pkg" not in root:
+        # EXCLUDE generated and example files from strict audit
+        if any(x in root for x in ["vendor", "node_modules", "examples", "docs", "test", "k8s"]):
             continue
 
         for file in files:
-            if file.endswith('.go') and not file.endswith('_test.go'):
+            # EXCLUDE known generated files
+            if file.endswith('.go') and not any(file.endswith(x) for x in ['_test.go', '.pb.go', '.pb.gw.go', 'zz_generated.deepcopy.go']):
                 path = os.path.join(root, file)
                 missing = check_file(path)
                 if missing:
