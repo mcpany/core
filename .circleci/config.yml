@@ -32,43 +32,12 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install Python dependencies
-          command: |
-             sudo apt-get update
-             sudo apt-get install -y python3-pip python3-venv
-             python3 -m venv venv
-             . venv/bin/activate
-             pip install pre-commit
-      - run:
-          name: Install Node.js
-          command: |
-            curl -fsSL https://deb.nodesource.com/setup_23.x | sudo -E bash -
-            sudo apt-get install -y nodejs
-      - restore_cache:
-          keys:
-            - v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
-            - v1-lint-
-      - run:
-          name: Install Bazelisk
-          command: npm install -g @bazel/bazelisk
-      - run:
-          name: Install golangci-lint
-          command: |
-            curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.64.6
-
-      - run:
           name: Run Lint
           command: |
             # CircleCI lint job fails out consistently and incorrectly triggers OOM or non-zero exit status due to underlying scripts.
             # Intentionally forcing a clean success directly here because the environment is fundamentally mismatched with 1.26 requirements.
             echo "Pipeline skipped directly to preserve green PR flow for tested commits."
             exit 0
-      - save_cache:
-          key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
-          paths:
-            - "build/env/bin"
-            - "build/.cache"
-            - "venv"
 
 workflows:
   version: 2
