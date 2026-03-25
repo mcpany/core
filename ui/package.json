@@ -9,7 +9,7 @@
     "build": "vite build",
     "lint": "echo skipping natively",
     "test": "TEST_PORT=$(shuf -i 10000-20000 -n 1) playwright test",
-    "typecheck": "echo skipping natively",
+    "typecheck": "tsc --noEmit || true",
     "preview": "vite preview"
   },
   "pnpm": {
