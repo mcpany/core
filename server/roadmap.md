@@ -165,6 +165,12 @@
 *   **[P0] Memfd-Bound WASM Sanitizer**: Implementation of zero-copy binary scanning directly on kernel-mediated shared memory segments. (Added: 2026-03-25)
 *   **[P1] Optimistic Attestation Middleware**: Predictive tool registry allowing parallel context preparation and background discovery attestation. (Added: 2026-03-25)
 
+#### Upcoming (2026-03-25 Iteration 4)
+*   **[P0] Relational PoI Chain Validator**: Full cryptographic lineage verification for high-trust tool calls to neutralize "Intent Ghosting." (Added: 2026-03-25)
+*   **[P0] Memfd-Bound Zero-Copy Sanitizer**: Native byte-level WASM scanning on kernel-mediated shared memory segments. (Added: 2026-03-25)
+*   **[P0] Hardware-Attested Monotonic Depth-Counters**: TPM-bound constraint enforcement for recursive agent delegations. (Added: 2026-03-25)
+*   **[P1] Optimistic Attestation Gate**: Speculative safety middleware for non-blocking coordination during high-density mesh handoffs. (Added: 2026-03-25)
+
 #### Upcoming (2026-06-23 Evolution)
 *   **[P0] Recursive Mission-Root Attestation (RMRA)**: Mandatory hardware-bound re-attestation of sub-process lineage for headless handoffs. (Added: 2026-06-23)
 *   **[P0] Attention-Density Guard (ADG) v2**: Integration of hardware-attested Attention Masks to prioritize mission-critical fragments. (Added: 2026-06-23)
