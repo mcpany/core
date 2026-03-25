@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// TestStore_Load tests the Load method of the PostgreSQL store.
 func TestStore_Load(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
