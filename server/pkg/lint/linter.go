@@ -221,7 +221,7 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 	var results []Result
 
 	checkSecret := func(sv *configv1.SecretValue,
-		path, serviceName string) {
+		path, serviceID string) {
 		if sv == nil {
 			return
 		}
@@ -229,42 +229,40 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 		if sv.WhichValue() == secretCase {
 			results = append(results, Result{
 				Severity:    Warning,
-				ServiceName: serviceName,
-				Message: "Secret is stored in " +
-					"plain text. Use env vars " +
-					"or file refs for " +
-					"better security.",
+				ServiceName: serviceID,
+				Message: "Secret is stored in plain text. " +
+					"Use env vars or file references " +
+					"for better security.",
 				Path: path,
 			})
 		}
 	}
 
 	for _, s := range l.cfg.GetUpstreamServices() {
+		sid := s.GetId()
 		if auth := s.GetUpstreamAuth(); auth != nil {
-			aName := s.GetId()
 			switch auth.WhichAuthMethod() {
 			case configv1.Authentication_ApiKey_case:
 				checkSecret(auth.GetApiKey().GetValue(),
 					"upstream_auth.api_key.value",
-					aName)
+					sid)
 			case configv1.Authentication_BearerToken_case:
 				checkSecret(auth.GetBearerToken().GetToken(),
 					"upstream_auth.bearer_token.token",
-					aName)
+					sid)
 			case configv1.Authentication_BasicAuth_case:
 				checkSecret(
 					auth.GetBasicAuth().GetPassword(),
 					"upstream_auth.basic_auth.password",
-					aName)
+					sid)
 			case configv1.Authentication_Oauth2_case:
 				checkSecret(
 					auth.GetOauth2().GetClientSecret(),
 					"upstream_auth.oauth2.client_secret",
-					aName)
+					sid)
 			}
 		}
 
-		sName := s.GetId()
 		switch s.WhichServiceConfig() {
 		case configv1.
 			UpstreamServiceConfig_CommandLineService_case:
@@ -272,7 +270,7 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 			for k, v := range cmd.GetEnv() {
 				p := fmt.Sprintf(
 					"command_line_service.env[%s]", k)
-				checkSecret(v, p, sName)
+				checkSecret(v, p, sid)
 			}
 			if ce := cmd.GetContainerEnvironment(); ce != nil {
 				for k, v := range ce.GetEnv() {
@@ -281,7 +279,7 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 							"container_env."+
 							"env[%s]",
 						k)
-					checkSecret(v, path, sName)
+					checkSecret(v, path, sid)
 				}
 			}
 		case configv1.
@@ -295,7 +293,7 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 					p := fmt.Sprintf(
 						"mcp_service."+
 							"stdio.env[%s]", k)
-					checkSecret(v, p, sName)
+					checkSecret(v, p, sid)
 				}
 			case configv1.
 				McpUpstreamService_BundleConnection_case:
@@ -304,7 +302,7 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 					p := fmt.Sprintf(
 						"mcp_service."+
 							"bundle.env[%s]", k)
-					checkSecret(v, p, sName)
+					checkSecret(v, p, sid)
 				}
 			}
 		}
