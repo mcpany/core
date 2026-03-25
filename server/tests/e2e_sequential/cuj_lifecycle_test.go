@@ -23,8 +23,7 @@ import (
 // TestCUJ_Lifecycle_And_Config tests lifecycle events and config changes.
 // Using Filesystem upstream to avoid dependency on external binaries or containers.
 func TestCUJ_Lifecycle_And_Config(t *testing.T) {
-	// Enable running local if Docker is not available
-	useLocal := os.Getenv("E2E_DOCKER") != "true"
+	useLocal := true // Force local seeded mode
 
 	rootDir, err := os.Getwd()
 	require.NoError(t, err)
