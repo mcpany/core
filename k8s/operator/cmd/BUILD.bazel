@@ -12,8 +12,8 @@ go_library(
     importpath = "github.com/mcpany/core/operator/cmd",
     visibility = ["//visibility:private"],
     deps = [
-        "//k8s/operator/api/v1alpha1",
-        "//k8s/operator/controllers",
+        "//k8s/operator/api/v1alpha1:v1alpha1",
+        "//k8s/operator/controllers:controllers",
         "@io_k8s_apimachinery//pkg/runtime",
         "@io_k8s_apimachinery//pkg/util/runtime",
         "@io_k8s_client_go//kubernetes/scheme",
@@ -27,7 +27,7 @@ go_library(
 
 go_binary(
     name = "operator",
-    embed = [":cmd_lib"],
+    embed = [":operator_cmd_lib"],
     gc_linkopts = [
         "-s",
         "-w",
@@ -62,23 +62,4 @@ oci_load(
     repo_tags = ["mcpany/operator:latest"],
     tags = ["manual"],
     visibility = ["//visibility:public"],
-)
-
-go_library(
-    name = "cmd_lib",
-    srcs = ["main.go"],
-    importpath = "github.com/mcpany/core/k8s/operator/cmd",
-    visibility = ["//visibility:private"],
-    deps = [
-        "@com_github_mcpany_core//operator/api/v1alpha1",
-        "@com_github_mcpany_core//operator/controllers",
-        "@io_k8s_apimachinery//pkg/runtime",
-        "@io_k8s_apimachinery//pkg/util/runtime",
-        "@io_k8s_client_go//kubernetes/scheme",
-        "@io_k8s_client_go//plugin/pkg/client/auth",
-        "@io_k8s_sigs_controller_runtime//:controller-runtime",
-        "@io_k8s_sigs_controller_runtime//pkg/healthz",
-        "@io_k8s_sigs_controller_runtime//pkg/log/zap",
-        "@io_k8s_sigs_controller_runtime//pkg/metrics/server",
-    ],
 )

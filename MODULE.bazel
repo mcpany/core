@@ -8,6 +8,7 @@ module(
 
 bazel_dep(name = "rules_go", version = "0.60.0")
 bazel_dep(name = "gazelle", version = "0.47.0")
+bazel_dep(name = "rules_proto", version = "7.1.0")
 bazel_dep(name = "protobuf", version = "34.0.bcr.1")
 bazel_dep(name = "googleapis", version = "0.0.0-20260223-edfe7983")
 bazel_dep(name = "googleapis-go", version = "1.0.0")
@@ -27,7 +28,7 @@ go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
 go_sdk.download(version = "1.26.1")
 
 go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
-go_deps.from_file(go_mod = "//server:go.mod")
+go_deps.from_file(go_work = "//:go.work")
 go_deps.gazelle_override(
     directives = [
         "gazelle:proto disable_global",
@@ -91,6 +92,7 @@ use_repo(
     "com_github_getkin_kin_openapi",
     "com_github_gin_gonic_gin",
     "com_github_go_jose_go_jose_v4",
+    "com_github_go_logr_zapr",
     "com_github_go_redis_redismock_v9",
     "com_github_go_sql_driver_mysql",
     "com_github_golang_jwt_jwt_v5",
@@ -143,7 +145,10 @@ use_repo(
     "in_gopkg_square_go_jose_v2",
     "in_gopkg_yaml_v2",
     "in_gopkg_yaml_v3",
+    "io_k8s_api",
+    "io_k8s_apimachinery",
     "io_k8s_client_go",
+    "io_k8s_sigs_controller_runtime",
     "io_k8s_sigs_yaml",
     "io_opentelemetry_go_contrib_instrumentation_google_golang_org_grpc_otelgrpc",
     "io_opentelemetry_go_contrib_instrumentation_net_http_otelhttp",
@@ -155,6 +160,9 @@ use_repo(
     "io_opentelemetry_go_otel_sdk",
     "io_opentelemetry_go_otel_sdk_metric",
     "org_golang_google_api",
+    "org_golang_google_genproto",
+    "org_golang_google_genproto_googleapis_api",
+    "org_golang_google_genproto_googleapis_rpc",
     "org_golang_google_grpc",
     "org_golang_google_grpc_cmd_protoc_gen_go_grpc",
     "org_golang_google_protobuf",

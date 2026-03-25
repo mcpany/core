@@ -11,8 +11,8 @@ go_library(
         "tool_types.go",
         "zz_generated.deepcopy.go",
     ],
-    importpath = "github.com/mcpany/core/k8s/operator/api/v1alpha1",
-    visibility = ["//k8s/operator:__subpackages__"],
+    importpath = "github.com/mcpany/core/operator/api/v1alpha1",
+    visibility = ["//visibility:public"],
     deps = [
         "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
         "@io_k8s_apimachinery//pkg/runtime",

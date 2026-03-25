@@ -38,8 +38,8 @@ The Active Reasoning Interdiction (ARI) Hub evolves the existing validator into 
         B --> C[Hash-Chain Validator]
         C --> D[Semantic Consistency Engine]
         D --> E{Integrity Verified?}
-        E -- Yes --> F[Update Hash-Chain & Commit Fragment]
-        E -- No --> G[Interdict Reasoning & Alert Root]
+        E â Yes --> F[Update Hash-Chain & Commit Fragment]
+        E â No --> G[Interdict Reasoning & Alert Root]
         H[Mission-Root Lineage] --> C
         I[Semantic Baselines] --> D
     ```
