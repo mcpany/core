@@ -4,6 +4,9 @@
 package logging
 
 import (
+	"os"
+	"github.com/mcpany/core/server/pkg/validation"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"bytes"
 	"context"
 	"io"
@@ -61,4 +64,62 @@ func TestAuditHandler_Export(t *testing.T) {
 	assert.Equal(t, "log:test message", entry.ToolName)
 	assert.Contains(t, string(entry.Arguments), "foo")
 	assert.Contains(t, string(entry.Arguments), "bar")
+}
+
+func TestAuditHandler_Enabled(t *testing.T) {
+	nextHandler := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelError})
+	cfg := &configv1.AuditConfig{}
+
+	handler := &AuditHandler{
+		next:   nextHandler,
+		config: cfg,
+	}
+
+	assert.False(t, handler.Enabled(context.Background(), slog.LevelInfo))
+	assert.True(t, handler.Enabled(context.Background(), slog.LevelError))
+}
+
+func TestAuditHandler_WithAttrs_WithGroup(t *testing.T) {
+	nextHandler := slog.NewTextHandler(os.Stdout, nil)
+	cfg := &configv1.AuditConfig{}
+
+	handler := &AuditHandler{
+		next:   nextHandler,
+		config: cfg,
+	}
+
+	attrs := []slog.Attr{slog.String("foo", "bar")}
+	newHandler := handler.WithAttrs(attrs)
+	assert.NotNil(t, newHandler)
+	assert.IsType(t, &AuditHandler{}, newHandler)
+
+	groupHandler := handler.WithGroup("mygroup")
+	assert.NotNil(t, groupHandler)
+	assert.IsType(t, &AuditHandler{}, groupHandler)
+}
+
+func TestNewAuditHandler_InitializeStore(t *testing.T) {
+	nextHandler := slog.NewTextHandler(os.Stdout, nil)
+
+	tempDir := t.TempDir()
+	validation.SetAllowedPaths([]string{tempDir})
+	t.Cleanup(func() {
+		validation.SetAllowedPaths(nil)
+	})
+
+	// Use FILE to test initialization
+	cfg := &configv1.AuditConfig{}
+	cfg.SetEnabled(true)
+	cfg.SetStorageType(configv1.AuditConfig_STORAGE_TYPE_FILE)
+	cfg.SetOutputPath(tempDir + "/test_audit.log")
+
+	handler := NewAuditHandler(nextHandler, cfg)
+
+	assert.NotNil(t, handler)
+	assert.NotNil(t, handler.store)
+
+	// Clean up
+	if s, ok := handler.store.(interface{ Close() error }); ok {
+		_ = s.Close()
+	}
 }
