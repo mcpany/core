@@ -1,7 +1,0 @@
-# Copyright 2025 Author(s) of MCP Any
-# SPDX-License-Identifier: Apache-2.0
-
-upstream_services:
-  - name: "graphql-service"
-    graphql_service:
-      address: "http://localhost:8080/graphql"
