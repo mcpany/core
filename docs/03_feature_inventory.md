@@ -3,9 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
  -->
 
-<!--
- -->
-
 # Feature Inventory: MCP Any
 
 ## Evolution: [2026-05-06] Updates

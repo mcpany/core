@@ -3,9 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
  -->
 
-<!--
- -->
-
 # Design Doc: Reasoning-Aware Memory Segmentation (RAMS) Hub
 
 **Status:** Draft
