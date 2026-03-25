@@ -19,25 +19,10 @@ import (
 //   - results: []CheckResult. The list of check results to print.
 //
 // Returns:
-//
-//	None.
+//   None.
 //
 // Side Effects:
 //   - Writes formatted text to the provided writer.
-//
-// Summary: Executes PrintResults operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func PrintResults(w io.Writer, results []CheckResult) {
 	if w == nil {
 		w = os.Stdout

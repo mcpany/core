@@ -45,7 +45,3 @@ The "Recursive Symlink Tunnel" exploit and the persistence of "Symlink-to-Inode 
 
 ## 7. Evolutionary Changelog
 * **2026-05-04:** Initial Document Creation.
-* **2026-05-05: HEPA Evolution & Shared Memory Optimization**
-    * **Context:** Market sync revealed the need for zero-latency path validation via hardware enclaves (HEPA).
-    * **Architecture Adjustment:** Integrating `HEPA.ValidatePath()` into the `Initial Path Resolution` phase in Section 4.
-    * **Optimization:** Introducing "FD-over-Shared-Memory" for the Zero-Copy transport, allowing pinned FDs to be shared with sub-millisecond latency between isolated RAMS shards.

@@ -3,12 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { apiClient } from "@/lib/client";
 import { useDashboard } from "@/components/dashboard/dashboard-context";
-import { usePolling } from "@/hooks/use-polling";
 
 /**
  * RequestVolumeChart component.
@@ -19,35 +18,50 @@ export function RequestVolumeChart() {
   const [mounted, setMounted] = useState(false);
   const { serviceId, timeRange } = useDashboard();
 
-  const fetchData = useCallback(async () => {
-      try {
-          const traffic = await apiClient.getDashboardTraffic(serviceId, timeRange);
-
-          // Client-side filtering fallback (if backend returns full history)
-          // Assuming 1 minute intervals for simplicity if needed
-          let filtered = traffic;
-          if (timeRange === "1h" && traffic.length > 60) {
-              filtered = traffic.slice(-60);
-          } else if (timeRange === "6h" && traffic.length > 360) {
-              filtered = traffic.slice(-360);
-          } else if (timeRange === "12h" && traffic.length > 720) {
-              filtered = traffic.slice(-720);
-          }
-
-          setData(filtered);
-      } catch (error) {
-          console.error("Failed to fetch traffic data", error);
-      }
-  }, [serviceId, timeRange]);
-
   useEffect(() => {
     setMounted(true);
-    fetchData();
-  }, [fetchData]);
+    const fetchData = async () => {
+        try {
+            const traffic = await apiClient.getDashboardTraffic(serviceId, timeRange);
 
-  // ⚡ BOLT: [Render Optimization] Use usePolling hook instead of raw setInterval
-  // Randomized Selection from Top 5 High-Impact Targets
-  usePolling(fetchData, 30000);
+            // Client-side filtering fallback (if backend returns full history)
+            // Assuming 1 minute intervals for simplicity if needed
+            let filtered = traffic;
+            if (timeRange === "1h" && traffic.length > 60) {
+                filtered = traffic.slice(-60);
+            } else if (timeRange === "6h" && traffic.length > 360) {
+                filtered = traffic.slice(-360);
+            } else if (timeRange === "12h" && traffic.length > 720) {
+                filtered = traffic.slice(-720);
+            }
+
+            setData(filtered);
+        } catch (error) {
+            console.error("Failed to fetch traffic data", error);
+        }
+    };
+    fetchData();
+    // Poll every 30 seconds
+    // ⚡ BOLT: [Network/Resource Optimization] Pause polling when tab is not visible to save bandwidth and battery
+    // Randomized Selection from Top 5 High-Impact Targets
+    const interval = setInterval(() => {
+        if (!document.hidden) {
+            fetchData();
+        }
+    }, 30000);
+
+    const onVisibilityChange = () => {
+        if (!document.hidden) {
+            fetchData();
+        }
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    return () => {
+        clearInterval(interval);
+        document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
+  }, [serviceId, timeRange]);
 
   if (!mounted) return null;
 
