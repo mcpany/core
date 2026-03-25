@@ -690,9 +690,27 @@
 - [ ] **[P0] ZK-Discovery Broker Workspace**: (2026-07-01) UI for reviewing masked capability cards and unmasking schemas via mission-handshakes.
 - [ ] **[P0] Attention Anchor Heatmap**: (2026-07-01) Visual tracker for ALRA-pinned intent fragments and attention-density alerts.
 
+#### Upcoming (2026-07-03 Evolution)
+- [ ] **[P0] Zero-Copy Buffer Monitor**: (2026-07-03) Real-time visualization of memory-mapped reasoning shards and physical boundary isolation status.
+- [ ] **[P0] Stylometric Identity Dashboard**: (2026-07-03) Security workspace for visualizing behavioral "voice" matches and mimicry alerts.
+- [ ] **[P0] Multimodal Lineage Tracer**: (2026-07-03) Forensic UI for inspecting hash-chained non-textual fragments and metadata integrity.
+- [ ] **[P0] Attention Reinforcement Console**: (2026-07-03) UI for managing AAE-injected tokens and visualizing mission-root attention strength.
+
 #### Upcoming (2026-03-24 Evolution - v2)
 - [ ] **[P1] Intent Lineage Visualizer**: Real-time graph showing the chain of signed intents across the swarm. (Added: 2026-03-24)
 - [ ] **[P2] BSH Performance Monitor**: Metrics dashboard tracking binary state transfer latency and token savings. (Added: 2026-03-24)
 - [ ] **[P0] Discovery Sandbox Monitor**: Real-time visualization of sandboxed discovery command execution and safety attestation. (Added: 2026-03-24)
 - [ ] **[P0] Teammate Task List Viewer**: High-speed, CRDT-native visualization of the shared task list for horizontal swarms. (Added: 2026-03-24)
 - [ ] **[P0] ALSV Block List Explorer**: UI for reviewing and approving command arguments flagged by the semantic validator. (Added: 2026-03-24)
+
+#### Upcoming (2026-07-04 Evolution)
+- [ ] **[P0] Behavioral Firewall Dashboard**: (2026-07-04) Visualize stylometric confidence scores and paraphrasing sandbox status.
+- [ ] **[P0] Enclave Isolation Monitor**: (2026-07-04) Real-time visualization of DME-locked memory regions and physical isolation fault alerts.
+- [ ] **[P0] Attention Masking Interface**: (2026-07-04) UI for configuring hardware-locked attention masks for mission-root intents.
+- [ ] **[P1] Context Compaction Quorum Viewer**: (2026-07-04) Visual tracker for summarizer agent consensus and compaction savings.
+
+#### Upcoming (2026-03-25 Evolution)
+- [ ] **[P0] WASM-BSH Sanitizer Dashboard**: (2026-03-25) UI for managing OpenClaw v2.5 WASM sanitization rules and viewing rejected binary context fragments.
+- [ ] **[P0] Zero-Copy Transport Monitor**: (2026-03-25) Real-time performance metrics for `memfd_create` memory-mapped BSH buffers.
+- [ ] **[P0] RID Lineage Inspector**: (2026-03-25) Security UI for visualizing UACO v1.8 recursive delegation depths and "Intent Ghosting" defense boundaries.
+- [ ] **[P1] Predictive Locking Visualizer**: Gantt-style view of projected Blackboard resource locks based on agent intents. (Added: 2026-03-25)
