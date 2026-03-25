@@ -57,7 +57,7 @@ func TestHTTPGateway_RegisterService(t *testing.T) {
 
 	// Send request to HTTP Gateway
 	gatewayURL := server.JSONRPCEndpoint + "/v1/services/register"
-	httpReq, err := http.NewRequest(http.MethodPost, gatewayURL, bytes.NewBuffer(jsonBytes))
+	httpReq, err := http.NewRequestWithContext(context.Background(), http.MethodPost, gatewayURL, bytes.NewBuffer(jsonBytes))
 	require.NoError(t, err)
 	httpReq.Header.Set("Content-Type", "application/json")
 
@@ -70,7 +70,9 @@ func TestHTTPGateway_RegisterService(t *testing.T) {
 
 	// Verify registration via ListServices (also via Gateway!)
 	listURL := server.JSONRPCEndpoint + "/v1/services"
-	listResp, err := client.Get(listURL)
+	listReq, err := http.NewRequestWithContext(context.Background(), http.MethodGet, listURL, nil)
+	require.NoError(t, err)
+	listResp, err := client.Do(listReq)
 	require.NoError(t, err)
 	defer func() { _ = listResp.Body.Close() }()
 	require.Equal(t, http.StatusOK, listResp.StatusCode)
