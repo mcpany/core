@@ -78,7 +78,8 @@ jobs:
 
             # Explicitly run bazel tests required for linting to pass CI. Avoid --disk_cache OOMs
             # Limit parallelism to avoid Out-Of-Memory errors on restricted runner instances
-            bazel test //server/pkg/lint/... //ui:lint //ui:typecheck --disk_cache= --jobs=2 --local_ram_resources=2048
+            # In CircleCI specifically drop ram_resources argument to avoid unknown arg failures
+            bazel test //server/pkg/lint/... //ui:lint //ui:typecheck --disk_cache= --jobs=2
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
