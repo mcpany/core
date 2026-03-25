@@ -476,11 +476,6 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] A2A Session Persistence Middleware**: Core security service for managing token refresh and trust persistence in deep reasoning chains. (Added: 2026-04-25)
 *   **[P0] DAP Enforcement for Pre-Flight Validator**: Mandatory enforcement of Deterministic Absence Proofs as a prerequisite for all agent boots. (Added: 2026-04-25)
 
-#### Upcoming (2026-05-05 Evolution)
-*   **[P0] Reasoning-Path Validator (RPV)**: Native validation middleware for UACO that verifies Gemini-style cryptographic watermarks on agent monologues to ensure chain-of-thought integrity. (Added: 2026-05-05)
-*   **[P0] Intent-Bound Attestation (IBA)**: Advanced security layer that semantically audits SIA reasoning proofs against the swarm's mission-root before tool execution. (Added: 2026-05-05)
-*   **[P1] Zk-Context Proxy Service**: Backend service for the Context Sharding middleware that supports Zero-Knowledge proof verification for sensitive context fragments. (Added: 2026-05-05)
-
 #### Upcoming (2026-04-24 Evolution)
 *   **[P0] A2A Authenticated Handshake Provider**: Implementation of Gemini CLI v0.33.0 style HTTP authentication for all agent-to-agent remote communications. (Added: 2026-04-24)
 *   **[P0] ContextEngine Plugin Adapter**: Core adapter for hosting OpenClaw-compatible ContextEngine plugins, supporting sovereignty-aware state management. (Added: 2026-04-24)
@@ -495,3 +490,4 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] GSR Deadlock Resolver**: Implementation of a graph-based reconciliation engine for resolving circular attestation dependencies in swarms. (Added: 2026-05-03)
 *   **[P1] Predictive Intent Warming (PIW)**: Middleware to pre-fetch tool schemas and pre-warm sandboxes based on early reasoning signals. (Added: 2026-05-03)
 *   **[P1] Host-Native Snapshotting Driver**: Support for ZFS/LVM kernel-level primitives in the PLSS Sync bridge. (Added: 2026-05-03)
+#### Upcoming (2026-05-05 Evolution)

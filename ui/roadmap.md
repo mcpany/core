@@ -323,10 +323,6 @@
 - [ ] **[P0] A2A Session Persistence Dashboard**: Real-time monitor for tracking token refresh and session health in long-running reasoning chains. (Added: 2026-04-25)
 - [ ] **[P0] DAP Enforcement Status Widget**: Security indicator for mandatory Deterministic Absence Proof compliance during agent boot. (Added: 2026-04-25)
 
-#### Upcoming (2026-05-05 Evolution)
-- [ ] **[P0] Reasoning Path Explorer**: (2026-05-05) Interactive visualization of the verified chain-of-thought and SIA reasoning proofs for any tool call.
-- [ ] **[P1] Zk-Context Verification Dashboard**: (2026-05-05) Monitor for tracking Zk-proof verification status and context shard privacy metrics.
-
 #### Upcoming (2026-04-24 Evolution)
 - [ ] **[P0] A2A Handshake Status Monitor**: Real-time visualization of authenticated inter-agent handshakes and auth failures. (Added: 2026-04-24)
 - [ ] **[P0] ContextEngine Plugin Manager**: UI for managing and monitoring pluggable ContextEngine strategies and sovereignty status. (Added: 2026-04-24)
@@ -341,3 +337,4 @@
 - [ ] **[P0] Inter-Swarm Wait-Graph Explorer**: Interactive visualization of attestation dependencies and deadlock resolution status. (Added: 2026-05-03)
 - [ ] **[P1] Intent Warming Dashboard**: Monitor for PIW pre-fetch hits, misses, and latency reduction scores. (Added: 2026-05-03)
 - [ ] **[P1] Host-Native Snapshot Monitor**: Real-time status indicator for ZFS/LVM snapshotting speed and integrity. (Added: 2026-05-03)
+#### Upcoming (2026-05-05 Evolution)

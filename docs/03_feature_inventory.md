@@ -6,13 +6,6 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
-## Evolution: [2026-05-05] Updates
-
-### Proposed Additions
-- **Reasoning-Path Validator (RPV)**: (P0) Native validation middleware for UACO that verifies Gemini-style cryptographic watermarks on agent monologues to ensure chain-of-thought integrity.
-- **Zk-Context Proxy**: (P1) A security-hardened extension for the Context Sharding middleware that supports Zero-Knowledge proof verification for sensitive context fragments.
-- **Intent-Bound Attestation (IBA)**: (P0) Advanced security layer that semantically audits "Reasoning Proofs" against the swarm's mission-root before tool execution, neutralizing mission-drift.
-
 ## Evolution: [2026-05-02] Updates
 
 ### Proposed Additions
@@ -829,3 +822,4 @@
 ### Priority Shifts
 - **Inter-Swarm Deadlock Detector**: (Promoted to P0) Now critical for ensuring stability in peer-to-peer swarms using GSR patterns.
 - **Lazy-Discovery Architecture**: (Re-affirmed P0) Elevated with the requirement for "Predictive Warming" to combat schema bloat.
+## Evolution: [2026-05-05] Updates

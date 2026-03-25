@@ -10,16 +10,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-05-05]
-### Focus: Intent Integrity & Zero-Knowledge Context Sovereignty
-**Context**: The introduction of OpenClaw's "Sovereign Intent Auditing" (SIA) and Gemini's "Reasoning Path Watermarking" (RPW) signals a shift from behavioral security to "Cognitive Lineage" protection. Simultaneously, Claude Code's "Zero-Knowledge Context Splicing" (Zk-CS) marks a breakthrough in secure multi-agent state sharing. Security must now validate the *reasoning* that led to a tool call, while privacy must be maintained via Zk-proofs even during deep context inheritance.
-**Strategic Pivot**:
-- **Reasoning-Path Validator (RPV)**: MCP Any will implement a native RPV for the UACO layer. We will integrate Gemini-style RPW and OpenClaw SIA to cryptographically verify the integrity of the agent's internal monologue and its alignment with the mission-root before any high-stakes tool execution.
-- **Zk-Context Proxy**: We are evolving our Context Sharding middleware to support Zk-Context Proxies. MCP Any will host Zk-proof verification for context shards, allowing subagents to prove they possess necessary context without exposing raw sensitive data, neutralizing the risk of "Context Exfiltration" by untrusted specialists.
-- **Intent-Bound Attestation (IBA)**: Moving beyond static capability tokens, MCP Any will implement IBA. Every tool call will require a signed "Reasoning Proof" that is semantically audited against the swarm's collective mission intent in real-time, preventing "Mission Drift" exploits.
-
----
-
 ## Strategic Evolution: [2026-05-02]
 ### Focus: Risk-Adaptive Quorums & Deterministic Environment Recovery
 **Context**: The introduction of OpenClaw's "Adaptive Quorum Thresholds" (AQT) and Claude Code's "Deterministic Sandbox Recovery" (DSR) signals a move toward highly granular, automated governance. Security is no longer a static gate but a dynamic system that scales with risk, while environment resilience is becoming "Self-Healing" via standardized recovery triggers.
@@ -596,3 +586,4 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **GSR Deadlock Resolver**: MCP Any will implement a native GSR engine for the UACO coordination layer. By mapping attestation dependencies as Directed Acyclic Graphs (DAGs), we will identify and resolve circular waiting patterns that stall multi-agent quorums.
 - **Predictive Intent Warming (PIW) Engine**: We are introducing a PIW middleware that monitors early reasoning tokens. This allows MCP Any to pre-fetch tool schemas and initialize sandboxed environments before the agent completes its primary reasoning branch, significantly reducing task latency.
 - **Host-Native Snapshotting (HNS) Bridge**: To support Claude Code's HNS requirements, we are expanding our PLSS Sync bridge to support kernel-level snapshotting (ZFS/LVM). This ensures that environment recovery remains sub-millisecond, even for multi-gigabyte project structures.
+## Strategic Evolution: [2026-05-05]
