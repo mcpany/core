@@ -10,17 +10,6 @@ import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea
 import { GripVertical, MoreHorizontal, Maximize, Columns, LayoutGrid, EyeOff, Trash2, Settings2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
@@ -78,10 +67,7 @@ export function DashboardGrid() {
     const [widgets, setWidgets] = useState<WidgetInstance[]>([]);
     const [isMounted, setIsMounted] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [isClearAllDialogOpen, setIsClearAllDialogOpen] = useState(false);
-    const [isRestoreDefaultsDialogOpen, setIsRestoreDefaultsDialogOpen] = useState(false);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const migrateLayout = (parsed: any): WidgetInstance[] => {
         // Migration Logic
         // Case 1: Legacy format (DashboardWidget[]) where id matches type
@@ -322,59 +308,10 @@ export function DashboardGrid() {
                                 </div>
                             ))}
                              {widgets.length === 0 && <p className="text-xs text-muted-foreground">No widgets added.</p>}
-                             <div className="pt-2 space-y-1">
-                                <AlertDialog open={isRestoreDefaultsDialogOpen} onOpenChange={setIsRestoreDefaultsDialogOpen}>
-                                    <AlertDialogTrigger asChild>
-                                        <Button variant="ghost" size="sm" className="w-full text-xs">
-                                            Restore Defaults
-                                        </Button>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                            <AlertDialogTitle>Restore default layout?</AlertDialogTitle>
-                                            <AlertDialogDescription>
-                                                This will remove all your custom widgets and restore the default dashboard layout.
-                                            </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                            <AlertDialogAction onClick={() => {
-                                                // Create a fresh copy of DEFAULT_LAYOUT to get new UUIDs if needed,
-                                                // or just use DEFAULT_LAYOUT. Actually, DEFAULT_LAYOUT has fixed IDs from module load.
-                                                // Let's generate fresh IDs so they don't collide if we mutate them later.
-                                                const freshDefaults = WIDGET_DEFINITIONS.map(def => ({
-                                                    instanceId: crypto.randomUUID(),
-                                                    type: def.type,
-                                                    title: def.title,
-                                                    size: def.defaultSize,
-                                                    hidden: false
-                                                }));
-                                                saveWidgets(freshDefaults);
-                                            }}>Restore</AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialog>
-                                <AlertDialog open={isClearAllDialogOpen} onOpenChange={setIsClearAllDialogOpen}>
-                                    <AlertDialogTrigger asChild>
-                                        <Button variant="ghost" size="sm" className="w-full text-xs text-destructive hover:text-destructive hover:bg-destructive/10">
-                                            Clear All
-                                        </Button>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                            <AlertDialogDescription>
-                                                This will remove all widgets from your dashboard.
-                                            </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                            <AlertDialogAction onClick={() => saveWidgets([])} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                                                Clear Dashboard
-                                            </AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialog>
+                             <div className="pt-2">
+                                <Button variant="ghost" size="sm" className="w-full text-xs text-destructive" onClick={() => saveWidgets([])}>
+                                    Clear All
+                                </Button>
                              </div>
                         </div>
                     </PopoverContent>

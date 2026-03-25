@@ -55,34 +55,3 @@ test('dashboard layout persistence', async ({ page, request }) => {
   expect(data['dashboard-layout']).toBeDefined();
   expect(data['dashboard-layout']).toContain('Recent Activity');
 });
-
-test('dashboard layout restore defaults and clear all', async ({ page, request }) => {
-  // 1. Initial Load & Clear
-  await request.post('/api/v1/user/preferences', {
-      data: { "dashboard-layout": "[]" }
-  });
-  await page.goto('/');
-  await expect(page.locator('.animate-spin')).not.toBeVisible();
-
-  // 2. Restore Defaults
-  await page.getByRole('button', { name: 'Layout' }).click();
-  await page.getByRole('button', { name: 'Restore Defaults' }).click();
-  await expect(page.getByText('Restore default layout?')).toBeVisible();
-  await page.getByRole('button', { name: 'Restore' }).click();
-
-  // 3. Verify defaults are loaded
-  await expect(page.getByText('Metrics Overview').first()).toBeVisible();
-  await expect(page.getByText('Service Health').first()).toBeVisible();
-
-  // 4. Wait for debounce save
-  await page.waitForTimeout(1500);
-
-  // 5. Clear All
-  await page.getByRole('button', { name: 'Layout' }).click();
-  await page.getByRole('button', { name: 'Clear All' }).click();
-  await expect(page.getByText('Are you absolutely sure?')).toBeVisible();
-  await page.getByRole('button', { name: 'Clear Dashboard' }).click();
-
-  // 6. Verify clear
-  await expect(page.getByText('Your dashboard is empty')).toBeVisible();
-});
