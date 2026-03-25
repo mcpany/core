@@ -78,10 +78,13 @@ export function DashboardGrid() {
                 type: string; // Actually 'wide'|'half' etc in some cases, but mapped
                 hidden?: boolean;
             }
+            // ⚡ BOLT: [Render Optimization] Eliminate O(N*M) lookups during widget migration
+            // Randomized Selection from Top 5 High-Impact Targets
+            const widgetDefMap = new Map(WIDGET_DEFINITIONS.map(d => [d.type, d.title]));
             const migrated: WidgetInstance[] = parsed.map((w: LegacyWidget) => ({
                 instanceId: crypto.randomUUID(),
                 type: w.id, // In legacy, id was effectively the type
-                title: WIDGET_DEFINITIONS.find(d => d.type === w.id)?.title || w.title,
+                title: widgetDefMap.get(w.id) || w.title,
                 size: (["full", "half", "third", "two-thirds"].includes(w.type) ? w.type : "third") as WidgetSize,
                 hidden: w.hidden ?? false
             }));
@@ -199,25 +202,17 @@ export function DashboardGrid() {
         return () => clearTimeout(timer);
     }, [widgets, isMounted, loading]);
 
-    // ⚡ BOLT: [Render Optimization] Eliminate redundant Array.filter calls during drag and drop
-    // Randomized Selection from Top 5 High-Impact Targets (Algorithmic)
     const onDragEnd = (result: DropResult) => {
         if (!result.destination) return;
 
-        const visibleWidgets = [];
-        const hiddenWidgets = [];
-        for (let i = 0; i < widgets.length; i++) {
-            if (widgets[i].hidden) {
-                hiddenWidgets.push(widgets[i]);
-            } else {
-                visibleWidgets.push(widgets[i]);
-            }
-        }
+        const visibleWidgets = widgets.filter(w => !w.hidden);
+        const hiddenWidgets = widgets.filter(w => w.hidden);
 
-        const [reorderedItem] = visibleWidgets.splice(result.source.index, 1);
-        visibleWidgets.splice(result.destination.index, 0, reorderedItem);
+        const items = Array.from(visibleWidgets);
+        const [reorderedItem] = items.splice(result.source.index, 1);
+        items.splice(result.destination.index, 0, reorderedItem);
 
-        saveWidgets([...visibleWidgets, ...hiddenWidgets]);
+        saveWidgets([...items, ...hiddenWidgets]);
     };
 
     const updateWidgetSize = (instanceId: string, newSize: WidgetSize) => {
