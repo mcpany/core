@@ -24,17 +24,19 @@ import (
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream"
-	"github.com/mcpany/core/server/pkg/util"
-	"github.com/mcpany/core/server/pkg/util/schemaconv"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/structpb"
-)
-
 // Upstream implements the upstream.Upstream interface for services that
 // are exposed via a WebSocket connection. It manages a connection pool and
 // registers tools based on the service configuration.
 //
 // Summary: Represents a Upstream.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Upstream struct {
 	poolManager *pool.Manager
 	serviceID   string

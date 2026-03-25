@@ -14,22 +14,30 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/validation"
-	"google.golang.org/protobuf/encoding/protojson"
-)
-
 // AuthTestRequest defines the structure for an authentication test request.
 //
 // Summary: Represents a AuthTestRequest.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type AuthTestRequest struct {
 	CredentialID  string         `json:"credential_id"`
-	ServiceType   string         `json:"service_type"`
-	ServiceConfig map[string]any `json:"service_config"`
-}
-
 // AuthTestResponse defines the structure for an authentication test response.
 //
 // Summary: Represents a AuthTestResponse.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type AuthTestResponse struct {
 	Success bool   `json:"success"`
 	Message string `json:"message"`

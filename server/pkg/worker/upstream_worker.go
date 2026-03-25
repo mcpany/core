@@ -8,19 +8,20 @@ import (
 	"encoding/json"
 	"sync"
 	"time"
-
-	"github.com/mcpany/core/server/pkg/bus"
-	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/metrics"
-	"github.com/mcpany/core/server/pkg/tool"
-)
-
 // UpstreamWorker is a background worker that handles tool execution requests. It
 // listens for ToolExecutionRequest messages on the event bus, uses the
 // tool manager to execute the requested tool, and then publishes the outcome as
 // a ToolExecutionResult message.
 //
 // Summary: Represents a UpstreamWorker.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type UpstreamWorker struct {
 	bus         *bus.Provider
 	toolManager tool.ManagerInterface

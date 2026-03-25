@@ -16,13 +16,17 @@ import (
 
 	"cloud.google.com/go/storage"
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/spf13/afero"
-	"google.golang.org/api/iterator"
-)
-
 // GcsProvider provides access to files in a Google Cloud Storage bucket.
 //
 // Summary: Represents a GcsProvider.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type GcsProvider struct {
 	fs     afero.Fs
 	client *storage.Client

@@ -12,13 +12,17 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/pkg/sftp"
-	"github.com/spf13/afero"
-	"golang.org/x/crypto/ssh"
-)
-
 // SftpProvider provides access to files via SFTP.
 //
 // Summary: Represents a SftpProvider.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type SftpProvider struct {
 	fs     afero.Fs
 	client *sftp.Client

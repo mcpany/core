@@ -28,12 +28,17 @@ import (
 	"github.com/spf13/cobra"
 	"golang.org/x/oauth2"
 	"gopkg.in/yaml.v3"
-)
-
-var (
 	// Version is set at build time.
 	//
 	// Summary: The version of the application, injected at build time.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	Version              = "dev"
 	appRunner app.Runner = app.NewApplication()
 )

@@ -1,18 +1,5 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package config
-
-import (
-	"log"
-	"path/filepath"
-	"strings"
-	"sync"
-	"time"
-
-	"github.com/fsnotify/fsnotify"
-)
-
 // Watcher monitors configuration files for changes and triggers a reload.
 //
 // Summary: A file system watcher for configuration reloading.
@@ -25,6 +12,14 @@ import (
 //   - done (chan bool): Channel to signal shutdown.
 //   - mu (sync.Mutex): Mutex to protect concurrent access.
 //   - timer (*time.Timer): Timer for debouncing reload events.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Watcher struct {
 	watcher *fsnotify.Watcher
 	done    chan bool

@@ -14,30 +14,17 @@ import (
 	"time"
 )
 
-const (
-	webhookBufferSize = 1000
-	webhookWorkers    = 2
-	webhookBatchSize  = 10
-	webhookBatchWait  = 1 * time.Second
-)
-
-// WebhookAuditStore sends audit logs to a configured webhook URL.
-//
-// Summary: Represents a WebhookAuditStore.
-type WebhookAuditStore struct {
-	webhookURL string
-	headers    map[string]string
-	client     *http.Client
-	queue      chan Entry
-	wg         sync.WaitGroup
-	done       chan struct{}
-}
-
 // NewWebhookAuditStore creates a new WebhookAuditStore.
 //
 // Summary: Creates a new webhook audit store.
 //
 // Parameters:
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 //   - webhookURL (string): The URL to send audit logs to.
 //   - headers (map[string]string): Additional headers to send with the request.
 //
@@ -46,6 +33,8 @@ type WebhookAuditStore struct {
 //
 // Side Effects:
 //   - Starts background workers.
+// Errors:
+//   - triggers relevant error states on failure.
 func NewWebhookAuditStore(webhookURL string, headers map[string]string) *WebhookAuditStore {
 	store := &WebhookAuditStore{
 		webhookURL: webhookURL,
@@ -87,20 +76,6 @@ func (s *WebhookAuditStore) worker() {
 				batch = nil
 			}
 		case <-s.done:
-			// Drain queue
-			for entry := range s.queue {
-				batch = append(batch, entry)
-				if len(batch) >= webhookBatchSize {
-					s.sendBatch(batch)
-					batch = nil
-				}
-			}
-			s.sendBatch(batch)
-			return
-		}
-	}
-}
-
 // Write writes an audit entry to the webhook (buffered).
 //
 // Summary: Queues an audit entry for sending.
@@ -114,6 +89,8 @@ func (s *WebhookAuditStore) worker() {
 //
 // Side Effects:
 //   - Queues the entry for processing.
+// Errors:
+//   - triggers relevant error states on failure.
 func (s *WebhookAuditStore) Write(_ context.Context, entry Entry) error {
 	select {
 	case s.queue <- entry:
@@ -143,39 +120,11 @@ func (s *WebhookAuditStore) sendBatch(batch []Entry) {
 
 	req.Header.Set("Content-Type", "application/json")
 	for k, v := range s.headers {
-		req.Header.Set(k, v)
-	}
-
-	resp, err := s.client.Do(req)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to send webhook batch: %v\n", err)
-		return
-	}
-	defer func() { _ = resp.Body.Close() }()
-
-	if resp.StatusCode >= 400 {
-		fmt.Fprintf(os.Stderr, "Webhook batch returned status: %s\n", resp.Status)
-	}
-}
-
 // Read implements the Store interface.
 //
 // Summary: Reads audit logs (not implemented for webhook store).
 //
 // Parameters:
-//   - _ (context.Context): Unused.
-//   - _ (Filter): Unused.
-//
-// Returns:
-//   - []Entry: Always nil.
-//   - error: Always returns an error indicating not implemented.
-//
-// Side Effects:
-//   - None.
-func (s *WebhookAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
-	return nil, fmt.Errorf("read not implemented for webhook audit store")
-}
-
 // Close stops the workers and drains the queue.
 //
 // Summary: Gracefully shuts down the webhook store.
@@ -185,9 +134,15 @@ func (s *WebhookAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 //
 // Returns:
 //   - error: Always nil.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Side Effects:
 //   - Stops background workers and drains the queue.
+// Errors:
+//   - triggers relevant error states on failure.
 func (s *WebhookAuditStore) Close() error {
 	if s.done != nil {
 		close(s.done)

@@ -44,20 +44,6 @@ func isCompressible(contentType string) bool {
 		}
 	}
 	return false
-}
-
-// ⚡ BOLT: Buffer pool to reduce allocations for small responses.
-// Randomized Selection from Top 5 High-Impact Targets.
-type pooledBuffer struct {
-	data []byte
-}
-
-var byteBufferPool = sync.Pool{
-	New: func() interface{} {
-		return &pooledBuffer{data: make([]byte, 0, minSize)}
-	},
-}
-
 // GzipCompressionMiddleware returns a middleware that compresses HTTP responses using Gzip.
 //
 // Summary: Middleware that compresses HTTP responses using Gzip if supported by the client.
@@ -71,6 +57,8 @@ var byteBufferPool = sync.Pool{
 // Side Effects:
 //   - Intercepts the response writer to buffer and compress content.
 //   - Modifies the Content-Encoding header.
+// Errors:
+//   - triggers relevant error states on failure.
 func GzipCompressionMiddleware(next http.Handler) http.Handler {
 	pool := sync.Pool{
 		New: func() interface{} {
@@ -101,21 +89,6 @@ func GzipCompressionMiddleware(next http.Handler) http.Handler {
 			code:           http.StatusOK, // Default status code
 		}
 		defer gzw.Close()
-
-		next.ServeHTTP(gzw, r)
-	})
-}
-
-type gzipResponseWriter struct {
-	http.ResponseWriter
-	writer *gzip.Writer
-	pool   *sync.Pool
-
-	headerWritten bool
-	code          int
-	buf           *pooledBuffer
-}
-
 // Write writes the data to the connection as part of an HTTP reply.
 //
 // Summary: Writes data to the response, buffering until compression threshold is met.
@@ -130,6 +103,8 @@ type gzipResponseWriter struct {
 // Side Effects:
 //   - Buffers data if the size is below the threshold.
 //   - Flushes buffer and writes to gzip writer if threshold is exceeded.
+// Errors:
+//   - triggers relevant error states on failure.
 func (w *gzipResponseWriter) Write(b []byte) (int, error) {
 	// If we are already compressing, write to gzip writer
 	if w.writer != nil {
@@ -169,17 +144,6 @@ func (w *gzipResponseWriter) Write(b []byte) (int, error) {
 		// Flush buffer and start gzipping
 		if err := w.flushBuffer(true); err != nil {
 			return 0, err
-		}
-		// Since flushBuffer wrote the buffer to the gzip writer,
-		// and we are now in gzip mode, future writes go to w.writer.
-		// However, flushBuffer consumed w.buf (which contained b).
-		// So we return len(b) as we successfully "wrote" it (into the buffer -> gzip).
-		return len(b), nil
-	}
-
-	return len(b), nil
-}
-
 // WriteHeader captures the status code.
 //
 // Summary: Captures the status code for later writing.
@@ -190,6 +154,10 @@ func (w *gzipResponseWriter) Write(b []byte) (int, error) {
 // Side Effects:
 //   - Sets the internal status code.
 //   - May trigger an immediate flush if the content type is not compressible.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
 func (w *gzipResponseWriter) WriteHeader(code int) {
 	if w.headerWritten {
 		return

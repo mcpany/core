@@ -14,40 +14,27 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/profile"
-	"github.com/mcpany/core/server/pkg/util"
-	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/encoding/prototext"
-	"google.golang.org/protobuf/proto"
-	"sigs.k8s.io/yaml"
-
-	"github.com/Masterminds/semver/v3"
-)
-
-// MergeStrategyReplace indicates that the new configuration list should replace the existing one.
-//
-// Summary: Constant for "replace" merge strategy.
-const MergeStrategyReplace = "replace"
-
 // UpstreamServiceManager manages the lifecycle and configuration of upstream services.
 //
 // Summary: Handles loading, validating, and merging service configurations from various sources.
 //
 // Side Effects:
 //   - Stores the final, merged UpstreamServiceConfig objects.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
 //   - Makes HTTP requests to fetch remote configurations.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
 type UpstreamServiceManager struct {
 	log               *slog.Logger
-	services          map[string]*configv1.UpstreamServiceConfig // Stores the final, merged UpstreamServiceConfig objects
-	servicePriorities map[string]int32
-	httpClient        *http.Client
-	newGitHub         func(ctx context.Context, rawURL string) (*GitHub, error)
-	enabledProfiles   []string
-	// New fields for profile management
-	profileServiceOverrides map[string]*configv1.ProfileServiceConfig // Stores overrides from profiles
-	profileSecrets          map[string]*configv1.SecretValue          // Stores secrets resolved from profiles
-}
-
 // NewUpstreamServiceManager creates a new instance of UpstreamServiceManager.
 //
 // Summary: Initializes a new UpstreamServiceManager with the specified profiles.
@@ -57,26 +44,14 @@ type UpstreamServiceManager struct {
 //
 // Returns:
 //   - (*UpstreamServiceManager): A pointer to a fully initialized UpstreamServiceManager.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager {
 	if len(enabledProfiles) == 0 {
 		enabledProfiles = []string{"default"}
 	}
-	return &UpstreamServiceManager{
-		log:                     logging.GetLogger().With("component", "UpstreamServiceManager"),
-		services:                make(map[string]*configv1.UpstreamServiceConfig),
-		servicePriorities:       make(map[string]int32),
-		profileServiceOverrides: make(map[string]*configv1.ProfileServiceConfig),
-		profileSecrets:          make(map[string]*configv1.SecretValue),
-		httpClient: &http.Client{
-			Transport: &http.Transport{
-				DialContext: util.SafeDialContext,
-			},
-		},
-		newGitHub:       NewGitHub,
-		enabledProfiles: enabledProfiles,
-	}
-}
-
 // LoadAndMergeServices loads all upstream services from the provided configuration.
 //
 // Summary: Processes local and remote service configurations, merging them based on priority and name.
@@ -92,6 +67,8 @@ func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager
 // Side Effects:
 //   - May clear existing services if a replace strategy is configured.
 //   - Fetches remote collections via HTTP.
+// Errors:
+//   - triggers relevant error states on failure.
 func (m *UpstreamServiceManager) LoadAndMergeServices(ctx context.Context, config *configv1.McpAnyServerConfig) ([]*configv1.UpstreamServiceConfig, error) {
 	// Respect merge strategy
 	if strategy := config.GetMergeStrategy(); strategy != nil {

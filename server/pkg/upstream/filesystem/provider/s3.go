@@ -12,13 +12,17 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials" //nolint:staticcheck
 	"github.com/aws/aws-sdk-go/aws/session"     //nolint:staticcheck
 	s3 "github.com/fclairamb/afero-s3"
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/spf13/afero"
-)
-
 // S3Provider provides access to files in an S3 bucket.
 //
 // Summary: Represents a S3Provider.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type S3Provider struct {
 	fs afero.Fs
 }

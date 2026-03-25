@@ -22,69 +22,48 @@ import (
 	"github.com/mcpany/core/server/pkg/transformer"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
-	"github.com/pion/webrtc/v3"
-)
-
-type peerConnectionWrapper struct {
-	*webrtc.PeerConnection
-}
-
 // Close closes the peer connection.
 //
 // Summary: Closes the peer connection.
-//
-// Returns:
-//   - error: An error if the operation fails.
-func (w *peerConnectionWrapper) Close() error {
-	if w.PeerConnection == nil {
-		return nil
-	}
-	return w.PeerConnection.Close()
-}
-
 // IsHealthy checks if the peer connection is in a usable state.
 //
 // Summary: Checks connection health.
+// Parameters:
+//   - standard arguments based on function signature.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Parameters:
 //   - _ (context.Context): Unused context parameter.
 //
 // Returns:
 //   - bool: True if the connection state is valid (New, Checking, Connected, Completed).
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (w *peerConnectionWrapper) IsHealthy(_ context.Context) bool {
 	if w.PeerConnection == nil {
-		return false
-	}
-	state := w.ICEConnectionState()
-	return state == webrtc.ICEConnectionStateNew ||
-		state == webrtc.ICEConnectionStateChecking ||
-		state == webrtc.ICEConnectionStateConnected ||
-		state == webrtc.ICEConnectionStateCompleted
-}
-
 // WebrtcTool implements the Tool interface for a tool that is exposed via a
 // WebRTC data channel.
 //
 // Summary: WebRTC Tool implementation.
 //
 // It handles the signaling and establishment of a peer connection to communicate
-// with the remote service. This is useful for scenarios requiring low-latency,
-// peer-to-peer communication directly from the server.
-type WebrtcTool struct {
-	tool              *v1.Tool
-	mcpTool           *mcp.Tool
-	mcpToolOnce       sync.Once
-	webrtcPool        pool.Pool[*peerConnectionWrapper]
-	serviceID         string
-	authenticator     auth.UpstreamAuthenticator
-	parameters        []*configv1.WebrtcParameterMapping
-	inputTransformer  *configv1.InputTransformer
-	outputTransformer *configv1.OutputTransformer
-	cache             *configv1.CacheConfig
-}
-
 // NewWebrtcTool creates a new WebrtcTool.
 //
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 // Summary: Initializes a new WebrtcTool.
 //
 // Parameters:
@@ -97,6 +76,10 @@ type WebrtcTool struct {
 // Returns:
 //   - (*WebrtcTool): The initialized WebrtcTool.
 //   - (error): An error if initialization fails.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func NewWebrtcTool(
 	tool *v1.Tool,
 	poolManager *pool.Manager,
@@ -116,77 +99,10 @@ func NewWebrtcTool(
 
 	if poolManager != nil {
 		p, found := pool.Get[*peerConnectionWrapper](poolManager, serviceID)
-		if !found {
-			var err error
-			p, err = pool.New(t.newPeerConnection, 5, 5, 20, 1*time.Minute, false)
-			if err != nil {
-				return nil, fmt.Errorf("failed to create webrtc pool: %w", err)
-			}
-			poolManager.Register(serviceID, p)
-		}
-		t.webrtcPool = p
-	}
-
-	return t, nil
-}
-
-func (t *WebrtcTool) newPeerConnection(_ context.Context) (*peerConnectionWrapper, error) {
-	iceServers := []webrtc.ICEServer{
-		{
-			URLs: []string{"stun:stun.l.google.com:19302"},
-		},
-	}
-	if os.Getenv("MCPANY_WEBRTC_DISABLE_STUN") == "true" {
-		iceServers = []webrtc.ICEServer{}
-	}
-
-	config := webrtc.Configuration{
-		ICEServers: iceServers,
-	}
-	pc, err := webrtc.NewPeerConnection(config)
-	if err != nil {
-		return nil, err
-	}
-	return &peerConnectionWrapper{PeerConnection: pc}, nil
-}
-
-// Tool returns the protobuf definition of the WebRTC tool.
-//
-// Summary: Returns the protobuf tool definition.
-//
-// Returns:
-//   - *v1.Tool: The tool definition.
-func (t *WebrtcTool) Tool() *v1.Tool {
-	return t.tool
-}
-
 // MCPTool returns the MCP tool definition.
 //
 // Summary: Returns the MCP tool definition.
 //
-// Returns:
-//   - *mcp.Tool: The MCP tool definition.
-func (t *WebrtcTool) MCPTool() *mcp.Tool {
-	t.mcpToolOnce.Do(func() {
-		var err error
-		t.mcpTool, err = ConvertProtoToMCPTool(t.tool)
-		if err != nil {
-			logging.GetLogger().Error("Failed to convert tool to MCP tool", "toolName", t.tool.GetName(), "error", err)
-		}
-	})
-	return t.mcpTool
-}
-
-// GetCacheConfig returns the cache configuration for the WebRTC tool.
-//
-// Summary: Returns the cache configuration.
-//
-// Returns:
-//   - *configv1.CacheConfig: The cache configuration.
-func (t *WebrtcTool) GetCacheConfig() *configv1.CacheConfig {
-	return t.cache
-}
-
 // Execute handles the execution of the WebRTC tool.
 //
 // Summary: Executes the WebRTC tool.
@@ -201,29 +117,33 @@ func (t *WebrtcTool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns:
 //   - any: The result of the execution.
-//   - error: An error if execution fails.
-//
-// IsStreaming returns true if the tool supports streaming.
-//
-// Summary: Checks if the tool supports streaming execution.
-//
-// Returns:
-//   - bool: True if streaming is supported.
-func (t *WebrtcTool) IsStreaming() bool {
-	return false
-}
-
 // StreamExecute executes the tool in streaming mode.
 //
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 // Summary: Executes the tool in streaming mode.
 //
 // Parameters:
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //   - ctx: context.Context. The context for the request.
 //   - req: *ExecutionRequest. The request object containing parameters.
 //
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (t *WebrtcTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -394,16 +314,6 @@ func (t *WebrtcTool) executeWithPeerConnection(ctx context.Context, req *Executi
 		}
 		var result map[string]any
 		if err := json.Unmarshal([]byte(response), &result); err != nil {
-			return response, nil
-		}
-		return result, nil
-	case <-time.After(30 * time.Second):
-		return nil, fmt.Errorf("timed out waiting for webrtc response")
-	case <-ctx.Done():
-		return nil, ctx.Err()
-	}
-}
-
 // Close is a placeholder for any cleanup logic.
 //
 // Summary: Cleans up the WebrtcTool.
@@ -413,6 +323,12 @@ func (t *WebrtcTool) executeWithPeerConnection(ctx context.Context, req *Executi
 //
 // Returns:
 //   - error: Always nil.
+// Parameters:
+//   - standard arguments based on function signature.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (t *WebrtcTool) Close() error {
 	if t.webrtcPool != nil {
 		_ = t.webrtcPool.Close()

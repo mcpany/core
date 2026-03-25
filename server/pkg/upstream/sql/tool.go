@@ -18,13 +18,17 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/metrics"
 	"github.com/mcpany/core/server/pkg/tool"
-	"github.com/mcpany/core/server/pkg/util"
-	"github.com/modelcontextprotocol/go-sdk/mcp"
-)
-
 // Tool implements the Tool interface for a tool that executes a SQL query.
 //
 // Summary: Represents a Tool.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Tool struct {
 	tool        *v1.Tool
 	mcpTool     *mcp.Tool
@@ -192,18 +196,6 @@ func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// IsStreaming returns true if the tool supports streaming.
-//
-// Summary: Checks if the tool supports streaming execution.
-//
-// Returns:
-//   - bool: True if streaming is supported.
-func (t *Tool) IsStreaming() bool {
-	return false
-}
-
 // StreamExecute executes the tool in streaming mode.
 //
 // Summary: Executes the tool in streaming mode.
@@ -215,6 +207,10 @@ func (t *Tool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (t *Tool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {

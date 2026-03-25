@@ -10,13 +10,17 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/image"
-	"github.com/docker/docker/api/types/network"
-	v1 "github.com/opencontainers/image-spec/specs-go/v1"
-)
-
 // DockerClient interface matching the subset of docker client methods used.
 //
 // Summary: Represents a DockerClient.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type DockerClient interface {
 	// ImagePull requests the docker host to pull an image from a remote registry.
 	//

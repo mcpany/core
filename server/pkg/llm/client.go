@@ -10,13 +10,17 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"net/http"
-	"time"
-)
-
 // Client is the interface for an LLM client.
 //
 // Summary: Represents a Client.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Client interface {
 	// ChatCompletion sends a chat request to the LLM and returns the response.
 	//
@@ -35,36 +39,52 @@ type Client interface {
 	//   - Returns error if marshaling fails, network request fails, or API returns non-200 status.
 	//
 	// Side Effects:
-	//   - Makes a network request to the LLM provider.
-	ChatCompletion(ctx context.Context, req ChatRequest) (*ChatResponse, error)
-}
-
 // ChatRequest represents a chat completion request.
 //
 // Summary: Represents a ChatRequest.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type ChatRequest struct {
-	Model    string    `json:"model"`
-	Messages []Message `json:"messages"`
-}
-
 // Message represents a chat message.
 //
 // Summary: Represents a Message.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Message struct {
-	Role    string `json:"role"`
-	Content string `json:"content"`
-}
-
 // ChatResponse represents a chat completion response.
 //
 // Summary: Represents a ChatResponse.
-type ChatResponse struct {
-	Content string `json:"content"`
-}
-
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 // OpenAIClient implements Client for OpenAI.
 //
 // Summary: Represents a OpenAIClient.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type OpenAIClient struct {
 	apiKey  string
 	baseURL string

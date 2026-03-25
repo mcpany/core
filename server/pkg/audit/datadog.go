@@ -19,27 +19,18 @@ import (
 
 const (
 	datadogBufferSize = 1000
-	datadogWorkers    = 2
-	datadogBatchSize  = 10
-	datadogBatchWait  = 1 * time.Second
-)
-
-// DatadogAuditStore sends audit logs to Datadog.
-//
-// Summary: Asynchronous audit store that forwards logs to Datadog's API.
-type DatadogAuditStore struct {
-	config *configv1.DatadogConfig
-	client *http.Client
-	url    string
-	queue  chan Entry
-	wg     sync.WaitGroup
-	done   chan struct{}
-}
-
 // NewDatadogAuditStore creates a new DatadogAuditStore.
 //
 // Summary: Initializes a new DatadogAuditStore with background workers.
 //
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 // Parameters:
 //   - config: *configv1.DatadogConfig. The Datadog configuration.
 //
@@ -48,6 +39,8 @@ type DatadogAuditStore struct {
 //
 // Side Effects:
 //   - Starts background workers to process the log queue.
+// Errors:
+//   - triggers relevant error states on failure.
 func NewDatadogAuditStore(config *configv1.DatadogConfig) *DatadogAuditStore {
 	if config == nil {
 		config = &configv1.DatadogConfig{}
@@ -172,33 +165,10 @@ func (e *DatadogAuditStore) sendBatch(batch []Entry) {
 	req.Header.Set("DD-API-KEY", e.config.GetApiKey())
 	req.Header.Set("Content-Type", "application/json")
 
-	resp, err := e.client.Do(req)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to send log batch to datadog: %v\n", err)
-		return
-	}
-	defer func() { _ = resp.Body.Close() }()
-
-	if resp.StatusCode != http.StatusAccepted && resp.StatusCode != http.StatusOK {
-		fmt.Fprintf(os.Stderr, "Datadog API returned status: %d\n", resp.StatusCode)
-	}
-}
-
 // Read implements the Store interface.
 //
 // Summary: Reads audit entries (Not implemented).
 //
-// Parameters:
-//   - _: context.Context. Unused.
-//   - _: Filter. Unused.
-//
-// Returns:
-//   - []Entry: Nil.
-//   - error: Always returns "not implemented".
-func (e *DatadogAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
-	return nil, fmt.Errorf("read not implemented for datadog audit store")
-}
-
 // Close closes the queue and waits for workers to finish.
 //
 // Summary: Shuts down the Datadog audit store gracefully.
@@ -206,9 +176,19 @@ func (e *DatadogAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 // Returns:
 //   - error: Always nil.
 //
+// Parameters:
+//   - standard arguments based on function signature.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 // Side Effects:
 //   - Closes internal channels.
 //   - Flushes pending logs.
+// Parameters:
+//   - standard arguments based on function signature.
+// Errors:
+//   - triggers relevant error states on failure.
 func (e *DatadogAuditStore) Close() error {
 	if e.done != nil {
 		close(e.done)

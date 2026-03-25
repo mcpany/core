@@ -10,13 +10,17 @@ import (
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/milvus-io/milvus-sdk-go/v2/client"
-	"github.com/milvus-io/milvus-sdk-go/v2/entity"
-)
-
 // MilvusClient implements VectorClient for Milvus.
 //
 // Summary: Represents a MilvusClient.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type MilvusClient struct {
 	config *configv1.MilvusVectorDB
 	client client.Client

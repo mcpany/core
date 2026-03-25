@@ -6,13 +6,17 @@ package discovery
 import (
 	"context"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"google.golang.org/protobuf/proto"
-)
-
 // GRPCProvider discovers services via gRPC reflection.
 //
 // Summary: Represents a GRPCProvider.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type GRPCProvider struct {
 	Endpoint string // e.g., "localhost:50051"
 }

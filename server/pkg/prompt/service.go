@@ -4,89 +4,50 @@
 package prompt
 
 import (
-	"context"
-	"encoding/json"
-	"fmt"
-
-	"github.com/modelcontextprotocol/go-sdk/mcp"
-)
-
-// Service handles the business logic for the prompts feature. It provides
-// methods for listing available prompts and retrieving a specific prompt by
-// name.
-//
-// Summary: Represents a Service.
-type Service struct {
-	promptManager ManagerInterface
-	mcpServer     *mcp.Server
-}
-
-// NewService creates and returns a new Service instance.
-//
-// Summary: Initializes a new Prompt Service.
-//
-// Parameters:
-//   - promptManager: ManagerInterface. The manager handling prompt lifecycle.
-//
-// Returns:
-//   - *Service: The initialized service.
-func NewService(promptManager ManagerInterface) *Service {
-	s := &Service{
-		promptManager: promptManager,
-	}
-	// s.promptManager.OnListChanged(s.onPromptListChanged)
-	return s
-}
-
-// SetMCPServer sets the MCP server instance for the service.
-//
-// Summary: Configures the underlying MCP server.
-//
-// Parameters:
-//   - mcpServer: *mcp.Server. The MCP server instance.
-//
-// Returns:
-//
-//	None.
-func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
-	s.mcpServer = mcpServer
-	s.promptManager.SetMCPServer(NewMCPServerProvider(mcpServer))
-}
-
 // onPromptListChanged notifies clients that the prompt list has changed.
 // Currently this is a no-op as the go-sdk does not expose a public Notify method
 // for PromptListChanged.
 // func (s *Service) onPromptListChanged() {
 //    // Waiting for SDK support for public notification triggering
 //	  // log.Warn("Prompt list changed notification not sent (SDK limitation)")
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 // }
-
 // ListPrompts handles the "prompts/list" MCP request.
 //
 // Summary: Lists all available prompts.
+// Parameters:
+//   - standard arguments based on function signature.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Parameters:
 //   - ctx: context.Context. The context for the request.
 //   - req: *mcp.ListPromptsRequest. The request object.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Returns:
 //   - *mcp.ListPromptsResult: The list of prompts.
-//   - error: An error if the operation fails.
-func (s *Service) ListPrompts(
-	_ context.Context,
-	_ *mcp.ListPromptsRequest,
-) (*mcp.ListPromptsResult, error) {
-	prompts := s.promptManager.ListPrompts()
-	mcpPrompts := make([]*mcp.Prompt, len(prompts))
-	for i, p := range prompts {
-		mcpPrompts[i] = p.Prompt()
-	}
-	return &mcp.ListPromptsResult{
-		Prompts: mcpPrompts,
-	}, nil
-}
-
 // GetPrompt handles the "prompts/get" MCP request.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Summary: Retrieves and executes a specific prompt.
 //
@@ -100,6 +61,8 @@ func (s *Service) ListPrompts(
 //
 // Throws/Errors:
 //   - ErrPromptNotFound: If the prompt does not exist.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (s *Service) GetPrompt(
 	ctx context.Context,
 	req *mcp.GetPromptRequest,

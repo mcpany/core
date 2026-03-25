@@ -9,21 +9,29 @@ import (
 	"net/http"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/config"
-	"sigs.k8s.io/yaml"
-)
-
 // ValidateRequest represents the request body for the validation endpoint.
 //
 // Summary: Represents a ValidateRequest.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type ValidateRequest struct {
-	Content string `json:"content"`
-	Format  string `json:"format"` // "json" or "yaml"
-}
-
 // ValidateResponse represents the response body for the validation endpoint.
 //
 // Summary: Represents a ValidateResponse.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type ValidateResponse struct {
 	Valid   bool   `json:"valid"`
 	Error   string `json:"error,omitempty"`

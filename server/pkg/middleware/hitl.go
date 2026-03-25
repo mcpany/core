@@ -11,40 +11,56 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/mcpany/core/server/pkg/bus"
-	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/tool"
-)
-
 // HITLConfig defines the configuration for Human-In-The-Loop approval flows.
 //
 // Summary: Represents the configuration for Human-In-The-Loop (HITL) approval flows.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type HITLConfig struct {
 	Enabled        bool     `json:"enabled"`
 	SensitiveTools []string `json:"sensitive_tools"`
-	RequireMFA     bool     `json:"require_mfa"`
-	TimeoutSeconds int      `json:"timeout_seconds"`
-}
-
 // HITLApprovalRequest represents a request for human approval published to the bus.
 //
 // Summary: Represents a request for human approval published to the message bus.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type HITLApprovalRequest struct {
 	ExecutionID string `json:"execution_id"`
-	ToolName    string `json:"tool_name"`
-	RequireMFA  bool   `json:"require_mfa"`
-}
-
 // HITLApprovalResponse represents the response from the human operator.
 //
 // Summary: Represents the response from a human operator regarding a tool execution approval request.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type HITLApprovalResponse struct {
-	ExecutionID string `json:"execution_id"`
-	Approved    bool   `json:"approved"`
-}
-
 // HITLMiddleware enforces Human-In-The-Loop approvals for sensitive actions.
 //
 // Summary: Represents middleware that enforces Human-In-The-Loop (HITL) approvals for sensitive actions.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type HITLMiddleware struct {
 	config HITLConfig
 	bus    *bus.Provider

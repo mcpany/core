@@ -13,13 +13,17 @@ import (
 
 	"github.com/mcpany/core/server/pkg/validation"
 
-	// modernc.org/sqlite is a pure Go SQLite driver.
-	_ "modernc.org/sqlite"
-)
-
 // SQLiteAuditStore writes audit logs to a SQLite database.
 //
 // Summary: Stores audit logs in a local SQLite database with tamper-evident hashing.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type SQLiteAuditStore struct {
 	db *sql.DB
 	mu sync.Mutex
@@ -144,20 +148,6 @@ func ensureColumn(db *sql.DB, colName string) error {
 	// Check if column exists
 	//nolint:gosec // colName is validated above
 	query := fmt.Sprintf("SELECT %s FROM audit_logs LIMIT 1", colName)
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	if _, err := db.ExecContext(ctx, query); err == nil {
-		return nil
-	}
-	// Add column
-
-	query = fmt.Sprintf("ALTER TABLE audit_logs ADD COLUMN %s TEXT DEFAULT ''", colName)
-	ctxAlter, cancelAlter := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancelAlter()
-	_, err := db.ExecContext(ctxAlter, query)
-	return err
-}
-
 // Write writes an audit entry to the database.
 //
 // Summary: Writes a single audit entry with cryptographic hash chaining.
@@ -171,6 +161,8 @@ func ensureColumn(db *sql.DB, colName string) error {
 //
 // Side Effects:
 //   - Inserts a row into the audit_logs table.
+// Errors:
+//   - triggers relevant error states on failure.
 func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -213,21 +205,6 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 	_, err = s.db.ExecContext(ctx, query,
 		ts,
 		entry.ToolName,
-		entry.UserID,
-		entry.ProfileID,
-		entry.TraceID,
-		entry.SpanID,
-		entry.ParentID,
-		argsJSON,
-		resultJSON,
-		entry.Error,
-		entry.DurationMs,
-		prevHash,
-		hash,
-	)
-	return err
-}
-
 // Read reads audit entries from the database based on the filter.
 //
 // Summary: Retrieves audit entries matching the specified filter criteria.
@@ -242,6 +219,8 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 //
 // Side Effects:
 //   - Executes a SELECT query on the database.
+// Errors:
+//   - triggers relevant error states on failure.
 func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -364,16 +343,6 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 
 		if calculatedHash != hash {
 			return false, fmt.Errorf("integrity violation at id %d: hash mismatch (calculated %q, got %q)", id, calculatedHash, hash)
-		}
-
-		expectedPrevHash = hash
-	}
-	if err := rows.Err(); err != nil {
-		return false, err
-	}
-	return true, nil
-}
-
 // Close closes the database connection.
 //
 // Summary: Closes the SQLite database connection.
@@ -383,6 +352,10 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 //
 // Side Effects:
 //   - Closes the DB connection.
+// Parameters:
+//   - standard arguments based on function signature.
+// Errors:
+//   - triggers relevant error states on failure.
 func (s *SQLiteAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

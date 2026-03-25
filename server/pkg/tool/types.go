@@ -44,11 +44,16 @@ import (
 )
 
 const (
-	contentTypeJSON     = "application/json"
-	redactedPlaceholder = "[REDACTED]"
-
 	// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
 	// Summary: Defines HealthStatusUnhealthy.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	HealthStatusUnhealthy = "unhealthy"
 
 	gitCommand = "git"
@@ -71,19 +76,20 @@ var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 // This prevents creating a new decoder on every tool execution (allocation reduction)
 // while preserving the UseNumber behavior required for accurate number handling.
 // Note: This config is frozen and thread-safe.
-var fastJSONNumber = jsoniter.Config{
-	EscapeHTML:             true,
-	SortMapKeys:            true,
-	ValidateJsonRawMessage: true,
-	UseNumber:              true,
-}.Froze()
-
 // Tool is the fundamental interface for any executable tool in the system.
 //
 // Summary: Interface for defining and executing tools.
 //
 // Each implementation represents a different type of underlying service
 // (e.g., gRPC, HTTP, command-line).
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Tool interface {
 	// Tool returns the protobuf definition of the tool.
 	//
@@ -142,15 +148,18 @@ type Tool interface {
 	//
 	// Summary: Retrieves cache configuration.
 	//
-	// Returns:
-	//   - *configv1.CacheConfig: The cache configuration, or nil if none.
-	GetCacheConfig() *configv1.CacheConfig
-}
-
 // ServiceInfo holds metadata about a registered upstream service, including its
 // configuration and any associated protobuf file descriptors.
 //
 // Summary: Metadata for a registered service.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type ServiceInfo struct {
 	// Name is the unique name of the service.
 	Name string
@@ -166,127 +175,31 @@ type ServiceInfo struct {
 
 	// CompiledPolicies are the pre-compiled call policies for the service.
 	CompiledPolicies []*CompiledCallPolicy
-
-	// HealthStatus indicates the health of the service ("healthy", "unhealthy", "unknown").
-	HealthStatus string
-}
-
-// ExecutionRequest represents a request to execute a specific tool, including
-// its name and input arguments as a raw JSON message.
-//
-// Summary: Request payload for tool execution.
-type ExecutionRequest struct {
-	// ToolName is the name of the tool to be executed.
-	ToolName string `json:"name"`
-	// ToolInputs is the raw JSON message of the tool inputs. It is used by
-	// tools that need to unmarshal the inputs into a specific struct.
-	ToolInputs stdjson.RawMessage `json:"toolInputs"`
-	// Arguments is a map of the tool inputs. It is used by tools that need to
-	// access the inputs as a map.
-	Arguments map[string]interface{} `json:"arguments"`
 	// DryRun indicates whether the tool should be executed in dry-run mode.
-	// In dry-run mode, the tool should validate inputs and return a preview
-	// of the execution without performing any side effects.
-	DryRun bool `json:"dryRun"`
-	// Tool is the resolved tool instance. Populated internally to avoid re-lookup.
-	Tool Tool `json:"-"`
-}
-
-// ServiceRegistry defines an interface for a component that can look up tools
-// and service information. It is used for dependency injection to decouple
-// components from the main service registry.
-//
-// Summary: Interface for tool and service lookup.
-type ServiceRegistry interface {
-	// GetTool retrieves a tool by name.
-	//
-	// Parameters:
-	//   - toolName: The name of the tool to retrieve.
-	//
-	// Returns:
-	//   - Tool: The tool instance if found.
-	//   - bool: True if the tool exists, false otherwise.
-	GetTool(toolName string) (Tool, bool)
-
 	// GetServiceInfo retrieves metadata for a service.
 	//
 	// Parameters:
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	//   - serviceID: The unique identifier of the service.
 	//
 	// Returns:
 	//   - *ServiceInfo: The service metadata info if found.
 	//   - bool: True if the service exists, false otherwise.
-	GetServiceInfo(serviceID string) (*ServiceInfo, bool)
-}
-
-// ExecutionFunc represents the next middleware in the chain.
-//
-// Summary: Function signature for tool execution middleware.
-//
-// Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *ExecutionRequest. The request payload.
-//
-// Returns:
-//   - any: The execution result.
-//   - error: An error if execution fails.
-type ExecutionFunc func(ctx context.Context, req *ExecutionRequest) (any, error)
-
-type contextKey string
-
-const toolContextKey = contextKey("tool")
-
-// NewContextWithTool creates a new context with the given tool embedded.
-//
-// Summary: Embeds a tool into the context.
-//
-// Parameters:
-//   - ctx: context.Context. The context to extend.
-//   - t: Tool. The tool instance to embed in the context.
-//
-// Returns:
-//   - context.Context: A new context containing the tool.
-func NewContextWithTool(ctx context.Context, t Tool) context.Context {
-	return context.WithValue(ctx, toolContextKey, t)
-}
-
 // GetFromContext retrieves a tool from the context if present.
 //
 // Summary: Retrieves a tool from the context.
 //
-// Parameters:
-//   - ctx: context.Context. The context to search.
-//
-// Returns:
-//   - Tool: The tool instance from the context.
-//   - bool: True if a tool was found, false otherwise.
-func GetFromContext(ctx context.Context) (Tool, bool) {
-	t, ok := ctx.Value(toolContextKey).(Tool)
-	return t, ok
-}
-
-// Callable is an interface that represents a callable tool.
-//
-// Summary: Interface for executing a tool.
-type Callable interface {
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Call executes the callable with the given request.
 	//
-	// Parameters:
-	//   - ctx: The context for the request.
-	//   - req: The execution request details.
-	//
-	// Returns:
-	//   - any: The result of the execution.
-	//   - error: An error if the operation fails.
-	Call(ctx context.Context, req *ExecutionRequest) (any, error)
-}
-
-// StreamingCallable is an interface that represents a callable tool that can stream output.
-//
-// Summary: Interface for executing a tool with streaming output.
-type StreamingCallable interface {
-	Callable
-
 	// StreamCall executes the callable with the given request, emitting updates to the channel.
 	//
 	// Parameters:
@@ -294,214 +207,128 @@ type StreamingCallable interface {
 	//   - req: *ExecutionRequest. The execution request details.
 	//
 	// Returns:
-	//   - <-chan any: A channel that emits streaming results.
-	//   - error: An error if the initial operation fails.
-	StreamCall(ctx context.Context, req *ExecutionRequest) (<-chan any, error)
-}
-
-// Action defines the decision made by a pre-call hook.
-//
-// Summary: Enumeration of possible hook actions.
-type Action int
-
-const (
 	// ActionAllow indicates that the action is allowed to proceed.
-	//
-	// Summary: Allow action.
-	ActionAllow Action = 0
-	// ActionDeny indicates that the action is denied and should be blocked.
-	//
-	// Summary: Deny action.
-	ActionDeny Action = 1
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// ActionSaveCache indicates that the result should be saved to the cache.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 	//
 	// Summary: Save to cache action.
-	ActionSaveCache Action = 2
-	// ActionDeleteCache indicates that the associated cache entry should be invalidated.
-	//
-	// Summary: Delete from cache action.
-	ActionDeleteCache Action = 3
-)
-
-// CacheControl is a mutable struct to pass cache control instructions via context.
-//
-// Summary: Context-based cache control instructions.
-type CacheControl struct {
-	Action Action
-}
-
-const cacheControlContextKey = contextKey("cache_control")
-
 // NewContextWithCacheControl creates a new context with the given CacheControl.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 //
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 // Summary: Embeds CacheControl into the context.
+// GetCacheControl retrieves the CacheControl from the context.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Parameters:
+//   - None.
+// Returns:
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 //
 // Parameters:
-//   - ctx: context.Context. The context to extend.
-//   - cc: *CacheControl. The CacheControl instance to embed.
-//
+//   - None.
 // Returns:
-//   - context.Context: A new context containing the CacheControl.
-func NewContextWithCacheControl(ctx context.Context, cc *CacheControl) context.Context {
-	return context.WithValue(ctx, cacheControlContextKey, cc)
-}
-
-// GetCacheControl retrieves the CacheControl from the context.
-//
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 // Summary: Retrieves CacheControl from the context.
 //
 // Parameters:
 //   - ctx: context.Context. The context to search.
 //
 // Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
+// Returns:
 //   - *CacheControl: The CacheControl instance if found.
 //   - bool: True if CacheControl exists, false otherwise.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func GetCacheControl(ctx context.Context) (*CacheControl, bool) {
-	cc, ok := ctx.Value(cacheControlContextKey).(*CacheControl)
-	return cc, ok
-}
-
 // PreCallHook defines the interface for hooks executed before a tool call.
 //
 // Summary: Interface for pre-execution hooks.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type PreCallHook interface {
 	// ExecutePre runs the hook. It returns an action (Allow/Deny),
-	// a potentially modified request (or nil if unchanged), and an error.
-	ExecutePre(ctx context.Context, req *ExecutionRequest) (Action, *ExecutionRequest, error)
-}
-
 // PostCallHook defines the interface for hooks executed after a tool call.
-//
-// Summary: Interface for post-execution hooks.
-type PostCallHook interface {
-	// ExecutePost runs the hook. It returns the potentially modified result
-	// (or original if unchanged) and an error.
-	ExecutePost(ctx context.Context, req *ExecutionRequest, result any) (any, error)
-}
-
 // GRPCTool implements the Tool interface for a tool that is exposed via a gRPC
 // endpoint.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 //
 // Summary: Tool implementation for gRPC services.
-//
-// It handles the marshalling of JSON inputs to protobuf messages and
-// invoking the gRPC method.
-type GRPCTool struct {
-	tool              *v1.Tool
-	mcpTool           *mcp.Tool
-	mcpToolOnce       sync.Once
-	poolManager       *pool.Manager
-	serviceID         string
-	method            protoreflect.MethodDescriptor
-	requestMessage    protoreflect.ProtoMessage
-	cache             *configv1.CacheConfig
-	resilienceManager *resilience.Manager
-}
-
 // NewGRPCTool creates a new GRPCTool instance.
 //
 // Summary: Initializes a new GRPCTool.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 //
 // Parameters:
 //   - tool: *v1.Tool. The protobuf definition of the tool.
 //   - poolManager: *pool.Manager. The connection pool manager for gRPC connections.
-//   - serviceID: string. The identifier for the service.
-//   - method: protoreflect.MethodDescriptor. The gRPC method descriptor.
-//   - callDefinition: *configv1.GrpcCallDefinition. The configuration for the gRPC call.
-//   - resilienceConfig: *configv1.ResilienceConfig. The resilience configuration.
-//
-// Returns:
-//   - *GRPCTool: The initialized GRPCTool.
-func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, method protoreflect.MethodDescriptor, callDefinition *configv1.GrpcCallDefinition, resilienceConfig *configv1.ResilienceConfig) *GRPCTool {
-	return &GRPCTool{
-		tool:              tool,
-		poolManager:       poolManager,
-		serviceID:         serviceID,
-		method:            method,
-		requestMessage:    dynamicpb.NewMessage(method.Input()),
-		cache:             callDefinition.GetCache(),
-		resilienceManager: resilience.NewManager(resilienceConfig),
-	}
-}
-
 // Tool returns the protobuf definition of the gRPC tool.
-//
-// Returns:
-//   - *v1.Tool: The underlying protobuf definition.
-//
-// Summary: Executes Tool operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
-func (t *GRPCTool) Tool() *v1.Tool {
-	return t.tool
-}
-
 // MCPTool returns the MCP-compliant tool definition.
 //
 // It lazily converts the internal protobuf definition to the MCP format on first access.
-//
-// Returns:
-//   - *mcp.Tool: The MCP tool definition.
-//
-// Summary: Executes MCPTool operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
-func (t *GRPCTool) MCPTool() *mcp.Tool {
-	t.mcpToolOnce.Do(func() {
-		var err error
-		t.mcpTool, err = ConvertProtoToMCPTool(t.tool)
-		if err != nil {
-			logging.GetLogger().Error("Failed to convert tool to MCP tool", "toolName", t.tool.GetName(), "error", err)
-		}
-	})
-	return t.mcpTool
-}
-
-// GetCacheConfig returns the cache configuration for the gRPC tool.
-//
-// Returns:
-//   - *configv1.CacheConfig: The cache configuration, if any.
-//
-// Summary: Retrieves GetCacheConfig operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
-func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
-	return t.cache
-}
-
 // Execute handles the execution of the gRPC tool.
 //
 // Summary: Executes the gRPC tool call.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // It retrieves a client from the pool, unmarshals the JSON input into a protobuf request message,
 // invokes the gRPC method, and marshals the protobuf response back to JSON.
@@ -513,33 +340,35 @@ func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - any: The execution result (usually a map or JSON string).
 //   - error: An error if execution fails.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Side Effects:
 //   - Makes a gRPC call to the upstream service.
+// Errors:
+//   - triggers relevant error states on failure.
 //   - Updates metrics (latency, success/error counts).
-//   - Logs execution details.
-//
-// IsStreaming returns true if the tool supports streaming.
-//
-// Summary: Checks if the tool supports streaming execution.
-//
-// Returns:
-//   - bool: True if streaming is supported.
-func (t *GRPCTool) IsStreaming() bool {
-	return false
-}
-
 // StreamExecute executes the tool in streaming mode.
 //
 // Summary: Executes the tool in streaming mode.
 //
 // Parameters:
+// Errors:
+//   - triggers relevant error states on failure.
 //   - ctx: context.Context. The context for the request.
 //   - req: *ExecutionRequest. The request object containing parameters.
 //
+// Errors:
+//   - triggers relevant error states on failure.
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (t *GRPCTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -636,19 +465,20 @@ func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 
 	// ⚡ Bolt: Use json-iterator
 	var result map[string]any
-	if err := fastJSON.Unmarshal(responseJSON, &result); err != nil {
-		return string(responseJSON), nil
-	}
-
-	return result, nil
-}
-
 // HTTPTool implements the Tool interface for a tool exposed via an HTTP endpoint.
 //
 // Summary: Tool implementation for HTTP services.
 //
 // It constructs and sends an HTTP request based on the tool definition and
 // input, handling parameter mapping, authentication, and transformations.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type HTTPTool struct {
 	tool              *v1.Tool
 	mcpTool           *mcp.Tool
@@ -662,23 +492,6 @@ type HTTPTool struct {
 	webhookClient     *WebhookClient
 	cache             *configv1.CacheConfig
 	resilienceManager *resilience.Manager
-	policies          []*CompiledCallPolicy
-	callID            string
-	allowedParams     map[string]bool
-	secretParams      map[string]bool
-
-	// Cached fields for performance
-	initError            error
-	cachedMethod         string
-	cachedURL            *url.URL
-	pathSegments         []urlSegment
-	querySegments        []urlSegment
-	paramInPath          []bool
-	paramInQuery         []bool
-	cachedInputTemplate  *transformer.TextTemplate
-	cachedOutputTemplate *transformer.TextTemplate
-}
-
 // NewHTTPTool creates a new HTTPTool instance.
 //
 // Summary: Initializes a new HTTPTool.
@@ -695,6 +508,10 @@ type HTTPTool struct {
 //
 // Returns:
 //   - *HTTPTool: The initialized HTTPTool.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.HttpCallDefinition, cfg *configv1.ResilienceConfig, policies []*configv1.CallPolicy, callID string) *HTTPTool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -776,100 +593,10 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 
 	t.paramInPath = make([]bool, len(callDefinition.GetParameters()))
 	t.paramInQuery = make([]bool, len(callDefinition.GetParameters()))
-
-	for i, param := range callDefinition.GetParameters() {
-		if schema := param.GetSchema(); schema != nil {
-			name := schema.GetName()
-			t.allowedParams[name] = true
-			placeholder := "{{" + name + "}}"
-
-			if strings.Contains(pathStr, placeholder) {
-				t.paramInPath[i] = true
-			}
-			if strings.Contains(queryStr, placeholder) {
-				t.paramInQuery[i] = true
-			}
-		}
-	}
-
-	return t
-}
-
 // Tool returns the protobuf definition of the HTTP tool.
-//
-// Returns:
-//   - *v1.Tool: The underlying protobuf definition.
-//
-// Summary: Executes Tool operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
-func (t *HTTPTool) Tool() *v1.Tool {
-	return t.tool
-}
-
 // MCPTool returns the MCP-compliant tool definition.
 //
 // It lazily converts the internal protobuf definition to the MCP format on first access.
-//
-// Returns:
-//   - *mcp.Tool: The MCP tool definition.
-//
-// Summary: Executes MCPTool operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
-func (t *HTTPTool) MCPTool() *mcp.Tool {
-	t.mcpToolOnce.Do(func() {
-		var err error
-		t.mcpTool, err = ConvertProtoToMCPTool(t.tool)
-		if err != nil {
-			logging.GetLogger().Error("Failed to convert tool to MCP tool", "toolName", t.tool.GetName(), "error", err)
-		}
-	})
-	return t.mcpTool
-}
-
-// GetCacheConfig returns the cache configuration for the HTTP tool.
-//
-// Returns:
-//   - *configv1.CacheConfig: The cache configuration, if any.
-//
-// Summary: Retrieves GetCacheConfig operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
-func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
-	return t.cache
-}
-
 // Execute handles the execution of the HTTP tool.
 //
 // Summary: Executes the HTTP tool call.
@@ -884,33 +611,35 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Side Effects:
 //   - Makes an HTTP request to the upstream service.
+// Errors:
+//   - triggers relevant error states on failure.
 //   - Updates metrics.
-//   - Logs execution details.
-//
-// IsStreaming returns true if the tool supports streaming.
-//
-// Summary: Checks if the tool supports streaming execution.
-//
-// Returns:
-//   - bool: True if streaming is supported.
-func (t *HTTPTool) IsStreaming() bool {
-	return false
-}
-
 // StreamExecute executes the tool in streaming mode.
 //
 // Summary: Executes the tool in streaming mode.
 //
 // Parameters:
+// Errors:
+//   - triggers relevant error states on failure.
 //   - ctx: context.Context. The context for the request.
 //   - req: *ExecutionRequest. The request object containing parameters.
 //
+// Errors:
+//   - triggers relevant error states on failure.
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (t *HTTPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -1529,14 +1258,6 @@ func (t *HTTPTool) processResponse(ctx context.Context, resp *http.Response) (an
 	}
 
 	// ⚡ Bolt: Use json-iterator
-	var result any
-	if err := fastJSON.Unmarshal(respBody, &result); err != nil {
-		return string(respBody), nil //nolint:nilerr
-	}
-
-	return result, nil
-}
-
 // MCPTool implements the Tool interface for a tool that is exposed via another
 // MCP-compliant service.
 //
@@ -1544,20 +1265,16 @@ func (t *HTTPTool) processResponse(ctx context.Context, resp *http.Response) (an
 //
 // It acts as a proxy, forwarding the tool call to the
 // downstream MCP service.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type MCPTool struct {
 	tool                 *v1.Tool
-	mcpTool              *mcp.Tool
-	mcpToolOnce          sync.Once
-	client               client.MCPClient
-	inputTransformer     *configv1.InputTransformer
-	outputTransformer    *configv1.OutputTransformer
-	webhookClient        *WebhookClient
-	cache                *configv1.CacheConfig
-	cachedInputTemplate  *transformer.TextTemplate
-	cachedOutputTemplate *transformer.TextTemplate
-	initError            error
-}
-
 // NewMCPTool creates a new MCPTool instance.
 //
 // Summary: Initializes a new MCPTool.
@@ -1569,6 +1286,10 @@ type MCPTool struct {
 //
 // Returns:
 //   - *MCPTool: The initialized MCPTool.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1.MCPCallDefinition) *MCPTool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -1584,100 +1305,12 @@ func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1
 	}
 
 	// Cache templates
-	if it := t.inputTransformer; it != nil && it.GetTemplate() != "" { //nolint:staticcheck
-		tpl, err := transformer.NewTemplate(it.GetTemplate(), "{{", "}}") //nolint:staticcheck
-		if err != nil {
-			t.initError = fmt.Errorf("failed to parse input template: %w", err)
-		} else {
-			t.cachedInputTemplate = tpl
-		}
-	}
-	if ot := t.outputTransformer; ot != nil && ot.GetTemplate() != "" {
-		tpl, err := transformer.NewTemplate(ot.GetTemplate(), "{{", "}}")
-		if err != nil {
-			t.initError = fmt.Errorf("failed to parse output template: %w", err)
-		} else {
-			t.cachedOutputTemplate = tpl
-		}
-	}
-	return t
-}
-
 // Tool returns the protobuf definition of the MCP tool.
-//
-// Returns:
-//   - *v1.Tool: The underlying protobuf definition.
-//
-// Summary: Executes Tool operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
-func (t *MCPTool) Tool() *v1.Tool {
-	return t.tool
-}
-
 // MCPTool returns the MCP-compliant tool definition.
 //
 // It lazily converts the internal protobuf definition to the MCP format on first access.
 //
 // Returns:
-//   - *mcp.Tool: The MCP tool definition.
-//
-// Summary: Executes MCPTool operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
-func (t *MCPTool) MCPTool() *mcp.Tool {
-	t.mcpToolOnce.Do(func() {
-		var err error
-		t.mcpTool, err = ConvertProtoToMCPTool(t.tool)
-		if err != nil {
-			logging.GetLogger().Error("Failed to convert tool to MCP tool", "toolName", t.tool.GetName(), "error", err)
-		}
-	})
-	return t.mcpTool
-}
-
-// GetCacheConfig returns the cache configuration for the MCP tool.
-//
-// Returns:
-//   - *configv1.CacheConfig: The cache configuration, if any.
-//
-// Summary: Retrieves GetCacheConfig operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
-func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
-	return t.cache
-}
-
 // Execute handles the execution of the MCP tool.
 //
 // Summary: Executes the MCP tool call.
@@ -1690,34 +1323,38 @@ func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 //   - req: *ExecutionRequest. The execution request.
 //
 // Returns:
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //   - any: The execution result.
 //   - error: An error if execution fails.
 //
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 // Side Effects:
 //   - Makes an MCP call to the upstream service.
-//   - Logs execution details.
-//
-// IsStreaming returns true if the tool supports streaming.
-//
-// Summary: Checks if the tool supports streaming execution.
-//
-// Returns:
-//   - bool: True if streaming is supported.
-func (t *MCPTool) IsStreaming() bool {
-	return false
-}
-
 // StreamExecute executes the tool in streaming mode.
 //
 // Summary: Executes the tool in streaming mode.
 //
 // Parameters:
+// Errors:
+//   - triggers relevant error states on failure.
 //   - ctx: context.Context. The context for the request.
 //   - req: *ExecutionRequest. The request object containing parameters.
 //
+// Errors:
+//   - triggers relevant error states on failure.
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (t *MCPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -1858,14 +1495,6 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 	}
 
 	var resultMap map[string]any
-	if err := fastJSON.Unmarshal(responseBytes, &resultMap); err != nil {
-		// If unmarshalling to a map fails, return the raw string content
-		return string(responseBytes), nil //nolint:nilerr // intentional fallback for non-JSON responses
-	}
-
-	return resultMap, nil
-}
-
 // OpenAPITool implements the Tool interface for a tool defined in an OpenAPI
 // specification.
 //
@@ -1873,24 +1502,16 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 //
 // It constructs and sends an HTTP request based on the OpenAPI
 // operation definition.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type OpenAPITool struct {
 	tool                 *v1.Tool
-	mcpTool              *mcp.Tool
-	mcpToolOnce          sync.Once
-	client               client.HTTPClient
-	parameterDefs        map[string]string
-	method               string
-	url                  string
-	authenticator        auth.UpstreamAuthenticator
-	inputTransformer     *configv1.InputTransformer
-	outputTransformer    *configv1.OutputTransformer
-	webhookClient        *WebhookClient
-	cache                *configv1.CacheConfig
-	cachedInputTemplate  *transformer.TextTemplate
-	cachedOutputTemplate *transformer.TextTemplate
-	initError            error
-}
-
 // NewOpenAPITool creates a new OpenAPITool instance.
 //
 // Summary: Initializes a new OpenAPITool.
@@ -1906,6 +1527,10 @@ type OpenAPITool struct {
 //
 // Returns:
 //   - *OpenAPITool: The initialized OpenAPITool.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[string]string, method, url string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.OpenAPICallDefinition) *OpenAPITool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -1925,100 +1550,12 @@ func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[s
 	}
 
 	// Cache templates
-	if it := t.inputTransformer; it != nil && it.GetTemplate() != "" { //nolint:staticcheck
-		tpl, err := transformer.NewTemplate(it.GetTemplate(), "{{", "}}") //nolint:staticcheck
-		if err != nil {
-			t.initError = fmt.Errorf("failed to parse input template: %w", err)
-		} else {
-			t.cachedInputTemplate = tpl
-		}
-	}
-	if ot := t.outputTransformer; ot != nil && ot.GetTemplate() != "" {
-		tpl, err := transformer.NewTemplate(ot.GetTemplate(), "{{", "}}")
-		if err != nil {
-			t.initError = fmt.Errorf("failed to parse output template: %w", err)
-		} else {
-			t.cachedOutputTemplate = tpl
-		}
-	}
-	return t
-}
-
 // Tool returns the protobuf definition of the OpenAPI tool.
-//
-// Returns:
-//   - *v1.Tool: The underlying protobuf definition.
-//
-// Summary: Executes Tool operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
-func (t *OpenAPITool) Tool() *v1.Tool {
-	return t.tool
-}
-
 // MCPTool returns the MCP-compliant tool definition.
 //
 // It lazily converts the internal protobuf definition to the MCP format on first access.
 //
 // Returns:
-//   - *mcp.Tool: The MCP tool definition.
-//
-// Summary: Executes MCPTool operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
-func (t *OpenAPITool) MCPTool() *mcp.Tool {
-	t.mcpToolOnce.Do(func() {
-		var err error
-		t.mcpTool, err = ConvertProtoToMCPTool(t.tool)
-		if err != nil {
-			logging.GetLogger().Error("Failed to convert tool to MCP tool", "toolName", t.tool.GetName(), "error", err)
-		}
-	})
-	return t.mcpTool
-}
-
-// GetCacheConfig returns the cache configuration for the OpenAPI tool.
-//
-// Returns:
-//   - *configv1.CacheConfig: The cache configuration, if any.
-//
-// Summary: Retrieves GetCacheConfig operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
-func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
-	return t.cache
-}
-
 // Execute handles the execution of the OpenAPI tool.
 //
 // Summary: Executes the OpenAPI tool call.
@@ -2031,34 +1568,38 @@ func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 //   - req: *ExecutionRequest. The execution request.
 //
 // Returns:
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //   - any: The execution result.
 //   - error: An error if execution fails.
 //
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 // Side Effects:
 //   - Makes an HTTP request to the upstream service.
-//   - Logs execution details.
-//
-// IsStreaming returns true if the tool supports streaming.
-//
-// Summary: Checks if the tool supports streaming execution.
-//
-// Returns:
-//   - bool: True if streaming is supported.
-func (t *OpenAPITool) IsStreaming() bool {
-	return false
-}
-
 // StreamExecute executes the tool in streaming mode.
 //
 // Summary: Executes the tool in streaming mode.
 //
 // Parameters:
+// Errors:
+//   - triggers relevant error states on failure.
 //   - ctx: context.Context. The context for the request.
 //   - req: *ExecutionRequest. The request object containing parameters.
 //
+// Errors:
+//   - triggers relevant error states on failure.
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (t *OpenAPITool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -2251,33 +1792,20 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	var result map[string]any
-	if err := fastJSON.Unmarshal(respBody, &result); err != nil {
-		return string(respBody), nil
-	}
-
-	return result, nil
-}
-
 // CommandTool implements the Tool interface for a tool that is executed as a
 // local command-line process.
 //
 // Summary: Tool implementation for command-line services (via executor).
 //
-// It maps tool inputs to command-line arguments and environment variables.
-type CommandTool struct {
-	tool            *v1.Tool
-	mcpTool         *mcp.Tool
-	mcpToolOnce     sync.Once
-	service         *configv1.CommandLineUpstreamService
-	callDefinition  *configv1.CommandLineCallDefinition
-	executorFactory func(*configv1.ContainerEnvironment) command.Executor
-	policies        []*CompiledCallPolicy
-	callID          string
-	initError       error
-	allowedParams   map[string]bool
-}
-
 // NewCommandTool creates a new CommandTool instance.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 //
 // Summary: Initializes a new CommandTool.
 //
@@ -2290,6 +1818,10 @@ type CommandTool struct {
 //
 // Returns:
 //   - Tool: The created CommandTool.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func NewCommandTool(
 	tool *v1.Tool,
 	service *configv1.CommandLineUpstreamService,
@@ -2316,33 +1848,20 @@ func NewCommandTool(
 		callID:         callID,
 		allowedParams:  allowedParams,
 	}
-	if err != nil {
-		t.initError = fmt.Errorf("failed to compile call policies: %w", err)
-	}
-
-	return t
-}
-
 // LocalCommandTool implements the Tool interface for a tool that is executed as a
 // local command-line process.
 //
 // Summary: Tool implementation for local command-line services.
 //
-// It maps tool inputs to command-line arguments and environment variables.
-type LocalCommandTool struct {
-	tool           *v1.Tool
-	mcpTool        *mcp.Tool
-	mcpToolOnce    sync.Once
-	service        *configv1.CommandLineUpstreamService
-	callDefinition *configv1.CommandLineCallDefinition
-	policies       []*CompiledCallPolicy
-	callID         string
-	sandboxArgs    []string
-	initError      error
-	allowedParams  map[string]bool
-}
-
 // NewLocalCommandTool creates a new LocalCommandTool instance.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 //
 // Summary: Initializes a new LocalCommandTool.
 //
@@ -2355,6 +1874,10 @@ type LocalCommandTool struct {
 //
 // Returns:
 //   - Tool: The created LocalCommandTool.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func NewLocalCommandTool(
 	tool *v1.Tool,
 	service *configv1.CommandLineUpstreamService,
@@ -2389,47 +1912,7 @@ func NewLocalCommandTool(
 	cmd := service.GetCommand()
 	base := filepath.Base(cmd)
 	if base == "sed" || base == "gsed" {
-		// Check if sed supports --sandbox by running `sed --sandbox --version`
-		// We use exec.Command directly here.
-		// Use --version because it exits successfully if supported.
-		// If --sandbox is not supported, sed usually exits with error "illegal option"
-		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-		defer cancel()
-		checkCmd := exec.CommandContext(ctx, cmd, "--sandbox", "--version")
-		if err := checkCmd.Run(); err == nil {
-			t.sandboxArgs = []string{"--sandbox"}
-			logging.GetLogger().Info("Enabled sandbox mode for sed tool", "tool", tool.GetName())
-		} else {
-			t.initError = fmt.Errorf("sed tool %q detected but --sandbox is not supported (error: %v); execution blocked for security", tool.GetName(), err)
-			logging.GetLogger().Error("Failed to enable sandbox for sed", "tool", tool.GetName(), "error", err)
-		}
-	}
-
-	return t
-}
-
 // Tool returns the protobuf definition of the command-line tool.
-//
-// Returns:
-//   - *v1.Tool: The underlying protobuf definition.
-//
-// Summary: Executes Tool operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
-func (t *LocalCommandTool) Tool() *v1.Tool {
-	return t.tool
-}
-
 // MCPTool returns the MCP-compliant tool definition.
 //
 // It lazily converts the internal protobuf definition to the MCP format on first access.
@@ -2439,53 +1922,6 @@ func (t *LocalCommandTool) Tool() *v1.Tool {
 //
 // Summary: Executes MCPTool operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
-func (t *LocalCommandTool) MCPTool() *mcp.Tool {
-	t.mcpToolOnce.Do(func() {
-		var err error
-		t.mcpTool, err = ConvertProtoToMCPTool(t.tool)
-		if err != nil {
-			logging.GetLogger().Error("Failed to convert tool to MCP tool", "toolName", t.tool.GetName(), "error", err)
-		}
-	})
-	return t.mcpTool
-}
-
-// GetCacheConfig returns the cache configuration for the command-line tool.
-//
-// Returns:
-//   - *configv1.CacheConfig: The cache configuration, if any.
-//
-// Summary: Retrieves GetCacheConfig operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
-func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
-	if t.callDefinition == nil {
-		return nil
-	}
-	return t.callDefinition.GetCache()
-}
-
 // Execute handles the execution of the command-line tool.
 //
 // Summary: Executes the local command-line tool.
@@ -2494,9 +1930,17 @@ func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 // runs the command, and returns its output.
 //
 // Parameters:
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //   - ctx: context.Context. The execution context.
 //   - req: *ExecutionRequest. The execution request.
 //
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
@@ -2504,29 +1948,25 @@ func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 // Side Effects:
 //   - Executes a subprocess on the local system.
 //   - Consumes system resources (CPU, memory).
-//   - Logs execution details.
-//
-// IsStreaming returns true if the tool supports streaming.
-//
-// Summary: Checks if the tool supports streaming execution.
-//
-// Returns:
-//   - bool: True if streaming is supported.
-func (t *LocalCommandTool) IsStreaming() bool {
-	return false
-}
-
 // StreamExecute executes the tool in streaming mode.
 //
+// Errors:
+//   - triggers relevant error states on failure.
 // Summary: Executes the tool in streaming mode.
 //
 // Parameters:
 //   - ctx: context.Context. The context for the request.
 //   - req: *ExecutionRequest. The request object containing parameters.
 //
+// Errors:
+//   - triggers relevant error states on failure.
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (t *LocalCommandTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -2868,47 +2308,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	if ctx.Err() == context.DeadlineExceeded {
 		status = consts.CommandStatusTimeout
 		exitCode = -1 // Override exit code on timeout
-	} else if exitCode != 0 {
-		status = consts.CommandStatusError
-	}
-
-	result := map[string]interface{}{
-		"command":         t.service.GetCommand(),
-		"args":            redactedArgs,
-		"stdout":          redactor.Redact(stdoutBuf.String()),
-		"stderr":          redactor.Redact(stderrBuf.String()),
-		"combined_output": redactor.Redact(combinedBuf.String()),
-		"start_time":      startTime,
-		"end_time":        endTime,
-		"return_code":     exitCode,
-		"status":          status,
-	}
-
-	return result, nil
-}
-
 // Tool returns the protobuf definition of the command-line tool.
-//
-// Returns:
-//   - *v1.Tool: The underlying protobuf definition.
-//
-// Summary: Executes Tool operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
-func (t *CommandTool) Tool() *v1.Tool {
-	return t.tool
-}
-
 // MCPTool returns the MCP-compliant tool definition.
 //
 // It lazily converts the internal protobuf definition to the MCP format on first access.
@@ -2918,53 +2318,6 @@ func (t *CommandTool) Tool() *v1.Tool {
 //
 // Summary: Executes MCPTool operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
-func (t *CommandTool) MCPTool() *mcp.Tool {
-	t.mcpToolOnce.Do(func() {
-		var err error
-		t.mcpTool, err = ConvertProtoToMCPTool(t.tool)
-		if err != nil {
-			logging.GetLogger().Error("Failed to convert tool to MCP tool", "toolName", t.tool.GetName(), "error", err)
-		}
-	})
-	return t.mcpTool
-}
-
-// GetCacheConfig returns the cache configuration for the command-line tool.
-//
-// Returns:
-//   - *configv1.CacheConfig: The cache configuration, if any.
-//
-// Summary: Retrieves GetCacheConfig operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
-func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
-	if t.callDefinition == nil {
-		return nil
-	}
-	return t.callDefinition.GetCache()
-}
-
 // Execute handles the execution of the command-line tool.
 //
 // Summary: Executes the command-line tool via executor.
@@ -2973,9 +2326,17 @@ func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 // runs the command, and returns its output.
 //
 // Parameters:
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //   - ctx: context.Context. The execution context.
 //   - req: *ExecutionRequest. The execution request.
 //
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
@@ -2983,29 +2344,25 @@ func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 // Side Effects:
 //   - Executes a subprocess (potentially inside a container).
 //   - Consumes system resources.
-//   - Logs execution details.
-//
-// IsStreaming returns true if the tool supports streaming.
-//
-// Summary: Checks if the tool supports streaming execution.
-//
-// Returns:
-//   - bool: True if streaming is supported.
-func (t *CommandTool) IsStreaming() bool {
-	return false
-}
-
 // StreamExecute executes the tool in streaming mode.
 //
+// Errors:
+//   - triggers relevant error states on failure.
 // Summary: Executes the tool in streaming mode.
 //
 // Parameters:
 //   - ctx: context.Context. The context for the request.
 //   - req: *ExecutionRequest. The request object containing parameters.
 //
+// Errors:
+//   - triggers relevant error states on failure.
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (t *CommandTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {

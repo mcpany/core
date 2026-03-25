@@ -11,19 +11,20 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/coreos/go-oidc/v3/oidc"
-	"github.com/mcpany/core/server/pkg/util"
-	"golang.org/x/oauth2/clientcredentials"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-)
-
 // UpstreamAuthenticator defines the interface for authentication methods used
 // when communicating with upstream services. Each implementation is responsible
 // for modifying the HTTP request to include the necessary authentication
 // credentials.
 //
 // Summary: Represents a UpstreamAuthenticator.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type UpstreamAuthenticator interface {
 	// Authenticate modifies the given HTTP request to add authentication
 	// information, such as headers or basic auth credentials.
@@ -135,15 +136,18 @@ func NewUpstreamAuthenticator(authConfig *configv1.Authentication) (UpstreamAuth
 			IssuerURL:    oauth2.GetIssuerUrl(),
 			Scopes:       strings.Split(oauth2.GetScopes(), " "),
 		}, nil
-	}
-
-	return nil, nil
-}
-
 // APIKeyAuth implements UpstreamAuthenticator for API key-based authentication.
 // It adds a specified header with a static API key value to the request.
 //
 // Summary: Represents a APIKeyAuth.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type APIKeyAuth struct {
 	ParamName string
 	Value     *configv1.SecretValue
@@ -193,15 +197,18 @@ func (a *APIKeyAuth) Authenticate(req *http.Request) error {
 	case configv1.APIKeyAuth_HEADER:
 		fallthrough
 	default:
-		req.Header.Set(a.ParamName, value)
-	}
-	return nil
-}
-
 // BearerTokenAuth implements UpstreamAuthenticator for bearer token-based
 // authentication. It adds an "Authorization" header with a bearer token.
 //
 // Summary: Represents a BearerTokenAuth.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type BearerTokenAuth struct {
 	Token *configv1.SecretValue
 }
@@ -234,15 +241,18 @@ func (b *BearerTokenAuth) Authenticate(req *http.Request) error {
 	token, err := util.ResolveSecret(req.Context(), b.Token)
 	if err != nil {
 		return err
-	}
-	req.Header.Set("Authorization", "Bearer "+token)
-	return nil
-}
-
 // BasicAuth implements UpstreamAuthenticator for basic HTTP authentication.
 // It adds an "Authorization" header with the username and password.
 //
 // Summary: Represents a BasicAuth.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type BasicAuth struct {
 	Username string
 	Password *configv1.SecretValue
@@ -277,13 +287,17 @@ func (b *BasicAuth) Authenticate(req *http.Request) error {
 	if err != nil {
 		return err
 	}
-	req.SetBasicAuth(b.Username, password)
-	return nil
-}
-
 // OAuth2Auth implements UpstreamAuthenticator for OAuth2 client credentials flow.
 //
 // Summary: Represents a OAuth2Auth.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type OAuth2Auth struct {
 	ClientID     *configv1.SecretValue
 	ClientSecret *configv1.SecretValue

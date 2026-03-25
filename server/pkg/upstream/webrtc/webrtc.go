@@ -26,15 +26,18 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/util/schemaconv"
 	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/structpb"
-)
-
-type sanitizer func(string) (string, error)
-
 // Upstream implements the upstream.Upstream interface for services that
 // communicate over WebRTC data channels.
 //
 // Summary: Represents a Upstream.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Upstream struct {
 	poolManager       *pool.Manager
 	toolNameSanitizer sanitizer

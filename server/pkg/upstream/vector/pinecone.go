@@ -13,13 +13,17 @@ import (
 	"net/http"
 	"net/url"
 	"time"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-)
-
 // PineconeClient implements VectorClient for Pinecone.
 //
 // Summary: Represents a PineconeClient.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type PineconeClient struct {
 	config  *configv1.PineconeVectorDB
 	client  *http.Client

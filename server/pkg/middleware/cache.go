@@ -21,13 +21,17 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/metrics"
 	"github.com/mcpany/core/server/pkg/tool"
-	"github.com/mcpany/core/server/pkg/util"
-	go_cache "github.com/patrickmn/go-cache"
-)
-
 // ProviderFactory is a function that creates an EmbeddingProvider.
 //
 // Summary: Represents a ProviderFactory.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type ProviderFactory func(config *configv1.SemanticCacheConfig, apiKey string) (EmbeddingProvider, error)
 
 // CachingMiddleware is a tool execution middleware that provides caching
@@ -35,13 +39,17 @@ type ProviderFactory func(config *configv1.SemanticCacheConfig, apiKey string) (
 var (
 	metricCacheHits   = []string{"cache", "hits"}
 	metricCacheMisses = []string{"cache", "misses"}
-	metricCacheSkips  = []string{"cache", "skips"}
-	metricCacheErrors = []string{"cache", "errors"}
-)
-
 // CachingMiddleware handles caching of tool execution results.
 //
 // Summary: Represents a CachingMiddleware.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type CachingMiddleware struct {
 	cache           *cache.Cache[any]
 	toolManager     tool.ManagerInterface

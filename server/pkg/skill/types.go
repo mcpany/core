@@ -1,23 +1,31 @@
 // Copyright 2026 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
-
-package skill
-
 // Frontmatter represents the YAML frontmatter of a SKILL.md file.
 //
 // Summary: Represents a Frontmatter.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Frontmatter struct {
 	Name          string            `yaml:"name" json:"name"`
 	Description   string            `yaml:"description" json:"description"`
 	License       string            `yaml:"license,omitempty" json:"license,omitempty"`
 	Compatibility string            `yaml:"compatibility,omitempty" json:"compatibility,omitempty"`
-	Metadata      map[string]string `yaml:"metadata,omitempty" json:"metadata,omitempty"`
-	AllowedTools  []string          `yaml:"allowed-tools,omitempty" json:"allowedTools,omitempty"`
-}
-
 // Skill represents a complete Agent Skill.
 //
 // Summary: Represents a Skill.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Skill struct {
 	// Frontmatter contains the metadata parsed from the YAML frontmatter.
 	Frontmatter `yaml:",inline"`

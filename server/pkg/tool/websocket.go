@@ -15,99 +15,20 @@ import (
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/client"
 	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/pool"
-	"github.com/mcpany/core/server/pkg/transformer"
-	"github.com/mcpany/core/server/pkg/util"
-	"github.com/modelcontextprotocol/go-sdk/mcp"
-)
-
 // WebsocketTool implements the Tool interface for a tool exposed via a WebSocket
-// connection. It handles sending and receiving messages over a persistent
-// WebSocket connection managed by a connection pool.
-//
-// Summary: A tool implementation for WebSocket services.
-type WebsocketTool struct {
-	tool              *v1.Tool
-	mcpTool           *mcp.Tool
-	mcpToolOnce       sync.Once
-	poolManager       *pool.Manager
-	serviceID         string
-	authenticator     auth.UpstreamAuthenticator
-	parameters        []*configv1.WebsocketParameterMapping
-	inputTransformer  *configv1.InputTransformer
-	outputTransformer *configv1.OutputTransformer
-	cache             *configv1.CacheConfig
-}
-
-// NewWebsocketTool creates a new WebsocketTool.
-//
-// Summary: Initializes a new WebsocketTool.
-//
-// Parameters:
-//   - tool: *v1.Tool. The protobuf definition of the tool.
-//   - poolManager: *pool.Manager. The manager for WebSocket connections.
-//   - serviceID: string. The ID of the WebSocket service.
-//   - authenticator: auth.UpstreamAuthenticator. The authenticator for the connection.
-//   - callDefinition: *configv1.WebsocketCallDefinition. Configuration for the WebSocket call.
-//
-// Returns:
-//   - *WebsocketTool: A new instance of WebsocketTool.
-func NewWebsocketTool(
-	tool *v1.Tool,
-	poolManager *pool.Manager,
-	serviceID string,
-	authenticator auth.UpstreamAuthenticator,
-	callDefinition *configv1.WebsocketCallDefinition,
-) *WebsocketTool {
-	return &WebsocketTool{
-		tool:              tool,
-		poolManager:       poolManager,
-		serviceID:         serviceID,
-		authenticator:     authenticator,
-		parameters:        callDefinition.GetParameters(),
-		inputTransformer:  callDefinition.GetInputTransformer(),
-		outputTransformer: callDefinition.GetOutputTransformer(),
-		cache:             callDefinition.GetCache(),
-	}
-}
-
-// Tool returns the protobuf definition of the WebSocket tool.
-//
-// Summary: Retrieves the underlying tool definition.
-//
-// Returns:
-//   - *v1.Tool: The tool definition.
-func (t *WebsocketTool) Tool() *v1.Tool {
-	return t.tool
-}
-
 // MCPTool returns the MCP tool definition.
 //
 // Summary: Retrieves the MCP-compatible tool definition.
 //
+// Parameters:
+//   - None.
 // Returns:
-//   - *mcp.Tool: The MCP tool definition.
-func (t *WebsocketTool) MCPTool() *mcp.Tool {
-	t.mcpToolOnce.Do(func() {
-		var err error
-		t.mcpTool, err = ConvertProtoToMCPTool(t.tool)
-		if err != nil {
-			logging.GetLogger().Error("Failed to convert tool to MCP tool", "toolName", t.tool.GetName(), "error", err)
-		}
-	})
-	return t.mcpTool
-}
-
-// GetCacheConfig returns the cache configuration for the WebSocket tool.
-//
-// Summary: Retrieves the cache configuration.
-//
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 // Returns:
-//   - *configv1.CacheConfig: The cache configuration.
-func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
-	return t.cache
-}
-
 // Execute handles the execution of the WebSocket tool.
 //
 // Summary: Executes the tool over WebSocket.
@@ -118,32 +39,40 @@ func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
 // Parameters:
 //   - ctx: context.Context. The execution context.
 //   - req: *ExecutionRequest. The request containing input arguments.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Returns:
 //   - any: The execution result.
-//   - error: An error if execution fails.
-//
-// IsStreaming returns true if the tool supports streaming.
-//
-// Summary: Checks if the tool supports streaming execution.
-//
-// Returns:
-//   - bool: True if streaming is supported.
-func (t *WebsocketTool) IsStreaming() bool {
-	return false
-}
-
 // StreamExecute executes the tool in streaming mode.
 //
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 // Summary: Executes the tool in streaming mode.
 //
 // Parameters:
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //   - ctx: context.Context. The context for the request.
 //   - req: *ExecutionRequest. The request object containing parameters.
 //
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (t *WebsocketTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {

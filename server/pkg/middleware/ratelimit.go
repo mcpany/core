@@ -15,84 +15,54 @@ import (
 	"time"
 
 	armonmetrics "github.com/armon/go-metrics"
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/auth"
-	"github.com/mcpany/core/server/pkg/metrics"
-	"github.com/mcpany/core/server/pkg/tokenizer"
-	"github.com/mcpany/core/server/pkg/tool"
-	"github.com/mcpany/core/server/pkg/util"
-	"github.com/patrickmn/go-cache"
-)
-
 // metricRateLimitRequestsTotal is the metric name for rate limit requests.
 // Pre-allocated to avoid allocation on every request.
-var metricRateLimitRequestsTotal = []string{"rate_limit", "requests_total"}
-
-// RateLimitMiddleware is a tool execution middleware that provides rate limiting
-// functionality for upstream services.
-//
-// Summary: Middleware for rate limiting tool execution.
-type RateLimitMiddleware struct {
-	toolManager tool.ManagerInterface
-	tokenizer   tokenizer.Tokenizer
 	// limiters caches active limiters. Key is "limitKey:partitionKey".
-	limiters *cache.Cache
-	// strategies maps storage types to strategies.
-	strategies map[configv1.RateLimitConfig_Storage]RateLimitStrategy
-}
-
-// Option defines a functional option for RateLimitMiddleware.
-//
-// Summary: Functional option for RateLimitMiddleware.
-type Option func(*RateLimitMiddleware)
-
 // WithTokenizer sets a custom tokenizer for the middleware.
 //
 // Summary: Configures a custom tokenizer.
 //
-// Parameters:
-//   - t (tokenizer.Tokenizer): The tokenizer to use.
-//
-// Returns:
-//   - (Option): The configured option.
-func WithTokenizer(t tokenizer.Tokenizer) Option {
-	return func(m *RateLimitMiddleware) {
-		m.tokenizer = t
-	}
-}
-
 // NewRateLimitMiddleware creates a new RateLimitMiddleware.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 //
 // Summary: Initializes the rate limit middleware.
 //
 // Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Parameters:
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //   - toolManager (tool.ManagerInterface): The tool manager.
 //   - opts (...Option): Optional configuration settings.
 //
 // Returns:
 //   - (*RateLimitMiddleware): The initialized middleware.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *RateLimitMiddleware {
 	m := &RateLimitMiddleware{
 		toolManager: toolManager,
 		limiters:    cache.New(1*time.Hour, 10*time.Minute),
 		strategies:  make(map[configv1.RateLimitConfig_Storage]RateLimitStrategy),
-	}
-
-	// Register default strategies
-	m.strategies[configv1.RateLimitConfig_STORAGE_MEMORY] = NewLocalStrategy()
-	// Redis strategy requires a client provider or we can use the default one if it manages clients internally.
-	// For now, let's assume we want to use the one that manages clients.
-	m.strategies[configv1.RateLimitConfig_STORAGE_REDIS] = NewRedisStrategy()
-
-	for _, opt := range opts {
-		opt(m)
-	}
-	if m.tokenizer == nil {
-		m.tokenizer = tokenizer.NewSimpleTokenizer()
-	}
-	return m
-}
-
 // Execute executes the rate limiting middleware.
 //
 // Summary: Executes rate limiting logic before passing to the next handler.
@@ -109,6 +79,8 @@ func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *
 // Side Effects:
 //   - Checks against rate limits in memory or Redis.
 //   - Increments counters.
+// Errors:
+//   - triggers relevant error states on failure.
 func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

@@ -15,13 +15,17 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/mcpany/core/server/pkg/audit"
-	"github.com/mcpany/core/server/pkg/logging"
-)
-
 // Span represents a span in a trace.
 //
 // Summary: Represents a Span.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Span struct {
 	ID           string         `json:"id"`
 	Name         string         `json:"name"`
@@ -32,13 +36,17 @@ type Span struct {
 	Status       string         `json:"status"`    // success, error, pending
 	Input        map[string]any `json:"input,omitempty"`
 	Output       map[string]any `json:"output,omitempty"`
-	ErrorMessage string         `json:"errorMessage,omitempty"`
-	Children     []Span         `json:"children,omitempty"`
-}
-
 // Trace represents a full trace.
 //
 // Summary: Represents a Trace.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Trace struct {
 	ID            string `json:"id"`
 	RootSpan      Span   `json:"rootSpan"`

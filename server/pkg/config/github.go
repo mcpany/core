@@ -20,18 +20,6 @@ import (
 )
 
 var (
-	githubAPIURL        = "https://api.github.com"
-	githubRawContentURL = "https://raw.githubusercontent.com"
-)
-
-const (
-	githubURLRegexStr = `^https://github\.com/([^/]+)/([^/]+)/?(tree/|blob/)?([^/]+)?/?(.*)?`
-)
-
-var (
-	githubURLRe = regexp.MustCompile(githubURLRegexStr)
-)
-
 // GitHub represents a client for interacting with the GitHub API to fetch
 // configuration files or directories.
 //
@@ -43,6 +31,14 @@ var (
 //   - Path (string): The path to the file or directory within the repository.
 //   - Ref (string): The branch, tag, or commit hash.
 //   - URLType (string): The type of URL (tree or blob).
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type GitHub struct {
 	Owner         string
 	Repo          string
@@ -138,16 +134,6 @@ func isGitHubURL(rawURL string) bool {
 //
 // Returns:
 //   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
-func (g *GitHub) ToRawContentURL() string {
-	return fmt.Sprintf("%s/%s/%s/%s/%s", g.rawContentURL, g.Owner, g.Repo, g.Ref, g.Path)
-}
-
 // Content represents a file or directory in a GitHub repository.
 //
 // Summary: Metadata for a file or directory in a GitHub repository.
@@ -157,6 +143,14 @@ func (g *GitHub) ToRawContentURL() string {
 //   - Type (string): The type of content (e.g., "file", "dir").
 //   - HTMLURL (string): The URL to view the content on GitHub.
 //   - DownloadURL (string): The URL to download the content (only for files).
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Content struct {
 	Name        string `json:"name"`
 	Type        string `json:"type"`

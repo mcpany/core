@@ -59,13 +59,17 @@ func (a *Application) setStatsCache(key string, data any) {
 const (
 	metricToolsCallTotal = "mcpany_tools_call_total"
 	labelTool            = "tool"
-	labelServiceID       = "service_id"
-	labelStatus          = "status"
-)
-
 // ToolUsageStats represents usage statistics for a tool.
 //
 // Summary: Represents a ToolUsageStats.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type ToolUsageStats struct {
 	Name      string `json:"name"`
 	ServiceID string `json:"serviceId"`
@@ -207,13 +211,17 @@ func (a *Application) handleDebugSeedTraffic() http.HandlerFunc {
 		a.TopologyManager.SeedTrafficHistory(points)
 
 		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte("OK"))
-	}
-}
-
 // ToolFailureStats represents failure statistics for a tool.
 //
 // Summary: Represents a ToolFailureStats.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type ToolFailureStats struct {
 	Name        string  `json:"name"`
 	ServiceID   string  `json:"serviceId"`
@@ -329,13 +337,17 @@ func (a *Application) handleDashboardToolFailures() http.HandlerFunc {
 		a.setStatsCache(cacheKey, stats)
 
 		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(stats)
-	}
-}
-
 // ToolAnalytics represents detailed usage analytics for a tool.
 //
 // Summary: Represents a ToolAnalytics.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type ToolAnalytics struct {
 	Name        string  `json:"name"`
 	ServiceID   string  `json:"serviceId"`
@@ -445,21 +457,29 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 		a.setStatsCache(cacheKey, analytics)
 
 		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(analytics)
-	}
-}
-
 // ServiceHealthResponse represents the response for the health dashboard.
 //
 // Summary: Represents a ServiceHealthResponse.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type ServiceHealthResponse struct {
-	Services []ServiceHealth                  `json:"services"`
-	History  map[string][]health.HistoryPoint `json:"history"`
-}
-
 // ServiceHealth represents the health status of a service.
 //
 // Summary: Represents a ServiceHealth.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type ServiceHealth struct {
 	ID      string `json:"id"`
 	Name    string `json:"name"`

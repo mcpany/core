@@ -12,15 +12,18 @@ import (
 
 var (
 	metricGrpcRPCStartedTotal        = []string{"grpc", "rpc", "started", "total"}
-	metricGrpcRPCFinishedTotal       = []string{"grpc", "rpc", "finished", "total"}
-	metricGrpcConnectionsOpenedTotal = []string{"grpc", "connections", "opened", "total"}
-	metricGrpcConnectionsClosedTotal = []string{"grpc", "connections", "closed", "total"}
-)
-
 // GrpcStatsHandler is a gRPC stats handler that records metrics for RPCs and connections.
 // It can optionally wrap another stats.Handler (e.g., OpenTelemetry).
 //
 // Summary: Represents a GrpcStatsHandler.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type GrpcStatsHandler struct {
 	Wrapped stats.Handler
 }

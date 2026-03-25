@@ -12,19 +12,20 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/bus"
-	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/metrics"
-	"github.com/mcpany/core/server/pkg/serviceregistry"
-	"github.com/mcpany/core/server/pkg/util"
-)
-
 // ServiceRegistrationWorker is a background worker responsible for handling
 // service registration requests. It listens for ServiceRegistrationRequest
 // messages on the event bus, processes them using the service registry, and
 // publishes the results as ServiceRegistrationResult messages.
 //
 // Summary: Represents a ServiceRegistrationWorker.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type ServiceRegistrationWorker struct {
 	bus             *bus.Provider
 	serviceRegistry serviceregistry.ServiceRegistryInterface

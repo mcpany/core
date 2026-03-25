@@ -6,22 +6,30 @@ package middleware
 import (
 	"context"
 	"math"
-	"sync"
-	"time"
-)
-
 // SimpleVectorStore is a naive in-memory vector store.
 //
 // Summary: Represents a SimpleVectorStore.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type SimpleVectorStore struct {
 	mu         sync.RWMutex
-	items      map[string][]*VectorEntry
-	maxEntries int
-}
-
 // VectorEntry represents a single entry in the vector store.
 //
 // Summary: Represents a VectorEntry.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type VectorEntry struct {
 	// Vector is the embedding vector.
 	Vector []float32

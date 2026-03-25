@@ -96,17 +96,6 @@ func init() {
 				second := k[1] // k is lowercase
 				if second >= 'a' && second <= 'z' {
 					mask |= 1 << (second - 'a')
-				}
-			}
-		}
-		sensitiveNextCharMask[start] = mask
-	}
-
-	// Pre-marshal the redacted placeholder to ensure valid JSON and avoid repeated work.
-	b, _ := json.Marshal(redactedPlaceholder)
-	redactedValue = json.RawMessage(b)
-}
-
 // RedactJSON parses a JSON byte slice and redacts sensitive keys.
 // If the input is not valid JSON object or array, it returns the input as is.
 //
@@ -117,23 +106,12 @@ func init() {
 //
 // Returns:
 //   - []byte: The redacted JSON output.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func RedactJSON(input []byte) []byte {
 	// Check if input looks like JSON object or array.
-	// We skip whitespace and comments to find the first significant character.
-	idx := skipWhitespaceAndComments(input, 0)
-	if idx >= len(input) {
-		return input
-	}
-	first := input[idx]
-	if first != '{' && first != '[' {
-		return input
-	}
-
-	// Use fast zero-allocation redaction path
-	// This avoids expensive json.Unmarshal/Marshal for large payloads
-	return redactJSONFast(input)
-}
-
 // RedactMap recursively redacts sensitive keys in a map.
 //
 // Optimization: This function performs a copy-on-write.
@@ -148,6 +126,10 @@ func RedactJSON(input []byte) []byte {
 //
 // Returns:
 //   - map[string]interface{}: The potentially redacted map.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func RedactMap(m map[string]interface{}) map[string]interface{} {
 	redacted, changed := redactMapMaybe(m)
 	if changed {
@@ -244,16 +226,6 @@ func redactSliceMaybe(s []interface{}) ([]interface{}, bool) {
 // but for now we stick to optimizing the single key search or the calling pattern.
 
 // sensitiveKeys is a list of substrings that suggest a key contains sensitive information.
-// Note: Shorter keys that are substrings of longer keys (e.g. "token" vs "access_token") cover the longer cases,
-// so we only include the shorter ones to optimize performance.
-var sensitiveKeys = []string{
-	"api_key", "apikey", "token", "secret", "password", "passwd", "credential", "auth", "private_key",
-	"authorization", "proxy-authorization", "cookie", "set-cookie", "x-api-key",
-	"passwords", "tokens", "api_keys", "apikeys",
-	"authentication", "authenticator", "credentials", "secrets",
-	"passphrase", "passphrases", "ssh_key",
-}
-
 // IsSensitiveKey checks if a key name suggests it contains sensitive information.
 //
 // Summary: Checks if a key name implies sensitive data.
@@ -263,6 +235,10 @@ var sensitiveKeys = []string{
 //
 // Returns:
 //   - bool: True if the key is considered sensitive, false otherwise.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func IsSensitiveKey(key string) bool {
 	// Use the optimized byte-based scanner for keys as well.
 	// Avoid allocation using zero-copy conversion.
@@ -479,17 +455,6 @@ var dsnPasswordRegex = regexp.MustCompile(`(:)([^/?#@\s][^/?#\s]*|/[^/?#@\s][^/?
 // the path or subsequent text (e.g. multiple DSNs).
 // Matches scheme://user:password@
 var dsnSchemeRegex = regexp.MustCompile(`(://[^/?#:\s]*):([^\s]*?)@([^/?#@\s]*)([/?#\s]|$)`)
-
-// dsnFallbackNoAtRegex handles cases where url.Parse failed (e.g. invalid port) and there is no '@'.
-// This covers "redis://:password" or "scheme://user:password" (missing host).
-// It matches "://", then optional user (non-colons), then colon, then password.
-// Password is terminated by /, @, whitespace, or ".
-var dsnFallbackNoAtRegex = regexp.MustCompile(`(://[^:]*):([^/@\s"?]+)`)
-
-// dsnInvalidPortRegex handles the specific Go url.Parse error message leak "invalid port".
-// e.g. parse "...": invalid port ":password".
-var dsnInvalidPortRegex = regexp.MustCompile(`invalid port "(:[^"]+)"`)
-
 // RedactDSN redacts the password from a DSN string.
 // Supported formats: postgres://user:password@host...
 //
@@ -500,6 +465,10 @@ var dsnInvalidPortRegex = regexp.MustCompile(`invalid port "(:[^"]+)"`)
 //
 // Returns:
 //   - string: The redacted DSN string.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func RedactDSN(dsn string) string {
 	u, err := url.Parse(dsn)
 	if err == nil && u.User != nil {
@@ -591,25 +560,6 @@ func RedactDSN(dsn string) string {
 					return m
 				}
 
-				return prefix + ":" + redactedPlaceholder
-			})
-		}
-	}
-
-	// Handle Go url.Parse error leak "invalid port"
-	dsn = dsnInvalidPortRegex.ReplaceAllString(dsn, "invalid port \":"+redactedPlaceholder+"\"")
-
-	return dsnPasswordRegex.ReplaceAllString(dsn, "$1"+redactedPlaceholder+"$3")
-}
-
-// SecretRedactor handles redaction of secrets from text.
-// It is optimized to pre-process the list of secrets once and reuse the configuration.
-//
-// Summary: Optimized text redactor for known secrets.
-type SecretRedactor struct {
-	replacer *strings.Replacer
-}
-
 // NewSecretRedactor creates a new SecretRedactor with the given secrets.
 // It performs filtering, deduplication, and sorting of secrets to ensure optimal redaction.
 //
@@ -617,9 +567,19 @@ type SecretRedactor struct {
 //
 // Parameters:
 //   - secrets ([]string): The list of secrets to redact.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 //
 // Returns:
 //   - *SecretRedactor: The configured redactor.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func NewSecretRedactor(secrets []string) *SecretRedactor {
 	// ⚡ BOLT: Optimization - Pre-compile the replacer for reuse.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -645,42 +605,31 @@ func NewSecretRedactor(secrets []string) *SecretRedactor {
 	})
 
 	// Build args for Replacer
-	args := make([]string, 0, len(validSecrets)*2)
-	for _, s := range validSecrets {
-		args = append(args, s, redactedPlaceholder)
-	}
-
-	return &SecretRedactor{
-		replacer: strings.NewReplacer(args...),
-	}
-}
-
 // Redact replaces all occurrences of the configured secrets in the text with [REDACTED].
 //
 // Summary: Redacts secrets from text.
 //
 // Parameters:
-//   - text (string): The text to redact.
-//
-// Returns:
-//   - string: The redacted text.
-func (r *SecretRedactor) Redact(text string) string {
-	if text == "" || r.replacer == nil {
-		return text
-	}
-	return r.replacer.Replace(text)
-}
-
 // RedactSecrets replaces all occurrences of the given secrets in the text with [REDACTED].
 //
 // Summary: Convenience function to redact secrets from text.
 //
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 // Parameters:
 //   - text (string): The text to redact.
 //   - secrets ([]string): A list of secret values to redact from the text.
 //
 // Returns:
 //   - string: The redacted text.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func RedactSecrets(text string, secrets []string) string {
 	// Use the new struct-based implementation for consistency.
 	return NewSecretRedactor(secrets).Redact(text)

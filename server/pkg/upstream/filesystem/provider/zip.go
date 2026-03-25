@@ -11,13 +11,17 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/validation"
-	"github.com/spf13/afero"
-	"github.com/spf13/afero/zipfs"
-)
-
 // ZipProvider provides access to files within a zip archive.
 //
 // Summary: Represents a ZipProvider.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type ZipProvider struct {
 	fs     afero.Fs
 	closer *os.File

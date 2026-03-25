@@ -12,17 +12,19 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-const (
-	// defaultPublishTimeout is the default duration to wait for a subscriber to
-	// accept a message before dropping it.
-	defaultPublishTimeout = 1 * time.Second
-)
-
 // DefaultBus is the default, thread-safe implementation of the Bus interface.
 // It uses channels to deliver messages to subscribers, with each subscriber
 // having its own dedicated goroutine for message processing.
 //
 // Summary: Represents a DefaultBus.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type DefaultBus[T any] struct {
 	mu             sync.RWMutex
 	subscribers    map[string]map[uintptr]chan T

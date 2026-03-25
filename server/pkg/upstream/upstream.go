@@ -5,14 +5,6 @@
 package upstream
 
 import (
-	"context"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/prompt"
-	"github.com/mcpany/core/server/pkg/resource"
-	"github.com/mcpany/core/server/pkg/tool"
-)
-
 // Upstream defines the standard interface for all backend service integrations.
 //
 // Each implementation of this interface is responsible for discovering and
@@ -20,6 +12,14 @@ import (
 // appropriate managers.
 //
 // Summary: Represents a Upstream.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Upstream interface {
 	// Shutdown gracefully terminates the upstream service.
 	//
@@ -64,15 +64,18 @@ type Upstream interface {
 		serviceConfig *configv1.UpstreamServiceConfig,
 		toolManager tool.ManagerInterface,
 		promptManager prompt.ManagerInterface,
-		resourceManager resource.ManagerInterface,
-		isReload bool,
-	) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error)
-}
-
 // HealthChecker is an optional interface that Upstreams can implement to provide
 // runtime health status.
 //
 // Summary: Represents a HealthChecker.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type HealthChecker interface {
 	// CheckHealth performs a health check on the upstream service.
 	//

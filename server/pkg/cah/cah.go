@@ -7,26 +7,15 @@ import (
 	"time"
 
 	"github.com/mcpany/core/server/pkg/logging"
-)
-
-// MonitorAgent represents a security/policy validator in the quorum.
-type MonitorAgent interface {
-	// ValidateRequest evaluates a request and returns a cryptographically bound
-	// signature if approved, or an error if rejected.
-	ValidateRequest(ctx context.Context, requestID string, intent string, payload []byte) (string, error)
-	// ID returns the unique identifier of the monitor agent.
-	ID() string
-}
-
-// CAHAdapter acts as the central arbiter for verifying agent interactions.
-// It manages a decentralized quorum of MonitorAgents to collect approvals.
-type CAHAdapter struct {
-	monitors        []MonitorAgent
-	quorumThreshold int
-	timeout         time.Duration
-}
-
 // NewCAHAdapter creates a new Cognitive Attestation Hub (CAH) Adapter.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 //
 // Parameters:
 //   - monitors: A list of MonitorAgent instances that form the quorum.
@@ -38,29 +27,12 @@ type CAHAdapter struct {
 //   - error: An error if the threshold is greater than the number of monitors or less than 1.
 //
 // Errors:
-//   - Returns an error if threshold is invalid.
-//
-// Side Effects:
-//   - None.
-func NewCAHAdapter(monitors []MonitorAgent, threshold int, timeout time.Duration) (*CAHAdapter, error) {
-	if threshold < 1 {
-		return nil, fmt.Errorf("quorum threshold must be at least 1")
-	}
-	if threshold > len(monitors) {
-		return nil, fmt.Errorf("quorum threshold cannot exceed the number of monitors (%d > %d)", threshold, len(monitors))
-	}
-
-	return &CAHAdapter{
-		monitors:        monitors,
-		quorumThreshold: threshold,
-		timeout:         timeout,
-	}, nil
-}
-
 // ValidateWithQuorum initiates a consensus gathering process for a given request.
 //
 // Parameters:
 //   - ctx: The context for the request.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //   - requestID: A unique identifier for the request being validated.
 //   - intent: The declared intent of the request (e.g., "read_file", "execute_command").
 //   - payload: The serialized payload of the request.
@@ -142,3 +114,18 @@ func (c *CAHAdapter) ValidateWithQuorum(ctx context.Context, requestID string, i
 		}
 	}
 }
+//   - None.
+// Side Effects:
+//   - None.
+// Errors:
+//
+//   - error: An error if the threshold is greater than the number of monitors or less than 1.
+//   - *CAHAdapter: A new CAHAdapter instance.
+// Returns:
+//
+//   - timeout: The maximum time to wait for quorum consensus.
+//   - threshold: The minimum number of approvals required to proceed.
+//   - monitors: A list of MonitorAgent instances that form the quorum.
+// Parameters:
+//
+// NewCAHAdapter creates a new Cognitive Attestation Hub (CAH) Adapter.

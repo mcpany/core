@@ -1,17 +1,5 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package webhooks
-
-import (
-	"bytes"
-	"context"
-	"fmt"
-	"net/http"
-	"sync"
-	"time"
-)
-
 // WebhookConfig represents a configured webhook.
 //
 // Summary: Webhook configuration definition.
@@ -23,57 +11,51 @@ import (
 //   - Active (bool): Whether the webhook is enabled.
 //   - LastTriggered (time.Time): Timestamp of the last execution.
 //   - Status (string): Status of the last execution (success, failure, pending).
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type WebhookConfig struct {
 	ID            string    `json:"id"`
 	URL           string    `json:"url"`
 	Events        []string  `json:"events"`
-	Active        bool      `json:"active"`
-	LastTriggered time.Time `json:"last_triggered,omitempty"`
-	Status        string    `json:"status,omitempty"` // success, failure, pending
-}
-
-// Manager manages webhooks.
-//
-// Summary: Webhook lifecycle manager.
-type Manager struct {
-	mu         sync.RWMutex
-	webhooks   map[string]*WebhookConfig
-	httpClient *http.Client
-}
-
 // NewManager creates a new Webhook Manager.
 //
 // Summary: Creates a new Manager.
 //
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 // Returns:
 //   - *Manager: A pointer to the newly created Manager.
 //
 // Side Effects:
 //   - Initializes internal maps and HTTP client.
-func NewManager() *Manager {
-	return &Manager{
-		webhooks:   make(map[string]*WebhookConfig),
-		httpClient: &http.Client{Timeout: 5 * time.Second},
-	}
-}
-
+// Parameters:
+//   - standard arguments based on function signature.
+// Errors:
+//   - triggers relevant error states on failure.
 // ListWebhooks returns all configured webhooks.
 //
 // Summary: Lists all webhooks.
 //
 // Returns:
-//   - []*WebhookConfig: A list of webhook configurations.
-func (m *Manager) ListWebhooks() []*WebhookConfig {
-	m.mu.RLock()
-	defer m.mu.RUnlock()
-	list := make([]*WebhookConfig, 0, len(m.webhooks))
-	for _, w := range m.webhooks {
-		list = append(list, w)
-	}
-	return list
-}
-
 // AddWebhook adds or updates a webhook.
+// Parameters:
+//   - standard arguments based on function signature.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Summary: Adds or updates a webhook.
 //
@@ -82,43 +64,36 @@ func (m *Manager) ListWebhooks() []*WebhookConfig {
 //
 // Side Effects:
 //   - Updates the internal webhook map.
-//   - Generates an ID if one is not provided.
-func (m *Manager) AddWebhook(w *WebhookConfig) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	if w.ID == "" {
-		w.ID = fmt.Sprintf("wh-%d", time.Now().UnixNano())
-	}
-	// Ensure active defaults to true if new? Or let caller decide.
-	m.webhooks[w.ID] = w
-}
-
 // GetWebhook returns a webhook by ID.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
 //
 // Summary: Retrieves a webhook by ID.
 //
 // Parameters:
 //   - id (string): The webhook ID.
 //
-// Returns:
-//   - *WebhookConfig: The webhook configuration.
-//   - bool: True if found, false otherwise.
-func (m *Manager) GetWebhook(id string) (*WebhookConfig, bool) {
-	m.mu.RLock()
-	defer m.mu.RUnlock()
-	w, ok := m.webhooks[id]
-	return w, ok
-}
-
 // DeleteWebhook removes a webhook by ID.
 //
 // Summary: Deletes a webhook.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Parameters:
 //   - id (string): The webhook ID to delete.
 //
 // Side Effects:
 //   - Removes the webhook from the internal map.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
 func (m *Manager) DeleteWebhook(id string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()

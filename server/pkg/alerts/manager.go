@@ -13,13 +13,17 @@ import (
 	"sync"
 	"time"
 
-	"github.com/google/uuid"
-	"github.com/mcpany/core/server/pkg/logging"
-)
-
 // ManagerInterface defines the interface for managing alerts.
 //
 // Summary: Represents a ManagerInterface.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type ManagerInterface interface {
 	// ListAlerts returns a list of all alerts.
 	ListAlerts() []*Alert
@@ -49,13 +53,17 @@ type ManagerInterface interface {
 	CreateRule(rule *AlertRule) *AlertRule
 	// UpdateRule updates an existing alert rule.
 	UpdateRule(id string, rule *AlertRule) *AlertRule
-	// DeleteRule deletes an alert rule by its ID.
-	DeleteRule(id string) error
-}
-
 // Manager implements ManagerInterface using in-memory storage.
 //
 // Summary: Represents a Manager.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Manager struct {
 	mu         sync.RWMutex
 	alerts     map[string]*Alert

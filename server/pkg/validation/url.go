@@ -1,19 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package validation
-
-import (
-	"context"
-	"fmt"
-	"net"
-	"net/url"
-	"os"
-	"time"
-)
-
-const trueVal = "true"
-
 // IsSafeIP checks if the IP address string is safe to connect to,
 // respecting the allowed network resources policy.
 //
@@ -26,6 +13,10 @@ const trueVal = "true"
 //   - error: An error if the IP is invalid or forbidden.
 //
 // IsSafeIP is a variable to allow mocking in tests.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 var IsSafeIP = func(ipStr string) error {
 	// Bypass if explicitly allowed (for testing/development)
 	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == trueVal {
@@ -124,18 +115,6 @@ var IsSafeURL = func(urlStr string) error {
 
 	if len(ips) == 0 {
 		return fmt.Errorf("no IP addresses found for host %q", host)
-	}
-
-	// Check all resolved IPs
-	for _, ip := range ips {
-		if err := ValidateIP(ip, allowLoopback, allowPrivate); err != nil {
-			return fmt.Errorf("host %q resolves to unsafe IP %s: %w", host, ip.String(), err)
-		}
-	}
-
-	return nil
-}
-
 // ValidateIP checks if the IP address is allowed based on the policy.
 //
 // Summary: Internal helper to validate an IP address against forbidden ranges.
@@ -147,6 +126,10 @@ var IsSafeURL = func(urlStr string) error {
 //
 // Returns:
 //   - error: An error if the IP matches a forbidden range.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func ValidateIP(ip net.IP, allowLoopback, allowPrivate bool) error {
 	if !allowLoopback && (ip.IsLoopback() || IsNAT64Loopback(ip) || (IsIPv4Compatible(ip) && ip[12] == 127)) {
 		return fmt.Errorf("loopback address is not allowed")

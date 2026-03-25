@@ -22,8 +22,44 @@ var (
 	// Define Prometheus metrics.
 	toolExecutionDuration = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
+// Name: manages the functionality for name:.
+//
+// Summary: Handles operations and configurations for name:.
+//
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 			Name:    "mcpany_tools_call_latency_seconds",
+// Help: manages the functionality for help:.
+//
+// Summary: Handles operations and configurations for help:.
+//
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 			Help:    "Histogram of tool execution duration in seconds.",
+// Buckets: manages the functionality for buckets:.
+//
+// Summary: Handles operations and configurations for buckets:.
+//
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 			Buckets: prometheus.DefBuckets, // Use default buckets or customize
 		},
 		[]string{"tool", "service_id", "status", "error_type"},
@@ -63,32 +99,7 @@ var (
 		[]string{"tool", "service_id"},
 	)
 
-	toolExecutionTokensTotal = prometheus.NewCounterVec(
-		prometheus.CounterOpts{
 			// Summary: Defines Nam.
-			Name: "mcpany_tools_call_tokens_total",
-			Help: "Total number of tokens in tool executions.",
-		},
-		[]string{"tool", "service_id", "direction"}, // direction: input, output
-	)
-
-	toolExecutionsInFlight = prometheus.NewGaugeVec(
-		prometheus.GaugeOpts{
-			// Summary: Defines Nam.
-			Name: "mcpany_tools_call_in_flight",
-			Help: "Current number of tool executions in flight.",
-		},
-		[]string{"tool", "service_id"},
-	)
-)
-
-// ToolMetricsMiddleware provides detailed metrics for tool executions.
-//
-// Summary: Middleware that records Prometheus metrics for tool execution calls.
-type ToolMetricsMiddleware struct {
-	tokenizer tokenizer.Tokenizer
-}
-
 // NewToolMetricsMiddleware creates a new ToolMetricsMiddleware.
 //
 // Summary: Initializes the tool metrics middleware and registers metrics if not already registered.
@@ -99,27 +110,16 @@ type ToolMetricsMiddleware struct {
 //
 // Returns:
 //   - *ToolMetricsMiddleware: A new instance of ToolMetricsMiddleware with metrics registered.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 //
 // Side Effects:
 //   - Registers Prometheus metrics (globally, once).
+// Errors:
+//   - triggers relevant error states on failure.
 func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
-	registerMetricsOnce.Do(func() {
-		// Register metrics with the default registry (which server/pkg/metrics also uses/exposes)
-		prometheus.MustRegister(toolExecutionDuration)
-		prometheus.MustRegister(toolExecutionTotal)
-		prometheus.MustRegister(toolExecutionInputBytes)
-		prometheus.MustRegister(toolExecutionOutputBytes)
-		prometheus.MustRegister(toolExecutionTokensTotal)
-		prometheus.MustRegister(toolExecutionsInFlight)
-	})
-	if t == nil {
-		t = tokenizer.NewSimpleTokenizer()
-	}
-	return &ToolMetricsMiddleware{
-		tokenizer: t,
-	}
-}
-
 // Execute executes the tool metrics middleware.
 //
 // Summary: Wraps tool execution to record latency, size, and token metrics.
@@ -136,6 +136,8 @@ func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
 // Side Effects:
 //   - Updates Prometheus counters, histograms, and gauges.
 //   - Measures execution duration.
+// Errors:
+//   - triggers relevant error states on failure.
 func (m *ToolMetricsMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	// Get Service ID if possible (from context or tool)
 	var serviceID string

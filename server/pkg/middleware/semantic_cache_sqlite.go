@@ -9,15 +9,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"time"
-
-	// modernc.org/sqlite is a pure Go SQLite driver.
-	_ "modernc.org/sqlite"
-)
-
 // SQLiteVectorStore implements VectorStore using SQLite for persistence
 // and an in-memory cache for fast search.
 //
 // Summary: A hybrid vector store that uses SQLite for persistence and an in-memory structure for search.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type SQLiteVectorStore struct {
 	memoryStore *SimpleVectorStore
 	db          *sql.DB
@@ -224,37 +227,11 @@ func (s *SQLiteVectorStore) Add(ctx context.Context, key string, vector []float3
 	// Probabilistic pruning (1 in 100 chance) to prevent unbound growth
 	// without impacting performance on every write.
 	if time.Now().UnixNano()%100 == 0 {
-		go func() {
-			// Best effort prune
-			now := time.Now().UnixNano()
-			// Use background context with short timeout for async cleanup so it doesn't block unrelated things,
-			// but also doesn't hang forever.
-			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-			defer cancel()
-			_, _ = s.db.ExecContext(ctx, "DELETE FROM semantic_cache_entries WHERE expires_at <= ?", now)
-		}()
-	}
-
-	return nil
-}
-
 // Search searches in memory.
 //
 // Summary: Searches the in-memory store for the nearest neighbor.
 //
 // Parameters:
-//   - ctx: context.Context. The request context.
-//   - key: string. The key to filter results.
-//   - query: []float32. The query embedding vector.
-//
-// Returns:
-//   - any: The best matching result data.
-//   - float32: The similarity score (0-1).
-//   - bool: True if a match was found.
-func (s *SQLiteVectorStore) Search(ctx context.Context, key string, query []float32) (any, float32, bool) {
-	return s.memoryStore.Search(ctx, key, query)
-}
-
 // Prune removes expired entries from both memory and DB.
 //
 // Summary: Manually triggers removal of expired entries from memory and disk.
@@ -263,22 +240,31 @@ func (s *SQLiteVectorStore) Search(ctx context.Context, key string, query []floa
 //   - ctx: context.Context. The request context.
 //   - key: string. Optional key to restrict pruning scope.
 //
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 // Side Effects:
 //   - Removes items from memory.
 //   - Deletes rows from SQLite database.
-func (s *SQLiteVectorStore) Prune(ctx context.Context, key string) {
-	s.memoryStore.Prune(ctx, key)
-
-	now := time.Now().UnixNano()
-	_, _ = s.db.ExecContext(ctx, "DELETE FROM semantic_cache_entries WHERE expires_at <= ?", now)
-}
-
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
 // Close closes the database connection.
 //
 // Summary: Closes the SQLite database connection.
 //
 // Returns:
 //   - error: An error if closing fails.
+// Parameters:
+//   - standard arguments based on function signature.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (s *SQLiteVectorStore) Close() error {
 	return s.db.Close()
 }

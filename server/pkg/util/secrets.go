@@ -14,20 +14,6 @@ import (
 	"regexp"
 	"strings"
 	"sync"
-	"time"
-
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
-	"github.com/hashicorp/vault/api"
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/validation"
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/clientcredentials"
-)
-
-const maxSecretRecursionDepth = 10
-
 // ResolveSecret resolves a SecretValue configuration object into a concrete string value.
 // It handles various secret types including plain text, environment variables, file paths,
 // remote URLs, Vault, and AWS Secrets Manager.
@@ -41,6 +27,10 @@ const maxSecretRecursionDepth = 10
 // Returns:
 //   - string: The resolved secret string.
 //   - error: An error if resolution fails.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func ResolveSecret(ctx context.Context, secret *configv1.SecretValue) (string, error) {
 	return resolveSecretRecursive(ctx, secret, 0)
 }
@@ -299,20 +289,6 @@ func resolveSecretImpl(ctx context.Context, secret *configv1.SecretValue, depth 
 				return "", fmt.Errorf("key %q not found in secret json", smSecret.GetJsonKey())
 			}
 
-			// Convert val to string
-			if strVal, ok := val.(string); ok {
-				return strings.TrimSpace(strVal), nil
-			}
-			// Try to convert other types to string
-			return strings.TrimSpace(fmt.Sprintf("%v", val)), nil
-		}
-
-		return strings.TrimSpace(secretVal), nil
-	default:
-		return "", nil
-	}
-}
-
 // ResolveSecretMap resolves a map of SecretValue objects and merges them with a map of plain strings.
 // If a key exists in both maps, the value from the secretMap (once resolved) takes precedence.
 //
@@ -326,6 +302,10 @@ func resolveSecretImpl(ctx context.Context, secret *configv1.SecretValue, depth 
 // Returns:
 //   - map[string]string: A single map containing all keys with their resolved string values.
 //   - error: An error if any secret resolution fails.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func ResolveSecretMap(ctx context.Context, secretMap map[string]*configv1.SecretValue, plainMap map[string]string) (map[string]string, error) {
 	result := make(map[string]string)
 	for k, v := range plainMap {

@@ -9,32 +9,29 @@ import (
 
 	"al.essio.dev/pkg/shellescape"
 	"github.com/alitto/pond/v2"
-	"github.com/mcpany/core/server/pkg/bus"
-	"github.com/mcpany/core/server/pkg/logging"
-)
-
 // Config holds the configuration for the worker.
 //
 // Summary: Configuration for worker pool.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Config struct {
-	MaxWorkers   int
-	MaxQueueSize int
-}
-
-// Worker is responsible for processing jobs from the bus.
-//
-// Summary: Processes background jobs.
-type Worker struct {
-	busProvider *bus.Provider
-	pond        pond.Pool
-	stopFuncs   []func()
-	mu          sync.Mutex
-	wg          sync.WaitGroup
-}
-
 // New creates a new Worker.
 //
 // Summary: Initializes a new Worker.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 //
 // Parameters:
 //   - busProvider: *bus.Provider. The bus provider.
@@ -42,22 +39,25 @@ type Worker struct {
 //
 // Returns:
 //   - *Worker: The initialized worker.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func New(busProvider *bus.Provider, cfg *Config) *Worker {
 	return &Worker{
 		busProvider: busProvider,
-		pond: pond.NewPool(
-			cfg.MaxWorkers,
-			pond.WithQueueSize(cfg.MaxQueueSize),
-		),
-	}
-}
-
 // Start starts the worker and its background tasks.
 //
 // Summary: Starts the worker processing loop.
 //
 // Parameters:
 //   - ctx: context.Context. The context for the worker.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (w *Worker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	go w.startToolExecutionWorker(ctx)

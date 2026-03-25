@@ -1,16 +1,5 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package middleware
-
-import (
-	"context"
-	"log/slog"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/modelcontextprotocol/go-sdk/mcp"
-)
-
 // DLPMiddleware creates a middleware that redacts PII from request arguments and result content.
 //
 // Summary: Middleware for Data Loss Prevention (PII redaction).
@@ -21,6 +10,10 @@ import (
 //
 // Returns:
 //   - mcp.Middleware: The configured middleware function.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func DLPMiddleware(config *configv1.DLPConfig, log *slog.Logger) mcp.Middleware {
 	redactor := NewRedactor(config, log)
 	if redactor == nil {

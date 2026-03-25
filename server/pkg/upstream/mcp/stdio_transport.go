@@ -12,15 +12,18 @@ import (
 	"os/exec"
 	"sync"
 
-	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/modelcontextprotocol/go-sdk/jsonrpc"
-	"github.com/modelcontextprotocol/go-sdk/mcp"
-)
-
 // StdioTransport implements mcp.Transport for a local command,
 // capturing stderr to provide better error messages on failure.
 //
 // Summary: Represents a StdioTransport.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type StdioTransport struct {
 	Command *exec.Cmd
 }

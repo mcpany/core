@@ -8,27 +8,34 @@ import (
 	"log/slog"
 	"runtime"
 	"sync"
-	"time"
-
-	"github.com/google/uuid"
-)
-
 // LogEntry is the structure for logs sent over WebSocket.
 // It matches the frontend expectation.
 //
 // Summary: Represents a LogEntry.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type LogEntry struct {
 	ID        string         `json:"id"`
 	Timestamp string         `json:"timestamp"`
 	Level     string         `json:"level"`
 	Message   string         `json:"message"`
-	Source    string         `json:"source,omitempty"`
-	Metadata  map[string]any `json:"metadata,omitempty"`
-}
-
 // BroadcastHandler implements slog.Handler and sends logs to the Broadcaster.
 //
 // Summary: Represents a BroadcastHandler.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type BroadcastHandler struct {
 	broadcaster *Broadcaster
 	attrs       []slog.Attr
@@ -287,13 +294,17 @@ func (h *BroadcastHandler) WithGroup(name string) slog.Handler {
 		broadcaster: h.broadcaster,
 		attrs:       h.attrs,
 		groups:      newGroups,
-		level:       h.level,
-	}
-}
-
 // TeeHandler is a slog.Handler that writes to multiple handlers.
 //
 // Summary: Represents a TeeHandler.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type TeeHandler struct {
 	handlers []slog.Handler
 }

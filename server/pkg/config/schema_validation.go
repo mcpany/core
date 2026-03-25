@@ -24,16 +24,6 @@ func ensureSchema() (*jsonschema.Schema, error) {
 	schemaOnce.Do(func() {
 		// 1. Generate JSON Schema from the Proto definition
 		cfg := configv1.McpAnyServerConfig_builder{}.Build()
-		var err error
-		compiledSchema, err = GenerateSchemaFromProto(cfg.ProtoReflect())
-		if err != nil {
-			schemaGenErr = fmt.Errorf("failed to generate schema from proto: %w", err)
-			return
-		}
-	})
-	return compiledSchema, schemaGenErr
-}
-
 // ValidateConfigAgainstSchema validates the raw configuration map against the generated JSON schema.
 //
 // Summary: Validates configuration against the JSON schema.
@@ -43,6 +33,10 @@ func ensureSchema() (*jsonschema.Schema, error) {
 //
 // Returns:
 //   - error: An error if validation fails.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func ValidateConfigAgainstSchema(rawConfig map[string]interface{}) error {
 	schema, err := ensureSchema()
 	if err != nil {

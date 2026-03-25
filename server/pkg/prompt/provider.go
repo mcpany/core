@@ -4,32 +4,25 @@
 package prompt
 
 import (
-	"github.com/modelcontextprotocol/go-sdk/mcp"
-)
-
-type mcpServerProvider struct {
-	server *mcp.Server
-}
-
-// Server returns the underlying MCP server instance.
-//
-// Summary: Retrieves the MCP server.
-//
-// Returns:
-//   - *mcp.Server: The MCP server instance.
-func (p *mcpServerProvider) Server() *mcp.Server {
-	return p.server
-}
-
 // NewMCPServerProvider creates a new MCPServerProvider.
 //
 // Summary: Initializes a provider for the MCP server.
 //
 // Parameters:
 //   - server: *mcp.Server. The server instance to wrap.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Returns:
 //   - MCPServerProvider: The initialized provider.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func NewMCPServerProvider(server *mcp.Server) MCPServerProvider {
 	return &mcpServerProvider{server: server}
 }

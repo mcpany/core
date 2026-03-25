@@ -9,12 +9,17 @@ import (
 	"sync"
 
 	"github.com/docker/docker/client"
-)
-
-var (
 	// IsDockerSocketAccessibleFunc is a variable to allow mocking in tests.
 	// It checks if the Docker socket is accessible.
 	// Summary: Defines IsDockerSocketAccessibleFunc.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	IsDockerSocketAccessibleFunc = isDockerSocketAccessibleDefault
 
 	dockerClient     client.APIClient
@@ -27,19 +32,18 @@ var (
 var initDockerClientDefault = func() {
 	var err error
 	dockerClient, err = client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-	if err != nil {
-		// If we can't create the client, we can't ping the server.
-		// We'll set dockerClient to nil and handle this in the check.
-		dockerClient = nil
-	}
-}
-
 // IsDockerSocketAccessible checks if the Docker daemon is accessible through the socket.
 //
 // Summary: Checks if the Docker daemon is accessible.
 //
 // Returns:
 //   - bool: True if the Docker daemon is accessible, false otherwise.
+// Parameters:
+//   - standard arguments based on function signature.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func IsDockerSocketAccessible() bool {
 	return IsDockerSocketAccessibleFunc()
 }

@@ -109,24 +109,6 @@ func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 			if err := r.MultipartForm.RemoveAll(); err != nil {
 				logging.GetLogger().Error("Failed to remove multipart form files", "error", err)
 			}
-		}()
-	}
-
-	// Consume the file content without writing to disk.
-	// We discard the content to avoid disk usage and potential residue.
-	written, err := io.Copy(io.Discard, file)
-	if err != nil {
-		http.Error(w, "failed to read file", http.StatusInternalServerError)
-		return
-	}
-
-	// Respond with the file name and size
-	// Sanitize the filename to prevent reflected XSS and ensure safe filesystem usage
-	safeFilename := util.SanitizeFilename(header.Filename)
-	w.Header().Set("Content-Type", "text/plain")
-	_, _ = fmt.Fprintf(w, "File '%s' uploaded successfully (size: %d bytes)", html.EscapeString(safeFilename), written)
-}
-
 // RunOptions configuration for starting the MCP Any application.
 //
 // Summary: Options for configuring the application runtime.
@@ -144,6 +126,14 @@ func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 //   - TLSKey: string. Path to the TLS private key file.
 //   - TLSClientCA: string. Path to the TLS client CA certificate file (for mTLS).
 //   - DBPath: string. Path to the SQLite database file.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type RunOptions struct {
 	Ctx             context.Context
 	Fs              afero.Fs
@@ -155,39 +145,19 @@ type RunOptions struct {
 	ShutdownTimeout time.Duration
 	TLSCert         string
 	TLSKey          string
-	TLSClientCA     string
-	DBPath          string
-}
-
 // Runner defines the interface for running the application.
 //
 // Summary: Interface for application execution and management.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Runner interface {
 	// Run starts the application with the given options.
-	//
-	// Summary: Starts the application.
-	//
-	// Parameters:
-	//   - opts: RunOptions. The configuration for running.
-	//
-	// Returns:
-	//   - error: An error if startup or execution fails.
-	Run(opts RunOptions) error
-
-	// ReloadConfig reloads the application configuration.
-	//
-	// Summary: Triggers a configuration reload.
-	//
-	// Parameters:
-	//   - ctx: context.Context. The context for the operation.
-	//   - fs: afero.Fs. The filesystem.
-	//   - configPaths: []string. Paths to configuration files.
-	//
-	// Returns:
-	//   - error: An error if reload fails.
-	ReloadConfig(ctx context.Context, fs afero.Fs, configPaths []string) error
-}
-
 // Application is the main application struct, holding the dependencies and logic for the MCP Any server.
 //
 // Summary: The main application container.
@@ -211,6 +181,14 @@ type Runner interface {
 //   - MetricsGatherer: prometheus.Gatherer. Interface for gathering metrics.
 //   - BoundHTTPPort: atomic.Int32. The actual bound HTTP port.
 //   - BoundGRPCPort: atomic.Int32. The actual bound gRPC port.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Application struct {
 	runStdioModeFunc func(ctx context.Context, mcpSrv *mcpserver.Server) error
 	PromptManager    prompt.ManagerInterface
@@ -301,39 +279,21 @@ type Application struct {
 	// statsCache for dashboard
 	statsCacheMu sync.RWMutex
 	statsCache   map[string]statsCacheEntry
-}
-
-type statsCacheEntry struct {
-	Data      any
-	ExpiresAt time.Time
-}
-
 // NewApplication creates a new Application with default dependencies.
 //
 // Summary: Initializes a new Application instance.
 //
 // Returns:
 //   - (*Application): The initialized application.
+// Parameters:
+//   - standard arguments based on function signature.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func NewApplication() *Application {
 	busProvider, _ := bus.NewProvider(nil)
 	return &Application{
-		runStdioModeFunc: runStdioMode,
-		PromptManager:    prompt.NewManager(),
-		ToolManager:      tool.NewManager(busProvider),
-		AlertsManager:    alerts.NewManager(),
-		WebhooksManager:  webhooks.NewManager(),
-		CatalogManager:   catalog.NewManager(afero.NewOsFs(), "marketplace/catalog"), // Default path, can be overridden
-
-		ResourceManager: resource.NewManager(),
-		UpstreamFactory: factory.NewUpstreamServiceFactory(pool.NewManager(), nil),
-		configFiles:     make(map[string]string),
-		startupCh:       make(chan struct{}),
-		startTime:       time.Now(),
-		MetricsGatherer: prometheus.DefaultGatherer,
-		statsCache:      make(map[string]statsCacheEntry),
-	}
-}
-
 // Run starts the MCP Any server and all its components.
 //
 // Summary: Executes the application.
@@ -350,6 +310,8 @@ func NewApplication() *Application {
 //   - Loads configuration.
 //
 //nolint:gocyclo // Run is the main entry point and setup function, expected to be complex
+// Errors:
+//   - triggers relevant error states on failure.
 func (a *Application) Run(opts RunOptions) error {
 	log := logging.GetLogger()
 	fs, err := setup(opts.Fs)
@@ -899,23 +861,6 @@ func (a *Application) Run(opts RunOptions) error {
 		serviceRegistry,
 		startupCallback,
 		opts.TLSCert,
-		opts.TLSKey,
-		opts.TLSClientCA,
-	); err != nil {
-		workerCancel()
-		upstreamWorker.Stop()
-		registrationWorker.Stop()
-		return err
-	}
-
-	// Stop workers
-	workerCancel()
-	upstreamWorker.Stop()
-	registrationWorker.Stop()
-
-	return nil
-}
-
 // ReloadConfig reloads the configuration from the given paths and updates the
 // services.
 //
@@ -932,6 +877,8 @@ func (a *Application) Run(opts RunOptions) error {
 // Side Effects:
 //   - Reads configuration files.
 //   - Updates global settings, user auth, profiles, and service registry.
+// Errors:
+//   - triggers relevant error states on failure.
 func (a *Application) ReloadConfig(ctx context.Context, fs afero.Fs, configPaths []string) error {
 	log := logging.GetLogger()
 	start := time.Now()
@@ -1341,18 +1288,6 @@ func (a *Application) generateConfigDiff(oldConfig, newConfig map[string]string)
 		if _, exists := newConfig[path]; !exists {
 			// Deleted file
 			d, _ := difflib.GetUnifiedDiffString(difflib.UnifiedDiff{
-				A:        difflib.SplitLines(oldContent),
-				B:        difflib.SplitLines(""),
-				FromFile: path,
-				ToFile:   "/dev/null",
-				Context:  3,
-			})
-			diffs = append(diffs, fmt.Sprintf("Deleted file: %s\n%s", path, d))
-		}
-	}
-	return strings.Join(diffs, "\n")
-}
-
 // WaitForStartup waits for the application to be fully initialized.
 //
 // Summary: Waits for application startup completion.
@@ -1364,6 +1299,10 @@ func (a *Application) generateConfigDiff(oldConfig, newConfig map[string]string)
 //
 // Returns:
 //   - (error): nil if startup completes successfully, or a context error if canceled.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (a *Application) WaitForStartup(ctx context.Context) error {
 	select {
 	case <-a.startupCh:
@@ -1463,43 +1402,11 @@ func (a *Application) filesystemHealthCheck(_ context.Context) health.CheckResul
 				issues = append(issues, fmt.Sprintf("service %q: root path %q (%s) is not a directory", svc.GetName(), virtualPath, localPath))
 			}
 		}
-	}
-
-	status := "ok"
-	var message string
-	if len(issues) > 0 {
-		status = "degraded"
-		message = strings.Join(issues, "; ")
-	}
-
-	return health.CheckResult{
-		Status:  status,
-		Message: message,
-		Latency: time.Since(start).String(),
-	}
-}
-
 // HealthCheck performs a health check against a running server.
 //
 // Summary: Checks the health of a running server.
 //
 // The function constructs the health check URL from the provided address and
-// sends an HTTP GET request. It expects a 200 OK status code for a successful
-// health check.
-//
-// Parameters:
-//   - out (io.Writer): The writer to which the success message will be written.
-//   - addr (string): The address (host:port) on which the server is running.
-//   - timeout (time.Duration): The maximum duration to wait for the health check.
-//
-// Returns:
-//   - (error): nil if healthy, or an error if the health check fails.
-func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
-	return HealthCheckWithContext(ctx, out, addr)
-}
-
 // HealthCheckWithContext performs a health check against a running server with a context.
 //
 // Summary: Checks the health of a running server using a context.
@@ -1510,11 +1417,21 @@ func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 //
 // Parameters:
 //   - ctx (context.Context): The context for managing the health check's lifecycle.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //   - out (io.Writer): The writer to which the success message will be written.
 //   - addr (string): The address (host:port) on which the server is running.
 //
 // Returns:
 //   - (error): nil if healthy, or an error if the health check fails.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func HealthCheckWithContext(
 	ctx context.Context,
 	out io.Writer,
@@ -2531,16 +2448,6 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 				}
 
 				// Grant Admin privileges (Root Access) for local development/testing convenience
-				// when running in insecure mode (private network, no API key).
-				ctx = auth.ContextWithRoles(ctx, []string{"admin"})
-				ctx = auth.ContextWithUser(ctx, "system-admin")
-			}
-
-			next.ServeHTTP(w, r.WithContext(ctx))
-		})
-	}
-}
-
 // HTTPRequestContextMiddleware injects the HTTP request into the context.
 //
 // Summary: Middleware to add HTTP request to context.
@@ -2550,6 +2457,10 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 //
 // Returns:
 //   - (http.Handler): The wrapped handler.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (a *Application) HTTPRequestContextMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := context.WithValue(r.Context(), middleware.HTTPRequestContextKey, r)

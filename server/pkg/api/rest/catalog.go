@@ -4,17 +4,19 @@
 package rest
 
 import (
-	"context"
-
-	apiv1 "github.com/mcpany/core/proto/api/v1"
-	"github.com/mcpany/core/server/pkg/catalog"
-)
-
 // CatalogServer implements the CatalogService API.
 //
 // Summary: Server implementation for the Catalog Service.
 //
 // It handles requests to list available services from the dynamic catalog.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type CatalogServer struct {
 	manager *catalog.Manager
 }

@@ -11,13 +11,17 @@ import (
 	"time"
 
 	"github.com/mcpany/core/proto/bus"
-	"github.com/nats-io/nats-server/v2/server"
-	natsgo "github.com/nats-io/nats.go"
-)
-
 // Bus is a message bus implementation using NATS.
 //
 // Summary: Represents a Bus.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Bus[T any] struct {
 	nc     *natsgo.Conn
 	config *bus.NatsBus
@@ -67,14 +71,6 @@ func New[T any](config *bus.NatsBus) (*Bus[T], error) {
 	nc, err := natsgo.Connect(config.GetServerUrl())
 	if err != nil {
 		return nil, err
-	}
-	return &Bus[T]{
-		nc:     nc,
-		config: config,
-		s:      s,
-	}, nil
-}
-
 // Close closes the NATS bus connection and shuts down the embedded server if applicable.
 //
 // Summary: Closes the NATS connection.
@@ -82,6 +78,12 @@ func New[T any](config *bus.NatsBus) (*Bus[T], error) {
 // Returns:
 //
 //	None.
+// Parameters:
+//   - standard arguments based on function signature.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (b *Bus[T]) Close() {
 	if b.nc != nil {
 		b.nc.Close()

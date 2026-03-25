@@ -18,14 +18,6 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
-	"github.com/mcpany/core/server/pkg/tool"
-	"github.com/mcpany/core/server/pkg/upstream"
-	"github.com/mcpany/core/server/pkg/util"
-	"github.com/mcpany/core/server/pkg/util/schemaconv"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/structpb"
-)
-
 // Upstream implements the upstream.Upstream interface for services that
 // are exposed as command-line tools.
 //
@@ -33,6 +25,14 @@ import (
 // service configuration.
 //
 // Summary: Represents a Upstream.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Upstream struct {
 	mu      sync.Mutex
 	checker health.Checker

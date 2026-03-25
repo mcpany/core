@@ -1,13 +1,17 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package auth
-
-import "net/http"
-
 // MockUpstreamAuthenticator is a mock implementation of UpstreamAuthenticator for testing.
 //
 // Summary: Represents a MockUpstreamAuthenticator.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type MockUpstreamAuthenticator struct {
 	AuthenticateFunc func(req *http.Request) error
 }

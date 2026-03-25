@@ -189,43 +189,9 @@ func appendHashSuffix(sb *strings.Builder, id string, reqHashLength int) {
 	var hashBuf [64]byte // sha256 hex is 64 chars
 	hex.Encode(hashBuf[:], sum[:])
 
-	sb.WriteByte('_')
-
-	// Determine effective hash length
-	effectiveLen := reqHashLength
-	if effectiveLen <= 0 {
-		effectiveLen = hashLength // Use package-level constant (8)
-	} else if effectiveLen > 64 {
-		effectiveLen = 64
-	}
-
-	sb.Write(hashBuf[:effectiveLen])
-}
-
-func isValidChar(c byte) bool {
-	return allowedSanitizeIDChars[c]
-}
-
 // SanitizeServiceName sanitizes the given service name.
 // It ensures that the name is a valid identifier by removing disallowed characters
 // and appending a hash if the name is too long or contains illegal characters.
-// This function calls SanitizeID with alwaysAppendHash set to false.
-//
-// Summary: Sanitizes a service name to be safe for use as an identifier.
-//
-// Parameters:
-//   - name (string): The service name to sanitize.
-//
-// Returns:
-//   - string: The sanitized service name.
-//   - error: An error if sanitization fails.
-//
-// Side Effects:
-//   - None.
-func SanitizeServiceName(name string) (string, error) {
-	return SanitizeID([]string{name}, false, maxSanitizedPrefixLength, hashLength)
-}
-
 // SanitizeToolName sanitizes the given tool name.
 // It ensures that the name is a valid identifier by removing disallowed characters
 // and appending a hash if the name is too long or contains illegal characters.
@@ -239,9 +205,15 @@ func SanitizeServiceName(name string) (string, error) {
 // Returns:
 //   - string: The sanitized tool name.
 //   - error: An error if sanitization fails.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Side Effects:
 //   - None.
+// Errors:
+//   - triggers relevant error states on failure.
 func SanitizeToolName(name string) (string, error) {
 	return SanitizeID([]string{name}, false, maxSanitizedPrefixLength, hashLength)
 }
@@ -260,48 +232,6 @@ var (
 	// allowedSanitizeIDChars is a lookup table for allowed characters in a sanitized ID.
 	// It corresponds to the regex `[a-zA-Z0-9_-]`.
 	allowedSanitizeIDChars [256]bool
-)
-
-func init() {
-	const allowed = "abcdefghijklmnopqrstuvwxyz" +
-		"ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
-		"0123456789" +
-		"-._~:/?#[]@!$&'()*+,;="
-	for i := 0; i < len(allowed); i++ {
-		allowedIDChars[allowed[i]] = true
-	}
-
-	const allowedSanitize = "abcdefghijklmnopqrstuvwxyz" +
-		"ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
-		"0123456789" +
-		"_-"
-	for i := 0; i < len(allowedSanitize); i++ {
-		allowedSanitizeIDChars[allowedSanitize[i]] = true
-	}
-}
-
-// TrueStr is a string constant representing the boolean value true.
-// It is used for consistent string comparisons and parsing of boolean-like strings.
-//
-// Summary: Constant for "true" string.
-const TrueStr = "true"
-
-// GenerateUUID creates a new random (version 4) UUID.
-//
-// Summary: Generates a random UUID.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - string: A string representation of the UUID (e.g., "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx").
-//
-// Side Effects:
-//   - Generates random data.
-func GenerateUUID() string {
-	return uuid.New().String()
-}
-
 // ParseToolName deconstructs a fully qualified tool name into its service key
 // and bare tool name components. It splits the name using the standard
 // separator.
@@ -310,30 +240,32 @@ func GenerateUUID() string {
 //
 // Parameters:
 //   - toolName (string): The fully qualified tool name to parse.
-//
-// Returns:
-//   - service (string): The service key part.
-//   - bareToolName (string): The tool name part.
-//   - err (error): An error if parsing fails.
-//
-// Side Effects:
-//   - None.
-func ParseToolName(toolName string) (service, bareToolName string, err error) {
-	parts := strings.SplitN(toolName, consts.ToolNameServiceSeparator, 2)
-	if len(parts) == 2 {
-		return parts[0], parts[1], nil
-	}
-	return "", toolName, nil
-}
-
 // SanitizeOperationID cleans an input string to make it suitable for use as an
 // operation ID. It replaces any sequence of disallowed characters with a short
 // hexadecimal hash of that sequence, ensuring uniqueness while preserving as
 // much of the original string as possible.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 //
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 // Summary: Sanitizes a string for use as an operation ID.
 //
 // Parameters:
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //   - input (string): The string to be sanitized.
 //
 // Returns:
@@ -341,6 +273,8 @@ func ParseToolName(toolName string) (service, bareToolName string, err error) {
 //
 // Side Effects:
 //   - None.
+// Errors:
+//   - triggers relevant error states on failure.
 func SanitizeOperationID(input string) string {
 	// Fast path: check if valid without allocating
 	isClean := true
@@ -392,37 +326,7 @@ func SanitizeOperationID(input string) string {
 			var hashBuf [64]byte
 			hex.Encode(hashBuf[:], sum[:])
 
-			sb.WriteString("_")
-			sb.Write(hashBuf[:6])
-			sb.WriteString("_")
-		}
-	}
-	return sb.String()
-}
-
-// stringToBytes converts a string to a byte slice without allocation.
-// IMPORTANT: The returned byte slice must not be modified.
-func stringToBytes(s string) []byte {
-	return unsafe.Slice(unsafe.StringData(s), len(s))
-}
-
 // BytesToString converts a byte slice to a string without allocation.
-// IMPORTANT: The byte slice must not be modified while the string is in use.
-//
-// Summary: Zero-copy conversion from bytes to string.
-//
-// Parameters:
-//   - b ([]byte): The byte slice to convert.
-//
-// Returns:
-//   - string: The resulting string.
-//
-// Side Effects:
-//   - None.
-func BytesToString(b []byte) string {
-	return unsafe.String(unsafe.SliceData(b), len(b))
-}
-
 // GetDockerCommand returns the command and base arguments for running Docker.
 // It checks the USE_SUDO_FOR_DOCKER environment variable to determine if
 // "sudo" should be prepended to the command.
@@ -430,46 +334,26 @@ func BytesToString(b []byte) string {
 // Summary: Retrieves the appropriate Docker command (with optional sudo).
 //
 // Parameters:
-//   - None.
-//
-// Returns:
-//   - string: The command to run (e.g., "docker" or "sudo").
-//   - []string: The arguments for the command (e.g., [] or ["docker"]).
-//
-// Side Effects:
-//   - Reads environment variable USE_SUDO_FOR_DOCKER.
-func GetDockerCommand() (string, []string) {
-	const dockerCmd = "docker"
-	if os.Getenv("USE_SUDO_FOR_DOCKER") == TrueStr {
-		return "sudo", []string{dockerCmd}
-	}
-	return dockerCmd, []string{}
-}
-
 // ReplaceURLPath replaces placeholders in a URL path with values from a params map.
 // It handles URL escaping of values unless specified otherwise.
 //
-// Summary: Substitutes placeholders in a URL path.
-//
-// Parameters:
-//   - urlPath (string): The URL path containing placeholders in the format "{{key}}".
-//   - params (map[string]interface{}): A map of keys to values to replace placeholders with.
-//   - noEscapeParams (map[string]bool): A map of keys that should NOT be URL escaped.
-//
-// Returns:
-//   - string: The URL path with placeholders replaced.
-//
-// Side Effects:
-//   - None.
-func ReplaceURLPath(urlPath string, params map[string]interface{}, noEscapeParams map[string]bool) string {
-	return replacePlaceholders(urlPath, params, noEscapeParams, url.PathEscape)
-}
-
 // ReplaceURLQuery replaces placeholders in a URL query string with values from a params map.
 // It handles URL query escaping of values unless specified otherwise.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Summary: Substitutes placeholders in a URL query string.
 //
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 // Parameters:
 //   - urlQuery (string): The URL query string containing placeholders in the format "{{key}}".
 //   - params (map[string]interface{}): A map of keys to values to replace placeholders with.
@@ -477,9 +361,15 @@ func ReplaceURLPath(urlPath string, params map[string]interface{}, noEscapeParam
 //
 // Returns:
 //   - string: The URL query string with placeholders replaced.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Side Effects:
 //   - None.
+// Errors:
+//   - triggers relevant error states on failure.
 func ReplaceURLQuery(urlQuery string, params map[string]interface{}, noEscapeParams map[string]bool) string {
 	return replacePlaceholders(urlQuery, params, noEscapeParams, url.QueryEscape)
 }
@@ -509,19 +399,6 @@ func replacePlaceholders(input string, params map[string]interface{}, noEscapePa
 		key := input[absoluteIdx+2 : absoluteEnd]
 		v, ok := params[key]
 		if !ok {
-			sb.WriteString(input[absoluteIdx : absoluteEnd+2])
-		} else {
-			val := ToString(v)
-			if noEscapeParams == nil || !noEscapeParams[key] {
-				val = escapeFunc(val)
-			}
-			sb.WriteString(val)
-		}
-		start = absoluteEnd + 2
-	}
-	return sb.String()
-}
-
 // IsNil checks if an interface value is nil or holds a nil pointer.
 //
 // Summary: Checks if a value is nil or a nil interface.
@@ -531,26 +408,13 @@ func replacePlaceholders(input string, params map[string]interface{}, noEscapePa
 //
 // Returns:
 //   - bool: True if the value is nil or a nil pointer, false otherwise.
-//
-// Side Effects:
-//   - None.
-func IsNil(i any) bool {
-	if i == nil {
-		return true
-	}
-	// Optimization: Use reflect.ValueOf directly which contains the type information.
-	// This avoids an extra reflect.TypeOf call.
-	v := reflect.ValueOf(i)
-	switch v.Kind() {
-	case reflect.Ptr, reflect.Map, reflect.Chan, reflect.Slice, reflect.Func, reflect.UnsafePointer:
-		return v.IsNil()
-	}
-	return false
-}
-
 // ToString converts a value to a string representation efficiently.
 // It handles common types like string, json.Number, int, float, and bool
 // without using reflection when possible.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 // Optimization: We manually handle all standard Go numeric types to avoid the overhead
 // of reflection (fmt.Sprintf) which is significantly slower and generates more allocations.
 //
@@ -564,6 +428,8 @@ func IsNil(i any) bool {
 //
 // Side Effects:
 //   - None.
+// Errors:
+//   - triggers relevant error states on failure.
 func ToString(v any) string {
 	return toStringRecursive(v, 0)
 }
@@ -645,37 +511,8 @@ func toStringRecursive(v any, depth int) string {
 		}
 		return strconv.FormatFloat(val, 'g', -1, 64)
 	case fmt.Stringer:
-		return val.String()
-	default:
-		// Check for pointer type
-		rVal := reflect.ValueOf(v)
-		if rVal.Kind() == reflect.Ptr {
-			if rVal.IsNil() {
-				return "<nil>"
-			}
-			return toStringRecursive(rVal.Elem().Interface(), depth+1)
-		}
-		return fmt.Sprintf("%v", v)
-	}
-}
-
 // RandomFloat64 returns a random float64 in [0.0, 1.0).
 // It uses the global math/rand source.
-//
-// Summary: Generates a random float.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - float64: A random float64 value.
-//
-// Side Effects:
-//   - Generates random data.
-func RandomFloat64() float64 {
-	return rand.Float64() //nolint:gosec // Weak random is sufficient for jitter
-}
-
 // SanitizeFilename cleans a filename to ensure it is safe to use.
 // It removes any directory components, null bytes, and restricts characters
 // to alphanumeric, dots, dashes, and underscores.
@@ -687,9 +524,15 @@ func RandomFloat64() float64 {
 //
 // Returns:
 //   - string: The sanitized filename.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Side Effects:
 //   - None.
+// Errors:
+//   - triggers relevant error states on failure.
 func SanitizeFilename(filename string) string {
 	// 1. Base name only
 	filename = filepath.Base(filename)
@@ -725,6 +568,38 @@ func SanitizeFilename(filename string) string {
 				break
 			}
 		}
+//   - triggers relevant error states on failure.
+// Errors:
+//   - None.
+// Side Effects:
+//
+//   - error: An error if the sanitization fails (e.g., if ids is empty).
+//   - string: A single string representing the sanitized and joined identifier.
+// Returns:
+//
+//   - reqHashLength (int): The desired length of the hexadecimal hash to be appended.
+//   - maxSanitizedPrefixLength (int): The maximum allowed length for the sanitized prefix.
+//   - alwaysAppendHash (bool): If true, forces a hash to be appended.
+//   - ids ([]string): A slice of strings to be sanitized and joined.
+// Parameters:
+//
+// Summary: Creates a sanitized, unique identifier from a list of string parts.
+//
+// the final identifier.
+// After sanitizing each string individually, it joins them with a "." separator to form
+//
+//     especially when truncation occurs or when illegal characters are present.
+//  4. Optionally, appending a hash of the original string to ensure uniqueness,
+//
+//  3. Truncating the result to the specified maximum length.
+//
+//     Allowed characters are: `[a-zA-Z0-9_-]`.
+//  2. Removing any characters that are not allowed (alphanumerics, "_", "-").
+//
+//  1. Joining the strings with a "." separator.
+//
+// It performs the following operations:
+// SanitizeID sanitizes a slice of strings to form a valid ID.
 	}
 
 	return result

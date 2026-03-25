@@ -15,22 +15,32 @@ import (
 	"github.com/mcpany/core/server/pkg/validation"
 	"gopkg.in/yaml.v3"
 )
-
-const (
 	// SkillFileName is the name of the main skill file.
 	// Summary: Defines SkillFileName.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	SkillFileName = "SKILL.md"
 )
 
 var (
 	// validNameRegex enforces the naming constraints from the spec.
-	// 1-64 chars, lowercase alphanumeric and hyphens. No start/end hyphen. No consecutive hyphens.
-	validNameRegex = regexp.MustCompile(`^[a-z0-9]([-a-z0-9]*[a-z0-9])?$`)
-)
-
 // Manager handles the storage and retrieval of skills.
 //
 // Summary: Represents a Manager.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Manager struct {
 	rootDir string
 	mu      sync.RWMutex

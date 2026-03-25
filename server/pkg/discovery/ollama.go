@@ -13,24 +13,31 @@ import (
 	"sync"
 	"time"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"google.golang.org/protobuf/proto"
-)
-
 // Provider defines the interface for auto-discovering local services.
 //
 // Summary: Represents a Provider.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Provider interface {
 	// Name returns the name of the discovery provider.
-	Name() string
-	// Discover attempts to find services and return their configurations.
-	Discover(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error)
-}
-
 // OllamaProvider discovers local Ollama instances.
 // OllamaProvider is a provider that discovers local Ollama instances.
 //
 // Summary: Represents a OllamaProvider.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type OllamaProvider struct {
 	Endpoint   string // e.g., "http://localhost:11434"
 	client     *http.Client

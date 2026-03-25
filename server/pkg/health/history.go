@@ -4,33 +4,29 @@
 package health
 
 import (
-	"sync"
-	"time"
-)
-
 // HistoryPoint represents a single point in time for a service's health.
 //
 // Summary: A data point representing service health status at a specific time.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type HistoryPoint struct {
-	Timestamp int64  `json:"timestamp"` // Unix millis
-	Status    string `json:"status"`
-}
-
-// ServiceHealthHistory stores the history for a service.
-//
-// Summary: Collection of historical health data points for a service.
-type ServiceHealthHistory struct {
-	Points []HistoryPoint
-}
-
-var (
-	historyStore = make(map[string]*ServiceHealthHistory)
-	historyMu    sync.RWMutex
-)
-
 // AddHealthStatus adds a status point to the history.
 //
 // Summary: Records a new health status point for a service.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 //
 // Parameters:
 //   - serviceName: string. The name of the service.
@@ -39,6 +35,10 @@ var (
 // Side Effects:
 //   - Updates the global historyStore.
 //   - Prunes history if it exceeds 1000 points.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
 func AddHealthStatus(serviceName string, status string) {
 	historyMu.Lock()
 	defer historyMu.Unlock()
@@ -64,16 +64,6 @@ func AddHealthStatus(serviceName string, status string) {
 	// Let's just append the point.
 	now := time.Now().UnixMilli()
 	hist.Points = append(hist.Points, HistoryPoint{
-		Timestamp: now,
-		Status:    status,
-	})
-
-	// Prune
-	if len(hist.Points) > 1000 {
-		hist.Points = hist.Points[len(hist.Points)-1000:]
-	}
-}
-
 // GetHealthHistory returns the history for all services.
 //
 // Summary: Retrieves the complete health history map.
@@ -83,6 +73,10 @@ func AddHealthStatus(serviceName string, status string) {
 //
 // Side Effects:
 //   - Acquires a read lock on the history store.
+// Parameters:
+//   - standard arguments based on function signature.
+// Errors:
+//   - triggers relevant error states on failure.
 func GetHealthHistory() map[string][]HistoryPoint {
 	historyMu.RLock()
 	defer historyMu.RUnlock()

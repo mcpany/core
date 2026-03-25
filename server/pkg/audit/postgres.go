@@ -10,13 +10,17 @@ import (
 	"fmt"
 	"sync"
 	"time"
-
-	_ "github.com/lib/pq" // Register postgres driver
-)
-
 // PostgresAuditStore writes audit logs to a PostgreSQL database.
 //
 // Summary: Stores audit log entries in a PostgreSQL database with tamper-evident hashing.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type PostgresAuditStore struct {
 	db *sql.DB
 	mu sync.Mutex
@@ -177,18 +181,6 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 		entry.ProfileID,
 		argsJSON,
 		resultJSON,
-		entry.Error,
-		entry.DurationMs,
-		prevHash,
-		hash,
-	)
-	if err != nil {
-		return fmt.Errorf("failed to insert audit log: %w", err)
-	}
-
-	return tx.Commit()
-}
-
 // Read implements the Store interface.
 //
 // Summary: Reads audit entries (Not implemented).
@@ -200,6 +192,10 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 // Returns:
 //   - []Entry: Nil.
 //   - error: Always returns "not implemented".
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (s *PostgresAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for postgres audit store")
 }
@@ -274,16 +270,6 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 
 		if calculatedHash != hash {
 			return false, fmt.Errorf("integrity violation at id %d: hash mismatch (calculated %q, got %q)", id, calculatedHash, hash)
-		}
-
-		expectedPrevHash = hash
-	}
-	if err := rows.Err(); err != nil {
-		return false, err
-	}
-	return true, nil
-}
-
 // Close closes the database connection.
 //
 // Summary: Closes the PostgreSQL database connection.
@@ -293,6 +279,10 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 //
 // Side Effects:
 //   - Closes the DB connection.
+// Parameters:
+//   - standard arguments based on function signature.
+// Errors:
+//   - triggers relevant error states on failure.
 func (s *PostgresAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

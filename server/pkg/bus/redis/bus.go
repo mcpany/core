@@ -10,13 +10,17 @@ import (
 	"sync"
 
 	"github.com/mcpany/core/proto/bus"
-	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/redis/go-redis/v9"
-)
-
 // Bus is a Redis-backed implementation of the Bus interface.
 //
 // Summary: Represents a Bus.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Bus[T any] struct {
 	client *redis.Client
 }
@@ -241,19 +245,18 @@ func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T
 			proxyUnsub()
 		})
 	})
-
-	// Signal that regularUnsub is set
-	close(ready)
-
-	return proxyUnsub
-}
-
 // Close closes the Redis client connection.
 //
 // Summary: Closes the Redis connection.
 //
 // Returns:
 //   - error: An error if closing fails.
+// Parameters:
+//   - standard arguments based on function signature.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (b *Bus[T]) Close() error {
 	return b.client.Close()
 }

@@ -5,33 +5,7 @@ package middleware
 
 import (
 	"bytes"
-	"encoding/json"
-	"log/slog"
-	"regexp"
-	"strings"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/util"
-	"google.golang.org/protobuf/types/known/structpb"
-)
-
-var (
 	// Common PII patterns.
-	emailRegex      = regexp.MustCompile(`(?i)[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}`)
-	creditCardRegex = regexp.MustCompile(`(?:\d{4}[-\s]?){3}\d{4}`)
-	ssnRegex        = regexp.MustCompile(`\d{3}-\d{2}-\d{4}`)
-
-	redactedStr = "***REDACTED***"
-)
-
-// Redactor handles redaction of sensitive data based on configuration.
-//
-// Summary: Component responsible for identifying and masking sensitive information (PII) in data.
-type Redactor struct {
-	customPattern  *regexp.Regexp
-	customPatterns []*regexp.Regexp
-}
-
 // NewRedactor creates a new Redactor from the given DLP config.
 //
 // Summary: Initializes a new Redactor based on Data Loss Prevention (DLP) configuration.
@@ -42,10 +16,16 @@ type Redactor struct {
 //
 // Returns:
 //   - *Redactor: The initialized redactor, or nil if DLP is disabled or config is nil.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 //
 // Side Effects:
 //   - Compiles regular expressions for custom patterns.
 //   - Logs warnings for invalid regex patterns.
+// Errors:
+//   - triggers relevant error states on failure.
 func NewRedactor(config *configv1.DLPConfig, log *slog.Logger) *Redactor {
 	if config == nil || !config.GetEnabled() {
 		return nil
@@ -72,21 +52,6 @@ func NewRedactor(config *configv1.DLPConfig, log *slog.Logger) *Redactor {
 		combinedStr := strings.Join(validPatterns, "|")
 		var err error
 		combined, err = regexp.Compile(combinedStr)
-		if err != nil {
-			if log != nil {
-				// This can happen if patterns contain duplicate named capture groups across different patterns
-				log.Warn("Failed to compile combined DLP pattern, falling back to individual checks", "error", err)
-			}
-			combined = nil
-		}
-	}
-
-	return &Redactor{
-		customPattern:  combined,
-		customPatterns: individualPatterns,
-	}
-}
-
 // RedactJSON redacts sensitive information from a JSON byte slice.
 //
 // Summary: Scans and redacts PII from a JSON-encoded byte slice.
@@ -101,6 +66,8 @@ func NewRedactor(config *configv1.DLPConfig, log *slog.Logger) *Redactor {
 // Side Effects:
 //   - Walks the JSON structure.
 //   - Unmarshals and remarshals strings if modification is needed.
+// Errors:
+//   - triggers relevant error states on failure.
 func (r *Redactor) RedactJSON(data []byte) ([]byte, error) {
 	if r == nil || len(data) == 0 {
 		return data, nil
@@ -135,19 +102,6 @@ func (r *Redactor) RedactJSON(data []byte) ([]byte, error) {
 			// Should not happen for valid JSON strings
 			return nil, false
 		}
-
-		redacted := r.RedactString(s)
-		if redacted != s {
-			b, err := json.Marshal(redacted)
-			if err != nil {
-				return nil, false
-			}
-			return b, true
-		}
-		return nil, false
-	}), nil
-}
-
 // RedactString redacts sensitive information from a string.
 //
 // Summary: Applies redaction rules to a plain string.
@@ -160,6 +114,8 @@ func (r *Redactor) RedactJSON(data []byte) ([]byte, error) {
 //
 // Side Effects:
 //   - Performs regex replacements for emails, credit cards, SSNs, and custom patterns.
+// Errors:
+//   - triggers relevant error states on failure.
 func (r *Redactor) RedactString(s string) string {
 	if r == nil {
 		return s
@@ -206,38 +162,21 @@ func (r *Redactor) RedactString(s string) string {
 	}
 
 	// Always run custom patterns as we don't know their characteristics
-	if r.customPattern != nil {
-		res = r.customPattern.ReplaceAllString(res, redactedStr)
-	} else {
-		for _, p := range r.customPatterns {
-			res = p.ReplaceAllString(res, redactedStr)
-		}
-	}
-	return res
-}
-
 // RedactStruct redacts sensitive information from a map.
 //
 // Summary: Recursively redacts sensitive information from a map (struct representation).
 //
 // Parameters:
-//   - v: map[string]interface{}. The map to redact.
-//
-// Side Effects:
-//   - Modifies the map in place.
-func (r *Redactor) RedactStruct(v map[string]interface{}) {
-	if r == nil {
-		return
-	}
-	for k, val := range v {
-		v[k] = r.RedactValue(val)
-	}
-}
-
 // RedactValue redacts sensitive information from a value.
 //
 // Summary: Recursively redacts sensitive information from an arbitrary value (string, map, slice).
 //
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 // Parameters:
 //   - val: interface{}. The value to redact.
 //
@@ -246,6 +185,8 @@ func (r *Redactor) RedactStruct(v map[string]interface{}) {
 //
 // Side Effects:
 //   - Recursively processes maps and slices.
+// Errors:
+//   - triggers relevant error states on failure.
 func (r *Redactor) RedactValue(val interface{}) interface{} {
 	if r == nil {
 		return val

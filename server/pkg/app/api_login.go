@@ -8,21 +8,29 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-
-	"github.com/mcpany/core/server/pkg/util/passhash"
-)
-
 // LoginRequest is the request body for login.
 //
 // Summary: Represents a LoginRequest.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type LoginRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
 // LoginResponse is the response body for login.
 //
 // Summary: Represents a LoginResponse.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type LoginResponse struct {
 	Token string `json:"token"`
 }

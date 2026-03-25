@@ -8,17 +8,19 @@ import (
 	"context"
 	"fmt"
 	"net"
-	"strings"
-
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
-)
-
 // ConnectionFactory is responsible for creating new gRPC client connections.
 // It can be configured with a custom dialer for testing or special connection
 // scenarios.
 //
 // Summary: Represents a ConnectionFactory.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type ConnectionFactory struct {
 	dialer func(context.Context, string) (net.Conn, error)
 }

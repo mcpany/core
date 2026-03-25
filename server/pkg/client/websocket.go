@@ -5,15 +5,18 @@ package client
 
 import (
 	"context"
-	"time"
-
-	"github.com/gorilla/websocket"
-)
-
 // WebsocketClientWrapper wraps a *websocket.Conn to adapt it for use in a
 // connection pool, implementing the pool.ClosableClient interface.
 //
 // Summary: Represents a WebsocketClientWrapper.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type WebsocketClientWrapper struct {
 	Conn *websocket.Conn
 }

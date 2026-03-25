@@ -6,37 +6,7 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
-	"time"
-
-	_ "github.com/lib/pq" // Register postgres driver
-)
-
-// DB wraps the sql.DB connection.
-//
-// Summary: Represents a DB.
-type DB struct {
-	*sql.DB
-}
-
 // NewDB opens a PostgreSQL database connection.
-//
-// Summary: Initializes a PostgreSQL database connection.
-//
-// Parameters:
-//   - dsn (string): The data source name (connection string).
-//
-// Returns:
-//   - *DB: The database connection.
-//   - error: An error if the connection fails.
-//
-// Side Effects:
-//   - Opens a network connection to the database.
-func NewDB(dsn string) (*DB, error) {
-	return NewDBWithDriver("postgres", dsn)
-}
-
 // NewDBWithDriver opens a database connection with the specified driver.
 //
 // Summary: Initializes a database connection with a custom driver.
@@ -49,9 +19,15 @@ func NewDB(dsn string) (*DB, error) {
 //   - *DB: The database connection.
 //   - error: An error if the connection fails.
 //
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 // Side Effects:
 //   - Opens a network connection to the database.
 //   - Initializes the schema.
+// Errors:
+//   - triggers relevant error states on failure.
 func NewDBWithDriver(driver, dsn string) (*DB, error) {
 	db, err := sql.Open(driver, dsn)
 	if err != nil {
@@ -63,21 +39,6 @@ func NewDBWithDriver(driver, dsn string) (*DB, error) {
 	// Default MaxIdleConns is 2, which causes high connection churn.
 	db.SetMaxOpenConns(25)
 	db.SetMaxIdleConns(25)
-	db.SetConnMaxLifetime(5 * time.Minute)
-
-	if err := db.PingContext(context.Background()); err != nil {
-		_ = db.Close()
-		return nil, fmt.Errorf("failed to ping postgres db: %w", err)
-	}
-
-	if err := initSchema(db); err != nil {
-		_ = db.Close()
-		return nil, fmt.Errorf("failed to init schema: %w", err)
-	}
-
-	return &DB{db}, nil
-}
-
 // NewDBFromSQLDB creates a new DB wrapper from an existing sql.DB connection.
 //
 // Summary: Wraps an existing sql.DB connection.
@@ -92,6 +53,8 @@ func NewDBWithDriver(driver, dsn string) (*DB, error) {
 // Side Effects:
 //   - Pings the database.
 //   - Initializes the schema.
+// Errors:
+//   - triggers relevant error states on failure.
 func NewDBFromSQLDB(db *sql.DB) (*DB, error) {
 	if err := db.PingContext(context.Background()); err != nil {
 		return nil, fmt.Errorf("failed to ping db: %w", err)
@@ -184,4 +147,18 @@ func initSchema(db *sql.DB) error {
 		return fmt.Errorf("failed to create tables: %w", err)
 	}
 	return nil
+//   - None.
+// Side Effects:
+//   - None.
+// Errors:
+// Returns:
+//
+//   - dsn (string): The data source name.
+//   - driver (string): The database driver name.
+// Parameters:
+//
+// Summary: Initializes a database connection with a custom driver.
+//
+// NewDBWithDriver opens a database connection with the specified driver.
+// NewDB opens a PostgreSQL database connection.
 }

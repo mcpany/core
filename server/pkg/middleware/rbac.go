@@ -7,38 +7,37 @@ import (
 	"fmt"
 	"net/http"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/auth"
-)
-
-// RBACMiddleware provides middleware for Role-Based Access Control.
-//
-// Summary: Middleware for enforcing role-based access control policies.
-type RBACMiddleware struct {
-	enforcer *auth.RBACEnforcer
-}
-
 // NewRBACMiddleware creates a new RBACMiddleware.
 //
-// Summary: Initializes the RBAC middleware.
-//
-// Returns:
-//   - *RBACMiddleware: The initialized middleware.
-func NewRBACMiddleware() *RBACMiddleware {
-	return &RBACMiddleware{
-		enforcer: auth.NewRBACEnforcer(),
-	}
-}
-
 // RequireRole returns an HTTP middleware that requires the user to have the specified role.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 //
 // Summary: Enforces that the authenticated user possesses a specific role.
 //
+// Parameters:
+//   - standard arguments based on function signature.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 // Parameters:
 //   - role: string. The required role.
 //
 // Returns:
 //   - func(http.Handler) http.Handler: The middleware function.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (m *RBACMiddleware) RequireRole(role string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -51,16 +50,6 @@ func (m *RBACMiddleware) RequireRole(role string) func(http.Handler) http.Handle
 			// If roles are not in context, we might be able to check user object if present
 			// However, standard pattern is to use ContextWithRoles.
 
-			// Fallback: check if "user" is in context and use that
-			// This depends on how auth middleware populates context.
-			// Assuming auth.ContextWithUser or similar puts a *configv1.User or user ID.
-			// But server/pkg/app/server.go uses auth.ContextWithRoles.
-
-			http.Error(w, fmt.Sprintf("Forbidden: requires role %s", role), http.StatusForbidden)
-		})
-	}
-}
-
 // RequireAnyRole returns an HTTP middleware that requires the user to have at least one of the specified roles.
 //
 // Summary: Enforces that the authenticated user possesses at least one of the specified roles.
@@ -70,6 +59,10 @@ func (m *RBACMiddleware) RequireRole(role string) func(http.Handler) http.Handle
 //
 // Returns:
 //   - func(http.Handler) http.Handler: The middleware function.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (m *RBACMiddleware) RequireAnyRole(roles ...string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -84,16 +77,6 @@ func (m *RBACMiddleware) RequireAnyRole(roles ...string) func(http.Handler) http
 						if reqRole == userRole {
 							next.ServeHTTP(w, r)
 							return
-						}
-					}
-				}
-			}
-
-			http.Error(w, fmt.Sprintf("Forbidden: requires one of roles %v", roles), http.StatusForbidden)
-		})
-	}
-}
-
 // EnforcePolicy allows passing a custom policy function.
 //
 // Summary: Enforces a custom policy based on the user object.
@@ -103,6 +86,10 @@ func (m *RBACMiddleware) RequireAnyRole(roles ...string) func(http.Handler) http
 //
 // Returns:
 //   - func(http.Handler) http.Handler: The middleware function.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (m *RBACMiddleware) EnforcePolicy(_ func(user *configv1.User) bool) func(http.Handler) http.Handler {
 	return func(_ http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {

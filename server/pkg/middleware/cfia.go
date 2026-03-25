@@ -9,30 +9,35 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/tool"
-)
-
 // CFIAConfig defines the configuration for Context-File Integrity Attestation.
 //
 // Summary: Configuration for Context-File Integrity Attestation (CFIA) Middleware.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type CFIAConfig struct {
 	// Enabled determines if the CFIA middleware is active.
 	Enabled bool `json:"enabled"`
 	// TargetTools lists the tools that should be inspected for file reads (e.g., fs:read, read_file).
-	TargetTools []string `json:"target_tools"`
-	// AttestedHashes maps file paths to their expected, hardware-attested SHA-256 hashes.
-	AttestedHashes map[string]string `json:"attested_hashes"`
-	// ArgumentName specifies the argument name that contains the file path in the tool request.
-	ArgumentName string `json:"argument_name"`
-}
-
 // CFIAMiddleware implements Context-File Integrity Attestation.
 // It intercepts requests to read local files, calculates their hashes,
 // and ensures they match known-good, hardware-attested manifests to
 // prevent Deceptive Context Injection.
 //
 // Summary: Represents the CFIA Middleware.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type CFIAMiddleware struct {
 	config CFIAConfig
 }

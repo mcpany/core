@@ -11,22 +11,30 @@ package resource
 
 import (
 	reflect "reflect"
-
-	gomock "go.uber.org/mock/gomock"
-)
-
 // MockManagerInterface is a mock of ManagerInterface interface.
 //
 // Summary: Represents a MockManagerInterface.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type MockManagerInterface struct {
 	ctrl     *gomock.Controller
-	recorder *MockManagerInterfaceMockRecorder
-	isgomock struct{}
-}
-
 // MockManagerInterfaceMockRecorder is the mock recorder for MockManagerInterface.
 //
 // Summary: Represents a MockManagerInterfaceMockRecorder.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type MockManagerInterfaceMockRecorder struct {
 	mock *MockManagerInterface
 }

@@ -3,31 +3,6 @@
 
 // Package webhooks defines the system webhook handlers.
 package webhooks
-
-import (
-	"encoding/json"
-	"fmt"
-	"log"
-	"net/http"
-	"strconv"
-	"time"
-
-	md "github.com/JohannesKaufmann/html-to-markdown"
-	cloudevents "github.com/cloudevents/sdk-go/v2"
-	"github.com/google/uuid"
-)
-
-// KindPostCall identifies a post-call webhook.
-//
-// Summary: Constant for post-call webhook kind.
-const KindPostCall = "PostCall"
-
-// MarkdownHandler is a webhook handler that converts HTML content to Markdown.
-// It processes incoming CloudEvents containing HTML and returns the converted Markdown.
-//
-// Summary: Webhook handler for Markdown conversion.
-type MarkdownHandler struct{}
-
 // Handle processes the markdown conversion request.
 // It expects a CloudEvent with "inputs" or "result" fields containing HTML strings or structures.
 //
@@ -36,6 +11,12 @@ type MarkdownHandler struct{}
 // Parameters:
 //   - w: http.ResponseWriter. The HTTP response writer.
 //   - r: *http.Request. The HTTP request.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 //
 // Returns:
 //
@@ -43,6 +24,8 @@ type MarkdownHandler struct{}
 //
 // Side Effects:
 //   - Writes the converted Markdown to the response.
+// Errors:
+//   - triggers relevant error states on failure.
 func (h *MarkdownHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -74,34 +57,6 @@ func (h *MarkdownHandler) Handle(w http.ResponseWriter, r *http.Request) {
 
 	// Check inputs or result
 	if val, ok := data["inputs"]; ok {
-		// Pre-Call
-		converter := md.NewConverter("", true, nil)
-		newInputs := convertToMarkdown(converter, val)
-		respData["replacement_object"] = newInputs
-	} else if val, ok := data["result"]; ok {
-		// Post-Call
-		converter := md.NewConverter("", true, nil)
-		newResult := convertToMarkdown(converter, val)
-		respData["replacement_object"] = newResult
-	}
-
-	if err := respEvent.SetData(cloudevents.ApplicationJSON, respData); err != nil {
-		http.Error(w, "Failed to set response data", http.StatusInternalServerError)
-		return
-	}
-
-	// Write response event
-	w.Header().Set("Content-Type", "application/cloudevents+json")
-	_ = json.NewEncoder(w).Encode(respEvent)
-}
-
-// TruncateHandler is a webhook handler that truncates long strings to a specified length.
-// It processes incoming CloudEvents and truncates strings in "inputs" or "result" fields.
-// The maximum characters can be specified via the "max_chars" query parameter (default 100).
-//
-// Summary: Webhook handler for text truncation.
-type TruncateHandler struct{}
-
 // Handle processes the text truncation request.
 //
 // Summary: Handles the text truncation request.
@@ -115,7 +70,11 @@ type TruncateHandler struct{}
 //	None.
 //
 // Side Effects:
+// Errors:
+//   - None.
 //   - Writes the truncated text to the response.
+// Errors:
+//   - triggers relevant error states on failure.
 func (h *TruncateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -153,34 +112,6 @@ func (h *TruncateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	respEvent.SetType("com.mcpany.webhook.response")
 	respEvent.SetTime(time.Now())
 
-	respData := map[string]any{
-		"allowed": true,
-	}
-
-	if val, ok := data["inputs"]; ok {
-		newInputs := truncateRecursive(val, maxChars)
-		respData["replacement_object"] = newInputs
-	} else if val, ok := data["result"]; ok {
-		newResult := truncateRecursive(val, maxChars)
-		respData["replacement_object"] = newResult
-	}
-
-	if err := respEvent.SetData(cloudevents.ApplicationJSON, respData); err != nil {
-		http.Error(w, "Failed to set response data", http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/cloudevents+json")
-	_ = json.NewEncoder(w).Encode(respEvent)
-}
-
-// PaginateHandler is a webhook handler that splits long strings into pages.
-// It processes incoming CloudEvents and paginates strings in "inputs" or "result" fields.
-// The page size can be specified via the "page_size" query parameter (default 1000).
-//
-// Summary: Webhook handler for pagination.
-type PaginateHandler struct{}
-
 // Handle processes the pagination request.
 //
 // Summary: Handles the pagination request.
@@ -194,7 +125,11 @@ type PaginateHandler struct{}
 //	None.
 //
 // Side Effects:
+// Errors:
+//   - None.
 //   - Writes the paginated content to the response.
+// Errors:
+//   - triggers relevant error states on failure.
 func (h *PaginateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -368,3 +303,19 @@ func paginateRecursive(data any, page, pageSize int) any {
 	}
 	return data
 }
+//   - None.
+// Errors:
+// Side Effects:
+//
+//	None.
+//
+// Returns:
+//
+//   - r: *http.Request. The HTTP request.
+//   - w: http.ResponseWriter. The HTTP response writer.
+// Parameters:
+//
+// Summary: Handles the markdown conversion request.
+//
+// It expects a CloudEvent with "inputs" or "result" fields containing HTML strings or structures.
+// Handle processes the markdown conversion request.

@@ -33,4 +33,23 @@ func CORSMiddleware() mcp.Middleware {
 			return next(ctx, method, req)
 		}
 	}
+//   - updates relevant subsystem state or network conditions.
+// Side Effects:
+//   - triggers relevant error states on failure.
+// Errors:
+//   - standard arguments based on function signature.
+// Parameters:
+//   - (mcp.Middleware): The middleware function.
+// Returns:
+//
+// Summary: Creates a placeholder MCP CORS middleware.
+//
+// HTTP CORS is handled by the dedicated HTTP middleware in cors_http.go.
+// interception and does not handle HTTP CORS headers.
+// NOTE: This middleware is currently a placeholder for MCP-level (JSON-RPC)
+//
+// the MCP server.
+// responses, allowing web browsers to securely make cross-origin requests to
+// Sharing (CORS). It is intended to add the necessary CORS headers to outgoing
+// CORSMiddleware creates an MCP middleware for handling Cross-Origin Resource
 }

@@ -1,13 +1,16 @@
 // Copyright 2026 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
-
-// Package terraform provides a Terraform provider skeleton.
-package terraform
-
 // ResourceMCPServer represents the configuration schema for an MCP Server resource
 // This would map to hashicorp/terraform-plugin-sdk in a real provider.
 //
 // Summary: Represents a ResourceMCPServer.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type ResourceMCPServer struct {
 	Name    string
 	Port    int

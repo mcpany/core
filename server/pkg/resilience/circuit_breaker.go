@@ -9,61 +9,56 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-)
-
 // State represents the current state of the circuit breaker.
 //
 // Summary: Represents a State.
-type State int32
-
-const (
-	// StateClosed represents the state where the circuit breaker allows requests to pass through.
-	// Summary: Defines StateClose.
-	StateClosed State = iota
-	// StateOpen represents the state where the circuit breaker blocks requests immediately.
-	// Summary: Defines StateOpe.
-	StateOpen
-	// StateHalfOpen represents the state where the circuit breaker allows a limited number of requests to test if the service has recovered.
-	// Summary: Defines StateHalfOpe.
-	StateHalfOpen
-)
-
-// CircuitBreaker implements the circuit breaker pattern. It prevents the
-// application from performing operations that are likely to fail.
-//
-// Summary: Represents a CircuitBreaker.
-type CircuitBreaker struct {
-	mutex sync.Mutex
-
-	state        State // Accessed using atomics for read optimization
-	failures     int32 // Accessed using atomics
-	openTime     time.Time
-	halfOpenHits int
-
-	config *configv1.CircuitBreakerConfig
-}
-
-// NewCircuitBreaker creates a new CircuitBreaker with the given configuration.
-//
-// Summary: Creates a new circuit breaker.
-//
 // Parameters:
-//   - config (*configv1.CircuitBreakerConfig): The configuration for the circuit breaker.
-//
+//   - None.
 // Returns:
-//   - *CircuitBreaker: A new CircuitBreaker instance.
-//
+//   - None.
+// Errors:
+//   - None.
 // Side Effects:
 //   - None.
-func NewCircuitBreaker(config *configv1.CircuitBreakerConfig) *CircuitBreaker {
-	return &CircuitBreaker{
-		config: config,
-		state:  StateClosed,
-	}
-}
-
+type State int32
+	// StateClosed represents the state where the circuit breaker allows requests to pass through.
+	// StateOpen represents the state where the circuit breaker blocks requests immediately.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// CircuitBreaker implements the circuit breaker pattern. It prevents the
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// application from performing operations that are likely to fail.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// NewCircuitBreaker creates a new CircuitBreaker with the given configuration.
+//
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 // Execute runs the provided work function. If the circuit breaker is open, it
 // returns a CircuitBreakerOpenError immediately. If the work function fails,
 // it tracks the failure and may trip the breaker.
@@ -75,11 +70,19 @@ func NewCircuitBreaker(config *configv1.CircuitBreakerConfig) *CircuitBreaker {
 //   - work (func(context.Context) error): The function to execute.
 //
 // Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
+// Returns:
 //   - error: An error if the function fails or the breaker is open.
 //
 // Side Effects:
 //   - May change the state of the circuit breaker.
 //   - Executes the provided function.
+// Errors:
+//   - triggers relevant error states on failure.
 func (cb *CircuitBreaker) Execute(ctx context.Context, work func(context.Context) error) error {
 	originState := StateClosed
 
@@ -212,30 +215,6 @@ func (cb *CircuitBreaker) onFailure(originState State) {
 		return
 	}
 
-	if currentState == StateHalfOpen {
-		// Only trip the breaker if the failure corresponds to a probe (started in HalfOpen state).
-		// If the request started in Closed state (e.g., a slow request from before the break),
-		// we ignore it to allow the current probes to complete.
-		if originState != StateHalfOpen {
-			return
-		}
-		cb.setState(StateOpen)
-		cb.openTime = time.Now()
-		return
-	}
-
-	newFailures := atomic.AddInt32(&cb.failures, 1)
-	if newFailures >= cb.config.GetConsecutiveFailures() {
-		cb.setState(StateOpen)
-		cb.openTime = time.Now()
-	}
-}
-
-// CircuitBreakerOpenError is returned when the circuit breaker is in the Open state.
-//
-// Summary: Represents a CircuitBreakerOpenError.
-type CircuitBreakerOpenError struct{}
-
 // Error returns the error message for a CircuitBreakerOpenError.
 //
 // Summary: Returns the error message.
@@ -247,7 +226,11 @@ type CircuitBreakerOpenError struct{}
 //   - string: The error message.
 //
 // Side Effects:
+// Errors:
 //   - None.
+//   - None.
+// Errors:
+//   - triggers relevant error states on failure.
 func (e *CircuitBreakerOpenError) Error() string {
 	return "circuit breaker is open"
 }

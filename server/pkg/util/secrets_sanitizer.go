@@ -1,18 +1,17 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package util //nolint:revive,nolintlint // Package name 'util' is common in this codebase
-
-import (
-	configv1 "github.com/mcpany/core/proto/config/v1"
-)
-
 // StripSecretsFromService removes sensitive information from the service configuration.
 //
 // Summary: Removes sensitive information from service configuration.
 //
 // Parameters:
 //   - svc (*configv1.UpstreamServiceConfig): The upstream service configuration to strip secrets from.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 	if svc == nil {
 		return
@@ -54,49 +53,46 @@ func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 	for _, hook := range svc.GetPostCallHooks() {
 		stripSecretsFromHook(hook)
 	}
-
-	// Cache
-	if svc.GetCache() != nil {
-		stripSecretsFromCacheConfig(svc.GetCache())
-	}
-}
-
 // StripSecretsFromProfile removes sensitive information from the profile definition.
 //
 // Summary: Removes sensitive information from profile definition.
 //
 // Parameters:
 //   - profile (*configv1.ProfileDefinition): The profile definition to strip secrets from.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func StripSecretsFromProfile(profile *configv1.ProfileDefinition) {
 	if profile == nil {
-		return
-	}
-	for _, secret := range profile.GetSecrets() {
-		scrubSecretValue(secret)
-	}
-}
-
 // StripSecretsFromCollection removes sensitive information from the service collection.
 //
 // Summary: Removes sensitive information from service collection.
 //
 // Parameters:
 //   - collection (*configv1.Collection): The service collection to strip secrets from.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func StripSecretsFromCollection(collection *configv1.Collection) {
 	if collection == nil {
-		return
-	}
-	for _, svc := range collection.GetServices() {
-		StripSecretsFromService(svc)
-	}
-}
-
 // StripSecretsFromAuth removes sensitive values from the authentication config.
 //
 // Summary: Removes sensitive values from authentication config.
 //
 // Parameters:
 //   - auth (*configv1.Authentication): The authentication configuration to strip secrets from.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func StripSecretsFromAuth(auth *configv1.Authentication) {
 	if auth == nil {
 		return
@@ -300,14 +296,6 @@ func stripSecretsFromSecretMap(m map[string]*configv1.SecretValue) {
 func scrubSecretValue(sv *configv1.SecretValue) {
 	if sv == nil {
 		return
-	}
-	// If it is a PLAIN value, we must remove it.
-	// Opaque API: Value is a oneof.
-	if sv.HasPlainText() {
-		sv.ClearValue() // Scrub it.
-	}
-}
-
 // HydrateSecretsInService populates the service configuration with resolved secret values.
 //
 // Summary: Populates service configuration with resolved secret values.
@@ -315,6 +303,12 @@ func scrubSecretValue(sv *configv1.SecretValue) {
 // Parameters:
 //   - svc (*configv1.UpstreamServiceConfig): The upstream service configuration to hydrate secrets into.
 //   - secrets (map[string]*configv1.SecretValue): A map of resolved secret values.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func HydrateSecretsInService(svc *configv1.UpstreamServiceConfig, secrets map[string]*configv1.SecretValue) {
 	if svc == nil || len(secrets) == 0 {
 		return

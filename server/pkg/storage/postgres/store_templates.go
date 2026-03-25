@@ -38,21 +38,6 @@ func (s *Store) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTe
 	for rows.Next() {
 		var configJSON []byte
 		if err := rows.Scan(&configJSON); err != nil {
-			return nil, fmt.Errorf("failed to scan config_json: %w", err)
-		}
-
-		var template configv1.ServiceTemplate
-		if err := protojson.Unmarshal(configJSON, &template); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal service template: %w", err)
-		}
-		templates = append(templates, &template)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("error iterating rows: %w", err)
-	}
-	return templates, nil
-}
-
 // GetServiceTemplate retrieves a service template by ID.
 //
 // Summary: Retrieves a single service template by ID.
@@ -67,6 +52,8 @@ func (s *Store) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTe
 //
 // Side Effects:
 //   - Executes a SELECT query.
+// Errors:
+//   - triggers relevant error states on failure.
 func (s *Store) GetServiceTemplate(ctx context.Context, id string) (*configv1.ServiceTemplate, error) {
 	query := "SELECT config_json FROM service_templates WHERE id = $1"
 	row := s.db.QueryRowContext(ctx, query, id)
@@ -127,3 +114,19 @@ func (s *Store) SaveServiceTemplate(ctx context.Context, template *configv1.Serv
 	}
 	return nil
 }
+//   - triggers relevant error states on failure.
+// Errors:
+//   - Executes a SELECT query.
+// Side Effects:
+//
+//   - error: An error if the database operation fails.
+//   - []*configv1.ServiceTemplate: A list of service templates.
+// Returns:
+//
+//   - ctx: context.Context. The request context.
+// Parameters:
+//
+// Summary: Retrieves all service templates from the PostgreSQL database.
+//
+// ListServiceTemplates retrieves all service templates.
+// Service Templates

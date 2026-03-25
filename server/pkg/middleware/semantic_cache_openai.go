@@ -1,28 +1,5 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package middleware
-
-import (
-	"bytes"
-	"context"
-	"encoding/json"
-	"fmt"
-	"io"
-	"net/http"
-	"time"
-)
-
-// OpenAIEmbeddingProvider implements EmbeddingProvider for OpenAI.
-//
-// Summary: Provides vector embeddings using the OpenAI API.
-type OpenAIEmbeddingProvider struct {
-	apiKey  string
-	model   string
-	baseURL string
-	client  *http.Client
-}
-
 // NewOpenAIEmbeddingProvider creates a new OpenAIEmbeddingProvider.
 //
 // Summary: Initializes a new OpenAIEmbeddingProvider with the given API key and model.
@@ -32,11 +9,19 @@ type OpenAIEmbeddingProvider struct {
 //   - model: string. The model ID (defaults to "text-embedding-3-small" if empty).
 //
 // Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Returns:
 //   - *OpenAIEmbeddingProvider: The initialized provider.
 //
 // Side Effects:
 //   - Sets a default model and base URL.
 //   - Initializes an HTTP client with a timeout.
+// Errors:
+//   - triggers relevant error states on failure.
 func NewOpenAIEmbeddingProvider(apiKey, model string) *OpenAIEmbeddingProvider {
 	if model == "" {
 		model = "text-embedding-3-small"

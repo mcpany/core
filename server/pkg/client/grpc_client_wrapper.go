@@ -8,32 +8,37 @@ import (
 
 	"github.com/alexliesenfeld/health"
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	healthChecker "github.com/mcpany/core/server/pkg/health"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/connectivity"
-)
-
 // Conn is an interface that represents a gRPC client connection.
 // It is used to allow for mocking of the gRPC client in tests.
 //
 // Summary: Represents a Conn.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Conn interface {
 	grpc.ClientConnInterface
 	// Close closes the connection to the server.
 	//
 	// Returns an error if the operation fails.
 	Close() error
-	// GetState returns the connectivity.State of the ClientConn.
-	//
-	// Returns the result.
-	GetState() connectivity.State
-}
-
 // GrpcClientWrapper wraps a `Conn` to adapt it to the
 // `pool.ClosableClient` interface. This allows gRPC clients to be managed by a
 // connection pool, which can improve performance by reusing connections.
 //
 // Summary: Represents a GrpcClientWrapper.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type GrpcClientWrapper struct {
 	Conn
 	config *configv1.UpstreamServiceConfig

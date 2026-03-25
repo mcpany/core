@@ -17,24 +17,28 @@ import (
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
-	"github.com/mcpany/core/server/pkg/upstream"
-	"github.com/mcpany/core/server/pkg/upstream/factory"
-	"github.com/mcpany/core/server/pkg/util"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/timestamppb"
-)
-
-// ErrServiceAlreadyRegistered is returned when attempting to register a service that is already active.
-//
-// Summary: Represents a ErrServiceAlreadyRegistered.
-var ErrServiceAlreadyRegistered = errors.New("service already registered")
-
 // ServiceRegistryInterface defines the interface for a service registry.
 //
 // It manages the registration, lifecycle, and discovery of upstream services
 // and their associated capabilities (tools, resources, prompts).
 //
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 // Summary: Represents a ServiceRegistryInterface.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type ServiceRegistryInterface interface { //nolint:revive
 	// RegisterService registers a new upstream service based on the provided configuration.
 	//
@@ -94,19 +98,20 @@ type ServiceRegistryInterface interface { //nolint:revive
 	//
 	// Parameters:
 	//   - serviceID (string): The unique identifier of the service.
-	//
-	// Returns:
-	//   - string: The error message.
-	//   - bool: True if an error is present, false otherwise.
-	GetServiceError(serviceID string) (string, bool)
-}
-
 // ServiceRegistry is the concrete implementation of ServiceRegistryInterface.
 //
 // It serves as the central hub for managing upstream services, coordinating
 // with tool, prompt, and resource managers.
 //
 // Summary: Represents a ServiceRegistry.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type ServiceRegistry struct {
 	mu              sync.RWMutex
 	serviceConfigs  map[string]*config.UpstreamServiceConfig

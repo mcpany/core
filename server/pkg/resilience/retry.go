@@ -6,20 +6,6 @@ package resilience
 import (
 	"context"
 	"errors"
-	"time"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/util"
-	"google.golang.org/protobuf/types/known/durationpb"
-)
-
-// Retry implements a retry policy for failed operations.
-//
-// Summary: Represents a Retry.
-type Retry struct {
-	config *configv1.RetryConfig
-}
-
 // NewRetry creates a new Retry instance with the given configuration.
 // It sets default values for base and max backoff if they are not provided.
 //
@@ -33,21 +19,8 @@ type Retry struct {
 //
 // Side Effects:
 //   - None.
-func NewRetry(config *configv1.RetryConfig) *Retry {
-	if config == nil {
-		config = &configv1.RetryConfig{}
-	}
-	if config.GetBaseBackoff() == nil {
-		config.SetBaseBackoff(durationpb.New(time.Second))
-	}
-	if config.GetMaxBackoff() == nil {
-		config.SetMaxBackoff(durationpb.New(30 * time.Second))
-	}
-	return &Retry{
-		config: config,
-	}
-}
-
+// Errors:
+//   - triggers relevant error states on failure.
 // Execute runs the provided work function, retrying it if it fails according
 // to the configured policy.
 //
@@ -62,6 +35,8 @@ func NewRetry(config *configv1.RetryConfig) *Retry {
 //
 // Side Effects:
 //   - Executes the provided function multiple times.
+// Errors:
+//   - triggers relevant error states on failure.
 func (r *Retry) Execute(ctx context.Context, work func(context.Context) error) error {
 	var err error
 	// Use int64 for attempts to match usage, though retries count is usually small.
@@ -153,4 +128,18 @@ func (r *Retry) backoff(attempt int) time.Duration {
 
 	jitter := time.Duration(float64(backoff) * (0.8 + 0.4*util.RandomFloat64()))
 	return jitter
+//   - None.
+// Side Effects:
+//   - None.
+// Errors:
+//   - *Retry: A new Retry instance.
+// Returns:
+//
+//   - config (*configv1.RetryConfig): The configuration for the retry policy.
+// Parameters:
+//
+// Summary: Creates a new retry policy.
+//
+// It sets default values for base and max backoff if they are not provided.
+// NewRetry creates a new Retry instance with the given configuration.
 }

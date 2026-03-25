@@ -7,13 +7,17 @@ package testutil
 import (
 	"context"
 	"testing"
-
-	"google.golang.org/grpc"
-)
-
 // MockClientConn is a mock implementation of grpc.ClientConnInterface for testing.
 //
 // Summary: Represents a MockClientConn.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type MockClientConn struct {
 	grpc.ClientConnInterface
 	t       *testing.T

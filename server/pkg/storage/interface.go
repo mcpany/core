@@ -7,13 +7,17 @@ package storage
 import (
 	"context"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/logging"
-)
-
 // Storage defines the interface for persisting configuration.
 //
 // Summary: Interface for backend storage operations.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Storage interface {
 	// Load retrieves the full server configuration.
 	//

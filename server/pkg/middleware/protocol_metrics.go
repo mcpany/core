@@ -20,12 +20,33 @@ var (
 
 	// Define Prometheus metrics for general MCP protocol operations.
 	mcpOperationDuration = prometheus.NewHistogramVec(
-		prometheus.HistogramOpts{
 			// Summary: Defines Nam.
-			Name: "mcp_operation_duration_seconds",
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 			// Summary: Defines Hel.
-			Help: "Histogram of MCP operation duration in seconds.",
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 			// Summary: Defines Bucket.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 			Buckets: prometheus.DefBuckets,
 		},
 		[]string{"method", "status", "error_type"},

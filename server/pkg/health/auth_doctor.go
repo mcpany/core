@@ -74,3 +74,16 @@ func CheckAuth() map[string]CheckResult {
 
 	return results
 }
+//   - triggers relevant error states on failure.
+// Errors:
+//   - standard arguments based on function signature.
+// Parameters:
+//   - Reads environment variables.
+// Side Effects:
+//
+//   - map[string]CheckResult: A map of check names to their results.
+// Returns:
+//
+// Summary: Validates the presence of critical API keys and OAuth configuration.
+//
+// CheckAuth performs health checks for authentication configuration.

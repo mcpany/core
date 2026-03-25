@@ -113,3 +113,19 @@ func (m *Manager) Middleware(next mcp.MethodHandler) mcp.MethodHandler {
 		return res, err
 	}
 }
+//   - triggers relevant error states on failure.
+// Errors:
+//   - Calls m.RecordActivity to persist metrics.
+//   - Records duration, success/error status, and response size.
+//   - Extracts session ID from context or request.
+// Side Effects:
+//
+//   - mcp.MethodHandler: The wrapped handler.
+// Returns:
+//
+//   - next: mcp.MethodHandler. The next handler in the chain.
+// Parameters:
+//
+// Summary: Creates an MCP middleware for tracking and recording session activity metrics.
+//
+// Middleware returns a middleware function to track session activity.

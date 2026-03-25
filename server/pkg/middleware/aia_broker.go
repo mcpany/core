@@ -9,26 +9,32 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/tool"
-)
-
 // AIABrokerConfig defines the configuration for the Active Intent Alignment Broker.
 //
 // Summary: Configuration for Active Intent Alignment Broker.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type AIABrokerConfig struct {
 	// Enabled determines if the AIA Broker is active.
-	Enabled bool `json:"enabled"`
-	// RequiredFor tools that mandate a mission-root intent heartbeat.
-	// If empty and Enabled is true, it applies to all tools.
-	RequiredFor []string `json:"required_for"`
-}
-
 // AIABroker implements the Active Intent Alignment Broker middleware.
 // It verifies that specialist agent reasoning traces remain semantically
 // aligned with the mission-root intent.
 //
 // Summary: Represents the AIA Broker middleware.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type AIABroker struct {
 	config AIABrokerConfig
 }

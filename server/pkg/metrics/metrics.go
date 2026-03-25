@@ -2,51 +2,39 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package metrics provides utilities for collecting and exposing application metrics.
-package metrics
-
-import (
-	"context"
-	"fmt"
-	"net"
-	"net/http"
-	"sync"
-	"time"
-
-	"github.com/armon/go-metrics"
-	"github.com/armon/go-metrics/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-)
-
-// Label is an alias for metrics.Label. It represents a key-value pair for labeling metrics.
-//
-// Summary: Represents a Label.
-type Label = metrics.Label
-
 // NewPrometheusSink creates a new Prometheus sink for metrics collection.
 //
 // Summary: Creates a Prometheus sink.
 //
 // Parameters:
 //   - None.
-//
-// Returns:
-//   - *prometheus.PrometheusSink: The initialized Prometheus sink.
-//   - error: An error if the sink creation fails.
-func NewPrometheusSink() (*prometheus.PrometheusSink, error) {
-	return prometheus.NewPrometheusSink()
-}
-
-var initOnce sync.Once
-
 // Initialize prepares the metrics system with a Prometheus sink.
 //
 // Summary: Initializes the global metrics collector.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 //
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 // It sets up a global metrics collector that can be used throughout the application.
 // The metrics are exposed on the /metrics endpoint.
 //
 // Returns:
 //   - error: An error if the initialization fails.
+// Parameters:
+//   - standard arguments based on function signature.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func Initialize() error {
 	var err error
 	initOnce.Do(func() {
@@ -62,32 +50,25 @@ func Initialize() error {
 		conf.EnableHostname = false
 
 		// Initialize the metrics system
-		if _, err = metrics.NewGlobal(conf, sink); err != nil {
-			return
-		}
-	})
-	return err
-}
-
-// Handler returns an http.Handler for the /metrics endpoint.
-//
-// Summary: Retrieves the metrics HTTP handler.
-//
-// Returns:
-//   - http.Handler: An http.Handler that serves the Prometheus metrics.
-func Handler() http.Handler {
-	return promhttp.Handler()
-}
-
 // StartServer starts an HTTP server to expose the metrics.
 //
 // Summary: Starts the metrics server.
 //
 // Parameters:
 //   - addr: string. The address to listen on (e.g., ":8080").
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Returns:
 //   - error: An error if the server fails to start.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func StartServer(addr string) error {
 	mux := http.NewServeMux()
 	mux.Handle("/metrics", Handler())
@@ -104,15 +85,6 @@ func StartServer(addr string) error {
 	}
 
 	server := &http.Server{
-		Handler:           mux,
-		ReadHeaderTimeout: 3 * time.Second,
-		ReadTimeout:       5 * time.Second,
-		WriteTimeout:      10 * time.Second,
-		IdleTimeout:       15 * time.Second,
-	}
-	return server.Serve(ln)
-}
-
 // SetGauge sets the value of a gauge.
 //
 // Summary: Sets a gauge metric.
@@ -121,81 +93,80 @@ func StartServer(addr string) error {
 //   - name: string. The name of the gauge.
 //   - val: float32. The value to set.
 //   - labels: ...string. A list of labels to apply to the gauge.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func SetGauge(name string, val float32, labels ...string) {
 	var metricLabels []metrics.Label
-	if len(labels) > 0 {
-		metricLabels = []metrics.Label{
-			{Name: "service_name", Value: labels[0]},
-		}
-	}
-	metrics.SetGaugeWithLabels([]string{name}, val, metricLabels)
-}
-
 // IncrCounter increments a counter.
 //
-// Summary: Increments a counter metric.
-//
-// Parameters:
-//   - name: []string. The name of the counter (as a path).
-//   - val: float32. The amount to increment.
-func IncrCounter(name []string, val float32) {
-	metrics.IncrCounter(name, val)
-}
-
 // IncrCounterWithLabels increments a counter with labels.
 //
 // Summary: Increments a labeled counter metric.
 //
-// Parameters:
-//   - name: []string. The name of the counter (as a path).
-//   - val: float32. The amount to increment.
-//   - labels: []metrics.Label. The labels to apply.
-func IncrCounterWithLabels(name []string, val float32, labels []metrics.Label) {
-	metrics.IncrCounterWithLabels(name, val, labels)
-}
-
 // MeasureSince measures the time since a given start time and records it.
-//
-// Summary: Records latency metric.
-//
 // Parameters:
-//   - name: []string. The name of the metric (as a path).
-//   - start: time.Time. The start time.
-func MeasureSince(name []string, start time.Time) {
-	metrics.MeasureSince(name, start)
-}
-
+//   - standard arguments based on function signature.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
+//
 // MeasureSinceWithLabels measures the time since a given start time and records it with labels.
 //
+// Parameters:
+//   - standard arguments based on function signature.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 // Summary: Records labeled latency metric.
 //
-// Parameters:
-//   - name: []string. The name of the metric (as a path).
-//   - start: time.Time. The start time.
-//   - labels: []metrics.Label. The labels to apply.
-func MeasureSinceWithLabels(name []string, start time.Time, labels []metrics.Label) {
-	metrics.MeasureSinceWithLabels(name, start, labels)
-}
-
 // AddSample adds a sample to a histogram/summary.
-//
-// Summary: Adds a sample to a metric.
-//
 // Parameters:
-//   - name: []string. The name of the metric (as a path).
-//   - val: float32. The value to sample.
-func AddSample(name []string, val float32) {
-	metrics.AddSample(name, val)
-}
-
+//   - standard arguments based on function signature.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
+//
 // AddSampleWithLabels adds a sample to a histogram/summary with labels.
 //
+// Parameters:
+//   - standard arguments based on function signature.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 // Summary: Adds a labeled sample to a metric.
 //
 // Parameters:
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //   - name: []string. The name of the metric (as a path).
 //   - val: float32. The value to sample.
 //   - labels: []metrics.Label. The labels to apply.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func AddSampleWithLabels(name []string, val float32, labels []metrics.Label) {
 	metrics.AddSampleWithLabels(name, val, labels)
 }

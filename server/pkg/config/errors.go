@@ -1,13 +1,5 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package config
-
-import (
-	"errors"
-	"fmt"
-)
-
 // ActionableError is an error that includes a suggestion for fixing the issue.
 //
 // Summary: An error type that pairs an underlying error with a user-facing suggestion.
@@ -15,6 +7,14 @@ import (
 // Fields:
 //   - Err: error. The original error that occurred.
 //   - Suggestion: string. A human-readable suggestion on how to resolve the error.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type ActionableError struct {
 	Err        error
 	Suggestion string
@@ -65,23 +65,6 @@ func (e *ActionableError) Error() string {
 // Side Effects:
 //   - None
 //
-// Summary: Executes Unwrap operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
-func (e *ActionableError) Unwrap() error {
-	return e.Err
-}
-
 // WrapActionableError wraps an error with context, preserving ActionableError semantics if present.
 //
 // Summary: Wraps an error with context, preserving ActionableError semantics.
@@ -98,6 +81,8 @@ func (e *ActionableError) Unwrap() error {
 //
 // Side Effects:
 //   - None.
+// Errors:
+//   - triggers relevant error states on failure.
 func WrapActionableError(context string, err error) error {
 	if err == nil {
 		return nil

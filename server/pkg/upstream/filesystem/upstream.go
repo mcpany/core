@@ -22,19 +22,20 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream"
 	"github.com/mcpany/core/server/pkg/upstream/filesystem/provider"
-	"github.com/mcpany/core/server/pkg/util"
-
-	"github.com/spf13/afero"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/structpb"
-)
-
 // Upstream implements the upstream.Upstream interface for filesystem services.
 //
 // It provides tools for interacting with various filesystem backends (local,
 // S3, GCS, etc.) as defined in the service configuration.
 //
 // Summary: Represents a Upstream.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Upstream struct {
 	mu      sync.Mutex
 	closers []io.Closer
@@ -243,18 +244,6 @@ func (u *Upstream) Register(
 			log.Error("Failed to add tool", "tool", toolName, "error", err)
 			continue
 		}
-
-		discoveredTools = append(discoveredTools, toolDef)
-	}
-
-	log.Info("Registered filesystem service", "serviceID", serviceID, "tools", len(discoveredTools))
-	return serviceID, discoveredTools, nil, nil
-}
-
-type fsCallable struct {
-	handler func(ctx context.Context, args map[string]interface{}) (map[string]interface{}, error)
-}
-
 // Call executes the filesystem tool with the provided request arguments.
 //
 // Summary: Executes a filesystem tool.
@@ -266,6 +255,10 @@ type fsCallable struct {
 // Returns:
 //   - any: The result of the execution.
 //   - error: An error if execution fails.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (c *fsCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	args := req.Arguments
 	if args == nil && len(req.ToolInputs) > 0 {

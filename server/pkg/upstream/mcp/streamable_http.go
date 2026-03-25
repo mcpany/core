@@ -34,17 +34,19 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-var (
-	newClientImplForTesting func(client *mcp.Client, stdioConfig *configv1.McpStdioConnection, httpAddress string, httpClient *http.Client) client.MCPClient
-	newClientForTesting     func(impl *mcp.Implementation) *mcp.Client
-	connectForTesting       func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error)
-)
-
 // ClientSession defines an interface that abstracts the capabilities of an
 // mcp.ClientSession. This is used primarily for testing, allowing mock sessions
 // to be injected.
 //
 // Summary: Represents a ClientSession.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type ClientSession interface {
 	// ListTools lists the tools available in the session.
 	//
@@ -187,19 +189,20 @@ func SetNewClientForTesting(f func(impl *mcp.Implementation) *mcp.Client) {
 //
 // Errors:
 //   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
-func SetConnectForTesting(f func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error)) {
-	connectForTesting = f
-}
-
 // Upstream implements the upstream.Upstream interface for services that are
 // themselves MCP-compliant. It connects to the downstream MCP service, discovers
 // its tools, prompts, and resources, and registers them with the current server,
 // effectively acting as a proxy or aggregator.
 //
 // Summary: Represents a Upstream.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Upstream struct {
 	sessionRegistry *SessionRegistry
 	// BundleBaseDir is the directory where bundles are extracted.
@@ -1559,13 +1562,17 @@ func (rt *authenticatedRoundTripper) RoundTrip(req *http.Request) (*http.Respons
 	base := rt.base
 	if base == nil {
 		base = http.DefaultTransport
-	}
-	return base.RoundTrip(req)
-}
-
 // StreamableHTTP implements the mcp.Transport interface for HTTP connections.
 //
 // Summary: Represents a StreamableHTTP.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type StreamableHTTP struct {
 	// Address is the HTTP address of the MCP service.
 	Address string

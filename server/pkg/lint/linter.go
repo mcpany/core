@@ -8,28 +8,48 @@ package lint
 import (
 	"context"
 	"fmt"
-	"strings"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/config"
-)
-
 // Severity indicates the importance of a linting result.
 //
 // It is used to categorize findings based on their impact and urgency.
 //
 // Summary: Represents a Severity.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Severity int
-
-const (
 	// Error indicates a critical issue that must be fixed for the system to function correctly or securely.
-	// Summary: Defines Erro.
-	Error Severity = iota
 	// Warning indicates a potential issue or best practice violation that should be addressed.
-	// Summary: Defines Warnin.
-	Warning
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Info indicates a suggestion or informational message for optimization or clarity.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Summary: Defines Inf.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	Info
 )
 
@@ -60,17 +80,19 @@ func (s Severity) String() string {
 	case Warning:
 		return "WARNING"
 	case Info:
-		return "INFO"
-	default:
-		return "UNKNOWN"
-	}
-}
-
 // Result represents a single linting finding.
 //
 // It encapsulates all details about a detected issue, including its severity, location, and description.
 //
 // Summary: Represents a Result.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Result struct {
 	// Severity indicates how critical the finding is (Error, Warning, Info).
 	Severity Severity
@@ -108,17 +130,19 @@ func (r Result) String() string {
 		pathStr = fmt.Sprintf(" at %s", r.Path)
 	}
 	serviceStr := ""
-	if r.ServiceName != "" {
-		serviceStr = fmt.Sprintf(" (service: %s)", r.ServiceName)
-	}
-	return fmt.Sprintf("[%s]%s%s: %s", r.Severity, serviceStr, pathStr, r.Message)
-}
-
 // Linter performs static analysis on the configuration.
 //
 // It holds the configuration to be analyzed and provides methods to execute various checks.
 //
 // Summary: Represents a Linter.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Linter struct {
 	cfg *configv1.McpAnyServerConfig
 }

@@ -7,13 +7,17 @@ import (
 	"context"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/tool"
-	"github.com/stretchr/testify/mock"
-)
-
 // MockServiceRegistry is a mock implementation of ServiceRegistryInterface.
 //
 // Summary: Represents a MockServiceRegistry.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type MockServiceRegistry struct {
 	mock.Mock
 }

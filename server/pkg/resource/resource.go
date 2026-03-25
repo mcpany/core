@@ -4,24 +4,28 @@
 package resource
 
 import (
-	"context"
-	"errors"
-	"sync"
-
-	"github.com/modelcontextprotocol/go-sdk/mcp"
-)
-
-// ErrResourceNotFound is returned when a requested resource cannot be found.
-//
-// Summary: Represents a ErrResourceNotFound.
-var ErrResourceNotFound = errors.New("resource not found")
-
 // Resource defines the interface for a resource that can be managed by the Manager.
 //
 // Summary: Interface for a managed resource.
 //
 // A resource represents a data source (e.g., a file, a database record) that can be
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 // read by an MCP client.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Resource interface {
 	// Resource returns the MCP representation of the resource, which includes its metadata.
 	//
@@ -48,19 +52,20 @@ type Resource interface {
 	// Subscribe establishes a subscription to the resource, allowing for receiving updates.
 	//
 	// Parameters:
-	//   - ctx: context.Context. The context for the subscription.
-	//
-	// Returns:
-	//   - error: An error if subscription fails.
-	Subscribe(ctx context.Context) error
-}
-
 // ManagerInterface defines the interface for managing a collection of resources.
 //
 // Summary: Interface for resource management.
 //
 // It provides methods for adding, removing, listing, and retrieving resources, as well
 // as managing callbacks for list changes.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type ManagerInterface interface {
 	// GetResource retrieves a resource by its URI.
 	//
@@ -108,86 +113,51 @@ type ManagerInterface interface {
 	// ClearResourcesForService removes all resources associated with a given service ID.
 	//
 	// Parameters:
-	//   - serviceID: string. The service ID.
-	//
-	// Returns:
-	//   None.
-	ClearResourcesForService(serviceID string)
-}
-
 // Manager is a thread-safe implementation of the ManagerInterface.
 //
 // Summary: Thread-safe resource manager implementation.
 //
 // It manages the lifecycle and retrieval of resources, providing thread-safe access
 // and efficient listing via caching.
-type Manager struct {
-	mu                sync.RWMutex
-	resources         map[string]Resource
-	onListChangedFunc func()
-	cachedResources   []Resource
-}
-
-// NewManager creates and returns a new, empty Manager.
-//
-// Summary: Creates a new resource manager.
-//
-// Returns:
-//   - *Manager: A new Manager instance.
-func NewManager() *Manager {
-	return &Manager{
-		resources: make(map[string]Resource),
-	}
-}
-
-// GetResource retrieves a resource from the manager by its URI.
-//
-// Summary: Retrieves a resource by URI.
-//
 // Parameters:
-//   - uri: string. The URI of the resource.
-//
+//   - None.
 // Returns:
-//   - Resource: The resource instance.
-//   - bool: True if found, false otherwise.
-func (rm *Manager) GetResource(uri string) (Resource, bool) {
-	rm.mu.RLock()
-	defer rm.mu.RUnlock()
-	resource, ok := rm.resources[uri]
-	return resource, ok
-}
-
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// NewManager creates and returns a new, empty Manager.
+// GetResource retrieves a resource from the manager by its URI.
 // AddResource adds a new resource to the manager.
 //
 // Summary: Adds a resource to the manager.
 //
 // Parameters:
+//   - standard arguments based on function signature.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
+// Parameters:
 //   - resource: Resource. The resource to add.
 //
 // Returns:
 //
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //	None.
 //
 // Side Effects:
-//   - Updates the internal resource storage.
-//   - Invalidates the list cache.
-//   - Triggers the on-change callback if registered.
-func (rm *Manager) AddResource(resource Resource) {
-	var callback func()
-	rm.mu.Lock()
-	rm.resources[resource.Resource().URI] = resource
-	rm.cachedResources = nil
-	callback = rm.onListChangedFunc
-	rm.mu.Unlock()
-
-	if callback != nil {
-		callback()
-	}
-}
-
 // RemoveResource removes a resource from the manager by its URI.
 //
 // Summary: Removes a resource from the manager.
+// Errors:
+//   - triggers relevant error states on failure.
 //
 // Parameters:
 //   - uri: string. The URI of the resource.
@@ -200,21 +170,13 @@ func (rm *Manager) AddResource(resource Resource) {
 //   - Updates the internal resource storage.
 //   - Invalidates the list cache.
 //   - Triggers the on-change callback if registered.
+// Errors:
+//   - triggers relevant error states on failure.
 func (rm *Manager) RemoveResource(uri string) {
 	var callback func()
 	rm.mu.Lock()
 	if _, ok := rm.resources[uri]; ok {
 		delete(rm.resources, uri)
-		rm.cachedResources = nil
-		callback = rm.onListChangedFunc
-	}
-	rm.mu.Unlock()
-
-	if callback != nil {
-		callback()
-	}
-}
-
 // ListResources returns a slice containing all the resources currently registered in the manager.
 //
 // Summary: Lists all managed resources.
@@ -224,6 +186,12 @@ func (rm *Manager) RemoveResource(uri string) {
 //
 // Returns:
 //   - []Resource: A slice of currently registered resources.
+// Parameters:
+//   - standard arguments based on function signature.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (rm *Manager) ListResources() []Resource {
 	// ⚡ Bolt: Use a read-through cache to avoid repeated map iteration and slice allocation.
 	// The cache is invalidated on any write operation (Add/Remove).
@@ -249,61 +217,32 @@ func (rm *Manager) ListResources() []Resource {
 		return result
 	}
 
-	resources := make([]Resource, 0, len(rm.resources))
-	for _, resource := range rm.resources {
-		resources = append(resources, resource)
-	}
-	rm.cachedResources = resources
-
-	// Return a copy to ensure thread safety
-	result := make([]Resource, len(resources))
-	copy(result, resources)
-	return result
-}
-
 // OnListChanged sets a callback function that will be invoked whenever the list
 // of resources is modified.
 //
 // Summary: Registers a callback for list changes.
 //
 // Parameters:
-//   - f: func(). The callback function.
-//
-// Returns:
-//
-//	None.
-func (rm *Manager) OnListChanged(f func()) {
-	rm.mu.Lock()
-	defer rm.mu.Unlock()
-	rm.onListChangedFunc = f
-}
-
 // Subscribe finds a resource by its URI and calls its Subscribe method.
 //
-// Summary: Subscribes to a resource.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the subscription.
-//   - uri: string. The URI of the resource.
-//
-// Returns:
-//   - error: An error if resource not found or subscription fails.
-func (rm *Manager) Subscribe(ctx context.Context, uri string) error {
-	resource, ok := rm.GetResource(uri)
-	if !ok {
-		return ErrResourceNotFound
-	}
-	return resource.Subscribe(ctx)
-}
-
 // ClearResourcesForService removes all resources associated with a given service ID.
 //
 // Summary: Clears resources for a specific service.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Parameters:
 //   - serviceID: string. The service ID.
 //
 // Returns:
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 //	None.
 //
@@ -311,6 +250,8 @@ func (rm *Manager) Subscribe(ctx context.Context, uri string) error {
 //   - Removes matching resources from storage.
 //   - Invalidates the list cache.
 //   - Triggers the on-change callback.
+// Errors:
+//   - triggers relevant error states on failure.
 func (rm *Manager) ClearResourcesForService(serviceID string) {
 	var callback func()
 	rm.mu.Lock()

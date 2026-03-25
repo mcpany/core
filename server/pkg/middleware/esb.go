@@ -11,45 +11,27 @@ import (
 )
 
 type esbContextKey string
-
-const (
-	missionIntentKey     esbContextKey = "x-mission-intent"
-	entanglementShardKey esbContextKey = "x-entanglement-shard"
-)
-
-// ESBMiddleware (Entangled State Broker) provides side-channel-immune speculative guarding
-// and enforces that requests are cryptographically bound to a mission-root intent.
-//
-// Summary: Implements the Entangled State Broker.
-type ESBMiddleware struct {
-	// Enable/disable the middleware
-	enabled bool
-}
-
 // NewESBMiddleware creates a new instance of the ESBMiddleware.
 //
 // Parameters:
 //   - config (*configv1.Middleware): The configuration for the middleware.
-//
-// Returns:
-//   - (*ESBMiddleware): The newly created middleware.
-//
-// Summary: Creates a new ESBMiddleware.
-func NewESBMiddleware(config *configv1.Middleware) *ESBMiddleware {
-	enabled := true
-	if config != nil {
-		enabled = !config.GetDisabled()
-	}
-	return &ESBMiddleware{
-		enabled: enabled,
-	}
-}
-
 // Execute applies the ESB logic to the incoming MCP request.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 // It verifies the presence of required headers and injects Temporal Shard Jitter (TSJ).
 //
 // Parameters:
 //   - ctx (context.Context): The context of the request.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //   - method (string): The MCP method being called.
 //   - req (mcp.Request): The incoming request.
 //   - next (mcp.MethodHandler): The next handler in the chain.
@@ -59,6 +41,10 @@ func NewESBMiddleware(config *configv1.Middleware) *ESBMiddleware {
 //   - (error): An error if the request fails validation or execution.
 //
 // Summary: Executes the ESB middleware logic.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (m *ESBMiddleware) Execute(ctx context.Context, method string, req mcp.Request, next mcp.MethodHandler) (mcp.Result, error) {
 	if !m.enabled {
 		return next(ctx, method, req)

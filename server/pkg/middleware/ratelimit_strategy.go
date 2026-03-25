@@ -5,13 +5,17 @@ package middleware
 
 import (
 	"context"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-)
-
 // Limiter interface defines the methods required for a rate limiter.
 //
 // Summary: Represents a Limiter.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Limiter interface {
 	// Allow checks if the request is allowed.
 	//
@@ -31,13 +35,17 @@ type Limiter interface {
 	// Update updates the limiter configuration.
 	//
 	// rps is the rps.
-	// burst is the burst.
-	Update(rps float64, burst int)
-}
-
 // RateLimitStrategy defines the interface for creating rate limiters.
 //
 // Summary: Represents a RateLimitStrategy.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type RateLimitStrategy interface {
 	// Create creates a new Limiter instance.
 	//

@@ -3,31 +3,6 @@
 
 package main
 
-import (
-	"context"
-	"encoding/json"
-	"fmt"
-	"io"
-	"net"
-	"net/http"
-	"strings"
-	"time"
-
-	"github.com/mcpany/core/server/pkg/config"
-	"github.com/mcpany/core/server/pkg/health"
-	"github.com/spf13/afero"
-	"github.com/spf13/cobra"
-)
-
-// DoctorRunner runs the doctor command checks.
-//
-// Summary: Component to run system health diagnostics.
-type DoctorRunner struct {
-	Out        io.Writer
-	Fs         afero.Fs
-	HTTPClient *http.Client
-}
-
 // Run executes the doctor checks.
 //
 // Summary: Runs a series of health checks (config, connectivity, deep health).
@@ -37,11 +12,17 @@ type DoctorRunner struct {
 //   - _: []string. Unused arguments.
 //
 // Returns:
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 //   - error: An error if a fatal check fails.
 //
 // Side Effects:
 //   - Prints check results to r.Out.
 //   - Makes HTTP requests to the running server.
+// Errors:
+//   - triggers relevant error states on failure.
 func (r *DoctorRunner) Run(cmd *cobra.Command, _ []string) error {
 	ctx := cmd.Context()
 	if ctx == nil {

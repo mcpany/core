@@ -11,20 +11,6 @@ import "unicode/utf8"
 //
 // It returns the minimum number of single-character edits (insertions, deletions, or substitutions)
 // required to change one string into the other.
-//
-// Parameters:
-//   - s1: string. The first string.
-//   - s2: string. The second string.
-//
-// Returns:
-//   - int: The Levenshtein distance.
-func LevenshteinDistance(s1, s2 string) int {
-	// Pass a very large limit so it behaves like the unbounded version.
-	// The maximum possible distance is max(len(s1), len(s2)).
-	// We use max int as limit effectively.
-	return LevenshteinDistanceWithLimit(s1, s2, len(s1)+len(s2))
-}
-
 // LevenshteinDistanceWithLimit calculates the Levenshtein distance with an upper limit.
 //
 // Summary: Calculates the Levenshtein edit distance with a limit.
@@ -38,6 +24,10 @@ func LevenshteinDistance(s1, s2 string) int {
 //
 // Returns:
 //   - int: The Levenshtein distance, or limit + 1 if it exceeds the limit.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func LevenshteinDistanceWithLimit(s1, s2 string, limit int) int {
 	// Optimization: If both strings are ASCII, we can avoid rune conversion
 	// and use stack-based allocation for small strings.
@@ -214,6 +204,25 @@ func levenshteinASCIIBounded(s1, s2 string, limit int) int {
 			return limit + 1
 		}
 
+//   - updates relevant subsystem state or network conditions.
+// Side Effects:
+//   - triggers relevant error states on failure.
+// Errors:
+//   - execution result or state changes.
+// Returns:
+// Parameters:
+//
+// If the distance is strictly greater than limit, it returns a value > limit (specifically limit + 1).
+//
+// Summary: Calculates the Levenshtein edit distance with a limit.
+//
+// LevenshteinDistanceWithLimit calculates the Levenshtein distance with an upper limit.
+// required to change one string into the other.
+// It returns the minimum number of single-character edits (insertions, deletions, or substitutions)
+//
+// Summary: Calculates the Levenshtein edit distance.
+//
+// LevenshteinDistance calculates the Levenshtein distance between two strings.
 		// Swap v0 and v1
 		v0, v1 = v1, v0
 	}

@@ -9,13 +9,17 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/appconsts"
-	"github.com/mcpany/core/server/pkg/logging"
-)
-
 // SystemStatusResponse represents the response from the system status API.
 //
 // Summary: Represents a SystemStatusResponse.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type SystemStatusResponse struct {
 	UptimeSeconds     int64    `json:"uptime_seconds"`
 	ActiveConnections int32    `json:"active_connections"`

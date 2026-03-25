@@ -13,31 +13,71 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// JSON schema types.
-const (
 	// TypeNumber represents a JSON number type.
-	// Summary: Defines TypeNumber.
-	TypeNumber = "number"
 	// TypeInteger represents a JSON integer type.
-	// Summary: Defines TypeInteger.
-	TypeInteger = "integer"
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// TypeBoolean represents a JSON boolean type.
-	// Summary: Defines TypeBoolean.
-	TypeBoolean = "boolean"
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// TypeObject represents a JSON object type.
-	// Summary: Defines TypeObject.
-	TypeObject = "object"
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// TypeArray represents a JSON array type.
-	// Summary: Defines TypeArray.
-	TypeArray = "array"
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// TypeString represents a JSON string type.
-	// Summary: Defines TypeString.
-	TypeString = "string"
-)
-
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 // MaxRecursionDepth limits the depth of nested messages to prevent infinite recursion.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 //
 // Summary: Represents a MaxRecursionDepth.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 const MaxRecursionDepth = 10
 
 // MethodDescriptorToProtoProperties converts the fields of a method's input
@@ -182,24 +222,32 @@ func fieldToSchema(field protoreflect.FieldDescriptor, depth int) (map[string]in
 			return nil, fmt.Errorf("failed to process nested message %s: %w", field.Name(), err)
 		}
 		schema["properties"] = nestedProps.AsMap()
-	}
-	return schema, nil
-}
-
 // ConfigParameter an interface for config parameter schemas.
 //
 // Summary: Represents a ConfigParameter.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type ConfigParameter interface {
 	// GetSchema returns the parameter schema.
 	//
 	// Returns:
-	//   - *configv1.ParameterSchema: The parameter schema.
-	GetSchema() *configv1.ParameterSchema
-}
-
 // McpFieldParameter an interface for McpField parameter schemas.
 //
 // Summary: Represents a McpFieldParameter.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type McpFieldParameter interface {
 	// GetName returns the name of the parameter.
 	//

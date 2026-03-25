@@ -8,24 +8,32 @@ import (
 	"sync"
 	"time"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/logging"
-)
-
 // ProviderStatus represents the status of a discovery provider.
 //
 // Summary: Represents a ProviderStatus.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type ProviderStatus struct {
 	Name            string
 	Status          string // "OK", "ERROR"
 	LastError       string
-	LastRunAt       time.Time
-	DiscoveredCount int
-}
-
 // Manager manages auto-discovery providers.
 //
 // Summary: Represents a Manager.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Manager struct {
 	providers []Provider
 	mu        sync.RWMutex

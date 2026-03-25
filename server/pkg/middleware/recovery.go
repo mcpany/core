@@ -38,5 +38,21 @@ func RecoveryMiddleware(next http.Handler) http.Handler {
 			}
 		}()
 		next.ServeHTTP(w, r)
+//   - triggers relevant error states on failure.
+// Errors:
+//   - Writes a 500 Internal Server Error response to the client on panic.
+//   - Logs panic details if a panic occurs.
+// Side Effects:
+//
+//   - http.Handler: A handler that wraps the next handler with recovery logic.
+// Returns:
+//
+//   - next (http.Handler): The next handler in the chain.
+// Parameters:
+//
+// Summary: Middleware to recover from panics.
+//
+// and returns a generic 500 Internal Server Error response.
+// RecoveryMiddleware recovers from panics in the handler chain, logs the panic,
 	})
 }

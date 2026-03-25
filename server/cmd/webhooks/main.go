@@ -21,16 +21,34 @@ import (
 	"github.com/mcpany/core/server/pkg/sidecar/webhooks"
 	webhook "github.com/standard-webhooks/standard-webhooks/libraries/go"
 )
-
-const (
 	// HeaderWebhookID is the header name for the webhook ID.
-	// Summary: Defines HeaderWebhookID.
-	HeaderWebhookID = webhook.HeaderWebhookID
 	// HeaderWebhookTimestamp is the header name for the webhook timestamp.
-	// Summary: Defines HeaderWebhookTimestamp.
-	HeaderWebhookTimestamp = webhook.HeaderWebhookTimestamp
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// HeaderWebhookSignature is the header name for the webhook signature.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Summary: Defines HeaderWebhookSignature.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	HeaderWebhookSignature = webhook.HeaderWebhookSignature
 )
 

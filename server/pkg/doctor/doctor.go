@@ -12,44 +12,40 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"strings"
-	"time"
-
-	_ "github.com/go-sql-driver/mysql" // Register MySQL driver
-	_ "github.com/lib/pq"              // Register Postgres driver
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/util"
-	"github.com/mcpany/core/server/pkg/validation"
-	_ "modernc.org/sqlite" // Register SQLite driver
-)
-
-// Status represents the status of a check.
-//
-// It is an enumerated string type used to indicate the outcome of a health or connectivity check.
-//
-// Summary: Represents a Status.
-type Status string
-
-const (
 	// StatusOk indicates the check passed successfully.
-	// Summary: Defines StatusO.
-	StatusOk Status = "OK"
-	// StatusWarning indicates a partial failure or non-critical issue that should be investigated.
-	// Summary: Defines StatusWarnin.
-	StatusWarning Status = "WARNING"
 	// StatusError indicates a critical failure that prevents the service from functioning correctly.
 	// Summary: Defines StatusErro.
-	StatusError Status = "ERROR"
-	// StatusSkipped indicates the check was skipped, usually due to configuration (e.g., disabled service).
-	// Summary: Defines StatusSkippe.
-	StatusSkipped Status = "SKIPPED"
-)
-
 // CheckResult represents the result of a single service check.
 //
 // It aggregates the status, any message, and potential error encountered during the check.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 //
 // Summary: Represents a CheckResult.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type CheckResult struct {
 	// ServiceName is the name of the service being checked.
 	ServiceName string

@@ -19,52 +19,40 @@ import (
 	"github.com/mcpany/core/server/pkg/metrics"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
-	"github.com/patrickmn/go-cache"
-	"github.com/redis/go-redis/v9"
-	"golang.org/x/time/rate"
-)
-
-// GlobalRateLimitMiddleware provides rate limiting functionality for all MCP requests.
-//
-// Summary: Middleware that enforces global rate limits on MCP requests across the entire server.
-type GlobalRateLimitMiddleware struct {
-	mu     sync.RWMutex
-	config *configv1.RateLimitConfig
-	// limiters caches active limiters. Key is "partitionKey".
-	limiters *cache.Cache
-	// redisClients caches Redis clients. Key is "global".
-	redisClients sync.Map
-}
-
 // NewGlobalRateLimitMiddleware creates a new GlobalRateLimitMiddleware.
 //
 // Summary: Initializes the global rate limit middleware with the provided configuration.
 //
 // Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Parameters:
 //   - config: *configv1.RateLimitConfig. The rate limit configuration settings.
 //
 // Returns:
-//   - *GlobalRateLimitMiddleware: The initialized middleware instance.
-//
-// Side Effects:
-//   - Initializes internal caches for limiters.
-func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateLimitMiddleware {
-	return &GlobalRateLimitMiddleware{
-		config:   config,
-		limiters: cache.New(1*time.Hour, 10*time.Minute),
-	}
-}
-
 // UpdateConfig updates the rate limit configuration safely.
 //
 // Summary: Updates the rate limit configuration at runtime.
 //
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 // Parameters:
 //   - config: *configv1.RateLimitConfig. The new configuration settings.
 //
 // Side Effects:
 //   - Acquires a lock to safely update the configuration.
 //   - Effectively changes rate limiting behavior for subsequent requests.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
 func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfig) {
 	m.mu.Lock()
 	defer m.mu.Unlock()

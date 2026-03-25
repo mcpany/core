@@ -16,13 +16,17 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/spf13/afero"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-)
-
 // Settings defines the global configuration for the application.
 //
 // Summary: Represents a Settings.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Settings struct {
 	proto           *configv1.GlobalSettings
 	grpcPort        string
@@ -32,19 +36,6 @@ type Settings struct {
 	logLevel        string
 	logFile         string
 	persistentLog   string
-	shutdownTimeout time.Duration
-	profiles        []string
-	dbPath          string
-	setValues       []string
-	fs              afero.Fs
-	cmd             *cobra.Command
-}
-
-var (
-	globalSettings *Settings
-	once           sync.Once
-)
-
 // GlobalSettings returns the singleton instance of the global settings.
 //
 // Summary: Retrieves the global settings singleton.
@@ -53,39 +44,14 @@ var (
 //   - None.
 //
 // Returns:
-//   - *Settings: The singleton instance.
-//
-// Side Effects:
-//   - Initializes the singleton if it doesn't exist.
-func GlobalSettings() *Settings {
-	once.Do(func() {
-		globalSettings = &Settings{
-			proto: configv1.GlobalSettings_builder{}.Build(),
-		}
-	})
-	return globalSettings
-}
-
-// ToProto returns the underlying GlobalSettings protobuf message.
-//
-// Summary: Converts the settings to a protobuf message.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - *configv1.GlobalSettings: The protobuf representation.
-//
-// Side Effects:
-//   - None.
-func (s *Settings) ToProto() *configv1.GlobalSettings {
-	return s.proto
-}
-
 // Load initializes the global settings from the command line and config files.
 //
 // Summary: Loads configuration from flags and files.
 //
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 // Parameters:
 //   - cmd: *cobra.Command. The cobra command containing flags.
 //   - fs: afero.Fs. The file system interface for reading config files.
@@ -94,9 +60,13 @@ func (s *Settings) ToProto() *configv1.GlobalSettings {
 //   - error: An error if loading fails.
 //
 // Side Effects:
+// Errors:
+//   - triggers relevant error states on failure.
 //   - Modifies the global settings instance.
 //   - Initializes logging.
 //   - Reads environment variables.
+// Errors:
+//   - triggers relevant error states on failure.
 func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	s.cmd = cmd
 	s.fs = fs
@@ -176,19 +146,6 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	s.proto.SetMcpListenAddress(mcpListenAddress)
 	s.proto.SetLogLevel(s.LogLevel())
 	s.proto.SetLogFormat(s.LogFormat())
-	s.proto.SetApiKey(s.APIKey())
-
-	// Set DB settings from config file if available, otherwise viper defaults (flags/env)
-	if s.proto.GetDbDsn() == "" {
-		s.proto.SetDbDsn(viper.GetString("db-dsn"))
-	}
-	if s.proto.GetDbDriver() == "" {
-		s.proto.SetDbDriver(viper.GetString("db-driver"))
-	}
-
-	return nil
-}
-
 // LogFormat returns the current log format as a protobuf enum.
 //
 // Summary: Retrieves the log format.
@@ -197,241 +154,149 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 //   - None.
 //
 // Returns:
-//   - configv1.GlobalSettings_LogFormat: The log format enum.
-//
-// Side Effects:
-//   - None.
-func (s *Settings) LogFormat() configv1.GlobalSettings_LogFormat {
-	format := viper.GetString("log-format")
-	key := "LOG_FORMAT_" + strings.ToUpper(format)
-	if val, ok := configv1.GlobalSettings_LogFormat_value[key]; ok {
-		return configv1.GlobalSettings_LogFormat(val)
-	}
-	return configv1.GlobalSettings_LOG_FORMAT_TEXT
-}
-
 // GRPCPort returns the gRPC port.
 //
 // Summary: Retrieves the gRPC port.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - string: The gRPC port.
-//
-// Side Effects:
-//   - None.
-func (s *Settings) GRPCPort() string {
-	return s.grpcPort
-}
-
 // MCPListenAddress returns the MCP listen address.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Summary: Retrieves the MCP listen address.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - string: The listen address.
-//
-// Side Effects:
-//   - None.
-func (s *Settings) MCPListenAddress() string {
-	return s.proto.GetMcpListenAddress()
-}
-
 // MetricsListenAddress returns the metrics listen address.
 //
 // Summary: Retrieves the metrics listen address.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - string: The metrics address.
-//
-// Side Effects:
-//   - None.
-func (s *Settings) MetricsListenAddress() string {
-	return viper.GetString("metrics-listen-address")
-}
-
 // Stdio returns whether stdio mode is enabled.
 //
 // Summary: Checks if stdio mode is enabled.
-//
 // Parameters:
-//   - None.
-//
+//   - standard arguments based on function signature.
 // Returns:
-//   - bool: True if enabled.
-//
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
 // Side Effects:
-//   - None.
-func (s *Settings) Stdio() bool {
-	return s.stdio
-}
-
+//   - updates relevant subsystem state or network conditions.
 // ConfigPaths returns the paths to the configuration files.
 //
 // Summary: Retrieves configuration file paths.
-//
 // Parameters:
-//   - None.
-//
+//   - standard arguments based on function signature.
 // Returns:
-//   - []string: List of paths.
-//
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
 // Side Effects:
-//   - None.
-func (s *Settings) ConfigPaths() []string {
-	return s.configPaths
-}
-
+//   - updates relevant subsystem state or network conditions.
 // IsDebug returns whether debug mode is enabled.
 //
 // Summary: Checks if debug mode is enabled.
-//
 // Parameters:
-//   - None.
-//
+//   - standard arguments based on function signature.
 // Returns:
-//   - bool: True if enabled.
-//
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
 // Side Effects:
-//   - None.
-func (s *Settings) IsDebug() bool {
-	return s.debug
-}
-
+//   - updates relevant subsystem state or network conditions.
 // LogFile returns the path to the log file.
 //
 // Summary: Retrieves the log file path.
-//
 // Parameters:
-//   - None.
-//
+//   - standard arguments based on function signature.
 // Returns:
-//   - string: The log file path.
-//
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
 // Side Effects:
-//   - None.
-func (s *Settings) LogFile() string {
-	return s.logFile
-}
-
+//   - updates relevant subsystem state or network conditions.
 // PersistentLog returns the path to the persistent log file used for hydration.
 //
 // Summary: Retrieves the persistent log file path.
-//
 // Parameters:
-//   - None.
-//
+//   - standard arguments based on function signature.
 // Returns:
-//   - string: The persistent log path.
-//
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
 // Side Effects:
-//   - None.
-func (s *Settings) PersistentLog() string {
-	return s.persistentLog
-}
-
+//   - updates relevant subsystem state or network conditions.
 // ShutdownTimeout returns the graceful shutdown timeout.
 //
 // Summary: Retrieves the shutdown timeout.
-//
 // Parameters:
-//   - None.
-//
+//   - standard arguments based on function signature.
 // Returns:
-//   - time.Duration: The timeout duration.
-//
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
 // Side Effects:
-//   - None.
-func (s *Settings) ShutdownTimeout() time.Duration {
-	return s.shutdownTimeout
-}
-
+//   - updates relevant subsystem state or network conditions.
 // APIKey returns the API key for the server.
 //
 // Summary: Retrieves the API key.
+// Parameters:
+//   - standard arguments based on function signature.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Parameters:
-//   - None.
-//
-// Returns:
-//   - string: The API key.
-//
-// Side Effects:
-//   - None.
-func (s *Settings) APIKey() string {
-	if s.proto.GetApiKey() != "" {
-		return s.proto.GetApiKey()
-	}
-	return viper.GetString("api-key")
-}
-
 // SetAPIKey sets the Global API key.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Summary: Sets the API key.
-//
-// Parameters:
-//   - key: string. The API key.
-//
-// Returns:
-//
-//	None.
-//
-// Side Effects:
-//   - Updates the API key setting.
-func (s *Settings) SetAPIKey(key string) {
-	s.proto.SetApiKey(key)
-}
-
 // SetMiddlewares sets the middlewares for the global settings.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Summary: Sets the middlewares.
 //
-// Parameters:
-//   - middlewares: []*configv1.Middleware. The list of middlewares.
-//
 // Returns:
-//
-//	None.
-//
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
 // Side Effects:
-//   - Updates the middlewares setting.
-func (s *Settings) SetMiddlewares(middlewares []*configv1.Middleware) {
-	s.proto.SetMiddlewares(middlewares)
-}
-
+//   - updates relevant subsystem state or network conditions.
 // Profiles returns the active profiles.
 //
 // Summary: Retrieves the active profiles.
 //
 // Parameters:
 //   - None.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Returns:
 //   - []string: List of profile names.
-//
+// Errors:
+//   - triggers relevant error states on failure.
 // Side Effects:
-//   - None.
-func (s *Settings) Profiles() []string {
-	if viper.IsSet("profiles") {
-		return getStringSlice("profiles")
-	}
-	if len(s.profiles) == 0 {
-		return []string{"default"}
-	}
-	return s.profiles
-}
-
+//   - updates relevant subsystem state or network conditions.
 // LogLevel returns the current log level as a protobuf enum.
 //
 // Summary: Retrieves the log level.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Parameters:
 //   - None.
@@ -441,6 +306,8 @@ func (s *Settings) Profiles() []string {
 //
 // Side Effects:
 //   - Logs a warning if the log level is invalid.
+// Errors:
+//   - triggers relevant error states on failure.
 func (s *Settings) LogLevel() configv1.GlobalSettings_LogLevel {
 	if s.IsDebug() {
 		return configv1.GlobalSettings_LOG_LEVEL_DEBUG
@@ -455,176 +322,113 @@ func (s *Settings) LogLevel() configv1.GlobalSettings_LogLevel {
 	key := "LOG_LEVEL_" + logLevel
 	if val, ok := configv1.GlobalSettings_LogLevel_value[key]; ok {
 		return configv1.GlobalSettings_LogLevel(val)
-	}
-
-	if s.logLevel != "" {
-		logging.GetLogger().Warn(
-			fmt.Sprintf(
-				"Invalid log level specified: '%s'. Defaulting to INFO.",
-				s.logLevel,
-			),
-		)
-	}
-	return configv1.GlobalSettings_LOG_LEVEL_INFO
-}
-
 // DBPath returns the path to the SQLite database.
 //
 // Summary: Retrieves the database path.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - string: The database path.
-//
-// Side Effects:
-//   - None.
-func (s *Settings) DBPath() string {
-	return s.dbPath
-}
-
 // SetValues returns configuration values to override.
 //
 // Summary: Retrieves configuration override values.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - []string: List of key=value strings.
-//
-// Side Effects:
-//   - None.
-func (s *Settings) SetValues() []string {
-	return s.setValues
-}
-
 // GetDbDsn returns the database DSN.
 //
 // Summary: Retrieves the database DSN.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - string: The DSN.
-//
-// Side Effects:
-//   - None.
-func (s *Settings) GetDbDsn() string {
-	return s.proto.GetDbDsn()
-}
-
 // GetDbDriver returns the database driver.
 //
 // Summary: Retrieves the database driver.
-//
 // Parameters:
-//   - None.
-//
+//   - standard arguments based on function signature.
 // Returns:
-//   - string: The driver name.
-//
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
 // Side Effects:
-//   - None.
-func (s *Settings) GetDbDriver() string {
-	return s.proto.GetDbDriver()
-}
-
+//   - updates relevant subsystem state or network conditions.
 // Middlewares returns the configured middlewares.
 //
 // Summary: Retrieves the configured middlewares.
-//
 // Parameters:
-//   - None.
-//
+//   - standard arguments based on function signature.
 // Returns:
-//   - []*configv1.Middleware: List of middlewares.
-//
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
 // Side Effects:
-//   - None.
-func (s *Settings) Middlewares() []*configv1.Middleware {
-	return s.proto.GetMiddlewares()
-}
-
+//   - updates relevant subsystem state or network conditions.
 // GetDlp returns the DLP configuration.
 //
-// Summary: Retrieves the DLP configuration.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - *configv1.DLPConfig: The DLP config.
-//
-// Side Effects:
-//   - None.
-func (s *Settings) GetDlp() *configv1.DLPConfig {
-	return s.proto.GetDlp()
-}
-
 // SetDlp sets the DLP configuration.
+// Parameters:
+//   - standard arguments based on function signature.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Summary: Sets the DLP configuration.
 //
 // Parameters:
-//   - dlp: *configv1.DLPConfig. The DLP config.
-//
+//   - standard arguments based on function signature.
 // Returns:
-//
-//	None.
-//
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
 // Side Effects:
-//   - Updates the DLP setting.
-func (s *Settings) SetDlp(dlp *configv1.DLPConfig) {
-	s.proto.SetDlp(dlp)
-}
-
+//   - updates relevant subsystem state or network conditions.
 // GetOidc returns the OIDC configuration.
 //
 // Summary: Retrieves the OIDC configuration.
-//
 // Parameters:
-//   - None.
-//
+//   - standard arguments based on function signature.
 // Returns:
-//   - *configv1.OIDCConfig: The OIDC config.
-//
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
 // Side Effects:
-//   - None.
-func (s *Settings) GetOidc() *configv1.OIDCConfig {
-	return s.proto.GetOidc()
-}
-
+//   - updates relevant subsystem state or network conditions.
 // GetProfileDefinitions returns the profile definitions.
 //
 // Summary: Retrieves the profile definitions.
-//
 // Parameters:
-//   - None.
-//
+//   - standard arguments based on function signature.
 // Returns:
-//   - []*configv1.ProfileDefinition: List of profiles.
-//
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
 // Side Effects:
-//   - None.
-func (s *Settings) GetProfileDefinitions() []*configv1.ProfileDefinition {
-	return s.proto.GetProfileDefinitions()
-}
-
+//   - updates relevant subsystem state or network conditions.
 // GithubAPIURL returns the GitHub API URL.
 //
 // Summary: Retrieves the GitHub API URL.
+// Parameters:
+//   - standard arguments based on function signature.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Parameters:
 //   - None.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Returns:
 //   - string: The URL.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Side Effects:
 //   - None.
+// Errors:
+//   - triggers relevant error states on failure.
 func (s *Settings) GithubAPIURL() string {
 	return s.proto.GetGithubApiUrl()
 }

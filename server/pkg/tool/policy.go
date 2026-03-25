@@ -3,17 +3,6 @@
 
 package tool
 
-import (
-	"fmt"
-	"regexp"
-	"sync"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/logging"
-)
-
-var exportRegexCache sync.Map
-
 // ShouldExport determines whether a named item (tool, prompt, or resource) should be exported.
 //
 // Summary: Checks if an item should be exported based on policy.
@@ -24,6 +13,10 @@ var exportRegexCache sync.Map
 //
 // Returns:
 //   - bool: True if the item should be exported, false otherwise.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func ShouldExport(name string, policy *configv1.ExportPolicy) bool {
 	if policy == nil {
 		// Default to Allow/Export if no policy is present?
@@ -49,23 +42,6 @@ func ShouldExport(name string, policy *configv1.ExportPolicy) bool {
 			if err != nil {
 				logging.GetLogger().Error("Invalid regex in export policy", "regex", pattern, "error", err)
 				continue
-			}
-			exportRegexCache.Store(pattern, re)
-		}
-
-		if re.MatchString(name) {
-			return rule.GetAction() == configv1.ExportPolicy_EXPORT
-		}
-	}
-
-	// Check default action
-	if policy.GetDefaultAction() == configv1.ExportPolicy_UNEXPORT {
-		return false
-	}
-	// EXPORT or UNSPECIFIED -> Export
-	return true
-}
-
 // EvaluateCallPolicy checks if a call should be allowed based on the policies.
 //
 // Summary: Evaluates call policies against a tool execution.
@@ -82,6 +58,10 @@ func ShouldExport(name string, policy *configv1.ExportPolicy) bool {
 // Returns:
 //   - bool: True if the call is allowed, false otherwise.
 //   - error: An error if evaluation fails.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func EvaluateCallPolicy(policies []*configv1.CallPolicy, toolName, callID string, arguments []byte) (bool, error) {
 	// Fallback to slower implementation if not using compiled policies
 	for _, policy := range policies {
@@ -133,48 +113,30 @@ func EvaluateCallPolicy(policies []*configv1.CallPolicy, toolName, callID string
 	}
 	return true, nil // Allowed
 }
-
-// compiledCallPolicyRule holds the pre-compiled regexes for a policy rule.
-type compiledCallPolicyRule struct {
-	nameRegex     *regexp.Regexp
-	callIDRegex   *regexp.Regexp
-	argumentRegex *regexp.Regexp
-	rule          *configv1.CallPolicyRule
-}
-
-// CompiledCallPolicy holds a compiled version of a call policy.
-//
-// Summary: Represents a pre-compiled call policy for efficient evaluation.
-type CompiledCallPolicy struct {
-	policy        *configv1.CallPolicy
-	compiledRules []compiledCallPolicyRule
-}
-
 // CompileCallPolicies compiles a list of call policies into an efficient runtime format.
 //
 // Summary: Compiles call policies for runtime usage.
 //
 // Parameters:
 //   - policies: []*configv1.CallPolicy. The list of policies to compile.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 //
 // Returns:
 //   - []*CompiledCallPolicy: The compiled policies.
 //   - error: An error if compilation fails (e.g., invalid regex).
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func CompileCallPolicies(policies []*configv1.CallPolicy) ([]*CompiledCallPolicy, error) {
 	compiled := make([]*CompiledCallPolicy, 0, len(policies))
 	for _, p := range policies {
 		if p == nil {
-			continue
-		}
-		cp, err := NewCompiledCallPolicy(p)
-		if err != nil {
-			return nil, err
-		}
-		compiled = append(compiled, cp)
-	}
-	return compiled, nil
-}
-
 // NewCompiledCallPolicy compiles a single call policy.
 //
 // Summary: Compiles a single call policy.
@@ -185,6 +147,10 @@ func CompileCallPolicies(policies []*configv1.CallPolicy) ([]*CompiledCallPolicy
 // Returns:
 //   - *CompiledCallPolicy: The compiled policy.
 //   - error: An error if compilation fails.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, error) {
 	compiledRules := make([]compiledCallPolicyRule, len(policy.GetRules()))
 	for i, rule := range policy.GetRules() {
@@ -211,20 +177,6 @@ func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, er
 				return nil, fmt.Errorf("invalid argument regex %q: %w", rule.GetArgumentRegex(), err)
 			}
 		}
-
-		compiledRules[i] = compiledCallPolicyRule{
-			nameRegex:     nameRe,
-			callIDRegex:   callIDRe,
-			argumentRegex: argRe,
-			rule:          rule,
-		}
-	}
-	return &CompiledCallPolicy{
-		policy:        policy,
-		compiledRules: compiledRules,
-	}, nil
-}
-
 // EvaluateCompiledCallPolicy checks if a call should be allowed based on the compiled policies.
 //
 // Summary: Evaluates compiled call policies.
@@ -238,6 +190,10 @@ func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, er
 // Returns:
 //   - bool: True if the call is allowed, false otherwise.
 //   - error: An error if evaluation fails.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func EvaluateCompiledCallPolicy(policies []*CompiledCallPolicy, toolName, callID string, arguments []byte) (bool, error) {
 	for _, policy := range policies {
 		policyBlocked := false

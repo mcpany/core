@@ -4,29 +4,27 @@
 package resilience
 
 import (
-	"context"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-)
-
-// Manager orchestrates resilience features like circuit breakers, retries, and timeouts.
-//
-// Summary: Central manager for applying resilience patterns to operations.
-type Manager struct {
-	circuitBreaker *CircuitBreaker
-	retry          *Retry
-	timeout        *Timeout
-}
-
 // NewManager creates a new Manager with the given resilience configuration.
 //
 // Summary: Initializes a new Resilience Manager.
 //
 // Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Parameters:
 //   - config: *configv1.ResilienceConfig. The resilience configuration.
 //
 // Returns:
 //   - *Manager: The initialized manager, or nil if no resilience features are enabled.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func NewManager(config *configv1.ResilienceConfig) *Manager {
 	if config == nil {
 		return nil
@@ -41,22 +39,6 @@ func NewManager(config *configv1.ResilienceConfig) *Manager {
 	if config.GetRetryPolicy() != nil {
 		r = NewRetry(config.GetRetryPolicy())
 	}
-
-	var t *Timeout
-	if config.GetTimeout() != nil {
-		t = NewTimeout(config.GetTimeout())
-	}
-
-	if cb == nil && r == nil && t == nil {
-		return nil
-	}
-
-	return &Manager{
-		circuitBreaker: cb,
-		retry:          r,
-		timeout:        t,
-	}
-}
 
 // Execute wraps the given function with resilience features.
 //
@@ -73,6 +55,8 @@ func NewManager(config *configv1.ResilienceConfig) *Manager {
 //   - Applies timeout context.
 //   - Retries operation on failure.
 //   - Checks and updates circuit breaker state.
+// Errors:
+//   - triggers relevant error states on failure.
 func (m *Manager) Execute(ctx context.Context, work func(context.Context) error) error {
 	if m == nil {
 		return work(ctx)

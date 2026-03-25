@@ -2,19 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 package config
-
-import (
-	"context"
-	"errors"
-	"fmt"
-	"strings"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/validation"
-	"google.golang.org/protobuf/proto"
-)
-
 // LoadServices loads, validates, and processes the MCP Any server configuration from a given store.
 //
 // Summary: Loads and validates the server configuration.
@@ -27,6 +14,10 @@ import (
 // Returns:
 //   - *configv1.McpAnyServerConfig: A validated configuration object.
 //   - error: An error if loading or validation fails.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func LoadServices(ctx context.Context, store Store, binaryType string) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 
@@ -90,18 +81,6 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 					sb.WriteString(fmt.Sprintf("    💡 Fix: %s\n", ae.Suggestion))
 				} else {
 					sb.WriteString(fmt.Sprintf("    Error: %v\n", e.Err))
-				}
-			}
-			return nil, fmt.Errorf("%s", sb.String())
-		}
-	}
-
-	if len(fileConfig.GetUpstreamServices()) > 0 {
-		log.Info("Successfully processed config file", "services", len(fileConfig.GetUpstreamServices()))
-	}
-	return fileConfig, nil
-}
-
 // LoadResolvedConfig loads key resolved configuration (merging services, setting defaults) without performing strict validation.
 //
 // Summary: Loads configuration with merging and defaults but without strict validation.
@@ -113,6 +92,10 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 // Returns:
 //   - *configv1.McpAnyServerConfig: The resolved configuration.
 //   - error: An error if loading fails.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func LoadResolvedConfig(ctx context.Context, store Store) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 

@@ -1,25 +1,4 @@
 // Copyright 2025 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
-
-package middleware
-
-import (
-	"net/http"
-	"sync"
-
-	"github.com/mcpany/core/server/pkg/logging"
-)
-
-// HTTPCORSMiddleware handles CORS for HTTP endpoints.
-// It is thread-safe and supports dynamic updates.
-//
-// Summary: Represents a HTTPCORSMiddleware.
-type HTTPCORSMiddleware struct {
-	mu              sync.RWMutex
-	allowedOrigins  map[string]struct{}
-	wildcardAllowed bool
-}
-
 // NewHTTPCORSMiddleware creates a new HTTPCORSMiddleware.
 //
 // Summary: Initializes HTTP CORS middleware.
@@ -28,22 +7,33 @@ type HTTPCORSMiddleware struct {
 // To allow all, pass []string{"*"}.
 //
 // Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Parameters:
 //   - allowedOrigins ([]string): The allowed origins.
 //
 // Returns:
-//   - (*HTTPCORSMiddleware): The initialized middleware.
-func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
-	m := &HTTPCORSMiddleware{}
-	m.updateInternal(allowedOrigins)
-	return m
-}
-
 // Update updates the allowed origins.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Summary: Updates the allowed origins dynamically.
 //
 // Parameters:
 //   - allowedOrigins ([]string): The new list of allowed origins.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (m *HTTPCORSMiddleware) Update(allowedOrigins []string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -55,16 +45,6 @@ func (m *HTTPCORSMiddleware) Update(allowedOrigins []string) {
 // ⚡ Bolt Optimization: Uses map for O(1) lookup instead of O(N) slice iteration.
 func (m *HTTPCORSMiddleware) updateInternal(origins []string) {
 	m.allowedOrigins = make(map[string]struct{}, len(origins))
-	m.wildcardAllowed = false
-	for _, o := range origins {
-		if o == "*" {
-			m.wildcardAllowed = true
-		} else {
-			m.allowedOrigins[o] = struct{}{}
-		}
-	}
-}
-
 // Handler wraps an http.Handler with CORS logic.
 //
 // Summary: Middleware to handle CORS headers.
@@ -74,6 +54,10 @@ func (m *HTTPCORSMiddleware) updateInternal(origins []string) {
 //
 // Returns:
 //   - (http.Handler): The wrapped handler.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (m *HTTPCORSMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")

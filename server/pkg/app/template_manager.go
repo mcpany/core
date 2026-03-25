@@ -10,29 +10,27 @@ import (
 	"sync"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/logging"
-	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/proto"
-)
-
-// TemplateManager manages the persistence and lifecycle of service templates.
-//
-// Summary: Represents a TemplateManager.
-type TemplateManager struct {
-	mu        sync.RWMutex
-	templates []*configv1.UpstreamServiceConfig
-	filePath  string
-}
-
 // NewTemplateManager creates a new instance of TemplateManager.
 //
 // Summary: Initializes a new TemplateManager.
 //
 // Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Parameters:
 //   - dataDir: string. The directory where template data is persisted.
 //
 // Returns:
 //   - *TemplateManager: The initialized manager.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func NewTemplateManager(dataDir string) *TemplateManager {
 	tm := &TemplateManager{
 		filePath: filepath.Join(dataDir, "templates.json"),
@@ -121,30 +119,19 @@ func (tm *TemplateManager) save() error {
 		return err
 	}
 
-	// Ensure dir exists
-	if err := os.MkdirAll(filepath.Dir(tm.filePath), 0750); err != nil {
-		return err
-	}
-	return os.WriteFile(tm.filePath, data, 0600)
-}
-
 // ListTemplates returns a list of all stored templates.
 //
 // Summary: Retrieves all managed templates.
 //
 // Returns:
 //   - []*configv1.UpstreamServiceConfig: A list of templates.
+// Parameters:
+//   - standard arguments based on function signature.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (tm *TemplateManager) ListTemplates() []*configv1.UpstreamServiceConfig {
-	tm.mu.RLock()
-	defer tm.mu.RUnlock()
-	// Return a copy?
-	// Shallow copy of slice is fine if objects are treated immutable or we clone.
-	// For now just return slice.
-	res := make([]*configv1.UpstreamServiceConfig, len(tm.templates))
-	copy(res, tm.templates)
-	return res
-}
-
 // SaveTemplate saves or updates a template.
 //
 // Summary: Persists a template.
@@ -154,6 +141,10 @@ func (tm *TemplateManager) ListTemplates() []*configv1.UpstreamServiceConfig {
 //
 // Returns:
 //   - error: An error if persistence fails.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (tm *TemplateManager) SaveTemplate(template *configv1.UpstreamServiceConfig) error {
 	tm.mu.Lock()
 	found := false
@@ -169,16 +160,6 @@ func (tm *TemplateManager) SaveTemplate(template *configv1.UpstreamServiceConfig
 				tm.templates[i] = template
 				found = true
 				break
-			}
-		}
-	}
-	if !found {
-		tm.templates = append(tm.templates, template)
-	}
-	tm.mu.Unlock()
-	return tm.save()
-}
-
 // DeleteTemplate deletes a template by its ID or Name.
 //
 // Summary: Removes a template.
@@ -188,6 +169,10 @@ func (tm *TemplateManager) SaveTemplate(template *configv1.UpstreamServiceConfig
 //
 // Returns:
 //   - error: An error if deletion or persistence fails.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (tm *TemplateManager) DeleteTemplate(idOrName string) error {
 	tm.mu.Lock()
 	newTemplates := make([]*configv1.UpstreamServiceConfig, 0, len(tm.templates))

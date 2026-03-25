@@ -3,19 +3,6 @@
 
 package util //nolint:revive,nolintlint // Package name 'util' is common in this codebase
 
-import (
-	"bytes"
-	"math"
-	"sync"
-)
-
-var jsonWalkerBufferPool = sync.Pool{
-	New: func() interface{} {
-		b := make([]byte, 0, 4096)
-		return &b
-	},
-}
-
 // WalkJSONStrings visits every string value in the JSON input.
 //
 // Summary: Walks through a JSON bytes slice and applies a visitor function to all string values.
@@ -28,6 +15,10 @@ var jsonWalkerBufferPool = sync.Pool{
 //
 // Returns:
 //   - []byte: The potentially modified JSON output.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func WalkJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []byte {
 	var outPtr *[]byte
 	var out []byte
@@ -114,19 +105,6 @@ func WalkJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []by
 	if out == nil {
 		return input
 	}
-	out = append(out, input[lastWrite:]...)
-
-	result := make([]byte, len(out))
-	copy(result, out)
-
-	if outPtr != nil {
-		*outPtr = out
-		jsonWalkerBufferPool.Put(outPtr)
-	}
-
-	return result
-}
-
 // WalkStandardJSONStrings visits every string value in the JSON input.
 //
 // Summary: Optimized JSON walker for standard JSON (no comments).
@@ -139,6 +117,10 @@ func WalkJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []by
 //
 // Returns:
 //   - []byte: The potentially modified JSON output.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func WalkStandardJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []byte {
 	var outPtr *[]byte
 	var out []byte

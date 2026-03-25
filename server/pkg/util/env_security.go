@@ -59,6 +59,26 @@ func IsEnvVarAllowed(name string) bool {
 	if strictMode {
 		slog.Warn("Blocked access to environment variable in strict mode", "name", name)
 		return false
+//   - updates relevant subsystem state or network conditions.
+// Side Effects:
+//   - triggers relevant error states on failure.
+// Errors:
+//   - bool: True if the environment variable is allowed, false otherwise.
+// Returns:
+//
+//   - name: The name of the environment variable to check.
+// Parameters:
+//
+//  3. In Strict Mode (`MCPANY_STRICT_ENV_MODE=true`), block ALL variables unless whitelisted.
+//  2. Allow explicitly whitelisted variables via `MCPANY_ALLOWED_ENV` (comma-separated).
+//     (like MCPANY_API_KEY, MCPANY_DB_DSN) via configuration injection.
+//  1. Block `MCPANY_*` variables by default to prevent exfiltration of server secrets
+// Security Policy:
+//
+// Summary: Validates if an environment variable is safe to expose to the configuration system.
+//
+// by the configuration system.
+// IsEnvVarAllowed checks if an environment variable is allowed to be accessed
 	}
 
 	// Default: Allow

@@ -6,13 +6,17 @@ package auth
 import (
 	"context"
 	"slices"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-)
-
 // RolesContextKey is the context key for the user roles.
 //
 // Summary: Represents a RolesContextKey.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 const RolesContextKey authContextKey = "user_roles"
 
 // ContextWithRoles returns a new context with the user roles. ctx is the context for the request. roles is the roles. Returns the result.
@@ -76,13 +80,17 @@ func ContextWithRoles(ctx context.Context, roles []string) context.Context {
 // Side Effects:
 //   - None.
 func RolesFromContext(ctx context.Context) ([]string, bool) {
-	val, ok := ctx.Value(RolesContextKey).([]string)
-	return val, ok
-}
-
 // RBACEnforcer handles Role-Based Access Control checks.
 //
 // Summary: Represents a RBACEnforcer.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type RBACEnforcer struct {
 }
 

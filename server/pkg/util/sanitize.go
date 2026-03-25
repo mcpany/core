@@ -4,16 +4,6 @@
 //revive:disable:var-naming
 package util
 
-import (
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"google.golang.org/protobuf/proto"
-)
-
-// RedactedString is the string used to replace sensitive data.
-//
-// Summary: Constant string for redacted data.
-const RedactedString = "REDACTED"
-
 // SanitizeUser creates a sanitized copy of the user object with sensitive data redacted.
 //
 // Summary: Sanitizes a user object.
@@ -23,20 +13,14 @@ const RedactedString = "REDACTED"
 //
 // Returns:
 //   - *configv1.User: A sanitized copy of the user object, or nil if input is nil.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func SanitizeUser(u *configv1.User) *configv1.User {
 	if u == nil {
 		return nil
 	}
-	// Clone to avoid modifying the original
-	clone := proto.Clone(u).(*configv1.User)
-
-	if clone.GetAuthentication() != nil {
-		clone.SetAuthentication(SanitizeAuthentication(clone.GetAuthentication()))
-	}
-
-	return clone
-}
-
 // SanitizeCredential creates a sanitized copy of the credential object with sensitive data redacted.
 //
 // Summary: Sanitizes a credential object.
@@ -46,22 +30,15 @@ func SanitizeUser(u *configv1.User) *configv1.User {
 //
 // Returns:
 //   - *configv1.Credential: A sanitized copy of the credential object, or nil if input is nil.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func SanitizeCredential(c *configv1.Credential) *configv1.Credential {
 	if c == nil {
 		return nil
 	}
 	clone := proto.Clone(c).(*configv1.Credential)
-
-	if clone.GetAuthentication() != nil {
-		clone.SetAuthentication(SanitizeAuthentication(clone.GetAuthentication()))
-	}
-
-	if clone.GetToken() != nil {
-		clone.SetToken(SanitizeUserToken(clone.GetToken()))
-	}
-
-	return clone
-}
 
 // SanitizeAuthentication sanitizes the authentication object.
 // It modifies the object in place (assumes it's already a clone).
@@ -73,6 +50,10 @@ func SanitizeCredential(c *configv1.Credential) *configv1.Credential {
 //
 // Returns:
 //   - *configv1.Authentication: The sanitized authentication object, or nil if input is nil.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func SanitizeAuthentication(a *configv1.Authentication) *configv1.Authentication {
 	if a == nil {
 		return nil
@@ -103,16 +84,6 @@ func SanitizeAuthentication(a *configv1.Authentication) *configv1.Authentication
 		if oa := a.GetOauth2(); oa != nil {
 			oa.SetClientSecret(SanitizeSecretValue(oa.GetClientSecret()))
 			oa.SetClientId(SanitizeSecretValue(oa.GetClientId()))
-		}
-	case configv1.Authentication_TrustedHeader_case:
-		if th := a.GetTrustedHeader(); th != nil && th.GetHeaderValue() != "" {
-			th.SetHeaderValue(RedactedString)
-		}
-	}
-
-	return a
-}
-
 // SanitizeUserToken sanitizes the user token.
 //
 // Summary: Sanitizes a user token.
@@ -122,19 +93,13 @@ func SanitizeAuthentication(a *configv1.Authentication) *configv1.Authentication
 //
 // Returns:
 //   - *configv1.UserToken: The sanitized user token, or nil if input is nil.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func SanitizeUserToken(t *configv1.UserToken) *configv1.UserToken {
 	if t == nil {
 		return nil
-	}
-	if t.GetAccessToken() != "" {
-		t.SetAccessToken(RedactedString)
-	}
-	if t.GetRefreshToken() != "" {
-		t.SetRefreshToken(RedactedString)
-	}
-	return t
-}
-
 // SanitizeSecretValue sanitizes a SecretValue.
 //
 // Summary: Sanitizes a SecretValue object.
@@ -144,6 +109,10 @@ func SanitizeUserToken(t *configv1.UserToken) *configv1.UserToken {
 //
 // Returns:
 //   - *configv1.SecretValue: The sanitized secret value, or nil if input is nil.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func SanitizeSecretValue(s *configv1.SecretValue) *configv1.SecretValue {
 	if s == nil {
 		return nil
@@ -164,5 +133,17 @@ func SanitizeSecretValue(s *configv1.SecretValue) *configv1.SecretValue {
 		}
 	}
 
+//   - None.
+// Side Effects:
+//   - None.
+// Errors:
+// Returns:
+//
+//   - u (*configv1.User): The user object to sanitize.
+// Parameters:
+//
+// Summary: Sanitizes a user object.
+//
+// SanitizeUser creates a sanitized copy of the user object with sensitive data redacted.
 	return s
 }

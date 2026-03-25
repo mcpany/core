@@ -40,15 +40,18 @@ type dockerClient interface {
 	ContainerRemove(ctx context.Context, containerID string, options container.RemoveOptions) error
 	Close() error
 }
-
-var newDockerClient = func(ops ...client.Opt) (dockerClient, error) {
-	return client.NewClientWithOpts(ops...)
-}
-
 // DockerTransport implements the mcp.Transport interface to connect to a service
 // running inside a Docker container. It manages the container lifecycle.
 //
 // Summary: Represents a DockerTransport.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type DockerTransport struct {
 	StdioConfig *configv1.McpStdioConnection
 }

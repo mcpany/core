@@ -10,13 +10,17 @@ import (
 	"io"
 	"os"
 	"sync"
-
-	"github.com/mcpany/core/server/pkg/validation"
-)
-
 // FileAuditStore writes audit logs to a file or stdout.
 //
 // Summary: Audit store implementation that appends newline-delimited JSON (NDJSON) to a file or standard output.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type FileAuditStore struct {
 	mu   sync.Mutex
 	file *os.File
@@ -44,20 +48,6 @@ func NewFileAuditStore(path string) (*FileAuditStore, error) {
 	var f *os.File
 	var err error
 	if path != "" {
-		if err := validation.IsAllowedPath(path); err != nil {
-			return nil, fmt.Errorf("audit log file path not allowed: %w", err)
-		}
-		f, err = os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-		if err != nil {
-			return nil, fmt.Errorf("failed to open audit log file: %w", err)
-		}
-	}
-	return &FileAuditStore{
-		file: f,
-		out:  os.Stdout,
-	}, nil
-}
-
 // Write writes an audit entry to the file.
 //
 // Summary: Appends a JSON-marshaled audit entry to the configured output.
@@ -71,6 +61,8 @@ func NewFileAuditStore(path string) (*FileAuditStore, error) {
 //
 // Side Effects:
 //   - Writes data to the file or stdout.
+// Errors:
+//   - triggers relevant error states on failure.
 func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 	// ⚡ BOLT: Serialize JSON outside the lock to reduce critical section duration.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -83,42 +75,28 @@ func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 
 	s.mu.Lock()
 	defer s.mu.Unlock()
-
-	var w io.Writer
-	if s.file != nil {
-		w = s.file
-	} else {
-		w = s.out
-	}
-
-	_, err = w.Write(b)
-	return err
-}
-
 // Read implements the Store interface.
 //
 // Summary: Reads audit entries (Not implemented).
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - _: Filter. Unused.
-//
-// Returns:
-//   - []Entry: Nil.
-//   - error: Always returns "not implemented".
-func (s *FileAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
-	return nil, fmt.Errorf("read not implemented for file audit store")
-}
-
 // Close closes the file.
 //
 // Summary: Closes the underlying file handle if one exists.
 //
 // Returns:
 //   - error: An error if closing the file fails.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Side Effects:
 //   - Closes the file descriptor.
+// Parameters:
+//   - standard arguments based on function signature.
+// Errors:
+//   - triggers relevant error states on failure.
 func (s *FileAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

@@ -20,3 +20,16 @@ type OAuth2Config struct {
 	// verify that the token's 'aud' claim matches at least one of these values.
 	Audiences []string
 }
+//   - None.
+// Side Effects:
+//   - None.
+// Errors:
+//   - None.
+// Returns:
+//   - None.
+// Parameters:
+// Summary: Represents a OAuth2Config.
+//
+// JWTs against an OIDC provider.
+// configure the OAuth2Authenticator with the necessary parameters to validate
+// OAuth2Config holds the configuration for OAuth2 authentication. It is used to

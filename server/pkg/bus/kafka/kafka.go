@@ -24,13 +24,17 @@ type writerInterface interface {
 
 // readerInterface allows mocking kafka.Reader.
 type readerInterface interface {
-	ReadMessage(ctx context.Context) (kafkago.Message, error)
-	Close() error
-}
-
 // Bus is a Kafka-backed implementation of the Bus interface.
 //
 // Summary: Represents a Bus.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Bus[T any] struct {
 	writer        writerInterface
 	brokers       []string
@@ -259,19 +263,18 @@ func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T
 
 	unsub = b.Subscribe(ctx, topic, func(msg T) {
 		once.Do(func() {
-			handler(msg)
-			unsub()
-		})
-	})
-	return unsub
-}
-
 // Close closes the Kafka writer.
 //
 // Summary: Closes the Kafka connection.
 //
 // Returns:
 //   - error: An error if closing fails.
+// Parameters:
+//   - standard arguments based on function signature.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (b *Bus[T]) Close() error {
 	return b.writer.Close()
 }

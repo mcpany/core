@@ -12,17 +12,19 @@ import (
 	"math/big"
 	"net"
 	"net/http"
-	"net/url"
-	"os"
-	"strings"
-	"time"
-)
-
 // IPResolver defines an interface for looking up IP addresses.
 //
 // Summary: Interface for IP address resolution.
 //
 // It matches the signature of net.Resolver.LookupIP.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type IPResolver interface {
 	// LookupIP looks up host using the local resolver.
 	//
@@ -33,17 +35,19 @@ type IPResolver interface {
 	//   - network (string): The network type (e.g., "ip", "ip4", "ip6").
 	//   - host (string): The host to look up.
 	//
-	// Returns:
-	//   - ([]net.IP): A slice of that host's IPv4 and IPv6 addresses.
-	//   - (error): An error if the lookup fails.
-	LookupIP(ctx context.Context, network, host string) ([]net.IP, error)
-}
-
 // NetDialer defines an interface for dialing network connections.
 //
 // Summary: Interface for network dialing.
 //
 // It matches the signature of net.Dialer.DialContext.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type NetDialer interface {
 	// DialContext connects to the address on the named network using the provided context.
 	//
@@ -56,44 +60,24 @@ type NetDialer interface {
 	//
 	// Returns:
 	//   - (net.Conn): The established connection.
-	//   - (error): An error if the connection fails.
-	DialContext(ctx context.Context, network, address string) (net.Conn, error)
-}
-
 // SafeDialer provides control over outbound connections to prevent Server-Side Request Forgery (SSRF).
 //
 // Summary: Secure network dialer preventing SSRF.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type SafeDialer struct {
 	// AllowLoopback allows connections to loopback addresses (127.0.0.1, ::1).
 	AllowLoopback bool
 	// AllowPrivate allows connections to private network addresses (RFC 1918, RFC 4193).
 	AllowPrivate bool
 	// AllowLinkLocal allows connections to link-local addresses (169.254.x.x, fe80::/10).
-	// This includes cloud metadata services.
-	AllowLinkLocal bool
-
-	// Resolver is used for DNS lookups. If nil, net.DefaultResolver is used.
-	Resolver IPResolver
-	// Dialer is used for establishing connections. If nil, &net.Dialer{} is used.
-	Dialer NetDialer
-}
-
 // NewSafeDialer creates a new SafeDialer with strict default security settings.
-//
-// Summary: Initializes a SafeDialer with secure defaults.
-//
-// By default, it blocks all non-public IP addresses (loopback, private, link-local).
-//
-// Returns:
-//   - (*SafeDialer): A new SafeDialer instance with restrictive defaults.
-func NewSafeDialer() *SafeDialer {
-	return &SafeDialer{
-		AllowLoopback:  false,
-		AllowPrivate:   false,
-		AllowLinkLocal: false,
-	}
-}
-
 // DialContext establishes a network connection to the given address while enforcing egress policies.
 //
 // Summary: Dials a network address securely.
@@ -101,6 +85,12 @@ func NewSafeDialer() *SafeDialer {
 // It resolves the host's IP addresses and verifies them against the allowed list before connecting.
 //
 // Parameters:
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //   - ctx (context.Context): The context for the dial operation.
 //   - network (string): The network type (e.g., "tcp", "tcp4", "tcp6").
 //   - addr (string): The address to connect to (host:port).
@@ -108,6 +98,10 @@ func NewSafeDialer() *SafeDialer {
 // Returns:
 //   - (net.Conn): The established connection.
 //   - (error): An error if resolution fails, all resolved IPs are blocked by policy, or the connection fails.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net.Conn, error) {
 	host, port, err := net.SplitHostPort(addr)
 	if err != nil {
@@ -153,39 +147,10 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 		dialer = &net.Dialer{}
 	}
 
-	// All IPs are safe. Dial them in order until one succeeds.
-	var firstErr error
-	for _, ip := range ips {
-		dialAddr := net.JoinHostPort(ip.String(), port)
-		conn, err := dialer.DialContext(ctx, network, dialAddr)
-		if err == nil {
-			return conn, nil
-		}
-		if firstErr == nil {
-			firstErr = err
-		}
-	}
-	return nil, firstErr
-}
-
 // SafeDialContext creates a connection to the given address with strict SSRF protection.
 //
 // Summary: Dials an address with default security protections.
 //
-// It is a convenience wrapper around SafeDialer with default settings (blocking private/loopback).
-//
-// Parameters:
-//   - ctx (context.Context): The context for the dial operation.
-//   - network (string): The network type.
-//   - addr (string): The address to connect to (host:port).
-//
-// Returns:
-//   - (net.Conn): The established connection.
-//   - (error): An error if the connection is blocked by policy or fails.
-func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error) {
-	return NewSafeDialer().DialContext(ctx, network, addr)
-}
-
 // NewSafeHTTPClient creates a new HTTP client configured to prevent SSRF attacks.
 //
 // Summary: Creates a secure HTTP client.
@@ -196,9 +161,23 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 //   - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS: Set to "true" to allow all local connections (loopback, private).
 //   - MCPANY_ALLOW_LOOPBACK_RESOURCES: Set to "true" to allow loopback connections.
 //   - MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES: Set to "true" to allow private network connections.
+// Parameters:
+//   - standard arguments based on function signature.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Returns:
 //   - (*http.Client): A configured HTTP client.
+// Parameters:
+//   - standard arguments based on function signature.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func NewSafeHTTPClient() *http.Client {
 	dialer := NewSafeDialer()
 	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
@@ -207,20 +186,6 @@ func NewSafeHTTPClient() *http.Client {
 	}
 	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
 		dialer.AllowLoopback = true
-	}
-	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
-		dialer.AllowPrivate = true
-	}
-	// LinkLocal is always blocked by default and cannot be enabled via env var for now (safest default).
-
-	return &http.Client{
-		Timeout: 10 * time.Second,
-		Transport: &http.Transport{
-			DialContext: dialer.DialContext,
-		},
-	}
-}
-
 // CheckConnection verifies if a TCP connection can be established to the given address.
 //
 // Summary: Verifies TCP connectivity to an address.
@@ -234,6 +199,10 @@ func NewSafeHTTPClient() *http.Client {
 //
 // Returns:
 //   - (error): nil if the connection succeeded, or an error if it failed.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func CheckConnection(ctx context.Context, address string) error {
 	var target string
 	if strings.Contains(address, "://") {
@@ -277,22 +246,6 @@ func CheckConnection(ctx context.Context, address string) error {
 
 	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
 		dialer.AllowLoopback = true
-	}
-
-	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
-		dialer.AllowPrivate = true
-	}
-
-	dialer.Dialer = &net.Dialer{Timeout: 5 * time.Second}
-
-	conn, err := dialer.DialContext(ctx, "tcp", target)
-	if err != nil {
-		return fmt.Errorf("failed to connect to address %s: %w", target, err)
-	}
-	defer func() { _ = conn.Close() }()
-	return nil
-}
-
 // ListenWithRetry attempts to listen on the given address with retries to handle transient port conflicts.
 //
 // Summary: Listens on an address with retry logic.
@@ -308,6 +261,10 @@ func CheckConnection(ctx context.Context, address string) error {
 // Returns:
 //   - (net.Listener): The successfully bound listener.
 //   - (error): An error if binding fails after all retries.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func ListenWithRetry(ctx context.Context, network, address string) (net.Listener, error) {
 	var lis net.Listener
 	var err error

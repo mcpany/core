@@ -45,14 +45,6 @@ func httpMethodToString(method configv1.HttpCallDefinition_HttpMethod) (string, 
 	case configv1.HttpCallDefinition_HTTP_METHOD_PUT:
 		return http.MethodPut, nil
 	case configv1.HttpCallDefinition_HTTP_METHOD_DELETE:
-		return http.MethodDelete, nil
-	case configv1.HttpCallDefinition_HTTP_METHOD_PATCH:
-		return http.MethodPatch, nil
-	default:
-		return "", fmt.Errorf("unsupported HTTP method: %v", method)
-	}
-}
-
 // Upstream implements the upstream.Upstream interface for services that are
 // exposed via standard HTTP endpoints.
 //
@@ -60,6 +52,14 @@ func httpMethodToString(method configv1.HttpCallDefinition_HttpMethod) (string, 
 // and manages connection pooling for HTTP requests.
 //
 // Summary: Represents a Upstream.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Upstream struct {
 	poolManager *pool.Manager
 	serviceID   string

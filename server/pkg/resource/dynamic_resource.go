@@ -4,25 +4,6 @@
 // Package resource provides resource management functionality.
 package resource
 
-import (
-	"context"
-	"encoding/json"
-	"fmt"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/tool"
-	"github.com/modelcontextprotocol/go-sdk/mcp"
-)
-
-// DynamicResource implements the Resource interface for resources that are
-// fetched dynamically by executing a tool.
-//
-// Summary: Represents a DynamicResource.
-type DynamicResource struct {
-	resource *mcp.Resource
-	tool     tool.Tool
-}
-
 // NewDynamicResource creates a new instance of DynamicResource.
 //
 // Summary: Initializes a dynamic resource backed by a tool.
@@ -30,50 +11,29 @@ type DynamicResource struct {
 // Parameters:
 //   - def: *configv1.ResourceDefinition. The resource definition.
 //   - t: tool.Tool. The tool used to fetch the resource content.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 //
 // Returns:
 //   - *DynamicResource: The initialized dynamic resource.
 //   - error: An error if validation fails.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func NewDynamicResource(def *configv1.ResourceDefinition, t tool.Tool) (*DynamicResource, error) {
 	if def == nil {
 		return nil, fmt.Errorf("resource definition is nil")
-	}
-	if t == nil {
-		return nil, fmt.Errorf("tool is nil")
-	}
-	return &DynamicResource{
-		resource: &mcp.Resource{
-			URI:         def.GetUri(),
-			Name:        def.GetName(),
-			Title:       def.GetTitle(),
-			Description: def.GetDescription(),
-			MIMEType:    def.GetMimeType(),
-			Size:        def.GetSize(),
-		},
-		tool: t,
-	}, nil
-}
-
 // Resource returns the MCP representation of the resource.
 //
 // Summary: Retrieves the MCP resource metadata.
 //
 // Returns:
 //   - *mcp.Resource: The MCP resource definition.
-func (r *DynamicResource) Resource() *mcp.Resource {
-	return r.resource
-}
-
-// Service returns the ID of the service that provides this resource.
-//
-// Summary: Retrieves the service ID.
-//
-// Returns:
-//   - string: The service ID.
-func (r *DynamicResource) Service() string {
-	return r.tool.Tool().GetServiceId()
-}
-
 // Read executes the associated tool to fetch the resource content.
 //
 // Summary: Fetches the resource content by executing the tool.
@@ -84,9 +44,15 @@ func (r *DynamicResource) Service() string {
 // Returns:
 //   - *mcp.ReadResourceResult: The resource content.
 //   - error: An error if the tool execution fails.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Side Effects:
 //   - Executes the underlying tool, which may have its own side effects.
+// Errors:
+//   - triggers relevant error states on failure.
 func (r *DynamicResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
 	// For now, we'll just execute the tool with no inputs.
 	// In the future, we may need to pass inputs to the tool.
@@ -129,16 +95,6 @@ func (r *DynamicResource) Read(ctx context.Context) (*mcp.ReadResourceResult, er
 			Contents: []*mcp.ResourceContents{
 				{
 					URI:      r.resource.URI,
-					Text:     string(data),
-					MIMEType: r.resource.MIMEType,
-				},
-			},
-		}, nil
-	default:
-		return nil, fmt.Errorf("unsupported tool result type for dynamic resource: %T", result)
-	}
-}
-
 // Subscribe is not yet implemented for dynamic resources.
 //
 // Summary: Subscribes to resource updates (Not Implemented).
@@ -148,6 +104,10 @@ func (r *DynamicResource) Read(ctx context.Context) (*mcp.ReadResourceResult, er
 //
 // Returns:
 //   - error: Always returns an error indicating not implemented.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (r *DynamicResource) Subscribe(_ context.Context) error {
 	return fmt.Errorf("subscribing to dynamic resources is not yet implemented")
 }

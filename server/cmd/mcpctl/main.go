@@ -10,15 +10,18 @@ import (
 	"os"
 	"strings"
 
-	"github.com/mcpany/core/server/pkg/config"
-	"github.com/spf13/afero"
-	"github.com/spf13/cobra"
-)
-
 // Version is the version of the mcpctl CLI.
 // It is set at build time via -ldflags.
 //
 // Summary: Represents Version.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 var Version = "dev"
 
 // main is the entry point for the mcpctl CLI.

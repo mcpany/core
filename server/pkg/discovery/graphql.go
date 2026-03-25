@@ -6,13 +6,17 @@ package discovery
 import (
 	"context"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"google.golang.org/protobuf/proto"
-)
-
 // GraphQLProvider discovers services via GraphQL introspection.
 //
 // Summary: Represents a GraphQLProvider.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type GraphQLProvider struct {
 	Endpoint string // e.g., "http://localhost:8080/graphql"
 }

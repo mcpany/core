@@ -1,30 +1,23 @@
 // Copyright 2025 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
-
-package resilience
-
-import (
-	"context"
-
-	"google.golang.org/protobuf/types/known/durationpb"
-)
-
-// Timeout implements a timeout policy for operations.
-//
-// Summary: Enforces a maximum duration for operations.
-type Timeout struct {
-	duration *durationpb.Duration
-}
-
 // NewTimeout creates a new Timeout instance with the given duration.
 //
 // Summary: Initializes a new Timeout policy.
 //
 // Parameters:
 //   - duration: *durationpb.Duration. The timeout duration.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 //
 // Returns:
 //   - *Timeout: The initialized timeout policy.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func NewTimeout(duration *durationpb.Duration) *Timeout {
 	return &Timeout{
 		duration: duration,

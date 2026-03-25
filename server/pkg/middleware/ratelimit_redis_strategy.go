@@ -10,24 +10,27 @@ import (
 	"sync"
 
 	"github.com/mcpany/core/proto/bus"
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/redis/go-redis/v9"
-)
-
 // RedisStrategy implements RateLimitStrategy for Redis-based rate limiting.
-//
-// Summary: Strategy for creating Redis-backed distributed rate limiters.
-type RedisStrategy struct {
-	// redisClients caches Redis clients per config. Key is configHash.
-	redisClients sync.Map
-}
-
 // NewRedisStrategy creates a new RedisStrategy.
 //
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 // Summary: Initializes a new RedisStrategy.
 //
 // Returns:
 //   - *RedisStrategy: The initialized strategy.
+// Parameters:
+//   - standard arguments based on function signature.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func NewRedisStrategy() *RedisStrategy {
 	return &RedisStrategy{}
 }

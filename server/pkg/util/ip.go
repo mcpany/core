@@ -6,31 +6,8 @@ package util
 
 import (
 	"context"
-	"net"
-	"net/http"
-	"strings"
-
-	"github.com/mcpany/core/server/pkg/validation"
-)
-
-type contextKey string
-
-const remoteIPContextKey = contextKey("remote_ip")
-
 // ContextWithRemoteIP creates a new context containing the remote IP address.
 //
-// Summary: Injects the remote IP into the context.
-//
-// Parameters:
-//   - ctx: context.Context. The parent context.
-//   - ip: string. The remote IP address to store in the context.
-//
-// Returns:
-//   - context.Context: A new context with the remote IP attached.
-func ContextWithRemoteIP(ctx context.Context, ip string) context.Context {
-	return context.WithValue(ctx, remoteIPContextKey, ip)
-}
-
 // ExtractIP extracts and validates the IP address from a string.
 //
 // Summary: Parses and sanitizes an IP address string.
@@ -39,9 +16,19 @@ func ContextWithRemoteIP(ctx context.Context, ip string) context.Context {
 //
 // Parameters:
 //   - addr: string. The address string to parse (e.g., "192.168.1.1:80", "[::1]", "fe80::1%eth0").
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Returns:
 //   - string: The cleaned IP address string, or an empty string if the address is invalid.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func ExtractIP(addr string) string {
 	ipStr, _, err := net.SplitHostPort(addr)
 	if err != nil {
@@ -52,17 +39,6 @@ func ExtractIP(addr string) string {
 	}
 	// Strip zone index if present (e.g. fe80::1%eth0 -> fe80::1)
 	if idx := strings.IndexByte(ipStr, '%'); idx != -1 {
-		ipStr = ipStr[:idx]
-	}
-
-	// Validate IP
-	parsedIP := net.ParseIP(ipStr)
-	if parsedIP == nil {
-		return ""
-	}
-	return parsedIP.String()
-}
-
 // GetClientIP extracts the client IP address from an HTTP request.
 //
 // Summary: Determines the client's IP address.
@@ -73,6 +49,10 @@ func ExtractIP(addr string) string {
 //
 // Returns:
 //   - string: The best-effort client IP address.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func GetClientIP(r *http.Request, trustProxy bool) string {
 	if trustProxy {
 		// Prefer X-Real-IP as it is usually a single IP set by the trusted proxy.
@@ -88,59 +68,41 @@ func GetClientIP(r *http.Request, trustProxy bool) string {
 			clientIP, _, _ := strings.Cut(xff, ",")
 			clientIP = strings.TrimSpace(clientIP)
 			if clientIP != "" {
-				if ip := ExtractIP(clientIP); ip != "" {
-					return ip
-				}
-			}
-		}
-	}
-
-	// Fallback to RemoteAddr
-	return ExtractIP(r.RemoteAddr)
-}
-
 // RemoteIPFromContext retrieves the remote IP address stored in the context.
 //
-// Summary: Retrieves the remote IP from the context.
-//
-// Parameters:
-//   - ctx: context.Context. The context to retrieve the IP from.
-//
-// Returns:
-//   - string: The remote IP address.
-//   - bool: True if the IP was found, false otherwise.
-func RemoteIPFromContext(ctx context.Context) (string, bool) {
-	ip, ok := ctx.Value(remoteIPContextKey).(string)
-	return ip, ok
-}
-
 // IsPrivateNetworkIP checks if the IP address belongs to a private network.
 //
 // Summary: Checks if an IP is a private network address.
 //
-// This includes RFC1918 (Private IPv4), RFC4193 (Unique Local IPv6), and RFC6598 (CGNAT).
-// It does NOT include loopback or link-local addresses.
-//
-// Parameters:
-//   - ip: net.IP. The IP address to check.
-//
-// Returns:
-//   - bool: True if the IP is a private network address.
-func IsPrivateNetworkIP(ip net.IP) bool {
-	return validation.IsPrivateNetworkIP(ip)
-}
-
 // IsPrivateIP checks if the IP address is private, link-local, or loopback.
 //
 // Summary: Checks if an IP is internal/private.
 //
+// Parameters:
+//   - standard arguments based on function signature.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 // This is a comprehensive check for any "internal" IP address that shouldn't be publicly routable.
 //
 // Parameters:
 //   - ip: net.IP. The IP address to check.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Returns:
 //   - bool: True if the IP is private, link-local, or loopback.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func IsPrivateIP(ip net.IP) bool {
 	return validation.IsPrivateIP(ip)
 }

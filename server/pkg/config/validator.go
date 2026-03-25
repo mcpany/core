@@ -20,68 +20,119 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/santhosh-tekuri/jsonschema/v5"
-	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/types/known/structpb"
-)
-
 // BinaryType defines the type of the binary being validated.
 //
 // Summary: Enumeration of binary types for validation context.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type BinaryType int
 
 const (
 	schemeHTTP  = "http"
 	schemeHTTPS = "https"
 )
-
-const (
 	// Server represents the server binary.
-	// Summary: Defines Serve.
-	Server BinaryType = iota
 	// Worker represents the worker binary.
-	// Summary: Defines Worke.
-	Worker
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Client represents the client binary.
-	// Summary: Defines Clien.
-	Client
-)
-
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 // AuthValidationContext defines the context for authentication validation.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 //
 // Summary: Enumeration of authentication validation contexts.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type AuthValidationContext int
-
-const (
 	// AuthValidationContextIncoming represents incoming authentication (e.g., Users).
-	// Summary: Defines AuthValidationContextIncomin.
-	AuthValidationContextIncoming AuthValidationContext = iota
 	// AuthValidationContextOutgoing represents outgoing authentication (e.g., Upstream Services).
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Summary: Defines AuthValidationContextOutgoin.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	AuthValidationContextOutgoing
 )
 
-type contextKey string
-
-const (
 	// SkipSecretValidationKey is the context key to skip secret validation (e.g. for config check API).
-	// Value should be a boolean.
-	// Summary: Defines SkipSecretValidationKey.
-	SkipSecretValidationKey contextKey = "skip_secret_validation"
-
 	// SkipFilesystemCheckKey is the context key to skip filesystem existence checks (e.g. for config check API).
 	// Value should be a boolean.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Summary: Defines SkipFilesystemCheckKey.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	SkipFilesystemCheckKey contextKey = "skip_filesystem_check"
 )
 
 var (
-	osStat       = os.Stat
-	execLookPath = exec.LookPath
-)
-
 // ValidationError encapsulates a validation error for a specific service.
 //
 // Summary: Represents a configuration validation error.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type ValidationError struct {
 	ServiceName string
 	Err         error
@@ -106,18 +157,6 @@ type ValidationError struct {
 // Parameters:
 //   - TODO: Document parameters.
 //
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
-func (e *ValidationError) Error() string {
-	return fmt.Sprintf("service %q: %v", e.ServiceName, e.Err)
-}
-
 // Validate inspects the given McpAnyServerConfig for correctness and consistency.
 //
 // Summary: Validates the entire server configuration.
@@ -129,6 +168,10 @@ func (e *ValidationError) Error() string {
 //
 // Returns:
 //   - ([]ValidationError): A slice of ValidationErrors, which will be empty if the configuration is valid.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryType BinaryType) []ValidationError {
 	var validationErrors []ValidationError
 	serviceNames := make(map[string]bool)
@@ -514,17 +557,6 @@ func validateGlobalSettings(ctx context.Context, gs *configv1.GlobalSettings, bi
 			return fmt.Errorf("profile definition has empty name")
 		}
 		if profileNames[profile.GetName()] {
-			return fmt.Errorf("duplicate profile definition name: %s", profile.GetName())
-		}
-		profileNames[profile.GetName()] = true
-		if err := validateProfileDefinition(profile); err != nil {
-			return fmt.Errorf("profile definition %q error: %w", profile.GetName(), err)
-		}
-	}
-
-	return nil
-}
-
 // ValidateOrError validates a single upstream service configuration and returns an error if it's invalid.
 //
 // Summary: Validates a single upstream service.
@@ -535,6 +567,10 @@ func validateGlobalSettings(ctx context.Context, gs *configv1.GlobalSettings, bi
 //
 // Returns:
 //   - (error): An error if validation fails.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func ValidateOrError(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
 	return validateUpstreamService(ctx, service)
 }

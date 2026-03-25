@@ -18,69 +18,57 @@ import (
 	"github.com/mcpany/core/server/pkg/upstream/mcp"
 	"github.com/mcpany/core/server/pkg/upstream/openapi"
 	"github.com/mcpany/core/server/pkg/upstream/sql"
-	"github.com/mcpany/core/server/pkg/upstream/vector"
-	"github.com/mcpany/core/server/pkg/upstream/webrtc"
-	"github.com/mcpany/core/server/pkg/upstream/websocket"
-)
-
 // Factory defines the interface for a factory that creates upstream service
 // instances.
 //
 // Summary: Interface for creating upstream services.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 type Factory interface {
 	// NewUpstream creates a new upstream service instance based on the provided
 	// configuration.
 	//
 	// Summary: Creates a new upstream service.
 	//
-	// Parameters:
-	//   - config (*configv1.UpstreamServiceConfig): The upstream service configuration.
-	//
-	// Returns:
-	//   - upstream.Upstream: The created upstream service.
-	//   - error: An error if creation fails.
-	NewUpstream(config *configv1.UpstreamServiceConfig) (upstream.Upstream, error)
-}
-
-// UpstreamServiceFactory is a concrete implementation of the Factory interface.
-// It creates different types of upstream services based on the service
-// configuration.
-//
-// Summary: Concrete factory for creating upstream services.
-type UpstreamServiceFactory struct {
-	poolManager    *pool.Manager
-	globalSettings *configv1.GlobalSettings
-}
-
 // NewUpstreamServiceFactory creates a new UpstreamServiceFactory.
 //
 // Summary: Creates a new UpstreamServiceFactory.
 //
 // Parameters:
 //   - poolManager (*pool.Manager): The connection pool manager used by upstreams that require
-//     connection pooling (e.g., gRPC, HTTP, WebSocket).
-//   - globalSettings (*configv1.GlobalSettings): The global configuration settings.
-//
-// Returns:
-//   - Factory: A new Factory instance.
-func NewUpstreamServiceFactory(poolManager *pool.Manager, globalSettings *configv1.GlobalSettings) Factory {
-	return &UpstreamServiceFactory{
-		poolManager:    poolManager,
-		globalSettings: globalSettings,
-	}
-}
-
 // NewUpstream creates and returns an appropriate upstream.Upstream implementation
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 // based on the type of service specified in the configuration.
 //
 // Summary: Creates a new upstream service based on configuration.
 //
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 // Parameters:
 //   - config (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
 //
 // Returns:
 //   - upstream.Upstream: A new upstream service instance.
 //   - error: An error if the service type is unknown.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (f *UpstreamServiceFactory) NewUpstream(config *configv1.UpstreamServiceConfig) (upstream.Upstream, error) {
 	if config == nil {
 		return nil, fmt.Errorf("upstream service config cannot be nil")

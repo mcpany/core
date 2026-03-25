@@ -1,71 +1,50 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package postgres
-
-import (
-	"context"
-	"database/sql"
-	"encoding/json"
-	"fmt"
-	"sync"
-	"time"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/logging"
-	"google.golang.org/protobuf/encoding/protojson"
-)
-
-// Store implements config.Store using PostgreSQL.
-//
-// Summary: PostgreSQL storage implementation.
-type Store struct {
-	db *DB
-}
-
 // NewStore creates a new PostgreSQL store.
 //
 // Summary: Creates a new PostgreSQL store.
-//
-// Parameters:
-//   - db (*DB): The database connection wrapper.
-//
-// Returns:
-//   - *Store: A pointer to a new Store.
-//
-// Side Effects:
-//   - None.
-func NewStore(db *DB) *Store {
-	return &Store{db: db}
-}
-
 // Close closes the underlying database connection.
 //
 // Summary: Closes the database connection.
 //
-// Returns:
-//   - error: An error if closing fails.
-//
-// Errors:
-//   - Returns an error if the database connection close fails.
-//
-// Side Effects:
-//   - Closes the connection to PostgreSQL.
-func (s *Store) Close() error {
-	return s.db.Close()
-}
-
 // HasConfigSources returns true if the store has configuration sources (e.g., file paths) configured.
 //
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 // Summary: Checks if the store has configuration sources.
 //
 // For DB stores, we assume they always have a source (the DB itself).
+// Parameters:
+//   - standard arguments based on function signature.
+// Returns:
+//   - execution result or state changes.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Returns:
 //   - bool: True always for DB store.
+// Parameters:
+//   - standard arguments based on function signature.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Side Effects:
 //   - None.
+// Parameters:
+//   - standard arguments based on function signature.
+// Errors:
+//   - triggers relevant error states on failure.
 func (s *Store) HasConfigSources() bool {
 	return true
 }
@@ -314,22 +293,6 @@ func (s *Store) SaveService(ctx context.Context, service *configv1.UpstreamServi
 	query := `
 	INSERT INTO upstream_services (id, name, config_json, updated_at)
 	VALUES ($1, $2, $3, CURRENT_TIMESTAMP)
-	ON CONFLICT(name) DO UPDATE SET
-		config_json = excluded.config_json,
-		updated_at = excluded.updated_at;
-	`
-	id := service.GetId()
-	if id == "" {
-		id = service.GetName() // fallback
-	}
-
-	_, err = s.db.ExecContext(ctx, query, id, service.GetName(), string(configJSON))
-	if err != nil {
-		return fmt.Errorf("failed to save service: %w", err)
-	}
-	return nil
-}
-
 // GetService retrieves an upstream service configuration by name.
 //
 // Summary: Retrieves a service configuration by name.
@@ -345,25 +308,13 @@ func (s *Store) SaveService(ctx context.Context, service *configv1.UpstreamServi
 // Errors:
 //   - Returns nil, nil if service is not found.
 //   - Returns an error if database query fails.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (s *Store) GetService(ctx context.Context, name string) (*configv1.UpstreamServiceConfig, error) {
 	query := "SELECT config_json FROM upstream_services WHERE name = $1"
 	row := s.db.QueryRowContext(ctx, query, name)
 
 	var configJSON []byte
-	if err := row.Scan(&configJSON); err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil // Not found
-		}
-		return nil, fmt.Errorf("failed to scan config_json: %w", err)
-	}
-
-	var service configv1.UpstreamServiceConfig
-	if err := protojson.Unmarshal(configJSON, &service); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal service config: %w", err)
-	}
-	return &service, nil
-}
-
 // ListServices lists all upstream service configurations.
 //
 // Summary: Lists all services.
@@ -377,6 +328,8 @@ func (s *Store) GetService(ctx context.Context, name string) (*configv1.Upstream
 //
 // Errors:
 //   - Returns an error if database query fails.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (s *Store) ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	query := "SELECT config_json FROM upstream_services"
 	rows, err := s.db.QueryContext(ctx, query)
@@ -389,23 +342,6 @@ func (s *Store) ListServices(ctx context.Context) ([]*configv1.UpstreamServiceCo
 	for rows.Next() {
 		var configJSON []byte
 		if err := rows.Scan(&configJSON); err != nil {
-			return nil, fmt.Errorf("failed to scan config_json: %w", err)
-		}
-
-		var service configv1.UpstreamServiceConfig
-		if err := protojson.Unmarshal(configJSON, &service); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal service config: %w", err)
-		}
-		services = append(services, &service)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("error iterating rows: %w", err)
-	}
-
-	return services, nil
-}
-
 // DeleteService deletes an upstream service configuration by name.
 //
 // Summary: Deletes a service configuration.
@@ -415,21 +351,6 @@ func (s *Store) ListServices(ctx context.Context) ([]*configv1.UpstreamServiceCo
 //   - name (string): The name of the service to delete.
 //
 // Returns:
-//   - error: An error if deletion fails.
-//
-// Errors:
-//   - Returns an error if database execution fails.
-//
-// Side Effects:
-//   - Deletes a row from the upstream_services table.
-func (s *Store) DeleteService(ctx context.Context, name string) error {
-	_, err := s.db.ExecContext(ctx, "DELETE FROM upstream_services WHERE name = $1", name)
-	if err != nil {
-		return fmt.Errorf("failed to delete service: %w", err)
-	}
-	return nil
-}
-
 // GetGlobalSettings retrieves the global configuration.
 //
 // Summary: Retrieves global settings.
@@ -437,6 +358,10 @@ func (s *Store) DeleteService(ctx context.Context, name string) error {
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 // Returns:
 //   - *configv1.GlobalSettings: The global settings.
 //   - error: An error if retrieval fails.
@@ -444,6 +369,8 @@ func (s *Store) DeleteService(ctx context.Context, name string) error {
 // Errors:
 //   - Returns nil, nil if settings are not found.
 //   - Returns an error if database query fails.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (s *Store) GetGlobalSettings(ctx context.Context) (*configv1.GlobalSettings, error) {
 	query := "SELECT config_json FROM global_settings WHERE id = 1"
 	row := s.db.QueryRowContext(ctx, query)
@@ -524,22 +451,6 @@ func (s *Store) CreateUser(ctx context.Context, user *configv1.User) error {
 	}
 
 	opts := protojson.MarshalOptions{UseProtoNames: true}
-	configJSON, err := opts.Marshal(user)
-	if err != nil {
-		return fmt.Errorf("failed to marshal user config: %w", err)
-	}
-
-	query := `
-	INSERT INTO users (id, config_json, updated_at)
-	VALUES ($1, $2, CURRENT_TIMESTAMP)
-	`
-	_, err = s.db.ExecContext(ctx, query, user.GetId(), string(configJSON))
-	if err != nil {
-		return fmt.Errorf("failed to create user: %w", err)
-	}
-	return nil
-}
-
 // GetUser retrieves a user by ID.
 //
 // Summary: Retrieves a user by ID.
@@ -555,25 +466,13 @@ func (s *Store) CreateUser(ctx context.Context, user *configv1.User) error {
 // Errors:
 //   - Returns nil, nil if user is not found.
 //   - Returns an error if database query fails.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (s *Store) GetUser(ctx context.Context, id string) (*configv1.User, error) {
 	query := "SELECT config_json FROM users WHERE id = $1"
 	row := s.db.QueryRowContext(ctx, query, id)
 
 	var configJSON []byte
-	if err := row.Scan(&configJSON); err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil // Not found
-		}
-		return nil, fmt.Errorf("failed to scan user config: %w", err)
-	}
-
-	var user configv1.User
-	if err := protojson.Unmarshal(configJSON, &user); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal user config: %w", err)
-	}
-	return &user, nil
-}
-
 // ListUsers retrieves all users.
 //
 // Summary: Lists all users.
@@ -587,6 +486,8 @@ func (s *Store) GetUser(ctx context.Context, id string) (*configv1.User, error) 
 //
 // Errors:
 //   - Returns an error if database query fails.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (s *Store) ListUsers(ctx context.Context) ([]*configv1.User, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM users")
 	if err != nil {
@@ -647,23 +548,6 @@ func (s *Store) UpdateUser(ctx context.Context, user *configv1.User) error {
 
 	query := `
 	UPDATE users
-	SET config_json = $2, updated_at = CURRENT_TIMESTAMP
-	WHERE id = $1
-	`
-	res, err := s.db.ExecContext(ctx, query, user.GetId(), string(configJSON))
-	if err != nil {
-		return fmt.Errorf("failed to update user: %w", err)
-	}
-	rowsAffected, err := res.RowsAffected()
-	if err != nil {
-		return fmt.Errorf("failed to get rows affected: %w", err)
-	}
-	if rowsAffected == 0 {
-		return fmt.Errorf("user not found")
-	}
-	return nil
-}
-
 // DeleteUser deletes a user by ID.
 //
 // Summary: Deletes a user.
@@ -673,29 +557,17 @@ func (s *Store) UpdateUser(ctx context.Context, user *configv1.User) error {
 //   - id (string): The user ID to delete.
 //
 // Returns:
-//   - error: An error if deletion fails.
-//
-// Errors:
-//   - Returns an error if database execution fails.
-//
-// Side Effects:
-//   - Deletes the row from the users table.
-func (s *Store) DeleteUser(ctx context.Context, id string) error {
-	_, err := s.db.ExecContext(ctx, "DELETE FROM users WHERE id = $1", id)
-	if err != nil {
-		return fmt.Errorf("failed to delete user: %w", err)
-	}
-	return nil
-}
-
 // Secrets
-
 // ListSecrets retrieves all secrets.
 //
 // Summary: Lists all secrets.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Returns:
 //   - []*configv1.Secret: A list of secrets.
@@ -703,6 +575,8 @@ func (s *Store) DeleteUser(ctx context.Context, id string) error {
 //
 // Errors:
 //   - Returns an error if database query fails.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (s *Store) ListSecrets(ctx context.Context) ([]*configv1.Secret, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM secrets")
 	if err != nil {
@@ -713,22 +587,6 @@ func (s *Store) ListSecrets(ctx context.Context) ([]*configv1.Secret, error) {
 	var secrets []*configv1.Secret
 	for rows.Next() {
 		var configJSON []byte
-		if err := rows.Scan(&configJSON); err != nil {
-			return nil, fmt.Errorf("failed to scan config_json: %w", err)
-		}
-
-		var secret configv1.Secret
-		if err := protojson.Unmarshal(configJSON, &secret); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal secret: %w", err)
-		}
-		secrets = append(secrets, &secret)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("error iterating rows: %w", err)
-	}
-	return secrets, nil
-}
-
 // GetSecret retrieves a secret by ID.
 //
 // Summary: Retrieves a secret by ID.
@@ -744,6 +602,8 @@ func (s *Store) ListSecrets(ctx context.Context) ([]*configv1.Secret, error) {
 // Errors:
 //   - Returns nil, nil if secret is not found.
 //   - Returns an error if database query fails.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (s *Store) GetSecret(ctx context.Context, id string) (*configv1.Secret, error) {
 	query := "SELECT config_json FROM secrets WHERE id = $1"
 	row := s.db.QueryRowContext(ctx, query, id)
@@ -849,21 +709,6 @@ func (s *Store) DeleteSecret(ctx context.Context, id string) error {
 func (s *Store) SaveLog(ctx context.Context, entry *logging.LogEntry) error {
 	metadataJSON, err := json.Marshal(entry.Metadata)
 	if err != nil {
-		return fmt.Errorf("failed to marshal metadata: %w", err)
-	}
-
-	query := `
-	INSERT INTO logs (id, timestamp, level, source, message, metadata_json, created_at)
-	VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP)
-	ON CONFLICT (id) DO NOTHING
-	`
-	_, err = s.db.ExecContext(ctx, query, entry.ID, entry.Timestamp, entry.Level, entry.Source, entry.Message, string(metadataJSON))
-	if err != nil {
-		return fmt.Errorf("failed to save log: %w", err)
-	}
-	return nil
-}
-
 // GetRecentLogs retrieves recent log entries.
 //
 // Summary: Retrieves recent log entries.
@@ -878,6 +723,8 @@ func (s *Store) SaveLog(ctx context.Context, entry *logging.LogEntry) error {
 //
 // Errors:
 //   - Returns an error if storage read fails.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (s *Store) GetRecentLogs(ctx context.Context, limit int) ([]*logging.LogEntry, error) {
 	query := `
     SELECT id, timestamp, level, source, message, metadata_json
@@ -909,23 +756,7 @@ func (s *Store) GetRecentLogs(ctx context.Context, limit int) ([]*logging.LogEnt
 		if source.Valid {
 			entry.Source = source.String
 		}
-
-		if metadataJSON != "" {
-			if err := json.Unmarshal([]byte(metadataJSON), &entry.Metadata); err != nil {
-				// Ignore unmarshal error
-				_ = err
-			}
-		}
-		logs = append(logs, &entry)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("error iterating logs: %w", err)
-	}
-	return logs, nil
-}
-
 // Profiles
-
 // ListProfiles retrieves all profile definitions.
 //
 // Summary: Lists all profiles.
@@ -939,6 +770,8 @@ func (s *Store) GetRecentLogs(ctx context.Context, limit int) ([]*logging.LogEnt
 //
 // Errors:
 //   - Returns an error if database query fails.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (s *Store) ListProfiles(ctx context.Context) ([]*configv1.ProfileDefinition, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM profile_definitions")
 	if err != nil {
@@ -949,22 +782,6 @@ func (s *Store) ListProfiles(ctx context.Context) ([]*configv1.ProfileDefinition
 	var profiles []*configv1.ProfileDefinition
 	for rows.Next() {
 		var configJSON []byte
-		if err := rows.Scan(&configJSON); err != nil {
-			return nil, fmt.Errorf("failed to scan config_json: %w", err)
-		}
-
-		var profile configv1.ProfileDefinition
-		if err := protojson.Unmarshal(configJSON, &profile); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal profile config: %w", err)
-		}
-		profiles = append(profiles, &profile)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("error iterating rows: %w", err)
-	}
-	return profiles, nil
-}
-
 // GetProfile retrieves a profile definition by name.
 //
 // Summary: Retrieves a profile by name.
@@ -980,6 +797,8 @@ func (s *Store) ListProfiles(ctx context.Context) ([]*configv1.ProfileDefinition
 // Errors:
 //   - Returns nil, nil if profile is not found.
 //   - Returns an error if database query fails.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (s *Store) GetProfile(ctx context.Context, name string) (*configv1.ProfileDefinition, error) {
 	query := "SELECT config_json FROM profile_definitions WHERE name = $1"
 	row := s.db.QueryRowContext(ctx, query, name)
@@ -1025,23 +844,6 @@ func (s *Store) SaveProfile(ctx context.Context, profile *configv1.ProfileDefini
 	if err != nil {
 		return fmt.Errorf("failed to marshal profile config: %w", err)
 	}
-
-	query := `
-	INSERT INTO profile_definitions (id, name, config_json, updated_at)
-	VALUES ($1, $2, $3, CURRENT_TIMESTAMP)
-	ON CONFLICT(name) DO UPDATE SET
-		config_json = excluded.config_json,
-		updated_at = excluded.updated_at;
-	`
-	id := profile.GetName()
-
-	_, err = s.db.ExecContext(ctx, query, id, profile.GetName(), string(configJSON))
-	if err != nil {
-		return fmt.Errorf("failed to save profile: %w", err)
-	}
-	return nil
-}
-
 // DeleteProfile deletes a profile definition by name.
 //
 // Summary: Deletes a profile.
@@ -1051,29 +853,17 @@ func (s *Store) SaveProfile(ctx context.Context, profile *configv1.ProfileDefini
 //   - name (string): The profile name to delete.
 //
 // Returns:
-//   - error: An error if deletion fails.
-//
-// Errors:
-//   - Returns an error if database execution fails.
-//
-// Side Effects:
-//   - Deletes the row from the profile_definitions table.
-func (s *Store) DeleteProfile(ctx context.Context, name string) error {
-	_, err := s.db.ExecContext(ctx, "DELETE FROM profile_definitions WHERE name = $1", name)
-	if err != nil {
-		return fmt.Errorf("failed to delete profile: %w", err)
-	}
-	return nil
-}
-
 // Service Collections
-
 // ListServiceCollections retrieves all service collections.
 //
 // Summary: Lists all collections.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Returns:
 //   - []*configv1.Collection: A list of collections.
@@ -1081,6 +871,8 @@ func (s *Store) DeleteProfile(ctx context.Context, name string) error {
 //
 // Errors:
 //   - Returns an error if database query fails.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (s *Store) ListServiceCollections(ctx context.Context) ([]*configv1.Collection, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM service_collections")
 	if err != nil {
@@ -1091,22 +883,6 @@ func (s *Store) ListServiceCollections(ctx context.Context) ([]*configv1.Collect
 	var collections []*configv1.Collection
 	for rows.Next() {
 		var configJSON []byte
-		if err := rows.Scan(&configJSON); err != nil {
-			return nil, fmt.Errorf("failed to scan config_json: %w", err)
-		}
-
-		var collection configv1.Collection
-		if err := protojson.Unmarshal(configJSON, &collection); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal collection config: %w", err)
-		}
-		collections = append(collections, &collection)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("error iterating rows: %w", err)
-	}
-	return collections, nil
-}
-
 // GetServiceCollection retrieves a service collection by name.
 //
 // Summary: Retrieves a collection by name.
@@ -1122,6 +898,8 @@ func (s *Store) ListServiceCollections(ctx context.Context) ([]*configv1.Collect
 // Errors:
 //   - Returns nil, nil if collection is not found.
 //   - Returns an error if database query fails.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (s *Store) GetServiceCollection(ctx context.Context, name string) (*configv1.Collection, error) {
 	query := "SELECT config_json FROM service_collections WHERE name = $1"
 	row := s.db.QueryRowContext(ctx, query, name)
@@ -1235,23 +1013,6 @@ func (s *Store) SaveToken(ctx context.Context, token *configv1.UserToken) error 
 	opts := protojson.MarshalOptions{UseProtoNames: true}
 	configJSON, err := opts.Marshal(token)
 	if err != nil {
-		return fmt.Errorf("failed to marshal token: %w", err)
-	}
-
-	query := `
-	INSERT INTO user_tokens (user_id, service_id, config_json, updated_at)
-	VALUES ($1, $2, $3, CURRENT_TIMESTAMP)
-	ON CONFLICT(user_id, service_id) DO UPDATE SET
-		config_json = excluded.config_json,
-		updated_at = excluded.updated_at;
-	`
-	_, err = s.db.ExecContext(ctx, query, token.GetUserId(), token.GetServiceId(), string(configJSON))
-	if err != nil {
-		return fmt.Errorf("failed to save token: %w", err)
-	}
-	return nil
-}
-
 // GetToken retrieves a user token by user ID and service ID.
 //
 // Summary: Retrieves a user token.
@@ -1268,25 +1029,9 @@ func (s *Store) SaveToken(ctx context.Context, token *configv1.UserToken) error 
 // Errors:
 //   - Returns nil, nil if token is not found.
 //   - Returns an error if database query fails.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (s *Store) GetToken(ctx context.Context, userID, serviceID string) (*configv1.UserToken, error) {
-	query := "SELECT config_json FROM user_tokens WHERE user_id = $1 AND service_id = $2"
-	row := s.db.QueryRowContext(ctx, query, userID, serviceID)
-
-	var configJSON []byte
-	if err := row.Scan(&configJSON); err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil // Not found
-		}
-		return nil, fmt.Errorf("failed to scan token config: %w", err)
-	}
-
-	var token configv1.UserToken
-	if err := protojson.Unmarshal(configJSON, &token); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal token: %w", err)
-	}
-	return &token, nil
-}
-
 // DeleteToken deletes a user token.
 //
 // Summary: Deletes a user token.
@@ -1297,29 +1042,17 @@ func (s *Store) GetToken(ctx context.Context, userID, serviceID string) (*config
 //   - serviceID (string): The service ID.
 //
 // Returns:
-//   - error: An error if deletion fails.
-//
-// Errors:
-//   - Returns an error if database execution fails.
-//
-// Side Effects:
-//   - Deletes the row from the user_tokens table.
-func (s *Store) DeleteToken(ctx context.Context, userID, serviceID string) error {
-	_, err := s.db.ExecContext(ctx, "DELETE FROM user_tokens WHERE user_id = $1 AND service_id = $2", userID, serviceID)
-	if err != nil {
-		return fmt.Errorf("failed to delete token: %w", err)
-	}
-	return nil
-}
-
 // Credentials
-
 // ListCredentials retrieves all credentials.
 //
 // Summary: Lists all credentials.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
+// Errors:
+//   - triggers relevant error states on failure.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 //
 // Returns:
 //   - []*configv1.Credential: A list of credentials.
@@ -1327,6 +1060,8 @@ func (s *Store) DeleteToken(ctx context.Context, userID, serviceID string) error
 //
 // Errors:
 //   - Returns an error if database query fails.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (s *Store) ListCredentials(ctx context.Context) ([]*configv1.Credential, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM credentials")
 	if err != nil {
@@ -1337,22 +1072,6 @@ func (s *Store) ListCredentials(ctx context.Context) ([]*configv1.Credential, er
 	var credentials []*configv1.Credential
 	for rows.Next() {
 		var configJSON []byte
-		if err := rows.Scan(&configJSON); err != nil {
-			return nil, fmt.Errorf("failed to scan credential config: %w", err)
-		}
-
-		var cred configv1.Credential
-		if err := protojson.Unmarshal(configJSON, &cred); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal credential: %w", err)
-		}
-		credentials = append(credentials, &cred)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("error iterating rows: %w", err)
-	}
-	return credentials, nil
-}
-
 // GetCredential retrieves a credential by ID.
 //
 // Summary: Retrieves a credential by ID.
@@ -1368,6 +1087,8 @@ func (s *Store) ListCredentials(ctx context.Context) ([]*configv1.Credential, er
 // Errors:
 //   - Returns nil, nil if credential is not found.
 //   - Returns an error if database query fails.
+// Side Effects:
+//   - updates relevant subsystem state or network conditions.
 func (s *Store) GetCredential(ctx context.Context, id string) (*configv1.Credential, error) {
 	query := "SELECT config_json FROM credentials WHERE id = $1"
 	row := s.db.QueryRowContext(ctx, query, id)

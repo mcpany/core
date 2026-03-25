@@ -4,13 +4,17 @@
 package app
 
 import (
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"google.golang.org/protobuf/proto"
-)
-
 // BuiltinServiceCollections contains the official service collections.
 //
 // Summary: Represents a BuiltinServiceCollections.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 var BuiltinServiceCollections []*configv1.Collection
 
 func init() {
