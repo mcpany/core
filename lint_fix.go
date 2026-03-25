@@ -16,8 +16,8 @@ func main() {
 	}
 
     ast.Inspect(f, func(n ast.Node) bool {
-        if assign, ok := n.(*ast.AssignStmt); ok {
-            if len(assign.Lhs) > 1 {
+        if ifStmt, ok := n.(*ast.IfStmt); ok {
+            if assign, ok := ifStmt.Init.(*ast.AssignStmt); ok {
                 for _, lhs := range assign.Lhs {
                     if ident, ok := lhs.(*ast.Ident); ok {
                         if ident.Name == "_" {

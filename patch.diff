@@ -1,26 +1,15 @@
 diff --git a/server/pkg/app/api.go b/server/pkg/app/api.go
-index dcbd4c3..1972828 100644
+index ed90cce..0e90956 100644
 --- a/server/pkg/app/api.go
 +++ b/server/pkg/app/api.go
-@@ -768,7 +768,9 @@ func (a *Application) handleTools() http.HandlerFunc {
-			buf = append(buf, ']')
+@@ -1150,8 +1150,8 @@
+	}
 
-			w.Header().Set("Content-Type", "application/json")
--			_, _ = w.Write(buf)
-+			if _, err := w.Write(buf); err != nil {
-+				logging.GetLogger().Error("failed to write response", "error", err.Error())
-+			}
-
-		case http.MethodPut:
-			var req struct {
-@@ -883,7 +885,9 @@ func (a *Application) handleTools() http.HandlerFunc {
-			}
-
-			w.WriteHeader(http.StatusOK)
--			_, _ = w.Write([]byte("{}"))
-+			if _, err := w.Write([]byte("{}")); err != nil {
-+				logging.GetLogger().Error("failed to write response", "error", err.Error())
-+			}
-
-		default:
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+	// Log the access (Audit)
+-	user, err := auth.UserFromContext(r.Context())
+-	if err != nil {
++	user, ok := auth.UserFromContext(r.Context())
++	if !ok {
+		user = "unknown"
+	}
+	logging.GetLogger().Info("Secret revealed", "id", id, "user", user)

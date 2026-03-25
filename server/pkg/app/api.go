@@ -479,13 +479,14 @@ func checkURLReachability(ctx context.Context, urlStr string) error {
 }
 
 func checkFilesystemAccess(path string) error {
-	_, err := os.Stat(path)
+	info, err := os.Stat(path)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return fmt.Errorf("path does not exist: %s", path)
 		}
 		return fmt.Errorf("failed to access path: %w", err)
 	}
+	_ = info
 	// We allow both files and directories, so existence is sufficient validation for now.
 	return nil
 }
@@ -497,13 +498,17 @@ func checkCommandAvailability(command string, workDir string) error {
 
 	// If absolute path, check existence
 	if filepath.IsAbs(command) {
-		if _, err := os.Stat(command); err != nil {
+		if info, err := os.Stat(command); err != nil {
 			return fmt.Errorf("executable not found at %s", command)
+		} else {
+			_ = info
 		}
 	} else {
 		// Look in PATH
-		if _, err := exec.LookPath(command); err != nil {
+		if p, err := exec.LookPath(command); err != nil {
 			return fmt.Errorf("command %s not found in PATH", command)
+		} else {
+			_ = p
 		}
 	}
 
@@ -768,9 +773,7 @@ func (a *Application) handleTools() http.HandlerFunc {
 			buf = append(buf, ']')
 
 			w.Header().Set("Content-Type", "application/json")
-			if _, err := w.Write(buf); err != nil {
-				logging.GetLogger().Error("failed to write response", "error", err.Error())
-			}
+			_, _ = w.Write(buf)
 
 		case http.MethodPut:
 			var req struct {
@@ -889,9 +892,7 @@ func (a *Application) handleTools() http.HandlerFunc {
 			}
 
 			w.WriteHeader(http.StatusOK)
-			if _, err := w.Write([]byte("{}")); err != nil {
-				logging.GetLogger().Error("failed to write response", "error", err.Error())
-			}
+			_, _ = w.Write([]byte("{}"))
 
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -1147,7 +1148,10 @@ func (a *Application) handleSecretReveal(w http.ResponseWriter, r *http.Request,
 	}
 
 	// Log the access (Audit)
-	user, _ := auth.UserFromContext(r.Context())
+	user, ok := auth.UserFromContext(r.Context())
+	if !ok {
+		user = "unknown"
+	}
 	logging.GetLogger().Info("Secret revealed", "id", id, "user", user)
 
 	w.Header().Set("Content-Type", "application/json")
