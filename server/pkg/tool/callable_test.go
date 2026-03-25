@@ -4,8 +4,6 @@
 package tool
 
 import (
-	"google.golang.org/protobuf/proto"
-
 	"context"
 	"errors"
 	"testing"
@@ -42,7 +40,9 @@ func (m *mockStreamingCallable) StreamCall(ctx context.Context, req *ExecutionRe
 }
 
 func TestNewCallableTool(t *testing.T) {
-	toolDef := configv1.ToolDefinition_builder{Name: proto.String("test_tool")}.Build()
+	toolDef := &configv1.ToolDefinition{
+		Name: "test_tool",
+	}
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	callable := &mockCallable{}
 
@@ -64,7 +64,7 @@ func TestCallableTool_Execute(t *testing.T) {
 	expectedResult := "test result"
 	expectedError := errors.New("test error")
 
-	toolDef := configv1.ToolDefinition_builder{Name: proto.String("test_tool")}.Build()
+	toolDef := &configv1.ToolDefinition{Name: "test_tool"}
 	req := &ExecutionRequest{}
 
 	t.Run("success", func(t *testing.T) {
@@ -96,7 +96,7 @@ func TestCallableTool_Execute(t *testing.T) {
 }
 
 func TestCallableTool_IsStreaming(t *testing.T) {
-	toolDef := configv1.ToolDefinition_builder{Name: proto.String("test_tool")}.Build()
+	toolDef := &configv1.ToolDefinition{Name: "test_tool"}
 
 	t.Run("non_streaming", func(t *testing.T) {
 		callable := &mockCallable{}
@@ -112,7 +112,7 @@ func TestCallableTool_IsStreaming(t *testing.T) {
 }
 
 func TestCallableTool_StreamExecute(t *testing.T) {
-	toolDef := configv1.ToolDefinition_builder{Name: proto.String("test_tool")}.Build()
+	toolDef := &configv1.ToolDefinition{Name: "test_tool"}
 	req := &ExecutionRequest{}
 
 	t.Run("streaming_callable_success", func(t *testing.T) {

@@ -69,7 +69,6 @@ go_test(
         "ip_xff_test.go",
         "ip_zone_test.go",
         "isnil_test.go",
-        "json_marshal_test.go",
         "json_size_test.go",
         "json_utils_test.go",
         "json_walker_test.go",

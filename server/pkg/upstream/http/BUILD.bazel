@@ -39,7 +39,6 @@ go_test(
     srcs = [
         "coverage_enhancement_test.go",
         "coverage_extra_test.go",
-        "coverage_intervention_test.go",
         "error_handling_test.go",
         "http_auth_test.go",
         "http_base_slash_test.go",

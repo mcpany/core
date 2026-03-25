@@ -40,8 +40,9 @@ go_test(
     deps = [
         "//proto/config/v1:config",
         "//server/pkg/audit",
-        "//server/pkg/validation",
         "@com_github_stretchr_testify//assert",
         "@com_github_stretchr_testify//require",
+        "@com_github_stretchr_testify//mock",
+        "//server/pkg/validation",
     ],
 )
