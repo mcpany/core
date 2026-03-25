@@ -16,14 +16,16 @@ func main() {
 	}
 
     ast.Inspect(f, func(n ast.Node) bool {
-        if ifStmt, ok := n.(*ast.IfStmt); ok {
-            if assign, ok := ifStmt.Init.(*ast.AssignStmt); ok {
+        if assign, ok := n.(*ast.AssignStmt); ok {
+            if len(assign.Lhs) > 1 {
                 for _, lhs := range assign.Lhs {
                     if ident, ok := lhs.(*ast.Ident); ok {
                         if ident.Name == "_" {
                             if call, ok := assign.Rhs[0].(*ast.CallExpr); ok {
                                 if sel, ok := call.Fun.(*ast.SelectorExpr); ok {
-                                    fmt.Printf("Ignoring part of return value of %s at %s\n", sel.Sel.Name, fset.Position(assign.Pos()))
+                                    if sel.Sel.Name == "UserFromContext" {
+                                        fmt.Printf("Ignoring part of return value of %s at %s\n", sel.Sel.Name, fset.Position(assign.Pos()))
+                                    }
                                 }
                             }
                         }
