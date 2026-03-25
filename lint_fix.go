@@ -23,7 +23,7 @@ func main() {
                         if ident.Name == "_" {
                             if call, ok := assign.Rhs[0].(*ast.CallExpr); ok {
                                 if sel, ok := call.Fun.(*ast.SelectorExpr); ok {
-                                    fmt.Printf("Ignoring part of return value of %s at %s\n", sel.Sel.Name, fset.Position(assign.Pos()))
+                                    fmt.Printf("Ignoring return value of %s at %s\n", sel.Sel.Name, fset.Position(assign.Pos()))
                                 }
                             }
                         }
