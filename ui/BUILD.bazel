@@ -126,7 +126,8 @@ define_vitest_tests(vitest_bin)
 eslint_bin.eslint_test(
     name = "lint",
     args = [
-        "src/", "--quiet",
+        "src/",
+        "--quiet",
     ],
     chdir = package_name(),
     data = [
