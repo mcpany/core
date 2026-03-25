@@ -201,18 +201,12 @@ export function DashboardGrid() {
             return parsed;
         }
         return DEFAULT_LAYOUT;
-    };
-
-    const requiresMigration = (parsed: any): boolean => {
-        return Array.isArray(parsed) && parsed.length > 0 && !parsed[0].instanceId;
-    };
+    }
 
     useEffect(() => {
         setIsMounted(true);
 
         const loadLayout = async () => {
-            let initialLayout = DEFAULT_LAYOUT;
-            let needsSave = false;
             try {
                 // Fetch from API
                 const res = await fetchWithAuth('/api/v1/user/preferences');
@@ -221,14 +215,10 @@ export function DashboardGrid() {
                     if (data && data['dashboard-layout']) {
                          try {
                             const parsed = JSON.parse(data['dashboard-layout']);
-                            initialLayout = migrateLayout(parsed);
-                            if (requiresMigration(parsed)) {
-                                needsSave = true;
-                            }
+                            setWidgets(migrateLayout(parsed));
                          } catch (e) {
                             console.error("Failed to parse remote layout", e);
-                            initialLayout = DEFAULT_LAYOUT;
-                            needsSave = true;
+                            setWidgets(DEFAULT_LAYOUT);
                          }
                     } else {
                          // No layout saved in backend, check local storage for migration
@@ -236,21 +226,15 @@ export function DashboardGrid() {
                          if (local) {
                              try {
                                 const parsed = JSON.parse(local);
-                                initialLayout = migrateLayout(parsed);
-                                if (requiresMigration(parsed)) {
-                                    needsSave = true;
-                                } else {
-                                    needsSave = true; // Still save to API since API was missing it
-                                }
+                                const migrated = migrateLayout(parsed);
+                                setWidgets(migrated);
                                 // We rely on the save effect to sync this to backend
                              } catch (e) {
                                 console.error("Failed to parse local layout", e);
-                                initialLayout = DEFAULT_LAYOUT;
-                                needsSave = true;
+                                setWidgets(DEFAULT_LAYOUT);
                              }
                          } else {
-                             initialLayout = DEFAULT_LAYOUT;
-                             needsSave = true;
+                             setWidgets(DEFAULT_LAYOUT);
                          }
                     }
                 } else {
@@ -259,40 +243,20 @@ export function DashboardGrid() {
                      const local = localStorage.getItem("dashboard-layout");
                      if (local) {
                         try {
-                            const parsed = JSON.parse(local);
-                            initialLayout = migrateLayout(parsed);
-                            if (requiresMigration(parsed)) {
-                                needsSave = true;
-                            }
+                            setWidgets(migrateLayout(JSON.parse(local)));
                         } catch {
-                            initialLayout = DEFAULT_LAYOUT;
-                            needsSave = true;
+                            setWidgets(DEFAULT_LAYOUT);
                         }
                      } else {
-                        initialLayout = DEFAULT_LAYOUT;
+                        setWidgets(DEFAULT_LAYOUT);
                      }
                 }
             } catch (err) {
                  console.error("Failed to load layout", err);
-                 initialLayout = DEFAULT_LAYOUT;
+                 setWidgets(DEFAULT_LAYOUT);
             } finally {
-                setWidgets(initialLayout);
                 setLoading(false);
                 setIsLoaded(true);
-
-                if (needsSave) {
-                    // Force an immediate save to persist migrations or defaults
-                    try {
-                        fetchWithAuth('/api/v1/user/preferences', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                'dashboard-layout': JSON.stringify(initialLayout)
-                            })
-                        }).catch(e => console.error("Failed to sync migrated layout", e));
-                        localStorage.setItem("dashboard-layout", JSON.stringify(initialLayout));
-                    } catch (e) {}
-                }
             }
         };
 
