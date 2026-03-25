@@ -28,7 +28,10 @@ go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
 go_sdk.download(version = "1.26.1")
 
 go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
+go_deps.from_file(go_mod = "//:go.mod")
 go_deps.from_file(go_mod = "//server:go.mod")
+go_deps.from_file(go_mod = "//k8s/operator:go.mod")
+go_deps.from_file(go_mod = "//proto:go.mod")
 go_deps.gazelle_override(
     directives = [
         "gazelle:proto disable_global",
@@ -113,9 +116,7 @@ use_repo(
     "com_github_lib_pq",
     "com_github_machinebox_graphql",
     "com_github_masterminds_semver_v3",
-    "com_github_mcpany_core",
     "com_github_milvus_io_milvus_sdk_go_v2",
-    "com_github_mcpany_core_proto",
     "com_github_modelcontextprotocol_go_sdk",
     "com_github_nats_io_nats_go",
     "com_github_nats_io_nats_server_v2",
@@ -145,7 +146,10 @@ use_repo(
     "in_gopkg_square_go_jose_v2",
     "in_gopkg_yaml_v2",
     "in_gopkg_yaml_v3",
+    "io_k8s_api",
+    "io_k8s_apimachinery",
     "io_k8s_client_go",
+    "io_k8s_sigs_controller_runtime",
     "io_k8s_sigs_yaml",
     "io_opentelemetry_go_contrib_instrumentation_google_golang_org_grpc_otelgrpc",
     "io_opentelemetry_go_contrib_instrumentation_net_http_otelhttp",
@@ -157,6 +161,7 @@ use_repo(
     "io_opentelemetry_go_otel_sdk",
     "io_opentelemetry_go_otel_sdk_metric",
     "org_golang_google_api",
+    "org_golang_google_genproto_googleapis_api",
     "org_golang_google_grpc",
     "org_golang_google_grpc_cmd_protoc_gen_go_grpc",
     "org_golang_google_protobuf",
@@ -167,10 +172,6 @@ use_repo(
     "org_modernc_sqlite",
     "org_uber_go_goleak",
     "org_uber_go_mock",
-    "io_k8s_sigs_controller_runtime",
-    "io_k8s_api",
-    "io_k8s_apimachinery",
-    "org_golang_google_genproto_googleapis_api",
 )
 
 oci = use_extension("@rules_oci//oci:extensions.bzl", "oci")

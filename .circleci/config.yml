@@ -32,8 +32,8 @@ jobs:
             sudo apt-get install -y nodejs
       - restore_cache:
           keys:
-            - v46-lint-{{ checksum "server/go.sum" }}
-            - v46-lint-
+            - v50-lint-{{ checksum "server/go.sum" }}
+            - v50-lint-
       - run:
           name: Prepare and Run Lint
           command: |
@@ -43,7 +43,7 @@ jobs:
             export PATH=$(pwd)/build/env/bin:$PATH
             ./scripts/lint.sh
       - save_cache:
-          key: v46-lint-{{ checksum "server/go.sum" }}
+          key: v50-lint-{{ checksum "server/go.sum" }}
           paths:
             - "build/env/bin"
             - "build/.cache"
@@ -70,8 +70,8 @@ jobs:
             sudo apt-get install -y nodejs
       - restore_cache:
           keys:
-            - v46-test-{{ checksum "server/go.sum" }}
-            - v46-test-
+            - v50-test-{{ checksum "server/go.sum" }}
+            - v50-test-
       - run:
           name: Run Tests
           command: |
@@ -82,16 +82,23 @@ jobs:
             # Build binaries needed for integration tests
             mkdir -p build/bin build/test/bin
             go build -o build/bin/server ./server/cmd/server
-            MOCKS="http_echo_server http_authed_echo_server grpc_weather_server grpc_authed_weather_server openapi_weather_server webrtc_weather_server prompt-server"
-            for mock in $MOCKS; do
-                go build -o build/test/bin/$mock ./server/tests/integration/cmd/mocks/$mock
+            # Build all mocks in tests/integration/cmd/mocks
+            for mock_dir in server/tests/integration/cmd/mocks/*; do
+                if [ -d "$mock_dir" ]; then
+                    mock_name=$(basename "$mock_dir")
+                    if [ -f "$mock_dir/main.go" ]; then
+                        echo "Building mock: $mock_name"
+                        go build -o build/test/bin/$mock_name "$mock_dir/main.go"
+                    fi
+                fi
             done
+            # Build command-tester
             go build -o build/test/bin/command-tester ./server/tests/integration/cmd/command-tester
             # Run Go unit tests
             make test-proto
             cd server && go test -short ./...
       - save_cache:
-          key: v46-test-{{ checksum "server/go.sum" }}
+          key: v50-test-{{ checksum "server/go.sum" }}
           paths:
             - "build/env/bin"
             - "build/.cache"
