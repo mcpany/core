@@ -61,6 +61,22 @@ func listDirectoryTool(prov provider.Provider, fs afero.Fs) filesystemToolDef {
 	}
 }
 
+// getFileInfoTool creates a tool for getting file info.
+//
+// Summary: Creates file info tool.
+//
+// Parameters:
+//   - prov (provider.Provider): The filesystem provider.
+//   - fs (afero.Fs): The filesystem instance.
+//
+// Returns:
+//   - filesystemToolDef: The tool definition.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func getFileInfoTool(prov provider.Provider, fs afero.Fs) filesystemToolDef {
 	return filesystemToolDef{
 		Name:        "get_file_info",
