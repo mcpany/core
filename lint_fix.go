@@ -16,19 +16,20 @@ func main() {
 	}
 
     ast.Inspect(f, func(n ast.Node) bool {
-        if funcDecl, ok := n.(*ast.FuncDecl); ok && funcDecl.Name.Name == "handleTools" {
-            ast.Inspect(funcDecl.Body, func(n ast.Node) bool {
-                if exprStmt, ok := n.(*ast.ExprStmt); ok {
-                    if call, ok := exprStmt.X.(*ast.CallExpr); ok {
-                        if sel, ok := call.Fun.(*ast.SelectorExpr); ok {
-                            if sel.Sel.Name == "Write" || sel.Sel.Name == "Marshal" {
-                                fmt.Printf("Unchecked return value of %s at %s\n", sel.Sel.Name, fset.Position(exprStmt.Pos()))
+        if assign, ok := n.(*ast.AssignStmt); ok {
+            if len(assign.Lhs) > 1 {
+                for _, lhs := range assign.Lhs {
+                    if ident, ok := lhs.(*ast.Ident); ok {
+                        if ident.Name == "_" {
+                            if call, ok := assign.Rhs[0].(*ast.CallExpr); ok {
+                                if sel, ok := call.Fun.(*ast.SelectorExpr); ok {
+                                    fmt.Printf("Ignoring return value of %s at %s\n", sel.Sel.Name, fset.Position(assign.Pos()))
+                                }
                             }
                         }
                     }
                 }
-                return true
-            })
+            }
         }
         return true
     })
