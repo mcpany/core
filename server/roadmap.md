@@ -857,6 +857,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Zero-Knowledge Discovery Broker (ZKDB)**: Security middleware mandating cryptographic capability masking until mission-handshake. (Added: 2026-07-01)
 *   **[P0] Attention-Locked Reasoning Anchors (ALRA)**: Hardware-bound attention-pinning to prevent mission-root intent eviction. (Added: 2026-07-01)
 
+#### Upcoming (2026-07-03 Evolution)
+*   **[P0] Zero-Copy Memory Broker (ZCMB)**: Hardware-locked shared memory reasoning buffers for sub-millisecond local swarm coordination. (Added: 2026-07-03)
+*   **[P0] Stylometric Identity Anchoring (SIA)**: Behavioral security middleware detecting reasoning-path mimicry in AIR quorums. (Added: 2026-07-03)
+*   **[P0] Multimodal Hash-Chaining (MHC)**: Cryptographic lineage for non-textual fragments to prevent multimodal logic grafting. (Added: 2026-07-03)
+*   **[P0] Active Attention Enforcer (AAE)**: Dynamic reinforcement of mission-root anchors to counter noise-driven attention drift. (Added: 2026-07-03)
+
 #### Upcoming (2026-03-24 Evolution - v2)
 *   **[P0] Relational PoI Validator**: Implementation of UACO v1.7 Intent Chain verification. (Added: 2026-03-24)
 *   **[P0] BSH State Buffer**: Memory-mapped binary transport for mitigation of "Token Storms". (Added: 2026-03-24)

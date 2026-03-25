@@ -924,6 +924,19 @@
 - **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
 - **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.
 
+## Evolution: [2026-07-03] Updates
+
+### Proposed Additions
+- **Zero-Copy Memory Broker (ZCMB)**: (P0) Authoritative coordination service for hardware-locked, shared memory reasoning buffers.
+- **Stylometric Identity Anchoring (SIA)**: (P0) Behavioral security middleware for the AIR Hub that performs real-time stylometric analysis to detect mimicry.
+- **Multimodal Hash-Chaining (MHC) Provider**: (P0) Security middleware mandating cryptographic hash-chaining for all non-textual reasoning fragments.
+- **Active Attention Enforcer (AAE)**: (P0) Cognitive security extension for the HAAL middleware that dynamically reinforces mission-root anchors.
+- **Intent-Based Priority Mailbox**: (P1) Upgrade for the PAMS middleware allowing mission-root directed prioritization of coordination fragments.
+
+### Priority Shifts
+- **Autonomous Intent Reconciliation (AIR) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SIA** integration to counter stylometric spoofing.
+- **Hardware-Attested Attention Locking (HAAL)**: (Re-affirmed P0) Evolving into the **Active Attention Enforcer** to counter attention drift.
+
 ---
 
 ## Evolution: [2026-03-25] Updates
