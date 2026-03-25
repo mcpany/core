@@ -10,13 +10,10 @@ test.describe('Audit Logs Viewer', () => {
   test.beforeEach(async ({ page, request }) => {
     try {
       await seedGlobalState(request);
-      await page.waitForTimeout(2000);
 
       const res = await request.post('/api/v1/debug/traces', { data: {}, headers: { 'Authorization': 'Bearer test-token', 'Content-Type': 'application/json' } });
       console.log('Seeding status:', res.status());
 
-      // Wait for backend persistence
-      await page.waitForTimeout(2000);
     } catch (e) {
       console.log(`Failed to seed: ${e}`);
     }
@@ -31,17 +28,28 @@ test.describe('Audit Logs Viewer', () => {
     ]);
   });
 
-  test('should display split-pane layout and SmartTable for JSON array output', async ({ page }) => {
+  test('should display split-pane layout and SmartTable for JSON array output', async ({ page, request }) => {
     await page.goto('/audit');
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(1000);
 
-    // We might have missed the initial load
-    await page.click('button:has-text("Filter")');
-    await page.waitForTimeout(2000);
+    // We retry seating traces here inside the test itself in case it was lost in setup
+    try {
+      await request.post('/api/v1/debug/traces', { data: {}, headers: { 'Authorization': 'Bearer test-token', 'Content-Type': 'application/json' } });
+    } catch(e) {}
 
     const listUsers = page.locator('text=list-users').first();
-    await expect(listUsers).toBeVisible({ timeout: 15000 });
+    const noLogs = page.locator('text=No logs found.');
 
+    // A more active loop checking for logs in case websocket fails and requires explicit filtering
+    for (let i = 0; i < 5; i++) {
+        if (await listUsers.isVisible()) break;
+        try {
+            await page.click('button:has-text("Filter")');
+        } catch(e) {}
+        await page.waitForTimeout(1500);
+    }
+
+    await expect(listUsers).toBeVisible({ timeout: 15000 });
     await listUsers.click();
 
     await expect(page.locator('text=Audit Log Detail')).toBeVisible();
