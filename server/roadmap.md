@@ -151,6 +151,10 @@
 *   **[P1] Context Compaction Quorum Hub**: Consensus-based state summarization service for large mesh efficiency. (Added: 2026-07-04)
 
 #### Upcoming (2026-03-25 Evolution)
+*   **[P0] Hardware-Attested Monotonic Depth-Counters**: physical constraint enforcement for recursive delegations to prevent infinite resource loops. (Added: 2026-03-25)
+*   **[P0] Relational PoI Chain Validator**: cryptographic lineage verification for every tool call to neutralize "Intent Ghosting" vulnerabilities. (Added: 2026-03-25)
+*   **[P0] Memfd-Bound Zero-Copy Sanitizer**: implementation of active state sanitization directly on kernel-mediated shared memory segments. (Added: 2026-03-25)
+*   **[P1] Optimistic Attestation Gate**: speculative security middleware allowing parallel context preparation and background discovery attestation. (Added: 2026-03-25)
 *   **[P0] WASM-BSH State Sanitizer**: Pluggable WASM-based validation for binary context handoffs to align with OpenClaw v2.5. (Added: 2026-03-25)
 *   **[P0] Zero-Copy BSH Transport**: Shared-memory based state transfer using `memfd_create` for sub-millisecond swarm handoffs. (Added: 2026-03-25)
 *   **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited Recursive Intent Delegation and preventing "Intent Ghosting." (Added: 2026-03-25)
@@ -887,6 +891,10 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Ghost Shell Hook Profiler**: Instrumented sandbox for behavioral hook analysis. (Added: 2026-03-24)
 
 #### Upcoming (2026-03-25 Evolution)
+*   **[P0] Hardware-Attested Monotonic Depth-Counters**: physical constraint enforcement for recursive delegations to prevent infinite resource loops. (Added: 2026-03-25)
+*   **[P0] Relational PoI Chain Validator**: cryptographic lineage verification for every tool call to neutralize "Intent Ghosting" vulnerabilities. (Added: 2026-03-25)
+*   **[P0] Memfd-Bound Zero-Copy Sanitizer**: implementation of active state sanitization directly on kernel-mediated shared memory segments. (Added: 2026-03-25)
+*   **[P1] Optimistic Attestation Gate**: speculative security middleware allowing parallel context preparation and background discovery attestation. (Added: 2026-03-25)
 *   **[P0] WASM-BSH State Sanitizer**: Pluggable WASM-based validation for binary context handoffs. (Added: 2026-03-25)
 *   **[P0] Zero-Copy BSH Transport**: Shared-memory based state transfer for sub-millisecond swarm handoffs. (Added: 2026-03-25)
 *   **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited Recursive Intent Delegation. (Added: 2026-03-25)
