@@ -127,7 +127,9 @@ fi
 # is a Bazel-native project. If the binary is not in runfiles, skip gracefully.
 
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
-    GOGC=off GOMEMLIMIT=1500MiB "$GOLANGCI_LINT_BIN" run --timeout 20m --fix \
+    # Disable Go GC explicitly and limit heap memory exactly below docker bounds.
+    # Set to run in a single concurrent thread to prevent bloat.
+    GOGC=off GOMEMLIMIT=800MiB "$GOLANGCI_LINT_BIN" run --timeout 20m --fix -j 1 \
         ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
     echo "    golangci-lint OK."
 else
