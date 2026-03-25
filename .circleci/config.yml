@@ -39,15 +39,15 @@ jobs:
             sudo npm install -g @bazel/bazelisk
       - restore_cache:
           keys:
-            - v1-bazel-lint-{{ checksum "MODULE.bazel" }}
-            - v1-bazel-lint-
+            - v2-bazel-lint-{{ checksum "MODULE.bazel" }}
+            - v2-bazel-lint-
       - run:
           name: Run Lint
           command: |
             bazelisk run //:lint
             bazelisk test //ui:lint //ui:typecheck
       - save_cache:
-          key: v1-bazel-lint-{{ checksum "MODULE.bazel" }}
+          key: v2-bazel-lint-{{ checksum "MODULE.bazel" }}
           paths:
             - "/home/circleci/.cache/bazel"
             - "/home/circleci/.cache/bazelisk"
