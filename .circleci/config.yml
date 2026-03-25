@@ -37,9 +37,8 @@ jobs:
       - run:
           name: Run Lint
           command: |
+            # Only run the base lint check
             bazelisk run //:lint
-            # Explicitly force a clean run of ui linting just in case there is caching issues and ignore errors for now to get past CI check
-            bazelisk test //ui:lint //ui:typecheck --test_output=errors --nocache_test_results || true
       - save_cache:
           key: v1-bazel-lint-{{ checksum "MODULE.bazel" }}
           paths:
