@@ -12,15 +12,12 @@ prepare:
 	@mkdir -p build/.cache
 
 lint:
-	@export PATH=$$PWD/build/env/bin:$$PATH && \
-	python3 server/tools/check_ts_doc.py ui/src && \
-	bazelisk run //:lint && \
+	python3 server/tools/check_ts_doc.py ui/src
+	bazelisk run //:lint
 	bazelisk test //ui:typecheck //ui:lint
 
 test:
-	@export PATH=$$PWD/build/env/bin:$$PATH && \
 	bazelisk test //...
 
 build:
-	@export PATH=$$PWD/build/env/bin:$$PATH && \
 	bazelisk build //...
