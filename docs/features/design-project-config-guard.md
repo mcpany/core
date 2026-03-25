@@ -77,3 +77,10 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 * **MFA Integration**: The `HITL Middleware` (Section 4) will now require Multi-Factor Attestation (e.g., via a mobile app or physical token) for any configuration block that defines a new executable hook or modifies system-level settings.
 * **Granular Consent Revocation**: Users can now revoke consent for a specific hook hash globally, causing all agents across all projects to immediately suspend execution if they attempt to run that hook.
 **Security Impact**: Eliminates "Trust Brushing" and prevents silent RCE from malicious configuration changes that might occur between agent sessions (e.g., after a `git pull`).
+
+### Update: 2026-06-28 - Implementing Hardware-Locked Configuration Anchors (HLCA)
+**Context**: The disclosure of CVE-2026-33068 proves that file-based trust can be bypassed by malicious repository settings.
+**Architecture Adjustment**:
+* **Hardware-Locked Anchoring**: Project-local settings are now cryptographically bound to a TPM-signed user session.
+* **Mandatory HLCA Validation**: Sections 3 and 4 are updated to require HLCA validation for any configuration file matching known agent settings patterns (e.g., `.claude/settings.json`, `GEMINI.md`).
+**Security Impact**: Ensures that even if a malicious configuration file is committed to a repository, it cannot silently bypass the workspace trust dialog without a hardware-bound user signature.
