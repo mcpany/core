@@ -1,6 +1,16 @@
 # Feature Inventory: MCP Any
 
-## Evolution: [2026-03-24] Updates
+## Evolution: [2026-03-25] Updates
+
+### Proposed Additions
+- **Recursive Intent Delegation (RID) Validator**: (P0) Middleware for enforcing depth-limited intent mutations and cryptographic mission boundaries.
+- **WASM-BSH State Sanitizer**: (P0) Pluggable WASM sandbox for binary context validation and schema-based state sanitization.
+- **Zero-Copy Shared Memory Transport**: (P0) High-performance BSH transport using Linux `memfd_create` to eliminate serialization overhead.
+
+### Priority Shifts
+- **Relational PoI Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory mission-root chain verification to counter "Intent Ghosting".
+- **Binary State Handoff (BSH) Gateway**: (Re-affirmed P0) Evolving into the **Zero-Copy Transport** architecture.
+
 
 ### Proposed Additions
 - **Discovery-Phase Sandbox Middleware**: (P0) A secure, ephemeral execution environment for MCP discovery commands, preventing host-level "Ghost-Execution" exploits (Gemini CLI / OpenClaw CVE defense).
@@ -923,6 +933,19 @@
 ### Priority Shifts
 - **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
 - **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.
+
+## Evolution: [2026-07-03] Updates
+
+### Proposed Additions
+- **Zero-Copy Memory Broker (ZCMB)**: (P0) Authoritative coordination service for hardware-locked, shared memory reasoning buffers.
+- **Stylometric Identity Anchoring (SIA)**: (P0) Behavioral security middleware for the AIR Hub that performs real-time stylometric analysis to detect mimicry.
+- **Multimodal Hash-Chaining (MHC) Provider**: (P0) Security middleware mandating cryptographic hash-chaining for all non-textual reasoning fragments.
+- **Active Attention Enforcer (AAE)**: (P0) Cognitive security extension for the HAAL middleware that dynamically reinforces mission-root anchors.
+- **Intent-Based Priority Mailbox**: (P1) Upgrade for the PAMS middleware allowing mission-root directed prioritization of coordination fragments.
+
+### Priority Shifts
+- **Autonomous Intent Reconciliation (AIR) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SIA** integration to counter stylometric spoofing.
+- **Hardware-Attested Attention Locking (HAAL)**: (Re-affirmed P0) Evolving into the **Active Attention Enforcer** to counter attention drift.
 
 ---
 
