@@ -221,7 +221,6 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		require.NoError(t, err)
 
 		workerCtx, workerCancel := context.WithCancel(context.Background())
-		defer workerCancel()
 
 		registry := &mockServiceRegistry{
 			registerFunc: func(ctx context.Context, _ *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
@@ -236,7 +235,7 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		worker := NewServiceRegistrationWorker(bp, registry)
 		worker.Start(workerCtx) // Worker starts with its own context.
 
-		// Cancel the worker's context to simulate shutdown.
+		// Cancel the worker context to simulate shutdown
 		workerCancel()
 
 		resultChan := make(chan *bus.ServiceRegistrationResult, 1)
