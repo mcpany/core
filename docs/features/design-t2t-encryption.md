@@ -102,7 +102,7 @@ The T2T Encryption Bridge provides a universal, secure bus for teammate-to-
  doesn't expose the metadata or throughput of unrelated teammate coordination.
 
 ### Update: 2026-05-26 - Non-Blocking Mailbox Sharding (AMS)
-**Context:** Further analysis of Claude Code "Mailbox Lock" confirms that
+**Context:** Further analys is of Claude Code "Mailbox Lock" confirms that
  synchronous sharding still introduces global coordination overhead. High-
  density teams (50+ agents) require a move to fully non-blocking coordination.
 **Architecture Adjustment:**
@@ -131,7 +131,7 @@ The T2T Encryption Bridge provides a universal, secure bus for teammate-to-
 ### Update: 2026-06-18 - Neutralizing Side-Channel Reconstruction
 
 **Context:** Today's market sync revealed that T2T encrypted channels are
-susceptible to reasoning-path reconstruction via timing analysis.
+susceptible to reasoning-path reconstruction via timing analys is.
 **Architecture Adjustment:**
 * Mandating hardware-attested noise-injection at the transport layer.
 * Transitioning to constant-time coordination handshakes.

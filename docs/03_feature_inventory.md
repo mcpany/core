@@ -13,7 +13,7 @@
  "Entanglement Shards" that are cryptographically bound to the mission-root
  intent.
 - **Stylometric Mimicry Mitigator (SMM)**: (P0) Security middleware that
- performs real-time stylometric analysis of inter-agent messages to detect
+ performs real-time stylometric analys is of inter-agent messages to detect
  reasoning-path shadowing.
 - **Speculative Branching Guard (SBG)**: (P1) Isolation service for un-executed
  reasoning paths that prevents speculative attention leakage.
@@ -94,7 +94,7 @@
  agent auctions, utilizing hardware-attested Capability Cards to filter and
  validate bids locally.
 - **Differential Context Guarding (DCG) Middleware**: (P0) Security extension
- for the Mailbox Integrity Middleware that performs semantic analysis of tool
+ for the Mailbox Integrity Middleware that performs semantic analys is of tool
  outputs to prevent context-dump exfiltration.
 - **Zero-Knowledge Capability Proof (ZKCP) Provider**: (P1) Advanced discovery
  service allowing agents to prove skill possession without revealing sensitive
@@ -313,7 +313,7 @@
  all local network ports that enforces origin-locked authentication,
  neutralizing "ClawdBot" style loopback hijacking.
 - **Injection-Shielding Middleware**: (P0) Pre-execution scanning service that
- performs SEMGREP-style static analysis and semantic validation on all tool
+ performs SEMGREP-style static analys is and semantic validation on all tool
  inputs to block prompt and command injection.
 - **Coordination Token Optimizer**: (P1) Efficiency middleware for parallel
  swarms that deduplicates and compresses coordination messages within the
@@ -482,7 +482,7 @@
 
 ### Proposed Additions
 - **Semantic Integrity Bridge**: (P0) A monitoring extension for the CQ Hub that
- utilizes "Intent Drift Detection" and SGC-aware analysis to prevent Recursive
+ utilizes "Intent Drift Detection" and SGC-aware analys is to prevent Recursive
  Intent Poisoning (RIP).
 - **Kernel-Bound FD Persistence Middleware**: (P0) Advanced security layer that
  utilizes FD-passing and hardware-bound Inode pinning to ensure the absolute
@@ -501,7 +501,7 @@
 
 ### Proposed Additions
 - **Deadlock-Resilient CQ Controller**: (P0) Advanced extension of the CQ Hub
- that performs "Wait-Graph Analysis" to identify and break circular attestation
+ that performs "Wait-Graph Analys is" to identify and break circular attestation
  dependencies in multi-agent swarms.
 - **Hierarchical Intent Lease (HIL) Broker**: (P0) Core security service
  implementing UACO v3.2 HIL. Manages hierarchical, task-bound capability leases
@@ -609,7 +609,7 @@
 - **Semantic Risk HITL Arbiter**: (Promoted to P0) Upgrading the HITL Middleware
  with context-aware risk assessment to reduce user approval fatigue.
 - **LFTA ARL Middleware**: (Re-affirmed P0) Critical for immediate revocation of
- privileges during the ongoing "BoryptGrab" crisis.
+ privileges during the ongoing "BoryptGrab" cris is.
 
 ## Evolution: [2026-04-27] Updates
 
@@ -1201,7 +1201,7 @@
  synchronize state with OpenClaw's new pluggable ContextEngine.
 - **Prompt Path Protection Middleware**: (P0) Real-time scanning of tool outputs
  for "Indirect Prompt Injection" patterns to prevent agent hijacking.
-- **Critical Skill Simulation (Dry-Run 2.0)**: (P1) Advanced "what-if" analysis
+- **Critical Skill Simulation (Dry-Run 2.0)**: (P1) Advanced "what-if" analys is
  for skills that simulates their impact on sensitive data before they are
  executed.
 - **Swarm Behavioral Baseline**: (P1) Monitoring tool to establish a "normal"
@@ -1209,7 +1209,7 @@
 
 ### Priority Shifts
 - **Verified Skill Registry**: Re-affirmed as **P0** following the "ClawHavoc"
- malicious skill crisis.
+ malicious skill cris is.
 - **A2A Interop Bridge**: Re-affirmed as **P0** to support the industry shift
  towards "Agentic Swarms."
 
@@ -1449,7 +1449,7 @@
 
 ### Priority Shifts
 - **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent
- requirement to solve the "Token Storm" crisis in deep swarms.
+ requirement to solve the "Token Storm" cris is in deep swarms.
 - **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security
  defense against malicious project-local hooks.
 
@@ -1857,7 +1857,7 @@
  provides hardware-attested identity fragments that persist across local and
  multi-cloud environments.
 - **Fragment-Aware Mailbox Isolation (FAMI)**: (P0) Security extension for the
- Mailbox Integrity Middleware that performs semantic analysis of state
+ Mailbox Integrity Middleware that performs semantic analys is of state
  fragments to prevent "State Splicing" exfiltration.
 - **Recursive Delegation Reaper (RDR)**: (P0) Stability middleware that monitors
  branching depth and semantic redundancy to prune non-convergent or redundant
@@ -1964,7 +1964,7 @@
 
 ### Proposed Additions
 - **Collective Swarm Anomaly Detection (CSAD) Hub**: (P0) Advanced security
- middleware that performs cross-agent behavioral analysis to detect coordinated
+ middleware that performs cross-agent behavioral analys is to detect coordinated
  "Hivenet" swarm attacks.
 - **Cross-Mesh Command Sovereignty (CMCS) Provider**: (P0) Identity service that
  issues hardware-attested "Mesh Tokens" for inter-teammate mailbox validation
@@ -1972,7 +1972,7 @@
 - **Atomic Teammate Handshake (ATH) Gateway**: (P0) Security middleware
  mandating hardware-attested identity exchange before teammate task delegation.
 - **Mesh-Bound Context Sovereignty Bridge**: (P0) Security extension for the DCG
- middleware that performs semantic fragment analysis across teammate
+ middleware that performs semantic fragment analys is across teammate
  boundaries.
 
 ### Priority Shifts
@@ -2013,7 +2013,7 @@
  the Context Sharding middleware that prevents parallel write collisions during
  granular state streaming.
 - **Zero-Latency Shard Prefetcher**: (P1) Optimization service that speculative
- loads context shards based on real-time intent analysis to reduce streaming
+ loads context shards based on real-time intent analys is to reduce streaming
  latency.
 
 ### Priority Shifts
@@ -2050,7 +2050,7 @@
 ### Proposed Additions
 - **Pre-Commit Speculative Sanitizer (PCSS)**: (P0) A high-performance security
  middleware for the Speculative Execution Guard that performs real-time
- semantic analysis and sanitization of context fragments before they are
+ semantic analys is and sanitization of context fragments before they are
  ingested by the reasoning engine.
 - **Mission-Root Gravity (MRG) Middleware**: (P0) Advanced extension for the
  Live Context Sharding middleware that "pins" the primary mission intent to
@@ -2119,7 +2119,7 @@
 
 ### Proposed Additions
 - **Layer-7 Semantic Inspection Hub (L7SIH)**: (P0) Advanced security middleware
- for the ISD Hub that performs real-time, high-entropy semantic analysis of
+ for the ISD Hub that performs real-time, high-entropy semantic analys is of
  inter-teammate coordination to neutralize REE.
 - **Environment Sovereignty Enforcer (ESE)**: (P0) Core security service for the
  EPM and LOWA providers that mandates hardware-attested "Environment Scrubbing"
@@ -2187,7 +2187,7 @@
  for the T2T Bridge that monitors transport metadata and state-tags to
  neutralize out-of-band collusion.
 - **Dynamic Attention Gating (DAG) Middleware**: (P0) Stability middleware that
- performs real-time attention-utilization analysis and dynamically prunes noise
+ performs real-time attention-utilization analys is and dynamically prunes noise
  to prevent REE-driven intent eviction.
 - **Hardware-Locked Coordination Handshake**: (P0) Core security standard
  mandating hardware-bound session attestation for all inter-agent state
