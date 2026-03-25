@@ -153,9 +153,9 @@ func validateConfig(t *testing.T, configPath string) {
 
 	// Load services.
 	// The second argument "server" matches what the CLI uses for validation context if any.
-	configs, loadErr := config.LoadServices(context.Background(), store, "server")
-	if loadErr != nil {
-		t.Fatalf("Failed to load config %s: %v", configPath, loadErr)
+	configs, configLoadErr := config.LoadServices(context.Background(), store, "server")
+	if configLoadErr != nil {
+		t.Fatalf("Failed to load config %s: %v", configPath, configLoadErr)
 	}
 
 	// Validate.
