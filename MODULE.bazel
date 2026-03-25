@@ -54,7 +54,6 @@ go_deps.gazelle_override(
     build_file_generation = "off",
     path = "github.com/grpc-ecosystem/grpc-gateway/v2",
 )
-
 go_deps.module_override(
     patch_strip = 1,
     patches = [
@@ -92,6 +91,7 @@ use_repo(
     "com_github_getkin_kin_openapi",
     "com_github_gin_gonic_gin",
     "com_github_go_jose_go_jose_v4",
+    "com_github_go_logr_zapr",
     "com_github_go_redis_redismock_v9",
     "com_github_go_sql_driver_mysql",
     "com_github_golang_jwt_jwt_v5",
@@ -145,8 +145,11 @@ use_repo(
     "in_gopkg_yaml_v2",
     "in_gopkg_yaml_v3",
     "io_k8s_api",
+    "io_k8s_apiextensions_apiserver",
     "io_k8s_apimachinery",
     "io_k8s_client_go",
+    "io_k8s_klog_v2",
+    "io_k8s_kube_openapi",
     "io_k8s_sigs_controller_runtime",
     "io_k8s_sigs_yaml",
     "io_opentelemetry_go_contrib_instrumentation_google_golang_org_grpc_otelgrpc",
@@ -159,7 +162,6 @@ use_repo(
     "io_opentelemetry_go_otel_sdk",
     "io_opentelemetry_go_otel_sdk_metric",
     "org_golang_google_api",
-    "org_golang_google_genproto_googleapis_api",
     "org_golang_google_grpc",
     "org_golang_google_grpc_cmd_protoc_gen_go_grpc",
     "org_golang_google_protobuf",
@@ -359,3 +361,5 @@ http_file(
     sha256 = "8ded44b58a0d9425a4178af26cf17693feac3b87bdcfef0a2a0898fcd1afc9f2",
     urls = ["https://github.com/bazelbuild/bazelisk/releases/download/v1.28.1/bazelisk-linux-arm64"],
 )
+
+bazel_dep(name = "rules_proto", version = "7.1.0")

@@ -1,14 +1,11 @@
 # Design Doc: Entangled State Broker (ESB)
-
 **Status:** Draft
 **Created:** 2026-06-16
 
 ## 1. Context and Scope
-
 As agent swarms move toward high-frequency state sharing via sharded meshes, the risk of "Context Poisoning" and unauthorized state mutation by specialist subagents has reached a critical level. Current "Passive Sanitization" models are insufficient against sub-millisecond MTTC (Mean Time To Compromise). MCP Any needs a proactive mechanism to ensure that state fragments remain cryptographically bound to the mission-root intent, preventing any ingestion of unauthorized state.
 
 ## 2. Goals & Non-Goals
-
 * **Goals:**
     * Provide hardware-attested "Entanglement Shards" for inter-teammate coordination.
     * Cryptographically bind state fragments to the mission-root intent.
@@ -19,7 +16,6 @@ As agent swarms move toward high-frequency state sharing via sharded meshes, the
     * Managing long-term archival of state fragments.
 
 ## 3. Critical User Journey (CUJ)
-
 * **User Persona:** Local LLM Swarm Orchestrator (e.g., Claude Code Team Lead)
 * **Primary Goal:** Share high-frequency state fragments between 5 specialized teammates without risking mission-root contamination.
 * **The Happy Path (Tasks):**
@@ -31,7 +27,6 @@ As agent swarms move toward high-frequency state sharing via sharded meshes, the
     6. The parent reasoning engine automatically rolls back the mission branch before re-ingesting the poisoned state.
 
 ## 4. Design & Architecture
-
 * **System Flow:**
     ```mermaid
     graph TD
@@ -52,27 +47,23 @@ As agent swarms move toward high-frequency state sharing via sharded meshes, the
     * Shards are stored in a memory-mapped, zero-copy buffer with hardware-bound integrity tags (MACs).
 
 ## 5. Alternatives Considered
-
 * **Full State Encryption:** Rejected due to the prohibitive latency of per-call decryption in high-density meshes.
 * **Passive Semantic Scanning:** Rejected as it cannot detect "Low-and-Slow" semantic drift before ingestion.
 
 ## 6. Cross-Cutting Concerns
-
 * **Security (Zero Trust):** All entanglement keys are hardware-bound and session-specific. "Shard Corruption" signals are non-maskable.
 * **Observability:** Real-time monitoring of "Entanglement Drift" and "Corruption Events" via the Mesh-Resident Lineage Tracker.
 
 ## 7. Evolutionary Changelog
-
 * **2026-06-16:** Initial Document Creation.
 * **2026-06-17:** **Resolving Enclave-Timing Leakage (CVE-2026-62001).**
     * **Context:** Today's market sync revealed that hardware-bound entangled shards can leak state fragments via cache-timing side-channels.
     * **Architecture Adjustment:** Introducing **Temporal Shard Jitter (TSJ) Injection** in Section 4. The ESB will now inject hardware-attested timing jitter into state synchronization for non-primary mission-root requests.
     * **Security Impact:** Mitigates the risk of subagents mapping mission-root constraints via high-frequency latency monitoring.
 
-### Update: 2026-06-18 - Resolving Mesh-Split (CVE-2026-82001)
-
-**Context:** Today's market sync revealed that high-frequency sharded meshes can diverge into "Consensus Partitions" during network latency or entropy-noise events.
-**Architecture Adjustment:** Introducing the **Consensus Partition Interdictor (CPI)** in Section 4.
-*   The ESB will now mandate "Inter-Teammate Intent Partitioning" checks during state synchronization.
-*   The CPI will automatically freeze the Blackboard state if it detects two sub-swarms attempting to commit conflicting "winning intents" for the same mission-root fragment.
-**Security Impact:** Prevents state corruption and "Split-Brain" intent divergence in deep speculative meshes.
+### Update: 2026-06-18 - Mesh-Split Resilience
+**Context:** CVE-2026-82001 revealed that network partitions can be exploited to bypass mission locks.
+**Architecture Adjustment:**
+* Integrating the **Consensus Partition Interdictor (CPI)** into the Entangled State Broker.
+* Implementing a "Majority-Or-Freeze" policy where shards automatically lock if they lose heartbeat connectivity to more than 50% of the mesh.
+**Security Impact:** Prevents "Split-Brain" intent corruption where two isolated agent groups claim conflicting state-locks.

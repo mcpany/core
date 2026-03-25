@@ -754,9 +754,7 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
 
-### Upcoming: [2026-06-18]
-
-- [ ] **[P0] MRGO Consensus Adapter**: Authoritative server-side middleware for decentralized governance quorums and local policy arbitration.
-- [ ] **[P0] Consensus Partition Interdictor (CPI)**: Blackboard-level security layer for detecting and neutralizing "Mesh-Split" (CVE-2026-82001) divergence.
-- [ ] **[P0] Recursive Attestation Provider**: Implementation of the Claude Code v3.2.0 attestation standard for delegated subagent spawns.
-- [ ] **[P1] PAD-v2 Discovery Gateway**: Discovery-time hardware attestation for Gemini CLI protocol-agnostic capability beacons.
+### Upcoming: 2026-06-18
+- [ ] Implement MRGO Adapter for decentralized mesh governance.
+- [ ] Integrate Consensus Partition Interdictor (CPI) for mesh-split mitigation.
+- [ ] Transition Discovery Bus to PAD-v2 compatibility.

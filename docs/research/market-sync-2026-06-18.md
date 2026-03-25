@@ -1,29 +1,18 @@
 # Market Sync: 2026-06-18
 
-## Ecosystem Shifts & Findings
+## 1. Ecosystem Shift: Mesh-Resident Governance Oracles (MRGO)
+A new architectural pattern has emerged in the OpenClaw and CrewAI ecosystems. Instead of relying on a central "Mission Root" for policy arbitration, agents are now initiating localized governance clusters.
+* **Key Finding:** Governance is moving from a static policy file to a mesh-resident oracle where multiple teammates must sign off on high-privilege tool calls.
+* **Pain Point:** Standardized attestation for these mesh-signed tokens is currently non-existent.
 
-### 1. OpenClaw: Mesh-Resident Governance Oracle (MRGO)
+## 2. Protocol Updates: PAD-v2 Discovery
+Gemini CLI has introduced **Protocol-Agnostic Discovery (PAD-v2)**. This allows subagents to discover capabilities without knowing if the underlying provider is using Stdio, HTTP, or a custom WebRTC bridge.
+* **Impact for MCP Any:** We must transition our Discovery Bus to support PAD-v2 headers to remain compatible with upcoming Gemini-native subagents.
 
-**Finding:** OpenClaw v3.3.0-beta introduces the MRGO, a decentralized service for real-time policy arbitration within horizontal meshes. It allows teammates to reach a "Governance Quorum" on ambiguous tool calls without escalating to the mission-root.
-**Impact:** Reduces latency in high-density teams and offloads reasoning effort from the lead agent, but introduces the risk of "Governance Drifting" if the quorum is compromised.
+## 3. Security Vulnerability: CVE-2026-82001 (Mesh-Split)
+A critical vulnerability was documented in distributed swarm architectures where a "Mesh-Split" (network partition) allows subagents to bypass state-locks by claiming a new root-of-trust in the isolated partition.
+* **Countermeasure:** Recursive Attestation and "Split-Brain" intent interdiction.
 
-### 2. Gemini CLI: Protocol-Agnostic Discovery (PAD) v2
-
-**Finding:** Gemini CLI's discovery layer has been upgraded to PAD v2, natively supporting UACO v3.3 capability beacons. Agents can now "hear" tool advertisements across network boundaries and perform hardware-attested handshakes without pre-configured endpoint lists.
-**Impact:** Enables truly dynamic swarm formation and eliminates "Discovery Silos," positioning Gemini as the leader in zero-config agentic meshes.
-
-### 3. Claude Code: Recursive Attestation (v3.2.0)
-
-**Finding:** Claude Code v3.2.0 mandates "Recursive Attestation" for all sub-delegations. Every subagent must provide a TPM-signed attestation not only for itself but for any sub-spawns it creates, forming an unbroken "Attestation Chain."
-**Impact:** Neutralizes the "Shadow Subagent" vector where intermediate agents spawn un-attested specialists.
-
-### 4. New Vulnerability: Mesh-Split (CVE-2026-82001)
-
-**Finding:** A critical vulnerability has been identified in sharded meshes where network latency or high-entropy noise can cause a swarm to diverge into "Consensus Partitions." Sub-swarms may adopt conflicting "winning intents," leading to state corruption on the Blackboard.
-**Impact:** Demands immediate implementation of "Partition-Resilient Consensus" and "Split-Brain Interdiction" at the infrastructure layer.
-
-## Autonomous Agent Pain Points
-
-- **Consensus Partitioning:** The risk of swarms diverging into conflicting truth states during high-frequency coordination.
-- **Attestation Exhaustion:** The performance tax of maintaining recursive attestation chains in deep agent hierarchies.
-- **Discovery Noise:** The challenge of filtering irrelevant capability beacons in protocol-agnostic meshes.
+## 4. Autonomous Agent Pain Points (Reddit/GitHub Audit)
+* **Context Bleed:** Agents in swarms are still accidentally sharing "thought fragments" that contain sensitive environment variables.
+* **Attestation Latency:** Hardware-backed signing (TPM) is causing significant delays in high-frequency tool loops.

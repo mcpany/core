@@ -1361,13 +1361,8 @@
 - **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **TSJ Injection** for all cross-mission synchronization.
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
 
----
-
-## 2026-06-18 Update: Mesh-Resident Governance & Partition Resilience
-
-| Priority | Feature Name | Description | Status |
-| :--- | :--- | :--- | :--- |
-| **P0** | **Mesh-Resident Governance Oracle (MRGO) Adapter** | Authoritative host for decentralized policy arbitration and quorum-based mission sovereignty. | Backlog |
-| **P0** | **Consensus Partition Interdictor (CPI)** | Mesh-split resilience layer that freezes the Blackboard state upon detecting "Winning Intent" divergence. | Backlog |
-| **P0** | **Recursive Attestation Orchestrator** | Enforces hardware-attested lineage chains for all delegated subagent spawns (Claude Code v3.2.0). | Backlog |
-| **P1** | **PAD-v2 Discovery Validator** | Discovery-time attestation for protocol-agnostic capability beacons (Gemini CLI). | Backlog |
+### Additions: 2026-06-18
+- **MRGO Adapter (P0):** Decentralized policy arbitration using TPM-signed teammate tokens.
+- **Consensus Partition Interdictor (CPI) (P0):** Real-time monitoring for CVE-2026-82001 (Mesh-Split) vulnerabilities.
+- **Recursive Attestation Orchestrator (P1):** Standards-compliant lineage tracking for Gemini PAD-v2.
+- **PAD-v2 Validator (P1):** Protocol-agnostic tool discovery middleware.

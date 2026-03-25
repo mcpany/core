@@ -592,9 +592,6 @@
 - [ ] **[P1] Speculative Garbage Collection Log**: (2026-06-17) Real-time tracker for R-GC purged context fragments and reasoning entropy scores.
 - [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
 
-### Upcoming: [2026-06-18]
-
-- [ ] **[P0] Mesh Governance Quorum Interface**: Workspace for participating in local teammate policy arbitration and monitoring MRGO votes.
-- [ ] **[P0] Consensus Partition Monitor**: Real-time visualization of inter-teammate intent divergence and "Mesh-Split" alerts.
-- [ ] **[P1] PAD-v2 Discovery Browser**: Unified UI for browsing protocol-agnostic capability beacons and hardware-attested advertisements.
-- [ ] **[P0] Recursive Attestation Chain Viewer**: Visual forensic tool for auditing TPM-signed attestation chains and subagent parentage.
+### Upcoming: 2026-06-18
+- [ ] Mesh Governance Visualization: Real-time display of quorum formation.
+- [ ] Partition Alert System: Visual indicators for detected Mesh-Split events.
