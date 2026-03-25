@@ -11,4 +11,4 @@ The TSE provides kernel-level isolation for parallel agent teammates, ensuring t
 ## Evolutionary Changelog
 - **2026-06-18:** Initial Document Creation.
 ### Update: 2026-06-18 - Logic-Path Interdiction Integration
-**Architecture Adjustment:** Mandatory integration with the Logic-Sovereignty Validator (LSV).
+**Architecture Adjustment:** Mandatory integration with LSV.
