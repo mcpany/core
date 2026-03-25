@@ -67,9 +67,9 @@ The Active Reasoning Interdiction (ARI) Hub evolves the existing validator into 
 * Upgrading hash-chaining to require **MRA-compliant** hardware-bound hashes to prevent legacy collision spoofing.
 **Security Impact:** Prevents subagents from colluding via metadata while appearing to follow the "Reasoning Mainline."
 
-### Update: 2026-06-14 - Attention-Locked Interdiction & MDRA Integration
+### Update: 2026-06-14 - Attention-Locked Interdiction and MDRA Integration
 **Context:** The disclosure of Coordination Drift and REE-driven intent eviction confirms that fragment validation must be attention-aware and multi-dimensional.
 **Architecture Adjustment:**
 * Introducing **Attention-Locked Routing (AAR)** within the ARI Hub flow to dynamically bypass specialists under high-entropy noise.
-* Upgrading the `ChainToken` to include **MDRA-unified signatures**, merging hardware (TPM) and stylometric (SSM) data.
+* Upgrading the  to include **MDRA-unified signatures**, merging hardware (TPM) and stylometric (SSM) data.
 **Security Impact:** Ensures the "Reasoning Mainline" remains anchored to the mission root even during coordinated REE attacks.

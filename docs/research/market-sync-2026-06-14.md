@@ -1,6 +1,6 @@
 # Market Sync: 2026-06-14
 
-## Ecosystem Shifts & Findings
+## Ecosystem Shifts and Findings
 
 ### 1. Attention-Aware Routing (AAR) in OpenClaw
 The latest OpenClaw "Orchestration Mesh" technical preview introduces Attention-Aware Routing. This mechanism allows the parent agent to dynamically route sub-tasks based on the "Attention Availability" of specialists. This is a direct response to Reasoning Entropy Exhaustion (REE), as it enables the swarm to bypass specialists currently under high-entropy noise injection, preserving the mission-root's cognitive resources.

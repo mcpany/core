@@ -18,10 +18,10 @@ def purge_file(filepath):
     content = content.replace(b'\xe2\x80\x99', b"'")
     content = content.replace(b'\xe2\x80\xa2', b'*')
 
-    # Strip any remaining non-ASCII
+    # Strip any remaining non-ASCII (keep 9, 10, 13, 32-126)
     final_content = bytearray(b for b in content if 32 <= b <= 126 or b in (9, 10, 13))
 
-    # Standardize newlines (single newline at EOF, no trailing whitespace)
+    # Standardize newlines
     try:
         text = final_content.decode('ascii')
         lines = [line.rstrip() for line in text.splitlines()]
@@ -33,10 +33,10 @@ def purge_file(filepath):
         print(f"  Final write error: {e}")
 
 files = [
+    "docs/research/market-sync-2026-06-14.md",
     "docs/02_strategic_vision.md",
     "docs/03_feature_inventory.md",
     "docs/features/design-ari-hub.md",
-    "docs/research/market-sync-2026-06-14.md",
     "server/roadmap.md",
     "ui/roadmap.md",
     ".circleci/config.yml",

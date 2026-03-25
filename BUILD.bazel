@@ -87,7 +87,7 @@ alias(
 # Well-known-type TypeScript bindings
 #
 # Generated here (root package) so that declare_file("google/protobuf/*.ts")
-# produces files at bazel-out/.../bin/google/protobuf/*.ts - the path that
+# produces files at bazel-out/.../bin/google/protobuf/*.ts — the path that
 # ts-proto uses when computing relative imports from proto/config/v1/ etc.
 # ---------------------------------------------------------------------------
 ts_wkt_gen(
