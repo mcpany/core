@@ -696,3 +696,7 @@
 - [ ] **[P0] Discovery Sandbox Monitor**: Real-time visualization of sandboxed discovery command execution and safety attestation. (Added: 2026-03-24)
 - [ ] **[P0] Teammate Task List Viewer**: High-speed, CRDT-native visualization of the shared task list for horizontal swarms. (Added: 2026-03-24)
 - [ ] **[P0] ALSV Block List Explorer**: UI for reviewing and approving command arguments flagged by the semantic validator. (Added: 2026-03-24)
+
+### Update: 2026-06-18 - Strategic Infrastructure Alignment
+- **[P0] Attention Utilization Dashboard:** Real-time visualization of subagent attention quotas and "Ghosting" alerts.
+- **[P1] Reasoning Budget Tracker:** Multi-modal interface for monitoring ARE consumption across active missions.

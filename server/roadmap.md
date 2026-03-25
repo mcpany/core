@@ -861,3 +861,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Relational PoI Validator**: Implementation of UACO v1.7 Intent Chain verification. (Added: 2026-03-24)
 *   **[P0] BSH State Buffer**: Memory-mapped binary transport for mitigation of "Token Storms". (Added: 2026-03-24)
 *   **[P0] Ghost Shell Hook Profiler**: Instrumented sandbox for behavioral hook analysis. (Added: 2026-03-24)
+
+### Update: 2026-06-18 - Strategic Infrastructure Alignment
+- **[P0] ALS Controller Implementation:** Enforcing attention sovereignty in the gateway. (Target: Q3 2026)
+- **[P0] PBRB Firewall Middleware:** Hard compute limits for autonomous agent turns. (Target: Q3 2026)
+- **[P1] Reasoning Telemetry Exporter:** Standardized sink for agentic reasoning effort metrics.
