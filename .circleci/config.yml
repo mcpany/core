@@ -95,7 +95,7 @@ jobs:
             done
             # Run tests
             make test-proto
-            cd server && go test -short ./...
+            export BUILD_WORKSPACE_DIRECTORY=$(pwd) && cd server && go test -short ./...
       - save_cache:
           key: v65-test-{{ checksum "server/go.sum" }}
           paths:
