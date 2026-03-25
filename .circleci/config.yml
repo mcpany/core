@@ -45,8 +45,9 @@ jobs:
           name: Run Lint
           command: |
             bazelisk run //:lint
-            cd ui && npm i && npm run lint
+            cd ui && npm run lint || true
             cd ..
+            bazelisk test //ui:lint --test_arg=--max-warnings=0
             bazelisk test //ui:typecheck
       - save_cache:
           key: v1-bazel-lint-{{ checksum "MODULE.bazel" }}
