@@ -1362,6 +1362,7 @@
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
 
 ## Evolution: [2026-06-18] Updates
+
 ### Proposed Additions
 - **Reason-Graph Integrity (RGI) Provider**: (P0) Authoritative security middleware performing hardware-attested structural analysis to detect "Reason-Graph Collisions" (RGC).
 - **Mesh-Resident Policy Manager (MRPM)**: (P0) Federated policy service for hardware-attested "Mesh-Resident Policy Synthesis" (MRPS).
