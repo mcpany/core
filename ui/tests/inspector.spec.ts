@@ -85,6 +85,13 @@ test.describe('Inspector Page', () => {
     const sheet = page.getByRole('dialog');
     await expect(sheet).toBeVisible();
     await expect(sheet.locator('text=orchestrator-task').first()).toBeVisible();
+
+    // Verify the Payload tab shows the RichResultViewer output correctly
+    await page.getByRole('tab', { name: 'Payload' }).click();
+    // The RichResultViewer handles JSON objects by rendering a JsonView (in its internal JSON tab)
+    // or a table. We'll check for the request or response content to appear.
+    await expect(sheet.getByText('Request Payload').first()).toBeVisible();
+    await expect(sheet.getByText('Response Payload').first()).toBeVisible();
   });
 
   test('should clear traces permanently on backend when Clear is clicked', async ({ page }) => {
