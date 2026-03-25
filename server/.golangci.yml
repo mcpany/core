@@ -52,8 +52,6 @@ issues:
   skip-files:
     - '.*\.pb\.go$'
     - lll
-    - funlen
     - wsl
     - gci
     - gofumpt
-    - 'types\.go$'
