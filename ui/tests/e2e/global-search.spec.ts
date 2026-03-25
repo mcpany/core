@@ -1,4 +1,3 @@
-import { seedGlobalState } from './test-data';
 /**
  * Copyright 2025 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
@@ -8,12 +7,10 @@ import { seedGlobalState } from './test-data';
 import { test, expect } from '@playwright/test';
 
 test.describe('Global Search', () => {
-  test.beforeEach(async ({ page, request }) => {
-    await seedGlobalState(request);
+  test.beforeEach(async ({ page }) => {
+    // We don't need to seed data for these tests as we search for static items
     await page.goto('/');
-});
-
-});
+  });
 
   test('should open command palette by clicking the search button', async ({ page }) => {
      // Find the button with text "Search" or similar

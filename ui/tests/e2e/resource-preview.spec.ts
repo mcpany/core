@@ -1,4 +1,3 @@
-import { seedGlobalState } from './test-data';
 /**
  * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
@@ -10,7 +9,7 @@ test.describe('Resource Preview Modal', () => {
 
   test('should open resource in modal from explorer', async ({ page }) => {
     // Mock resources list
-
+    await page.route('**/api/v1/resources', async route => {
         await route.fulfill({
             status: 200,
             contentType: 'application/json',
@@ -21,7 +20,7 @@ test.describe('Resource Preview Modal', () => {
     });
 
     // Mock resource read with regex to handle encoded URI
-
+    await page.route(/\/api\/v1\/resources\/read.*/, async route => {
         await route.fulfill({
             status: 200,
             contentType: 'application/json',

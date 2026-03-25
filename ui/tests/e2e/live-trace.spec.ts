@@ -1,4 +1,3 @@
-import { seedGlobalState } from './test-data';
 /**
  * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
@@ -9,7 +8,7 @@ import { test, expect } from '@playwright/test';
 test('Live Trace Inspector and Replay Flow', async ({ page }) => {
   // Navigate to traces page
   // Mock traces API
-
+  await page.route('**/api/v1/traces', async route => {
     await route.fulfill({
       json: [
         {

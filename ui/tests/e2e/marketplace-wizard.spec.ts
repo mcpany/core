@@ -1,4 +1,3 @@
-import { seedGlobalState } from './test-data';
 /**
  * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
@@ -9,22 +8,27 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Marketplace Wizard and Service Lifecycle', () => {
 
-  test.beforeEach(async ({ page, request }) => {
-    await seedGlobalState(request);
-    await page.goto('/');
-});
+  test.beforeEach(async ({ page }) => {
+    // Mock API responses
+    await page.route('/api/v1/services', async route => {
+      if (route.request().method() === 'GET') {
+        await route.fulfill({ json: [] });
+      } else if (route.request().method() === 'POST') {
+        await route.fulfill({ json: { status: 'success' } });
+      } else {
+        await route.continue();
+      }
+    });
 
-});
-
-
+    await page.route('/api/v1/marketplace/official', async route => {
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) });
     });
 
-
+    await page.route('/api/v1/marketplace/public', async route => {
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) });
     });
 
-
+    await page.route('/api/v1/credentials', async route => {
       await route.fulfill({
         json: [{
           id: 'cred-1',
@@ -63,7 +67,7 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
         },
       },
     ];
-
+    await page.route('**/api/v1/templates', async route => {
       if (route.request().method() === 'GET') {
         await route.fulfill({ json: templates });
       } else if (route.request().method() === 'POST') {
@@ -75,7 +79,7 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
       }
     });
 
-
+    await page.route('**/api/v1/templates/*', async route => {
       if (route.request().method() === 'DELETE') {
         // Basic mock
         await route.fulfill({ json: {} });
@@ -85,7 +89,7 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
     });
 
     // Mock Auth Test
-
+    await page.route('/api/v1/debug/auth-test', async route => {
       await route.fulfill({ json: { success: true, message: "Connection verification successful" } });
     });
   });

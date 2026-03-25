@@ -1,4 +1,3 @@
-import { seedGlobalState } from './test-data';
 /**
  * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
@@ -25,12 +24,9 @@ test.describe('OAuth Flow Integration', () => {
     }
   ];
 
-  test.beforeEach(async ({ page, request }) => {
-    await seedGlobalState(request);
-    await page.goto('/');
-});
-
-});
+  test.beforeEach(async ({ page }) => {
+    // Increase viewport height for long forms/lists
+    await page.setViewportSize({ width: 1280, height: 1000 });
 
     callbackCalled = false;
     // Reset credentials for each test if multiple tests existed
@@ -38,14 +34,14 @@ test.describe('OAuth Flow Integration', () => {
 
     page.on('console', msg => console.log('BROWSER LOG:', msg.text()));
 
-
+    await page.route('**/api/v1/credentials', async route => {
       console.log(`Mocking list credentials, token: ${!!credentials[0].token}`);
       await route.fulfill({
         json: { credentials }
       });
     });
 
-
+    await page.route((url) => url.pathname.includes('/auth/oauth/'), async route => {
       const urlStr = route.request().url();
       if (urlStr.includes('/initiate')) {
         const origin = new URL(page.url()).origin;
@@ -66,7 +62,7 @@ test.describe('OAuth Flow Integration', () => {
     });
 
     // Mock service create
-
+    await page.route('**/api/v1/services', async route => {
         if (route.request().method() === 'POST') {
              await route.fulfill({ json: { id: 'test-service' } });
         } else {
@@ -75,12 +71,12 @@ test.describe('OAuth Flow Integration', () => {
     });
 
     // Mock templates list for marketplace
-
+    await page.route('**/api/v1/registration/templates', async route => {
         await route.fulfill({ json: { templates: [] } });
     });
 
     // Mock template create/save
-
+    await page.route('**/api/v1/templates', async route => {
       if (route.request().method() === 'POST') {
         await route.fulfill({ json: { id: 'test-template' } });
       } else {

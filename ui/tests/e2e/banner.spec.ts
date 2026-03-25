@@ -1,4 +1,3 @@
-import { seedGlobalState } from './test-data';
 /**
  * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
@@ -9,16 +8,14 @@ import { test, expect } from '@playwright/test';
 
 test.describe('System Status Banner', () => {
 
-  test.beforeEach(async ({ page, request }) => {
-    await seedGlobalState(request);
-    await page.goto('/');
-});
-
-});
+  test.beforeEach(async ({ page }) => {
+    // Reset any previous mocks
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
+  });
 
   test('should not be visible when system is healthy', async ({ page }) => {
     // Mock healthy doctor response
-
+    await page.route('**/doctor', async route => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -34,7 +31,7 @@ test.describe('System Status Banner', () => {
 
   test('should show connection error when backend is unreachable', async ({ page }) => {
      // Mock network error
-
+     await page.route('**/doctor', async route => {
        await route.abort('failed');
      });
 
@@ -44,7 +41,7 @@ test.describe('System Status Banner', () => {
   });
 
   test('should show configuration error when config check fails', async ({ page }) => {
-
+    await page.route('**/doctor', async route => {
       await route.fulfill({
         status: 200, // The endpoint might still return 200 even if checks fail, or 503. The frontend handles the body.
         contentType: 'application/json',
@@ -66,7 +63,7 @@ test.describe('System Status Banner', () => {
   });
 
   test('should show configuration error with diff', async ({ page }) => {
-
+    await page.route('**/doctor', async route => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -93,7 +90,7 @@ test.describe('System Status Banner', () => {
   });
 
   test('should show degraded status for other check failures', async ({ page }) => {
-
+    await page.route('**/doctor', async route => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
