@@ -19,23 +19,29 @@ func ptr(s string) *string {
 }
 
 func TestLinter_Run_PlainTextSecrets(t *testing.T) {
+	sVal := configv1.SecretValue_builder{
+		PlainText: proto.String("123"),
+	}.Build()
+
+	auth := configv1.Authentication_builder{
+		ApiKey: configv1.APIKeyAuth_builder{
+			ParamName: ptr("key"),
+			Value:     sVal,
+		}.Build(),
+	}.Build()
+
+	httpSvc := configv1.HttpUpstreamService_builder{
+		Address: ptr("https://example.com"),
+	}.Build()
+
+	svc := configv1.UpstreamServiceConfig_builder{
+		Id:           ptr("test-service"),
+		UpstreamAuth: auth,
+		HttpService:  httpSvc,
+	}.Build()
+
 	cfg := configv1.McpAnyServerConfig_builder{
-		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			configv1.UpstreamServiceConfig_builder{
-				Id: ptr("test-service"),
-				UpstreamAuth: configv1.Authentication_builder{
-					ApiKey: configv1.APIKeyAuth_builder{
-						ParamName: ptr("key"),
-						Value: configv1.SecretValue_builder{
-							PlainText: proto.String("123456"),
-						}.Build(),
-					}.Build(),
-				}.Build(),
-				HttpService: configv1.HttpUpstreamService_builder{
-					Address: ptr("https://example.com"),
-				}.Build(),
-			}.Build(),
-		},
+		UpstreamServices: []*configv1.UpstreamServiceConfig{svc},
 	}.Build()
 
 	linter := NewLinter(cfg)
@@ -55,16 +61,17 @@ func TestLinter_Run_PlainTextSecrets(t *testing.T) {
 }
 
 func TestLinter_Run_ShellInjection(t *testing.T) {
+	cmdSvc := configv1.CommandLineUpstreamService_builder{
+		Command: ptr("sh -c 'echo hello'"),
+	}.Build()
+
+	svc := configv1.UpstreamServiceConfig_builder{
+		Id:                 ptr("risky-service"),
+		CommandLineService: cmdSvc,
+	}.Build()
+
 	cfg := configv1.McpAnyServerConfig_builder{
-		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			configv1.UpstreamServiceConfig_builder{
-				Id: ptr("risky-service"),
-				CommandLineService: configv1.
-					CommandLineUpstreamService_builder{
-					Command: ptr("sh -c 'echo hello'"),
-				}.Build(),
-			}.Build(),
-		},
+		UpstreamServices: []*configv1.UpstreamServiceConfig{svc},
 	}.Build()
 
 	linter := NewLinter(cfg)
@@ -82,15 +89,17 @@ func TestLinter_Run_ShellInjection(t *testing.T) {
 }
 
 func TestLinter_Run_InsecureHTTP(t *testing.T) {
+	httpSvc := configv1.HttpUpstreamService_builder{
+		Address: ptr("http://api.example.com"),
+	}.Build()
+
+	svc := configv1.UpstreamServiceConfig_builder{
+		Id:          ptr("insecure-service"),
+		HttpService: httpSvc,
+	}.Build()
+
 	cfg := configv1.McpAnyServerConfig_builder{
-		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			configv1.UpstreamServiceConfig_builder{
-				Id: ptr("insecure-service"),
-				HttpService: configv1.HttpUpstreamService_builder{
-					Address: ptr("http://api.example.com"),
-				}.Build(),
-			}.Build(),
-		},
+		UpstreamServices: []*configv1.UpstreamServiceConfig{svc},
 	}.Build()
 
 	linter := NewLinter(cfg)
@@ -109,18 +118,22 @@ func TestLinter_Run_InsecureHTTP(t *testing.T) {
 }
 
 func TestLinter_Run_CacheTTL(t *testing.T) {
+	httpSvc := configv1.HttpUpstreamService_builder{
+		Address: ptr("https://api.example.com"),
+	}.Build()
+
+	cacheCfg := configv1.CacheConfig_builder{
+		Ttl: &durationpb.Duration{Seconds: 0},
+	}.Build()
+
+	svc := configv1.UpstreamServiceConfig_builder{
+		Id:          ptr("cache-service"),
+		HttpService: httpSvc,
+		Cache:       cacheCfg,
+	}.Build()
+
 	cfg := configv1.McpAnyServerConfig_builder{
-		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			configv1.UpstreamServiceConfig_builder{
-				Id: ptr("cache-service"),
-				HttpService: configv1.HttpUpstreamService_builder{
-					Address: ptr("https://api.example.com"),
-				}.Build(),
-				Cache: configv1.CacheConfig_builder{
-					Ttl: &durationpb.Duration{Seconds: 0},
-				}.Build(),
-			}.Build(),
-		},
+		UpstreamServices: []*configv1.UpstreamServiceConfig{svc},
 	}.Build()
 
 	linter := NewLinter(cfg)
