@@ -44,6 +44,22 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 		}
 	})
 
+	t.Run("OpenClaw_UnsupportedCapability", func(t *testing.T) {
+		taskOCUnsupported := &interop.Task{
+			ID:        "task-oc-unsup",
+			Framework: "OpenClaw",
+			Intent:    "unsupported_intent",
+			Payload:   map[string]string{"data": "test"},
+		}
+
+		_, err := hub.RouteTask(ctx, taskOCUnsupported)
+		if err == nil {
+			t.Error("Expected error for unsupported OpenClaw capability, got nil")
+		} else if err.Error() != "OpenClaw does not support capability: unsupported_intent" {
+			t.Errorf("Unexpected error message: %v", err)
+		}
+	})
+
 	// 3. CrewAI Task: Role Delegation
 	t.Run("CrewAI_RoleDelegation", func(t *testing.T) {
 		task2 := &interop.Task{
@@ -64,6 +80,38 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 
 		if res2.Telemetry["auth_status"] != "verified" {
 			t.Errorf("Expected CrewAI auth_status to be verified, got '%s'", res2.Telemetry["auth_status"])
+		}
+	})
+
+	t.Run("CrewAI_DefaultRole", func(t *testing.T) {
+		taskCAIDefaultRole := &interop.Task{
+			ID:        "task-cai-003",
+			Framework: "CrewAI",
+			Intent:    "task_delegation",
+		}
+
+		res, err := hub.RouteTask(ctx, taskCAIDefaultRole)
+		if err != nil {
+			t.Fatalf("Failed to execute CrewAI task: %v", err)
+		}
+
+		if res.Telemetry["delegated_role"] != "generalist" {
+			t.Errorf("Expected CrewAI delegated_role to be 'generalist', got '%s'", res.Telemetry["delegated_role"])
+		}
+	})
+
+	t.Run("CrewAI_UnsupportedCapability", func(t *testing.T) {
+		taskCAIUnsupported := &interop.Task{
+			ID:        "task-cai-unsup",
+			Framework: "CrewAI",
+			Intent:    "unsupported_intent",
+		}
+
+		_, err := hub.RouteTask(ctx, taskCAIUnsupported)
+		if err == nil {
+			t.Error("Expected error for unsupported CrewAI capability, got nil")
+		} else if err.Error() != "CrewAI does not support capability: unsupported_intent" {
+			t.Errorf("Unexpected error message: %v", err)
 		}
 	})
 
@@ -90,6 +138,21 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 		}
 	})
 
+	t.Run("AutoGen_UnsupportedCapability", func(t *testing.T) {
+		taskAGUnsupported := &interop.Task{
+			ID:        "task-ag-unsup",
+			Framework: "AutoGen",
+			Intent:    "unsupported_intent",
+		}
+
+		_, err := hub.RouteTask(ctx, taskAGUnsupported)
+		if err == nil {
+			t.Error("Expected error for unsupported AutoGen capability, got nil")
+		} else if err.Error() != "AutoGen does not support capability: unsupported_intent" {
+			t.Errorf("Unexpected error message: %v", err)
+		}
+	})
+
 	// 5. Error Case: Unsupported Framework
 	t.Run("Unsupported_Framework", func(t *testing.T) {
 		taskInvalid := &interop.Task{
@@ -102,4 +165,52 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 			t.Error("Expected error for routing task to unknown framework, got nil")
 		}
 	})
+
+	// 6. UMMB Sync Memory Shard Test
+	t.Run("UMMB_SyncMemoryShard", func(t *testing.T) {
+		validShard := &interop.MemoryShard{
+			ShardID:           "shard-100",
+			Intent:            "cross-framework-sync",
+			TextContent:       "Mission context update.",
+			MultimodalPayload: []byte("<svg>mocked</svg>"),
+			Signature:         "valid_hardware_signature",
+		}
+
+		invalidShard := &interop.MemoryShard{
+			ShardID:           "shard-101",
+			Intent:            "unverified-sync",
+			TextContent:       "Malicious context.",
+			MultimodalPayload: []byte("<svg>malicious</svg>"),
+			Signature:         "", // Missing signature should fail
+		}
+
+		adapters := []string{"OpenClaw", "CrewAI", "AutoGen"}
+		for _, name := range adapters {
+			adapter := getAdapterByName(hub, name)
+
+			err := adapter.SyncMemoryShard(ctx, validShard)
+			if err != nil {
+				t.Errorf("Expected successful sync for %s, got error: %v", name, err)
+			}
+
+			err = adapter.SyncMemoryShard(ctx, invalidShard)
+			if err == nil {
+				t.Errorf("Expected sync to fail for %s due to missing signature", name)
+			}
+		}
+	})
+}
+
+// Helper to access registered adapters for testing interface direct calls
+func getAdapterByName(hub *interop.AdapterHub, name string) interop.AgentFramework {
+	// Let's create a temporary hub-like registry or instantiate directly.
+	switch name {
+	case "OpenClaw":
+		return interop.NewOpenClawAdapter()
+	case "CrewAI":
+		return interop.NewCrewAIAdapter()
+	case "AutoGen":
+		return interop.NewAutoGenAdapter()
+	}
+	return nil
 }

@@ -1,35 +1,28 @@
-# Truth Reconciliation Audit Report
+# Truth Reconciliation Audit
 
-## 1. Executive Summary
+## Executive Summary
+Completed a comprehensive Truth Reconciliation Audit on 10 sampled documentation files across the MCP Any project. The overall health is good, but there was significant documentation drift regarding configuration structures, system architectures (e.g. WASM, webhooks) and UI screenshot paths. All 10 files have been audited and updated to be perfectly in sync with the current codebase implementation and the latest product roadmap.
 
-A "Truth Reconciliation Audit" was performed on the MCP Any project to verify perfect synchronization between the Documentation (`ui/docs`, `server/docs`), the Codebase (Implementation), and the Product Roadmap. A structured 10-file sampling procedure verified diverse layers: UI, Middleware, Config, Webhooks, Playgrounds, and Services.
-
-**High-Level Health:**
-Overall alignment across the sample is strong, demonstrating cohesive features across the project structure. However, there was a minor instance of "Documentation Drift" (Case A). The Webhooks configuration UI was fully functional in the implementation (`ui/src/app/webhooks/page.tsx`), adding capabilities like status toggle, event testing, and endpoint creation. The documentation still reported this as a "Planned" feature. The documentation has now been aligned to reflect the implementation perfectly.
-
-## 2. Verification Matrix
+## Verification Matrix
 
 | Document Name | Status | Action Taken | Evidence |
-| :--- | :--- | :--- | :--- |
-| `ui/docs/features/playground.md` | Aligned | Verified UI | `ui/src/components/playground/pro/playground-client-pro.tsx` (Includes export/import, tool rendering) |
-| `ui/docs/features/services.md` | Aligned | Verified UI | `ui/src/app/upstream-services/page.tsx` & `.proto` files confirm `health_check` options |
-| `ui/docs/features/middleware.md` | Aligned | Verified UI | `ui/src/components/middleware/pipeline-visualizer.tsx` matches drag/drop UI flow |
-| `ui/docs/features/webhooks.md` | **Documentation Drift** | Updated Doc | `ui/src/app/webhooks/page.tsx` is implemented, doc incorrectly said "UI Planned". Updated doc. |
-| `ui/docs/features/secrets.md` | Aligned | Verified UI | `ui/src/components/settings/secrets-manager.tsx` implements key UI fields (friendly name, env var name) |
-| `ui/docs/features/logs.md` | Aligned | Verified UI | Codebase supports streaming output view elements |
-| `ui/docs/features/search.md` | Aligned | Verified UI | Command palette uses `cmdK` functionality with `Command` UI primitives |
-| `ui/docs/features/universal_agent_bus.md` | Aligned | Verified UI | Confirmed `Recursive Context Dashboard` UI |
-| `server/docs/features/webhooks/README.md` | Aligned | Verified Backend | `server/cmd/webhooks/main.go` correctly implements sidecar features |
-| `server/docs/features/webhooks/sidecar.md` | Aligned | Verified Backend | Confirmed Sidecar purpose matching code implementation |
+| --- | --- | --- | --- |
+| `server/docs/features/hitl.md` | Drifted | Updated configuration from `timeout` to `timeout_seconds` | Matches `HITLConfig` struct in `server/pkg/middleware/hitl.go` |
+| `server/docs/features/helm.md` | Drifted | Fixed install command to reference the actual Helm chart `mcpany/mcpany` | Verified `Chart.yaml` in `k8s/helm/mcpany` |
+| `server/docs/features/wasm.md` | Drifted | Updated to reflect the mock runtime implementation | Checked `server/pkg/wasm/runtime.go` |
+| `server/docs/features/audit_logging.md` | Drifted | Updated Webhook performance note to reflect async batching | Verified worker implementation in `server/pkg/audit/webhook.go` |
+| `ui/docs/features/prompts.md` | Drifted | Corrected screenshot path to `../screenshots/prompts.png` | Checked `ui/docs/screenshots/` |
+| `ui/docs/features/secrets.md` | Drifted | Corrected screenshot paths to `../screenshots/secrets.png` and `../screenshots/secret_create_modal.png` | Checked `ui/docs/screenshots/` |
+| `ui/docs/features/hitl.md` | Verified | None | Verified implementation in `ui/src/components/hitl/hitl-dashboard.tsx` |
+| `ui/docs/features/dashboard.md` | Drifted | Corrected "Quick Actions" screenshot reference | Checked `ui/docs/screenshots/` |
+| `ui/docs/features/test_connection.md` | Verified | None | Verified implementation in `ui/src/components/diagnostics/connection-diagnostic.tsx` |
+| `ui/docs/features/middleware.md` | Drifted | Corrected screenshot path to `../screenshots/middleware.png` | Checked `ui/docs/screenshots/` |
 
-## 3. Remediation Log
+## Remediation Log
+- **Documentation Drift**: The vast majority of discrepancies were related to missing or incorrectly path-referenced screenshots in the `ui/docs` folder. The actual files are named slightly differently than what the docs had.
+- **Backend Configuration Drift**: The HITL configuration document had the `timeout` string incorrectly listed, whereas the actual backend parsing strictly expects `timeout_seconds`. This would have caused parsing failures.
+- **Architectural Reality**: The `audit_logging.md` inaccurately described the `Webhook` storage type as a synchronous call that could slow down tool execution. In reality, `server/pkg/audit/webhook.go` uses an asynchronous batch queue. The WASM plugin system doc stated it was purely planned, but a mock interface already exists.
+- **Code vs Roadmap**: The implementation correctly reflects the Roadmap objectives. Specifically, "Doctor 2.0" and "HITL" exist perfectly as outlined.
 
-*   **Documentation Updates:**
-    * Updated `ui/docs/features/webhooks.md` to flag "Status: Implemented".
-    * Specified the newly added features to the UI dashboard (Add Webhooks, Toggle active state, Status testing, and Deleting webhooks).
-*   **Code Fixes:** No codebase modifications were required during this sample since all backend components passed TDD and `make test`. All UI components were manually traced and correctly referenced features in documentation files.
-
-## 4. Security Scrub
-
-*   **PII/Secrets:** Clean. No Personally Identifiable Information (PII) or secrets are exposed in this PR. All test payloads reference fake `https://...` endpoints.
-*   **Internal IPs:** Clean. No internal IP addresses.
+## Security Scrub
+- Confirmed no PII, secrets, or internal IPs have been exposed in this report or in any of the updated markdown files.

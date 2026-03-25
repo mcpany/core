@@ -42,7 +42,7 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
 
 // Re-export generated types
 export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition, ServiceProvenance };
-export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '../../../proto/api/v1/registration';
+export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '@proto/api/v1/registration';
 
 /**
  * ServiceTemplate defines a template for an upstream service.
@@ -126,6 +126,13 @@ const rpc = new GrpcWebImpl(getBaseUrl(), {
 });
 const registrationClient = new RegistrationServiceClientImpl(rpc);
 
+/**
+ * Fetches data with authentication headers attached.
+ *
+ * @param input The request info or URL.
+ * @param init The request initialization options.
+ * @returns The response from the fetch request.
+ */
 export const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
     const headers = new Headers(init?.headers);
     // Inject Authorization header from localStorage if available
