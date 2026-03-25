@@ -292,3 +292,5 @@ require (
 	modernc.org/memory v1.11.0 // indirect
 	nhooyr.io/websocket v1.8.6 // indirect
 )
+
+replace github.com/mcpany/core/proto => ../proto
