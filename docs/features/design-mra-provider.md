@@ -63,4 +63,11 @@ The Mesh-Resident Attestation (MRA) Provider provides the hardware-bound infrast
 
 ## 7. Evolutionary Changelog
 * **2026-06-12:** Initial Document Creation. Supporting ARI-v2 requirements for collision-resistant, hardware-bound reasoning hashes.
-* **2026-06-30:** Hardware-Bound Trust Continuity (HBL) Upgrade. Introducing support for TPM-bound monotonic counters to facilitate sub-100ms teammate rotation and trust resumption, neutralizing "Teammate Rotation Fatigue."
+
+### Update: 2026-06-30 - Mandating HBL for Trust Resumption
+**Context:** Gemini CLI v0.44.0 now mandates Hardware-Bound Lineage (HBL) for teammate rotations to counter session cloning. Current full-mesh handshakes are exceeding 2s latency.
+**Architecture Adjustment:**
+* Integrating TPM-bound monotonic counters into the MRA Provider to enforce hardware lineage.
+* Enabling "Trust Resumption" based on HBL state, bypassing repeated full-mesh handshakes for horizontal rotations.
+* Anchoring RPP (Reasoning-Path Persistence) snapshots to hardware monotonic counters to prevent reasoning-chain splicing.
+**Security Impact:** Neutralizes session replay/cloning attacks and reduces teammate rotation latency from >2s to under 100ms.

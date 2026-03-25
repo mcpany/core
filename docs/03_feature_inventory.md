@@ -1520,18 +1520,13 @@
 - **Context-File Integrity Attestation (CFIA) v2**: (P0) Advanced security service mandating "Human-in-the-Loop" hashing and hardware-attested signing for natural-language context files.
 - **Fast-Path Identity Resumption (FPIR)**: (P1) Performance-optimizing middleware providing time-bound trust leases for sub-100ms teammate rotation.
 
-### Priority Shifts
-- **Active Reasoning Interdiction (ARI) Hub**: (Re-affirmed P0) Evolving to v2 with the requirement for fragment-level semantic hash-chaining to counter Logic Grafting.
-- **SRM Provider**: (Re-affirmed P0) Elevated with mandatory support for **Reasoning Provenance** verification.
-
 ## Evolution: [2026-06-30] Updates
 
 ### Proposed Additions
-- **SVG-Layer Semantic Interceptor**: (P0) Advanced extension for the MIB that performs real-time deconstruction of SVG/CSS metadata and pathing to detect "Invisible" instructions.
-- **Hardware-Bound Trust Continuity Relay**: (P0) Optimization service for the HBL Gateway utilizing TPM monotonic counters for sub-100ms teammate rotation.
-- **RPP Snapshot Broker**: (P0) Authoritative coordination service providing hardware-attested snapshots of the reasoning-path for cross-teammate cognitive continuity.
-- **Sovereign Path Normalizer**: (P1) Security extension for the NaaS provider mandating OS-agnostic path manifests to prevent "Normalization Escape" exfiltration.
+- **SVG-Layer Semantic Interceptor**: (P0) Core security middleware for the MIB that deconstructs and sanitizes hidden SVG structural layers to neutralize "Zero-Width" instruction injection.
+- **HBL Trust Continuity Relay**: (P0) High-speed identity service utilizing TPM-bound monotonic counters to facilitate sub-100ms teammate rotation via hardware lineage.
+- **RPP Snapshot Broker**: (P0) Authoritative coordination service for OpenClaw-compliant "Reasoning-Path Persistence" snapshots, ensuring mission-root continuity.
 
 ### Priority Shifts
-- **Multi-modal Integrity Bridge (MIB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SVG-Layer** deconstruction.
-- **HBL Gateway**: (Re-affirmed P0) Elevated as the primary solution for "Teammate Rotation Fatigue."
+- **Multi-modal Integrity Bridge (MIB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SVG-Layer Semantic Shielding (SLSS)**.
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary broker for **RPP-compliant** reasoning snapshots.

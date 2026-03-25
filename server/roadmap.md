@@ -832,7 +832,6 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] Fast-Path Identity Resumption (FPIR)**: Time-bound hardware-attested trust leases to neutralize teammate rotation latency. (Added: 2026-06-29)
 
 #### Upcoming (2026-06-30 Evolution)
-*   **[P0] SVG-Layer Semantic Shield (SLSS)**: Real-time structural deconstruction of SVG/CSS metadata and pathing to neutralize "Invisible" instruction injection. (Added: 2026-06-30)
-*   **[P0] HBL Trust Resumption Gateway**: Implementation of TPM-bound monotonic counters for sub-100ms teammate trust resumption. (Added: 2026-06-30)
-*   **[P0] RPP Snapshot Broker**: Coordination service for hardware-attested reasoning-path snapshots to ensure cognitive continuity across teammate swaps. (Added: 2026-06-30)
-*   **[P1] Sovereign Path Normalization**: OS-agnostic path manifest validation for shared teammate shards to prevent "Normalization Escape." (Added: 2026-06-30)
+*   **[P0] SVG-Layer Semantic Interceptor**: Structural deconstruction and sanitization of hidden SVG layers to prevent invisible instruction injection. (Added: 2026-06-30)
+*   **[P0] HBL Trust Continuity Relay**: High-speed identity service utilizing TPM-bound monotonic counters for horizontal rotation. (Added: 2026-06-30)
+*   **[P0] RPP Snapshot Broker**: Authority for brokering OpenClaw Reasoning-Path Persistence snapshots with mission-root anchoring. (Added: 2026-06-30)

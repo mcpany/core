@@ -669,7 +669,6 @@
 - [ ] **[P1] FPIR Lease Monitor**: Dashboard for tracking fast-path identity resumption leases and teammate rotation latency. (Added: 2026-06-29)
 
 #### Upcoming (2026-06-30 Evolution)
-- [ ] **[P0] SVG Semantic Shield Dashboard**: UI for reviewing structural SVG deconstructions and approved metadata fragments. (Added: 2026-06-30)
-- [ ] **[P0] SVG Attention Heatmap**: Heatmap visualization of context fragments and hidden reasoning traces within SVG assets. (Added: 2026-06-30)
-- [ ] **[P0] HBL Resumption Monitor**: Visual indicator for TPM-bound monotonic counters and fast-path teammate rotation events. (Added: 2026-06-30)
-- [ ] **[P1] RPP Snapshot Explorer**: UI for reviewing hardware-attested reasoning-path snapshots and mission-root cognitive state. (Added: 2026-06-30)
+- [ ] **[P0] SVG Semantic Shield Dashboard**: UI for reviewing sanitized SVG structures and hidden instruction fragment alerts. (Added: 2026-06-30)
+- [ ] **[P1] SVG Attention Heatmap**: Visualization of hidden SVG structural layers driving agent visual reasoning. (Added: 2026-06-30)
+- [ ] **[P0] HBL Trust Continuity Monitor**: Real-time status indicator for TPM-bound monotonic counters and HBL-resumed sessions. (Added: 2026-06-30)
