@@ -36,7 +36,7 @@ With the maturation of Gemini CLI's A2A auth and the shift toward horizontal "Ag
     * Persistent "Trusted Lineage" cache to accelerate repeat handshakes.
 
 ## 5. Alternatives Considered
-* **TLS-Only Auth:** Rejected because it doesn't provide "Lineage Proof"an attacker could still spoof a valid cert if the local environment is partially compromised.
+* **TLS-Only Auth:** Rejected because it doesn't provide "Lineage Proof " an attacker could still spoof a valid cert if the local environment is partially compromised.
 * **Public Discovery + Per-Call Auth:** Rejected because metadata (tool descriptions) itself often contains sensitive intent fragments.
 
 ## 6. Cross-Cutting Concerns

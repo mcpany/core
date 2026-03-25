@@ -3,7 +3,7 @@
 ## Ecosystem Shifts & Research Findings
 
 ### 1. The "Supervisor Bottleneck" in Enterprise Swarms
-- **Finding**: As enterprises transition from pilot projects to production swarms (approaching 40% of apps by 2026), the traditional "Supervisor Pattern"where a central orchestrator manages all subagentsis hitting a scalability wall. The orchestrator is becoming a cognitive and performance bottleneck, as well as a single point of failure for audit trails.
+- **Finding**: As enterprises transition from pilot projects to production swarms (approaching 40% of apps by 2026), the traditional "Supervisor Pattern " where a central orchestrator manages all subagentsis hitting a scalability wall. The orchestrator is becoming a cognitive and performance bottleneck, as well as a single point of failure for audit trails.
 - **Impact**: MCP Any must evolve to support "Distributed Supervisor Meshes," where delegation and oversight are decentralized but still anchored to a unified mission root.
 
 ### 2. Rise of Programmatic Agent Control (OpenCode SDK)
