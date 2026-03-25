@@ -4,7 +4,6 @@
  */
 
 import { request, APIRequestContext } from "@playwright/test";
-/* eslint-disable @typescript-eslint/no-unused-vars */
 
 const BASE_URL = process.env.BACKEND_URL || "http://localhost:50050";
 const API_KEY = process.env.MCPANY_API_KEY || "test-token";
@@ -198,6 +197,25 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
     },
   ];
 
+  const traces = [
+    {
+      id: "trace-1",
+      rootSpan: {
+        id: "span-1",
+        name: "calculate_sum",
+        serviceName: "Math",
+        type: "tool",
+        status: "success",
+        startTime: Date.now() - 150,
+        endTime: Date.now(),
+        children: [],
+      },
+      timestamp: new Date().toISOString(),
+      totalDuration: 150,
+      status: "success",
+      trigger: "user",
+    },
+  ];
   const seedRequest = {
     upstream_services: services,
     service_templates: templates,
