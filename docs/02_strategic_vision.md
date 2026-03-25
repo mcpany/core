@@ -1239,3 +1239,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Relational PoI Enforcement**: MCP Any will pivot to a "Relational Security" model where every tool call is validated against a cryptographically signed "Intent Chain." This ensures that subagents cannot be coerced into actions that diverge from the parent's verified goal.
 - **BSH-Native Orchestration**: Moving toward a "Binary-First" transport for all A2A communications. MCP Any will act as a high-speed buffer and validator for Protobuf/BSH state handoffs, drastically reducing latency in complex multi-agent workflows.
 - **Ghost Shell Hook Profiling**: We are introducing "Ghost Shell" as a mandatory profiling step for any un-attested configuration hooks. This provides a behavioral safety net before any "Binary Smuggling" in WASM hooks can reach the host.
+
+---
+
+## Strategic Evolution: [2026-03-25]
+### Focus: Multi-Level Intent Integrity & Kernel-Mediated State Handoffs
+**Context**: The disclosure of "Intent Ghosting" in UACO v1.7 and the move towards Zero-Copy Binary State Handoffs (BSH) confirm that infrastructure must move beyond transport-layer security to **Relational Integrity** and **Kernel-Level Performance**.
+**Strategic Pivot**:
+- **Relational PoI Enforcement**: MCP Any will evolve to verify the entire cryptographic chain of custody for intents, ensuring that "Ghost" intents cannot shadow authorized mission roots.
+- **WASM-BSH Active Sanitizer**: We are mandating WASM-based sanitization for all binary state handoffs to ensure schema compliance and detect "State Injection" at the byte level.
+- **Memfd-Native BSH Buffers**: To support multi-gigabyte context transfer, we are adopting Linux `memfd_create` for zero-copy shared memory handoffs, mediated by the MCP Any gateway.
