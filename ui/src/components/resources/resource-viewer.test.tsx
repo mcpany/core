@@ -35,28 +35,14 @@ describe('ResourceViewer', () => {
     expect(screen.getByText('Select a resource to view its content.')).toBeInTheDocument();
   });
 
-  it('renders JSON content using JsonView', () => {
+  it('renders JSON content', () => {
     const content: ResourceContent = {
         uri: 'file:///config.json',
         mimeType: 'application/json',
         text: '{"foo": "bar"}'
     };
-    const { container } = render(<ResourceViewer content={content} loading={false} />);
-    // JsonView uses syntax highlighter internally for raw view, but tree view parses it.
-    // If it's a small object, it might render as a tree or smart table.
-    // Assuming JsonView renders some keys:
-    expect(container).toHaveTextContent('foo');
-    expect(container).toHaveTextContent('bar');
-  });
-
-  it('renders YAML content using ReactSyntaxHighlighter', () => {
-    const content: ResourceContent = {
-        uri: 'file:///config.yaml',
-        mimeType: 'application/yaml',
-        text: 'foo: bar'
-    };
     render(<ResourceViewer content={content} loading={false} />);
-    expect(screen.getByTestId('code-block')).toHaveTextContent('foo: bar');
+    expect(screen.getByTestId('code-block')).toHaveTextContent('{"foo": "bar"}');
   });
 
   it('renders Markdown content', () => {

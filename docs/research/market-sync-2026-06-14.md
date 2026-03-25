@@ -1,20 +1,16 @@
 # Market Sync: 2026-06-14
 
-## Ecosystem Shifts & Findings
+## Ecosystem Shifts and Findings
 
-### 1. Shadow-Discovery via Metadata Injection (SDMI)
-Recent deep-dives into OpenClaw's PNTD (Protocol-Neutral Task Discovery) implementation reveal a critical vulnerability: SDMI. Malicious MCP servers or compromised registries can inject imperative instructions directly into the "Description" and "Example" fields of a tool's structural metadata. Because these fields are often treated as trusted documentation by LLMs, the agent "reasons" over them *before* any tool-call interdiction occurs, leading to "Pre-Flight Reasoning Hijacking."
+### 1. Attention-Aware Routing (AAR) in OpenClaw
+The latest OpenClaw "Orchestration Mesh" technical preview introduces Attention-Aware Routing. This mechanism allows the parent agent to dynamically route sub-tasks based on the "Attention Availability" of specialists. This is a direct response to Reasoning Entropy Exhaustion (REE), as it enables the swarm to bypass specialists currently under high-entropy noise injection, preserving the mission-root's cognitive resources.
 
-### 2. Attention-Locked Context Sharding (ALCS)
-Following the disclosure of REE (Reasoning Entropy Exhaustion), the Claude Code "Agent Teams" ecosystem is moving toward ALCS. This protocol ensures that mission-critical context shards—specifically the "Mission Root" intent and "Sovereignty Proofs"—are cryptographically pinned to a hardware-protected "Attention Tier" within the context window. This prevents them from being evicted by high-entropy noise injected by subagents.
+### 2. Hardware-Locked Context Pinning (Claude Code v2.6)
+Claude Code has released a patch for its "Attention Sovereignty" suite, introducing Hardware-Locked Context Pinning. This allows specific mission-critical intent fragments to be cryptographically "pinned" at the LLM's attention layer via a TPM-bound session. Unlike legacy software pinning, this prevents eviction even during extreme REE attacks, ensuring the mission root remains authoritative.
 
-### 3. Multi-Swarm Handshake Exhaustion (MSHE)
-In heterogeneous swarms (e.g., Gemini CLI orchestrating OpenClaw specialists), the mandate for "Hardware-Locked Coordination Handshakes" is leading to MSHE. In deep delegations (A -> B -> C -> D), the cumulative latency of per-hop hardware signatures is causing "Cognitive Stall," where the agent's reasoning loop times out before the coordination bus can validate the lineage. This demands a move toward "Trust Persistence" and "Leased Mesh Identity."
+### 3. Multi-Dimensional Reasoning Attestation (MDRA)
+Gemini CLI has published a draft specification for MDRA. This unified token format merges hardware attestation (TPM/TEE), stylometric consistency (SSM), and mission-lineage (HAIL) into a single, multi-dimensional attestation block. This is intended to solve the "Coordination Drift" pain point by providing a high-confidence proof of fragment-level integrity that is resistant to collision-based spoofing.
 
 ### 4. Autonomous Agent Pain Points
-- **Pre-Flight Hijacking**: Discovery metadata is being weaponized to steer agent reasoning before tool execution.
-- **Cognitive Stall**: High-security coordination is introducing prohibitive latency in deep delegation chains.
-- **Attention Erosion**: Subagents are still finding ways to "smear" the attention window even with basic gating.
-
-## Strategic Implications for MCP Any
-MCP Any must evolution to include a **Structural Metadata Sanitizer** to neutralize SDMI. Additionally, our T2T Bridge must evolve to support **Attention-Locked Context Windows** (HAAL) and **Multi-Hop Persistence Relays** (MHPR) to reconcile the conflict between absolute sovereignty and multi-agent performance.
+- **Coordination Drift**: Swarms are diverging when specialists return hardware-attested but semantically inconsistent results.
+- **Context Fragmentation**: The overhead of MDRA-style unified tokens is leading to "Context-Window Bloat" in deep agent chains.
