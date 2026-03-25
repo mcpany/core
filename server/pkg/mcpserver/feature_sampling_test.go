@@ -37,15 +37,6 @@ func (m *featureSamplingTool) Tool() *v1.Tool {
 	return m.tool
 }
 
-
-func (m *featureSamplingTool) IsStreaming() bool {
-	return false
-}
-
-func (m *featureSamplingTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
-	return nil, nil
-}
-
 func (m *featureSamplingTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 	// 1. Get Session/Sampler from context
 	sampler, ok := tool.GetSession(ctx)
