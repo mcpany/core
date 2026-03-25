@@ -49,7 +49,7 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func setupApiTestApp() (*Application, storage.Storage) {
+func setupAPITestApp() (*Application, storage.Storage) {
 	bp, _ := bus.NewProvider(nil)
 	store := memory.NewStore()
 	app := &Application{
@@ -179,7 +179,7 @@ func TestHandleServiceStatus_Mocked(t *testing.T) {
 // Tests from api_coverage_test.go
 
 func TestHandleServices(t *testing.T) {
-	app, store := setupApiTestApp()
+	app, store := setupAPITestApp()
 	handler := app.handleServices(store)
 
 	// Test POST Success
@@ -221,7 +221,7 @@ func TestHandleServices(t *testing.T) {
 }
 
 func TestHandleServiceDetail(t *testing.T) {
-	app, store := setupApiTestApp()
+	app, store := setupAPITestApp()
 	handler := app.handleServiceDetail(store)
 
 	httpSvc := &configv1.HttpUpstreamService{}
@@ -273,7 +273,7 @@ func TestHandleServiceDetail(t *testing.T) {
 }
 
 func TestHandleServiceStatus_Detailed(t *testing.T) {
-	app, store := setupApiTestApp()
+	app, store := setupAPITestApp()
 	handler := app.handleServiceDetail(store)
 
 	svc := configv1.UpstreamServiceConfig_builder{
@@ -293,7 +293,7 @@ func TestHandleServiceStatus_Detailed(t *testing.T) {
 }
 
 func TestHandleSettings_Detailed(t *testing.T) {
-	app, store := setupApiTestApp()
+	app, store := setupAPITestApp()
 	handler := app.handleSettings(store)
 
 	// Test POST
@@ -319,7 +319,7 @@ func TestHandleSettings_Detailed(t *testing.T) {
 }
 
 func TestHandleTools_Detailed(t *testing.T) {
-	app, _ := setupApiTestApp()
+	app, _ := setupAPITestApp()
 	handler := app.handleTools()
 
 	req := httptest.NewRequest(http.MethodGet, "/tools", nil)
@@ -331,7 +331,7 @@ func TestHandleTools_Detailed(t *testing.T) {
 }
 
 func TestHandlePrompts_Detailed(t *testing.T) {
-	app, _ := setupApiTestApp()
+	app, _ := setupAPITestApp()
 	handler := app.handlePrompts()
 
 	req := httptest.NewRequest(http.MethodGet, "/prompts", nil)
@@ -343,7 +343,7 @@ func TestHandlePrompts_Detailed(t *testing.T) {
 }
 
 func TestHandleResources_Detailed(t *testing.T) {
-	app, _ := setupApiTestApp()
+	app, _ := setupAPITestApp()
 	handler := app.handleResources()
 
 	req := httptest.NewRequest(http.MethodGet, "/resources", nil)
@@ -355,7 +355,7 @@ func TestHandleResources_Detailed(t *testing.T) {
 }
 
 func TestHandleSecrets_Detailed(t *testing.T) {
-	app, store := setupApiTestApp()
+	app, store := setupAPITestApp()
 	handler := app.handleSecrets(store)
 
 	// Test POST
@@ -387,7 +387,7 @@ func TestHandleSecrets_Detailed(t *testing.T) {
 }
 
 func TestHandleSecretDetail_Detailed(t *testing.T) {
-	app, store := setupApiTestApp()
+	app, store := setupAPITestApp()
 	handler := app.handleSecretDetail(store)
 
 	secret := configv1.Secret_builder{
@@ -418,7 +418,7 @@ func TestHandleSecretDetail_Detailed(t *testing.T) {
 }
 
 func TestHandleProfiles_Detailed(t *testing.T) {
-	app, store := setupApiTestApp()
+	app, store := setupAPITestApp()
 	handler := app.handleProfiles(store)
 
 	profile := configv1.ProfileDefinition_builder{
@@ -442,7 +442,7 @@ func TestHandleProfiles_Detailed(t *testing.T) {
 }
 
 func TestHandleProfileDetail_Detailed(t *testing.T) {
-	app, store := setupApiTestApp()
+	app, store := setupAPITestApp()
 	handler := app.handleProfileDetail(store)
 
 	profile := configv1.ProfileDefinition_builder{
@@ -486,7 +486,7 @@ func TestHandleProfileDetail_Detailed(t *testing.T) {
 }
 
 func TestHandleCollections_Detailed(t *testing.T) {
-	app, store := setupApiTestApp()
+	app, store := setupAPITestApp()
 	handler := app.handleCollections(store)
 
 	collection := configv1.Collection_builder{
@@ -510,7 +510,7 @@ func TestHandleCollections_Detailed(t *testing.T) {
 }
 
 func TestHandleCollectionDetail_Detailed(t *testing.T) {
-	app, store := setupApiTestApp()
+	app, store := setupAPITestApp()
 	handler := app.handleCollectionDetail(store)
 
 	svc1 := configv1.UpstreamServiceConfig_builder{
@@ -570,7 +570,7 @@ func TestHandleCollectionDetail_Detailed(t *testing.T) {
 }
 
 func TestHandleExecute_Detailed(t *testing.T) {
-	app, _ := setupApiTestApp()
+	app, _ := setupAPITestApp()
 	handler := app.handleExecute()
 
 	// 1. Invalid JSON
@@ -606,7 +606,7 @@ func (m *mockResource) Resource() *mcp.Resource {
 	return &mcp.Resource{URI: m.uri}
 }
 func (m *mockResource) Service() string { return "mock" }
-func (m *mockResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
+func (m *mockResource) Read(_ context.Context) (*mcp.ReadResourceResult, error) {
 	return &mcp.ReadResourceResult{
 		Contents: []*mcp.ResourceContents{
 			{
@@ -617,7 +617,7 @@ func (m *mockResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error
 		},
 	}, nil
 }
-func (m *mockResource) Subscribe(ctx context.Context) error { return nil }
+func (m *mockResource) Subscribe(_ context.Context) error { return nil }
 
 // Mock Prompt
 type mockPrompt struct {
@@ -629,7 +629,7 @@ func (m *mockPrompt) Prompt() *mcp.Prompt {
 }
 func (m *mockPrompt) Service() string { return "mock" }
 func (m *mockPrompt) Definition() *configv1.PromptDefinition { return nil }
-func (m *mockPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
+func (m *mockPrompt) Get( _ context.Context, _ json.RawMessage) (*mcp.GetPromptResult, error) {
 	return &mcp.GetPromptResult{
 		Messages: []*mcp.PromptMessage{
 			{
@@ -760,7 +760,7 @@ func TestHandlePromptExecute(t *testing.T) {
 // Tests from api_bug_test.go
 
 func TestHandleProfiles_LargeBody(t *testing.T) {
-	app, store := setupApiTestApp()
+	app, store := setupAPITestApp()
 
 	// Create a large body (> 1MB)
 	largeBody := make([]byte, 2*1024*1024) // 2MB
@@ -780,7 +780,7 @@ func TestHandleProfiles_LargeBody(t *testing.T) {
 }
 
 func TestHandleProfileDetail_LargeBody(t *testing.T) {
-	app, store := setupApiTestApp()
+	app, store := setupAPITestApp()
 
 	largeBody := make([]byte, 2*1024*1024) // 2MB
 	req := httptest.NewRequest(http.MethodPut, "/profiles/test", bytes.NewReader(largeBody))
@@ -795,7 +795,7 @@ func TestHandleProfileDetail_LargeBody(t *testing.T) {
 }
 
 func TestHandleSettings_LargeBody(t *testing.T) {
-	app, store := setupApiTestApp()
+	app, store := setupAPITestApp()
 
 	largeBody := make([]byte, 2*1024*1024) // 2MB
 	req := httptest.NewRequest(http.MethodPost, "/settings", bytes.NewReader(largeBody))
@@ -810,7 +810,7 @@ func TestHandleSettings_LargeBody(t *testing.T) {
 }
 
 func TestHandleCollections_LargeBody(t *testing.T) {
-	app, store := setupApiTestApp()
+	app, store := setupAPITestApp()
 
 	largeBody := make([]byte, 2*1024*1024) // 2MB
 	req := httptest.NewRequest(http.MethodPost, "/collections", bytes.NewReader(largeBody))
@@ -825,7 +825,7 @@ func TestHandleCollections_LargeBody(t *testing.T) {
 }
 
 func TestHandleCollectionDetail_LargeBody(t *testing.T) {
-	app, store := setupApiTestApp()
+	app, store := setupAPITestApp()
 
 	largeBody := make([]byte, 2*1024*1024) // 2MB
 	req := httptest.NewRequest(http.MethodPut, "/collections/test", bytes.NewReader(largeBody))
@@ -840,7 +840,7 @@ func TestHandleCollectionDetail_LargeBody(t *testing.T) {
 }
 
 func TestHandleSecrets_LargeBody(t *testing.T) {
-	app, store := setupApiTestApp()
+	app, store := setupAPITestApp()
 
 	largeBody := make([]byte, 2*1024*1024) // 2MB
 	req := httptest.NewRequest(http.MethodPost, "/secrets", bytes.NewReader(largeBody))
@@ -861,7 +861,7 @@ func (e *errorReader) Read(p []byte) (n int, err error) {
 }
 
 func TestHandleProfiles_ReadError(t *testing.T) {
-	app, store := setupApiTestApp()
+	app, store := setupAPITestApp()
 
 	req := httptest.NewRequest(http.MethodPost, "/profiles", &errorReader{})
 	w := httptest.NewRecorder()
@@ -1077,17 +1077,17 @@ type errorResource struct{}
 
 func (e *errorResource) Resource() *mcp.Resource { return &mcp.Resource{URI: "error://test"} }
 func (e *errorResource) Service() string         { return "test" }
-func (e *errorResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
+func (e *errorResource) Read(_ context.Context) (*mcp.ReadResourceResult, error) {
 	return nil, errors.New("read failed")
 }
-func (e *errorResource) Subscribe(ctx context.Context) error { return nil }
+func (e *errorResource) Subscribe(_ context.Context) error { return nil }
 
 type errorPrompt struct{}
 
 func (e *errorPrompt) Prompt() *mcp.Prompt { return &mcp.Prompt{Name: "error-prompt"} }
 func (e *errorPrompt) Service() string     { return "test" }
 func (e *errorPrompt) Definition() *configv1.PromptDefinition { return nil }
-func (e *errorPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
+func (e *errorPrompt) Get( _ context.Context, _ json.RawMessage) (*mcp.GetPromptResult, error) {
 	return nil, errors.New("get failed")
 }
 
@@ -1096,7 +1096,7 @@ func TestHandleResourceReadError(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockResManager := resource.NewMockManagerInterface(ctrl)
-	app, _ := setupApiTestApp()
+	app, _ := setupAPITestApp()
 	app.ResourceManager = mockResManager
 
 	mockResManager.EXPECT().GetResource("error://test").Return(&errorResource{}, true)
@@ -1114,7 +1114,7 @@ func TestHandlePromptExecuteError(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockPromptManager := prompt.NewMockManagerInterface(ctrl)
-	app, _ := setupApiTestApp()
+	app, _ := setupAPITestApp()
 	app.PromptManager = mockPromptManager
 
 	mockPromptManager.EXPECT().GetPrompt("error-prompt").Return(&errorPrompt{}, true)
@@ -1132,7 +1132,7 @@ func stringPtr(s string) *string {
 }
 
 func TestHandleAuditExport(t *testing.T) {
-	app, _ := setupApiTestApp()
+	app, _ := setupAPITestApp()
 	app.standardMiddlewares = &middleware.StandardMiddlewares{}
 
 	// Use CWD to ensure path is allowed by validation
@@ -1192,13 +1192,13 @@ func TestHandleInitiateOAuth(t *testing.T) {
 	app := &Application{AuthManager: am}
 
 	svcID := "github"
-	clientId := &configv1.SecretValue{}
-	clientId.SetPlainText("client-id")
+	clientID := &configv1.SecretValue{}
+	clientID.SetPlainText("client-id")
 	clientSecret := &configv1.SecretValue{}
 	clientSecret.SetPlainText("client-secret")
 
 	oauth2 := &configv1.OAuth2Auth{}
-	oauth2.SetClientId(clientId)
+	oauth2.SetClientId(clientID)
 	oauth2.SetClientSecret(clientSecret)
 	oauth2.SetAuthorizationUrl("https://github.com/login/oauth/authorize")
 	oauth2.SetTokenUrl("https://github.com/login/oauth/access_token")
@@ -1396,7 +1396,7 @@ type MockServiceStore struct {
 	services []*configv1.UpstreamServiceConfig
 }
 
-func (s *MockServiceStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
+func (s *MockServiceStore) Load(_ context.Context) (*configv1.McpAnyServerConfig, error) {
 	return nil, nil
 }
 func (s *MockServiceStore) HasConfigSources() bool { return false }
@@ -1406,11 +1406,11 @@ func (s *MockServiceStore) SaveService(ctx context.Context, service *configv1.Up
 func (s *MockServiceStore) GetService(ctx context.Context, name string) (*configv1.UpstreamServiceConfig, error) {
 	return nil, nil
 }
-func (s *MockServiceStore) ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
+func (s *MockServiceStore) ListServices(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	return s.services, nil
 }
 func (s *MockServiceStore) DeleteService(ctx context.Context, name string) error  { return nil }
-func (s *MockServiceStore) ListSecrets(ctx context.Context) ([]*configv1.Secret, error) {
+func (s *MockServiceStore) ListSecrets(_ context.Context) ([]*configv1.Secret, error) {
 	return nil, nil
 }
 func (s *MockServiceStore) SaveSecret(ctx context.Context, secret *configv1.Secret) error {
@@ -1420,7 +1420,7 @@ func (s *MockServiceStore) GetSecret(ctx context.Context, id string) (*configv1.
 	return nil, nil
 }
 func (s *MockServiceStore) DeleteSecret(ctx context.Context, id string) error { return nil }
-func (s *MockServiceStore) ListProfiles(ctx context.Context) ([]*configv1.ProfileDefinition, error) {
+func (s *MockServiceStore) ListProfiles(_ context.Context) ([]*configv1.ProfileDefinition, error) {
 	return nil, nil
 }
 func (s *MockServiceStore) SaveProfile(ctx context.Context, p *configv1.ProfileDefinition) error {
@@ -1430,7 +1430,7 @@ func (s *MockServiceStore) GetProfile(ctx context.Context, name string) (*config
 	return nil, nil
 }
 func (s *MockServiceStore) DeleteProfile(ctx context.Context, name string) error { return nil }
-func (s *MockServiceStore) ListServiceCollections(ctx context.Context) ([]*configv1.Collection, error) {
+func (s *MockServiceStore) ListServiceCollections(_ context.Context) ([]*configv1.Collection, error) {
 	return nil, nil
 }
 func (s *MockServiceStore) SaveServiceCollection(ctx context.Context, c *configv1.Collection) error {
@@ -1442,7 +1442,7 @@ func (s *MockServiceStore) GetServiceCollection(ctx context.Context, name string
 func (s *MockServiceStore) DeleteServiceCollection(ctx context.Context, name string) error {
 	return nil
 }
-func (s *MockServiceStore) GetGlobalSettings(ctx context.Context) (*configv1.GlobalSettings, error) {
+func (s *MockServiceStore) GetGlobalSettings(_ context.Context) (*configv1.GlobalSettings, error) {
 	return nil, nil
 }
 func (s *MockServiceStore) SaveGlobalSettings(ctx context.Context, gs *configv1.GlobalSettings) error {
@@ -1453,7 +1453,7 @@ func (s *MockServiceStore) CreateUser(ctx context.Context, user *configv1.User) 
 func (s *MockServiceStore) GetUser(ctx context.Context, id string) (*configv1.User, error) {
 	return nil, nil
 }
-func (s *MockServiceStore) ListUsers(ctx context.Context) ([]*configv1.User, error) { return nil, nil }
+func (s *MockServiceStore) ListUsers(_ context.Context) ([]*configv1.User, error) { return nil, nil }
 func (s *MockServiceStore) UpdateUser(ctx context.Context, user *configv1.User) error { return nil }
 func (s *MockServiceStore) DeleteUser(ctx context.Context, id string) error           { return nil }
 func (s *MockServiceStore) SaveToken(ctx context.Context, token *configv1.UserToken) error {
@@ -1465,7 +1465,7 @@ func (s *MockServiceStore) GetToken(ctx context.Context, userID, serviceID strin
 func (s *MockServiceStore) DeleteToken(ctx context.Context, userID, serviceID string) error {
 	return nil
 }
-func (s *MockServiceStore) ListCredentials(ctx context.Context) ([]*configv1.Credential, error) {
+func (s *MockServiceStore) ListCredentials(_ context.Context) ([]*configv1.Credential, error) {
 	return nil, nil
 }
 func (s *MockServiceStore) GetCredential(ctx context.Context, id string) (*configv1.Credential, error) {
@@ -1475,7 +1475,7 @@ func (s *MockServiceStore) SaveCredential(ctx context.Context, cred *configv1.Cr
 	return nil
 }
 func (s *MockServiceStore) DeleteCredential(ctx context.Context, id string) error { return nil }
-func (s *MockServiceStore) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTemplate, error) {
+func (s *MockServiceStore) ListServiceTemplates(_ context.Context) ([]*configv1.ServiceTemplate, error) {
 	return nil, nil
 }
 func (s *MockServiceStore) GetServiceTemplate(ctx context.Context, id string) (*configv1.ServiceTemplate, error) {
@@ -1738,7 +1738,7 @@ func TestHandleAuthTest(t *testing.T) {
 }
 
 func TestHandleSecretDetail_Reveal_HappyPath(t *testing.T) {
-	app, store := setupApiTestApp()
+	app, store := setupAPITestApp()
 	handler := app.handleSecretDetail(store)
 
 	secret := configv1.Secret_builder{
@@ -1760,7 +1760,7 @@ func TestHandleSecretDetail_Reveal_HappyPath(t *testing.T) {
 }
 
 func TestHandleSecretDetail_Reveal_MethodNotAllowed(t *testing.T) {
-	app, store := setupApiTestApp()
+	app, store := setupAPITestApp()
 	handler := app.handleSecretDetail(store)
 
 	req := httptest.NewRequest(http.MethodGet, "/secrets/sec-123/reveal", nil)
@@ -1772,7 +1772,7 @@ func TestHandleSecretDetail_Reveal_MethodNotAllowed(t *testing.T) {
 }
 
 func TestHandleSecretDetail_Reveal_NotFound(t *testing.T) {
-	app, store := setupApiTestApp()
+	app, store := setupAPITestApp()
 	handler := app.handleSecretDetail(store)
 
 	req := httptest.NewRequest(http.MethodPost, "/secrets/non-existent/reveal", nil)
@@ -1784,7 +1784,7 @@ func TestHandleSecretDetail_Reveal_NotFound(t *testing.T) {
 }
 
 func TestHandleSecretDetail_Put_HappyPath(t *testing.T) {
-	app, store := setupApiTestApp()
+	app, store := setupAPITestApp()
 	handler := app.handleSecretDetail(store)
 
 	reqBody := `{"name":"my-secret", "value":"new-secret-value"}`
@@ -1807,7 +1807,7 @@ func TestHandleSecretDetail_Put_HappyPath(t *testing.T) {
 }
 
 func TestHandleSecretDetail_Put_InvalidJSON(t *testing.T) {
-	app, store := setupApiTestApp()
+	app, store := setupAPITestApp()
 	handler := app.handleSecretDetail(store)
 
 	reqBody := `{"name":"my-secret", "value":"new-secret-value"` // Missing closing brace
