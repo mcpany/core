@@ -28,11 +28,18 @@ type Label = armonmetrics.Label
 //
 // Summary: Creates a Prometheus sink.
 //
-// Parameters: None.
+// Parameters:
+//   - None.
 //
 // Returns:
 //   - *prometheus.PrometheusSink: The initialized Prometheus sink.
 //   - error: An error if the sink creation fails.
+//
+// Errors:
+//   - Returns error if the prometheus sink cannot be created.
+//
+// Side Effects:
+//   - None.
 func NewPrometheusSink() (*prometheus.PrometheusSink, error) {
 	return prometheus.NewPrometheusSink()
 }
@@ -46,10 +53,17 @@ var (
 //
 // Summary: Initializes the global metrics collector.
 //
-// Parameters: None.
+// Parameters:
+//   - None.
 //
 // Returns:
 //   - error: An error if the initialization fails.
+//
+// Errors:
+//   - Returns error if sink creation or global initialization fails.
+//
+// Side Effects:
+//   - Initializes a global metrics sink.
 func Initialize() error {
 	initOnce.Do(func() {
 		// Create a Prometheus sink
@@ -75,10 +89,17 @@ func Initialize() error {
 //
 // Summary: Retrieves the metrics HTTP handler.
 //
-// Parameters: None.
+// Parameters:
+//   - None.
 //
 // Returns:
 //   - http.Handler: An http.Handler that serves the Prometheus metrics.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func Handler() http.Handler {
 	return promhttp.Handler()
 }
@@ -92,6 +113,12 @@ func Handler() http.Handler {
 //
 // Returns:
 //   - error: An error if the server fails to start.
+//
+// Errors:
+//   - Returns error if the listener cannot be started or the server fails.
+//
+// Side Effects:
+//   - Starts a background HTTP server.
 func StartServer(addr string) error {
 	mux := http.NewServeMux()
 	mux.Handle("/metrics", Handler())
@@ -103,7 +130,7 @@ func StartServer(addr string) error {
 	}
 
 	if tcpAddr, ok := ln.Addr().(*net.TCPAddr); ok {
-		fmt.Printf("Metrics server listening on port %d\\n", tcpAddr.Port)
+		fmt.Printf("Metrics server listening on port %d\n", tcpAddr.Port)
 	}
 
 	server := &http.Server{
@@ -125,7 +152,11 @@ func StartServer(addr string) error {
 //   - val (float32): The value to set.
 //   - labels (...string): A list of labels to apply to the gauge.
 //
-// Returns: None.
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Updates a global metric.
 func SetGauge(name string, val float32, labels ...string) {
 	var metricLabels []Label
 	if len(labels) > 0 {
@@ -144,7 +175,11 @@ func SetGauge(name string, val float32, labels ...string) {
 //   - name ([]string): The name of the counter.
 //   - val (float32): The amount to increment.
 //
-// Returns: None.
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Updates a global metric.
 func IncrCounter(name []string, val float32) {
 	armonmetrics.IncrCounter(name, val)
 }
@@ -158,7 +193,11 @@ func IncrCounter(name []string, val float32) {
 //   - val (float32): The amount to increment.
 //   - labels ([]Label): The labels to apply.
 //
-// Returns: None.
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Updates a global metric.
 func IncrCounterWithLabels(name []string, val float32, labels []Label) {
 	armonmetrics.IncrCounterWithLabels(name, val, labels)
 }
@@ -171,7 +210,11 @@ func IncrCounterWithLabels(name []string, val float32, labels []Label) {
 //   - name ([]string): The name of the metric.
 //   - start (time.Time): The start time.
 //
-// Returns: None.
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Updates a global metric.
 func MeasureSince(name []string, start time.Time) {
 	armonmetrics.MeasureSince(name, start)
 }
@@ -185,7 +228,11 @@ func MeasureSince(name []string, start time.Time) {
 //   - start (time.Time): The start time.
 //   - labels ([]Label): The labels to apply.
 //
-// Returns: None.
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Updates a global metric.
 func MeasureSinceWithLabels(name []string, start time.Time, labels []Label) {
 	armonmetrics.MeasureSinceWithLabels(name, start, labels)
 }
@@ -198,7 +245,11 @@ func MeasureSinceWithLabels(name []string, start time.Time, labels []Label) {
 //   - name ([]string): The name of the metric.
 //   - val (float32): The value to sample.
 //
-// Returns: None.
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Updates a global metric.
 func AddSample(name []string, val float32) {
 	armonmetrics.AddSample(name, val)
 }
@@ -212,7 +263,11 @@ func AddSample(name []string, val float32) {
 //   - val (float32): The value to sample.
 //   - labels ([]Label): The labels to apply.
 //
-// Returns: None.
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Updates a global metric.
 func AddSampleWithLabels(name []string, val float32, labels []Label) {
 	armonmetrics.AddSampleWithLabels(name, val, labels)
 }

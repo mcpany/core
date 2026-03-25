@@ -191,7 +191,7 @@ func (m *RateLimitMiddleware) checkLimit(ctx context.Context, limiter Limiter, c
 }
 
 func (m *RateLimitMiddleware) recordMetrics(serviceID, limitType, status string) {
-	metrics.IncrCounterWithLabels(metricRateLimitRequestsTotal, 1, []metrics.Label{
+	metrics.IncrCounterWithLabels(metricRateLimitRequestsTotal, 1, []armonmetrics.Label{
 		{Name: "service_id", Value: serviceID},
 		{Name: "limit_type", Value: limitType},
 		{Name: "status", Value: status},

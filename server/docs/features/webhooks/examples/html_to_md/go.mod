@@ -1,6 +1,6 @@
 module example/html_to_md
 
-go 1.24
+go 1.26.1
 
 toolchain go1.24.11
 

@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	armonmetrics "github.com/armon/go-metrics"
+	"github.com/armon/go-metrics"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/mcpserver"
@@ -32,10 +32,10 @@ import (
 
 func TestMetricNamingConsistency(t *testing.T) {
 	// Initialize metrics with an in-memory sink
-	sink := armonmetrics.NewInmemSink(10*time.Second, 30*time.Second)
-	conf := armonmetrics.DefaultConfig("mcpany")
+	sink := metrics.NewInmemSink(10*time.Second, 30*time.Second)
+	conf := metrics.DefaultConfig("mcpany")
 	conf.EnableHostname = false
-	_, err := armonmetrics.NewGlobal(conf, sink)
+	_, err := metrics.NewGlobal(conf, sink)
 	require.NoError(t, err)
 
 	poolManager := pool.NewManager()
