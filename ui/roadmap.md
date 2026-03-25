@@ -3,6 +3,9 @@
 ## Status: Active Development
 
 ### Universal Agent Bus (New Strategic Priorities)
+- [ ] **[P0] Pre-Flight Discovery Monitor**: Real-time visualization of sandboxed discovery execution and PFDQ quarantine status. (Added: 2026-07-03)
+- [ ] **[P1] Plan Governance Dashboard**: UI for reviewing agent-generated plans and PIG-blocked step sequences. (Added: 2026-07-03)
+- [ ] **[P0] Hardware Discovery Manifest Reviewer**: TPM-signing workspace for authorizing repo-local tool definitions. (Added: 2026-07-03)
 - [ ] **[P0] Recursive Context Dashboard**: Visualize state inheritance and session tokens across agent swarms. (Added: 2026-02-23)
 - [ ] **[P0] Multi-Agent Session Timeline**: Visual tracking of agent handoffs and shared tool state. (Added: 2026-02-24)
 - [ ] **[P1] Unified Discovery Manager**: UI for managing and auto-discovering MCP servers across transports. (Added: 2026-02-24)

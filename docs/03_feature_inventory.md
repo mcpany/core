@@ -1,5 +1,16 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-03] Updates
+
+### Proposed Additions
+- **Pre-Flight Discovery Quarantine (PFDQ)**: (P0) Ephemeral, air-gapped execution environment for project-local discovery commands (e.g., `discoveryCommand`), neutralizing "Settings-as-Shell" RCE vectors.
+- **Plan-Invariant Governance (PIG) Middleware**: (P1) Semantic security layer that validates agent-generated multi-step plans to prevent "Plan-Mode" privilege escalation.
+- **Hardware-Locked Discovery Manifest Provider**: (P0) Advanced attestation service mandating TPM-signed signatures for all repository-committed tool definitions.
+
+### Priority Shifts
+- **Discovery Sandbox Middleware**: (Evolved to PFDQ) Now elevated with the requirement for mandatory air-gapping and hardware-attested manifests.
+- **A2A Messaging Hub**: (Re-affirmed P0) Evolving to act as the primary "Security Sidecar" for decentralized T2T communication in Agent Teams.
+
 ## Evolution: [2026-03-24] Updates
 
 ### Proposed Additions

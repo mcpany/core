@@ -50,3 +50,11 @@ The emergence of "Ghost-Execution" exploits in the Gemini CLI ecosystem has high
 * Mandating "Isolated Discovery Environments" for all project-local configurations.
 * Introducing a "Discovery Quarantine" where tool schemas are held until a hardware-attested user signal is received.
 **Security Impact:** Neutralizes startup-time RCE in cloned repositories and prevents "Context Poisoning" during the discovery phase.
+
+### Update: 2026-07-03 - Transition to Pre-Flight Discovery Quarantine (PFDQ)
+**Context:** Today's research into Gemini CLI v0.34.0 reveals that even sandboxed tool execution is vulnerable if the discovery phase remains un-isolated. The "Settings-as-Shell" exploit pattern has matured into full "Plan-Mode" escapes.
+**Architecture Adjustment:**
+* Deprecating optional isolation in favor of **Mandatory Pre-Flight Discovery Quarantine (PFDQ)**.
+* Discovery commands are now executed in an air-gapped container with zero network access and a read-only mount of the project root.
+* Introducing **Hardware-Locked Discovery Manifests**, requiring TPM-signed approval of any changes to the discovered tool graph.
+**Security Impact:** Eliminates the possibility of "invisible" instruction injection during startup and ensures that agents cannot "Shadow-Discover" exfiltration tools.

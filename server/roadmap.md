@@ -155,6 +155,11 @@
 *   **[P0] Lock-Free Sharded Mailbox Hub**: High-speed, non-blocking teammate coordination using CRDT-based mailbox shards. (Added: 2026-06-24)
 *   **[P1] Zero-Knowledge Discovery (ZKD) Proxy**: Cryptographic capability masking for agent tool schemas until mission-bound handshake. (Added: 2026-06-24)
 
+#### Upcoming (2026-07-03 Evolution)
+*   **[P0] Pre-Flight Discovery Quarantine (PFDQ)**: Mandatory air-gapped execution for discovery commands to neutralize startup-time RCE. (Added: 2026-07-03)
+*   **[P1] Plan-Invariant Governance (PIG) Middleware**: Semantic validation of agent-generated multi-step plans to prevent privilege escalation. (Added: 2026-07-03)
+*   **[P0] Hardware-Locked Discovery Manifest Provider**: TPM-signed attestation for all repository-committed tool definitions. (Added: 2026-07-03)
+
 #### Upcoming (2026-06-27 Evolution)
 *   **[P0] Zero-Knowledge Discovery (ZKD) Proxy**: Authoritative discovery gateway implementing ZK-Capability Proofs for pre-flight masking. (Added: 2026-06-27)
 *   **[P0] CRDT-Native Mailbox Sharding**: Transition to full CRDT-native mailbox shards for lock-free horizontal scaling. (Added: 2026-06-27)

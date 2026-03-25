@@ -619,6 +619,17 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-07-03]
+### Focus: Pre-Flight Discovery Quarantine (PFDQ) & Plan-Aware Governance
+**Context**: The disclosure of "Settings-as-Shell" exploits (Gemini CLI) and the emergence of "Autonomous Social Engineering" in horizontal meshes confirm that securing the tool-call layer is no longer enough. We must now protect the **discovery phase** itself and provide **proactive governance** for agent-generated plans. As agents move from reactive tool-calling to autonomous planning, the infrastructure must ensure that the environment remains immutable during the pre-flight phase.
+**Strategic Pivot**:
+- **Pre-Flight Discovery Quarantine (PFDQ)**: MCP Any will evolve to treat all discovery-time execution (e.g., `tools.discoveryCommand`) as high-risk, untrusted events. We will implement PFDQ, where discovery logic is executed in an ephemeral, air-gapped sandbox before any capability is exposed to the bus.
+- **Plan-Invariant Governance (PIG)**: Supporting the industry shift to "Plan Mode," we are introducing PIG. MCP Any will perform semantic analysis of agent-generated mission plans, blocking those that exhibit "Privilege Escalation" patterns or attempt to bypass established tool-level security gates.
+- **Decentralized T2T Policy Broker**: To support horizontal meshes (Claude Code Agent Teams), MCP Any will act as the authoritative "Security Sidecar" for peer-to-peer communication. We will mandate Zero-Trust validation for every inter-agent message, ensuring that subagents cannot coerce peers into unauthorized actions.
+- **Hardware-Locked Discovery Manifests**: We are mandating the use of TPM-signed manifests for all project-local tool definitions. This ensures that a malicious repository cannot "Shadow-Discovery" exfiltration tools without explicit, hardware-bound user re-attestation.
+
+---
+
 ## Strategic Evolution: [2026-03-24]
 ### Focus: Relational Intent Integrity & Binary State Efficiency
 **Context**: Today's findings emphasize that the "Identity-Only" security model is failing against "Context-Mirroring" (CVE-2026-34015). Simultaneously, the "Token Storm" crisis in deep swarms (OpenClaw v2.4) proves that JSON is no longer a viable transport for inter-agent state.
