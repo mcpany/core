@@ -40,7 +40,14 @@ go_deps.gazelle_override(
     path = "github.com/bufbuild/protocompile",
 )
 go_deps.gazelle_override(
+    directives = [
+        "gazelle:resolve go google.golang.org/genproto/googleapis/api/annotations @org_golang_google_genproto_googleapis_api//annotations:annotations",
+    ],
     path = "google.golang.org/genproto/googleapis/api",
+)
+use_repo(
+    go_deps,
+    "org_golang_google_genproto_googleapis_api",
 )
 
 # Add required direct dependencies from go.mod manually or via use_repo
