@@ -74,6 +74,8 @@ jobs:
             # Use go proxy
             export GOPROXY=https://proxy.golang.org,direct
 
+            curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.56.2
+            export GOLANGCI_LINT_BIN=$(go env GOPATH)/bin/golangci-lint
             bazel run //:lint
 
             # Explicitly run bazel tests required for linting to pass CI. Avoid --disk_cache OOMs
