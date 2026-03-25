@@ -1006,4 +1006,5 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ## Strategic Evolution: [2026-06-14]
 ### Focus: Coordination Sovereignty & Side-Channel Immunity
-The emergence of Identity-Decay Attacks (IDA) necessitates HLCH.
+The emergence of Identity-Decay Attacks (IDA) necessitates a transition from
+software-only "Attention Pinning" to hardware-locked "Coordination Sovereignty."

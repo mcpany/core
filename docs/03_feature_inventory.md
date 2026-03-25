@@ -1316,8 +1316,5 @@
 
 ## Evolution: [2026-06-14] Updates
 
-### Proposed Additions
-- **MRA-Backed Lineage Provider**: (P0) Hardware-bound.
-
-### Priority Shifts
-- **Shadow Coordination Interceptor (SCI)**: (Re-affirmed P0).
+### Proposed Additions (2026-06-14)
+- **MRA-Backed Lineage Provider**: (P0) Hardware-bound collision-resistant hashes.
