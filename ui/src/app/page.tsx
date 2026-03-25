@@ -70,3 +70,4 @@ export default function DashboardPage() {
     </DashboardProvider>
   );
 }
+console.log("hello");
