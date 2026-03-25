@@ -147,22 +147,11 @@ clean-gateway-protos:
 
 clean-protos: clean-ts-protos clean-gateway-protos
 	@echo "Cleaning generated protobuf files..."
-	@-find proto -name "*.pb.go" -delete
 
-gen: clean-protos gen-go-proto gen-protoset gen-ts-proto
+gen: clean-protos gen-gateway-proto gen-protoset gen-ts-proto
 
 gen-go-proto: gen-gateway-proto gen-protoset
-	@echo "Generating protobuf files (Go)..."
-	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
-		find proto -name "*.proto" -not -path "proto/third_party/*" -not -path "proto/google/*" -exec protoc \
-			--proto_path=. \
-			--proto_path=$(BUILD_DIR)/grpc-gateway \
-			--proto_path=$(BUILD_DIR)/googleapis \
-			--go_out=. \
-			--go_opt=module=github.com/mcpany/core \
-			--go-grpc_out=. \
-			--go-grpc_opt=module=github.com/mcpany/core \
-			{} +
+	@echo "gen-go-proto is now an alias for gateway stubs plus descriptor set generation."
 
 gen-protoset: prepare-proto
 	@echo "Generating protobuf descriptor set..."

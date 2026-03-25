@@ -86,7 +86,3 @@ config_setting(
     values = {"host_cpu": "k8"},
     visibility = ["//visibility:public"],
 )
-
-# gazelle:exclude server/examples/upstream_service_demo/grpc/greeter_server/proto/BUILD.bazel
-
-# gazelle:exclude server/examples/upstream_service_demo/grpc/greeter_server
