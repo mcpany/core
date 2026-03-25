@@ -79,8 +79,7 @@
 
 - [ ] **[P1] Live Marble Diagrams**: Reactive visualization of concurrent agent flows, tool calls, and dependencies.
 
-- [ ] **[P1] Interactive Debugger**:
-  - [ ] Breakpoint management for tool calls.
+- [ ] **[P1] Interactive Debugger**:  - [ ] Breakpoint management for tool calls.
   - [ ] Variable inspection and modification during "Paused" state.
 
 - [ ] **[P2] Plugin Marketplace**: In-app browser to discover, install, and configure community MCP servers.
