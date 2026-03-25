@@ -703,8 +703,14 @@
 - [ ] **[P0] Teammate Task List Viewer**: High-speed, CRDT-native visualization of the shared task list for horizontal swarms. (Added: 2026-03-24)
 - [ ] **[P0] ALSV Block List Explorer**: UI for reviewing and approving command arguments flagged by the semantic validator. (Added: 2026-03-24)
 
+#### Upcoming (2026-07-04 Evolution)
+- [ ] **[P0] Behavioral Firewall Dashboard**: (2026-07-04) Visualize stylometric confidence scores and paraphrasing sandbox status.
+- [ ] **[P0] Enclave Isolation Monitor**: (2026-07-04) Real-time visualization of DME-locked memory regions and physical isolation fault alerts.
+- [ ] **[P0] Attention Masking Interface**: (2026-07-04) UI for configuring hardware-locked attention masks for mission-root intents.
+- [ ] **[P1] Context Compaction Quorum Viewer**: (2026-07-04) Visual tracker for summarizer agent consensus and compaction savings.
+
 #### Upcoming (2026-03-25 Evolution)
-- [ ] **[P0] WASM-BSH Sanitizer Dashboard**: UI for managing WASM sanitization rules and viewing rejected binary context fragments. (Added: 2026-03-25)
-- [ ] **[P0] Zero-Copy Transport Monitor**: Real-time performance metrics for memory-mapped BSH buffers. (Added: 2026-03-25)
-- [ ] **[P0] RID Lineage Inspector**: Security UI for visualizing UACO v1.8 recursive delegation depths and mutation boundaries. (Added: 2026-03-25)
+- [ ] **[P0] WASM-BSH Sanitizer Dashboard**: (2026-03-25) UI for managing OpenClaw v2.5 WASM sanitization rules and viewing rejected binary context fragments.
+- [ ] **[P0] Zero-Copy Transport Monitor**: (2026-03-25) Real-time performance metrics for `memfd_create` memory-mapped BSH buffers.
+- [ ] **[P0] RID Lineage Inspector**: (2026-03-25) Security UI for visualizing UACO v1.8 recursive delegation depths and "Intent Ghosting" defense boundaries.
 - [ ] **[P1] Predictive Locking Visualizer**: Gantt-style view of projected Blackboard resource locks based on agent intents. (Added: 2026-03-25)

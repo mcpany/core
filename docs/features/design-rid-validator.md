@@ -52,3 +52,11 @@ MCP Any needs to implement a **Recursive Intent Delegation (RID) Validator** tha
 
 ## 7. Evolutionary Changelog
 * **2026-03-25:** Initial Document Creation.
+
+### Update: 2026-03-25 - UACO v1.8 RID Compliance & Intent Ghosting Defense
+**Context:** Today's UACO v1.8 leak reveals a critical need for depth-limited delegation to prevent "Intent Ghosting" where malicious subagents shadow legitimate mission-root intents.
+**Architecture Adjustment:**
+* Implementing mandatory monotonic depth counters in all RID tokens.
+* Introducing "Immutable Mutation Boundaries" that prevent subagents from expanding their intent scope beyond their hardware-attested parent lineage.
+* Mandating Relational PoI verification, where every tool call must provide the complete cryptographic lineage back to the mission root.
+**Security Impact:** Neutralizes "Intent Ghosting" and prevents privilege escalation in deep, autonomous agent swarms.

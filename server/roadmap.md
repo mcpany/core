@@ -137,10 +137,17 @@
 *   **[P0] Mission-Root Budget Enforcer**: Resource management for reasoning effort and token limits based on process-bound agency. (Added: 2026-03-20)
 *   **[P1] A2A Multi-Channel Inbox Bridge**: Secure coordination and translation for handling 20+ messaging platforms simultaneously. (Added: 2026-03-20)
 
+#### Upcoming (2026-07-04 Evolution)
+*   **[P0] Stylometric Behavioral Firewall (SBF)**: Authoritative linguistic broker with integrated paraphrasing sandbox. (Added: 2026-07-04)
+*   **[P0] Distributed Memory Enclave (DME) Broker**: Hardware-enclave (TPM/SEP) bound coordination for cross-framework memory isolation. (Added: 2026-07-04)
+*   **[P0] Hardware-Locked Attention Masking (HLAM)**: Middleware for cryptographic masking of subagent noise at the attention layer. (Added: 2026-07-04)
+*   **[P0] Monotonic Jitter Provider**: Hardware-attested timing variation service to neutralize enclave timing side-channels. (Added: 2026-07-04)
+*   **[P1] Context Compaction Quorum Hub**: Consensus-based state summarization service for large mesh efficiency. (Added: 2026-07-04)
+
 #### Upcoming (2026-03-25 Evolution)
-*   **[P0] WASM-BSH State Sanitizer**: Pluggable WASM-based validation for binary context handoffs. (Added: 2026-03-25)
-*   **[P0] Zero-Copy BSH Transport**: Shared-memory based state transfer for sub-millisecond swarm handoffs. (Added: 2026-03-25)
-*   **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited Recursive Intent Delegation. (Added: 2026-03-25)
+*   **[P0] WASM-BSH State Sanitizer**: Pluggable WASM-based validation for binary context handoffs to align with OpenClaw v2.5. (Added: 2026-03-25)
+*   **[P0] Zero-Copy BSH Transport**: Shared-memory based state transfer using `memfd_create` for sub-millisecond swarm handoffs. (Added: 2026-03-25)
+*   **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited Recursive Intent Delegation and preventing "Intent Ghosting." (Added: 2026-03-25)
 *   **[P1] Predictive Resource Locking**: Intent-aware concurrency control for the Shared Blackboard. (Added: 2026-03-25)
 
 #### Upcoming (2026-06-23 Evolution)
