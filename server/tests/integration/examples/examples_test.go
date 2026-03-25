@@ -76,7 +76,7 @@ func sourceProjectRoot() (string, error) {
 			continue
 		}
 		candidate := filepath.Join(base, workspace, "server")
-		if _, statErr := os.Stat(filepath.Join(candidate, "examples")); statErr == nil {
+		if _, candidateStatErr := os.Stat(filepath.Join(candidate, "examples")); candidateStatErr == nil {
 			return candidate, nil
 		}
 	}
