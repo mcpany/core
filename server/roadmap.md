@@ -42,7 +42,7 @@
 #### Upcoming (2026-03-09 Evolution)
 *   **[P0] Project Configuration Security Guard**: Validating proxy for project-local agent configs (e.g., `.claude/settings.json`) to prevent RCE. (Added: 2026-03-09)
 *   **[P0] Agent-Aware Blackboard Isolation**: Row-level security for Shared KV Store to prevent cross-agent state injection. (Added: 2026-03-09)
-*   **[P0] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09 — Promoted to P0 on 2026-03-10)
+*   **[P0] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09 - Promoted to P0 on 2026-03-10)
 
 #### Upcoming (2026-03-11 Evolution)
 *   **[P0] Exfiltration-Resistant Transport Gateway**: Force all agent traffic through a secure, allow-listed proxy to prevent API key exfiltration. (Added: 2026-03-11)
@@ -56,7 +56,7 @@
 
 #### Upcoming (2026-03-13 Evolution)
 *   **[P0] Prompt Path Protection Middleware**: Real-time scanning of tool outputs for "Indirect Prompt Injection" patterns. (Added: 2026-03-13)
-*   **[P0] OpenClaw ContextEngine Bridge**: Middleware to synchronize state with OpenClaw's pluggable context management. (Added: 2026-03-13 — Promoted to P0 on 2026-03-14)
+*   **[P0] OpenClaw ContextEngine Bridge**: Middleware to synchronize state with OpenClaw's pluggable context management. (Added: 2026-03-13 - Promoted to P0 on 2026-03-14)
 *   **[P1] Critical Skill Simulation**: Advanced "what-if" analysis for skills, simulating impact on sensitive data. (Added: 2026-03-13)
 
 #### Upcoming (2026-03-14 Evolution)
@@ -117,7 +117,7 @@
 #### Upcoming (2026-03-23 Evolution)
 *   **[P0] Proof-of-Intent (PoI) Validator**: Middleware implementing UACO v1.7 headers to bind tool calls to cryptographically signed intents. (Added: 2026-03-23)
 *   **[P0] Multi-Signature Skill Attestation**: Security mechanism for dynamic skill grafting to prevent "Skill-Squatting." (Added: 2026-03-23)
-*   **[P0] Binary State Handoff (BSH) Gateway**: High-performance binary transport layer for agent state transfer. (Added: 2026-03-23 — Promoted to P0 on 2026-03-24)
+*   **[P0] Binary State Handoff (BSH) Gateway**: High-performance binary transport layer for agent state transfer. (Added: 2026-03-23 - Promoted to P0 on 2026-03-24)
 
 #### Upcoming (2026-03-24 Evolution)
 *   **[P0] Relational PoI Enforcement**: Advanced intent-chain validation to prevent "Context-Mirroring" attacks. (Added: 2026-03-24)
@@ -146,7 +146,7 @@ These features represent the next logical steps for the product, focusing on Ent
 | 4 | **Tool Execution Timeline** | **Debugging**: A visual waterfall chart of tool execution stages (hooks, middleware, upstream call) to debug latency bottlenecks. | High |
 | 3 | **Canary Tool Deployment** | **Ops**: gradually roll out new tool versions to a subset of users or sessions to catch regressions before they impact everyone. | High |
 | 4 | **Compliance Reporting** | **Enterprise**: Automated generation of PDF/CSV reports from Audit Logs for SOC2/GDPR compliance reviews. | Medium |
-| 5 | **Advanced Tiered Caching** | **Performance**: Implement a multi-layer cache (Memory → Redis → Disk) with configurable eviction policies to reduce upstream costs. | Medium |
+| 5 | **Advanced Tiered Caching** | **Performance**: Implement a multi-layer cache (Memory -> Redis -> Disk) with configurable eviction policies to reduce upstream costs. | Medium |
 
 | 14 | **Partial Reloads** | **Resilience**: When reloading config dynamically, if one service is invalid, keep the old version running instead of removing it or failing the whole reload (if possible). | High |
 | 15 | **Filesystem Health Check** | **Observability**: Add a health check probe for filesystem roots to report status to the UI, not just logs. | Low |
@@ -233,41 +233,41 @@ These features represent the next logical steps for the product, focusing on Ent
 ## 1. Completed Features
 
 - **Interactive Doctor Resilience**
-  — **Description**: Enhanced `doctor` command to gracefully handle missing environment variables in configuration files, allowing it to report specific missing variables and proceed with other checks instead of aborting.
+  - **Description**: Enhanced `doctor` command to gracefully handle missing environment variables in configuration files, allowing it to report specific missing variables and proceed with other checks instead of aborting.
 - **Pre-flight Command Validation**
-  — **Description**: Validates that the executable exists for command-based services before attempting to run it, providing a clear error message if it's missing.
+  - **Description**: Validates that the executable exists for command-based services before attempting to run it, providing a clear error message if it's missing.
 - **Actionable Configuration Errors**
-  — **Description**: Improved configuration loading and validation to provide "Actionable Errors" with specific "Fix" suggestions for common issues like missing environment variables, missing files, and invalid paths.
+  - **Description**: Improved configuration loading and validation to provide "Actionable Errors" with specific "Fix" suggestions for common issues like missing environment variables, missing files, and invalid paths.
 - **Environment Variable Fuzzy Matching**
-  — **Description**: Enhances "Actionable Errors" by suggesting similar environment variables when a configured variable is missing, helping users catch typos (e.g., "Did you mean 'API_KEY'?").
+  - **Description**: Enhances "Actionable Errors" by suggesting similar environment variables when a configured variable is missing, helping users catch typos (e.g., "Did you mean 'API_KEY'?").
 - **RegEx Environment Variable Validation**
-  — **Description**: Validating the format of environment variables using regex (e.g., ensuring an API key matches a pattern) in addition to existence checks.
+  - **Description**: Validating the format of environment variables using regex (e.g., ensuring an API key matches a pattern) in addition to existence checks.
 - **Async Tool Loading**
-  — **Description**: Ensure server waits for initial roots/tools to be loaded before accepting requests to prevent race conditions on startup.
+  - **Description**: Ensure server waits for initial roots/tools to be loaded before accepting requests to prevent race conditions on startup.
 - **Preset Service Gallery**
-  — **Description**: A curated list of popular services (like `wttr.in`, `sqlite`, etc.) that can be added via CLI or UI. Implemented via example configurations in `server/examples/popular_services`.
+  - **Description**: A curated list of popular services (like `wttr.in`, `sqlite`, etc.) that can be added via CLI or UI. Implemented via example configurations in `server/examples/popular_services`.
 - **HTTP Upstream Env Validation**
-  — **Description**: Extend required environment variable validation to HTTP connections (e.g. for `http_address` or auth headers).
+  - **Description**: Extend required environment variable validation to HTTP connections (e.g. for `http_address` or auth headers).
 - **Tool Poisoning Mitigation**
-  — **Description**: Integrity checks for tool definitions to prevent "Rug Pull" attacks. Implemented via SHA256 hashing of tool definitions.
+  - **Description**: Integrity checks for tool definitions to prevent "Rug Pull" attacks. Implemented via SHA256 hashing of tool definitions.
 - **Local LLM "One-Click" Connect**
-  — **Description**: Auto-detection and template-based connection to local inference servers. Supports Ollama via `/api/tags` discovery.
+  - **Description**: Auto-detection and template-based connection to local inference servers. Supports Ollama via `/api/tags` discovery.
 - **Tool "Dry Run" Mode**
-  — **Description**: Allows tools to validate inputs and return a preview of side effects without executing them. Supported in the common tool execution lifecycle.
+  - **Description**: Allows tools to validate inputs and return a preview of side effects without executing them. Supported in the common tool execution lifecycle.
 - **Smart Retry Policies**
-  — **Description**: Configurable exponential backoff and jitter for upstream connections, integrated with circuit breakers.
+  - **Description**: Configurable exponential backoff and jitter for upstream connections, integrated with circuit breakers.
 - **Service Dependency Graph**
-  — **Description**: Visual topology of the MCP ecosystem, visualizing clients, services, tools, and their relationships with real-time metrics.
+  - **Description**: Visual topology of the MCP ecosystem, visualizing clients, services, tools, and their relationships with real-time metrics.
 - **Runtime Health Visibility**
-  — **Description**: Exposed real-time service health status (`last_error`) and tool counts in the API, enabling the UI to show error badges for failing upstreams instantly.
+  - **Description**: Exposed real-time service health status (`last_error`) and tool counts in the API, enabling the UI to show error badges for failing upstreams instantly.
 - **Port Conflict Hints**
-  — **Description**: Detects "Address already in use" errors during server startup and suggests using `--json-rpc-port` or `--grpc-port` flags to resolve the conflict.
+  - **Description**: Detects "Address already in use" errors during server startup and suggests using `--json-rpc-port` or `--grpc-port` flags to resolve the conflict.
 - **Whitespace URL Validation**
-  — **Description**: Detects and warns about hidden whitespace in URL configurations (HTTP, WebSocket, OpenAPI, etc.) which often occurs when copying from external sources, providing actionable fixes.
+  - **Description**: Detects and warns about hidden whitespace in URL configurations (HTTP, WebSocket, OpenAPI, etc.) which often occurs when copying from external sources, providing actionable fixes.
 - **gRPC Health Checks**
-  — **Description**: Implements `CheckHealth` for gRPC upstreams using the standard gRPC Health Checking Protocol to detect service availability.
+  - **Description**: Implements `CheckHealth` for gRPC upstreams using the standard gRPC Health Checking Protocol to detect service availability.
 - **Context Optimizer Middleware**
-  — **Description**: Automatically truncates large text outputs in JSON responses to prevent "Context Bloat" and reduce token usage.
+  - **Description**: Automatically truncates large text outputs in JSON responses to prevent "Context Bloat" and reduce token usage.
 
 ## 3. Codebase Health
 
@@ -306,7 +306,7 @@ These features represent the next logical steps for the product, focusing on Ent
 #### Upcoming (2026-03-28 Evolution)
 *   **[P0] Atomic State Rollback Middleware**: Support for swarm-wide checkpoints and rollbacks for Blackboard and Context Shards. (Added: 2026-03-28)
 *   **[P0] UACO-MAQ Consensus Gateway**: Implementation of UACO v1.9 Multi-Agent Quorum for cross-framework high-risk action approval. (Added: 2026-03-28)
-*   **[P0] Session-Bound Fast-Path Attestation**: Hardware-accelerated "Lightweight Proofs" for low-latency sub-call validation. (Added: 2026-03-28 — Promoted to P0 on 2026-03-29)
+*   **[P0] Session-Bound Fast-Path Attestation**: Hardware-accelerated "Lightweight Proofs" for low-latency sub-call validation. (Added: 2026-03-28 - Promoted to P0 on 2026-03-29)
 *   **[P1] Context Smearing Scanner**: Binary-level scanner for BSH fragments to detect "Ghost Fragments" in context handoffs. (Added: 2026-03-28)
 
 #### Upcoming (2026-03-29 Evolution)
@@ -414,7 +414,7 @@ These features represent the next logical steps for the product, focusing on Ent
 
 #### Upcoming (2026-04-16 Evolution)
 *   **[P0] Reactive Intent Gateway (RIG)**: Middleware to mediate and sign agent "Boundary Expansion" requests, preventing Intent Smuggling. (Added: 2026-04-16)
-*   **[P0] Resident Integrity Monitor (RIM)**: Service for continuous, hardware-bound sandbox attestation to detect post-boot environment drift. (Added: 2026-04-16 — Promoted to P0 on 2026-04-17)
+*   **[P0] Resident Integrity Monitor (RIM)**: Service for continuous, hardware-bound sandbox attestation to detect post-boot environment drift. (Added: 2026-04-16 - Promoted to P0 on 2026-04-17)
 *   **[P0] Self-Healing Consensus Hub**: Autoritative "Truth Broker" for swarm self-correction, leveraging MAQ for state reconciliation. (Added: 2026-04-16)
 
 #### Upcoming (2026-04-21 Evolution)
@@ -465,7 +465,7 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] Cross-Swarm Intent Attestation**: UACO-native multi-signature coordination for mission-root intents. (Added: 2026-05-05)
 
 #### Upcoming (2026-05-04 Evolution)
-*   **[P0] Semantic Integrity Bridge**: Intent Drift Detection middleware to prevent Recursive Intent Poisoning (RIP) and RCS. (Added: 2026-05-04 — Promoted to P0 on 2026-05-05)
+*   **[P0] Semantic Integrity Bridge**: Intent Drift Detection middleware to prevent Recursive Intent Poisoning (RIP) and RCS. (Added: 2026-05-04 - Promoted to P0 on 2026-05-05)
 *   **[P0] Kernel-Bound FD Persistence Middleware**: FD-passing and pinning for absolute configuration immutability. (Added: 2026-05-04)
 *   **[P1] Bi-directional A2UI State Bridge**: Two-way state synchronization for corrective user intent injection. (Added: 2026-05-04)
 
@@ -477,7 +477,7 @@ These features represent the next logical steps for the product, focusing on Ent
 #### Upcoming (2026-05-01 Evolution)
 *   **[P0] Contextual Quorum (CQ) Hub**: Coordination service for multi-agent attestation and consensus-based tool execution. (Added: 2026-05-01)
 *   **[P1] Adaptive Intent Budgeting (AIB)**: Resource management layer for dynamic token and compute lease scaling. (Added: 2026-05-01)
-*   **[P0] Project-Local Snapshot (PLSS) Sync**: OS-level bridge for rapid environment recovery and speculative agent rollbacks. (Added: 2026-05-01 — Promoted to P0 on 2026-05-02)
+*   **[P0] Project-Local Snapshot (PLSS) Sync**: OS-level bridge for rapid environment recovery and speculative agent rollbacks. (Added: 2026-05-01 - Promoted to P0 on 2026-05-02)
 
 #### Upcoming (2026-04-30 Evolution)
 *   **[P0] Mesh-Aware Blackboard Adaptor**: Graph-based intent mesh for multi-agent swarm reconciliation. (Added: 2026-04-30)
@@ -731,7 +731,19 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Hardware-Locked Coordination Handshake**: (Re-affirmed P0) Designated as the primary enforcement point for **Attention Sovereignty** and **Side-Channel Immunity**.
 
 ### Upcoming: [2026-06-14]
-- **Attention-Locked Routing Hub (ALRH)**: (P0) Authoritative attention guard that performs real-time attention-utilization analysis and dynamically bypasses high-entropy specialists. (Added: 2026-06-14)
-- **Hardware-Locked Context Pinning (HLCP)**: (P0) Core security middleware utilizing hardware-bound (TPM) headers to cryptographically "pin" mission-critical intent fragments. (Added: 2026-06-14)
-- **MDRA Attestation Bridge**: (P0) Advanced bridge supporting Gemini's Multi-Dimensional Reasoning Attestation standard, merging hardware, stylometric, and lineage data. (Added: 2026-06-14)
-- **Attention-Aware Discovery Provider**: (P1) Upgrade for the discovery layer that throttles capability visibility based on the parent agent's Attention Availability. (Added: 2026-06-14)
+- **Structural Metadata Sanitizer (SMS)**: (P0) Real-time semantic deconstruction of discovery metadata to neutralize SDMI instructions. (Added: 2026-06-14)
+- **Multi-Hop Persistence Relay (MHPR)**: (P0) Trust-lease propagation service to neutralize MSHE-driven cognitive stall in deep swarms. (Added: 2026-06-14)
+- **Attention-Locked Context Sharding (ALCS)**: (P0) Hardware-protected pinning of mission-critical fragments to prevent noise-driven eviction. (Added: 2026-06-14)
+- **Sovereign Discovery Proxy (SDP)**: (P0) Authoritative discovery gateway for hardware-attested tool capability card validation. (Added: 2026-06-14)
+
+### Upcoming: [2026-06-16]
+- **[P0] Entangled State Broker (ESB)**: Authoritative coordination for "Entanglement Shards" bound to mission-root intent. (Added: 2026-06-16)
+- **[P0] Stylometric Mimicry Mitigator (SMM)**: Real-time stylometric analysis of inter-agent messages to detect reasoning-path shadowing. (Added: 2026-06-16)
+- **[P1] Speculative Branching Guard (SBG)**: Isolation for un-executed reasoning paths to prevent speculative attention leakage. (Added: 2026-06-16)
+- **[P0] Mesh-Resident Key Exchange (MRKE) Provider**: Hardware-bound session key rotation for sub-100ms inter-teammate coordination. (Added: 2026-06-16)
+
+### Upcoming: [2026-06-15]
+- **Intent-Resumption Gateway (IRG)**: (P0) Authoritative resumption broker implementing OpenClaw-compliant "Intent-Resumption Tokens" to eliminate cognitive stall during teammate rotation. (Added: 2026-06-15)
+- **Side-Channel Timing Mitigator (SCTM)**: (P0) Advanced security middleware for the ASLM that injects hardware-attested timing jitter to neutralize shard-collision timing attacks. (Added: 2026-06-15)
+- **Attention-Locked Telemetry Proxy**: (P1) Authoritative telemetry sanitizer for Gemini-compliant reasoning traces, ensuring attention-mapping privacy during RL feedback export. (Added: 2026-06-15)
+- **WASM-Hook Behavioral Profiler**: (P0) Mandatory extension for the SMS that performs sandboxed profiling of AI-generated configuration hooks to counter PR "Logic Bombs." (Added: 2026-06-15)

@@ -4,7 +4,7 @@
 **Created:** 2026-05-08
 
 ## 1. Context and Scope
-As enterprises transition from pilot projects to large-scale production swarms, the traditional "Central Supervisor" pattern--where a single orchestrator manages all subagents--has become a performance and reliability bottleneck. The Distributed Supervisor Mesh (DSM) evolves MCP Any from a central gateway into a decentralized coordination layer. It allows any agent within a swarm to act as a local supervisor for a sub-task while remaining cryptographically bound to the "Mission Root" established by the user.
+As enterprises transition from pilot projects to large-scale production swarms, the traditional "Central Supervisor" pattern—where a single orchestrator manages all subagents—has become a performance and reliability bottleneck. The Distributed Supervisor Mesh (DSM) evolves MCP Any from a central gateway into a decentralized coordination layer. It allows any agent within a swarm to act as a local supervisor for a sub-task while remaining cryptographically bound to the "Mission Root" established by the user.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
