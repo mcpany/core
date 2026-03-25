@@ -1,5 +1,27 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-03-25] Updates
+
+### Proposed Additions
+- **Recursive Intent Delegation (RID) Validator**: (P0) Middleware for enforcing depth-limited intent mutations and cryptographic mission boundaries.
+- **WASM-BSH State Sanitizer**: (P0) Pluggable WASM sandbox for binary context validation and schema-based state sanitization.
+- **Zero-Copy Shared Memory Transport**: (P0) High-performance BSH transport using Linux `memfd_create` to eliminate serialization overhead.
+
+### Priority Shifts
+- **Relational PoI Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory mission-root chain verification to counter "Intent Ghosting".
+- **Binary State Handoff (BSH) Gateway**: (Re-affirmed P0) Evolving into the **Zero-Copy Transport** architecture.
+
+
+### Proposed Additions
+- **Discovery-Phase Sandbox Middleware**: (P0) A secure, ephemeral execution environment for MCP discovery commands, preventing host-level "Ghost-Execution" exploits (Gemini CLI / OpenClaw CVE defense).
+- **Lock-Free Teammate Coordination (LFTC)**: (P0) Sharded, CRDT-based mailbox synchronization to eliminate "Mailbox Lock" bottlenecks in horizontal swarms (Claude Code Agent Teams).
+- **Argument-Level Semantic Validator (ALSV)**: (P0) Security middleware that performs real-time semantic analysis and escaping of command arguments to prevent shell injection and allowlist bypass.
+- **Task-Claim Integrity Provider**: (P0) Advanced security service for horizontal meshes mandating hardware-attested tokens before teammate task-claiming.
+
+### Priority Shifts
+- **Teammate Task-List Arbiter**: (Evolved to LFTC) Now designated as the primary mechanism for lock-free horizontal coordination.
+- **Discovery Sandbox Middleware**: (Promoted to P0) Critical requirement for neutralizing startup-time RCE in agent environments.
+
 ## Current Backlog (P0/P1)
 - **Policy Firewall**: Rego/CEL based hooking for tool calls.
 - **HITL Middleware**: Suspension protocol for user approval flows.
@@ -65,7 +87,7 @@
 
 ### Proposed Additions
 - **Federated Swarm Identity (FSI) Provider**: (P0) A local identity service that issues hardware-attested, cross-framework tokens for secure teammate verification in heterogeneous meshes.
-- **Intent-Leakage Shielding (ILS) Middleware**: (P0) Security extension for the MRP middleware that monitors semantic entropy and blocks subagent requests designed to probe mission-root constraints.
+- **Intent-Leakage Shield (ILS) Middleware**: (P0) Security extension for the MRP middleware that monitors semantic entropy and blocks subagent requests designed to probe mission-root constraints.
 - **Hardware-Attested Discovery Handshake (HADH) Gateway**: (P0) Advanced discovery service that mandates hardware-bound handshakes before revealing any agent capabilities to peers.
 - **Reasoning-Effort Quota Controller**: (P0) Resource management middleware that dynamically throttles high-intensity reasoning (e.g., `x-gemini-reasoning-effort`) to prevent Agentic DoS.
 
@@ -912,6 +934,19 @@
 - **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
 - **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.
 
+## Evolution: [2026-07-03] Updates
+
+### Proposed Additions
+- **Zero-Copy Memory Broker (ZCMB)**: (P0) Authoritative coordination service for hardware-locked, shared memory reasoning buffers.
+- **Stylometric Identity Anchoring (SIA)**: (P0) Behavioral security middleware for the AIR Hub that performs real-time stylometric analysis to detect mimicry.
+- **Multimodal Hash-Chaining (MHC) Provider**: (P0) Security middleware mandating cryptographic hash-chaining for all non-textual reasoning fragments.
+- **Active Attention Enforcer (AAE)**: (P0) Cognitive security extension for the HAAL middleware that dynamically reinforces mission-root anchors.
+- **Intent-Based Priority Mailbox**: (P1) Upgrade for the PAMS middleware allowing mission-root directed prioritization of coordination fragments.
+
+### Priority Shifts
+- **Autonomous Intent Reconciliation (AIR) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SIA** integration to counter stylometric spoofing.
+- **Hardware-Attested Attention Locking (HAAL)**: (Re-affirmed P0) Evolving into the **Active Attention Enforcer** to counter attention drift.
+
 ---
 
 ## Evolution: [2026-03-25] Updates
@@ -1132,7 +1167,7 @@
 - **Self-Healing Consensus Hub**: (P0) A coordination service that provides a standardized interface for swarm state reconciliation, leveraging MAQ for authoritative "Truth Brokering."
 
 ### Priority Shifts
-- **Deterministic Attestation Gateway**: (Re-affirmed P0) Expanded to support the new Resident Integrity Monitor for continuous lifecycle protection.
+- **Deterministic Attestation Gateway**: (Re-affirmed P0) Expanded to include Resident Integrity Monitor for continuous lifecycle protection.
 - **TPM-Bound Configuration Boot**: (Re-affirmed P0) Now considered the prerequisite foundation for RIG-mediated boundary expansions.
 
 ## Evolution: [2026-04-15] Updates
@@ -1233,7 +1268,7 @@
 ## Evolution: [2026-05-29] Updates
 
 ### Proposed Additions
-- **Collective Swarm Anomaly Detection (CSAD) Hub**: (P0) Advanced security middleware that performs cross-agent behavioral analysis to detect coordinated "Hivenet" swarm attacks.
+- **Collective Swomaly Detection (CSAD) Hub**: (P0) Advanced security middleware that performs cross-agent behavioral analysis to detect coordinated "Hivenet" swarm attacks.
 - **Cross-Mesh Command Sovereignty (CMCS) Provider**: (P0) Identity service that issues hardware-attested "Mesh Tokens" for inter-teammate mailbox validation in horizontal swarms.
 - **Atomic Teammate Handshake (ATH) Gateway**: (P0) Security middleware mandating hardware-attested identity exchange before teammate task delegation.
 - **Mesh-Bound Context Sovereignty Bridge**: (P0) Security extension for the DCG middleware that performs semantic fragment analysis across teammate boundaries.
@@ -1547,6 +1582,18 @@
 - **Fast-Path Identity Resumption (FPIR)**: (Promoted to P0) Critical for supporting the new **LMP** standard and solving teammate rotation latency.
 - **Asynchronous Mailbox Sharding (AMS)**: (Re-affirmed P0) Evolving into **PAMS** to support interrupt-driven coordination.
 
+## Evolution: [2026-07-02] Updates
+
+### Proposed Additions
+- **AIR (Autonomous Intent Reconciliation) Hub**: (P0) Authoritative swarm arbitration service utilizing hardware-attested "Intent Quorums" to resolve conflicting subagent instructions.
+- **Multimodal State Entanglement (MSE) Provider**: (P0) Advanced security service that cryptographically "entangles" non-textual reasoning traces (SVG, Audio) with the mission root.
+- **Reasoning Entropy Monitor (REM)**: (P0) Stability middleware performing real-time semantic analysis of agent outputs to detect "Cognitive Stalls" and trigger resolution policies.
+- **CRDT-Native Mailbox Hub**: (P1) High-performance coordination service using Conflict-Free Replicated Data Types to eliminate teammate mailbox locks.
+
+### Priority Shifts
+- **Consensus Tool Validation Hub**: (Re-affirmed P0) Evolving to act as the primary backend for the **AIR Hub** multi-agent quorums.
+- **Multimodal Inference-Time Sanitizer (MITS)**: (Re-affirmed P0) Upgraded with **MSE** capabilities for structural multimodal lineage.
+
 ## Evolution: [2026-07-01] Updates
 
 ### Proposed Additions
@@ -1557,3 +1604,14 @@
 ### Priority Shifts
 - **Shared KV Store (Blackboard)**: (Re-affirmed P0) Evolving to act as the primary backend for the **UMMB** state synchronization.
 - **Zero-Knowledge Discovery (ZKD) Proxy**: (Re-affirmed P0) Expanding into the **ZKDB** to support cross-framework capability negotiation.
+
+## Evolution: [2026-03-24] Updates
+
+### Proposed Additions
+- **Relational PoI Validator**: (P0) Extends PoI validation to verify the entire "Intent Chain," ensuring subagents cannot be coerced into actions outside the parent's verified goal.
+- **BSH State Buffer**: (P1) High-speed memory-mapped buffer for binary state handoffs between agents to minimize context transfer latency.
+- **Ghost Shell Hook Profiler**: (P0) Instrumented sandbox for behavioral profiling of un-attested configuration hooks, detecting "Binary Smuggling" before host execution.
+
+### Priority Shifts
+- **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
+- **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.
