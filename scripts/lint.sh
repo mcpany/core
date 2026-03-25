@@ -33,7 +33,7 @@ if [ -z "$GOLANGCI_LINT_BIN" ]; then
     exit 1
 fi
 
-GOGC=50 "$GOLANGCI_LINT_BIN" run -c server/.golangci.yml --concurrency 2 --timeout 20m --fix ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
+GOGC=20 GOMEMLIMIT=1024MiB "$GOLANGCI_LINT_BIN" run -c server/.golangci.yml --concurrency 1 --timeout 20m --fix ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
 
 echo "Running pre-commit..."
 if command -v pre-commit >/dev/null 2>&1; then
