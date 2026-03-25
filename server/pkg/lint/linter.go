@@ -51,7 +51,7 @@ const (
 // Summary: Returns the string name of the severity level.
 //
 // Parameters:
-//   - s (Severity): The severity level to convert.
+//   - None.
 //
 // Returns:
 //   - string: The name of the severity (e.g., "ERROR").
@@ -105,7 +105,7 @@ type Result struct {
 // Summary: Formats the result into a readable string.
 //
 // Parameters:
-//   - r (Result): The result instance to format.
+//   - None.
 //
 // Returns:
 //   - string: A formatted summary of the finding.
@@ -221,7 +221,7 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 	var results []Result
 
 	checkSecret := func(sv *configv1.SecretValue,
-		path, serviceID string) {
+		path, serviceName string) {
 		if sv == nil {
 			return
 		}
@@ -229,7 +229,7 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 		if sv.WhichValue() == secretCase {
 			results = append(results, Result{
 				Severity:    Warning,
-				ServiceName: serviceID,
+				ServiceName: serviceName,
 				Message: "Secret is stored in plain text. " +
 					"Use env vars or file references " +
 					"for better security.",
@@ -239,38 +239,37 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 	}
 
 	for _, s := range l.cfg.GetUpstreamServices() {
-		sid := s.GetId()
+		sName := s.GetName()
 		if auth := s.GetUpstreamAuth(); auth != nil {
 			switch auth.WhichAuthMethod() {
 			case configv1.Authentication_ApiKey_case:
 				checkSecret(auth.GetApiKey().GetValue(),
 					"upstream_auth.api_key.value",
-					sid)
+					sName)
 			case configv1.Authentication_BearerToken_case:
 				checkSecret(auth.GetBearerToken().GetToken(),
 					"upstream_auth.bearer_token.token",
-					sid)
+					sName)
 			case configv1.Authentication_BasicAuth_case:
 				checkSecret(
 					auth.GetBasicAuth().GetPassword(),
 					"upstream_auth.basic_auth.password",
-					sid)
+					sName)
 			case configv1.Authentication_Oauth2_case:
 				checkSecret(
 					auth.GetOauth2().GetClientSecret(),
 					"upstream_auth.oauth2.client_secret",
-					sid)
+					sName)
 			}
 		}
 
 		switch s.WhichServiceConfig() {
-		case configv1.
-			UpstreamServiceConfig_CommandLineService_case:
+		case configv1.UpstreamServiceConfig_CommandLineService_case:
 			cmd := s.GetCommandLineService()
 			for k, v := range cmd.GetEnv() {
 				p := fmt.Sprintf(
 					"command_line_service.env[%s]", k)
-				checkSecret(v, p, sid)
+				checkSecret(v, p, sName)
 			}
 			if ce := cmd.GetContainerEnvironment(); ce != nil {
 				for k, v := range ce.GetEnv() {
@@ -279,30 +278,27 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 							"container_env."+
 							"env[%s]",
 						k)
-					checkSecret(v, path, sid)
+					checkSecret(v, path, sName)
 				}
 			}
-		case configv1.
-			UpstreamServiceConfig_McpService_case:
+		case configv1.UpstreamServiceConfig_McpService_case:
 			mcp := s.GetMcpService()
 			switch mcp.WhichConnectionType() {
-			case configv1.
-				McpUpstreamService_StdioConnection_case:
+			case configv1.McpUpstreamService_StdioConnection_case:
 				stdio := mcp.GetStdioConnection()
 				for k, v := range stdio.GetEnv() {
 					p := fmt.Sprintf(
 						"mcp_service."+
 							"stdio.env[%s]", k)
-					checkSecret(v, p, sid)
+					checkSecret(v, p, sName)
 				}
-			case configv1.
-				McpUpstreamService_BundleConnection_case:
+			case configv1.McpUpstreamService_BundleConnection_case:
 				bundle := mcp.GetBundleConnection()
 				for k, v := range bundle.GetEnv() {
 					p := fmt.Sprintf(
 						"mcp_service."+
 							"bundle.env[%s]", k)
-					checkSecret(v, p, sid)
+					checkSecret(v, p, sName)
 				}
 			}
 		}
@@ -334,11 +330,9 @@ func (l *Linter) checkShellInjection() []Result {
 	for _, s := range l.cfg.GetUpstreamServices() {
 		var command string
 		switch s.WhichServiceConfig() {
-		case configv1.
-			UpstreamServiceConfig_CommandLineService_case:
+		case configv1.UpstreamServiceConfig_CommandLineService_case:
 			command = s.GetCommandLineService().GetCommand()
-		case configv1.
-			UpstreamServiceConfig_McpService_case:
+		case configv1.UpstreamServiceConfig_McpService_case:
 			mcp := s.GetMcpService()
 			stdioCase := configv1.
 				McpUpstreamService_StdioConnection_case
@@ -354,7 +348,7 @@ func (l *Linter) checkShellInjection() []Result {
 					strings.ToLower(command), pattern) {
 					results = append(results, Result{
 						Severity:    Warning,
-						ServiceName: s.GetId(),
+						ServiceName: s.GetName(),
 						Message: fmt.Sprintf(
 							"Command uses "+
 								"shell "+
@@ -408,7 +402,7 @@ func (l *Linter) checkInsecureHTTP() []Result {
 			}
 			results = append(results, Result{
 				Severity:    Warning,
-				ServiceName: s.GetId(),
+				ServiceName: s.GetName(),
 				Message: fmt.Sprintf(
 					"Service uses "+
 						"insecure "+
@@ -425,8 +419,7 @@ func (l *Linter) checkInsecureHTTP() []Result {
 		case configv1.UpstreamServiceConfig_HttpService_case:
 			checkInsecure(s.GetHttpService().GetAddress(),
 				"http_service.address")
-		case configv1.
-			UpstreamServiceConfig_OpenapiService_case:
+		case configv1.UpstreamServiceConfig_OpenapiService_case:
 			openapi := s.GetOpenapiService()
 			checkInsecure(openapi.GetAddress(),
 				"openapi_service.address")
@@ -475,7 +468,7 @@ func (l *Linter) checkCacheSettings() []Result {
 			s.GetCache().GetTtl().GetSeconds() == 0 {
 			results = append(results, Result{
 				Severity:    Info,
-				ServiceName: s.GetId(),
+				ServiceName: s.GetName(),
 				Message: "Cache is configured but has 0 " +
 					"TTL (infinite or disabled " +
 					"depending on implementation). " +
