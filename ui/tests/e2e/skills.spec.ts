@@ -1,29 +1,37 @@
+import { seedGlobalState } from "./test-data";
 /**
  * Copyright 2025 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { test, expect } from '@playwright/test';
-import { seedServices, seedUser, seedProfiles, cleanupServices, cleanupUser, cleanupProfiles } from './test-data';
+import { test, expect } from "@playwright/test";
+import {
+  seedServices,
+  seedUser,
+  seedProfiles,
+  cleanupServices,
+  cleanupUser,
+  cleanupProfiles,
+} from "./test-data";
 
-test.describe('Agent Skills', () => {
+test.describe("Agent Skills", () => {
   test.beforeEach(async ({ page, request }) => {
     await seedServices(request);
     await seedProfiles(request);
     await seedUser(request, "e2e-admin-skills");
 
     // Login first
-    await page.goto('/login');
-    await page.waitForLoadState('networkidle');
-    await page.fill('input[name="username"]', 'e2e-admin-skills');
-    await page.fill('input[name="password"]', 'password');
+    await page.goto("/login");
+    await page.waitForLoadState("networkidle");
+    await page.fill('input[name="username"]', "e2e-admin-skills");
+    await page.fill('input[name="password"]', "password");
     await Promise.all([
-      page.waitForURL('/', { timeout: 30000 }),
-      page.click('button[type="submit"]', { force: true })
+      page.waitForURL("/", { timeout: 30000 }),
+      page.click('button[type="submit"]', { force: true }),
     ]);
-    await expect(page).toHaveURL('/', { timeout: 15000 });
+    await expect(page).toHaveURL("/", { timeout: 15000 });
 
-    await page.goto('/skills');
+    await page.goto("/skills");
     // Ensure we are on the list page
     await expect(page).toHaveURL(/\/skills\/?$/);
   });
@@ -34,33 +42,40 @@ test.describe('Agent Skills', () => {
     // await cleanupUser(request, "e2e-admin-skills");
   });
 
-  test('should create and list a new skill', async ({ page }) => {
+  test.beforeEach(async ({ request }) => {
+    await seedGlobalState(request);
+  });
+
+  test("should create and list a new skill", async ({ page }) => {
     const testSkillName = `e2e-test-skill-${Date.now()}`;
 
     // 1. Fill Metadata
-    await page.getByRole('button', { name: 'Create Skill' }).first().click();
-    await page.fill('input#name', testSkillName);
-    await page.fill('textarea#description', 'Created by E2E test');
-    await page.getByRole('button', { name: 'Next', exact: true }).click();
+    await page.getByRole("button", { name: "Create Skill" }).first().click();
+    await page.fill("input#name", testSkillName);
+    await page.fill("textarea#description", "Created by E2E test");
+    await page.getByRole("button", { name: "Next", exact: true }).click();
 
     // 2. Fill Instructions
-    await expect(page.locator('text=Step 2: Instructions')).toBeVisible();
-    await page.fill('textarea', '# E2E Instructions\n\nRun this.');
-    await page.getByRole('button', { name: 'Next', exact: true }).click();
+    await expect(page.locator("text=Step 2: Instructions")).toBeVisible();
+    await page.fill("textarea", "# E2E Instructions\n\nRun this.");
+    await page.getByRole("button", { name: "Next", exact: true }).click();
 
     // 3. Final Step (Assets)
-    await expect(page.locator('text=Step 3: Assets')).toBeVisible();
+    await expect(page.locator("text=Step 3: Assets")).toBeVisible();
 
     // Wait for creation API response
-    const createPromise = page.waitForResponse(response =>
-        response.url().includes('/api/v1/skills') &&
-        response.request().method() === 'POST' &&
+    const createPromise = page.waitForResponse(
+      (response) =>
+        response.url().includes("/api/v1/skills") &&
+        response.request().method() === "POST" &&
         (response.status() === 200 || response.status() === 201),
-        { timeout: 30000 }
+      { timeout: 30000 },
     );
 
     // Click the Save button in the wizard specifically
-    const saveButton = page.locator('main').locator('button:has-text("Create Skill")');
+    const saveButton = page
+      .locator("main")
+      .locator('button:has-text("Create Skill")');
     await expect(saveButton).toBeVisible();
     await saveButton.click({ force: true });
     await createPromise;
@@ -69,35 +84,40 @@ test.describe('Agent Skills', () => {
     await expect(page).toHaveURL(/\/skills\/?$/);
 
     // 6. Verify we are back to the skills list after a successful create
-    await expect(page.getByRole('button', { name: 'Create Skill' }).first()).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Create Skill" }).first(),
+    ).toBeVisible();
   });
 
-  test('should view skill details', async ({ page }) => {
+  test("should view skill details", async ({ page }) => {
     const skillName = `view-test-skill-${Date.now()}`;
 
     // Create a skill first (minimal metadata)
-    await page.getByRole('button', { name: 'Create Skill' }).first().click();
-    await page.fill('input#name', skillName);
-    await page.fill('textarea#description', 'Created by View Test');
-    await page.getByRole('button', { name: 'Next', exact: true }).click();
-    await page.fill('textarea', '# Instructions');
-    await page.getByRole('button', { name: 'Next', exact: true }).click();
+    await page.getByRole("button", { name: "Create Skill" }).first().click();
+    await page.fill("input#name", skillName);
+    await page.fill("textarea#description", "Created by View Test");
+    await page.getByRole("button", { name: "Next", exact: true }).click();
+    await page.fill("textarea", "# Instructions");
+    await page.getByRole("button", { name: "Next", exact: true }).click();
 
-    const createPromise = page.waitForResponse(response =>
-        response.url().includes('/api/v1/skills') &&
-        response.request().method() === 'POST' &&
+    const createPromise = page.waitForResponse(
+      (response) =>
+        response.url().includes("/api/v1/skills") &&
+        response.request().method() === "POST" &&
         (response.status() === 200 || response.status() === 201),
-        { timeout: 30000 }
+      { timeout: 30000 },
     );
     // Click the Save button in the wizard specifically
-    const saveButton = page.locator('main').locator('button:has-text("Create Skill")');
+    const saveButton = page
+      .locator("main")
+      .locator('button:has-text("Create Skill")');
     await expect(saveButton).toBeVisible();
     await saveButton.click();
     await createPromise;
     await expect(page).toHaveURL(/\/skills\/?$/);
 
     // Keep this as a navigation smoke check to avoid backend eventual-consistency flakiness.
-    await page.goto('/skills');
+    await page.goto("/skills");
     await expect(page).toHaveURL(/\/skills\/?$/);
   });
 });

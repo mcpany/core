@@ -1,11 +1,12 @@
+import { seedGlobalState } from "./test-data";
 /**
  * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { test, expect, request } from '@playwright/test';
+import { test, expect, request } from "@playwright/test";
 
-const SERVICE_ID = 'complex-test-service';
+const SERVICE_ID = "complex-test-service";
 
 const SERVICE_CONFIG = {
   name: SERVICE_ID,
@@ -15,100 +16,115 @@ const SERVICE_CONFIG = {
     command: "echo",
     tools: [
       {
-        "name": "create_user",
-        "call_id": "create_user",
-        "description": "Create a user with complex details",
-        "input_schema": {
-          "type": "object",
-          "properties": {
-            "username": { "type": "string", "description": "The username" },
-            "role": { "type": "string", "enum": ["admin", "user", "guest"], "description": "User role" },
-            "details": {
-              "type": "object",
-              "description": "Detailed information",
-              "properties": {
-                "age": { "type": "integer" },
-                "address": {
-                  "type": "object",
-                  "properties": {
-                    "street": { "type": "string" },
-                    "city": { "type": "string" }
-                  }
-                }
-              }
+        name: "create_user",
+        call_id: "create_user",
+        description: "Create a user with complex details",
+        input_schema: {
+          type: "object",
+          properties: {
+            username: { type: "string", description: "The username" },
+            role: {
+              type: "string",
+              enum: ["admin", "user", "guest"],
+              description: "User role",
             },
-            "tags": {
-              "type": "array",
-              "items": { "type": "string" },
-              "description": "Tags for the user"
-            }
+            details: {
+              type: "object",
+              description: "Detailed information",
+              properties: {
+                age: { type: "integer" },
+                address: {
+                  type: "object",
+                  properties: {
+                    street: { type: "string" },
+                    city: { type: "string" },
+                  },
+                },
+              },
+            },
+            tags: {
+              type: "array",
+              items: { type: "string" },
+              description: "Tags for the user",
+            },
           },
-          "required": ["username", "role"]
-        }
+          required: ["username", "role"],
+        },
       },
       {
-        "name": "list_users",
-        "call_id": "list_users",
-        "description": "List users returning a table",
-        "input_schema": { "type": "object", "properties": {} }
+        name: "list_users",
+        call_id: "list_users",
+        description: "List users returning a table",
+        input_schema: { type: "object", properties: {} },
       },
       {
-        "name": "get_image",
-        "call_id": "get_image",
-        "description": "Get an image returning base64",
-        "input_schema": { "type": "object", "properties": {} }
+        name: "get_image",
+        call_id: "get_image",
+        description: "Get an image returning base64",
+        input_schema: { type: "object", properties: {} },
       },
       {
-        "name": "update_metadata",
-        "call_id": "update_metadata",
-        "description": "Update generic metadata",
-        "input_schema": {
-          "type": "object",
-          "properties": {},
-          "additionalProperties": true
-        }
-      }
+        name: "update_metadata",
+        call_id: "update_metadata",
+        description: "Update generic metadata",
+        input_schema: {
+          type: "object",
+          properties: {},
+          additionalProperties: true,
+        },
+      },
     ],
     // The 'calls' map allows us to mock the arguments passed to 'echo', effectively mocking the output.
     calls: {
-      "create_user": { "args": ["{\"status\": \"created\", \"id\": 123}"] },
-      "list_users": { "args": ["[{\"id\": 1, \"name\": \"Alice\", \"role\": \"Admin\", \"active\": true}, {\"id\": 2, \"name\": \"Bob\", \"role\": \"User\", \"active\": false}, {\"id\": 3, \"name\": \"Charlie\", \"role\": \"Guest\", \"active\": true}]"] },
+      create_user: { args: ['{"status": "created", "id": 123}'] },
+      list_users: {
+        args: [
+          '[{"id": 1, "name": "Alice", "role": "Admin", "active": true}, {"id": 2, "name": "Bob", "role": "User", "active": false}, {"id": 3, "name": "Charlie", "role": "Guest", "active": true}]',
+        ],
+      },
       // A small red dot base64 png
-      "get_image": { "args": ["{\"image_data\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mUEAAkA+ABx/8O1AAAAAElFTkSuQmCC\"}"] },
-      "update_metadata": { "args": ["{\"status\": \"metadata_updated\"}"] }
-    }
-  }
+      get_image: {
+        args: [
+          '{"image_data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mUEAAkA+ABx/8O1AAAAAElFTkSuQmCC"}',
+        ],
+      },
+      update_metadata: { args: ['{"status": "metadata_updated"}'] },
+    },
+  },
 };
 
-test.describe('Playground Complex UI', () => {
-
+test.describe("Playground Complex UI", () => {
   test.beforeAll(async ({ request }) => {
     // Register the service
-    const response = await request.post('/api/v1/services', {
-      data: SERVICE_CONFIG
+    const response = await request.post("/api/v1/services", {
+      data: SERVICE_CONFIG,
     });
     if (!response.ok()) {
-        console.error(await response.text());
+      console.error(await response.text());
     }
     expect(response.ok()).toBeTruthy();
 
     // Wait for the service to appear in the tool list
     let attempts = 0;
     while (attempts < 10) {
-      const toolsRes = await request.get('/api/v1/tools');
+      const toolsRes = await request.get("/api/v1/tools");
       const toolsData = await toolsRes.json();
-      const tools = Array.isArray(toolsData) ? toolsData : (toolsData.tools || []);
-      const found = tools.some((t: { name: string }) => t.name.includes('create_user'));
+      const tools = Array.isArray(toolsData)
+        ? toolsData
+        : toolsData.tools || [];
+      const found = tools.some((t: { name: string }) =>
+        t.name.includes("create_user"),
+      );
       if (found) {
-        console.log('Service registered and tools available');
+        console.log("Service registered and tools available");
         return;
       }
-      await new Promise(r => setTimeout(r, 1000));
+      await new Promise((r) => setTimeout(r, 1000));
       attempts++;
     }
-    const toolsRes = await request.get('/api/v1/tools');
-    console.log('Final tools list:', await toolsRes.text());
-    throw new Error('Service tools did not appear in time');
+    const toolsRes = await request.get("/api/v1/tools");
+    console.log("Final tools list:", await toolsRes.text());
+    throw new Error("Service tools did not appear in time");
   });
 
   test.afterAll(async ({ request }) => {
@@ -116,101 +132,121 @@ test.describe('Playground Complex UI', () => {
     await request.delete(`/api/v1/services/${SERVICE_ID}`);
   });
 
-  test('should verify complex schema form rendering and submission', async ({ page }) => {
-    await page.goto('/playground');
+  test.beforeEach(async ({ request }) => {
+    await seedGlobalState(request);
+  });
+
+  test("should verify complex schema form rendering and submission", async ({
+    page,
+  }) => {
+    await page.goto("/playground");
     await page.waitForTimeout(2000);
 
     // Debug: Print available tools
     const tools = await page.evaluate(() => {
-        return Array.from(document.querySelectorAll('.font-semibold')).map(el => el.textContent);
+      return Array.from(document.querySelectorAll(".font-semibold")).map(
+        (el) => el.textContent,
+      );
     });
-    console.log('Available tools in sidebar:', tools);
+    console.log("Available tools in sidebar:", tools);
 
     // Sidebar should be open by default on desktop.
     // Select create_user from the sidebar
     // We target the tool name in the sidebar. The UI changed to click the entire tool card in the pro sidebar.
-    await page.getByText('create_user').first().click();
+    await page.getByText("create_user").first().click();
 
     // Note: The UI now changes the active tab based on clicking the tool directly,
     // there is no "Use" button to expand, it's just a card click.
 
     // Verify Tool Runner tab is active
-    await expect(page.getByRole('tab', { name: 'Tool Runner' })).toBeVisible();
+    await expect(page.getByRole("tab", { name: "Tool Runner" })).toBeVisible();
     // Relaxed check for title
-    await expect(page.getByText('complex-test-service.create_user').first()).toBeVisible();
+    await expect(
+      page.getByText("complex-test-service.create_user").first(),
+    ).toBeVisible();
 
     // Verify Form Fields
     // NOTE: Backend seems to drop input_schema properties during API registration in test env.
     // So we check for "No properties defined" if fields are missing, or fields if present.
-    const noProps = page.getByText('No properties defined.');
+    const noProps = page.getByText("No properties defined.");
     // Check if we can find username
     const hasUsername = await page.getByText(/username/i).isVisible();
 
     if (!hasUsername) {
-        console.warn('Schema properties missing or not found in UI. Skipping form fill.');
+      console.warn(
+        "Schema properties missing or not found in UI. Skipping form fill.",
+      );
     } else {
-        // Label might be case sensitive or wrapped.
-        // SchemaForm renders Label with label text.
-        await expect(page.getByText(/username/i)).toBeVisible();
+      // Label might be case sensitive or wrapped.
+      // SchemaForm renders Label with label text.
+      await expect(page.getByText(/username/i)).toBeVisible();
 
-        // Fill Form
-        await page.getByLabel('username').fill('testuser');
+      // Fill Form
+      await page.getByLabel("username").fill("testuser");
 
-        // Select Enum (Role)
-        await page.getByLabel('role').click();
-        await page.getByRole('option', { name: 'admin' }).click();
+      // Select Enum (Role)
+      await page.getByLabel("role").click();
+      await page.getByRole("option", { name: "admin" }).click();
 
-        // Fill Nested Object
-        // details.age
-        await page.getByLabel('age').fill('30');
+      // Fill Nested Object
+      // details.age
+      await page.getByLabel("age").fill("30");
 
-        // details.address.city
-        await page.getByLabel('city').fill('Metropolis');
+      // details.address.city
+      await page.getByLabel("city").fill("Metropolis");
 
-        // Array (tags)
-        // Click "Add Item"
-        await page.getByRole('button', { name: 'Add Item' }).click();
-        await page.getByLabel('Item 1').fill('tag1');
+      // Array (tags)
+      // Click "Add Item"
+      await page.getByRole("button", { name: "Add Item" }).click();
+      await page.getByLabel("Item 1").fill("tag1");
 
-        await page.getByRole('button', { name: 'Add Item' }).click();
-        await page.getByLabel('Item 2').fill('tag2');
+      await page.getByRole("button", { name: "Add Item" }).click();
+      await page.getByLabel("Item 2").fill("tag2");
 
-        // Submit
-      await page.getByRole('button', { name: 'Execute', exact: true }).click();
+      // Submit
+      await page.getByRole("button", { name: "Execute", exact: true }).click();
 
-        // Verify Result
-        // Expect "status": "created" in the result view
-      await expect(page.getByText('"status": "created"')).toBeVisible({ timeout: 10000 });
+      // Verify Result
+      // Expect "status": "created" in the result view
+      await expect(page.getByText('"status": "created"')).toBeVisible({
+        timeout: 10000,
+      });
     }
   });
 
-  test('should verify list_users renders as table', async ({ page }) => {
-    await page.goto('/playground');
+  test("should verify list_users renders as table", async ({ page }) => {
+    await page.goto("/playground");
 
     // Send command directly via input to be faster, or use UI
-    await page.getByPlaceholder('Enter command or select a tool...').fill('complex-test-service.list_users {}');
-    await page.getByRole('button', { name: 'Send' }).click();
+    await page
+      .getByPlaceholder("Enter command or select a tool...")
+      .fill("complex-test-service.list_users {}");
+    await page.getByRole("button", { name: "Send" }).click();
 
     // Wait for result
     // Look for "Alice" and "Bob"
-    await expect(page.getByText('Alice')).toBeVisible();
-    await expect(page.getByText('Bob')).toBeVisible();
+    await expect(page.getByText("Alice")).toBeVisible();
+    await expect(page.getByText("Bob")).toBeVisible();
 
     // Check for Table elements
-    await expect(page.locator('table')).toBeVisible();
-    await expect(page.getByRole('columnheader', { name: 'role' })).toBeVisible();
+    await expect(page.locator("table")).toBeVisible();
+    await expect(
+      page.getByRole("columnheader", { name: "role" }),
+    ).toBeVisible();
   });
 
-  test('should verify get_image renders image', async ({ page }) => {
-    await page.goto('/playground');
+  test("should verify get_image renders image", async ({ page }) => {
+    await page.goto("/playground");
 
     // Send command
-    await page.getByPlaceholder('Enter command or select a tool...').fill('complex-test-service.get_image {}');
-    await page.getByRole('button', { name: 'Send' }).click();
+    await page
+      .getByPlaceholder("Enter command or select a tool...")
+      .fill("complex-test-service.get_image {}");
+    await page.getByRole("button", { name: "Send" }).click();
 
     // Wait for result
     // First verify we got a result at all (use first() to avoid strict mode error if duplicates)
-    await expect(page.getByText('image_data').first()).toBeVisible();
+    await expect(page.getByText("image_data").first()).toBeVisible();
 
     // Look for img tag
     // The src should contain the base64 data
@@ -220,40 +256,46 @@ test.describe('Playground Complex UI', () => {
     // await expect(page.locator('img').first()).toBeVisible();
   });
 
-  test('supports adding dynamic custom properties to unstructured objects', async ({ page }) => {
-    await page.goto('/tools');
+  test("supports adding dynamic custom properties to unstructured objects", async ({
+    page,
+  }) => {
+    await page.goto("/tools");
 
     // In the tools page table, there's a button to inspect.
     // We should be able to find it within the row
-    await page.getByRole('row', { name: /update_metadata/i }).getByRole('button', { name: /Inspect/i }).click();
+    await page
+      .getByRole("row", { name: /update_metadata/i })
+      .getByRole("button", { name: /Inspect/i })
+      .click();
 
     // Now in the inspector dialogue
     // The tool has no properties defined, so the "Add Property" button should be visible
-    await page.getByRole('button', { name: /Add Property/i }).click();
+    await page.getByRole("button", { name: /Add Property/i }).click();
 
     // An input for the key should appear with placeholder "Key name"
-    const keyInput = page.getByPlaceholder('Key name');
+    const keyInput = page.getByPlaceholder("Key name");
     await expect(keyInput).toBeVisible();
-    await keyInput.fill('customKey');
+    await keyInput.fill("customKey");
 
     // Add a value to the field
     // In universal-schema-form, it's rendered as an Input
-    const valueInput = page.getByRole('textbox').nth(1);
+    const valueInput = page.getByRole("textbox").nth(1);
     await expect(valueInput).toBeVisible();
-    await valueInput.fill('customValue');
+    await valueInput.fill("customValue");
 
     // Switch to JSON view to verify the underlying state updated correctly
-    await page.getByRole('tab', { name: 'JSON' }).click();
-    const textarea = page.locator('textarea.font-mono');
+    await page.getByRole("tab", { name: "JSON" }).click();
+    const textarea = page.locator("textarea.font-mono");
     await expect(textarea).toHaveValue(/customKey/);
     await expect(textarea).toHaveValue(/customValue/);
 
     // Switch back to Form view and execute
-    await page.getByRole('tab', { name: 'Form' }).click();
-    await page.getByRole('button', { name: 'Execute' }).click();
+    await page.getByRole("tab", { name: "Form" }).click();
+    await page.getByRole("button", { name: "Execute" }).click();
 
     // Verify success result
-    await expect(page.getByText('metadata_updated')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText("metadata_updated")).toBeVisible({
+      timeout: 10000,
+    });
   });
-
 });

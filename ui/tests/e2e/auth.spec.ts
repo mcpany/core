@@ -1,67 +1,80 @@
+import { seedGlobalState } from "./test-data";
 /**
  * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { test, expect } from '@playwright/test';
+import { test, expect } from "@playwright/test";
 
 // Use a unique ID to avoid collisions
 const TEST_TIMESTAMP = Date.now();
 const USER_ID = `e2e-user-${TEST_TIMESTAMP}`;
 
-test.describe('Authentication and User Management', () => {
+test.describe("Authentication and User Management", () => {
+  test.beforeEach(async ({ request }) => {
+    await seedGlobalState(request);
+  });
 
-  test('should login successfully with real backend', async ({ page, request }) => {
-      // 1. Create User via API (using Admin/API Key from config)
-      const createUserRes = await request.post('/api/v1/users', {
-          data: {
-              user: {
-                  id: USER_ID,
-                  roles: ['admin'],
-                  authentication: {
-                      basic_auth: {
-                          username: USER_ID,
-                          password_hash: 'password123' // Server handles hashing
-                      }
-                  }
-              }
-          }
-      });
+  test("should login successfully with real backend", async ({
+    page,
+    request,
+  }) => {
+    // 1. Create User via API (using Admin/API Key from config)
+    const createUserRes = await request.post("/api/v1/users", {
+      data: {
+        user: {
+          id: USER_ID,
+          roles: ["admin"],
+          authentication: {
+            basic_auth: {
+              username: USER_ID,
+              password_hash: "password123", // Server handles hashing
+            },
+          },
+        },
+      },
+    });
 
-      // If user creation fails, test should fail
-      if (!createUserRes.ok()) {
-          console.error("Failed to create user:", await createUserRes.text());
-      }
-      expect(createUserRes.ok()).toBeTruthy();
+    // If user creation fails, test should fail
+    if (!createUserRes.ok()) {
+      console.error("Failed to create user:", await createUserRes.text());
+    }
+    expect(createUserRes.ok()).toBeTruthy();
 
-      // 2. Login via UI
-      await page.goto('/login');
-      // Ensure we are logically on login page
-      await expect(page.getByLabel('Username')).toBeVisible();
+    // 2. Login via UI
+    await page.goto("/login");
+    // Ensure we are logically on login page
+    await expect(page.getByLabel("Username")).toBeVisible();
 
-      await page.getByLabel('Username').fill(USER_ID);
-      await page.getByLabel('Password').fill('password123');
-      await Promise.all([
-        page.waitForURL('/', { timeout: 30000 }),
-        page.getByRole('button', { name: 'Sign in' }).click({ force: true })
-      ]);
-      await expect(page).toHaveURL('/', { timeout: 15000 });
+    await page.getByLabel("Username").fill(USER_ID);
+    await page.getByLabel("Password").fill("password123");
+    await Promise.all([
+      page.waitForURL("/", { timeout: 30000 }),
+      page.getByRole("button", { name: "Sign in" }).click({ force: true }),
+    ]);
+    await expect(page).toHaveURL("/", { timeout: 15000 });
 
-      // 4. Verify Token in LocalStorage
-      const token = await page.evaluate(() => localStorage.getItem('mcp_auth_token'));
-      expect(token).toBeTruthy();
+    // 4. Verify Token in LocalStorage
+    const token = await page.evaluate(() =>
+      localStorage.getItem("mcp_auth_token"),
+    );
+    expect(token).toBeTruthy();
 
-      // 5. Verify User Management Access (Protected)
-      await page.goto('/users');
-      await expect(page.getByText('Users', { exact: true }).first()).toBeVisible();
+    // 5. Verify User Management Access (Protected)
+    await page.goto("/users");
+    await expect(
+      page.getByText("Users", { exact: true }).first(),
+    ).toBeVisible();
 
-      // Verify our user is in the list
-      await expect(page.getByTestId(`user-row-${USER_ID}`)).toBeVisible({ timeout: 60000 });
+    // Verify our user is in the list
+    await expect(page.getByTestId(`user-row-${USER_ID}`)).toBeVisible({
+      timeout: 60000,
+    });
 
-      // Cleanup: Delete user
-      // We can use the UI to delete to test that too?
-      // Or just API for speed/reliability.
-      const deleteRes = await request.delete(`/api/v1/users/${USER_ID}`);
-      expect(deleteRes.ok()).toBeTruthy();
+    // Cleanup: Delete user
+    // We can use the UI to delete to test that too?
+    // Or just API for speed/reliability.
+    const deleteRes = await request.delete(`/api/v1/users/${USER_ID}`);
+    expect(deleteRes.ok()).toBeTruthy();
   });
 });

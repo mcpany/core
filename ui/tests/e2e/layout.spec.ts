@@ -1,13 +1,18 @@
+import { seedGlobalState } from "./test-data";
 /**
  * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { test, expect } from '@playwright/test';
+import { test, expect } from "@playwright/test";
 
-test.describe('Layout Tests', () => {
-  test('Sidebar Footer should be pinned to the bottom', async ({ page }) => {
-    await page.goto('/');
+test.describe("Layout Tests", () => {
+  test.beforeEach(async ({ request }) => {
+    await seedGlobalState(request);
+  });
+
+  test("Sidebar Footer should be pinned to the bottom", async ({ page }) => {
+    await page.goto("/");
 
     if (await page.getByText(/API Key Not Set/i).isVisible()) return;
 
@@ -16,7 +21,7 @@ test.describe('Layout Tests', () => {
     await expect(footer).toBeVisible();
 
     // Verify it contains the user avatar/name (Admin)
-    await expect(footer).toContainText('Admin');
+    await expect(footer).toContainText("Admin");
 
     // Verify visual positioning
     // We expect the footer to be at the bottom of the sidebar.
@@ -30,32 +35,38 @@ test.describe('Layout Tests', () => {
     expect(viewportSize).not.toBeNull();
 
     if (footerBox && viewportSize) {
-        // Footer bottom should be close to viewport bottom
-        // giving it a small buffer for borders/padding
-        expect(footerBox.y + footerBox.height).toBeGreaterThan(viewportSize.height - 50);
+      // Footer bottom should be close to viewport bottom
+      // giving it a small buffer for borders/padding
+      expect(footerBox.y + footerBox.height).toBeGreaterThan(
+        viewportSize.height - 50,
+      );
     }
   });
 
-  test('Global Search backdrop should cover the window', async ({ page }) => {
-     // This is hard to test automatically without screenshot comparison or checking computed styles on the overlay
-     // checking for class 'w-screen h-screen' or 'fixed inset-0' matches implementation
+  test("Global Search backdrop should cover the window", async ({ page }) => {
+    // This is hard to test automatically without screenshot comparison or checking computed styles on the overlay
+    // checking for class 'w-screen h-screen' or 'fixed inset-0' matches implementation
 
-     await page.goto('/');
+    await page.goto("/");
 
-     if (await page.getByText(/API Key Not Set/i).isVisible()) return;
+    if (await page.getByText(/API Key Not Set/i).isVisible()) return;
 
-     // Click the search trigger button (more reliable than keyboard shortcut in CI)
-     // Use a very permissive selector ensuring we target the button
-     await page.locator('button').filter({ hasText: /Search/i }).first().click();
+    // Click the search trigger button (more reliable than keyboard shortcut in CI)
+    // Use a very permissive selector ensuring we target the button
+    await page
+      .locator("button")
+      .filter({ hasText: /Search/i })
+      .first()
+      .click();
 
-     // Wait for dialog to appear
-     await expect(page.getByRole('dialog')).toBeVisible();
+    // Wait for dialog to appear
+    await expect(page.getByRole("dialog")).toBeVisible();
 
-     // Radix dialog overlay is usually a sibling or parent.
-     // In our code: DialogOverlay is fixed inset-0 z-50 ... w-screen h-screen
+    // Radix dialog overlay is usually a sibling or parent.
+    // In our code: DialogOverlay is fixed inset-0 z-50 ... w-screen h-screen
 
-     // We can just rely on the screenshot test for this visual detail,
-     // but let's check if the dialog is visible.
-     await expect(page.getByRole('dialog')).toBeVisible();
+    // We can just rely on the screenshot test for this visual detail,
+    // but let's check if the dialog is visible.
+    await expect(page.getByRole("dialog")).toBeVisible();
   });
 });
