@@ -47,7 +47,7 @@ jobs:
           name: Run Lint
           command: |
             export GOLANGCI_LINT_BIN=$(go env GOPATH)/bin/golangci-lint
-            bazelisk run //:lint
+            bazelisk run --action_env=GOLANGCI_LINT_BIN=/home/jules/go/bin/golangci-lint //:lint
             bazelisk test //ui:lint //ui:typecheck
       - save_cache:
           key: v1-bazel-lint-{{ checksum "MODULE.bazel" }}

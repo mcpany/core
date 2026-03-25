@@ -158,12 +158,10 @@ pkg_files(
 )
 
 # Package the minimal node_modules needed by vite preview (vite itself + proxy deps).
-# We conservatively include the full node_modules; a future optimisation can
-# prune dev-only packages.
-pkg_files(
-    name = "ui_node_modules_files",
+pkg_tar(
+    name = "ui_node_modules_tar",
     srcs = [":node_modules"],
-    prefix = "/app/node_modules",
+    package_dir = "/app/node_modules",
 )
 
 # Static config files required by `vite preview` at runtime.
@@ -182,6 +180,9 @@ pkg_tar(
     srcs = [
         ":ui_config_files",
         ":ui_dist_files",
+    ],
+    deps = [
+        ":ui_node_modules_tar",
     ],
 )
 

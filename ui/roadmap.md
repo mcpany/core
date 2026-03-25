@@ -40,13 +40,13 @@
 - [ ] **[P0] Inter-Agent Mailbox Monitor**: (2026-03-17) Visual tracking and security auditing of teammate-to-teammate coordination messages.
 - [ ] **[P1] RL Reward Attestation Viewer**: (2026-03-17) UI for monitoring verifiable binary rewards and reasoning optimization metrics.
 - [x] **[P1] Tool Playground & Explorer**:
-  - [x] Auto-generated forms from Tool JSON Schemas.
-  - [x] "Execute" button with history and result visualization.
-  - [x] "Copy as Curl/Python" code generation.
+  — [x] Auto-generated forms from Tool JSON Schemas.
+  — [x] "Execute" button with history and result visualization.
+  — [x] "Copy as Curl/Python" code generation.
 - [ ] **[P1] Live Marble Diagrams**: Reactive visualization of concurrent agent flows, tool calls, and dependencies.
 - [ ] **[P1] Interactive Debugger**:
-  - [ ] Breakpoint management for tool calls.
-  - [ ] Variable inspection and modification during "Paused" state.
+  — [ ] Breakpoint management for tool calls.
+  — [ ] Variable inspection and modification during "Paused" state.
 - [ ] **[P2] Plugin Marketplace**: In-app browser to discover, install, and configure community MCP servers.
 - [ ] **[P2] Interactive Setup Wizard**: Guided "First Run" experience to generate `mcp.yaml` and configure agents.
 - [ ] **[P2] Agent Black Box Player**: Timeline-based replay of recorded agent sessions (Inputs, Outputs, State).
@@ -55,13 +55,13 @@
 ### Existing Planned Features
 
 - [ ] **Advanced Service Configuration & Sharing**:
-  - [x] Visual editor for detailed service configuration (Connection, Auth, Advanced).
-  - [x] Service Duplication: One-click cloning of existing services.
-  - [x] Service Export: Download service configuration as JSON.
-  - [ ] Import external services via gRPC auto-discovery or OpenAPI specs.
-  - [ ] Export and share service configurations.
-- [x] **Service Connection Diagnostic Tool**: Interactive tool to diagnose connection issues with upstream services (DNS, Handshake, Capabilities) - Added based on Ecosystem Audit.
-  - _Update_: Enhanced with WebSocket support and browser-side connectivity probing.
+  — [x] Visual editor for detailed service configuration (Connection, Auth, Advanced).
+  — [x] Service Duplication: One-click cloning of existing services.
+  — [x] Service Export: Download service configuration as JSON.
+  — [ ] Import external services via gRPC auto-discovery or OpenAPI specs.
+  — [ ] Export and share service configurations.
+- [x] **Service Connection Diagnostic Tool**: Interactive tool to diagnose connection issues with upstream services (DNS, Handshake, Capabilities) — Added based on Ecosystem Audit.
+  — _Update_: Enhanced with WebSocket support and browser-side connectivity probing.
 - [x] **Integrated Connection Diagnostics**: Added direct access to the Connection Diagnostic tool from the Service List status indicator, allowing users to quickly troubleshoot failed services.
 - [x] **Context-Aware Error Suggestions**: When a service error occurs, use heuristics to suggest a fix in the Connection Diagnostic dialog.
 - [x] **Fix E2E Testing Infrastructure**: Resolve persistent CI failures in `e2e-parallel` by implementing robust backend mocking for the Settings & Secrets page tests.
@@ -260,7 +260,7 @@
 
 #### Upcoming (2026-04-16 Evolution)
 - [ ] **[P0] Reactive Intent Dashboard**: Visual workspace for reviewing and approving agent "Boundary Expansion" requests. (Added: 2026-04-16)
-- [ ] **[P0] Resident Integrity Status Widget**: Real-time indicator for continuous sandbox attestation and hardware-bound health. (Added: 2026-04-16 - Promoted to P0 on 2026-04-17)
+- [ ] **[P0] Resident Integrity Status Widget**: Real-time indicator for continuous sandbox attestation and hardware-bound health. (Added: 2026-04-16 — Promoted to P0 on 2026-04-17)
 - [ ] **[P0] Swarm Truth Explorer**: Authorization UI for swarm self-healing and mission state reconciliation. (Added: 2026-04-16)
 
 #### Upcoming (2026-04-21 Evolution)
@@ -305,7 +305,7 @@
 - [ ] **[P1] Multi-modal Trace Debugger**: Forensic UI for analyzing textual and visual traces for RCS patterns. (Added: 2026-05-05)
 
 #### Upcoming (2026-05-04 Evolution)
-- [ ] **[P0] Semantic Integrity Dashboard**: Real-time visualization of intent drift and RIP/RCS alerts. (Added: 2026-05-04 - Promoted to P0 on 2026-05-05)
+- [ ] **[P0] Semantic Integrity Dashboard**: Real-time visualization of intent drift and RIP/RCS alerts. (Added: 2026-05-04 — Promoted to P0 on 2026-05-05)
 - [ ] **[P0] FD Persistence Monitor**: Visual tracker for kernel-bound file descriptors and pinning status. (Added: 2026-05-04)
 - [ ] **[P1] Bi-directional A2UI Sync Workspace**: Interactive bridge for user-initiated state pushes and intent correction. (Added: 2026-05-04)
 
