@@ -26,10 +26,8 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
 
 interface BulkServiceImportProps {
     onImportSuccess: () => void;
@@ -88,7 +86,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
     const parseAndValidate = async () => {
         setParsingError(null);
         setIsValidating(true);
-        let parsedServices: any[] = [];
+        let parsedServices = [] as UpstreamServiceConfig[];
 
         try {
             if (inputType === "url") {
@@ -104,29 +102,29 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                         openapiService: {
                             address: importUrl,
                             specUrl: importUrl,
-                            tools: [], resources: [], calls: [], prompts: []
+                            tools: [], resources: [], calls: {}, prompts: []
                         }
-                    }];
+                    } as unknown as UpstreamServiceConfig];
                 } else {
-                    parsedServices = Array.isArray(data) ? data : (data.services || [data]);
+                    parsedServices = Array.isArray(data) ? data : (data.services || [data as unknown as UpstreamServiceConfig]);
                 }
             } else {
                 if (!jsonContent.trim()) throw new Error("Content is required.");
 
-                let data: any;
+                let data = null as unknown as { services?: UpstreamServiceConfig[], openapi?: boolean, swagger?: boolean, info?: { title: string } };
                 try {
                     data = JSON.parse(jsonContent);
-                } catch (e) {
+                } catch (_e) {
                     // Try YAML
                     try {
-                        data = yaml.load(jsonContent);
-                    } catch (yamlErr) {
+                        data = yaml.load(jsonContent) as { services?: UpstreamServiceConfig[], openapi?: boolean, swagger?: boolean, info?: { title: string } };
+                    } catch (_yamlErr) {
                         throw new Error("Failed to parse input as JSON or YAML.");
                     }
                 }
 
                 if (!data) throw new Error("Parsed content is empty.");
-                parsedServices = Array.isArray(data) ? data : (data.services || [data]);
+                parsedServices = Array.isArray(data) ? data : (data.services || [data as unknown as UpstreamServiceConfig]);
             }
 
             if (!parsedServices.length) throw new Error("No services found in input.");
@@ -144,7 +142,8 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
             // Trigger async validation for each
             validateItems(initialItems);
 
-        } catch (e: any) {
+        } catch (err: unknown) {
+            const e = err as Error;
             setParsingError(e.message || "Failed to parse input.");
             setIsValidating(false);
         }
@@ -180,7 +179,8 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                          validatedItems[index].selected = false;
                      }
                 }
-            } catch (e: any) {
+            } catch (err: unknown) {
+            const e = err as Error;
                 validatedItems[index].validationStatus = "invalid";
                 validatedItems[index].validationMessage = e.message;
                 validatedItems[index].selected = false;
@@ -204,16 +204,40 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
          })));
     };
 
-    const selectedCount = items.filter(i => i.selected).length;
-    const validCount = items.filter(i => i.validationStatus === "valid").length;
-    const warningCount = items.filter(i => i.validationStatus === "warning").length;
+    // ⚡ BOLT: [Render Optimization] Combined multiple O(N) array filter passes into a single O(N) memoized reduce block.
+    // Randomized Selection from Top 5 High-Impact Targets
+    const {
+        selectedCount,
+        validCount,
+        warningCount,
+        validOrWarningCount,
+        itemsToImport
+    } = useMemo(() => {
+        let selectedCount = 0;
+        let validCount = 0;
+        let warningCount = 0;
+        let validOrWarningCount = 0;
+        const itemsToImport: ServiceImportItem[] = [];
+
+        for (let i = 0; i < items.length; i++) {
+            const item = items[i];
+            if (item.selected) {
+                selectedCount++;
+                itemsToImport.push(item);
+            }
+            if (item.validationStatus === "valid") validCount++;
+            if (item.validationStatus === "warning") warningCount++;
+            if (item.validationStatus !== "invalid") validOrWarningCount++;
+        }
+
+        return { selectedCount, validCount, warningCount, validOrWarningCount, itemsToImport };
+    }, [items]);
 
     const startImport = async () => {
         setStep("import");
         setIsImporting(true);
         setProgress(0);
 
-        const itemsToImport = items.filter(i => i.selected);
         let successCount = 0;
         let failureCount = 0;
 
@@ -228,7 +252,8 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                 await apiClient.registerService(item.config);
                 results[originalIndex].importStatus = "success";
                 successCount++;
-            } catch (e: any) {
+            } catch (err: unknown) {
+            const e = err as Error;
                 results[originalIndex].importStatus = "error";
                 results[originalIndex].importError = e.message;
                 failureCount++;
@@ -256,7 +281,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
     if (step === "input") {
         return (
             <div className="space-y-6">
-                <Tabs value={inputType} onValueChange={(v) => setInputType(v as any)} className="w-full">
+                <Tabs value={inputType} onValueChange={(v) => setInputType(v as "json" | "file" | "url")} className="w-full">
                     <TabsList className="grid w-full grid-cols-3">
                         <TabsTrigger value="json"><FileJson className="mr-2 h-4 w-4" /> JSON / YAML</TabsTrigger>
                         <TabsTrigger value="file"><Upload className="mr-2 h-4 w-4" /> File Upload</TabsTrigger>
@@ -356,7 +381,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                             <TableRow>
                                 <TableHead className="w-[50px]">
                                     <Checkbox
-                                        checked={selectedCount > 0 && selectedCount === items.filter(i => i.validationStatus !== 'invalid').length}
+                                        checked={selectedCount > 0 && selectedCount === validOrWarningCount}
                                         onCheckedChange={(c) => toggleSelectAll(!!c)}
                                     />
                                 </TableHead>
@@ -452,7 +477,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                     </h3>
                     <p className="text-muted-foreground">
                         {isImporting
-                            ? `Processing ${items.filter(i => i.selected).length} services.`
+                            ? `Processing ${selectedCount} services.`
                             : `Successfully imported ${importSummary?.success} services.`}
                     </p>
                 </div>
@@ -480,7 +505,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                         <div className="border rounded-md max-h-[200px] overflow-y-auto">
                              <Table>
                                 <TableBody>
-                                    {items.filter(i => i.selected).map((item, idx) => (
+                                    {itemsToImport.map((item, idx) => (
                                         <TableRow key={idx}>
                                             <TableCell className="w-[30px]">
                                                 {item.importStatus === "success" && <CheckCircle2 className="h-4 w-4 text-green-500" />}
