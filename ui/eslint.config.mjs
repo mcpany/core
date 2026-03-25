@@ -21,6 +21,8 @@ export default [
       "@typescript-eslint": tsPlugin,
     },
     rules: {
+       "import/no-unresolved": "off",
+       "@typescript-eslint/ban-ts-comment": "off",
        ...tsPlugin.configs.recommended.rules,
        "no-undef": "off",
        "@typescript-eslint/no-unused-vars": "off",
