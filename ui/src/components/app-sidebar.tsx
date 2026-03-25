@@ -97,6 +97,11 @@ const platformItems = [
     icon: Layers,
   },
   {
+    title: "HITL Approvals",
+    url: "/hitl",
+    icon: ShieldCheck,
+  },
+  {
     title: "Analytics",
     url: "/stats",
     icon: Activity,
@@ -105,6 +110,11 @@ const platformItems = [
     title: "Context",
     url: "/context",
     icon: Brain,
+  },
+  {
+    title: "Blackboard",
+    url: "/blackboard",
+    icon: Database,
   },
   {
     title: "Marketplace",
