@@ -108,7 +108,7 @@ def generate_doc(name, params, returns, receiver=None, is_type=False):
     lines = []
     lines.append(f"// {name} {summary[0].lower() + summary[1:]}\n")
     lines.append("//\n")
-    lines.append(f"// Summary: {summary}\n")
+    lines.append(f"// Summary: {summary}\n".
 
     if not is_type:
         if params:

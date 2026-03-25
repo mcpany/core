@@ -35,11 +35,11 @@ type MCPServerReconciler struct {
 // move the current state of the cluster closer to the desired state.
 // It creates or updates the Deployment and Service for the MCPServer.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx: The context for the request.
 //   - req: The reconciliation request containing the namespaced name of the MCPServer.
 //
-// Returns:
+// Returns: - None.
 //   - ctrl.Result: The result of the reconciliation, indicating if the request should be requeued.
 //   - error: Any error that occurred during reconciliation.
 func (r *MCPServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
@@ -134,10 +134,10 @@ func (r *MCPServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 
 // deploymentForMCPServer creates a new Deployment for the MCPServer resource.
 //
-// Parameters:
+// Parameters: - None.
 //   - m: The MCPServer resource.
 //
-// Returns:
+// Returns: - None.
 //   - *appsv1.Deployment: The created Deployment.
 func (r *MCPServerReconciler) deploymentForMCPServer(m *mcpv1alpha1.MCPServer) *appsv1.Deployment {
 	ls := labelsForMCPServer(m.Name)
@@ -194,10 +194,10 @@ func (r *MCPServerReconciler) deploymentForMCPServer(m *mcpv1alpha1.MCPServer) *
 
 // serviceForMCPServer creates a new Service for the MCPServer resource.
 //
-// Parameters:
+// Parameters: - None.
 //   - m: The MCPServer resource.
 //
-// Returns:
+// Returns: - None.
 //   - *corev1.Service: The created Service.
 func (r *MCPServerReconciler) serviceForMCPServer(m *mcpv1alpha1.MCPServer) *corev1.Service {
 	ls := labelsForMCPServer(m.Name)
@@ -225,10 +225,10 @@ func (r *MCPServerReconciler) serviceForMCPServer(m *mcpv1alpha1.MCPServer) *cor
 // labelsForMCPServer returns the labels for selecting the resources
 // belonging to the given mcpServer CR name.
 //
-// Parameters:
+// Parameters: - None.
 //   - name: The name of the MCPServer resource.
 //
-// Returns:
+// Returns: - None.
 //   - map[string]string: A map of labels.
 func labelsForMCPServer(name string) map[string]string {
 	return map[string]string{"app": "mcp-server", "mcp_cr": name}
@@ -236,10 +236,10 @@ func labelsForMCPServer(name string) map[string]string {
 
 // SetupWithManager sets up the controller with the Manager.
 //
-// Parameters:
+// Parameters: - None.
 //   - mgr: The controller manager.
 //
-// Returns:
+// Returns: - None.
 //   - error: Any error that occurred during setup.
 func (r *MCPServerReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).

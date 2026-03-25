@@ -41,12 +41,12 @@ var weatherData = map[string]string{
 
 // GetWeather returns the weather for a specific location.
 //
-// Parameters:
+// Parameters: - None.
 //
 //	ctx: The context for the request.
 //	req: The request containing the location.
 //
-// Returns:
+// Returns: - None.
 //
 //	*weatherV1.GetWeatherResponse: The response containing the weather description.
 //	error: An error if the location is not found.

@@ -31,15 +31,15 @@ type ToolReconciler struct {
 //
 // Summary: Reconciles a Tool object.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx: context.Context. The context for the request.
 //   - req: ctrl.Request. The reconciliation request.
 //
-// Returns:
+// Returns: - None.
 //   - ctrl.Result: The result of the reconciliation.
 //   - error: Any error that occurred.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Reads and updates Tool resources in the cluster.
 //   - May create or update related resources.
 func (r *ToolReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
@@ -54,10 +54,10 @@ func (r *ToolReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 //
 // Summary: Sets up the controller with the Manager.
 //
-// Parameters:
+// Parameters: - None.
 //   - mgr: ctrl.Manager. The controller manager.
 //
-// Returns:
+// Returns: - None.
 //   - error: Any error that occurred during setup.
 func (r *ToolReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
