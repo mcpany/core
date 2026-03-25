@@ -1,6 +1,8 @@
 module github.com/mcpany/core/upstream_service/grpc/greeter_server
 
-go 1.26.1
+go 1.24.0
+
+toolchain go1.24.3
 
 require (
 	google.golang.org/grpc v1.79.2
