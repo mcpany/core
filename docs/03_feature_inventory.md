@@ -1741,6 +1741,24 @@
 
 ## Evolution: [2026-06-05] Updates - Part 2
 
+### Proposed Additions - Part 2 - Part 2
+
+- **Intent-Splicing Detector (ISD)**: (P0) Security extension for the Semantic Integrity Bridge that performs active deconstruction and structural validation of inter-agent messages to prevent instruction splicing.
+
+- **Recursive Accountability Tracker (RAT)**: (P0) Lifecycle security service that recursively tracks capability lineage and enforces immediate revocation upon sub-intent termination.
+
+- **HAIL Lineage Provider**: (P0) Identity extension for the SRM Provider supporting Hardware-Attested Intent Lineage for non-repudiable mission-root attestation.
+
+- **Synthetic Policy Synthesizer**: (P1) Experimental middleware for swarm-local generation and hardware-attestation of dynamic security policies based on mesh behavior.
+
+### Priority Shifts - Part 2 - Part 2
+
+- **Semantic Integrity Bridge**: (Re-affirmed P0) Now elevated with the requirement for mandatory **ISD** to counter OpenClaw v3.0.0-rc1 style intent-splicing.
+
+- **Pre-Commit Speculative Sanitizer (PCSS)**: (Re-affirmed P0) Evolving to support active intent-deconstruction for "Speculative Splicing" defense.
+
+## Evolution: [2026-06-05] Updates - Part 2
+
 ### Proposed Additions - Part 2
 
 - **Intent-Splicing Detector (ISD)**: (P0) Security extension for the Semantic Integrity Bridge that performs active deconstruction and structural validation of inter-agent messages to prevent instruction splicing.
