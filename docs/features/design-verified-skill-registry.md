@@ -60,3 +60,10 @@ The "ClawHavoc" crisis demonstrated that open-source agent marketplaces are vuln
 * **Continuous Behavioral Attestation**: Shifting from one-time "Burn-In" to real-time, ongoing behavioral monitoring. If a skill's execution patterns diverge from its attested baseline (e.g., a "wallet tracker" starts accessing `.ssh` directories), its signature is immediately revoked.
 * **Federated Reputation Quorum**: Integrating consensus-based safety signals. A skill's "Trusted" status is now a function of both local analysis and a quorum of remote MCP Any security nodes.
 **Security Impact:** Provides a dynamic, adaptive defense against "Delayed Payload" and "Mimicry" attacks, ensuring that a skill's safety is verified for its entire lifecycle, not just at installation.
+
+### Update: 2026-06-27 - Multi-Signature Skill Attestation (MSSA)
+**Context:** The "ClawHub" compromise revealed that even "vetted" skills can be weaponized if the registry's single point of trust is breached.
+**Architecture Adjustment:**
+* **Multi-Signature Requirement**: Transitioning from single-provider signing to MSSA. Dynamic skill grafting now requires cryptographically bound approval tokens from both the agent framework and a verified third-party security auditor.
+* **Auditor Sidecars**: Introducing "Auditor Sidecars" in the analysis engine that provide real-time, independent behavioral monitoring for high-risk tools.
+**Security Impact:** Mitigates the risk of "Rug-Pull" supply chain attacks by ensuring no single entity can authorize high-risk tool execution.
