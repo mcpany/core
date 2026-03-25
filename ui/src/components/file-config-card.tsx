@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UpstreamServiceConfig } from "@/lib/types";
 import { File } from "lucide-react";
 import yaml from 'js-yaml';
+import { JsonView } from '@/components/ui/json-view';
 import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light';
 import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
 import yamlLang from 'react-syntax-highlighter/dist/esm/languages/hljs/yaml';
@@ -117,7 +118,7 @@ export const FileConfigCard = memo(function FileConfigCard({ service }: { servic
                         <CodeBlock language="yaml" code={yamlConfig} />
                     </TabsContent>
                     <TabsContent value="json" className="mt-4">
-                        <CodeBlock language="json" code={jsonConfig} />
+                        <JsonView data={service} maxHeight={500} />
                     </TabsContent>
                     <TabsContent value="textproto" className="mt-4">
                         <CodeBlock language="protobuf" code={textProtoConfig} />

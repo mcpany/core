@@ -21,6 +21,7 @@ import { apiClient } from "@/lib/client";
 import { UpstreamServiceConfig } from "@/lib/types";
 import { Credential } from "@proto/config/v1/auth";
 import { Plus, RotateCw, ChevronLeft, Loader2, Activity, CheckCircle2, XCircle, ArrowLeft, AlertTriangle } from "lucide-react";
+import { JsonView } from "@/components/ui/json-view";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { SERVICE_TEMPLATES, ServiceTemplate } from "@/lib/templates";
 import { ServiceTemplateSelector } from "./services/service-template-selector";
@@ -584,9 +585,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                         <h3 className="text-sm font-medium">Current Configuration</h3>
                         {form.watch("upstreamAuth") ? (
                             <div className="text-sm border p-2 rounded">
-                                <pre className="whitespace-pre-wrap break-all">
-                                    {JSON.stringify(form.watch("upstreamAuth"), null, 2)}
-                                </pre>
+                                <JsonView data={form.watch("upstreamAuth")} maxHeight={300} />
                                 <Button type="button" variant="outline" size="sm" className="mt-2" onClick={() => form.setValue("upstreamAuth", undefined)}>Clear Authentication</Button>
                             </div>
                         ) : (

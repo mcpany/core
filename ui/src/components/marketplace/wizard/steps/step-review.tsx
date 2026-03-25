@@ -8,6 +8,7 @@ import { useWizard } from '../wizard-context';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { CheckCircle2 } from 'lucide-react';
+import { JsonView } from '@/components/ui/json-view';
 
 /**
  * StepReview.
@@ -28,11 +29,7 @@ export function StepReview({ onComplete }: { onComplete: (config: any) => void }
             <div className="space-y-2">
                  <h3 className="font-medium">Spec Preview</h3>
                  <div className="rounded-md overflow-hidden border">
-                     <ScrollArea className="max-h-[300px]">
-                         <pre className="p-4 text-xs font-mono bg-[#1e1e1e] text-gray-200 whitespace-pre-wrap break-all">
-                             {JSON.stringify(config, null, 2)}
-                         </pre>
-                     </ScrollArea>
+                      <JsonView data={config} maxHeight={300} />
                  </div>
             </div>
 
