@@ -3,7 +3,7 @@
 ## Ecosystem Updates
 
 ### OpenClaw
-- **ARI-v2 (Active Reasoning Interdiction) Standard**: Released. This update introduces "Semantic Hash-Chaining" for all shared teammate shards, specifically designed to prevent "Logic Grafting"a technique where malicious subagents attempt to append unauthorized but plausible-sounding reasoning paths to a mission.
+- **ARI-v2 (Active Reasoning Interdiction) Standard**: Released. This update introduces "Semantic Hash-Chaining" for all shared teammate shards, specifically designed to prevent "Logic Grafting" -- a technique where malicious subagents attempt to append unauthorized but plausible-sounding reasoning paths to a mission.
 - **ContextEngine v3.4.0**: Now supports "Asynchronous Shard Reconciliation," allowing parallel agents to merge divergent state without the 150ms "Streaming Tax" observed in earlier builds.
 
 ### Gemini CLI
@@ -30,4 +30,4 @@
 
 ## GitHub / Reddit Trending
 - **GitHub**: `mcp-shadow-interceptor` - A new middleware project for detecting out-of-band coordination between subagents.
-- **Reddit**: Intense debate on "The Attention Governance Gap"users are calling for native "Layer 7 Semantic Inspection" to be built into all Universal Agent Bridges to prevent REE and Logic Grafting.
+- **Reddit**: Intense debate on "The Attention Governance Gap" -- users are calling for native "Layer 7 Semantic Inspection" to be built into all Universal Agent Bridges to prevent REE and Logic Grafting.
