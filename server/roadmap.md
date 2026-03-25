@@ -857,6 +857,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Zero-Knowledge Discovery Broker (ZKDB)**: Security middleware mandating cryptographic capability masking until mission-handshake. (Added: 2026-07-01)
 *   **[P0] Attention-Locked Reasoning Anchors (ALRA)**: Hardware-bound attention-pinning to prevent mission-root intent eviction. (Added: 2026-07-01)
 
+#### Upcoming (2026-07-03 Evolution)
+*   **[P0] Survivability Certification Provider (SCP)**: Authoritative local service for hardware-attested ASS scoring and certification. (Added: 2026-07-03)
+*   **[P0] RAAM-Aware Attention Guard**: Advanced dynamic masking for sensitive reasoning fragments to neutralize timing side-channels. (Added: 2026-07-03)
+*   **[P1] Adversarial Intent Prober (AIP)**: Automated sandbox for executing adversarial probes on agent intent proposals. (Added: 2026-07-03)
+*   **[P0] Dynamic Intent Handoff (DIH) Adapter**: Support for zero-latency, OpenClaw-compliant mission transfers between teammates. (Added: 2026-07-03)
+
 #### Upcoming (2026-03-24 Evolution - v2)
 *   **[P0] Relational PoI Validator**: Implementation of UACO v1.7 Intent Chain verification. (Added: 2026-03-24)
 *   **[P0] BSH State Buffer**: Memory-mapped binary transport for mitigation of "Token Storms". (Added: 2026-03-24)

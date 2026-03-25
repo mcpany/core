@@ -1,5 +1,14 @@
 # Strategic Vision: MCP Any
 
+## Strategic Evolution: [2026-07-03]
+### Focus: Survivability Orchestration & Reasoning-Aware Privacy
+**Context**: The emergence of the Agentic Survivability Standard (ASS) and the disclosure of "State-Splicing Replay" vulnerabilities (CVE-2026-95001) confirm that infrastructure must move beyond simple integrity to **Agentic Survivability**. Simultaneously, the GA release of Reasoning-Aware Attention Masking (RAAM) by Gemini CLI proves that the context window must now be protected from "Spectre-style" timing attacks designed to map mission constraints.
+**Strategic Pivot**:
+- **Survivability Certification Provider (SCP)**: MCP Any will evolve to act as the authoritative "Assurance Mint." We will implement the SCP, issuing hardware-attested, ASS-compliant survivability certificates for connected agent swarms, providing a verifiable trust signal for autonomous deployment.
+- **RAAM-Aware Attention Guard**: To neutralize "Spectre-style" reasoning probes, we are upgrading the Attention-Density Guard to support RAAM. MCP Any will facilitate dynamic attention masking for sensitive reasoning fragments, ensuring mission-root constraints remain cryptographically and temporally invisible.
+- **Dynamic Intent Handoff (DIH) Adapter**: Supporting the efficiency of horizontal swarms, we are evolving the `TeammateTool` Orchestration layer to support OpenClaw's DIH. This enables zero-latency mission transfers between teammates while maintaining hardware-locked intent integrity.
+- **Adversarial Intent Prober (AIP)**: Moving from reactive gating to active defense, we are introducing AIP. This service will perform automated, sandboxed adversarial probes on subagent intent proposals to detect "Dormant Logic Bombs" before they reach the mission-root blackboard.
+
 ## Strategic Evolution: [2026-03-24]
 ### Focus: Horizontal Coordination & Discovery-Phase Sovereignty
 **Context**: The emergence of "Agent Teams" in horizontal swarms and the discovery of "Settings-as-Shell" exploits in Gemini CLI and OpenClaw confirm that the "Universal Agent Bus" must now move beyond simple tool proxying. We must now protect the **discovery phase** itself and provide **non-blocking coordination** for parallel teammates. As agents move from linear sessions to horizontal teammate meshes, the security frontier is no longer just the "tool," but the **Inbox** where agents coordinate and the **Manifest** that defines their discovery.

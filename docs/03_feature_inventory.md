@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-03] Updates
+
+### Proposed Additions
+- **Survivability Certification Provider (SCP)**: (P0) Authoritative local service that issues hardware-attested certificates based on the Agentic Survivability Standard (ASS), providing verifiable trust for autonomous swarm deployment.
+- **RAAM-Aware Attention Guard**: (P0) Advanced extension for the ADF that supports Reasoning-Aware Attention Masking, allowing parent agents to cryptographically hide sensitive constraints from specialist subagents.
+- **Dynamic Intent Handoff (DIH) Adapter**: (P0) Upgrade for the `TeammateTool` Orchestration layer to support zero-latency, OpenClaw-compliant mission transfers between horizontal teammates.
+- **Adversarial Intent Prober (AIP)**: (P1) Active defense middleware that performs automated, sandboxed adversarial probes on subagent intent proposals to detect "Logic Bombs" and hijacking attempts.
+
+### Priority Shifts
+- **Attention-Density Firewall (ADF)**: (Re-affirmed P0) Now elevated with the requirement for **RAAM-compliant** dynamic masking.
+- **Teammate Tool Orchestration Adapter**: (Re-affirmed P0) Evolving to support **DIH-native** state handoffs.
+
 ## Evolution: [2026-03-24] Updates
 
 ### Proposed Additions

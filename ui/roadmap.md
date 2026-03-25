@@ -690,6 +690,11 @@
 - [ ] **[P0] ZK-Discovery Broker Workspace**: (2026-07-01) UI for reviewing masked capability cards and unmasking schemas via mission-handshakes.
 - [ ] **[P0] Attention Anchor Heatmap**: (2026-07-01) Visual tracker for ALRA-pinned intent fragments and attention-density alerts.
 
+#### Upcoming (2026-07-03 Evolution)
+- [ ] **[P0] Survivability Certification Dashboard**: Authoritative UI for reviewing ASS scores and downloading hardware-attested certificates. (Added: 2026-07-03)
+- [ ] **[P1] Adversarial Probe Visualizer**: Real-time tracker for ongoing AIP probes, showing reasoning traces and vulnerability detections. (Added: 2026-07-03)
+- [ ] **[P0] Attention Masking Monitor**: Visualizer for RAAM-gated reasoning fragments and neutralized timing probes. (Added: 2026-07-03)
+
 #### Upcoming (2026-03-24 Evolution - v2)
 - [ ] **[P1] Intent Lineage Visualizer**: Real-time graph showing the chain of signed intents across the swarm. (Added: 2026-03-24)
 - [ ] **[P2] BSH Performance Monitor**: Metrics dashboard tracking binary state transfer latency and token savings. (Added: 2026-03-24)
