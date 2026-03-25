@@ -15,7 +15,7 @@ There are two primary strategies for controlling access:
 
 When you enable `auto_discover_tool: true` for an OpenAPI or gRPC service, it might expose hundreds of endpoints. You may want to restrict the AI agent to only a safe subset.
 
-### Configuration (Security)
+### Configuration (Profiles)
 
 Call Policies are defined under `upstream_services`. You can set a `default_action` (ALLOW or DENY) and then provide specific exceptions.
 
@@ -68,7 +68,7 @@ upstream_services:
 
 Profiles allow you to group services or resources and selectively enable them at runtime. This is perfect for presenting different toolsets to different agents.
 
-### Configuration (Security)
+### Configuration (Policies)
 
 You tag each upstream service with one or more profiles. Note that you should set both `id` and `name` for the profile to ensure consistent behavior across the system.
 

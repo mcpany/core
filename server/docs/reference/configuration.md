@@ -34,7 +34,7 @@ The `McpAnyServerConfig` is the top-level configuration object for the entire MC
 | `upstream_services`            | `repeated UpstreamServiceConfig`     | A list of all configured upstream services that MCP Any will proxy to. Each service has its own specific configuration and policies. |
 | `upstream_service_collections` | `repeated Collection` | A list of upstream service collections to load from remote sources.                                                                  |
 
-### Use Case and Example (Standard)
+### Use Case and Example (Server Config)
 
 A top-level configuration for an MCP Any server that connects to a local gRPC service and a remote HTTP service.
 
@@ -63,7 +63,7 @@ Defines a collection of upstream services that can be loaded from a remote sourc
 | `priority`       | `int32`                  | The priority of the collection. Lower numbers have higher priority. |
 | `authentication` | `UpstreamAuthentication` | The authentication to use when fetching the collection.             |
 
-### Use Case and Example (Standard)
+### Use Case and Example (Collection)
 
 Dynamically load a collection of upstream services from a remote URL. This is useful for managing a large number of services or for updating service configurations without restarting the MCP Any server.
 
@@ -128,7 +128,7 @@ Configuration for audit logging of tool executions.
 | `splunk`        | `SplunkConfig` | Splunk configuration.                                          |
 | `datadog`       | `DatadogConfig` | Datadog configuration.                                        |
 
-#### Use Case and Example (Advanced) (Core)
+#### Use Case and Example (Audit)
 
 Enable audit logging to a file.
 
@@ -141,7 +141,7 @@ global_settings:
     log_results: false
 ```
 
-### Use Case and Example (Standard)
+### Use Case and Example (Global)
 
 ```yaml
 global_settings:
@@ -178,7 +178,7 @@ Profiles allow you to categorize and selectively enable services, tools, resourc
 If a configuration item (service, tool, etc.) has an empty `profiles` list, it is treated as belonging to the "default" profile.
 Items are enabled if they share at least one profile with the enabled profiles list.
 
-#### Use Case and Example (Advanced) (Core)
+#### Use Case and Example (Profiles)
 
 Enable "debug-tools" only when the "dev" profile is active.
 
@@ -194,7 +194,7 @@ upstream_services:
 
 To run this service, start the server with `--profiles=dev` (or `--profiles=dev,default`).
 
-### Use Case and Example (Standard)
+### Use Case and Example (Upstream)
 
 A gRPC service with a connection pool, rate limiting, a circuit breaker, and API key authentication for the upstream.
 
@@ -251,7 +251,7 @@ The `service_config` oneof field can contain one of the following service types:
 | `calls`             | `map<string, GrpcCallDefinition>` | A map of call definitions, keyed by their unique ID.            |
 | `prompts`           | `repeated PromptDefinition`       | A list of prompts served by this service.                       |
 
-##### Use Case and Example (Reference) (Advanced) (Core)
+##### Use Case and Example (gRPC)
 
 Expose a gRPC service that requires TLS and has its protobuf definitions stored locally.
 
@@ -278,7 +278,7 @@ grpc_service:
 | `calls`        | `map<string, HttpCallDefinition>` | A map of call definitions, keyed by their unique ID. |
 | `prompts`      | `repeated PromptDefinition`       | A list of prompts served by this service.            |
 
-##### Use Case and Example (Reference) (Advanced) (Core)
+##### Use Case and Example (HTTP)
 
 Proxy an external HTTP API and add a health check.
 
@@ -314,7 +314,7 @@ Defines how to parse and transform the upstream service's output.
 | `template` | `string` | Optional Go template to render the extracted/transformed data. |
 | `jq_query` | `string` | JQ query to transform the output (when format is `JQ`). |
 
-##### Use Case and Example (Reference) (Advanced) (Core): JQ Transformation
+##### Use Case and Example (JQ): JQ Transformation
 
 Transform a complex JSON response using JQ.
 
@@ -337,7 +337,7 @@ output_transformer:
 | `calls`        | `map<string, OpenAPICallDefinition>` | A map of call definitions, keyed by their unique ID. |
 | `prompts`      | `repeated PromptDefinition`          | A list of prompts served by this service.            |
 
-##### Use Case and Example (Reference) (Advanced) (Core)
+##### Use Case and Example (OpenAPI)
 
 Automatically discover and expose an OpenAPI-defined service.
 
@@ -369,7 +369,7 @@ openapi_service:
 | `calls`                  | `map<string, CommandLineCallDefinition>` | A map of call definitions, keyed by their unique ID.  |
 | `prompts`                | `repeated PromptDefinition`              | A list of prompts served by this service.             |
 
-##### Use Case and Example (Reference) (Advanced) (Core)
+##### Use Case and Example (CLI)
 
 Wrap a command-line tool, run it in a container, and cache the results.
 
@@ -407,7 +407,7 @@ Defines argument mapping for a command-line tool.
 | `calls`               | `map<string, MCPCallDefinition>` | A map of call definitions, keyed by their unique ID.      |
 | `prompts`             | `repeated PromptDefinition`      | A list of prompts served by this service.                 |
 
-##### Use Case and Example (Reference) (Advanced) (Core)
+##### Use Case and Example (MCP)
 
 Proxy another MCP Any instance and automatically discover its tools.
 
@@ -476,7 +476,7 @@ To verify these configurations, you can use the `@google/gemini-cli`.
 | `prompts`      | `repeated PromptDefinition`          | A list of prompts served by this service.  |
 | `health_check` | `WebsocketHealthCheck`               | Health check configuration.                |
 
-##### Use Case and Example (Reference) (Advanced) (Core)
+##### Use Case and Example (GraphQL)
 
 Register a GraphQL service and customize the selection set for a query.
 
@@ -509,7 +509,7 @@ upstream_services:
 | `calls`      | `map<string, WebsocketCallDefinition>` | A map of call definitions, keyed by their unique ID. |
 | `prompts`    | `repeated PromptDefinition`            | A list of prompts served by this service.            |
 
-##### Use Case and Example (Reference) (Advanced) (Core)
+##### Use Case and Example (WebSocket)
 
 Connect to a real-time data streaming service over a secure Websocket.
 
@@ -531,7 +531,7 @@ websocket_service:
 | `calls`      | `map<string, WebrtcCallDefinition>` | A map of call definitions, keyed by their unique ID. |
 | `prompts`    | `repeated PromptDefinition`         | A list of prompts served by this service.            |
 
-##### Use Case and Example (Reference) (Advanced) (Core)
+##### Use Case and Example (WebRTC)
 
 Expose a WebRTC service for real-time communication, connecting to its signaling server.
 
@@ -578,7 +578,7 @@ MCP Any supports several advanced policies that can be applied to upstream servi
 | `max_idle_connections` | `int32`    | The maximum number of idle connections to keep in the pool.                |
 | `idle_timeout`         | `duration` | The duration a connection can remain idle in the pool before being closed. |
 
-##### Use Case and Example (Reference) (Advanced) (Core)
+##### Use Case and Example (Pool)
 
 Manage connections to a high-traffic database proxy.
 
@@ -597,7 +597,7 @@ connection_pool:
 | `requests_per_second` | `double` | The maximum number of requests allowed per second.           |
 | `burst`               | `int64`  | The number of requests that can be allowed in a short burst. |
 
-##### Use Case and Example (Reference) (Advanced) (Core)
+##### Use Case and Example (Rate Limit)
 
 Protect a public API from excessive use.
 
@@ -617,7 +617,7 @@ rate_limit:
 
 **Priority Note:** When defined at the call level (e.g., inside `HttpCallDefinition.cache`), this configuration **overrides** the service-level cache settings.
 
-##### Use Case and Example (Reference) (Advanced) (Core)
+##### Use Case and Example (Cache)
 
 Cache responses from a slow, data-intensive service.
 
@@ -631,7 +631,7 @@ cache:
 
 Contains configurations for circuit breakers and retries.
 
-##### Use Case and Example (Reference) (Advanced) (Core)
+##### Use Case and Example (Resilience)
 
 Improve the reliability of a connection to a occasionally unstable upstream service.
 
@@ -678,7 +678,7 @@ Call Policies allow you to fine-tune which calls are allowed or denied based on 
 | `url_regex`      | `string` | Regex to match endpoint path or URL.                                |
 | `call_id_regex`  | `string` | Regex to match the call ID. Empty means match all.                  |
 
-##### Use Case and Example (Reference) (Advanced) (Core)
+##### Use Case and Example (Call Policy)
 
 Deny all calls to the "delete_user" tool, and allow everything else.
 
@@ -708,7 +708,7 @@ Hooks allow you to execute custom logic before (`pre_call_hooks`) or after (`pos
 | `timeout`        | `duration` | The timeout for the webhook request.             |
 | `webhook_secret` | `string`   | A secret shared with the webhook for HMAC validation (optional). |
 
-##### Use Case and Example (Reference) (Advanced) (Core)
+##### Use Case and Example (Hook)
 
 Validate tool arguments using an external webhook before execution.
 
@@ -786,7 +786,7 @@ Configures the authentication method for incoming requests to the MCP Any server
 | `api_key` | `APIKeyAuth` | API key in a header or query parameter.         |
 | `oauth2`  | `OAuth2Auth` | OAuth 2.0 client credentials or JWT validation. |
 
-##### Use Case and Example (Reference) (Advanced) (Core)
+##### Use Case and Example (Incoming Auth)
 
 Secure the MCP Any server with API key authentication.
 
@@ -827,7 +827,7 @@ Configures the authentication method for MCP Any to use when connecting to an up
 | `basic_auth`   | `UpstreamBasicAuth`       | Basic authentication with a username and password. |
 | `oauth2`       | `UpstreamOAuth2Auth`      | OAuth 2.0 client credentials flow.                 |
 
-##### Use Case and Example (Reference) (Advanced) (Core)
+##### Use Case and Example (OAuth2)
 
 Authenticate with an upstream service using the OAuth 2.0 client credentials flow.
 
@@ -842,7 +842,7 @@ upstream_auth:
     scopes: "read:data write:data"
 ```
 
-##### Use Case and Example (Reference) (Advanced) (Core) with Vault
+##### Use Case and Example (Vault) with Vault
 
 Authenticate with an upstream service using an API key stored in HashiCorp Vault.
 
@@ -858,7 +858,7 @@ upstream_auth:
         key: "api_key"
 ```
 
-##### Use Case and Example (Reference) (Advanced) (Core) with AWS Secrets Manager
+##### Use Case and Example (AWS) with AWS Secrets Manager
 
 Authenticate using an API key stored in AWS Secrets Manager.
 
@@ -947,7 +947,7 @@ Defines TLS settings for connecting to an upstream service.
 | `client_key_path`      | `string` | Path to the client private key file for mTLS.                                             |
 | `insecure_skip_verify` | `bool`   | If true, the client will not verify the server's certificate chain. **Use with caution.** |
 
-### Use Case and Example (Standard)
+### Use Case and Example (TLS)
 
 Connect to an upstream service that requires mutual TLS (mTLS) authentication.
 
@@ -969,7 +969,7 @@ MCP Any allows you to define and execute prompts directly from your configuratio
 | `description` | `string`                 | A description of what the prompt does. |
 | `messages`    | `repeated PromptMessage` | The list of messages in the prompt.    |
 
-### Use Case and Example (Standard)
+### Use Case and Example (Prompt)
 
 Here's an example of how to define a prompt in any service configuration (e.g., `http_service`):
 

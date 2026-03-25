@@ -89,7 +89,7 @@ This example demonstrates a **Pre-Call Hook** that inspects arguments for a comm
 - **Scenario**: A `busybox` container service that allows executing commands. We want to prevent users from running `rm`.
 - **Mechanism**: The webhook receives the tool inputs, checks for "rm", and returns `allowed: false` if found.
 
-#### Running the Example (Setup)
+#### Running the Example (HTML)
 
 1.  Navigate to the example directory:
     ```bash
@@ -121,7 +121,7 @@ This example demonstrates a **Pre-Call Hook** that inspects arguments for a comm
     gemini -m gemini-2.5-flash -p "Run 'rm myfile' in the busybox container"
     ```
 
-#### Verification (Manual)
+#### Verification (HTML Verification)
 
 You can also run the included End-to-End test to verify the behavior programmatically:
 
@@ -138,7 +138,7 @@ This example demonstrates a **Post-Call Hook** that transforms the output of a t
 - **Scenario**: We fetch a webpage which returns raw HTML. We want the LLM to receive clean Markdown.
 - **Mechanism**: The webhook receives the tool result (HTML), converts it to Markdown, and returns the replacement object.
 
-#### Running the Example (Setup)
+#### Running the Example (Block)
 
 1.  Navigate to the example directory:
     ```bash
@@ -158,7 +158,7 @@ This example demonstrates a **Post-Call Hook** that transforms the output of a t
     go run cmd/server/main.go run --config-path server/docs/features/webhooks/examples/html_to_md/config.yaml
     ```
 
-#### Verification (Manual)
+#### Verification (Block Verification)
 
 Run the included E2E test to verify implementation:
 

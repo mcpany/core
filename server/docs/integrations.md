@@ -15,7 +15,7 @@ This guide explains how to connect `mcpany` to various AI assistant clients, ena
 
 This is the most direct method for running `mcpany` on your local machine.
 
-### Prerequisites (Integration)
+### Prerequisites (Google)
 
 Before you begin, you need to have the `mcpany` server binary built and available on your system.
 
@@ -85,7 +85,7 @@ Use the interactive prompt (`/mcp add`) and provide the absolute path to the `se
 
 You can run `mcpany` and its upstream services in a containerized environment using Docker Compose. This is ideal for creating reproducible setups.
 
-### Prerequisites (Integration)
+### Prerequisites (OpenAI)
 
 - [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) are installed.
 
@@ -125,7 +125,7 @@ The repository includes a `docker-compose.yml` file that starts `mcpany` and a s
 
 For production or staging environments, you can deploy `mcpany` to a Kubernetes cluster using the provided Helm chart.
 
-### Prerequisites (Integration)
+### Prerequisites (Anthropic)
 
 - A running Kubernetes cluster.
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) configured to connect to your cluster.
