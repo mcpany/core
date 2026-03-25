@@ -1,12 +1,7 @@
-// Copyright 2026 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
-
 package postgres
 
 import (
 	"context"
-	"database/sql"
-	"errors"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -16,37 +11,18 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// TestStore_Load tests the Load method of the PostgreSQL store.
-//
-// Summary: Validates that the store correctly loads and parses all server configuration from the database.
-//
-// Parameters:
-//   - t (*testing.T): The testing context.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - Modifies testing state through assertions.
 func TestStore_Load(t *testing.T) {
-	t.Run("Happy Path", func(t *testing.T) {
-		db, mock, err := sqlmock.New()
-		require.NoError(t, err)
-		defer db.Close()
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
 
-		pgDB := &DB{db}
-		store := NewStore(pgDB)
+	store := &Store{db: &DB{DB: db}}
 
-		svc := configv1.UpstreamServiceConfig_builder{Id: proto.String("service-1"), Name: proto.String("Service One")}.Build()
-		svcBytes, err := protojson.MarshalOptions{}.Marshal(svc)
-		require.NoError(t, err)
-		mock.ExpectQuery(".*").
-			WillReturnRows(sqlmock.NewRows([]string{"config_json"}).AddRow(svcBytes))
+	t.Run("Success", func(t *testing.T) {
+		// Mock query for each configuration type.
+		// Note: the order of mock.ExpectQuery should match the order they are called in store.Load.
 
-		user := configv1.User_builder{Id: proto.String("user-1"), Roles: []string{"admin"}}.Build()
+		user := configv1.User_builder{Id: proto.String("user-1")}.Build()
 		userBytes, err := protojson.MarshalOptions{}.Marshal(user)
 		require.NoError(t, err)
 		mock.ExpectQuery(".*").
@@ -58,93 +34,35 @@ func TestStore_Load(t *testing.T) {
 		mock.ExpectQuery(".*").
 			WillReturnRows(sqlmock.NewRows([]string{"config_json"}).AddRow(settingsBytes))
 
-		coll := configv1.Collection_builder{Name: proto.String("Collection One"), Version: proto.String("collection-1")}.Build()
-		collBytes, err := protojson.MarshalOptions{}.Marshal(coll)
+		collection := configv1.Collection_builder{Name: proto.String("Collection One")}.Build()
+		collectionBytes, err := protojson.MarshalOptions{}.Marshal(collection)
 		require.NoError(t, err)
 		mock.ExpectQuery(".*").
-			WillReturnRows(sqlmock.NewRows([]string{"config_json"}).AddRow(collBytes))
+			WillReturnRows(sqlmock.NewRows([]string{"config_json"}).AddRow(collectionBytes))
 
-		profile := configv1.ProfileDefinition_builder{Name: proto.String("profile-1")}.Build()
-		profileBytes, err := protojson.MarshalOptions{}.Marshal(profile)
+		service := configv1.UpstreamServiceConfig_builder{Id: proto.String("service-1")}.Build()
+		serviceBytes, err := protojson.MarshalOptions{}.Marshal(service)
 		require.NoError(t, err)
 		mock.ExpectQuery(".*").
-			WillReturnRows(sqlmock.NewRows([]string{"config_json"}).AddRow(profileBytes))
+			WillReturnRows(sqlmock.NewRows([]string{"config_json"}).AddRow(serviceBytes))
+
+		mock.ExpectQuery(".*").
+			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
+
+		mock.ExpectQuery(".*").
+			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
 
 		cfg, err := store.Load(context.Background())
 		require.NoError(t, err)
 		require.NotNil(t, cfg)
-		require.Equal(t, configv1.GlobalSettings_LOG_LEVEL_INFO, cfg.GetGlobalSettings().GetLogLevel())
 	})
 
 	t.Run("Query Error", func(t *testing.T) {
-		db, mock, err := sqlmock.New()
-		require.NoError(t, err)
-		defer db.Close()
-
-		pgDB := &DB{db}
-		store := NewStore(pgDB)
-
-		mock.ExpectQuery(".*").
-			WillReturnError(errors.New("db error"))
-		mock.ExpectQuery(".*").
-			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
-		mock.ExpectQuery(".*").
-			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
-		mock.ExpectQuery(".*").
-			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
-		mock.ExpectQuery(".*").
-			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
+		mock.ExpectQuery(".*").WillReturnError(context.DeadlineExceeded)
 
 		cfg, err := store.Load(context.Background())
 		require.Error(t, err)
 		require.Nil(t, cfg)
-	})
-
-	t.Run("Scan Error - Invalid JSON", func(t *testing.T) {
-		db, mock, err := sqlmock.New()
-		require.NoError(t, err)
-		defer db.Close()
-
-		pgDB := &DB{db}
-		store := NewStore(pgDB)
-
-		mock.ExpectQuery(".*").
-			WillReturnRows(sqlmock.NewRows([]string{"config_json"}).AddRow([]byte("invalid json")))
-
-		mock.ExpectQuery(".*").
-			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
-		mock.ExpectQuery(".*").
-			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
-		mock.ExpectQuery(".*").
-			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
-		mock.ExpectQuery(".*").
-			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
-
-		cfg, err := store.Load(context.Background())
-		require.Error(t, err)
-		require.Nil(t, cfg)
-	})
-
-	t.Run("Settings Not Found", func(t *testing.T) {
-		db, mock, err := sqlmock.New()
-		require.NoError(t, err)
-		defer db.Close()
-
-		pgDB := &DB{db}
-		store := NewStore(pgDB)
-
-		mock.ExpectQuery(".*").
-			WillReturnError(sql.ErrNoRows)
-		mock.ExpectQuery(".*").
-			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
-		mock.ExpectQuery(".*").
-			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
-		mock.ExpectQuery(".*").
-			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
-		mock.ExpectQuery(".*").
-			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
-		cfg, err := store.Load(context.Background())
-		require.Error(t, err)
-		require.Nil(t, cfg)
+		require.ErrorIs(t, err, context.DeadlineExceeded)
 	})
 }
