@@ -11,3 +11,4 @@ ui/.next/
 ui/test-results/
 ui/playwright-report/
 server/.build-context/
+server/examples/upstream_service_demo/grpc/greeter_server/proto/BUILD.bazel
