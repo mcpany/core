@@ -1,4 +1,5 @@
 <!-- markdownlint-disable -->
+<!-- markdownlint-disable -->
 # Strategic Vision: MCP Any
 
 ## Mission Statement
@@ -15,6 +16,14 @@ The UAB is the primary transport and coordination layer for the Universal Agent 
 ## Strategic Evolution: [2026-06-16]
 ### Entangled State Sovereignty
 The core challenge in deep agent swarms is "State Fragmentation." MCP Any is evolving to support **Entangled State Sovereignty**, where teammate state shards are cryptographically bound to a hardware-attested mission-root intent. This prevents "Reasoning Hijacking" where a subagent is coerced into a state inconsistent with the parent mission.
+
+## Strategic Evolution: [2026-06-18]
+### Attention Sovereignty
+The emergence of REE (Reasoning Entropy Exhaustion) attacks requires a pivot toward **Attention Sovereignty**. MCP Any will implement hardware-bound attention governors that "pin" critical mission fragments, ensuring they cannot be evicted by high-entropy reasoning noise.
+
+## Strategic Evolution: [2026-06-19]
+### Reasoning-Path Sovereignty
+To counter "Reasoning-Path Shadowing," MCP Any is introducing **Hardware-Attested Intent Lineage (HAIL)**. Every reasoning fragment and sub-instruction will carry a non-repudiable cryptographic signature tracing back to the mission-root TPM, ensuring the behavioral integrity of the entire swarm.
 
 ## Strategic Evolution: [2026-06-18]
 ### Attention Sovereignty
