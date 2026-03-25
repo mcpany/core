@@ -696,3 +696,8 @@
 - [ ] **[P0] Discovery Sandbox Monitor**: Real-time visualization of sandboxed discovery command execution and safety attestation. (Added: 2026-03-24)
 - [ ] **[P0] Teammate Task List Viewer**: High-speed, CRDT-native visualization of the shared task list for horizontal swarms. (Added: 2026-03-24)
 - [ ] **[P0] ALSV Block List Explorer**: UI for reviewing and approving command arguments flagged by the semantic validator. (Added: 2026-03-24)
+
+#### Upcoming (2026-03-25 Evolution)
+- [ ] **[P0] RID Lineage Inspector**: (2026-03-25) Security UI for visualizing UACO v1.8 recursive delegation depths and mutation boundaries.
+- [ ] **[P0] WASM-BSH Sanitizer Dashboard**: (2026-03-25) UI for managing WASM sanitization rules and viewing rejected binary context fragments.
+- [ ] **[P0] Zero-Copy Transport Monitor**: (2026-03-25) Real-time performance metrics for memory-mapped BSH buffers.

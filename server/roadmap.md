@@ -100,11 +100,6 @@
 *   **[P1] DNS/ICMP Exfiltration Monitor**: L4 telemetry middleware to detect and block non-HTTP exfiltration attempts. (Added: 2026-03-21)
 *   **[P1] Hardware-Bound Trust Continuity**: TPM/Secure Enclave signatures to persist trust for verified headless agents. (Added: 2026-03-21)
 
-#### Upcoming (2026-03-17 Evolution)
-*   **[P0] Inter-Agent Mailbox Guard (IAMG)**: Mandatory mediation for teammate-to-teammate messaging with intent validation. (Added: 2026-03-17)
-*   **[P1] Verifiable RL Reward Provider**: Authoritative source for binary truth attestation to optimize RL reasoning loops. (Added: 2026-03-17)
-*   **[P0] Identity-Bound Discovery (IBD)**: Mission-token gated tool and capability discovery. (Added: 2026-03-17)
-
 #### Upcoming (2026-03-22 Evolution)
 *   **[P0] Premium Tool Execution Timeline**: (2026-03-21) Blueprint for high-fidelity interactive timeline.
 *   **[P0] UACO Agentic SLA Middleware**: Enforcement of hardware-attested resource contracts (token budget, reasoning time) during task delegation. (Added: 2026-03-22)
@@ -112,10 +107,6 @@
 *   **[P0] ARL (Attestation Revocation List) Provider**: Real-time, hardware-bound capability revocation service to neutralize "Trust Lease" vulnerabilities. (Added: 2026-03-22)
 *   **[P0] Ghost Shell Execution Mode**: Isolated profiling environment for behavioral analysis of un-attested hooks. (Added: 2026-03-22)
 *   **[P1] Federated Policy Synchronizer**: Secure bus for synchronizing security guardrails across multiple MCP Any instances. (Added: 2026-03-22)
-
-#### Upcoming (2026-03-17 Evolution)
-*   **[P0] Local-Loopback Rate Limiter**: Mandatory throttling for all loopback traffic to neutralize browser-based brute-force attacks. (Added: 2026-03-17)
-*   **[P0] Origin-Locked Session Bridge**: Hardened session management binding tokens to cryptographically verified origins. (Added: 2026-03-17)
 
 #### Upcoming (2026-03-23 Evolution)
 *   **[P0] Proof-of-Intent (PoI) Validator**: Middleware implementing UACO v1.7 headers to bind tool calls to cryptographically signed intents. (Added: 2026-03-23)
@@ -130,18 +121,6 @@
 *   **[P0] Lock-Free Teammate Coordination (LFTC)**: CRDT-based mailbox synchronization for horizontal swarms. (Added: 2026-03-24)
 *   **[P0] Argument-Level Semantic Validator (ALSV)**: Deep-inspection for command arguments to prevent shell-fallback exploits. (Added: 2026-03-24)
 *   **[P0] Task-Claim Integrity Provider**: Hardware-attested tokens for horizontal mesh task claiming. (Added: 2026-03-24)
-
-#### Upcoming (2026-03-20 Evolution)
-*   **[P0] Hardware-Attested Mission Manifest (HAMM) Provider**: Authoritative service for enforcing TPM-signed capability manifests. (Added: 2026-03-20)
-*   **[P0] Asynchronous Mailbox Sharding (AMS) Middleware**: High-density teammate coordination service with granular mailbox shards. (Added: 2026-03-20)
-*   **[P0] Mission-Root Budget Enforcer**: Resource management for reasoning effort and token limits based on process-bound agency. (Added: 2026-03-20)
-*   **[P1] A2A Multi-Channel Inbox Bridge**: Secure coordination and translation for handling 20+ messaging platforms simultaneously. (Added: 2026-03-20)
-
-#### Upcoming (2026-03-25 Evolution)
-*   **[P0] WASM-BSH State Sanitizer**: Pluggable WASM-based validation for binary context handoffs. (Added: 2026-03-25)
-*   **[P0] Zero-Copy BSH Transport**: Shared-memory based state transfer for sub-millisecond swarm handoffs. (Added: 2026-03-25)
-*   **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited Recursive Intent Delegation. (Added: 2026-03-25)
-*   **[P1] Predictive Resource Locking**: Intent-aware concurrency control for the Shared Blackboard. (Added: 2026-03-25)
 
 #### Upcoming (2026-06-23 Evolution)
 *   **[P0] Recursive Mission-Root Attestation (RMRA)**: Mandatory hardware-bound re-attestation of sub-process lineage for headless handoffs. (Added: 2026-06-23)
@@ -861,3 +840,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Relational PoI Validator**: Implementation of UACO v1.7 Intent Chain verification. (Added: 2026-03-24)
 *   **[P0] BSH State Buffer**: Memory-mapped binary transport for mitigation of "Token Storms". (Added: 2026-03-24)
 *   **[P0] Ghost Shell Hook Profiler**: Instrumented sandbox for behavioral hook analysis. (Added: 2026-03-24)
+
+
+#### Upcoming (2026-03-25 Evolution)
+*   **[P0] Recursive Intent Delegation (RID) Validator**: UACO v1.8 compliant middleware for enforcing depth-limited intent mutations. (Added: 2026-03-25)
+*   **[P0] WASM-BSH State Sanitizer**: Pluggable WASM sandbox for binary state validation during handoffs. (Added: 2026-03-25)
+*   **[P0] Zero-Copy BSH Transport**: Shared-memory based state transfer for sub-millisecond swarm handoffs. (Added: 2026-03-25)

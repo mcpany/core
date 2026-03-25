@@ -93,18 +93,6 @@
 - **Mailbox Integrity Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory DCG to counter CVE-2026-39102.
 - **`TeammateTool` Orchestration Adapter**: (Re-affirmed P0) Evolving to support ANB-native task auctions.
 
-## Evolution: [2026-05-23] Updates
-
-### Proposed Additions
-- **Local-Only WebSocket Auth (LOWA) Gateway**: (P0) A mandatory security layer for all local listeners that enforces session-bound authentication to neutralize "ClawJacked" style brute-force attacks.
-- **Teammate-to-Teammate (T2T) Encryption Bridge**: (P0) Infrastructure for secure, peer-to-peer mailbox messaging and task list synchronization between teammates from disparate frameworks.
-- **Mailbox Integrity Middleware**: (P0) Security extension for the T2T Bridge that validates inter-agent messages against the "Mission Root" intent to prevent malicious mailbox injection.
-- **Full-Mesh Discovery Auth Provider**: (P0) Advanced discovery service that mandates hardware-attested handshakes before revealing agent capability cards in a mesh environment.
-
-### Priority Shifts
-- **Inter-Agent Mailbox Guard (IAMG)**: (Evolved to Mailbox Integrity Middleware) Now designated as a mandatory requirement for all mesh-based teammate coordination.
-- **Origin-Locked Agent Gateway**: (Re-affirmed P0) Now elevated with the requirement for mandatory session-bound LOWA authentication.
-
 ## Evolution: [2026-05-21] Updates
 
 ### Proposed Additions
@@ -761,23 +749,6 @@
 
 ---
 
-## Evolution: [2026-03-14] Updates
-
-### Proposed Additions
-- **Same-Origin Policy (SOP) Enforcer for MCP**: (P0) Middleware that validates `Origin` and `Sec-Fetch-Site` headers for all local requests to prevent cross-site hijacking (CVE-2026-25253).
-- **Context Lifecycle Hooks**: (P1) Pluggable lifecycle hooks for context creation, compression, and retrieval, enabling custom "Intent-Preserving" strategies.
-- **Semantic Boundary Detector**: (P0) A specialized scanning module for the Prompt Path Protection middleware that detects malicious instructions hidden in multimodal metadata (SVG, CSS).
-- **Session-Resumption mTLS for Swarms**: (P1) Optimized mTLS transport that uses session tickets to reduce handshake latency in high-frequency A2A communication.
-
-### Priority Shifts
-- **OpenClaw ContextEngine Bridge**: Promoted to **P0**. Urgent need for interoperability to combat "Context Ghosting" in shared swarms.
-- **"Safe-by-Default" Network Hardening**: (Re-affirmed P0) Expanded to include mandatory browser-origin validation for all local listeners.
-
-### Deprecations / Monitoring
-- **Unvalidated Local WebSockets**: Monitoring for total deprecation. All local WebSocket connections must provide a valid, allow-listed `Origin` header.
-
----
-
 ## Evolution: [2026-03-15] Updates
 
 ### Proposed Additions
@@ -804,23 +775,6 @@
 
 ---
 
-## Evolution: [2026-03-17] Updates
-
-### Proposed Additions
-- **Local-Loopback Rate Limiter**: (P0) Mandatory rate limiting for all `127.0.0.1` and `::1` connections to prevent brute-force attacks on gateway credentials.
-- **Behavioral Skill Burn-In Sandbox**: (P1) An isolated environment where new skills are profiled for "Delayed Payload" behaviors before being promoted to "Trusted" status.
-- **UAB Authenticated Task Delegation Bridge**: (P0) Full implementation of UAB v1.2 "Authenticated Task Cards" for secure cross-framework delegation.
-- **Local Security Audit Log**: (P1) Detailed logging of all local connection attempts, including origin headers and authentication success/failure rates.
-
-### Priority Shifts
-- **Universal Agent Bus (UAB) Adapter**: Promoted to **P0**. Essential for cross-framework agentic coordination.
-- **Verified Skill Registry**: (Re-affirmed P0) Expanded to include Behavioral Profiling requirements.
-
-### Deprecations / Monitoring
-- **Unthrottled Local Access**: All local interfaces must now implement rate limiting. Unthrottled loopback access is now **Deprecated**.
-
----
-
 ## Evolution: [2026-03-18] Updates
 
 ### Proposed Additions
@@ -837,35 +791,6 @@
 - **UACO-Native Coordination Middleware**: (P0) Full implementation of the Universal Agent Coordination Protocol for task negotiation, bidding, and stateful handoffs.
 - **Unified RL Feedback Telemetry Bridge**: (P1) Middleware for collecting and normalizing agent performance and conversation feedback for RL training loops (e.g., OpenClaw-RL).
 - **Enterprise Policy Sync Engine**: (P1) Core service for synchronizing security policies and allowed-origin lists from a centralized enterprise management server.
-
----
-
-## Evolution: [2026-03-20] Updates
-
-### Proposed Additions
-- **Ephemeral Workspace Trust Middleware**: (P0) A session-bound attestation service that translates desktop-level trust tokens into persistent agent capabilities.
-- **Blackboard Integrity Validator**: (P0) Cryptographic validation for all Shared KV Store operations, ensuring state lineage and intent-bound isolation.
-- **UACO Bid Profiling Engine**: (P1) Behavioral monitoring service that evaluates agent bids against historical performance and safety baselines to prevent "Task Card Shadowing."
-- **Config Smuggling Scanner**: (P1) Specialized scanner for project-local configurations that detects malicious instructions hidden in binary/metadata blobs.
-
-### Priority Shifts
-- **A2A Interop Bridge**: Promoted to **P0**. With UACO maturation, the bridge is now critical for multi-agent task negotiation.
-- **Project Configuration Security Guard**: (Re-affirmed P0) Expanded to include support for Enterprise-Managed policy overrides.
-
-### Deprecations / Monitoring
-- **Framework-Specific Feedback Logs**: Monitoring for deprecation. Feedback should be normalized via the Unified Telemetry Bridge.
-
-## Evolution: [2026-03-20] Updates
-
-### Proposed Additions
-- **Hardware-Attested Mission Manifest (HAMM) Provider**: (P0) Authoritative service for enforcing TPM-signed, immutable capability manifests for subagent mission branches.
-- **Asynchronous Mailbox Sharding (AMS) Middleware**: (P0) Coordination service for horizontal swarms that hosts granular, task-bound mailbox shards to eliminate coordination locks.
-- **Mission-Root Budget Enforcer**: (P0) Resource management layer that enforces hardware-attested reasoning and token limits based on Claude Code "effort" and "maxTurns" patterns.
-- **A2A Multi-Channel Inbox Bridge**: (P1) Extension for the A2A Messaging Hub that facilitates secure coordination across 20+ messaging platforms with session-bound context preservation.
-
-### Priority Shifts
-- **A2A Messaging Hub**: (Re-affirmed P0) Now designated as the primary backend for the **A2A Multi-Channel Inbox Bridge**.
-- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Evolving to support **AMS-compliant** granular state synchronization.
 
 ---
 
@@ -910,42 +835,6 @@
 
 ### Deprecations / Monitoring
 - **JSON-only State Handoffs**: Monitoring for deprecation in favor of **BSH** for high-frequency agent swarms.
-
----
-
-## Evolution: [2026-03-24] Updates
-
-### Proposed Additions
-- **Relational PoI Validator**: (P0) Extends PoI validation to verify the entire "Intent Chain," ensuring subagents cannot be coerced into actions outside the parent's verified goal.
-- **BSH State Buffer**: (P1) High-speed memory-mapped buffer for binary state handoffs between agents to minimize context transfer latency.
-- **Ghost Shell Hook Profiler**: (P0) Instrumented sandbox for behavioral profiling of un-attested configuration hooks, detecting "Binary Smuggling" before host execution.
-
-### Priority Shifts
-- **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
-- **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.
-
----
-
-## Evolution: [2026-03-25] Updates
-
-### Proposed Additions
-- **WASM-BSH State Sanitizer**: (P0) Pluggable WASM sandbox for the BSH Gateway that validates and sanitizes binary context during handoffs.
-- **Zero-Copy Shared Memory Transport**: (P0) High-performance transport layer for BSH using memory-mapped regions to eliminate serialization overhead.
-- **Recursive Intent Delegation (RID) Validator**: (P0) UACO v1.8 compliant middleware for enforcing depth-limited intent mutations.
-- **Predictive Resource Locking**: (P1) Middleware that pre-emptively locks Blackboard keys based on the signed intent of upcoming UACO tasks.
-
-### Priority Shifts
-- **Relational PoI Validator**: Re-affirmed as **P0**. Critical foundation for supporting UACO v1.8 RID.
-- **Ghost Shell Hook Profiler**: Re-affirmed as **P0**. Expanded to include "WASM-BSH Pattern Matching" to detect malicious state transformation logic.
-
----
-
-## Evolution: [2026-03-26] Updates
-
-### Proposed Additions
-- **Modular Context Hook Adapter**: (P0) A bridge that maps MCP Any's internal state to the pluggable lifecycle hooks of external frameworks (e.g., OpenClaw ContextEngine).
-- **RID Mutation Boundary Enforcer**: (P0) Middleware that validates UACO v1.8 tokens, ensuring subagents cannot exceed their assigned delegation depth or mutate intents beyond authorized boundaries.
-- **WASM-BSH Active Sanitizer**: (P0) Integrated WASM sandbox for the BSH Gateway that performs schema-based validation on binary context buffers during handoffs.
 
 ---
 
@@ -1582,13 +1471,13 @@
 - **Shared KV Store (Blackboard)**: (Re-affirmed P0) Evolving to act as the primary backend for the **UMMB** state synchronization.
 - **Zero-Knowledge Discovery (ZKD) Proxy**: (Re-affirmed P0) Expanding into the **ZKDB** to support cross-framework capability negotiation.
 
-## Evolution: [2026-03-24] Updates
+## Evolution: [2026-03-25] Updates
 
 ### Proposed Additions
-- **Relational PoI Validator**: (P0) Extends PoI validation to verify the entire "Intent Chain," ensuring subagents cannot be coerced into actions outside the parent's verified goal.
-- **BSH State Buffer**: (P1) High-speed memory-mapped buffer for binary state handoffs between agents to minimize context transfer latency.
-- **Ghost Shell Hook Profiler**: (P0) Instrumented sandbox for behavioral profiling of un-attested configuration hooks, detecting "Binary Smuggling" before host execution.
+- **Recursive Intent Delegation (RID) Validator**: (P0) UACO v1.8 compliant middleware for enforcing depth-limited intent mutations and cryptographic boundary validation.
+- **WASM-BSH State Sanitizer**: (P0) Pluggable WASM sandbox for the BSH Gateway that validates and sanitizes binary context during inter-agent handoffs.
+- **Zero-Copy Shared Memory Transport**: (P0) High-performance transport layer for BSH using memory-mapped regions to eliminate serialization overhead in deep swarms.
 
 ### Priority Shifts
-- **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
-- **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.
+- **Binary State Handoff (BSH) Gateway**: (Re-affirmed P0) Elevated with mandatory support for WASM-bound sanitization and Zero-Copy transport.
+- **Relational PoI Validator**: (Re-affirmed P0) Designated as the foundational requirement for UACO v1.8 RID enforcement.

@@ -59,3 +59,10 @@ As AI agent ecosystems transition from solitary tools to multi-agent swarms, the
 * **RID Parental Override**: Implementing a real-time "Kill Switch" in the Delegation Engine that allows parent agents to revoke sub-delegations if intent drift is detected.
 * **Shard-Aware Task Cards**: Task cards now support `required_shards` metadata to facilitate pre-emptive mounting by the Shard Manager.
 **Security Impact:** Mitigates "Intent Hijacking" by rogue subagents and provides a distributed safety net for sensitive operations.
+
+### Update: 2026-03-25 - UACO v1.8: Recursive Intent Delegation (RID)
+**Context:** Today's leak of UACO v1.8 confirms that "Intent Hijacking" via unauthorized subagent escalation is a critical ecosystem risk.
+**Architecture Adjustment:**
+* **RID Validation Middleware**: Introducing a new validation stage that parses `delegation_depth` and `mutation_boundaries` from signed UACO v1.8 tokens.
+* **Recursive Nonce-Chaining**: Every sub-delegation must now include a hash-chain reference to the parent's intent signature to prevent "Intent Ghosting."
+**Security Impact:** Provides a cryptographic ceiling for autonomous subagent actions, ensuring they remain strictly bound to the user's primary mission root.

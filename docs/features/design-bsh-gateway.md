@@ -60,3 +60,11 @@ As agent swarms grow in depth and complexity, the overhead of transferring massi
     **Architecture Adjustment:** * Transitioning to Protobuf-based Binary State Handoffs (BSH).
     * Introducing a high-speed "BSH State Buffer" using memory-mapped regions.
     **Performance Impact:** Eliminates JSON serialization overhead and reduces inter-agent latency by 50%.
+
+### Update: 2026-03-25 - OpenClaw v2.5: WASM-Bound Active Sanitization
+**Context:** OpenClaw v2.5 roadmap highlights "Binary Context Poisoning" as the next primary attack vector for high-frequency swarms.
+**Architecture Adjustment:**
+* **WASM Sanitization Stage**: All BSH handoffs are now intercepted by an isolated WASM sandbox.
+* **Schema Enforcement**: Binary state is validated against a signed Protobuf schema within the sandbox before being mapped to the target agent.
+* **Zero-Copy Optimization**: Utilizing `memfd_create` and file-descriptor passing to maintain sub-millisecond performance despite the sanitization overhead.
+**Security Impact:** Prevents malicious state injection between specialized agents while mitigating the "Token Storm" overhead of traditional JSON validation.
