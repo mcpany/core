@@ -15,7 +15,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// Registry manages available middlewares.
+// Registry manages available middlewares in a thread-safe manner.
 type Registry struct {
 	mu           sync.RWMutex
 	factories    map[string]Factory
@@ -38,11 +38,11 @@ var (
 // Register registers a HTTP middleware factory in the global registry.
 //
 // Parameters:
-//   - name (string): The unique name of the HTTP middleware.
-//   - factory (Factory): The factory function to create the middleware instance.
+//   - name (string): The unique identifier for the middleware.
+//   - factory (Factory): The function to create the middleware instance.
 //
 // Side Effects:
-//   - Modifies the global HTTP middleware map.
+//   - Modifies the global factories map.
 func Register(name string, factory Factory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
@@ -52,11 +52,11 @@ func Register(name string, factory Factory) {
 // RegisterMCP registers an MCP middleware factory in the global registry.
 //
 // Parameters:
-//   - name (string): The unique name of the MCP middleware.
-//   - factory (MCPFactory): The factory function to create the middleware instance.
+//   - name (string): The unique identifier for the MCP middleware.
+//   - factory (MCPFactory): The function to create the middleware instance.
 //
 // Side Effects:
-//   - Modifies the global MCP middleware map.
+//   - Modifies the global mcpFactories map.
 func RegisterMCP(name string, factory MCPFactory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
@@ -303,10 +303,6 @@ func InitStandardMiddlewares(
 
 	// DLP
 	RegisterMCP("dlp", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
-		// Logger will be injected by DLPMiddleware constructor or we use default?
-		// DLPMiddleware takes (*configv1.DLPConfig, *slog.Logger)
-		// We use package level logger or similar.
-		// NOTE: DLPMiddleware signature is: func DLPMiddleware(config *configv1.DLPConfig, log *slog.Logger) mcp.Middleware
 		return DLPMiddleware(dlpConfig, nil)
 	})
 
