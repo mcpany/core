@@ -703,13 +703,29 @@
 - [ ] **[P0] Teammate Task List Viewer**: High-speed, CRDT-native visualization of the shared task list for horizontal swarms. (Added: 2026-03-24)
 - [ ] **[P0] ALSV Block List Explorer**: UI for reviewing and approving command arguments flagged by the semantic validator. (Added: 2026-03-24)
 
+#### Upcoming (2026-07-05 Evolution)
+- [ ] **[P0] Physical Shard Inspector**: (2026-07-05) Visualize cryptographic pinning of shards to hardware Enclave IDs and PSS status.
+- [ ] **[P0] Multi-Modal Stylometric Monitor**: (2026-07-05) Real-time visualization of behavioral consistency across SVG and Audio reasoning traces.
+- [ ] **[P0] Summarization Quorum Hub**: (2026-07-05) Workspace for monitoring multi-agent consensus on context compaction and "Mission-Root Erasure" alerts.
+- [ ] **[P1] Adaptive Jitter Control**: (2026-07-05) UI for configuring risk-aware jitter profiles and monitoring coordination latency.
+
+#### Upcoming (2026-07-04 Evolution)
+- [ ] **[P0] Behavioral Firewall Dashboard**: (2026-07-04) Visualize stylometric confidence scores and paraphrasing sandbox status.
+- [ ] **[P0] Enclave Isolation Monitor**: (2026-07-04) Real-time visualization of DME-locked memory regions and physical isolation fault alerts.
+- [ ] **[P0] Attention Masking Interface**: (2026-07-04) UI for configuring hardware-locked attention masks for mission-root intents.
+- [ ] **[P1] Context Compaction Quorum Viewer**: (2026-07-04) Visual tracker for summarizer agent consensus and compaction savings.
+
 #### Upcoming (2026-03-25 Evolution)
 - [ ] **[P0] WASM-BSH Sanitizer Dashboard**: (2026-03-25) UI for managing OpenClaw v2.5 WASM sanitization rules and viewing rejected binary context fragments.
 - [ ] **[P0] Zero-Copy Transport Monitor**: (2026-03-25) Real-time performance metrics for `memfd_create` memory-mapped BSH buffers.
 - [ ] **[P0] RID Lineage Inspector**: (2026-03-25) Security UI for visualizing UACO v1.8 recursive delegation depths and "Intent Ghosting" defense boundaries.
 - [ ] **[P1] Predictive Locking Visualizer**: Gantt-style view of projected Blackboard resource locks based on agent intents. (Added: 2026-03-25)
 
+#### Upcoming (2026-03-25 Iteration 2)
+- [ ] **[P0] Relational Intent Tracer**: Visual debugger for verifying the cryptographic lineage of tool-bound intents back to the mission root. (Added: 2026-03-25)
+- [ ] **[P0] Memfd Shard Inspector**: Real-time visualization of shared memory mappings and byte-level sanitization status. (Added: 2026-03-25)
+- [ ] **[P1] Optimistic Attestation Widget**: Dashboard indicator for speculatively loaded tool contexts and background verification progress. (Added: 2026-03-25)
 
 ### Upcoming: [2026-06-21]
-- **[P0] Reasoning Lineage Visualizer**: Interactive Gantt chart for visualizing AIA-attested reasoning paths and attention weights.
-- **[P1] Mesh Memory Shard Viewer**: Real-time visualization of isolated Blackboard shards and access patterns.
+- [P0] Reasoning Lineage Visualizer
+- [P1] Mesh Memory Shard Viewer

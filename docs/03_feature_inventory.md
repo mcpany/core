@@ -1,5 +1,30 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-05] Updates
+
+### Proposed Additions
+- **Physical Shard Sovereignty (PSS) Provider**: (P0) Advanced security service that cryptographically pins sharded context fragments to specific hardware enclave IDs.
+- **Multi-Modal Stylometric Integrity (MMSI) Validator**: (P0) Upgrade for the SBF providing real-time stylometric analysis of SVG logic diagrams and audio reasoning traces.
+- **Quorum-Bound Summarization (QBS) Hub**: (P0) Distributed coordination service requiring multi-agent consensus (Mission-Root + Auditor) on all context compaction events.
+- **Adaptive Jitter Profiler**: (P1) Performance-optimizing middleware that dynamically scales timing variations based on shard sensitivity and trust levels.
+
+### Priority Shifts
+- **Stylometric Behavioral Firewall (SBF)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **MMSI** integration.
+- **Distributed Memory Enclave (DME) Broker**: (Re-affirmed P0) Designated as the primary enforcement point for **PSS-compliant** shard anchoring.
+
+## Evolution: [2026-07-04] Updates
+
+### Proposed Additions
+- **Stylometric Behavioral Firewall (SBF)**: (P0) Authoritative linguistic security service that routes low-confidence fragments through an isolated paraphrasing sandbox.
+- **Distributed Memory Enclave (DME) Broker**: (P0) Hardware-enclave (TPM/SEP) bound coordination service for cross-framework shared memory isolation.
+- **Hardware-Locked Attention Masking (HLAM)**: (P0) Security middleware mandating cryptographic masking of subagent noise fragments at the hardware attention layer.
+- **Monotonic Jitter Injection Provider**: (P0) Security service mandating hardware-attested timing variations for all memory-broker responses to neutralize timing side-channels.
+- **Context Compaction Quorum Hub**: (P1) Distributed coordination service requiring multi-agent consensus on state summarization before mesh-wide sharing.
+
+### Priority Shifts
+- **Zero-Copy Memory Broker (ZCMB)**: (Re-affirmed P0) Evolving into the **DME Broker** to support hardware-enclave isolation.
+- **Stylometric Identity Anchoring (SIA)**: (Re-affirmed P0) Now designated as the primary detection engine for the **Stylometric Behavioral Firewall**.
+
 ## Evolution: [2026-03-25] Updates
 
 ### Proposed Additions
@@ -10,6 +35,17 @@
 ### Priority Shifts
 - **Relational PoI Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory mission-root chain verification to counter "Intent Ghosting" vulnerabilities.
 - **Binary State Handoff (BSH) Gateway**: (Re-affirmed P0) Evolving into the **Zero-Copy Transport** architecture with integrated WASM-based "Point-in-Time" binary scanning.
+
+## Evolution: [2026-03-25] (Iteration 2) Updates
+
+### Proposed Additions
+- **Optimistic Attestation Middleware**: (P1) Predictive tool registry facilitating parallel context preparation and background discovery attestation.
+- **Relational PoI Chain Validator**: (P0) Core security service mandating cryptographic lineage verification for every intent-bound tool call.
+- **Memfd-Bound BSH Sanitizer**: (P0) Integration of WASM-based binary scanning directly into zero-copy shared memory segments.
+
+### Priority Shifts
+- **WASM-BSH State Sanitizer**: (Re-affirmed P0) Evolving into the **Memfd-Bound Sanitizer** to eliminate intermediate copies.
+- **RID Validator**: (Re-affirmed P0) Elevated with mandatory monotonic depth-counter enforcement.
 
 
 ### Proposed Additions
@@ -1616,13 +1652,7 @@
 - **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
 - **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.
 
-
 ## Evolution: [2026-06-21] Updates
-
 ### Proposed Additions
-- **Active Intent Alignment (AIA) Hub**: (P0) Authoritative alignment service issuing hardware-attested heartbeats.
-- **Trace-Aware Identity (TAI) Bridge**: (P0) Infrastructure for hardware-bound identity propagation across heterogeneous meshes.
-- **Semantic Entropy Filters (SEF)**: (P1) Real-time monitor for detecting reasoning-path hijacking via stylometric anomalies.
-
-### Priority Shifts
-- **Shared KV Store (Blackboard)**: Elevated to support **Intent-Bound Memory Shards** as the primary isolation model.
+- AIA Hub (P0): Authoritative alignment service.
+- TAI Bridge (P0): Hardware-bound identity propagation.

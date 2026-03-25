@@ -137,11 +137,29 @@
 *   **[P0] Mission-Root Budget Enforcer**: Resource management for reasoning effort and token limits based on process-bound agency. (Added: 2026-03-20)
 *   **[P1] A2A Multi-Channel Inbox Bridge**: Secure coordination and translation for handling 20+ messaging platforms simultaneously. (Added: 2026-03-20)
 
+#### Upcoming (2026-07-05 Evolution)
+*   **[P0] Physical Shard Sovereignty (PSS) Provider**: Cryptographically pin context shards to specific hardware Enclave IDs to neutralize shard-hopping. (Added: 2026-07-05)
+*   **[P0] Multi-Modal Stylometric Integrity (MMSI) Validator**: Real-time stylometric analysis for SVG logic diagrams and audio reasoning traces within SBF. (Added: 2026-07-05)
+*   **[P0] Quorum-Bound Summarization (QBS) Hub**: Distributed service requiring multi-agent consensus (Mission-Root + Auditor) on context compaction. (Added: 2026-07-05)
+*   **[P1] Adaptive Jitter Profiler**: Performance-optimizing middleware for risk-aware timing variations in enclave handoffs. (Added: 2026-07-05)
+
+#### Upcoming (2026-07-04 Evolution)
+*   **[P0] Stylometric Behavioral Firewall (SBF)**: Authoritative linguistic broker with integrated paraphrasing sandbox. (Added: 2026-07-04)
+*   **[P0] Distributed Memory Enclave (DME) Broker**: Hardware-enclave (TPM/SEP) bound coordination for cross-framework memory isolation. (Added: 2026-07-04)
+*   **[P0] Hardware-Locked Attention Masking (HLAM)**: Middleware for cryptographic masking of subagent noise at the attention layer. (Added: 2026-07-04)
+*   **[P0] Monotonic Jitter Provider**: Hardware-attested timing variation service to neutralize enclave timing side-channels. (Added: 2026-07-04)
+*   **[P1] Context Compaction Quorum Hub**: Consensus-based state summarization service for large mesh efficiency. (Added: 2026-07-04)
+
 #### Upcoming (2026-03-25 Evolution)
 *   **[P0] WASM-BSH State Sanitizer**: Pluggable WASM-based validation for binary context handoffs to align with OpenClaw v2.5. (Added: 2026-03-25)
 *   **[P0] Zero-Copy BSH Transport**: Shared-memory based state transfer using `memfd_create` for sub-millisecond swarm handoffs. (Added: 2026-03-25)
 *   **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited Recursive Intent Delegation and preventing "Intent Ghosting." (Added: 2026-03-25)
 *   **[P1] Predictive Resource Locking**: Intent-aware concurrency control for the Shared Blackboard. (Added: 2026-03-25)
+
+#### Upcoming (2026-03-25 Iteration 2)
+*   **[P0] Relational PoI Chain Validator**: Cryptographic lineage verification for every tool call to prevent "Intent Ghosting." (Added: 2026-03-25)
+*   **[P0] Memfd-Bound WASM Sanitizer**: Implementation of zero-copy binary scanning directly on kernel-mediated shared memory segments. (Added: 2026-03-25)
+*   **[P1] Optimistic Attestation Middleware**: Predictive tool registry allowing parallel context preparation and background discovery attestation. (Added: 2026-03-25)
 
 #### Upcoming (2026-06-23 Evolution)
 *   **[P0] Recursive Mission-Root Attestation (RMRA)**: Mandatory hardware-bound re-attestation of sub-process lineage for headless handoffs. (Added: 2026-06-23)
@@ -874,7 +892,6 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited Recursive Intent Delegation. (Added: 2026-03-25)
 *   **[P1] Predictive Resource Locking**: Intent-aware concurrency control for the Shared Blackboard. (Added: 2026-03-25)
 
-
 ### Upcoming: [2026-06-21]
-- **[P0] Active Intent Alignment (AIA) Broker**: Implementation of hardware-attested heartbeat issuance and validation.
-- **[P0] TAI Bridge**: Standardize Trace-Aware Identity fragments for Gemini and Claude Code mesh compatibility.
+- [P0] Active Intent Alignment (AIA) Broker
+- [P0] TAI Bridge
