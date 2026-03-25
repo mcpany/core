@@ -1733,7 +1733,6 @@ func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationSer
 		Method:       &method,
 		Parameters:   params,
 	}.Build()
-	_ = callDef
 	toolDef.SetCallId(callID)
 
 	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{
@@ -2071,7 +2070,6 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 		EndpointPath: &endpointPath,
 		Method:       &method,
 	}.Build()
-	_ = callDef
 	toolDef.SetCallId(callID)
 
 	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{
