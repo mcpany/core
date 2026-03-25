@@ -4,6 +4,7 @@
 run:
   timeout: 5m
   tests: false
+  concurrency: 1
 
 linters:
   enable:
