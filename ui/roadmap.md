@@ -696,3 +696,9 @@
 - [ ] **[P0] Discovery Sandbox Monitor**: Real-time visualization of sandboxed discovery command execution and safety attestation. (Added: 2026-03-24)
 - [ ] **[P0] Teammate Task List Viewer**: High-speed, CRDT-native visualization of the shared task list for horizontal swarms. (Added: 2026-03-24)
 - [ ] **[P0] ALSV Block List Explorer**: UI for reviewing and approving command arguments flagged by the semantic validator. (Added: 2026-03-24)
+
+#### Upcoming (2026-07-03 Evolution)
+- [ ] **[P0] Active Attention Heatmap**: Real-time visualization of mission-root anchor steering and attention-density scores. (Added: 2026-07-03)
+- [ ] **[P0] Stylometric Identity Dashboard**: Behavioral security workspace for visualizing stylometric consistency scores and persona-splicing alerts. (Added: 2026-07-03)
+- [ ] **[P0] Cognitive Pacing Monitor**: Performance tracker for subagent reasoning frequency and attestation-sync status. (Added: 2026-07-03)
+- [ ] **[P0] Polyglot Injection Alert Center**: Security UI for inspecting cross-modal instruction fragments detected in multimodal metadata. (Added: 2026-07-03)

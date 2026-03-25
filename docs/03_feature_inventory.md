@@ -924,6 +924,18 @@
 - **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
 - **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.
 
+## Evolution: [2026-07-03] Updates
+
+### Proposed Additions
+- **Active Attention Steering (AAS) Adapter**: (P0) Authoritative service that force-injects hardware-attested mission-root anchors into subagent reasoning turns to prevent attention-eviction.
+- **Live Stylometric Attestation (LSA) Provider**: (P0) Identity service that anchors agent identities to high-dimensional behavioral traces to neutralize stylometric mimicry.
+- **Cognitive Pacing Middleware**: (P0) Stability service that throttles subagent reasoning frequency to match hardware-attestation speed, eliminating race conditions.
+- **Polyglot Injection Shield**: (P0) Advanced extension for the MITS performing cross-modal analysis to block instructions hidden in combined SVG/CSS/Trace metadata.
+
+### Priority Shifts
+- **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Elevated with mandatory **LSA** integration for real-time behavioral verification.
+- **Multimodal Inference-Time Sanitizer (MITS)**: (Re-affirmed P0) Designated as the primary enforcement point for the **Polyglot Injection Shield**.
+
 ---
 
 ## Evolution: [2026-03-25] Updates

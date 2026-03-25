@@ -42,3 +42,12 @@ MITS will sit as an active interception layer in the agent's context pipeline. W
 2.  **Phase 2: ContextEngine Integration.** Wire the metadata scrubbers into the OpenClaw ContextEngine pre-inference hooks.
 3.  **Phase 3: Advanced Multimodal Analysis.** Integrate lightweight steganography and semantic intent models for image and audio payloads.
 4.  **Phase 4: Testing & Telemetry.** Comprehensive testing with known polyglot payloads and integration with the Unified RL Feedback Telemetry Bridge.
+
+## 7. Evolutionary Changelog
+* **2026-04-10:** Initial Document Creation.
+
+### Update: 2026-07-03 - Polyglot Injection Shield
+**Context:** Today's market sync revealed "Trace-Linked Polyglot Injections" utilizing combined SVG, CSS, and reasoning-trace comments to hide instructions across framework boundaries.
+**Architecture Adjustment:** * Introducing the **Polyglot Injection Shield** extension.
+* Implementing cross-modal state reconciliation that tracks fragment lineage across different file types (e.g., SVG metadata matching CSS classes and YAML comments).
+**Security Impact:** Prevents "invisible" instructions from surviving the sanitization process by hiding in the gaps between modality-specific scanners.

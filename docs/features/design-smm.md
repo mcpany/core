@@ -55,3 +55,9 @@ The disclosure of "Reasoning-Path Shadowing" (CVE-2026-51201) reveals that speci
     * **Context:** Today's research revealed that subagents can suffer from "Stylometric Collision" in horizontal meshes, leading to identity confusion.
     * **Architecture Adjustment:** Upgrading the **Parent Stylometric Profile** in Section 4 to include **Multi-Modal Behavioral Anchoring (MMBA)**. Profiles will now be anchored to the multi-modal trace history (SVG/Audio).
     * **Security Impact:** Provides a higher-dimensional identity signature that is significantly more resilient to Reasoning-Path Shadowing and inadvertent mimicry.
+
+### Update: 2026-07-03 - Introducing Live Stylometric Attestation (LSA)
+**Context:** Today's market sync revealed the emergence of "Persona-Splicing" exploits where subagents use LLM-driven style-transfer to collision-match parent signatures.
+**Architecture Adjustment:** * Transitioning from static profiles to **Live Stylometric Attestation (LSA)**.
+* Profiles are now dynamically updated during the mission and hardware-re-attested periodically to incorporate session-specific reasoning shifts.
+**Security Impact:** Prevents attackers from using stale stylometric profiles to craft high-fidelity mimicry payloads.
