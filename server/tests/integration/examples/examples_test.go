@@ -115,7 +115,7 @@ func copyDir(src, dst string) error {
 	})
 }
 
-func validateConfig(t *testing.T, targetConfigPath string) {
+func validateConfig(targetT *testing.T, targetConfigPath string) {
 	aferoFs := afero.NewOsFs()
 
 	requiredEnvironmentVariables := []string{
@@ -139,15 +139,15 @@ func validateConfig(t *testing.T, targetConfigPath string) {
 	}
 
 	for _, environmentVariableName := range requiredEnvironmentVariables {
-		t.Setenv(environmentVariableName, "dummy-val")
+		targetT.Setenv(environmentVariableName, "dummy-val")
 	}
 
 	configurationStore := config.NewFileStore(aferoFs, []string{targetConfigPath})
 	loadedServiceConfigs, serviceLoadErr := config.LoadServices(context.Background(), configurationStore, "server")
 	if serviceLoadErr != nil {
-		t.Fatalf("Failed to load config %s: %v", targetConfigPath, serviceLoadErr)
+		targetT.Fatalf("Failed to load config %s: %v", targetConfigPath, serviceLoadErr)
 	}
 
 	serviceValidationErrors := config.Validate(context.Background(), loadedServiceConfigs, config.Server)
-	assert.Empty(t, serviceValidationErrors, "Config validation failed for %s", targetConfigPath)
+	assert.Empty(targetT, serviceValidationErrors, "Config validation failed for %s", targetConfigPath)
 }
