@@ -126,6 +126,10 @@
 *   **[P0] Relational PoI Enforcement**: Advanced intent-chain validation to prevent "Context-Mirroring" attacks. (Added: 2026-03-24)
 *   **[P0] Ghost Shell Hook Profiler**: Instrumented sandbox for behavioral profiling of un-attested configuration hooks. (Added: 2026-03-24)
 *   **[P1] BSH State Differential Sync**: Optimized binary state transfer that only sends deltas between agent handoffs. (Added: 2026-03-24)
+*   **[P0] Discovery-Phase Sandbox Middleware**: Ephemeral execution for discovery commands to neutralize startup-time RCE. (Added: 2026-03-24)
+*   **[P0] Lock-Free Teammate Coordination (LFTC)**: CRDT-based mailbox synchronization for horizontal swarms. (Added: 2026-03-24)
+*   **[P0] Argument-Level Semantic Validator (ALSV)**: Deep-inspection for command arguments to prevent shell-fallback exploits. (Added: 2026-03-24)
+*   **[P0] Task-Claim Integrity Provider**: Hardware-attested tokens for horizontal mesh task claiming. (Added: 2026-03-24)
 
 #### Upcoming (2026-03-20 Evolution)
 *   **[P0] Hardware-Attested Mission Manifest (HAMM) Provider**: Authoritative service for enforcing TPM-signed capability manifests. (Added: 2026-03-20)
@@ -133,10 +137,17 @@
 *   **[P0] Mission-Root Budget Enforcer**: Resource management for reasoning effort and token limits based on process-bound agency. (Added: 2026-03-20)
 *   **[P1] A2A Multi-Channel Inbox Bridge**: Secure coordination and translation for handling 20+ messaging platforms simultaneously. (Added: 2026-03-20)
 
+#### Upcoming (2026-07-04 Evolution)
+*   **[P0] Stylometric Behavioral Firewall (SBF)**: Authoritative linguistic broker with integrated paraphrasing sandbox. (Added: 2026-07-04)
+*   **[P0] Distributed Memory Enclave (DME) Broker**: Hardware-enclave (TPM/SEP) bound coordination for cross-framework memory isolation. (Added: 2026-07-04)
+*   **[P0] Hardware-Locked Attention Masking (HLAM)**: Middleware for cryptographic masking of subagent noise at the attention layer. (Added: 2026-07-04)
+*   **[P0] Monotonic Jitter Provider**: Hardware-attested timing variation service to neutralize enclave timing side-channels. (Added: 2026-07-04)
+*   **[P1] Context Compaction Quorum Hub**: Consensus-based state summarization service for large mesh efficiency. (Added: 2026-07-04)
+
 #### Upcoming (2026-03-25 Evolution)
-*   **[P0] WASM-BSH State Sanitizer**: Pluggable WASM-based validation for binary context handoffs. (Added: 2026-03-25)
-*   **[P0] Zero-Copy BSH Transport**: Shared-memory based state transfer for sub-millisecond swarm handoffs. (Added: 2026-03-25)
-*   **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited Recursive Intent Delegation. (Added: 2026-03-25)
+*   **[P0] WASM-BSH State Sanitizer**: Pluggable WASM-based validation for binary context handoffs to align with OpenClaw v2.5. (Added: 2026-03-25)
+*   **[P0] Zero-Copy BSH Transport**: Shared-memory based state transfer using `memfd_create` for sub-millisecond swarm handoffs. (Added: 2026-03-25)
+*   **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited Recursive Intent Delegation and preventing "Intent Ghosting." (Added: 2026-03-25)
 *   **[P1] Predictive Resource Locking**: Intent-aware concurrency control for the Shared Blackboard. (Added: 2026-03-25)
 
 #### Upcoming (2026-06-23 Evolution)
@@ -841,3 +852,37 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Priority-Aware Mailbox Sharding (PAMS)**: Upgrade to AMS allowing lock-free "Urgent Interrupt" signals for safety. (Added: 2026-06-30)
 *   **[P0] Attention-Splicing Firewall (ASF)**: Entropy-based defense against mimicry-based instruction injection (CVE-2026-91023). (Added: 2026-06-30)
 *   **[P0] Leased Mission Persistence (LMP)**: Time-bound hardware-locked mission leases to neutralize rotation fatigue. (Added: 2026-06-30)
+
+#### Upcoming (2026-07-02 Evolution)
+*   **[P0] AIR (Autonomous Intent Reconciliation) Hub**: Authoritative swarm arbitration service utilizing hardware-attested Intent Quorums. (Added: 2026-07-02)
+*   **[P0] Multimodal State Entanglement (MSE) Provider**: Advanced security service for cryptographic entanglement of non-textual reasoning traces. (Added: 2026-07-02)
+*   **[P0] Reasoning Entropy Monitor (REM)**: Stability middleware for detecting and resolving cognitive stalls in autonomous swarms. (Added: 2026-07-02)
+*   **[P1] CRDT-Native Mailbox Hub**: High-performance coordination service using Conflict-Free Replicated Data Types to resolve lock exhaustion. (Added: 2026-07-02)
+
+#### Upcoming (2026-07-01 Evolution)
+*   **[P0] Universal Multimodal Memory Bus (UMMB)**: Hardware-attested memory bus for state synchronization across disparate frameworks. (Added: 2026-07-01)
+*   **[P0] Zero-Knowledge Discovery Broker (ZKDB)**: Security middleware mandating cryptographic capability masking until mission-handshake. (Added: 2026-07-01)
+*   **[P0] Attention-Locked Reasoning Anchors (ALRA)**: Hardware-bound attention-pinning to prevent mission-root intent eviction. (Added: 2026-07-01)
+
+#### Upcoming (2026-07-03 Evolution)
+*   **[P0] Zero-Copy Memory Broker (ZCMB)**: Hardware-locked shared memory reasoning buffers for sub-millisecond local swarm coordination. (Added: 2026-07-03)
+*   **[P0] Stylometric Identity Anchoring (SIA)**: Behavioral security middleware detecting reasoning-path mimicry in AIR quorums. (Added: 2026-07-03)
+*   **[P0] Multimodal Hash-Chaining (MHC)**: Cryptographic lineage for non-textual fragments to prevent multimodal logic grafting. (Added: 2026-07-03)
+*   **[P0] Active Attention Enforcer (AAE)**: Dynamic reinforcement of mission-root anchors to counter noise-driven attention drift. (Added: 2026-07-03)
+
+#### Upcoming (2026-03-24 Evolution - v2)
+*   **[P0] Relational PoI Validator**: Implementation of UACO v1.7 Intent Chain verification. (Added: 2026-03-24)
+*   **[P0] BSH State Buffer**: Memory-mapped binary transport for mitigation of "Token Storms". (Added: 2026-03-24)
+*   **[P0] Ghost Shell Hook Profiler**: Instrumented sandbox for behavioral hook analysis. (Added: 2026-03-24)
+
+#### Upcoming (2026-03-25 Evolution)
+*   **[P0] WASM-BSH State Sanitizer**: Pluggable WASM-based validation for binary context handoffs. (Added: 2026-03-25)
+*   **[P0] Zero-Copy BSH Transport**: Shared-memory based state transfer for sub-millisecond swarm handoffs. (Added: 2026-03-25)
+*   **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited Recursive Intent Delegation. (Added: 2026-03-25)
+*   **[P1] Predictive Resource Locking**: Intent-aware concurrency control for the Shared Blackboard. (Added: 2026-03-25)
+
+### Upcoming: [2026-06-07]
+- **[P0] Recursive Mission Attestation (RMA) Provider**: Implement hardware-attested intent lineage and mission receipt issuance.
+- **[P0] Context-Aware Shard Isolation (CASI) Middleware**: Enforce semantic boundaries between teammate context shards in horizontal teams.
+- **[P1] Cross-Framework Intent Bidding (CFIB) Gateway**: Orchestrate task auctions between OpenClaw, Claude Code, and Gemini.
+- **[P1] Mission-Receipt Logging Service**: High-integrity audit trail for hierarchical task authorizations.
