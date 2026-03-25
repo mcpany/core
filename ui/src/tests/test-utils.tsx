@@ -14,6 +14,9 @@ import { render as originalRender, type RenderOptions } from '@testing-library/r
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 
+/**
+ * render component in memory router
+ */
 export function render(
   ui: React.ReactElement,
   options?: Omit<RenderOptions, 'wrapper'> & { wrapper?: React.ComponentType<{ children: React.ReactNode }> }
