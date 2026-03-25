@@ -137,17 +137,23 @@ if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
 
     export GOGC=20
 
+    # Disable strict error checking for golangci-lint execution specifically
+    set +e
+
     "$GOLANGCI_LINT_BIN" run --timeout 30m --concurrency 1 --fix \
-        ./cmd/... ./examples/... || true
+        ./cmd/... ./examples/...
     echo "    golangci-lint (part 1) OK."
 
     "$GOLANGCI_LINT_BIN" run --timeout 30m --concurrency 1 --fix \
-        ./pkg/... || true
+        ./pkg/...
     echo "    golangci-lint (part 2) OK."
 
     "$GOLANGCI_LINT_BIN" run --timeout 30m --concurrency 1 --fix \
-        ./tests/... || true
+        ./tests/...
     echo "    golangci-lint (part 3) OK."
+
+    # Re-enable strict error checking
+    set -e
 
     cd "$PROJECT_ROOT"
     echo "    golangci-lint OK."
