@@ -7,7 +7,7 @@ import { sanitizeServiceConfig } from './config-utils';
 import { UpstreamServiceConfig } from './client';
 
 describe('sanitizeServiceConfig', () => {
-    const mockService: UpstreamServiceConfig = {
+    const baseMockService: UpstreamServiceConfig = {
         id: 'test-service',
         name: 'Test Service',
         commandLineService: {
@@ -20,10 +20,10 @@ describe('sanitizeServiceConfig', () => {
             },
             workingDirectory: '/tmp'
         }
-    } as UpstreamServiceConfig; // Casting as UpstreamServiceConfig might have other required fields in strict TS
+    } as UpstreamServiceConfig;
 
     it('should redact secrets when mode is redact', () => {
-        const sanitizedRedact = sanitizeServiceConfig(mockService, 'redact');
+        const sanitizedRedact = sanitizeServiceConfig(baseMockService, 'redact');
         expect(sanitizedRedact.commandLineService?.env?.['API_KEY']).toBe('<REDACTED>');
         expect(sanitizedRedact.commandLineService?.env?.['DB_PASSWORD']).toBe('<REDACTED>');
         expect(sanitizedRedact.commandLineService?.env?.['AUTH_TOKEN']).toBe('<REDACTED>');
@@ -31,7 +31,7 @@ describe('sanitizeServiceConfig', () => {
     });
 
     it('should template secrets when mode is template', () => {
-        const sanitizedTemplate = sanitizeServiceConfig(mockService, 'template');
+        const sanitizedTemplate = sanitizeServiceConfig(baseMockService, 'template');
         expect(sanitizedTemplate.commandLineService?.env?.['API_KEY']).toBe('${API_KEY}');
         expect(sanitizedTemplate.commandLineService?.env?.['DB_PASSWORD']).toBe('${DB_PASSWORD}');
         expect(sanitizedTemplate.commandLineService?.env?.['AUTH_TOKEN']).toBe('${AUTH_TOKEN}');
@@ -39,7 +39,7 @@ describe('sanitizeServiceConfig', () => {
     });
 
     it('should keep secrets when mode is unsafe', () => {
-        const sanitizedUnsafe = sanitizeServiceConfig(mockService, 'unsafe');
+        const sanitizedUnsafe = sanitizeServiceConfig(baseMockService, 'unsafe');
         expect(sanitizedUnsafe.commandLineService?.env?.['API_KEY']).toBe('super-secret-key');
         expect(sanitizedUnsafe.commandLineService?.env?.['DB_PASSWORD']).toBe('super-secret-password');
         expect(sanitizedUnsafe.commandLineService?.env?.['AUTH_TOKEN']).toBe('jwt-token');
@@ -47,7 +47,7 @@ describe('sanitizeServiceConfig', () => {
     });
 
     it('should handle missing env', () => {
-        const serviceNoEnv = { ...mockService, commandLineService: { command: 'cmd' } };
+        const serviceNoEnv = { ...baseMockService, commandLineService: { command: 'cmd' } };
         const sanitizedMissing = sanitizeServiceConfig(serviceNoEnv as UpstreamServiceConfig, 'redact');
         expect(sanitizedMissing.commandLineService?.env).toBeUndefined();
     });
