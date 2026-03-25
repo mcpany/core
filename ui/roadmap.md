@@ -651,3 +651,48 @@
 - [ ] **[P0] Stylometric Alignment Dashboard**: Visual tracker for real-time stylometric consistency scores and mimicry alerts. (Added: 2026-06-26)
 - [ ] **[P0] Handshake Lineage Inspector**: Forensic UI for visualizing the cryptographically bound lineage of mission-initiation signals. (Added: 2026-06-26)
 - [ ] **[P0] Differential Reasoning Debugger**: Workspace for reviewing cross-framework state handoffs and DRV-redacted payloads. (Added: 2026-06-26)
+
+#### Upcoming (2026-06-27 Evolution)
+- [ ] **[P0] ZK-Discovery Workspace**: UI for reviewing ZK-Capability Proofs and unmasking schemas after mission-handshake. (Added: 2026-06-27)
+- [ ] **[P0] CRDT Shard Monitor**: Real-time visualization of lock-free mailbox synchronization and hardware-attested conflict resolution. (Added: 2026-06-27)
+- [ ] **[P0] Auditor Attestation Portal**: Interactive workspace for third-party security auditors to review and sign dynamic skill grafts. (Added: 2026-06-27)
+- [ ] **[P1] Reasoning Path Integrity Viewer**: Visual debugger for hardware-signed RPI fragments and semantic hash-chain integrity. (Added: 2026-06-27)
+
+#### Upcoming (2026-06-28 Evolution)
+- [ ] **[P0] HLCA Configuration Anchor Manager**: UI for reviewing and hardware-signing project-local settings files. (Added: 2026-06-28)
+- [ ] **[P0] Multi-Tenant Context Isolation Dashboard**: Visualize state boundaries and isolation status for sharded missions. (Added: 2026-06-28)
+- [ ] **[P1] ODCS Summarization Debugger**: Visualizer for on-demand context compression and intent-preservation scores. (Added: 2026-06-28)
+
+#### Upcoming (2026-06-29 Evolution)
+- [ ] **[P0] Reasoning Lineage Inspector**: UI component for visualizing verified `x-gemini-provenance` reasoning steps. (Added: 2026-06-29)
+- [ ] **[P0] CFIA v2 Signing Workspace**: Interactive UI for human-in-the-loop hashing and hardware-signing of context files. (Added: 2026-06-29)
+- [ ] **[P1] FPIR Lease Monitor**: Dashboard for tracking fast-path identity resumption leases and teammate rotation latency. (Added: 2026-06-29)
+
+#### Upcoming (2026-03-23 Evolution - v2)
+- [ ] **[P0] A2A Auth Status Dashboard**: (2026-03-23) Visualize authenticated inter-agent handshakes and peer-to-peer security status.
+- [ ] **[P1] Usage Quota Dashboard**: (2026-03-23) Real-time visualization of mission budget consumption and quota burn rates.
+- [ ] **[P1] Sandbox Identity Viewer**: (2026-03-23) Real-time status for gVisor-bound tools and execution environment integrity proofs.
+
+#### Upcoming (2026-06-30 Evolution)
+- [ ] **[P0] Cognitive Consensus Dashboard**: Visualize swarm quorum status and CAH attestation strengths. (Added: 2026-06-30)
+- [ ] **[P0] Priority Mailbox Visualizer**: Real-time monitor for PAMS interrupt signals and coordination bypasses. (Added: 2026-06-30)
+- [ ] **[P0] Attention Entropy Heatmap**: Forensic UI for visualizing noise-to-utility scores and ASF detection alerts. (Added: 2026-06-30)
+- [ ] **[P0] Mission Lease Manager**: Dashboard for tracking LMP token lifetimes and hardware re-attestation status. (Added: 2026-06-30)
+
+#### Upcoming (2026-07-02 Evolution)
+- [ ] **[P0] Intent Reconciliation Hub**: (2026-07-02) Workspace for managing multi-agent instruction quorums and hardware-attested vote resolution.
+- [ ] **[P0] Multimodal Entanglement Auditor**: (2026-07-02) Forensic UI for reviewing cryptographically entangled non-textual shards and lineage alerts.
+- [ ] **[P0] Reasoning Entropy Dashboard**: (2026-07-02) Real-time visualization of swarm reasoning entropy and cognitive stall triggers.
+- [ ] **[P1] CRDT Mailbox Visualizer**: (2026-07-02) High-speed monitor for lock-free teammate synchronization and conflict-free state resolution.
+
+#### Upcoming (2026-07-01 Evolution)
+- [ ] **[P0] Multimodal Memory Bus Monitor**: (2026-07-01) Real-time visualization of intent-pinned state synchronization and multimodal sanitization events.
+- [ ] **[P0] ZK-Discovery Broker Workspace**: (2026-07-01) UI for reviewing masked capability cards and unmasking schemas via mission-handshakes.
+- [ ] **[P0] Attention Anchor Heatmap**: (2026-07-01) Visual tracker for ALRA-pinned intent fragments and attention-density alerts.
+
+#### Upcoming (2026-03-24 Evolution - v2)
+- [ ] **[P1] Intent Lineage Visualizer**: Real-time graph showing the chain of signed intents across the swarm. (Added: 2026-03-24)
+- [ ] **[P2] BSH Performance Monitor**: Metrics dashboard tracking binary state transfer latency and token savings. (Added: 2026-03-24)
+- [ ] **[P0] Discovery Sandbox Monitor**: Real-time visualization of sandboxed discovery command execution and safety attestation. (Added: 2026-03-24)
+- [ ] **[P0] Teammate Task List Viewer**: High-speed, CRDT-native visualization of the shared task list for horizontal swarms. (Added: 2026-03-24)
+- [ ] **[P0] ALSV Block List Explorer**: UI for reviewing and approving command arguments flagged by the semantic validator. (Added: 2026-03-24)
