@@ -5,6 +5,7 @@ package integration
 
 import (
 	"bytes"
+	"context"
 	"net/http"
 	"testing"
 	"time"
