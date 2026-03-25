@@ -19,7 +19,7 @@ import (
 	mcpv1alpha1 "github.com/mcpany/core/operator/api/v1alpha1"
 )
 
-// MCPServerReconciler reconciles a MCPServer object
+// MCPServerReconciler reconciles a MCPServer object.
 type MCPServerReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
@@ -120,8 +120,8 @@ func (r *MCPServerReconciler) deploymentForMCPServer(m *mcpv1alpha1.MCPServer) *
 				},
 				Spec: corev1.PodSpec{
 					Containers: []corev1.Container{{
-						Image:   m.Spec.Image,
-						Name:    "mcp-server",
+						Image: m.Spec.Image,
+						Name:  "mcp-server",
 						Ports: []corev1.ContainerPort{{
 							ContainerPort: 8080,
 							Name:          "http",

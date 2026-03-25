@@ -10,7 +10,7 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
-// MCPServerSpec defines the desired state of MCPServer
+// MCPServerSpec defines the desired state of MCPServer.
 type MCPServerSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
@@ -30,7 +30,7 @@ type MCPServerSpec struct {
 	ServiceType string `json:"serviceType,omitempty"`
 }
 
-// MCPServerStatus defines the observed state of MCPServer
+// MCPServerStatus defines the observed state of MCPServer.
 type MCPServerStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
@@ -42,7 +42,7 @@ type MCPServerStatus struct {
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 
-// MCPServer is the Schema for the mcpservers API
+// MCPServer is the Schema for the mcpservers API.
 type MCPServer struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -53,7 +53,7 @@ type MCPServer struct {
 
 //+kubebuilder:object:root=true
 
-// MCPServerList contains a list of MCPServer
+// MCPServerList contains a list of MCPServer.
 type MCPServerList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`

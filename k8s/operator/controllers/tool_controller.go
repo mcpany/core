@@ -14,7 +14,7 @@ import (
 	mcpv1alpha1 "github.com/mcpany/core/operator/api/v1alpha1"
 )
 
-// ToolReconciler reconciles a Tool object
+// ToolReconciler reconciles a Tool object.
 type ToolReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
