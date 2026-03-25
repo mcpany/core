@@ -981,6 +981,17 @@
 - **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
 - **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.
 
+## Evolution: [2026-03-25] (Iteration 4) Updates
+
+### Proposed Additions
+- **Relational PoI Chain Validator**: (P0) Core security service mandating cryptographic verification of the entire intent lineage back to the hardware-attested mission root.
+- **Memfd-Bound BSH Sanitizer**: (P0) Integration of WASM-based binary scanning directly into zero-copy shared memory segments.
+- **Hardware-Attested Monotonic Depth-Counters**: (P0) Physical constraint enforcement for recursive delegations to prevent infinite resource exhaustion loops.
+
+### Priority Shifts
+- **RID Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Hardware-Attested Depth-Counters**.
+- **WASM-BSH State Sanitizer**: (Re-affirmed P0) Evolving into the **Memfd-Bound Sanitizer** to eliminate intermediate buffer copies.
+
 ## Evolution: [2026-07-03] Updates
 
 ### Proposed Additions
