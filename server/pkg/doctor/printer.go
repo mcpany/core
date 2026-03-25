@@ -10,33 +10,15 @@ import (
 	"text/tabwriter"
 )
 
-// PrintResults prints the doctor check results in a structured table to the provided writer.
+// PrintResults printResults print results.
 //
-// It formats the check results with status icons and alignment for readability.
+// Summary: PrintResults print results.
 //
-// Parameters:
-//   - w: io.Writer. The writer to output the results to (e.g., os.Stdout). If nil, defaults to os.Stdout.
-//   - results: []CheckResult. The list of check results to print.
+// Parameters: - None.
+//   - w (io.Writer): The w.
+//   - results ([]CheckResult): The results.
 //
-// Returns:
-//
-//	None.
-//
-// Side Effects:
-//   - Writes formatted text to the provided writer.
-//
-// Summary: Executes PrintResults operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
+// Returns: - None.
 //   - None.
 func PrintResults(w io.Writer, results []CheckResult) {
 	if w == nil {

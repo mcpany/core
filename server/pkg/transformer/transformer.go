@@ -28,10 +28,10 @@ type Transformer struct {
 //
 // Summary: Initializes a new Transformer.
 //
-// Returns:
+// Returns: - None.
 //   - *Transformer: The initialized transformer.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Initializes a sync.Pool for bytes.Buffer.
 func NewTransformer() *Transformer {
 	return &Transformer{
@@ -48,19 +48,19 @@ func NewTransformer() *Transformer {
 //
 // Summary: Executes a Go template against provided data.
 //
-// Parameters:
+// Parameters: - None.
 //   - templateStr: string. The Go template to execute.
 //   - data: any. The input data context for the template.
 //
-// Returns:
+// Returns: - None.
 //   - []byte: The transformed output.
 //   - error: An error if template parsing or execution fails.
 //
-// Errors:
+// Errors: - None.
 //   - Returns error if template syntax is invalid.
 //   - Returns error if template execution fails.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Caches parsed templates.
 //   - Uses a buffer pool to reduce allocations.
 func (t *Transformer) Transform(templateStr string, data any) ([]byte, error) {

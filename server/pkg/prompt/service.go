@@ -25,10 +25,10 @@ type Service struct {
 //
 // Summary: Initializes a new Prompt Service.
 //
-// Parameters:
+// Parameters: - None.
 //   - promptManager: ManagerInterface. The manager handling prompt lifecycle.
 //
-// Returns:
+// Returns: - None.
 //   - *Service: The initialized service.
 func NewService(promptManager ManagerInterface) *Service {
 	s := &Service{
@@ -42,10 +42,10 @@ func NewService(promptManager ManagerInterface) *Service {
 //
 // Summary: Configures the underlying MCP server.
 //
-// Parameters:
+// Parameters: - None.
 //   - mcpServer: *mcp.Server. The MCP server instance.
 //
-// Returns:
+// Returns: - None.
 //
 //	None.
 func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
@@ -65,11 +65,11 @@ func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 //
 // Summary: Lists all available prompts.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx: context.Context. The context for the request.
 //   - req: *mcp.ListPromptsRequest. The request object.
 //
-// Returns:
+// Returns: - None.
 //   - *mcp.ListPromptsResult: The list of prompts.
 //   - error: An error if the operation fails.
 func (s *Service) ListPrompts(
@@ -90,15 +90,15 @@ func (s *Service) ListPrompts(
 //
 // Summary: Retrieves and executes a specific prompt.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx: context.Context. The context for the request.
 //   - req: *mcp.GetPromptRequest. The request containing the prompt name and arguments.
 //
-// Returns:
+// Returns: - None.
 //   - *mcp.GetPromptResult: The result of the prompt execution.
 //   - error: An error if the prompt is not found or execution fails.
 //
-// Throws/Errors:
+// Errors: - None.
 //   - ErrPromptNotFound: If the prompt does not exist.
 func (s *Service) GetPrompt(
 	ctx context.Context,

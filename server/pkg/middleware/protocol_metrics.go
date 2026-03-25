@@ -64,33 +64,15 @@ var (
 	)
 )
 
-// PrometheusMetricsMiddleware provides protocol-level metrics for all MCP requests. It intercepts requests to track duration, success/failure counts, payload sizes, and token counts.
+// PrometheusMetricsMiddleware prometheusMetricsMiddleware prometheus metrics middleware.
 //
-// Parameters:
-//   - t (tokenizer.Tokenizer): The t parameter.
+// Summary: PrometheusMetricsMiddleware prometheus metrics middleware.
 //
-// Returns:
-//   - mcp.Middleware: The resulting mcp.Middleware.
+// Parameters: - None.
+//   - t (tokenizer.Tokenizer): The t.
 //
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes PrometheusMetricsMiddleware operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+// Returns: - None.
+//   - mcp.Middleware: The result.
 func PrometheusMetricsMiddleware(t tokenizer.Tokenizer) mcp.Middleware {
 	registerProtocolMetricsOnce.Do(func() {
 		prometheus.MustRegister(mcpOperationDuration)
@@ -236,28 +218,16 @@ func estimateResultTokens(t tokenizer.Tokenizer, res mcp.Result) int {
 	return c
 }
 
-// CalculateToolResultTokens calculates the number of tokens in a tool result.
+// CalculateToolResultTokens calculateToolResultTokens calculate tool result tokens.
 //
-// Parameters:
-//   - t: tokenizer.Tokenizer. The tokenizer to use for counting.
-//   - result: any. The result object to analyze (can be *mcp.CallToolResult, string, []byte, or others).
+// Summary: CalculateToolResultTokens calculate tool result tokens.
 //
-// Returns:
-//   - int: The estimated token count.
+// Parameters: - None.
+//   - t (tokenizer.Tokenizer): The t.
+//   - result (any): The result.
 //
-// Summary: Executes CalculateToolResultTokens operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+// Returns: - None.
+//   - int: The result.
 func CalculateToolResultTokens(t tokenizer.Tokenizer, result any) int {
 	if result == nil {
 		return 0

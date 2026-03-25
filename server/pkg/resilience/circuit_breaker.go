@@ -49,13 +49,13 @@ type CircuitBreaker struct {
 //
 // Summary: Creates a new circuit breaker.
 //
-// Parameters:
+// Parameters: - None.
 //   - config (*configv1.CircuitBreakerConfig): The configuration for the circuit breaker.
 //
-// Returns:
+// Returns: - None.
 //   - *CircuitBreaker: A new CircuitBreaker instance.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func NewCircuitBreaker(config *configv1.CircuitBreakerConfig) *CircuitBreaker {
 	return &CircuitBreaker{
@@ -70,14 +70,14 @@ func NewCircuitBreaker(config *configv1.CircuitBreakerConfig) *CircuitBreaker {
 //
 // Summary: Executes a function protected by the circuit breaker.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx (context.Context): The context for the request.
 //   - work (func(context.Context) error): The function to execute.
 //
-// Returns:
+// Returns: - None.
 //   - error: An error if the function fails or the breaker is open.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - May change the state of the circuit breaker.
 //   - Executes the provided function.
 func (cb *CircuitBreaker) Execute(ctx context.Context, work func(context.Context) error) error {
@@ -240,13 +240,13 @@ type CircuitBreakerOpenError struct{}
 //
 // Summary: Returns the error message.
 //
-// Parameters:
+// Parameters: - None.
 //   - None.
 //
-// Returns:
+// Returns: - None.
 //   - string: The error message.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (e *CircuitBreakerOpenError) Error() string {
 	return "circuit breaker is open"

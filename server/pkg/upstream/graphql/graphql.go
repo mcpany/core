@@ -93,58 +93,28 @@ const introspectionQuery = `
 // Summary: Represents a Upstream.
 type Upstream struct{}
 
-// NewGraphQLUpstream creates a new GraphQL upstream.
+// NewGraphQLUpstream creates a new graph ql upstream.
 //
-// Returns:
+// Summary: Creates a new graph ql upstream.
+//
+// Parameters: - None.
+//   - None.
+//
+// Returns: - None.
 //   - upstream.Upstream: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewGraphQLUpstream operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func NewGraphQLUpstream() upstream.Upstream {
 	return &Upstream{}
 }
 
-// Shutdown shuts down the upstream.
+// Shutdown shutdown shutdown.
 //
-// Parameters:
-//   - _ (context.Context): The parameter.
+// Summary: Shutdown shutdown.
 //
-// Returns:
+// Parameters: - None.
+//   - _ (context.Context): Unused parameter.
+//
+// Returns: - None.
 //   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Shutdown operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (g *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
@@ -236,35 +206,17 @@ type Callable struct {
 	address       string
 }
 
-// Call executes the GraphQL query.
+// Call call call.
 //
-// Parameters:
+// Summary: Call call.
+//
+// Parameters: - None.
 //   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The parameter.
+//   - req (*tool.ExecutionRequest): The req.
 //
-// Returns:
+// Returns: - None.
 //   - any: The result.
 //   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Call operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	graphqlReq := graphql.NewRequest(c.query)
 	for key, value := range req.Arguments {
@@ -289,7 +241,7 @@ func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, e
 
 // Register inspects the GraphQL upstream service and registers its capabilities. ctx is the context for the request. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx (context.Context): The context for the request.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
 //   - toolManager (tool.ManagerInterface): The toolManager parameter.
@@ -297,30 +249,27 @@ func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, e
 //   - _ (resource.ManagerInterface): The _ parameter.
 //   - _ (bool): The _ parameter.
 //
-// Returns:
+// Returns: - None.
 //   - string: The resulting string.
 //   - []*configv1.ToolDefinition: The resulting []*configv1.ToolDefinition.
 //   - []*configv1.ResourceDefinition: The resulting []*configv1.ResourceDefinition.
 //   - error: An error if the operation fails.
 //
-// Errors:
+// Errors: - None.
 //   - Returns an error if the operation fails or is invalid.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 //
 // Summary: Executes Register operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
+// Parameters: - None.
 //
-// Returns:
-//   - TODO: Document returns.
+// Returns: - None.
 //
-// Errors:
-//   - TODO: Document errors.
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (g *Upstream) Register(
 	ctx context.Context,

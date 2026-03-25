@@ -22,31 +22,17 @@ type OAuth2Authenticator struct {
 	audiences []string
 }
 
-// NewOAuth2Authenticator creates a new OAuth2Authenticator with the provided
-// configuration. It initializes the OIDC provider and creates a verifier for
-// validating ID tokens.
+// NewOAuth2Authenticator creates a new o auth2 authenticator.
 //
-// Parameters:
-//   - ctx: The context for the OIDC provider initialization.
-//   - config: The OAuth2 configuration, including the issuer URL and client ID.
+// Summary: Creates a new o auth2 authenticator.
 //
-// Returns:
-//   - A new OAuth2Authenticator.
-//   - An error if the OIDC provider cannot be initialized.
+// Parameters: - None.
+//   - ctx (context.Context): The context for the request.
+//   - config (*OAuth2Config): The config.
 //
-// Summary: Initializes NewOAuth2Authenticator operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+// Returns: - None.
+//   - *OAuth2Authenticator: The result.
+//   - error: An error if the operation fails.
 func NewOAuth2Authenticator(ctx context.Context, config *OAuth2Config) (*OAuth2Authenticator, error) {
 	provider, err := oidc.NewProvider(ctx, config.IssuerURL)
 	if err != nil {
@@ -75,31 +61,17 @@ func NewOAuth2Authenticator(ctx context.Context, config *OAuth2Config) (*OAuth2A
 	}, nil
 }
 
-// Authenticate validates the JWT from the Authorization header of the request.
-// It checks for a "Bearer" token and verifies its signature, expiration, and
-// claims against the OIDC provider.
+// Authenticate authenticate authenticate.
 //
-// Parameters:
-//   - ctx: The request context.
-//   - r: The HTTP request to authenticate.
+// Summary: Authenticate authenticate.
 //
-// Returns:
-//   - The context with the user's identity (email) on success.
-//   - An error if authentication fails.
+// Parameters: - None.
+//   - ctx (context.Context): The context for the request.
+//   - r (*http.Request): The r.
 //
-// Summary: Executes Authenticate operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+// Returns: - None.
+//   - context.Context: The result.
+//   - error: An error if the operation fails.
 func (a *OAuth2Authenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {

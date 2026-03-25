@@ -22,7 +22,7 @@ type RBACMiddleware struct {
 //
 // Summary: Initializes the RBAC middleware.
 //
-// Returns:
+// Returns: - None.
 //   - *RBACMiddleware: The initialized middleware.
 func NewRBACMiddleware() *RBACMiddleware {
 	return &RBACMiddleware{
@@ -34,10 +34,10 @@ func NewRBACMiddleware() *RBACMiddleware {
 //
 // Summary: Enforces that the authenticated user possesses a specific role.
 //
-// Parameters:
+// Parameters: - None.
 //   - role: string. The required role.
 //
-// Returns:
+// Returns: - None.
 //   - func(http.Handler) http.Handler: The middleware function.
 func (m *RBACMiddleware) RequireRole(role string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
@@ -65,10 +65,10 @@ func (m *RBACMiddleware) RequireRole(role string) func(http.Handler) http.Handle
 //
 // Summary: Enforces that the authenticated user possesses at least one of the specified roles.
 //
-// Parameters:
+// Parameters: - None.
 //   - roles: ...string. The list of allowed roles.
 //
-// Returns:
+// Returns: - None.
 //   - func(http.Handler) http.Handler: The middleware function.
 func (m *RBACMiddleware) RequireAnyRole(roles ...string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
@@ -98,10 +98,10 @@ func (m *RBACMiddleware) RequireAnyRole(roles ...string) func(http.Handler) http
 //
 // Summary: Enforces a custom policy based on the user object.
 //
-// Parameters:
+// Parameters: - None.
 //   - policy: func(user *configv1.User) bool. The policy function to evaluate.
 //
-// Returns:
+// Returns: - None.
 //   - func(http.Handler) http.Handler: The middleware function.
 func (m *RBACMiddleware) EnforcePolicy(_ func(user *configv1.User) bool) func(http.Handler) http.Handler {
 	return func(_ http.Handler) http.Handler {

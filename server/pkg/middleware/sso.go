@@ -22,13 +22,13 @@ type SSOConfig struct {
 //
 // Summary: Middleware that enforces SSO authentication via trusted headers or bearer tokens.
 //
-// Parameters:
+// Parameters: - None.
 //   - config: SSOConfig. The configuration settings for SSO.
 //
-// Returns:
+// Returns: - None.
 //   - gin.HandlerFunc: The Gin middleware handler.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Inspects headers for authentication information.
 //   - Aborts the request with 401 Unauthorized if authentication is missing or invalid.
 //   - Sets "UserID" in the context on successful authentication.

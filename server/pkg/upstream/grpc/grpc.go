@@ -51,30 +51,15 @@ type Upstream struct {
 	mu              sync.RWMutex
 }
 
-// CheckHealth performs a health check on the upstream service.
+// CheckHealth checkHealth check health.
 //
-// Parameters:
-//   - ctx (context.Context): The context for the health check.
+// Summary: CheckHealth check health.
 //
-// Returns:
-//   - error: An error if the service is unhealthy.
+// Parameters: - None.
+//   - ctx (context.Context): The context for the request.
 //
-// Side Effects:
-//   - Performs a health check RPC.
-//
-// Summary: Executes CheckHealth operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+// Returns: - None.
+//   - error: An error if the operation fails.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -90,30 +75,15 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 	return nil
 }
 
-// NewUpstream creates a new instance of Upstream.
+// NewUpstream creates a new upstream.
 //
-// Parameters:
-//   - poolManager (*pool.Manager): The connection pool manager to be used for managing gRPC connections.
+// Summary: Creates a new upstream.
 //
-// Returns:
-//   - upstream.Upstream: An implementation of the upstream.Upstream interface.
+// Parameters: - None.
+//   - poolManager (*pool.Manager): The pool manager.
 //
-// Side Effects:
-//   - Starts a background cache cleaner.
-//
-// Summary: Initializes NewUpstream operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+// Returns: - None.
+//   - upstream.Upstream: The result.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	cache := ttlcache.New[string, *descriptorpb.FileDescriptorSet](
 		ttlcache.WithTTL[string, *descriptorpb.FileDescriptorSet](5 * time.Minute),
@@ -126,33 +96,15 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	}
 }
 
-// Shutdown gracefully terminates the gRPC upstream service by shutting down the
-// associated connection pool.
+// Shutdown shutdown shutdown.
 //
-// Parameters:
-//   - ctx (context.Context): The context for the shutdown operation (currently unused).
+// Summary: Shutdown shutdown.
 //
-// Returns:
-//   - error: Always returns nil.
+// Parameters: - None.
+//   - _ (context.Context): Unused parameter.
 //
-// Side Effects:
-//   - Stops the health checker.
-//   - Stops the reflection cache.
-//   - Deregisters the connection pool.
-//
-// Summary: Executes Shutdown operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+// Returns: - None.
+//   - error: An error if the operation fails.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -173,7 +125,7 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // definitions, and then creates and registers tools based on the discovered
 // methods and any MCP annotations.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx (context.Context): The registration context.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the service.
 //   - toolManager (tool.ManagerInterface): The manager for tools.
@@ -181,29 +133,26 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //   - resourceManager (resource.ManagerInterface): The manager for resources.
 //   - isReload (bool): Indicates whether this is a reload.
 //
-// Returns:
+// Returns: - None.
 //   - string: The unique service ID.
 //   - []*configv1.ToolDefinition: Discovered tools.
 //   - []*configv1.ResourceDefinition: Discovered resources (currently unused for gRPC).
 //   - error: An error if registration fails.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Creates a gRPC connection pool.
 //   - Fetches and caches service descriptors (via reflection or config).
 //   - Registers tools and prompts.
 //
 // Summary: Executes Register operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
+// Parameters: - None.
 //
-// Returns:
-//   - TODO: Document returns.
+// Returns: - None.
 //
-// Errors:
-//   - TODO: Document errors.
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (u *Upstream) Register(
 	ctx context.Context,

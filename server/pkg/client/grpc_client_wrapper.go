@@ -41,35 +41,17 @@ type GrpcClientWrapper struct {
 	checker health.Checker
 }
 
-// NewGrpcClientWrapper creates a new GrpcClientWrapper. It accepts a shared health checker to avoid creating a new one for every client.
+// NewGrpcClientWrapper creates a new grpc client wrapper.
 //
-// Parameters:
-//   - conn (Conn): The conn parameter.
-//   - config (*configv1.UpstreamServiceConfig): The config parameter.
-//   - checker (health.Checker): The checker parameter.
+// Summary: Creates a new grpc client wrapper.
 //
-// Returns:
-//   - *GrpcClientWrapper: The resulting *GrpcClientWrapper.
+// Parameters: - None.
+//   - conn (Conn): The conn.
+//   - config (*configv1.UpstreamServiceConfig): The config.
+//   - checker (health.Checker): The checker.
 //
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewGrpcClientWrapper operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+// Returns: - None.
+//   - *GrpcClientWrapper: The result.
 func NewGrpcClientWrapper(conn Conn, config *configv1.UpstreamServiceConfig, checker health.Checker) *GrpcClientWrapper {
 	// If no checker is provided, create a new one (backward compatibility or standalone usage).
 	if checker == nil {
@@ -82,33 +64,15 @@ func NewGrpcClientWrapper(conn Conn, config *configv1.UpstreamServiceConfig, che
 	}
 }
 
-// IsHealthy checks if the underlying gRPC connection is in a usable state. It returns `true` if the connection's state is not `connectivity.Shutdown`, indicating that it is still active and can be used for new RPCs.
+// IsHealthy isHealthy is healthy.
 //
-// Parameters:
+// Summary: IsHealthy is healthy.
+//
+// Parameters: - None.
 //   - ctx (context.Context): The context for the request.
 //
-// Returns:
-//   - bool: True if successful, false otherwise.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Checks IsHealthy operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+// Returns: - None.
+//   - bool: The result.
 func (w *GrpcClientWrapper) IsHealthy(ctx context.Context) bool {
 	if w.GetState() == connectivity.Shutdown {
 		return false
@@ -122,33 +86,15 @@ func (w *GrpcClientWrapper) IsHealthy(ctx context.Context) bool {
 	return w.checker.Check(ctx).Status == health.StatusUp
 }
 
-// Close terminates the underlying gRPC connection, releasing any associated resources.
+// Close close close.
 //
-// Parameters:
+// Summary: Close close.
+//
+// Parameters: - None.
 //   - None.
 //
-// Returns:
+// Returns: - None.
 //   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Close operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (w *GrpcClientWrapper) Close() error {
 	return w.Conn.Close()
 }

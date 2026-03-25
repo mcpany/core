@@ -17,10 +17,10 @@ import (
 //
 // Summary: Verifies runtime tool integrity.
 //
-// Parameters:
+// Parameters: - None.
 //   - t: *v1.Tool. The tool to verify.
 //
-// Returns:
+// Returns: - None.
 //   - error: An error if integrity check fails.
 func VerifyIntegrity(t *v1.Tool) error {
 	if !t.HasIntegrity() {
@@ -47,10 +47,10 @@ func VerifyIntegrity(t *v1.Tool) error {
 //
 // Summary: Verifies configuration tool integrity.
 //
-// Parameters:
+// Parameters: - None.
 //   - t: *configv1.ToolDefinition. The tool definition to verify.
 //
-// Returns:
+// Returns: - None.
 //   - error: An error if integrity check fails.
 func VerifyConfigIntegrity(t *configv1.ToolDefinition) error {
 	if t.GetIntegrity() == nil {
@@ -77,10 +77,10 @@ func VerifyConfigIntegrity(t *configv1.ToolDefinition) error {
 //
 // Summary: Calculates hash for runtime tool.
 //
-// Parameters:
+// Parameters: - None.
 //   - t: *v1.Tool. The tool to hash.
 //
-// Returns:
+// Returns: - None.
 //   - string: The hex-encoded SHA256 hash.
 //   - error: An error if marshaling fails.
 func CalculateHash(t *v1.Tool) (string, error) {
@@ -105,10 +105,10 @@ func CalculateHash(t *v1.Tool) (string, error) {
 //
 // Summary: Calculates hash for configuration tool.
 //
-// Parameters:
+// Parameters: - None.
 //   - t: *configv1.ToolDefinition. The tool definition to hash.
 //
-// Returns:
+// Returns: - None.
 //   - string: The hex-encoded SHA256 hash.
 //   - error: An error if marshaling fails.
 func CalculateConfigHash(t *configv1.ToolDefinition) (string, error) {

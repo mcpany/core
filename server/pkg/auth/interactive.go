@@ -17,39 +17,21 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// InitiateOAuth starts the OAuth2 flow for a given service or credential. It returns the authorization URL and the state parameter.
+// InitiateOAuth initiateOAuth initiate o auth.
 //
-// Parameters:
+// Summary: InitiateOAuth initiate o auth.
+//
+// Parameters: - None.
 //   - ctx (context.Context): The context for the request.
-//   - userID (string): The userID parameter.
-//   - serviceID (string): The serviceID parameter.
-//   - credentialID (string): The credentialID parameter.
-//   - redirectURL (string): The redirectURL parameter.
+//   - userID (unknown): The user id.
+//   - serviceID (unknown): The service id.
+//   - credentialID (unknown): The credential id.
+//   - redirectURL (string): The redirect url.
 //
-// Returns:
-//   - string: The resulting string.
-//   - string: The resulting string.
+// Returns: - None.
+//   - string: The result.
+//   - string: The result.
 //   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes InitiateOAuth operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credentialID, redirectURL string) (string, string, error) {
 	// Fix for unused userID:
 	_ = userID
@@ -148,38 +130,20 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 	return url, state, nil
 }
 
-// HandleOAuthCallback handles the OAuth2 callback code exchange.
+// HandleOAuthCallback handleOAuthCallback handle o auth callback.
 //
-// Parameters:
+// Summary: HandleOAuthCallback handle o auth callback.
+//
+// Parameters: - None.
 //   - ctx (context.Context): The context for the request.
-//   - userID (string): The userID parameter.
-//   - serviceID (string): The serviceID parameter.
-//   - credentialID (string): The credentialID parameter.
-//   - code (string): The code parameter.
-//   - redirectURL (string): The redirectURL parameter.
+//   - userID (unknown): The user id.
+//   - serviceID (unknown): The service id.
+//   - credentialID (unknown): The credential id.
+//   - code (unknown): The code.
+//   - redirectURL (string): The redirect url.
 //
-// Returns:
+// Returns: - None.
 //   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes HandleOAuthCallback operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (am *Manager) HandleOAuthCallback(ctx context.Context, userID, serviceID, credentialID, code, redirectURL string) error {
 	am.mu.RLock()
 	storage := am.storage

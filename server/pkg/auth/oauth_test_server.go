@@ -27,33 +27,15 @@ type MockOAuth2Server struct {
 	ClientID   string
 }
 
-// NewMockOAuth2Server creates a new mock OAuth2 server. t is the t. Returns the result.
+// NewMockOAuth2Server creates a new mock o auth2 server.
 //
-// Parameters:
-//   - t (*testing.T): The t parameter.
+// Summary: Creates a new mock o auth2 server.
 //
-// Returns:
-//   - *MockOAuth2Server: The resulting *MockOAuth2Server.
+// Parameters: - None.
+//   - t (*testing.T): The t.
 //
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewMockOAuth2Server operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+// Returns: - None.
+//   - *MockOAuth2Server: The result.
 func NewMockOAuth2Server(t *testing.T) *MockOAuth2Server {
 	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
 	require.NoError(t, err)
@@ -124,34 +106,16 @@ func NewMockOAuth2Server(t *testing.T) *MockOAuth2Server {
 	return mock
 }
 
-// NewIDToken permits generating custom tokens signed by this server. t is the t. claims is the claims. Returns the result.
+// NewIDToken creates a new id token.
 //
-// Parameters:
-//   - t (*testing.T): The t parameter.
-//   - claims (jwt.MapClaims): The claims parameter.
+// Summary: Creates a new id token.
 //
-// Returns:
-//   - string: The resulting string.
+// Parameters: - None.
+//   - t (*testing.T): The t.
+//   - claims (jwt.MapClaims): The claims.
 //
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewIDToken operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+// Returns: - None.
+//   - string: The result.
 func (s *MockOAuth2Server) NewIDToken(t *testing.T, claims jwt.MapClaims) string {
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
 	signedToken, err := token.SignedString(s.PrivateKey)

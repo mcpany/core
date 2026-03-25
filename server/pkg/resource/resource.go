@@ -25,32 +25,32 @@ var ErrResourceNotFound = errors.New("resource not found")
 type Resource interface {
 	// Resource returns the MCP representation of the resource, which includes its metadata.
 	//
-	// Returns:
+	// Returns: - None.
 	//   - *mcp.Resource: The MCP resource definition.
 	Resource() *mcp.Resource
 
 	// Service returns the ID of the service that provides this resource.
 	//
-	// Returns:
+	// Returns: - None.
 	//   - string: The service ID.
 	Service() string
 
 	// Read retrieves the content of the resource.
 	//
-	// Parameters:
+	// Parameters: - None.
 	//   - ctx: context.Context. The context for the request.
 	//
-	// Returns:
+	// Returns: - None.
 	//   - *mcp.ReadResourceResult: The content of the resource.
 	//   - error: An error if reading fails.
 	Read(ctx context.Context) (*mcp.ReadResourceResult, error)
 
 	// Subscribe establishes a subscription to the resource, allowing for receiving updates.
 	//
-	// Parameters:
+	// Parameters: - None.
 	//   - ctx: context.Context. The context for the subscription.
 	//
-	// Returns:
+	// Returns: - None.
 	//   - error: An error if subscription fails.
 	Subscribe(ctx context.Context) error
 }
@@ -64,54 +64,54 @@ type Resource interface {
 type ManagerInterface interface {
 	// GetResource retrieves a resource by its URI.
 	//
-	// Parameters:
+	// Parameters: - None.
 	//   - uri: string. The URI of the resource.
 	//
-	// Returns:
+	// Returns: - None.
 	//   - Resource: The resource instance.
 	//   - bool: True if found, false otherwise.
 	GetResource(uri string) (Resource, bool)
 
 	// AddResource adds a new resource to the manager.
 	//
-	// Parameters:
-	//   - resource: Resource. The resource to add.
+	// Parameters: - None.
+	//   - resource (Resource): The resource to add.
 	//
-	// Returns:
-	//   None.
+	// Returns: - None.
+	//   - None.
 	AddResource(resource Resource)
 
 	// RemoveResource removes a resource from the manager by its URI.
 	//
-	// Parameters:
-	//   - uri: string. The URI of the resource to remove.
+	// Parameters: - None.
+	//   - uri (string): The URI of the resource to remove.
 	//
-	// Returns:
-	//   None.
+	// Returns: - None.
+	//   - None.
 	RemoveResource(uri string)
 
 	// ListResources returns a slice of all resources currently in the manager.
 	//
-	// Returns:
+	// Returns: - None.
 	//   - []Resource: A slice of resources.
 	ListResources() []Resource
 
 	// OnListChanged registers a callback function to be called when the list of resources changes.
 	//
-	// Parameters:
-	//   - f: func(). The callback function to execute on change.
+	// Parameters: - None.
+	//   - f (func()): The callback function to execute on change.
 	//
-	// Returns:
-	//   None.
+	// Returns: - None.
+	//   - None.
 	OnListChanged(f func())
 
 	// ClearResourcesForService removes all resources associated with a given service ID.
 	//
-	// Parameters:
-	//   - serviceID: string. The service ID.
+	// Parameters: - None.
+	//   - serviceID (string): The service ID.
 	//
-	// Returns:
-	//   None.
+	// Returns: - None.
+	//   - None.
 	ClearResourcesForService(serviceID string)
 }
 
@@ -132,7 +132,7 @@ type Manager struct {
 //
 // Summary: Creates a new resource manager.
 //
-// Returns:
+// Returns: - None.
 //   - *Manager: A new Manager instance.
 func NewManager() *Manager {
 	return &Manager{
@@ -144,10 +144,10 @@ func NewManager() *Manager {
 //
 // Summary: Retrieves a resource by URI.
 //
-// Parameters:
+// Parameters: - None.
 //   - uri: string. The URI of the resource.
 //
-// Returns:
+// Returns: - None.
 //   - Resource: The resource instance.
 //   - bool: True if found, false otherwise.
 func (rm *Manager) GetResource(uri string) (Resource, bool) {
@@ -161,14 +161,14 @@ func (rm *Manager) GetResource(uri string) (Resource, bool) {
 //
 // Summary: Adds a resource to the manager.
 //
-// Parameters:
+// Parameters: - None.
 //   - resource: Resource. The resource to add.
 //
-// Returns:
+// Returns: - None.
 //
 //	None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Updates the internal resource storage.
 //   - Invalidates the list cache.
 //   - Triggers the on-change callback if registered.
@@ -189,14 +189,14 @@ func (rm *Manager) AddResource(resource Resource) {
 //
 // Summary: Removes a resource from the manager.
 //
-// Parameters:
+// Parameters: - None.
 //   - uri: string. The URI of the resource.
 //
-// Returns:
+// Returns: - None.
 //
 //	None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Updates the internal resource storage.
 //   - Invalidates the list cache.
 //   - Triggers the on-change callback if registered.
@@ -222,7 +222,7 @@ func (rm *Manager) RemoveResource(uri string) {
 // It uses a read-through cache (double-checked locking) to minimize allocation overhead
 // for frequent calls.
 //
-// Returns:
+// Returns: - None.
 //   - []Resource: A slice of currently registered resources.
 func (rm *Manager) ListResources() []Resource {
 	// ⚡ Bolt: Use a read-through cache to avoid repeated map iteration and slice allocation.
@@ -266,10 +266,10 @@ func (rm *Manager) ListResources() []Resource {
 //
 // Summary: Registers a callback for list changes.
 //
-// Parameters:
+// Parameters: - None.
 //   - f: func(). The callback function.
 //
-// Returns:
+// Returns: - None.
 //
 //	None.
 func (rm *Manager) OnListChanged(f func()) {
@@ -282,11 +282,11 @@ func (rm *Manager) OnListChanged(f func()) {
 //
 // Summary: Subscribes to a resource.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx: context.Context. The context for the subscription.
 //   - uri: string. The URI of the resource.
 //
-// Returns:
+// Returns: - None.
 //   - error: An error if resource not found or subscription fails.
 func (rm *Manager) Subscribe(ctx context.Context, uri string) error {
 	resource, ok := rm.GetResource(uri)
@@ -300,14 +300,14 @@ func (rm *Manager) Subscribe(ctx context.Context, uri string) error {
 //
 // Summary: Clears resources for a specific service.
 //
-// Parameters:
+// Parameters: - None.
 //   - serviceID: string. The service ID.
 //
-// Returns:
+// Returns: - None.
 //
 //	None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Removes matching resources from storage.
 //   - Invalidates the list cache.
 //   - Triggers the on-change callback.

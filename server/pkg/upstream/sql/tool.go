@@ -36,34 +36,19 @@ type Tool struct {
 	initError   error
 }
 
-// NewTool creates a new SQL Tool.
+// NewTool creates a new tool.
 //
-// Parameters:
-//   - t (*v1.Tool): The parameter.
-//   - db (*sql.DB): The parameter.
-//   - callDef (*configv1.SqlCallDefinition): The parameter.
-//   - policies ([]*configv1.CallPolicy): The parameter.
-//   - callID (string): The parameter.
+// Summary: Creates a new tool.
 //
-// Returns:
+// Parameters: - None.
+//   - t (*v1.Tool): The t.
+//   - db (*sql.DB): The db.
+//   - callDef (*configv1.SqlCallDefinition): The call def.
+//   - policies ([]*configv1.CallPolicy): The policies.
+//   - callID (string): The call id.
+//
+// Returns: - None.
 //   - *Tool: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewTool operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, policies []*configv1.CallPolicy, callID string) *Tool {
 	compiled, err := tool.CompileCallPolicies(policies)
 	to := &Tool{
@@ -79,52 +64,28 @@ func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, polici
 	return to
 }
 
-// Tool returns the protobuf definition of the tool.
+// Tool tool tool.
 //
-// Returns:
+// Summary: Tool tool.
+//
+// Parameters: - None.
+//   - None.
+//
+// Returns: - None.
 //   - *v1.Tool: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Tool operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (t *Tool) Tool() *v1.Tool {
 	return t.tool
 }
 
-// MCPTool returns the MCP tool definition.
+// MCPTool mCPTool mcp tool.
 //
-// Returns:
+// Summary: MCPTool mcp tool.
+//
+// Parameters: - None.
+//   - None.
+//
+// Returns: - None.
 //   - *mcp.Tool: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes MCPTool operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (t *Tool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -136,27 +97,15 @@ func (t *Tool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
 
-// GetCacheConfig returns the cache configuration for the tool.
+// GetCacheConfig retrieves the cache config.
 //
-// Returns:
+// Summary: Retrieves the cache config.
+//
+// Parameters: - None.
+//   - None.
+//
+// Returns: - None.
 //   - *configv1.CacheConfig: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves GetCacheConfig operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDef == nil {
 		return nil
@@ -164,35 +113,17 @@ func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 	return t.callDef.GetCache()
 }
 
-// Execute runs the SQL query with the provided inputs.
+// Execute executes the operation.
 //
-// Parameters:
+// Summary: Executes the operation.
+//
+// Parameters: - None.
 //   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The parameter.
+//   - req (*tool.ExecutionRequest): The req.
 //
-// Returns:
+// Returns: - None.
 //   - any: The result.
 //   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Execute operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (t *Tool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError

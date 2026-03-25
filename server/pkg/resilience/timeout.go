@@ -20,10 +20,10 @@ type Timeout struct {
 //
 // Summary: Initializes a new Timeout policy.
 //
-// Parameters:
+// Parameters: - None.
 //   - duration: *durationpb.Duration. The timeout duration.
 //
-// Returns:
+// Returns: - None.
 //   - *Timeout: The initialized timeout policy.
 func NewTimeout(duration *durationpb.Duration) *Timeout {
 	return &Timeout{
@@ -35,17 +35,17 @@ func NewTimeout(duration *durationpb.Duration) *Timeout {
 //
 // Summary: Executes work within a timed context.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx: context.Context. The parent context.
 //   - work: func(context.Context) error. The function to execute.
 //
-// Returns:
+// Returns: - None.
 //   - error: An error if the work fails or the timeout is exceeded.
 //
-// Errors:
+// Errors: - None.
 //   - Returns context.DeadlineExceeded if the timeout is reached.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Creates a child context with a deadline.
 func (t *Timeout) Execute(ctx context.Context, work func(context.Context) error) error {
 	ctx, cancel := context.WithTimeout(ctx, t.duration.AsDuration())

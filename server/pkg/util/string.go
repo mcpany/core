@@ -12,11 +12,11 @@ import "unicode/utf8"
 // It returns the minimum number of single-character edits (insertions, deletions, or substitutions)
 // required to change one string into the other.
 //
-// Parameters:
+// Parameters: - None.
 //   - s1: string. The first string.
 //   - s2: string. The second string.
 //
-// Returns:
+// Returns: - None.
 //   - int: The Levenshtein distance.
 func LevenshteinDistance(s1, s2 string) int {
 	// Pass a very large limit so it behaves like the unbounded version.
@@ -31,12 +31,12 @@ func LevenshteinDistance(s1, s2 string) int {
 //
 // If the distance is strictly greater than limit, it returns a value > limit (specifically limit + 1).
 //
-// Parameters:
+// Parameters: - None.
 //   - s1: string. The first string.
 //   - s2: string. The second string.
 //   - limit: int. The maximum distance to compute.
 //
-// Returns:
+// Returns: - None.
 //   - int: The Levenshtein distance, or limit + 1 if it exceeds the limit.
 func LevenshteinDistanceWithLimit(s1, s2 string, limit int) int {
 	// Optimization: If both strings are ASCII, we can avoid rune conversion

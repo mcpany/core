@@ -28,16 +28,16 @@ type TextTemplate struct {
 //
 // Summary: Initializes a new TextTemplate.
 //
-// Parameters:
+// Parameters: - None.
 //   - templateString: string. The template source.
 //   - startTag: string. The start delimiter (e.g. "{{").
 //   - endTag: string. The end delimiter (e.g. "}}").
 //
-// Returns:
+// Returns: - None.
 //   - *TextTemplate: The parsed template.
 //   - error: An error if parsing fails.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Auto-detects if the template output is likely JSON to enable automatic escaping.
 func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error) {
 	tpl, err := fasttemplate.NewTemplate(templateString, startTag, endTag)
@@ -68,17 +68,17 @@ func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error)
 //
 // Summary: Renders the template with data.
 //
-// Parameters:
+// Parameters: - None.
 //   - params: map[string]any. The data map for variable substitution.
 //
-// Returns:
+// Returns: - None.
 //   - string: The rendered output.
 //   - error: An error if a key is missing or rendering fails.
 //
-// Errors:
+// Errors: - None.
 //   - Returns error if a required tag is missing in params.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Automatically escapes strings if the template is detected as JSON.
 func (t *TextTemplate) Render(params map[string]any) (string, error) {
 	return t.template.ExecuteFuncStringWithErr(func(w io.Writer, tag string) (int, error) {

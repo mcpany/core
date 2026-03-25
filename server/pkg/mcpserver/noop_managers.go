@@ -22,10 +22,10 @@ type NoOpToolManager struct{}
 //
 // Summary: No-op AddTool.
 //
-// Parameters:
+// Parameters: - None.
 //   - _ (tool.Tool): Unused.
 //
-// Returns:
+// Returns: - None.
 //   - error: Always returns nil.
 func (m *NoOpToolManager) AddTool(_ tool.Tool) error { return nil }
 
@@ -33,10 +33,10 @@ func (m *NoOpToolManager) AddTool(_ tool.Tool) error { return nil }
 //
 // Summary: No-op GetTool.
 //
-// Parameters:
+// Parameters: - None.
 //   - _ (string): Unused.
 //
-// Returns:
+// Returns: - None.
 //   - tool.Tool: Always nil.
 //   - bool: Always false.
 func (m *NoOpToolManager) GetTool(_ string) (tool.Tool, bool) { return nil, false }
@@ -45,13 +45,13 @@ func (m *NoOpToolManager) GetTool(_ string) (tool.Tool, bool) { return nil, fals
 //
 // Summary: Returns an empty list of tools.
 //
-// Parameters:
+// Parameters: - None.
 //   - None.
 //
-// Returns:
+// Returns: - None.
 //   - []tool.Tool: Always nil.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (m *NoOpToolManager) ListTools() []tool.Tool { return nil }
 
@@ -59,13 +59,13 @@ func (m *NoOpToolManager) ListTools() []tool.Tool { return nil }
 //
 // Summary: Returns an empty list of MCP tools.
 //
-// Parameters:
+// Parameters: - None.
 //   - None.
 //
-// Returns:
+// Returns: - None.
 //   - []*mcp.Tool: Always nil.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (m *NoOpToolManager) ListMCPTools() []*mcp.Tool { return nil }
 
@@ -73,13 +73,13 @@ func (m *NoOpToolManager) ListMCPTools() []*mcp.Tool { return nil }
 //
 // Summary: No-op ClearToolsForService.
 //
-// Parameters:
+// Parameters: - None.
 //   - _ (string): Unused.
 //
-// Returns:
+// Returns: - None.
 //   - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (m *NoOpToolManager) ClearToolsForService(_ string) {}
 
@@ -87,11 +87,11 @@ func (m *NoOpToolManager) ClearToolsForService(_ string) {}
 //
 // Summary: No-op ExecuteTool.
 //
-// Parameters:
+// Parameters: - None.
 //   - _ (context.Context): Unused.
 //   - _ (*tool.ExecutionRequest): Unused.
 //
-// Returns:
+// Returns: - None.
 //   - any: Always nil.
 //   - error: Always nil.
 func (m *NoOpToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
@@ -102,13 +102,13 @@ func (m *NoOpToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionReques
 //
 // Summary: No-op SetMCPServer.
 //
-// Parameters:
+// Parameters: - None.
 //   - _ (tool.MCPServerProvider): Unused.
 //
-// Returns:
+// Returns: - None.
 //   - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (m *NoOpToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
 
@@ -116,13 +116,13 @@ func (m *NoOpToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
 //
 // Summary: No-op AddMiddleware.
 //
-// Parameters:
+// Parameters: - None.
 //   - _ (tool.ExecutionMiddleware): Unused.
 //
-// Returns:
+// Returns: - None.
 //   - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (m *NoOpToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {}
 
@@ -130,14 +130,14 @@ func (m *NoOpToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {}
 //
 // Summary: No-op AddServiceInfo.
 //
-// Parameters:
+// Parameters: - None.
 //   - _ (string): Unused.
 //   - _ (*tool.ServiceInfo): Unused.
 //
-// Returns:
+// Returns: - None.
 //   - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (m *NoOpToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
 
@@ -145,10 +145,10 @@ func (m *NoOpToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
 //
 // Summary: No-op GetServiceInfo.
 //
-// Parameters:
+// Parameters: - None.
 //   - _ (string): Unused.
 //
-// Returns:
+// Returns: - None.
 //   - *tool.ServiceInfo: Always nil.
 //   - bool: Always false.
 func (m *NoOpToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) { return nil, false }
@@ -157,13 +157,13 @@ func (m *NoOpToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) { r
 //
 // Summary: Returns an empty list of services.
 //
-// Parameters:
+// Parameters: - None.
 //   - None.
 //
-// Returns:
+// Returns: - None.
 //   - []*tool.ServiceInfo: Always nil.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (m *NoOpToolManager) ListServices() []*tool.ServiceInfo { return nil }
 
@@ -171,14 +171,14 @@ func (m *NoOpToolManager) ListServices() []*tool.ServiceInfo { return nil }
 //
 // Summary: No-op SetProfiles.
 //
-// Parameters:
+// Parameters: - None.
 //   - _ ([]string): Unused.
 //   - _ ([]*configv1.ProfileDefinition): Unused.
 //
-// Returns:
+// Returns: - None.
 //   - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (m *NoOpToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
 
@@ -186,10 +186,10 @@ func (m *NoOpToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinitio
 //
 // Summary: No-op IsServiceAllowed.
 //
-// Parameters:
+// Parameters: - None.
 //   - _, _ (string): Unused.
 //
-// Returns:
+// Returns: - None.
 //   - bool: Always true (allow all).
 func (m *NoOpToolManager) IsServiceAllowed(_, _ string) bool { return true }
 
@@ -197,11 +197,11 @@ func (m *NoOpToolManager) IsServiceAllowed(_, _ string) bool { return true }
 //
 // Summary: No-op ToolMatchesProfile.
 //
-// Parameters:
+// Parameters: - None.
 //   - _ (tool.Tool): Unused.
 //   - _ (string): Unused.
 //
-// Returns:
+// Returns: - None.
 //   - bool: Always true.
 func (m *NoOpToolManager) ToolMatchesProfile(_ tool.Tool, _ string) bool { return true }
 
@@ -209,10 +209,10 @@ func (m *NoOpToolManager) ToolMatchesProfile(_ tool.Tool, _ string) bool { retur
 //
 // Summary: No-op GetAllowedServiceIDs.
 //
-// Parameters:
+// Parameters: - None.
 //   - _ (string): Unused.
 //
-// Returns:
+// Returns: - None.
 //   - map[string]bool: Always nil.
 //   - bool: Always false.
 func (m *NoOpToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool) {
@@ -223,10 +223,10 @@ func (m *NoOpToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool)
 //
 // Summary: No-op GetToolCountForService.
 //
-// Parameters:
+// Parameters: - None.
 //   - _ (string): Unused.
 //
-// Returns:
+// Returns: - None.
 //   - int: Always 0.
 func (m *NoOpToolManager) GetToolCountForService(_ string) int {
 	return 0
@@ -241,13 +241,13 @@ type NoOpPromptManager struct{}
 //
 // Summary: No-op AddPrompt.
 //
-// Parameters:
+// Parameters: - None.
 //   - _ (prompt.Prompt): Unused.
 //
-// Returns:
+// Returns: - None.
 //   - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (m *NoOpPromptManager) AddPrompt(_ prompt.Prompt) {}
 
@@ -255,13 +255,13 @@ func (m *NoOpPromptManager) AddPrompt(_ prompt.Prompt) {}
 //
 // Summary: No-op UpdatePrompt.
 //
-// Parameters:
+// Parameters: - None.
 //   - _ (prompt.Prompt): Unused.
 //
-// Returns:
+// Returns: - None.
 //   - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (m *NoOpPromptManager) UpdatePrompt(_ prompt.Prompt) {}
 
@@ -269,10 +269,10 @@ func (m *NoOpPromptManager) UpdatePrompt(_ prompt.Prompt) {}
 //
 // Summary: No-op GetPrompt.
 //
-// Parameters:
+// Parameters: - None.
 //   - _ (string): Unused.
 //
-// Returns:
+// Returns: - None.
 //   - prompt.Prompt: Always nil.
 //   - bool: Always false.
 func (m *NoOpPromptManager) GetPrompt(_ string) (prompt.Prompt, bool) { return nil, false }
@@ -281,13 +281,13 @@ func (m *NoOpPromptManager) GetPrompt(_ string) (prompt.Prompt, bool) { return n
 //
 // Summary: Returns an empty list of prompts.
 //
-// Parameters:
+// Parameters: - None.
 //   - None.
 //
-// Returns:
+// Returns: - None.
 //   - []prompt.Prompt: Always nil.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (m *NoOpPromptManager) ListPrompts() []prompt.Prompt { return nil }
 
@@ -295,13 +295,13 @@ func (m *NoOpPromptManager) ListPrompts() []prompt.Prompt { return nil }
 //
 // Summary: No-op ClearPromptsForService.
 //
-// Parameters:
+// Parameters: - None.
 //   - _ (string): Unused.
 //
-// Returns:
+// Returns: - None.
 //   - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (m *NoOpPromptManager) ClearPromptsForService(_ string) {}
 
@@ -309,13 +309,13 @@ func (m *NoOpPromptManager) ClearPromptsForService(_ string) {}
 //
 // Summary: No-op SetMCPServer.
 //
-// Parameters:
+// Parameters: - None.
 //   - _ (prompt.MCPServerProvider): Unused.
 //
-// Returns:
+// Returns: - None.
 //   - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (m *NoOpPromptManager) SetMCPServer(_ prompt.MCPServerProvider) {}
 
@@ -328,10 +328,10 @@ type NoOpResourceManager struct{}
 //
 // Summary: No-op GetResource.
 //
-// Parameters:
+// Parameters: - None.
 //   - _ (string): Unused.
 //
-// Returns:
+// Returns: - None.
 //   - resource.Resource: Always nil.
 //   - bool: Always false.
 func (m *NoOpResourceManager) GetResource(_ string) (resource.Resource, bool) { return nil, false }
@@ -340,13 +340,13 @@ func (m *NoOpResourceManager) GetResource(_ string) (resource.Resource, bool) { 
 //
 // Summary: No-op AddResource.
 //
-// Parameters:
+// Parameters: - None.
 //   - _ (resource.Resource): Unused.
 //
-// Returns:
+// Returns: - None.
 //   - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (m *NoOpResourceManager) AddResource(_ resource.Resource) {}
 
@@ -354,13 +354,13 @@ func (m *NoOpResourceManager) AddResource(_ resource.Resource) {}
 //
 // Summary: No-op RemoveResource.
 //
-// Parameters:
+// Parameters: - None.
 //   - _ (string): Unused.
 //
-// Returns:
+// Returns: - None.
 //   - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (m *NoOpResourceManager) RemoveResource(_ string) {}
 
@@ -368,13 +368,13 @@ func (m *NoOpResourceManager) RemoveResource(_ string) {}
 //
 // Summary: Returns an empty list of resources.
 //
-// Parameters:
+// Parameters: - None.
 //   - None.
 //
-// Returns:
+// Returns: - None.
 //   - []resource.Resource: Always nil.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (m *NoOpResourceManager) ListResources() []resource.Resource { return nil }
 
@@ -382,13 +382,13 @@ func (m *NoOpResourceManager) ListResources() []resource.Resource { return nil }
 //
 // Summary: No-op OnListChanged.
 //
-// Parameters:
+// Parameters: - None.
 //   - _ (func()): Unused.
 //
-// Returns:
+// Returns: - None.
 //   - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (m *NoOpResourceManager) OnListChanged(_ func()) {}
 
@@ -396,12 +396,12 @@ func (m *NoOpResourceManager) OnListChanged(_ func()) {}
 //
 // Summary: No-op ClearResourcesForService.
 //
-// Parameters:
+// Parameters: - None.
 //   - _ (string): Unused.
 //
-// Returns:
+// Returns: - None.
 //   - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (m *NoOpResourceManager) ClearResourcesForService(_ string) {}

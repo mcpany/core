@@ -24,11 +24,11 @@ type JSONExecutor struct {
 //
 // Summary: Creates a new JSONExecutor with the given writer and reader.  Parameters: - in: io.Writer. The destination for writing JSON requests. - out: io.Reader. The source for reading JSON responses.  Returns: - *JSONExecutor: A new JSONExecutor instance.
 //
-// Parameters:
+// Parameters: - None.
 //   - in (io.Writer): Description for in.
 //   - out (io.Reader): Description for out.
 //
-// Returns:
+// Returns: - None.
 //   - (*JSONExecutor): Result.
 func NewJSONExecutor(in io.Writer, out io.Reader) *JSONExecutor {
 	return &JSONExecutor{
@@ -41,11 +41,11 @@ func NewJSONExecutor(in io.Writer, out io.Reader) *JSONExecutor {
 //
 // Summary: Sends the given data as a JSON-encoded message to the writer and decodes the JSON-encoded response from the reader into the given result.
 //
-// Parameters:
+// Parameters: - None.
 //   - data: Parameter.
 //   - result (any): Description for result.
 //
-// Returns:
+// Returns: - None.
 //   - (error): Result.
 func (e *JSONExecutor) Execute(data, result any) error {
 	if err := json.NewEncoder(e.in).Encode(data); err != nil {

@@ -87,33 +87,15 @@ type ValidationError struct {
 	Err         error
 }
 
-// Error returns the formatted error message. Side Effects: - None.
+// Error error error.
 //
-// Parameters:
+// Summary: Error error.
+//
+// Parameters: - None.
 //   - None.
 //
-// Returns:
-//   - string: The resulting string.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Error operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+// Returns: - None.
+//   - string: The result.
 func (e *ValidationError) Error() string {
 	return fmt.Sprintf("service %q: %v", e.ServiceName, e.Err)
 }
@@ -122,12 +104,12 @@ func (e *ValidationError) Error() string {
 //
 // Summary: Validates the entire server configuration.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx (context.Context): The context for the validation (used for secret resolution).
 //   - config (*configv1.McpAnyServerConfig): The server configuration to be validated.
 //   - binaryType (BinaryType): The type of binary (server, worker) which might affect validation rules.
 //
-// Returns:
+// Returns: - None.
 //   - ([]ValidationError): A slice of ValidationErrors, which will be empty if the configuration is valid.
 func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryType BinaryType) []ValidationError {
 	var validationErrors []ValidationError
@@ -529,11 +511,11 @@ func validateGlobalSettings(ctx context.Context, gs *configv1.GlobalSettings, bi
 //
 // Summary: Validates a single upstream service.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx (context.Context): The context for the validation.
 //   - service (*configv1.UpstreamServiceConfig): The upstream service configuration to validate.
 //
-// Returns:
+// Returns: - None.
 //   - (error): An error if validation fails.
 func ValidateOrError(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
 	return validateUpstreamService(ctx, service)

@@ -25,13 +25,13 @@ type Retry struct {
 //
 // Summary: Creates a new retry policy.
 //
-// Parameters:
+// Parameters: - None.
 //   - config (*configv1.RetryConfig): The configuration for the retry policy.
 //
-// Returns:
+// Returns: - None.
 //   - *Retry: A new Retry instance.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func NewRetry(config *configv1.RetryConfig) *Retry {
 	if config == nil {
@@ -53,14 +53,14 @@ func NewRetry(config *configv1.RetryConfig) *Retry {
 //
 // Summary: Executes a function with retries.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx (context.Context): The context for the request.
 //   - work (func(context.Context) error): The function to execute.
 //
-// Returns:
+// Returns: - None.
 //   - error: An error if all retries fail.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Executes the provided function multiple times.
 func (r *Retry) Execute(ctx context.Context, work func(context.Context) error) error {
 	var err error

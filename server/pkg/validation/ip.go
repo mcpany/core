@@ -23,29 +23,15 @@ func init() {
 	}
 }
 
-// IsPrivateNetworkIP checks if the IP address is a private network address.
-// This includes RFC1918, RFC4193 (Unique Local), and RFC6598 (CGNAT).
-// It does NOT include loopback or link-local addresses.
+// IsPrivateNetworkIP isPrivateNetworkIP is private network ip.
 //
-// Parameters:
-//   - ip: The IP address to check.
+// Summary: IsPrivateNetworkIP is private network ip.
 //
-// Returns:
-//   - bool: True if the IP is a private network address, false otherwise.
+// Parameters: - None.
+//   - ip (net.IP): The ip.
 //
-// Summary: Checks IsPrivateNetworkIP operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+// Returns: - None.
+//   - bool: The result.
 func IsPrivateNetworkIP(ip net.IP) bool {
 	// Treat unspecified addresses (0.0.0.0 and ::) as private.
 	// 0.0.0.0 is also covered by isPrivateNetworkIPv4, but :: wasn't.
@@ -76,27 +62,15 @@ func IsPrivateNetworkIP(ip net.IP) bool {
 	return false
 }
 
-// IsNAT64 checks for NAT64 (IPv4-embedded IPv6) addresses - 64:ff9b::/96 (RFC 6052).
+// IsNAT64 isNAT64 is nat64.
 //
-// Parameters:
-//   - ip: The IP address to check.
+// Summary: IsNAT64 is nat64.
 //
-// Returns:
-//   - bool: True if the IP is a NAT64 address, false otherwise.
+// Parameters: - None.
+//   - ip (net.IP): The ip.
 //
-// Summary: Checks IsNAT64 operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+// Returns: - None.
+//   - bool: The result.
 func IsNAT64(ip net.IP) bool {
 	// 64:ff9b:: expands to 0064:ff9b:0000:0000:0000:0000 (96 bits)
 	return len(ip) == net.IPv6len &&
@@ -105,27 +79,15 @@ func IsNAT64(ip net.IP) bool {
 		ip[8] == 0 && ip[9] == 0 && ip[10] == 0 && ip[11] == 0
 }
 
-// IsIPv4Compatible checks for IPv4-compatible IPv6 addresses (::a.b.c.d).
+// IsIPv4Compatible isIPv4Compatible is i pv4 compatible.
 //
-// Parameters:
-//   - ip: The IP address to check.
+// Summary: IsIPv4Compatible is i pv4 compatible.
 //
-// Returns:
-//   - bool: True if the IP is an IPv4-compatible IPv6 address, false otherwise.
+// Parameters: - None.
+//   - ip (net.IP): The ip.
 //
-// Summary: Checks IsIPv4Compatible operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+// Returns: - None.
+//   - bool: The result.
 func IsIPv4Compatible(ip net.IP) bool {
 	// First 12 bytes are 0.
 	return len(ip) == net.IPv6len &&
@@ -134,27 +96,15 @@ func IsIPv4Compatible(ip net.IP) bool {
 		ip[8] == 0 && ip[9] == 0 && ip[10] == 0 && ip[11] == 0
 }
 
-// IsNAT64LinkLocal checks if a NAT64 address embeds a link-local IPv4 address.
+// IsNAT64LinkLocal isNAT64LinkLocal is nat64 link local.
 //
-// Parameters:
-//   - ip: The IP address to check.
+// Summary: IsNAT64LinkLocal is nat64 link local.
 //
-// Returns:
-//   - bool: True if the IP is a NAT64 link-local address, false otherwise.
+// Parameters: - None.
+//   - ip (net.IP): The ip.
 //
-// Summary: Checks IsNAT64LinkLocal operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+// Returns: - None.
+//   - bool: The result.
 func IsNAT64LinkLocal(ip net.IP) bool {
 	if !IsNAT64(ip) {
 		return false
@@ -165,27 +115,15 @@ func IsNAT64LinkLocal(ip net.IP) bool {
 	return ip4[0] == 169 && ip4[1] == 254
 }
 
-// IsNAT64Loopback checks if a NAT64 address embeds a loopback IPv4 address.
+// IsNAT64Loopback isNAT64Loopback is nat64 loopback.
 //
-// Parameters:
-//   - ip: The IP address to check.
+// Summary: IsNAT64Loopback is nat64 loopback.
 //
-// Returns:
-//   - bool: True if the IP is a NAT64 loopback address, false otherwise.
+// Parameters: - None.
+//   - ip (net.IP): The ip.
 //
-// Summary: Checks IsNAT64Loopback operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+// Returns: - None.
+//   - bool: The result.
 func IsNAT64Loopback(ip net.IP) bool {
 	if !IsNAT64(ip) {
 		return false
@@ -196,27 +134,15 @@ func IsNAT64Loopback(ip net.IP) bool {
 	return ip4[0] == 127
 }
 
-// IsPrivateIP checks if the IP address is a private, link-local, or loopback address.
+// IsPrivateIP isPrivateIP is private ip.
 //
-// Parameters:
-//   - ip: The IP address to check.
+// Summary: IsPrivateIP is private ip.
 //
-// Returns:
-//   - bool: True if the IP is private, link-local, or loopback, false otherwise.
+// Parameters: - None.
+//   - ip (net.IP): The ip.
 //
-// Summary: Checks IsPrivateIP operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+// Returns: - None.
+//   - bool: The result.
 func IsPrivateIP(ip net.IP) bool {
 	if ip.IsLoopback() || ip.IsUnspecified() {
 		return true
@@ -255,28 +181,15 @@ func IsPrivateIP(ip net.IP) bool {
 	return IsPrivateNetworkIP(ip)
 }
 
-// IsPrivateNetworkIPv4 checks if an IPv4 address is private.
-// ip must be a valid 4-byte IPv4 address slice.
+// IsPrivateNetworkIPv4 isPrivateNetworkIPv4 is private network i pv4.
 //
-// Parameters:
-//   - ip: The IPv4 address slice to check.
+// Summary: IsPrivateNetworkIPv4 is private network i pv4.
 //
-// Returns:
-//   - bool: True if the IP is private, false otherwise.
+// Parameters: - None.
+//   - ip (net.IP): The ip.
 //
-// Summary: Checks IsPrivateNetworkIPv4 operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+// Returns: - None.
+//   - bool: The result.
 func IsPrivateNetworkIPv4(ip net.IP) bool {
 	switch ip[0] {
 	case 0:

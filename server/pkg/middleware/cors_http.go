@@ -27,10 +27,10 @@ type HTTPCORSMiddleware struct {
 // If allowedOrigins is empty, it defaults to allowing nothing (or behaving like standard Same-Origin).
 // To allow all, pass []string{"*"}.
 //
-// Parameters:
+// Parameters: - None.
 //   - allowedOrigins ([]string): The allowed origins.
 //
-// Returns:
+// Returns: - None.
 //   - (*HTTPCORSMiddleware): The initialized middleware.
 func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
 	m := &HTTPCORSMiddleware{}
@@ -42,7 +42,7 @@ func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
 //
 // Summary: Updates the allowed origins dynamically.
 //
-// Parameters:
+// Parameters: - None.
 //   - allowedOrigins ([]string): The new list of allowed origins.
 func (m *HTTPCORSMiddleware) Update(allowedOrigins []string) {
 	m.mu.Lock()
@@ -69,10 +69,10 @@ func (m *HTTPCORSMiddleware) updateInternal(origins []string) {
 //
 // Summary: Middleware to handle CORS headers.
 //
-// Parameters:
+// Parameters: - None.
 //   - next (http.Handler): The next handler in the chain.
 //
-// Returns:
+// Returns: - None.
 //   - (http.Handler): The wrapped handler.
 func (m *HTTPCORSMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

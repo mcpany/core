@@ -32,34 +32,16 @@ type Watcher struct {
 	timer   *time.Timer
 }
 
-// NewWatcher creates a new file watcher.
+// NewWatcher creates a new watcher.
 //
-// Parameters:
+// Summary: Creates a new watcher.
+//
+// Parameters: - None.
 //   - None.
 //
-// Returns:
-//   - *Watcher: The resulting *Watcher.
+// Returns: - None.
+//   - *Watcher: The result.
 //   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewWatcher operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func NewWatcher() (*Watcher, error) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -76,17 +58,17 @@ func NewWatcher() (*Watcher, error) {
 //
 // Summary: Starts watching the specified paths for changes.
 //
-// Parameters:
+// Parameters: - None.
 //   - paths ([]string): A slice of file or directory paths to watch.
 //   - reloadFunc (func()): The function to call when a change is detected.
 //
-// Returns:
+// Returns: - None.
 //   - error: An error if adding paths to the watcher fails.
 //
-// Errors:
+// Errors: - None.
 //   - Returns an error if adding a path to the watcher fails.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Starts a goroutine to process file events.
 //   - Registers directories with the OS watcher.
 func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
@@ -201,23 +183,14 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 	return nil
 }
 
-// Close stops the file watcher and releases resources.
+// Close close close.
 //
-// Parameters:
+// Summary: Close close.
+//
+// Parameters: - None.
 //   - None.
 //
-// Summary: Executes Close operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
+// Returns: - None.
 //   - None.
 func (w *Watcher) Close() {
 	close(w.done)

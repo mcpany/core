@@ -15,11 +15,11 @@ import (
 //
 // Summary: Middleware for Data Loss Prevention (PII redaction).
 //
-// Parameters:
+// Parameters: - None.
 //   - config (*configv1.DLPConfig): The DLP configuration settings.
 //   - log (*slog.Logger): The logger for reporting errors.
 //
-// Returns:
+// Returns: - None.
 //   - mcp.Middleware: The configured middleware function.
 func DLPMiddleware(config *configv1.DLPConfig, log *slog.Logger) mcp.Middleware {
 	redactor := NewRedactor(config, log)

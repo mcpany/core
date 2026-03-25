@@ -100,96 +100,48 @@ type ClientSession interface {
 	Close() error
 }
 
-// SetNewClientImplForTesting provides a hook for injecting a mock MCP client
-// implementation during tests. This should only be used for testing purposes.
+// SetNewClientImplForTesting setNewClientImplForTesting set new client impl for testing.
 //
-// Parameters:
-//   - f func(client *mcp.Client (*http.Client): The parameter.
-//   - stdioConfig *configv1.McpStdioConnection (*http.Client): The parameter.
-//   - httpAddress string (*http.Client): The parameter.
-//   - httpClient (*http.Client): The parameter.
+// Summary: SetNewClientImplForTesting set new client impl for testing.
 //
-// Returns:
-//   - client.MCPClient): The result.
+// Parameters: - None.
+//   - f func(client *mcp.Client (client.MCPClient): The f func(client *mcp. client.
+//   - stdioConfig *configv1.McpStdioConnection (client.MCPClient): The stdio config *configv1. mcp stdio connection.
+//   - httpAddress string (client.MCPClient): The http address string.
+//   - httpClient *http.Client) (client.MCPClient): The http client *http. client).
 //
-// Side Effects:
-//   - None.
-//
-// Summary: Updates SetNewClientImplForTesting operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
+// Returns: - None.
 //   - None.
 func SetNewClientImplForTesting(f func(client *mcp.Client, stdioConfig *configv1.McpStdioConnection, httpAddress string, httpClient *http.Client) client.MCPClient) {
 	newClientImplForTesting = f
 }
 
-// SetNewClientForTesting provides a hook for injecting a mock mcp.Client
-// during tests. This should only be used for testing purposes.
+// SetNewClientForTesting setNewClientForTesting set new client for testing.
 //
-// Parameters:
-//   - f func(impl (*mcp.Implementation): The parameter.
+// Summary: SetNewClientForTesting set new client for testing.
 //
-// Returns:
-//   - *mcp.Client): The result.
+// Parameters: - None.
+//   - f func(impl *mcp.Implementation) (*mcp.Client): The f func(impl *mcp. implementation).
 //
-// Side Effects:
-//   - None.
-//
-// Summary: Updates SetNewClientForTesting operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
+// Returns: - None.
 //   - None.
 func SetNewClientForTesting(f func(impl *mcp.Implementation) *mcp.Client) {
 	newClientForTesting = f
 }
 
-// SetConnectForTesting provides a hook for injecting a mock mcp.Client.Connect
-// function during tests. This should only be used for testing purposes.
+// SetConnectForTesting setConnectForTesting set connect for testing.
 //
-// Parameters:
-//   - f func(client *mcp.Client ([]mcp.Root): The parameter.
-//   - ctx context.Context ([]mcp.Root): The parameter.
-//   - transport mcp.Transport ([]mcp.Root): The parameter.
-//   - roots ([]mcp.Root): The parameter.
+// Summary: SetConnectForTesting set connect for testing.
 //
-// Returns:
+// Parameters: - None.
+//   - f func(client *mcp.Client ([]mcp.Root): The f func(client *mcp. client.
+//   - ctx context.Context ([]mcp.Root): The ctx context. context.
+//   - transport mcp.Transport ([]mcp.Root): The transport mcp. transport.
+//   - roots ([]mcp.Root): The roots.
+//
+// Returns: - None.
 //   - ClientSession: The result.
 //   - error): The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Updates SetConnectForTesting operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func SetConnectForTesting(f func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error)) {
 	connectForTesting = f
 }
@@ -211,33 +163,15 @@ type Upstream struct {
 	checker   health.Checker
 }
 
-// CheckHealth performs a health check on the upstream service.
+// CheckHealth checkHealth check health.
 //
-// Parameters:
+// Summary: CheckHealth check health.
+//
+// Parameters: - None.
 //   - ctx (context.Context): The context for the request.
 //
-// Returns:
+// Returns: - None.
 //   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes CheckHealth operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -253,34 +187,15 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 	return nil
 }
 
-// Shutdown cleans up any temporary resources associated with the upstream, such
-// as extracted bundle directories.
+// Shutdown shutdown shutdown.
 //
-// Parameters:
-//   - _ (context.Context): The parameter.
+// Summary: Shutdown shutdown.
 //
-// Returns:
+// Parameters: - None.
+//   - _ (context.Context): Unused parameter.
+//
+// Returns: - None.
 //   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Shutdown operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.RLock()
 	serviceID := u.serviceID
@@ -306,30 +221,15 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
-// NewUpstream creates a new instance of Upstream.
+// NewUpstream creates a new upstream.
 //
-// Parameters:
-//   - globalSettings (*configv1.GlobalSettings): The parameter.
+// Summary: Creates a new upstream.
 //
-// Returns:
+// Parameters: - None.
+//   - globalSettings (*configv1.GlobalSettings): The global settings.
+//
+// Returns: - None.
 //   - upstream.Upstream: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewUpstream operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func NewUpstream(globalSettings *configv1.GlobalSettings) upstream.Upstream {
 	return &Upstream{
 		sessionRegistry: NewSessionRegistry(),
@@ -346,83 +246,41 @@ type mcpPrompt struct {
 	*mcpConnection
 }
 
-// Prompt returns the underlying *mcp.Prompt definition.
+// Prompt prompt prompt.
 //
-// Returns:
+// Summary: Prompt prompt.
+//
+// Parameters: - None.
+//   - None.
+//
+// Returns: - None.
 //   - *mcp.Prompt: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Prompt operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (p *mcpPrompt) Prompt() *mcp.Prompt {
 	return p.mcpPrompt
 }
 
-// Service returns the ID of the service that this prompt belongs to.
+// Service service service.
 //
-// Returns:
+// Summary: Service service.
+//
+// Parameters: - None.
+//   - None.
+//
+// Returns: - None.
 //   - string: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Service operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (p *mcpPrompt) Service() string {
 	return p.service
 }
 
-// Definition returns the raw configuration definition of the prompt.
+// Definition definition definition.
 //
-// Parameters:
+// Summary: Definition definition.
+//
+// Parameters: - None.
 //   - None.
 //
-// Returns:
-//   - *configv1.PromptDefinition: The resulting *configv1.PromptDefinition.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Definition operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+// Returns: - None.
+//   - *configv1.PromptDefinition: The result.
 func (p *mcpPrompt) Definition() *configv1.PromptDefinition {
 	// Construct a partial definition from p.mcpPrompt
 	properties := make(map[string]*structpb.Value)
@@ -459,36 +317,17 @@ func (p *mcpPrompt) Definition() *configv1.PromptDefinition {
 	}.Build()
 }
 
-// Get executes the prompt by establishing a session with the downstream MCP
-// service and calling its GetPrompt method.
+// Get retrieves the .
 //
-// Parameters:
+// Summary: Retrieves the .
+//
+// Parameters: - None.
 //   - ctx (context.Context): The context for the request.
-//   - args (json.RawMessage): The parameter.
+//   - args (json.RawMessage): The args.
 //
-// Returns:
+// Returns: - None.
 //   - *mcp.GetPromptResult: The result.
 //   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves Get operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (p *mcpPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
 	var arguments map[string]string
 	if args != nil {
@@ -527,85 +366,42 @@ type mcpResource struct {
 	*mcpConnection
 }
 
-// Resource returns the underlying *mcp.Resource definition.
+// Resource resource resource.
 //
-// Returns:
+// Summary: Resource resource.
+//
+// Parameters: - None.
+//   - None.
+//
+// Returns: - None.
 //   - *mcp.Resource: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Resource operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (r *mcpResource) Resource() *mcp.Resource {
 	return r.mcpResource
 }
 
-// Service returns the ID of the service that this resource belongs to.
+// Service service service.
 //
-// Returns:
+// Summary: Service service.
+//
+// Parameters: - None.
+//   - None.
+//
+// Returns: - None.
 //   - string: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Service operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (r *mcpResource) Service() string {
 	return r.service
 }
 
-// Read retrieves the content of the resource by establishing a session with the
-// downstream MCP service and calling its ReadResource method.
+// Read read read.
 //
-// Parameters:
+// Summary: Read read.
+//
+// Parameters: - None.
 //   - ctx (context.Context): The context for the request.
 //
-// Returns:
+// Returns: - None.
 //   - *mcp.ReadResourceResult: The result.
 //   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves Read operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (r *mcpResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
 	var result *mcp.ReadResourceResult
 	err := r.withMCPClientSession(ctx, func(cs ClientSession) error {
@@ -618,41 +414,22 @@ func (r *mcpResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error)
 	return result, err
 }
 
-// Subscribe is not yet implemented for MCP resources. It returns an error
-// indicating that this functionality is not available.
+// Subscribe subscribe subscribe.
 //
-// Parameters:
-//   - _ (context.Context): The parameter.
+// Summary: Subscribe subscribe.
 //
-// Returns:
+// Parameters: - None.
+//   - _ (context.Context): Unused parameter.
+//
+// Returns: - None.
 //   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Subscribe operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (r *mcpResource) Subscribe(_ context.Context) error {
 	return fmt.Errorf("subscribing to resources on mcp upstreams is not yet implemented")
 }
 
 // Register handles the registration of another MCP service as an upstream. It determines the connection type (stdio or HTTP), connects to the downstream service, lists its available tools, prompts, and resources, and registers them with the appropriate managers.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx (context.Context): The context for the request.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
 //   - toolManager (tool.ManagerInterface): The toolManager parameter.
@@ -660,30 +437,27 @@ func (r *mcpResource) Subscribe(_ context.Context) error {
 //   - resourceManager (resource.ManagerInterface): The resourceManager parameter.
 //   - isReload (bool): The isReload parameter.
 //
-// Returns:
+// Returns: - None.
 //   - string: The resulting string.
 //   - []*configv1.ToolDefinition: The resulting []*configv1.ToolDefinition.
 //   - []*configv1.ResourceDefinition: The resulting []*configv1.ResourceDefinition.
 //   - error: An error if the operation fails.
 //
-// Errors:
+// Errors: - None.
 //   - Returns an error if the operation fails or is invalid.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 //
 // Summary: Executes Register operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
+// Parameters: - None.
 //
-// Returns:
-//   - TODO: Document returns.
+// Returns: - None.
 //
-// Errors:
-//   - TODO: Document errors.
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func (u *Upstream) Register(
 	ctx context.Context,
@@ -844,36 +618,17 @@ func (c *mcpConnection) withMCPClientSession(ctx context.Context, f func(cs Clie
 	return f(cs)
 }
 
-// CallTool executes a tool on the downstream MCP service by establishing a
-// session and forwarding the tool call.
+// CallTool callTool call tool.
 //
-// Parameters:
+// Summary: CallTool call tool.
+//
+// Parameters: - None.
 //   - ctx (context.Context): The context for the request.
-//   - params (*mcp.CallToolParams): The parameter.
+//   - params (*mcp.CallToolParams): The params.
 //
-// Returns:
+// Returns: - None.
 //   - *mcp.CallToolResult: The result.
 //   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes CallTool operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (c *mcpConnection) CallTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
 	var result *mcp.CallToolResult
 	err := c.withMCPClientSession(ctx, func(cs ClientSession) error {
@@ -1521,35 +1276,16 @@ type authenticatedRoundTripper struct {
 	base          http.RoundTripper
 }
 
-// RoundTrip applies the configured authenticator to the request and then passes
-// it to the base RoundTripper.
+// RoundTrip roundTrip round trip.
 //
-// Parameters:
-//   - req (*http.Request): The parameter.
+// Summary: RoundTrip round trip.
 //
-// Returns:
+// Parameters: - None.
+//   - req (*http.Request): The req.
+//
+// Returns: - None.
 //   - *http.Response: The result.
 //   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes RoundTrip operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (rt *authenticatedRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	if rt.authenticator != nil {
 		if err := rt.authenticator.Authenticate(req); err != nil {
@@ -1573,34 +1309,16 @@ type StreamableHTTP struct {
 	Client *http.Client
 }
 
-// RoundTrip executes an HTTP request and returns the response.
+// RoundTrip roundTrip round trip.
 //
-// Parameters:
-//   - req (*http.Request): The parameter.
+// Summary: RoundTrip round trip.
 //
-// Returns:
+// Parameters: - None.
+//   - req (*http.Request): The req.
+//
+// Returns: - None.
 //   - *http.Response: The result.
 //   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes RoundTrip operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (t *StreamableHTTP) RoundTrip(req *http.Request) (*http.Response, error) {
 	if t.Client == nil {
 		t.Client = http.DefaultClient

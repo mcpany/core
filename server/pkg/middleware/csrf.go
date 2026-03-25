@@ -25,13 +25,13 @@ type CSRFMiddleware struct {
 //
 // Summary: Initializes a new CSRFMiddleware with a list of allowed origins.
 //
-// Parameters:
+// Parameters: - None.
 //   - allowedOrigins: []string. A list of origin strings (e.g., "https://example.com") allowed to make requests.
 //
-// Returns:
+// Returns: - None.
 //   - *CSRFMiddleware: The initialized middleware.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Populates the internal allowed origins map.
 func NewCSRFMiddleware(allowedOrigins []string) *CSRFMiddleware {
 	m := &CSRFMiddleware{
@@ -45,10 +45,10 @@ func NewCSRFMiddleware(allowedOrigins []string) *CSRFMiddleware {
 //
 // Summary: Updates the list of allowed origins at runtime.
 //
-// Parameters:
+// Parameters: - None.
 //   - origins: []string. The new list of allowed origins.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Replaces the existing allowed origins map in a thread-safe manner.
 func (m *CSRFMiddleware) Update(origins []string) {
 	m.mu.Lock()
@@ -63,13 +63,13 @@ func (m *CSRFMiddleware) Update(origins []string) {
 //
 // Summary: Returns an HTTP handler that enforces CSRF protection checks.
 //
-// Parameters:
+// Parameters: - None.
 //   - next: http.Handler. The next handler in the chain.
 //
-// Returns:
+// Returns: - None.
 //   - http.Handler: The wrapped handler.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Inspects Method, Headers, Origin, and Referer of incoming requests.
 //   - Blocks requests with 403 Forbidden if validation fails.
 //   - Logs warnings for blocked requests.

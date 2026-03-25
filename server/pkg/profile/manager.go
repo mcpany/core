@@ -24,10 +24,10 @@ type Manager struct {
 //
 // Summary: Initializes a new Profile Manager.
 //
-// Parameters:
+// Parameters: - None.
 //   - profiles: []*configv1.ProfileDefinition. Initial profile definitions.
 //
-// Returns:
+// Returns: - None.
 //   - *Manager: The initialized manager.
 func NewManager(profiles []*configv1.ProfileDefinition) *Manager {
 	m := &Manager{
@@ -41,7 +41,7 @@ func NewManager(profiles []*configv1.ProfileDefinition) *Manager {
 //
 // Summary: Updates the stored profile definitions.
 //
-// Parameters:
+// Parameters: - None.
 //   - profiles: []*configv1.ProfileDefinition. The new list of profiles.
 func (m *Manager) Update(profiles []*configv1.ProfileDefinition) {
 	newProfiles := make(map[string]*configv1.ProfileDefinition)
@@ -57,10 +57,10 @@ func (m *Manager) Update(profiles []*configv1.ProfileDefinition) {
 //
 // Summary: Retrieves a profile definition.
 //
-// Parameters:
+// Parameters: - None.
 //   - name: string. The name of the profile.
 //
-// Returns:
+// Returns: - None.
 //   - *configv1.ProfileDefinition: The profile definition.
 //   - bool: True if found.
 func (m *Manager) GetProfileDefinition(name string) (*configv1.ProfileDefinition, bool) {
@@ -75,10 +75,10 @@ func (m *Manager) GetProfileDefinition(name string) (*configv1.ProfileDefinition
 //
 // Summary: Resolves a profile hierarchy into a final configuration.
 //
-// Parameters:
+// Parameters: - None.
 //   - profileName: string. The name of the profile to resolve.
 //
-// Returns:
+// Returns: - None.
 //   - map[string]*configv1.ProfileServiceConfig: Merged service configs.
 //   - map[string]*configv1.SecretValue: Merged secrets.
 //   - error: Error if profile not found or cycle detected.

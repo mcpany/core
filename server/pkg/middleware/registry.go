@@ -41,24 +41,15 @@ var (
 	}
 )
 
-// Register registers a HTTP middleware factory.
+// Register register register.
 //
-// Parameters:
-//   - name (string): The name of the resource.
+// Summary: Register register.
+//
+// Parameters: - None.
+//   - name (string): The name.
 //   - factory (Factory): The factory.
 //
-// Summary: Executes Register operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
+// Returns: - None.
 //   - None.
 func Register(name string, factory Factory) {
 	globalRegistry.mu.Lock()
@@ -66,24 +57,15 @@ func Register(name string, factory Factory) {
 	globalRegistry.factories[name] = factory
 }
 
-// RegisterMCP registers an MCP middleware factory.
+// RegisterMCP registerMCP register mcp.
 //
-// Parameters:
-//   - name (string): The name of the resource.
+// Summary: RegisterMCP register mcp.
+//
+// Parameters: - None.
+//   - name (string): The name.
 //   - factory (MCPFactory): The factory.
 //
-// Summary: Executes RegisterMCP operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
+// Returns: - None.
 //   - None.
 func RegisterMCP(name string, factory MCPFactory) {
 	globalRegistry.mu.Lock()
@@ -91,27 +73,15 @@ func RegisterMCP(name string, factory MCPFactory) {
 	globalRegistry.mcpFactories[name] = factory
 }
 
-// GetHTTPMiddlewares returns a sorted list of HTTP middlewares based on configuration.
+// GetHTTPMiddlewares retrieves the http middlewares.
 //
-// Parameters:
-//   - configs ([]*configv1.Middleware): The configs.
+// Summary: Retrieves the http middlewares.
 //
-// Returns:
-//   - ([]func(http.Handler) http.Handler): The result.
+// Parameters: - None.
+//   - configs []*configv1.Middleware) ([]func(http.Handler): The configs []*configv1. middleware).
 //
-// Summary: Retrieves GetHTTPMiddlewares operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+// Returns: - None.
+//   - http.Handler: The result.
 func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) http.Handler {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()
@@ -135,27 +105,15 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 	return middlewares
 }
 
-// GetMCPMiddlewares returns a sorted list of MCP middlewares based on configuration.
+// GetMCPMiddlewares retrieves the mcp middlewares.
 //
-// Parameters:
-//   - configs ([]*configv1.Middleware): The configs.
+// Summary: Retrieves the mcp middlewares.
 //
-// Returns:
-//   - ([]func(mcp.MethodHandler) mcp.MethodHandler): The result.
+// Parameters: - None.
+//   - configs []*configv1.Middleware) ([]func(mcp.MethodHandler): The configs []*configv1. middleware).
 //
-// Summary: Retrieves GetMCPMiddlewares operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+// Returns: - None.
+//   - mcp.MethodHandler: The result.
 func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler) mcp.MethodHandler {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()
@@ -195,7 +153,7 @@ type StandardMiddlewares struct {
 
 // InitStandardMiddlewares registers standard middlewares.
 //
-// Parameters:
+// Parameters: - None.
 //   - authManager (*auth.Manager): The authManager.
 //   - toolManager (tool.ManagerInterface): The toolManager.
 //   - auditConfig (*configv1.AuditConfig): The auditConfig.
@@ -206,22 +164,19 @@ type StandardMiddlewares struct {
 //   - debuggerConfig (*configv1.DebuggerConfig): The debuggerConfig.
 //   - smartRecoveryConfig (*configv1.SmartRecoveryConfig): The smartRecoveryConfig.
 //
-// Returns:
+// Returns: - None.
 //   - (*StandardMiddlewares): The result.
 //   - (error): An error if the operation fails.
 //
 // Summary: Executes InitStandardMiddlewares operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
+// Parameters: - None.
 //
-// Returns:
-//   - TODO: Document returns.
+// Returns: - None.
 //
-// Errors:
-//   - TODO: Document errors.
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func InitStandardMiddlewares(
 	authManager *auth.Manager,

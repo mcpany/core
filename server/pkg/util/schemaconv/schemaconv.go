@@ -40,58 +40,30 @@ const (
 // Summary: Represents a MaxRecursionDepth.
 const MaxRecursionDepth = 10
 
-// MethodDescriptorToProtoProperties converts the fields of a method's input
-// message into a `structpb.Struct` for use as the `properties` field in a tool
-// input schema.
+// MethodDescriptorToProtoProperties methodDescriptorToProtoProperties method descriptor to proto properties.
 //
-// Parameters:
-//   - methodDesc: The method descriptor to convert.
+// Summary: MethodDescriptorToProtoProperties method descriptor to proto properties.
 //
-// Returns:
-//   - *structpb.Struct: The properties structure for the input schema.
-//   - error: An error if the conversion fails.
+// Parameters: - None.
+//   - methodDesc (protoreflect.MethodDescriptor): The method desc.
 //
-// Summary: Executes MethodDescriptorToProtoProperties operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+// Returns: - None.
+//   - *structpb.Struct: The result.
+//   - error: An error if the operation fails.
 func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor) (*structpb.Struct, error) {
 	return fieldsToProperties(methodDesc.Input().Fields(), 0)
 }
 
-// MethodOutputDescriptorToProtoProperties converts the fields of a method's
-// output message into a `structpb.Struct` for use as the `properties` field in
-// a tool output schema.
+// MethodOutputDescriptorToProtoProperties methodOutputDescriptorToProtoProperties method output descriptor to proto properties.
 //
-// Parameters:
-//   - methodDesc: The method descriptor to convert.
+// Summary: MethodOutputDescriptorToProtoProperties method output descriptor to proto properties.
 //
-// Returns:
-//   - *structpb.Struct: The properties structure for the output schema.
-//   - error: An error if the conversion fails.
+// Parameters: - None.
+//   - methodDesc (protoreflect.MethodDescriptor): The method desc.
 //
-// Summary: Executes MethodOutputDescriptorToProtoProperties operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+// Returns: - None.
+//   - *structpb.Struct: The result.
+//   - error: An error if the operation fails.
 func MethodOutputDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor) (*structpb.Struct, error) {
 	return fieldsToProperties(methodDesc.Output().Fields(), 0)
 }
@@ -192,7 +164,7 @@ func fieldToSchema(field protoreflect.FieldDescriptor, depth int) (map[string]in
 type ConfigParameter interface {
 	// GetSchema returns the parameter schema.
 	//
-	// Returns:
+	// Returns: - None.
 	//   - *configv1.ParameterSchema: The parameter schema.
 	GetSchema() *configv1.ParameterSchema
 }
@@ -203,22 +175,22 @@ type ConfigParameter interface {
 type McpFieldParameter interface {
 	// GetName returns the name of the parameter.
 	//
-	// Returns:
+	// Returns: - None.
 	//   - string: The name of the parameter.
 	GetName() string
 	// GetDescription returns the description of the parameter.
 	//
-	// Returns:
+	// Returns: - None.
 	//   - string: The description of the parameter.
 	GetDescription() string
 	// GetType returns the type of the parameter.
 	//
-	// Returns:
+	// Returns: - None.
 	//   - string: The type of the parameter.
 	GetType() string
 	// GetIsRepeated returns true if the parameter is a repeated field (array).
 	//
-	// Returns:
+	// Returns: - None.
 	//   - bool: True if the parameter is repeated.
 	GetIsRepeated() bool
 }
@@ -227,26 +199,23 @@ type McpFieldParameter interface {
 // from a service configuration into a `structpb.Struct` that can be used as the
 // `properties` field in a protobuf-based tool input schema.
 //
-// Parameters:
+// Parameters: - None.
 //   - params: A slice of parameters implementing ConfigParameter.
 //
-// Returns:
+// Returns: - None.
 //   - *structpb.Struct: The properties structure for the input schema.
 //   - []string: A list of required parameter names.
 //   - error: An error if the conversion fails.
 //
 // Summary: Executes ConfigSchemaToProtoProperties operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
+// Parameters: - None.
 //
-// Returns:
-//   - TODO: Document returns.
+// Returns: - None.
 //
-// Errors:
-//   - TODO: Document errors.
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func ConfigSchemaToProtoProperties[T ConfigParameter](params []T) (*structpb.Struct, []string, error) {
 	properties := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
@@ -287,25 +256,22 @@ func ConfigSchemaToProtoProperties[T ConfigParameter](params []T) (*structpb.Str
 // `structpb.Struct` that can be used as the `properties` field in a
 // protobuf-based tool input schema.
 //
-// Parameters:
+// Parameters: - None.
 //   - params: A slice of parameters implementing McpFieldParameter.
 //
-// Returns:
+// Returns: - None.
 //   - *structpb.Struct: The properties structure for the input schema.
 //   - error: An error if the conversion fails.
 //
 // Summary: Executes McpFieldsToProtoProperties operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
+// Parameters: - None.
 //
-// Returns:
-//   - TODO: Document returns.
+// Returns: - None.
 //
-// Errors:
-//   - TODO: Document errors.
+// Errors: - None.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - None.
 func McpFieldsToProtoProperties[T McpFieldParameter](params []T) (*structpb.Struct, error) {
 	properties := &structpb.Struct{Fields: make(map[string]*structpb.Value)}

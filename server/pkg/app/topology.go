@@ -16,7 +16,7 @@ import (
 //
 // Summary: Returns the current service topology graph.
 //
-// Returns:
+// Returns: - None.
 //   - http.HandlerFunc: The HTTP handler function.
 func (a *Application) handleTopology() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

@@ -93,14 +93,14 @@ type ToolMetricsMiddleware struct {
 //
 // Summary: Initializes the tool metrics middleware and registers metrics if not already registered.
 //
-// Parameters:
+// Parameters: - None.
 //   - t: tokenizer.Tokenizer. The tokenizer used to count tokens in tool inputs and outputs.
 //     If nil, a simple default tokenizer is used.
 //
-// Returns:
+// Returns: - None.
 //   - *ToolMetricsMiddleware: A new instance of ToolMetricsMiddleware with metrics registered.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Registers Prometheus metrics (globally, once).
 func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
 	registerMetricsOnce.Do(func() {
@@ -124,16 +124,16 @@ func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
 //
 // Summary: Wraps tool execution to record latency, size, and token metrics.
 //
-// Parameters:
+// Parameters: - None.
 //   - ctx: context.Context. The execution context.
 //   - req: *tool.ExecutionRequest. The request containing tool execution details.
 //   - next: tool.ExecutionFunc. The next handler in the execution chain.
 //
-// Returns:
+// Returns: - None.
 //   - any: The result of the tool execution.
 //   - error: An error if the execution fails.
 //
-// Side Effects:
+// Side Effects: - None.
 //   - Updates Prometheus counters, histograms, and gauges.
 //   - Measures execution duration.
 func (m *ToolMetricsMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
