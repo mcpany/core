@@ -394,6 +394,26 @@ func generateMockAuditEntries() []audit.Entry {
 			Duration:   "5005ms",
 			DurationMs: 5005,
 		},
+		{
+			Timestamp: now.Add(6400 * time.Millisecond),
+			ToolName:  "list-users",
+			UserID:    "system",
+			ProfileID: "default",
+			TraceID:   traceID,
+			SpanID:    traceID + "-5",
+			ParentID:  traceID + "-0",
+			Arguments: json.RawMessage(`{"limit": 10}`),
+			Result: map[string]any{
+				"content": []map[string]any{
+					{
+						"type": "text",
+						"text": `[{"id": 1, "name": "Alice", "role": "admin", "status": "active"}, {"id": 2, "name": "Bob", "role": "user", "status": "inactive"}, {"id": 3, "name": "Charlie", "role": "user", "status": "active"}]`,
+					},
+				},
+			},
+			Duration:   "120ms",
+			DurationMs: 120,
+		},
 	}
 	return entries
 }

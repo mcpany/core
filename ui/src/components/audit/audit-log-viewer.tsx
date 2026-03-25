@@ -22,7 +22,7 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
-import { CalendarIcon, Search, RefreshCw, Eye, AlertTriangle, Download } from "lucide-react";
+import { CalendarIcon, Search, RefreshCw, Eye, AlertTriangle, Download, Terminal, FileJson } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light';
@@ -235,107 +235,116 @@ export function AuditLogViewer() {
                 </CardContent>
             </Card>
 
-            <Card className="flex-1 flex flex-col overflow-hidden">
-                <CardContent className="p-0 flex-1 overflow-auto">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="w-[180px]">Timestamp</TableHead>
-                                <TableHead>Tool</TableHead>
-                                <TableHead>User</TableHead>
-                                <TableHead>Duration</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead className="text-right">Details</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {logs.length === 0 && !loading && (
+            <div className="flex-1 flex gap-4 min-h-0">
+                <Card className={cn("flex flex-col overflow-hidden transition-all duration-300", selectedLog ? "w-1/2" : "w-full")}>
+                    <CardContent className="p-0 flex-1 overflow-auto">
+                        <Table>
+                            <TableHeader>
                                 <TableRow>
-                                    <TableCell colSpan={6} className="text-center h-24 text-muted-foreground">
-                                        No logs found.
-                                    </TableCell>
+                                    <TableHead className="w-[180px]">Timestamp</TableHead>
+                                    <TableHead>Tool</TableHead>
+                                    <TableHead>User</TableHead>
+                                    <TableHead>Duration</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead className="text-right">Details</TableHead>
                                 </TableRow>
-                            )}
-                            {logs.map((log, i) => (
-                                <TableRow key={i}>
-                                    <TableCell className="font-mono text-xs">
-                                        {new Date(log.timestamp).toLocaleString()}
-                                    </TableCell>
-                                    <TableCell className="font-medium">{log.toolName}</TableCell>
-                                    <TableCell>{log.userId || "-"}</TableCell>
-                                    <TableCell>{log.duration}</TableCell>
-                                    <TableCell>
-                                        {log.error ? (
-                                            <Badge variant="destructive" className="gap-1">
-                                                <AlertTriangle className="h-3 w-3" /> Error
-                                            </Badge>
-                                        ) : (
-                                            <Badge variant="outline" className="text-green-500 border-green-500/50">
-                                                Success
-                                            </Badge>
-                                        )}
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        <Button variant="ghost" size="sm" onClick={() => setSelectedLog(log)}>
-                                            <Eye className="h-4 w-4 mr-1" /> View
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-                <div className="flex items-center justify-between px-4 py-3 border-t bg-muted/10">
-                    <div className="text-sm text-muted-foreground">
-                        Showing {logs.length > 0 ? page * limit + 1 : 0} to {page * limit + logs.length} entries
+                            </TableHeader>
+                            <TableBody>
+                                {logs.length === 0 && !loading && (
+                                    <TableRow>
+                                        <TableCell colSpan={6} className="text-center h-24 text-muted-foreground">
+                                            No logs found.
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                                {logs.map((log, i) => (
+                                    <TableRow
+                                        key={i}
+                                        className={cn("cursor-pointer", selectedLog?.timestamp === log.timestamp && selectedLog?.toolName === log.toolName ? "bg-muted/50" : "")}
+                                        onClick={() => setSelectedLog(log)}
+                                    >
+                                        <TableCell className="font-mono text-xs">
+                                            {new Date(log.timestamp).toLocaleString()}
+                                        </TableCell>
+                                        <TableCell className="font-medium">{log.toolName}</TableCell>
+                                        <TableCell>{log.userId || "-"}</TableCell>
+                                        <TableCell>{log.duration}</TableCell>
+                                        <TableCell>
+                                            {log.error ? (
+                                                <Badge variant="destructive" className="gap-1">
+                                                    <AlertTriangle className="h-3 w-3" /> Error
+                                                </Badge>
+                                            ) : (
+                                                <Badge variant="outline" className="text-green-500 border-green-500/50">
+                                                    Success
+                                                </Badge>
+                                            )}
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                            <Button variant="ghost" size="sm">
+                                                <Eye className="h-4 w-4 mr-1" /> View
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                    <div className="flex items-center justify-between px-4 py-3 border-t bg-muted/10">
+                        <div className="text-sm text-muted-foreground">
+                            Showing {logs.length > 0 ? page * limit + 1 : 0} to {page * limit + logs.length} entries
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setPage(p => Math.max(0, p - 1))}
+                                disabled={page === 0 || loading}
+                            >
+                                Previous
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setPage(p => p + 1)}
+                                disabled={!hasMore || loading}
+                            >
+                                Next
+                            </Button>
+                        </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setPage(p => Math.max(0, p - 1))}
-                            disabled={page === 0 || loading}
-                        >
-                            Previous
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setPage(p => p + 1)}
-                            disabled={!hasMore || loading}
-                        >
-                            Next
-                        </Button>
-                    </div>
-                </div>
-            </Card>
+                </Card>
 
-            <Dialog open={!!selectedLog} onOpenChange={(open) => !open && setSelectedLog(null)}>
-                <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-                    <DialogHeader>
-                        <DialogTitle>Audit Log Detail</DialogTitle>
-                        <DialogDescription>
-                            Execution details for {selectedLog?.toolName} at {selectedLog && new Date(selectedLog.timestamp).toLocaleString()}
-                        </DialogDescription>
-                    </DialogHeader>
-                    {selectedLog && (
-                        <div className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4 text-sm">
+                {selectedLog && (
+                    <Card className="w-1/2 flex flex-col overflow-hidden animate-in slide-in-from-right-4 duration-300">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 border-b">
+                            <div>
+                                <CardTitle className="text-lg">Audit Log Detail</CardTitle>
+                                <CardDescription className="text-xs">
+                                    Execution details for {selectedLog?.toolName} at {selectedLog && new Date(selectedLog.timestamp).toLocaleString()}
+                                </CardDescription>
+                            </div>
+                            <Button variant="ghost" size="sm" onClick={() => setSelectedLog(null)}>
+                                Close
+                            </Button>
+                        </CardHeader>
+                        <CardContent className="flex-1 overflow-auto p-4 space-y-4">
+                            <div className="grid grid-cols-2 gap-4 text-sm bg-muted/20 p-4 rounded-lg border">
                                 <div>
-                                    <span className="font-semibold block text-muted-foreground">User ID</span>
-                                    {selectedLog.userId || "N/A"}
+                                    <span className="font-semibold block text-muted-foreground text-xs uppercase tracking-wider mb-1">User ID</span>
+                                    <span className="font-mono">{selectedLog.userId || "N/A"}</span>
                                 </div>
                                 <div>
-                                    <span className="font-semibold block text-muted-foreground">Profile ID</span>
-                                    {selectedLog.profileId || "N/A"}
+                                    <span className="font-semibold block text-muted-foreground text-xs uppercase tracking-wider mb-1">Profile ID</span>
+                                    <span className="font-mono">{selectedLog.profileId || "N/A"}</span>
                                 </div>
                                 <div>
-                                    <span className="font-semibold block text-muted-foreground">Duration</span>
-                                    {selectedLog.duration} ({selectedLog.durationMs}ms)
+                                    <span className="font-semibold block text-muted-foreground text-xs uppercase tracking-wider mb-1">Duration</span>
+                                    <span className="font-mono">{selectedLog.duration} ({selectedLog.durationMs}ms)</span>
                                 </div>
                                 <div>
-                                    <span className="font-semibold block text-muted-foreground">Status</span>
-                                    {selectedLog.error ? <span className="text-red-500">Failed</span> : <span className="text-green-500">Success</span>}
+                                    <span className="font-semibold block text-muted-foreground text-xs uppercase tracking-wider mb-1">Status</span>
+                                    {selectedLog.error ? <span className="text-red-500 font-medium flex items-center gap-1"><AlertTriangle className="h-3 w-3" /> Failed</span> : <span className="text-green-500 font-medium">Success</span>}
                                 </div>
                             </div>
 
@@ -346,23 +355,23 @@ export function AuditLogViewer() {
                                 </div>
                             )}
 
-                            <div>
-                                <h4 className="text-sm font-medium mb-2">Arguments</h4>
-                                <div className="rounded-md overflow-hidden border">
+                            <div className="space-y-2">
+                                <h4 className="text-sm font-semibold flex items-center gap-2 text-foreground/80"><Terminal className="h-4 w-4" /> Arguments</h4>
+                                <div className="rounded-md overflow-hidden border shadow-sm">
                                     <RichResultViewer result={safeParse(selectedLog.arguments) || {}} />
                                 </div>
                             </div>
 
-                            <div>
-                                <h4 className="text-sm font-medium mb-2">Result</h4>
-                                <div className="rounded-md overflow-hidden border">
+                            <div className="space-y-2">
+                                <h4 className="text-sm font-semibold flex items-center gap-2 text-foreground/80"><FileJson className="h-4 w-4" /> Result</h4>
+                                <div className="rounded-md overflow-hidden border shadow-sm">
                                     <RichResultViewer result={safeParse(selectedLog.result) || (selectedLog.error ? null : {})} />
                                 </div>
                             </div>
-                        </div>
-                    )}
-                </DialogContent>
-            </Dialog>
+                        </CardContent>
+                    </Card>
+                )}
+            </div>
         </div>
     );
 }
