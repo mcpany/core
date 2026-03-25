@@ -16,7 +16,8 @@ import (
 //
 // Summary: Represents a shared key-value store with agent-aware row-level security.
 type BlackboardStore struct {
-	db *sql.DB
+	db             *sql.DB
+	isolationLevel string
 }
 
 // NewBlackboardStore creates a new SQLite Blackboard store.
@@ -25,6 +26,7 @@ type BlackboardStore struct {
 //
 // Parameters:
 //   - path (string): The file path to the SQLite database.
+//   - isolationLevel (string): The isolation level, e.g., "agent_aware".
 //
 // Returns:
 //   - *BlackboardStore: A new instance of the BlackboardStore.
@@ -38,7 +40,7 @@ type BlackboardStore struct {
 // Side Effects:
 //   - Connects to the specified SQLite database.
 //   - Executes schema creation queries (CREATE TABLE, CREATE INDEX).
-func NewBlackboardStore(path string) (*BlackboardStore, error) {
+func NewBlackboardStore(path string, isolationLevel string) (*BlackboardStore, error) {
 	if path == "" {
 		return nil, fmt.Errorf("sqlite path is required")
 	}
@@ -65,7 +67,10 @@ func NewBlackboardStore(path string) (*BlackboardStore, error) {
 		return nil, fmt.Errorf("failed to create blackboard table: %w", err)
 	}
 
-	return &BlackboardStore{db: db}, nil
+	return &BlackboardStore{
+		db:             db,
+		isolationLevel: isolationLevel,
+	}, nil
 }
 
 // Get retrieves a value from the blackboard for a specific agent.
@@ -88,6 +93,10 @@ func NewBlackboardStore(path string) (*BlackboardStore, error) {
 // Side Effects:
 //   - Executes a SELECT query on the database.
 func (s *BlackboardStore) Get(ctx context.Context, agentID, key string) (string, error) {
+	if s.isolationLevel == "agent_aware" && agentID == "" {
+		return "", fmt.Errorf("agent_aware isolation requires a valid agent ID")
+	}
+
 	var value string
 	err := s.db.QueryRowContext(ctx, "SELECT value FROM blackboard WHERE agent_id = ? AND key = ?", agentID, key).Scan(&value)
 	if err != nil {
@@ -118,6 +127,10 @@ func (s *BlackboardStore) Get(ctx context.Context, agentID, key string) (string,
 // Side Effects:
 //   - Executes an INSERT OR REPLACE (UPSERT) query on the database.
 func (s *BlackboardStore) Set(ctx context.Context, agentID, key, value string) error {
+	if s.isolationLevel == "agent_aware" && agentID == "" {
+		return fmt.Errorf("agent_aware isolation requires a valid agent ID")
+	}
+
 	_, err := s.db.ExecContext(ctx, `
 		INSERT INTO blackboard (agent_id, key, value) VALUES (?, ?, ?)
 		ON CONFLICT(agent_id, key) DO UPDATE SET value = excluded.value

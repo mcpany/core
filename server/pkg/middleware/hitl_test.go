@@ -45,6 +45,81 @@ func TestHITLMiddleware_Disabled(t *testing.T) {
 	assert.Equal(t, "success", res)
 }
 
+func TestHITLMiddleware_ApprovalDeniedMFA(t *testing.T) {
+	bp := setupTestBus(t)
+	config := HITLConfig{
+		Enabled:        true,
+		SensitiveTools: []string{"database.drop_table"},
+		TimeoutSeconds: 5,
+		RequireMFA:     true,
+	}
+	middleware := NewHITLMiddleware(config, bp)
+
+	ctx := context.Background()
+	req := &tool.ExecutionRequest{
+		ToolName: "database.drop_table",
+	}
+
+	go func() {
+		time.Sleep(100 * time.Millisecond)
+		reqBus, _ := corebus.GetBus[HITLApprovalRequest](bp, "hitl.requests")
+		reqBus.SubscribeOnce(context.Background(), "hitl.requests", func(req HITLApprovalRequest) {
+			resBus, _ := corebus.GetBus[HITLApprovalResponse](bp, "hitl.responses."+req.ExecutionID)
+			_ = resBus.Publish(context.Background(), "hitl.responses."+req.ExecutionID, HITLApprovalResponse{
+				ExecutionID: req.ExecutionID,
+				Approved:    true,
+				// MFAToken missing!
+			})
+		})
+	}()
+
+	mockNext := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		return "success", nil
+	}
+
+	res, err := middleware.Execute(ctx, req, mockNext)
+	assert.Error(t, err)
+	assert.Nil(t, res)
+	assert.Contains(t, err.Error(), "missing required MFA token")
+}
+
+func TestHITLMiddleware_ApprovalGrantedMFA(t *testing.T) {
+	bp := setupTestBus(t)
+	config := HITLConfig{
+		Enabled:        true,
+		SensitiveTools: []string{"database.drop_table"},
+		TimeoutSeconds: 5,
+		RequireMFA:     true,
+	}
+	middleware := NewHITLMiddleware(config, bp)
+
+	ctx := context.Background()
+	req := &tool.ExecutionRequest{
+		ToolName: "database.drop_table",
+	}
+
+	go func() {
+		time.Sleep(100 * time.Millisecond)
+		reqBus, _ := corebus.GetBus[HITLApprovalRequest](bp, "hitl.requests")
+		reqBus.SubscribeOnce(context.Background(), "hitl.requests", func(req HITLApprovalRequest) {
+			resBus, _ := corebus.GetBus[HITLApprovalResponse](bp, "hitl.responses."+req.ExecutionID)
+			_ = resBus.Publish(context.Background(), "hitl.responses."+req.ExecutionID, HITLApprovalResponse{
+				ExecutionID: req.ExecutionID,
+				Approved:    true,
+				MFAToken:    "123456",
+			})
+		})
+	}()
+
+	mockNext := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		return "success", nil
+	}
+
+	res, err := middleware.Execute(ctx, req, mockNext)
+	assert.NoError(t, err)
+	assert.Equal(t, "success", res)
+}
+
 func TestHITLMiddleware_NotSensitive(t *testing.T) {
 	bp := setupTestBus(t)
 	config := HITLConfig{

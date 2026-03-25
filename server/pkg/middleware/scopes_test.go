@@ -27,18 +27,28 @@ func TestScopesMiddleware(t *testing.T) {
 		name        string
 		role        string
 		toolName    string
+		args        map[string]interface{}
 		expectError bool
 	}{
 		{
-			name:        "default role allowed",
+			name:        "default role allowed read /tmp",
 			role:        "default",
-			toolName:    "fs:read:/tmp/file.txt",
+			toolName:    "fs:read",
+			args:        map[string]interface{}{"path": "/tmp/file.txt"},
 			expectError: false,
 		},
 		{
-			name:        "default role denied",
+			name:        "default role denied read outside /tmp",
 			role:        "default",
-			toolName:    "fs:write:/tmp/file.txt",
+			toolName:    "fs:read",
+			args:        map[string]interface{}{"path": "/etc/passwd"},
+			expectError: true,
+		},
+		{
+			name:        "default role denied write",
+			role:        "default",
+			toolName:    "fs:write",
+			args:        map[string]interface{}{"path": "/tmp/file.txt"},
 			expectError: true,
 		},
 		{
@@ -62,7 +72,8 @@ func TestScopesMiddleware(t *testing.T) {
 		{
 			name:        "unknown role",
 			role:        "unknown",
-			toolName:    "fs:read:/tmp/file.txt",
+			toolName:    "fs:read",
+			args:        map[string]interface{}{"path": "/tmp/file.txt"},
 			expectError: true,
 		},
 	}
@@ -70,7 +81,7 @@ func TestScopesMiddleware(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := context.WithValue(context.Background(), agentRoleKey, tt.role)
-			req := &tool.ExecutionRequest{ToolName: tt.toolName}
+			req := &tool.ExecutionRequest{ToolName: tt.toolName, Arguments: tt.args}
 
 			_, err := middleware.Execute(ctx, req, mockNext)
 

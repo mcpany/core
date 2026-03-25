@@ -22,6 +22,7 @@ type SessionState struct {
 	Data      map[string]interface{} `json:"data"`
 	CreatedAt time.Time              `json:"created_at"`
 	ExpiresAt time.Time              `json:"expires_at"`
+	Depth     int                    `json:"depth"`
 }
 
 // RecursiveContextManager manages the shared context sessions (Blackboard).
@@ -30,12 +31,13 @@ type SessionState struct {
 type RecursiveContextManager struct {
 	mu       sync.RWMutex
 	sessions map[string]*SessionState
+	maxDepth int
 }
 
 // NewRecursiveContextManager initializes and returns a new RecursiveContextManager.
 //
 // Parameters:
-//   - None.
+//   - maxDepth (int): The maximum allowed depth for context inheritance.
 //
 // Returns:
 //   - *RecursiveContextManager: A pointer to the newly created manager instance.
@@ -47,54 +49,28 @@ type RecursiveContextManager struct {
 //   - Allocates memory for the manager and its internal session map.
 //
 // Summary: Initializes NewRecursiveContextManager operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
-func NewRecursiveContextManager() *RecursiveContextManager {
+func NewRecursiveContextManager(maxDepth int) *RecursiveContextManager {
 	return &RecursiveContextManager{
 		sessions: make(map[string]*SessionState),
+		maxDepth: maxDepth,
 	}
 }
 
-// CreateSession generates a new recursive context session with the provided data and expiration time.
+// CreateSession generates a new recursive context session with the provided data, expiration time, and depth.
 //
 // Parameters:
 //   - data (map[string]interface{}): The initial state data to be stored in the session.
 //   - ttl (time.Duration): The time-to-live duration for the session before it expires.
+//   - depth (int): The recursion depth of this session.
 //
 // Returns:
-//   - *SessionState: A pointer to the newly created session state.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - Modifies the internal sessions map by adding a new session.
-//   - Performs a cleanup of expired sessions during insertion, removing them from the map.
-//
-// Summary: Initializes CreateSession operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
-func (m *RecursiveContextManager) CreateSession(data map[string]interface{}, ttl time.Duration) *SessionState {
+//   - *SessionState: A pointer to the newly created session state, or nil if max depth exceeded.
+//   - error: Error if max depth is exceeded.
+func (m *RecursiveContextManager) CreateSession(data map[string]interface{}, ttl time.Duration, depth int) (*SessionState, error) {
+	if m.maxDepth > 0 && depth > m.maxDepth {
+		return nil, fmt.Errorf("max context depth %d exceeded", m.maxDepth)
+	}
+
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
@@ -105,6 +81,7 @@ func (m *RecursiveContextManager) CreateSession(data map[string]interface{}, ttl
 		Data:      data,
 		CreatedAt: now,
 		ExpiresAt: now.Add(ttl),
+		Depth:     depth,
 	}
 	m.sessions[id] = session
 
@@ -115,7 +92,7 @@ func (m *RecursiveContextManager) CreateSession(data map[string]interface{}, ttl
 		}
 	}
 
-	return session
+	return session, nil
 }
 
 // GetSession retrieves an active context session by its unique identifier.
@@ -192,8 +169,9 @@ func (m *RecursiveContextManager) APIHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
 			var req struct {
-				Data map[string]interface{} `json:"data"`
-				TTL  int                    `json:"ttl_seconds"`
+				Data  map[string]interface{} `json:"data"`
+				TTL   int                    `json:"ttl_seconds"`
+				Depth int                    `json:"depth"`
 			}
 			if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 				http.Error(w, "Invalid JSON body", http.StatusBadRequest)
@@ -204,7 +182,11 @@ func (m *RecursiveContextManager) APIHandler() http.HandlerFunc {
 				ttl = 1 * time.Hour // Default TTL
 			}
 
-			session := m.CreateSession(req.Data, ttl)
+			session, err := m.CreateSession(req.Data, ttl, req.Depth)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusForbidden)
+				return
+			}
 
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusCreated)

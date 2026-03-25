@@ -16,8 +16,9 @@ import (
 //
 // Summary: Middleware that filters requests based on a list of allowed IP addresses or CIDRs.
 type IPAllowlistMiddleware struct {
-	mu            sync.RWMutex
-	allowedIPNets []*net.IPNet
+	mu               sync.RWMutex
+	allowedIPNets    []*net.IPNet
+	enforceLocalhost bool
 }
 
 // NewIPAllowlistMiddleware creates a new IPAllowlistMiddleware.
@@ -26,12 +27,13 @@ type IPAllowlistMiddleware struct {
 //
 // Parameters:
 //   - allowedCIDRs: []string. A list of IP addresses or CIDR blocks to allow.
+//   - enforceLocalhost: bool. If true and allowedCIDRs is empty, only localhost is allowed.
 //
 // Returns:
 //   - *IPAllowlistMiddleware: The initialized middleware instance.
 //   - error: An error if any of the provided CIDRs are invalid.
-func NewIPAllowlistMiddleware(allowedCIDRs []string) (*IPAllowlistMiddleware, error) {
-	m := &IPAllowlistMiddleware{}
+func NewIPAllowlistMiddleware(allowedCIDRs []string, enforceLocalhost bool) (*IPAllowlistMiddleware, error) {
+	m := &IPAllowlistMiddleware{enforceLocalhost: enforceLocalhost}
 	if err := m.Update(allowedCIDRs); err != nil {
 		return nil, err
 	}
@@ -91,10 +93,6 @@ func (m *IPAllowlistMiddleware) Allow(remoteAddr string) bool {
 	nets := m.allowedIPNets
 	m.mu.RUnlock()
 
-	if len(nets) == 0 {
-		return true
-	}
-
 	host, _, err := net.SplitHostPort(remoteAddr)
 	if err != nil {
 		host = remoteAddr
@@ -109,6 +107,17 @@ func (m *IPAllowlistMiddleware) Allow(remoteAddr string) bool {
 	if ip == nil {
 		logging.GetLogger().Warn("Failed to parse remote IP", "remote_addr", remoteAddr)
 		return false
+	}
+
+	if len(nets) == 0 {
+		if m.enforceLocalhost {
+			if ip.IsLoopback() || ip.IsUnspecified() || ip.String() == "::1" || ip.String() == "127.0.0.1" {
+				return true
+			}
+			logging.GetLogger().Warn("Sentinel Security Mode: Access denied (non-local)", "remote_ip", ip.String())
+			return false
+		}
+		return true
 	}
 
 	for _, ipNet := range nets {

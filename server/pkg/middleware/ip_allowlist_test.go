@@ -65,7 +65,7 @@ func TestIPAllowlistMiddleware(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m, err := NewIPAllowlistMiddleware(tt.allowedIPs)
+			m, err := NewIPAllowlistMiddleware(tt.allowedIPs, false)
 			require.NoError(t, err)
 
 			handler := m.Handler(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
@@ -84,7 +84,50 @@ func TestIPAllowlistMiddleware(t *testing.T) {
 }
 
 func TestIPAllowlistMiddleware_InvalidConfig(t *testing.T) {
-	_, err := NewIPAllowlistMiddleware([]string{"invalid-ip"})
+	_, err := NewIPAllowlistMiddleware([]string{"invalid-ip"}, false)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "invalid IP or CIDR")
+}
+
+func TestIPAllowlistMiddleware_SentinelMode(t *testing.T) {
+	m, err := NewIPAllowlistMiddleware([]string{}, true)
+	require.NoError(t, err)
+
+	handler := m.Handler(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+
+	tests := []struct {
+		name           string
+		remoteAddr     string
+		expectedStatus int
+	}{
+		{
+			name:           "Localhost IPv4",
+			remoteAddr:     "127.0.0.1:1234",
+			expectedStatus: http.StatusOK,
+		},
+		{
+			name:           "Localhost IPv6",
+			remoteAddr:     "[::1]:1234",
+			expectedStatus: http.StatusOK,
+		},
+		{
+			name:           "External IP",
+			remoteAddr:     "192.168.1.100:1234",
+			expectedStatus: http.StatusForbidden,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			req := httptest.NewRequest("GET", "/", nil)
+			req.RemoteAddr = tt.remoteAddr
+			w := httptest.NewRecorder()
+
+			handler.ServeHTTP(w, req)
+
+			assert.Equal(t, tt.expectedStatus, w.Code)
+		})
+	}
 }

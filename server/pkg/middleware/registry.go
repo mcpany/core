@@ -439,7 +439,7 @@ func InitStandardMiddlewares(
 		}
 	})
 
-	recursiveContext := NewRecursiveContextManager()
+	recursiveContext := NewRecursiveContextManager(0)
 	Register("recursive_context", func(_ *configv1.Middleware) func(http.Handler) http.Handler {
 		return recursiveContext.HandleContext
 	})

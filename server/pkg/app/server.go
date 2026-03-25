@@ -1589,7 +1589,7 @@ func (a *Application) runServerMode(
 	startupCallback func(),
 	tlsCert, tlsKey, tlsClientCA string,
 ) error {
-	ipMiddleware, err := middleware.NewIPAllowlistMiddleware(a.SettingsManager.GetAllowedIPs())
+	ipMiddleware, err := middleware.NewIPAllowlistMiddleware(a.SettingsManager.GetAllowedIPs(), false)
 	if err != nil {
 		return fmt.Errorf("failed to create IP allowlist middleware: %w", err)
 	}
@@ -2119,7 +2119,7 @@ func (a *Application) runServerMode(
 
 	// Register Recursive Context Manager
 	if standardMiddlewares != nil && standardMiddlewares.RecursiveContext == nil {
-		standardMiddlewares.RecursiveContext = middleware.NewRecursiveContextManager()
+		standardMiddlewares.RecursiveContext = middleware.NewRecursiveContextManager(0)
 	}
 	if standardMiddlewares != nil {
 		mux.Handle("/context/session", authMiddleware(standardMiddlewares.RecursiveContext.APIHandler()))

@@ -40,6 +40,7 @@ type HITLApprovalRequest struct {
 type HITLApprovalResponse struct {
 	ExecutionID string `json:"execution_id"`
 	Approved    bool   `json:"approved"`
+	MFAToken    string `json:"mfa_token,omitempty"`
 }
 
 // HITLMiddleware enforces Human-In-The-Loop approvals for sensitive actions.
@@ -131,7 +132,7 @@ func (m *HITLMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest
 	}
 
 	// 2. Set up channel to receive the response
-	responseCh := make(chan bool, 1)
+	responseCh := make(chan HITLApprovalResponse, 1)
 
 	timeout := time.Duration(m.config.TimeoutSeconds) * time.Second
 	if timeout == 0 {
@@ -142,7 +143,7 @@ func (m *HITLMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest
 
 	// 3. Subscribe to the unique response topic for this execution
 	unsubscribe := resBus.SubscribeOnce(subCtx, "hitl.responses."+executionID, func(res HITLApprovalResponse) {
-		responseCh <- res.Approved
+		responseCh <- res
 	})
 	defer unsubscribe()
 
@@ -160,10 +161,16 @@ func (m *HITLMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest
 	select {
 	case <-subCtx.Done():
 		return nil, fmt.Errorf("execution suspended for HITL approval: timeout reached or context cancelled")
-	case approved := <-responseCh:
-		if !approved {
+	case response := <-responseCh:
+		if !response.Approved {
 			return nil, fmt.Errorf("execution suspended for HITL approval: human denied request")
 		}
+		if m.config.RequireMFA && response.MFAToken == "" {
+			return nil, fmt.Errorf("execution suspended for HITL approval: missing required MFA token")
+		}
+		// In a real implementation we would validate the MFA token here.
+		// For the purpose of this demonstration, we just check if it's non-empty.
+
 		// Proceed if approved
 		return next(ctx, req)
 	}

@@ -13,7 +13,7 @@ import (
 )
 
 func TestRecursiveContextManager_APIHandler(t *testing.T) {
-	manager := NewRecursiveContextManager()
+	manager := NewRecursiveContextManager(5)
 	handler := manager.APIHandler()
 
 	// Test POST /context/session
@@ -21,6 +21,7 @@ func TestRecursiveContextManager_APIHandler(t *testing.T) {
 	reqBody := map[string]interface{}{
 		"data":        data,
 		"ttl_seconds": 60,
+		"depth":       1,
 	}
 	bodyBytes, _ := json.Marshal(reqBody)
 	req := httptest.NewRequest(http.MethodPost, "/context/session", bytes.NewReader(bodyBytes))
@@ -34,6 +35,21 @@ func TestRecursiveContextManager_APIHandler(t *testing.T) {
 	var session SessionState
 	if err := json.Unmarshal(rec.Body.Bytes(), &session); err != nil {
 		t.Fatalf("failed to decode response: %v", err)
+	}
+
+	// Test POST exceeding depth
+	reqBodyOver := map[string]interface{}{
+		"data":        data,
+		"ttl_seconds": 60,
+		"depth":       6,
+	}
+	bodyBytesOver, _ := json.Marshal(reqBodyOver)
+	reqOver := httptest.NewRequest(http.MethodPost, "/context/session", bytes.NewReader(bodyBytesOver))
+	recOver := httptest.NewRecorder()
+	handler.ServeHTTP(recOver, reqOver)
+
+	if recOver.Code != http.StatusForbidden {
+		t.Fatalf("expected status 403 Forbidden for exceeding depth, got %d", recOver.Code)
 	}
 
 	if session.ID == "" {
@@ -81,9 +97,9 @@ func TestRecursiveContextManager_APIHandler(t *testing.T) {
 }
 
 func TestRecursiveContextManager_HandleContext(t *testing.T) {
-	manager := NewRecursiveContextManager()
+	manager := NewRecursiveContextManager(5)
 	data := map[string]interface{}{"role": "admin"}
-	session := manager.CreateSession(data, 1*time.Hour)
+	session, _ := manager.CreateSession(data, 1*time.Hour, 1)
 
 	var capturedData map[string]interface{}
 	nextHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

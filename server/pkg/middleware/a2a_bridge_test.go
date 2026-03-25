@@ -14,7 +14,7 @@ import (
 
 func TestA2ABridgeMiddleware_Execute(t *testing.T) {
 	ctx := context.Background()
-	manager := NewRecursiveContextManager()
+	manager := NewRecursiveContextManager(5)
 	bridge := NewA2ABridgeMiddleware(manager)
 
 	// Test 1: Not a tools/call request

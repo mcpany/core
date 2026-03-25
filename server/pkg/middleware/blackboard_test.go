@@ -19,7 +19,7 @@ func TestBlackboardStore(t *testing.T) {
 
 	dbPath := filepath.Join(tempDir, "blackboard.db")
 
-	store, err := NewBlackboardStore(dbPath)
+	store, err := NewBlackboardStore(dbPath, "agent_aware")
 	if err != nil {
 		t.Fatalf("failed to create store: %v", err)
 	}
@@ -60,5 +60,16 @@ func TestBlackboardStore(t *testing.T) {
 	}
 	if val != "value2" {
 		t.Errorf("expected 'value2', got '%s'", val)
+	}
+
+	// Test Agent Aware isolation blocks empty agent
+	err = store.Set(ctx, "", "key1", "value3")
+	if err == nil {
+		t.Errorf("expected error setting value without agent ID in agent_aware mode")
+	}
+
+	_, err = store.Get(ctx, "", "key1")
+	if err == nil {
+		t.Errorf("expected error getting value without agent ID in agent_aware mode")
 	}
 }

@@ -116,7 +116,7 @@ func (m *A2ABridgeMiddleware) Execute(ctx context.Context, method string, req mc
 	}
 
 	// Create a session to store the token for asynchronous callbacks
-	session := m.contextManager.CreateSession(sessionData, 1*time.Hour)
+	session, _ := m.contextManager.CreateSession(sessionData, 1*time.Hour, 1)
 
 	// Return a simulated A2A response
 	responseText := fmt.Sprintf("A2A Bridge: Successfully forwarded task to %s. Session ID: %s", agentName, session.ID)

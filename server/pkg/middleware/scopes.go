@@ -84,10 +84,49 @@ func (m *ScopesMiddleware) Execute(ctx context.Context, req *tool.ExecutionReque
 	}
 
 	isAllowed := false
-	for _, prefix := range allowedPrefixes {
-		if strings.HasPrefix(req.ToolName, prefix) {
-			isAllowed = true
-			break
+	for _, token := range allowedPrefixes {
+		parts := strings.SplitN(token, ":", 3)
+		if len(parts) == 1 {
+			// e.g. "fs:" -> allow any tool starting with "fs:"
+			if strings.HasPrefix(req.ToolName, parts[0]) {
+				isAllowed = true
+				break
+			}
+		} else if len(parts) == 2 {
+			// e.g. "fs:read"
+			if req.ToolName == parts[0]+":"+parts[1] {
+				isAllowed = true
+				break
+			}
+		} else if len(parts) == 3 {
+			// e.g. "fs:read:/tmp"
+			toolNamePrefix := parts[0] + ":" + parts[1]
+			if req.ToolName == toolNamePrefix {
+				// Validate the path argument
+				if req.Arguments != nil {
+					// We heuristically check common path arguments: "path", "dir", "file"
+					pathArgKeys := []string{"path", "dir", "file"}
+					pathValue := ""
+					for _, k := range pathArgKeys {
+						if val, ok := req.Arguments[k]; ok {
+							if sval, ok := val.(string); ok {
+								pathValue = sval
+								break
+							}
+						}
+					}
+
+					// If the tool has a path argument, it must start with the token's path.
+					if pathValue != "" {
+						if strings.HasPrefix(pathValue, parts[2]) {
+							isAllowed = true
+							break
+						}
+					}
+					// If no path is provided but the token mandates a path constraint,
+					// we MUST fail closed to prevent path-bypass attacks.
+				}
+			}
 		}
 	}
 
