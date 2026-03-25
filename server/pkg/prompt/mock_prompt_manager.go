@@ -4,27 +4,45 @@
 package prompt
 
 import (
-	"context"
-
 	"github.com/stretchr/testify/mock"
 )
 
-// MockPromptManager is a mock of PromptManager.
+// MockPromptManager is a mock of ManagerInterface.
 type MockPromptManager struct {
 	mock.Mock
 }
 
+// AddPrompt is a mock method.
+func (m *MockPromptManager) AddPrompt(p Prompt) {
+	m.Called(p)
+}
+
+// UpdatePrompt is a mock method.
+func (m *MockPromptManager) UpdatePrompt(p Prompt) {
+	m.Called(p)
+}
+
 // GetPrompt is a mock method.
-func (m *MockPromptManager) GetPrompt(ctx context.Context, id string) (any, error) {
-	args := m.Called(ctx, id)
-	return args.Get(0), args.Error(1)
+func (m *MockPromptManager) GetPrompt(name string) (Prompt, bool) {
+	args := m.Called(name)
+	return args.Get(0).(Prompt), args.Bool(1)
 }
 
 // ListPrompts is a mock method.
-func (m *MockPromptManager) ListPrompts(ctx context.Context) ([]any, error) {
-	args := m.Called(ctx)
+func (m *MockPromptManager) ListPrompts() []Prompt {
+	args := m.Called()
 	if args.Get(0) == nil {
-		return nil, args.Error(1)
+		return nil
 	}
-	return args.Get(0).([]any), args.Error(1)
+	return args.Get(0).([]Prompt)
+}
+
+// ClearPromptsForService is a mock method.
+func (m *MockPromptManager) ClearPromptsForService(serviceID string) {
+	m.Called(serviceID)
+}
+
+// SetMCPServer is a mock method.
+func (m *MockPromptManager) SetMCPServer(mcpServer MCPServerProvider) {
+	m.Called(mcpServer)
 }
