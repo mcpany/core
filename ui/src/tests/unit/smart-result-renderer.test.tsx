@@ -18,27 +18,32 @@ describe('SmartResultRenderer', () => {
         // Check for headers
         expect(screen.getByText('id')).toBeDefined();
 
-        // Check for Toggle Buttons
-        const jsonButton = screen.getByRole('button', { name: /JSON/i });
-        const tableButton = screen.getByRole('button', { name: /Table/i });
+        // Check for Toggle Buttons (Top-level SmartResultRenderer toggles)
+        const jsonButton = screen.getByRole('button', { name: 'JSON' });
+        const tableButton = screen.getByRole('button', { name: 'Table' });
         expect(jsonButton).toBeDefined();
         expect(tableButton).toBeDefined();
 
         // Switch to Raw JSON
         fireEvent.click(jsonButton);
 
-        // Table header should disappear (queryByText returns null if not found)
-        // Note: JsonView now defaults to smartTable=true, so switching to "JSON" (raw) mode inside SmartResultRenderer
-        // renders a JsonView, which ALSO detects table data and shows a table.
-        // Thus, 'id' may still be in the document. To check raw JSON view in the outer component,
-        // we assert on something specific or skip this exact negative assertion.
-        // Since JsonView ALSO renders its own toggle buttons for Table vs Raw, let's just make sure
-        // both views don't completely break.
-        // expect(screen.queryByText('id')).toBeNull();
+        // In JSON view, we use `<JsonView>` which defaults to smartTable=true.
+        // It renders a table if it detects an array.
+        // To verify we actually switched to the JsonView mode, we can look for
+        // the JsonView's specific toggle buttons which only appear when it renders.
+        const innerRawJsonButton = screen.getByRole('button', { name: /Raw/i });
+        expect(innerRawJsonButton).toBeDefined();
 
-        // Switch back to Table
+        // Actually click "Raw" to completely remove the table view
+        fireEvent.click(innerRawJsonButton);
+
+        // Now there should be absolutely no table elements in the DOM.
+        expect(screen.queryByRole('table')).toBeNull();
+
+        // Switch back to Top-level Table
         fireEvent.click(tableButton);
         expect(screen.getByText('id')).toBeDefined();
+        expect(screen.getByRole('table')).toBeDefined();
     });
 
     it('renders Table for JSON array inside stdout string (Command output)', () => {
@@ -75,12 +80,6 @@ describe('SmartResultRenderer', () => {
         const data = { id: 1, name: 'Alice' };
         render(<SmartResultRenderer result={data} />);
         // Table headers should not exist
-        // If it renders raw JSON, "name" might appear in the JSON string!
-        // So checking existence of "name" is ambiguous.
-        // Check for specific Raw View elements like the Copy button or SyntaxHighlighter structure.
-        // Or check that it does NOT render table structure.
-        // But "name" inside JSON string vs "name" inside th.
-        // We can check if `table` element exists.
         const table = screen.queryByRole('table');
         expect(table).toBeNull();
     });
