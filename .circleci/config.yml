@@ -45,7 +45,7 @@ jobs:
           name: Run Lint
           command: |
             bazelisk run //:lint
-            cd ui && npm ci && npm run lint
+            cd ui && npm i && npm run lint
             cd ..
             bazelisk test //ui:typecheck
       - save_cache:
