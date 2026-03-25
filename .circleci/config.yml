@@ -8,7 +8,7 @@ executors:
   default-executor:
     docker:
       - image: cimg/go:1.24
-    resource_class: large
+    resource_class: xlarge
 
 commands:
   check-skip:
@@ -21,8 +21,7 @@ commands:
               echo "Pull Request detected: $CIRCLE_PULL_REQUEST"
               # Ensure we have the base branch to compare against
               git fetch origin main:main || true
-              BASE_BRANCH="main"
-              CHANGED_FILES=$(git diff --name-only main...HEAD)
+              CHANGED_FILES=$(git diff --name-only origin/main...HEAD || git diff --name-only main...HEAD || true)
               echo "Files changed in this PR:"
               echo "$CHANGED_FILES"
 
@@ -32,7 +31,7 @@ commands:
               NON_DOC_FILES=$(echo "$CHANGED_FILES" | grep -v "^docs/" | grep -v "\.md$" | grep -v "roadmap\.md$" | grep -v "^.circleci/" | grep -v "^scripts/lint.sh" || true)
 
               if [ -z "$NON_DOC_FILES" ]; then
-                echo "Only documentation or CI-related changes detected. Skipping expensive Go linting."
+                echo "Only documentation detected. Skipping expensive Go linting."
                 # Halt the current job successfully
                 if command -v circleci-agent >/dev/null 2>&1; then
                   circleci-agent step halt
@@ -80,6 +79,8 @@ jobs:
             . venv/bin/activate
             # Ensure PATH includes tool install dir
             export PATH=$PWD/build/env/bin:$PATH
+            # Set memory limit for Go GC to avoid OOM in large repos
+            export GOMEMLIMIT=12GiB
             make lint
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
