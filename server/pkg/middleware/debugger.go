@@ -95,6 +95,20 @@ func (d *Debugger) process() {
 //
 // Side Effects:
 //   - None
+//
+// Summary: Executes Close operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (d *Debugger) Close() {
 	close(d.ingress)
 	<-d.done

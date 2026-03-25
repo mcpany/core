@@ -105,6 +105,15 @@ func (m *MockToolManager) GetToolCountForService(serviceID string) int {
 }
 
 // MockTool is a mock implementation of tool.Tool
+
+func (m *MockTool) IsStreaming() bool {
+	return false
+}
+
+func (m *MockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, nil
+}
+
 type MockTool struct {
 	mock.Mock
 }

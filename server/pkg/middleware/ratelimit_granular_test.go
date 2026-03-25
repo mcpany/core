@@ -63,6 +63,15 @@ func (t *MockTool) Tool() *v1.Tool {
 	return v1.Tool_builder{Name: proto.String(t.name), ServiceId: proto.String(t.serviceID)}.Build()
 }
 func (t *MockTool) MCPTool() *mcp.Tool { return &mcp.Tool{Name: t.name} }
+
+func (t *MockTool) IsStreaming() bool {
+	return false
+}
+
+func (t *MockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, nil
+}
+
 func (t *MockTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	return nil, nil
 }
