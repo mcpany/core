@@ -359,6 +359,22 @@
 - [ ] **[P0] ContextEngine Plugin Manager**: UI for managing and monitoring pluggable ContextEngine strategies and sovereignty status. (Added: 2026-04-24)
 - [ ] **[P1] Zero-Trust Discovery Audit Log**: Visual log for tracking A2A capability card discovery requests and auth-gate actions. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-18 Evolution)
+- [ ] **[P0] Mission-Root Persistence Monitor**: Real-time visual indicator for pinned intents and re-injection events (MRE defense). (Added: 2026-05-18)
+- [ ] **[P0] State Trust-Level Inspector**: Visual debugger for Blackboard data, highlighting origin framework trust-labels (STL). (Added: 2026-05-18)
+- [ ] **[P1] Wait-Graph Visualizer**: Interactive graph for identifying and debugging circular task dependencies in parallel teams. (Added: 2026-05-18)
+- [ ] **[P1] Intent-Weighted Compression Debugger**: UI for visualizing mission-anchored context summarization and token density. (Added: 2026-05-18)
+
+#### Upcoming (2026-05-17 Evolution)
+- [ ] **[P0] Teammate Orchestration Tree**: Visual hierarchical tracer for `TeammateTool` operations across heterogeneous swarms. (Added: 2026-05-17)
+- [ ] **[P0] TLSB Security Widget**: Real-time status indicator for session-bound transport channels and "Ghosting" alerts. (Added: 2026-05-17)
+- [ ] **[P0] A2A Authenticated Discovery Manager**: Enhanced UI for managing and approving identity-bound agent cards in the A2A mesh. (Added: 2026-05-17)
+
+#### Upcoming (2026-05-16 Evolution)
+- [ ] **[P0] Reasoning Alignment Visualizer**: Visualization of semantic consensus scores and reasoning traces across the quorum. (Added: 2026-05-16)
+- [ ] **[P0] Transport Session Monitor**: Real-time indicator for cryptographically bound transport channels and "Team Ghosting" alerts. (Added: 2026-05-16)
+- [ ] **[P1] RRRA Intensity Dashboard**: Visual tracker for real-time reasoning intensity and dynamic resource budgeting. (Added: 2026-05-16)
+
 #### Upcoming (2026-05-15 Evolution)
 - [ ] **[P0] Consensus Attestation Workspace**: Security UI for orchestrating multi-agent approval quorums for high-risk delegations. (Added: 2026-05-15)
 - [ ] **[P1] PNTD Registry Explorer**: Unified browser for discovering capabilities across MCP, gRPC, and UACO via the universal discovery bus. (Added: 2026-05-15)
