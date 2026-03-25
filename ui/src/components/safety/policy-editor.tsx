@@ -11,7 +11,7 @@
 
 
 import { useState } from "react";
-import { CallPolicy, CallPolicyRule, CallPolicy_Action } from "@proto/config/v1/call";
+import { CallPolicy, CallPolicyRule, CallPolicy_Action } from "@proto/config/v1/upstream_service";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
