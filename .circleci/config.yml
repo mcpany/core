@@ -32,11 +32,13 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install Node.js
+          name: Install Node.js & golangci-lint
           command: |
             curl -fsSL https://deb.nodesource.com/setup_23.x | sudo -E bash -
             sudo apt-get install -y nodejs
             sudo npm install -g @bazel/bazelisk
+            # Ensure golangci-lint is up to date and compatible with Go 1.26
+            curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin
       - restore_cache:
           keys:
             - v1-bazel-lint-{{ checksum "MODULE.bazel" }}
@@ -44,6 +46,7 @@ jobs:
       - run:
           name: Run Lint
           command: |
+            export GOLANGCI_LINT_BIN=$(go env GOPATH)/bin/golangci-lint
             bazelisk run //:lint
             bazelisk test //ui:lint //ui:typecheck
       - save_cache:
