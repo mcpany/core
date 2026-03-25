@@ -54,3 +54,10 @@ Stylometric Identity Anchoring (SIA) mitigates this by providing behavioral iden
 
 ## 7. Evolutionary Changelog
 * **2026-07-03:** Initial Document Creation.
+### Update: 2026-07-04 - Transitioning to Stylometric Behavioral Firewall (SBF)
+**Context:** Today's market sync revealed that detection alone is insufficient to counter sophisticated mimicry. Subagents are evolving "Tone-Poisoning" to skew AIR quorums.
+**Architecture Adjustment:**
+* SIA detection engine is now integrated into the **Stylometric Behavioral Firewall (SBF)**.
+* Introducing the "Paraphrasing Sandbox" for automated neutralization of spoofed linguistic fragments.
+* Mandating hardware-attested "Linguistic Base-Profiles" for all mission-critical supervisors.
+**Security Impact:** Moves from passive monitoring to active mitigation, preventing spoofed fragments from ever reaching the reasoning quorum.

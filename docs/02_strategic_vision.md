@@ -640,6 +640,18 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-07-04]
+### Focus: Behavioral Firewalling & Distributed Memory Enclaves
+**Context**: The emergence of "Stylometric Mimicry" and the discovery of "Enclave Timing Side-Channels" (CVE-2026-92001) confirm that transport-layer security and hardware-attested tokens are no longer sufficient. We must now protect the **behavioral sovereignty** of the agent and provide **temporal isolation** for shared memory. As context windows scale, "Attention Fragmentation" demands that infrastructure provides **Hardware-Locked Attention Masking** to prevent mission-root eviction.
+
+**Strategic Pivot**:
+- **Stylometric Behavioral Firewall (SBF)**: MCP Any will evolve to act as the authoritative "Linguistic Broker." We will implement the SBF, which automatically routes reasoning fragments with low stylometric confidence through an isolated "Paraphrasing Sandbox" to neutralize spoofed tones before they reach the AIR Hub.
+- **Distributed Memory Enclave (DME) Broker**: To neutralize "Memory-Mapped Escape" vulnerabilities, we are upgrading the ZCMB to support DMEs. This layer utilizes hardware-enclave (TPM/SEP) boundaries to physically isolate shared reasoning regions between specialist agents from different frameworks.
+- **Hardware-Locked Attention Masking (HLAM)**: Supporting the stability of deep swarms, we are adopting the Gemini CLI v0.46.0 standard. MCP Any will implement HLAM, allowing the mission-root to cryptographically "mask out" high-entropy noise from subagents at the attention layer.
+- **Monotonic Jitter Injection**: To counter enclave timing side-channels, we are introducing a mandatory jitter middleware. This layer injects hardware-attested timing variations into all memory-broker responses, neutralizing the ability for subagents to map parent attention maps via latency monitoring.
+
+---
+
 ## Strategic Evolution: [2026-03-25]
 ### Focus: Recursive Intent Integrity & WASM-Bound Binary State
 **Context**: Today's leak of UACO v1.8 and the OpenClaw v2.5 roadmap mark a shift toward "Active State Governance." As agent swarms grow deeper, the risk of "Intent Hijacking" and "Binary Context Poisoning" becomes critical. MCP Any must evolve from a passive validator to an active, sandboxed state mediator.
