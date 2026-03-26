@@ -7,12 +7,13 @@
 
 import { useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FileJson, Table as TableIcon, Terminal, FileText } from "lucide-react";
 import { JsonView } from "@/components/ui/json-view";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { SmartTable } from "./smart-table";
+
 
 interface RichResultViewerProps {
     result: any;
@@ -125,13 +126,35 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         return null;
     }, [content]);
 
-    const isTableEligible = useMemo(() => {
-        return !mcpContent && Array.isArray(content) && content.length > 0 && typeof content[0] === 'object' && content[0] !== null;
-    }, [content, mcpContent]);
+    const { isTableEligible, tableData } = useMemo(() => {
+        if (mcpContent) return { isTableEligible: false, tableData: [] };
 
-    const isKeyValueEligible = useMemo(() => {
-        return !mcpContent && !isTableEligible && content && typeof content === 'object' && !Array.isArray(content);
-    }, [content, mcpContent, isTableEligible]);
+        // 1. Array of objects
+        if (Array.isArray(content) && content.length > 0 && typeof content[0] === 'object' && content[0] !== null) {
+            return { isTableEligible: true, tableData: content };
+        }
+
+        // 2. Object with a single key that is an array of objects
+        if (content && typeof content === 'object' && !Array.isArray(content) && content !== null) {
+            const keys = Object.keys(content);
+            if (keys.length === 1) {
+                const innerData = content[keys[0]];
+                if (Array.isArray(innerData) && innerData.length > 0 && typeof innerData[0] === 'object' && innerData[0] !== null) {
+                    return { isTableEligible: true, tableData: innerData };
+                }
+            }
+
+            // 3. Heuristic: Object with exactly one array of objects, and other simple properties (e.g. metadata)
+            const arrayProps = Object.entries(content).filter(([_, val]) =>
+                Array.isArray(val) && val.length > 0 && typeof val[0] === 'object' && val[0] !== null
+            );
+            if (arrayProps.length === 1) {
+                 return { isTableEligible: true, tableData: arrayProps[0][1] as any[] };
+            }
+        }
+
+        return { isTableEligible: false, tableData: [] };
+    }, [content, mcpContent]);
 
     // Get columns for table
     const columns = useMemo(() => {
@@ -139,13 +162,13 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         // aggregate all keys from all objects to handle sparse data
         const keys = new Set<string>();
         // Limit rows scanned for columns to avoid perf issues on huge datasets
-        content.slice(0, 50).forEach((item: any) => {
+        tableData.slice(0, 50).forEach((item: any) => {
             if (typeof item === 'object' && item !== null) {
                 Object.keys(item).forEach(k => keys.add(k));
             }
         });
         return Array.from(keys);
-    }, [content, isTableEligible]);
+    }, [tableData, isTableEligible]);
 
     const renderCell = (value: any) => {
         if (value === null || value === undefined) return <span className="text-muted-foreground">-</span>;
@@ -154,20 +177,20 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         return <span className="truncate max-w-[300px] block" title={String(value)}>{String(value)}</span>;
     }
 
-    const defaultTab = mcpContent ? "rendered" : (isTableEligible || isKeyValueEligible ? "table" : "json");
+    const defaultTab = mcpContent ? "rendered" : (isTableEligible ? "table" : "json");
 
     return (
         <Tabs defaultValue={defaultTab} className="w-full">
             <div className="flex items-center justify-between mb-2">
-                <TabsList className="bg-background/50 backdrop-blur-sm border shadow-sm">
+                <TabsList>
                     {mcpContent && (
                         <TabsTrigger value="rendered" className="flex items-center gap-2">
                             <FileText className="h-4 w-4" /> Rendered
                         </TabsTrigger>
                     )}
-                    {(isTableEligible || isKeyValueEligible) && (
+                    {isTableEligible && (
                         <TabsTrigger value="table" className="flex items-center gap-2">
-                            <TableIcon className="h-4 w-4" /> {isTableEligible ? 'Table' : 'Details'}
+                            <TableIcon className="h-4 w-4" /> Table
                         </TabsTrigger>
                     )}
                     <TabsTrigger value="json" className="flex items-center gap-2">
@@ -182,7 +205,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
             </div>
 
             {mcpContent && (
-                <TabsContent value="rendered" className="border rounded-xl bg-card shadow-sm backdrop-blur-sm bg-background/50 overflow-hidden">
+                <TabsContent value="rendered" className="border rounded-md bg-card">
                     <ScrollArea className="h-[400px]">
                         <McpContentRenderer content={mcpContent} />
                     </ScrollArea>
@@ -190,66 +213,20 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
             )}
 
             {isTableEligible && (
-                <TabsContent value="table" className="border rounded-xl shadow-sm backdrop-blur-sm bg-background/50 overflow-hidden">
-                    <ScrollArea className="h-[400px]">
-                        <Table>
-                            <TableHeader className="bg-muted/50">
-                                <TableRow>
-                                    {columns.map(col => (
-                                        <TableHead key={col} className="whitespace-nowrap font-semibold">{col}</TableHead>
-                                    ))}
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {content.map((row: any, i: number) => (
-                                    <TableRow key={i} className="hover:bg-muted/30">
-                                        {columns.map(col => (
-                                            <TableCell key={col} className="py-3">
-                                                {renderCell(row[col])}
-                                            </TableCell>
-                                        ))}
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </ScrollArea>
+                <TabsContent value="table" className="border rounded-md">
+                    <div className="h-[400px]">
+                        <SmartTable data={tableData} />
+                    </div>
                 </TabsContent>
             )}
 
-            {isKeyValueEligible && (
-                <TabsContent value="table" className="border rounded-xl shadow-sm backdrop-blur-sm bg-background/50 overflow-hidden">
-                    <ScrollArea className="h-[400px]">
-                        <Table>
-                            <TableHeader className="bg-muted/50">
-                                <TableRow>
-                                    <TableHead className="w-1/3 font-semibold">Key</TableHead>
-                                    <TableHead className="font-semibold">Value</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {Object.entries(content).map(([key, value], i: number) => (
-                                    <TableRow key={i} className="hover:bg-muted/30">
-                                        <TableCell className="py-3 font-medium text-muted-foreground">{key}</TableCell>
-                                        <TableCell className="py-3">{renderCell(value)}</TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </ScrollArea>
-                </TabsContent>
-            )}
-
-            <TabsContent value="json" className="border rounded-xl shadow-sm backdrop-blur-sm bg-background/50 overflow-hidden">
-                <div className="p-1">
-                    <JsonView data={content} maxHeight={400} defaultExpandedLevel={2} />
-                </div>
+            <TabsContent value="json">
+                <JsonView data={content} maxHeight={400} defaultExpandedLevel={2} />
             </TabsContent>
 
             {isExtracted && (
-                <TabsContent value="raw" className="border rounded-xl shadow-sm backdrop-blur-sm bg-background/50 overflow-hidden">
-                    <div className="p-1">
-                        <JsonView data={result} maxHeight={400} />
-                    </div>
+                <TabsContent value="raw">
+                    <JsonView data={result} maxHeight={400} />
                 </TabsContent>
             )}
         </Tabs>
