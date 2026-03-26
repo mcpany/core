@@ -4,7 +4,7 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedCollection, cleanupCollection, cleanupServices, seedUser } from './e2e/test-data';
+import { seedServices, seedCollection, cleanupCollection, cleanupServices, seedUser } from './e2e/test-data';
 
 test.describe('Onboarding Flow', () => {
   test.beforeEach(async ({ request }) => {
@@ -21,17 +21,17 @@ test.describe('Onboarding Flow', () => {
 
     // Wait for the outcome state directly
     const welcome = page.getByText('Welcome to MCP Any');
-    const dashboard = page.getByRole('heading', { name: /Dashboard/i });
+    const dashboardHeading = page.locator('h1').filter({ hasText: /Dashboard/i });
 
     await Promise.race([
       welcome.waitFor({ state: 'visible', timeout: 30000 }).catch(() => { }),
-      dashboard.waitFor({ state: 'visible', timeout: 30000 }).catch(() => { })
+      dashboardHeading.waitFor({ state: 'visible', timeout: 30000 }).catch(() => { })
     ]);
 
     if (await welcome.isVisible()) {
       await expect(welcome).toBeVisible();
       await expect(page.getByRole('link', { name: /Connect Your First Service/i })).toBeVisible();
-    } else if (await dashboard.isVisible()) {
+    } else if (await dashboardHeading.isVisible()) {
         console.warn("Skipping empty state assertion: Environment has leftover services.");
     } else {
       throw new Error("Neither Welcome screen nor Dashboard appeared within 30s");
@@ -41,6 +41,7 @@ test.describe('Onboarding Flow', () => {
   test('shows dashboard when services exist', async ({ page, request }) => {
     // 1. Seed data BEFORE loading UI to prevent race condition between React mount and backend insert
     await seedCollection('mcpany-system', request);
+    await seedServices(request);
     await page.waitForTimeout(2000);
 
     // 2. Login
@@ -53,38 +54,26 @@ test.describe('Onboarding Flow', () => {
         page.click('button[type="submit"]')
     ]);
 
-    // Explicitly wait for the layout header attached to the DOM as a proof of rendering the layout wrapper
-    await page.waitForSelector('header', { state: 'attached', timeout: 30000 }).catch(()=>{});
-
-    // Give time for initial API requests to finish.
-    await page.waitForTimeout(3000);
-
-    // Force reload to ensure listServices runs again if it cached an empty result
-    await page.reload({ waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(3000); // Wait for React hydration & fetch
-
-    // Look for either Dashboard or Welcome
     const dashboardHeading = page.locator('h1').filter({ hasText: /Dashboard/i });
     const welcome = page.getByText('Welcome to MCP Any');
 
+    // Wait for the outcome state directly
     await Promise.race([
-      dashboardHeading.waitFor({ state: 'visible', timeout: 15000 }).catch(()=>{}),
-      welcome.waitFor({ state: 'visible', timeout: 15000 }).catch(()=>{})
+      welcome.waitFor({ state: 'visible', timeout: 15000 }).catch(() => { }),
+      dashboardHeading.waitFor({ state: 'visible', timeout: 15000 }).catch(() => { })
     ]);
 
-    // If it's STILL welcome, the seed data wasn't returned by /api/v1/services
-    if (await welcome.isVisible()) {
-        console.log("Welcome screen is visible. The DB seed might have failed or not been fetched by UI.");
-        throw new Error("Welcome screen is visible. Expected Dashboard.");
-    }
+    // Final assert
+    await expect(dashboardHeading).toBeVisible({ timeout: 15000 }).catch(async () => {
+        // If not visible, force reload and wait again, could be suspense/caching
+        await page.reload({ waitUntil: 'networkidle' });
+        await expect(dashboardHeading).toBeVisible({ timeout: 15000 });
+    });
 
-    // Assert Dashboard is visible
-    await expect(dashboardHeading).toBeVisible({ timeout: 15000 });
-
-    // Verify welcome screen is not shown
     await expect(welcome).not.toBeVisible();
 
     // Cleanup
+    await cleanupServices(request);
     await cleanupCollection('mcpany-system', request);
   });
 });
