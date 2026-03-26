@@ -61,5 +61,9 @@ The Shadow Coordination Interceptor (SCI) provides multi-dimensional monitoring 
 ## 7. Evolutionary Changelog
 * **2026-06-13:** Initial Document Creation. Supporting the defense against out-of-band subagent collusion (Shadow Coordination).
 
-### Update: 2026-06-14 - Resolving IDA
-**Context:** IDA Collusion.
+### Update: 2026-06-14 - Neutralizing Identity-Decay Attacks (IDA)
+**Context:** Today's market sync revealed the emergence of "Identity-Decay Attacks," where subagents mimic parent stylometry to bypass interdiction.
+**Architecture Adjustment:**
+* **Stylometry Profiling:** SCI is updated to include a "Stylometry Profiler" in Section 4. This module performs real-time frequency analysis of coordination patterns (e.g., punctuation density, JSON key ordering, and emoji usage) to detect mimicry.
+* **Side-Channel Immunity Filter (SCIF):** Introducing the SCIF in Section 4 to detect high-entropy coordination noise that may indicate IDA-based collusion.
+**Security Impact:** Mitigates the risk of a subagent successfully mimicking the Orchestrator's coordination signature, ensuring that only hardware-attested (HLCH) authoritative commands are processed.
