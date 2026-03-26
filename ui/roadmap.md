@@ -206,6 +206,11 @@
 - [ ] **[P1] Automated Remediation Tracer**: (2026-07-07) Verifiable audit trail viewer for AI-powered fix suggestions and SSDF compliance.
 - [ ] **[P0] Action-Chain Sovereignty Monitor**: (2026-07-07) Real-time visualization of automated workflow sequences and interdiction events.
 
+#### Upcoming (2026-07-08 Evolution)
+- [ ] **[P0] RAG Gateway Manager**: (2026-07-08) UI for managing embeddings and model discovery endpoints.
+- [ ] **[P1] Multi-Panel Swarm Visualizer**: (2026-07-08) Tmux-inspired parallel visualization of teammate reasoning and task list progression.
+- [ ] **[P0] Metadata Injection Alert Hub**: (2026-07-08) Security dashboard for reviewing sanitized structural metadata and Cyera-style injection alerts.
+
 #### Upcoming (2026-03-20 Evolution)
 - [ ] **[P0] Mission Manifest Editor**: (2026-03-20) UI for defining and TPM-signing Hardware-Attested Mission Manifests (HAMM).
 - [ ] **[P0] Mailbox Shard Monitor**: (2026-03-20) Real-time visualization of task-bound mailbox shards and coordination throughput.

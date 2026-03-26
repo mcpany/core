@@ -1,5 +1,13 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-08] Updates
+
+### Proposed Additions
+- **OpenAI-Compatible RAG Bridge**: (P0) Authoritative gateway for embeddings and model discovery, implementing standardized `/v1/embeddings` and `/v1/models` proxying.
+- **Swarm Observability Hub (SOB)**: (P1) High-speed, sharded telemetry service for multi-panel visualization of parallel agent chains and shared task lists.
+- **Structural Metadata Sanitizer (SMS) v2**: (P0) Upgrade for the SMS middleware providing deep, recursive scanning of natural-language metadata to neutralize multi-modal injection.
+- **Parallel Mission Sync**: (P0) Optimization for the LFTC hub providing panel-aware coordination for real-time visualization synchronization.
+
 ## Evolution: [2026-07-07] Updates
 
 ### Proposed Additions
