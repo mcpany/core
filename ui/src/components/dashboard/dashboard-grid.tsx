@@ -78,13 +78,19 @@ export function DashboardGrid() {
                 type: string; // Actually 'wide'|'half' etc in some cases, but mapped
                 hidden?: boolean;
             }
-            const migrated: WidgetInstance[] = parsed.map((w: LegacyWidget) => ({
-                instanceId: crypto.randomUUID(),
-                type: w.id, // In legacy, id was effectively the type
-                title: WIDGET_DEFINITIONS.find(d => d.type === w.id)?.title || w.title,
-                size: (["full", "half", "third", "two-thirds"].includes(w.type) ? w.type : "third") as WidgetSize,
-                hidden: w.hidden ?? false
-            }));
+            // ⚡ BOLT: [Render Optimization] Use Map for Legacy Widget Migration title lookups
+            // Randomized Selection from Top 5 High-Impact Targets (Algorithmic)
+            const widgetDefMap = new Map(WIDGET_DEFINITIONS.map(def => [def.type, def]));
+            const migrated: WidgetInstance[] = parsed.map((w: LegacyWidget) => {
+                const def = widgetDefMap.get(w.id);
+                return {
+                    instanceId: crypto.randomUUID(),
+                    type: w.id, // In legacy, id was effectively the type
+                    title: def?.title || w.title,
+                    size: (["full", "half", "third", "two-thirds"].includes(w.type) ? w.type : "third") as WidgetSize,
+                    hidden: w.hidden ?? false
+                };
+            });
 
             // Filter out any invalid types
             const validMigrated = migrated.filter(w => getWidgetDefinition(w.type));
