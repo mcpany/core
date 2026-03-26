@@ -120,7 +120,7 @@ test --local_test_jobs=1
 
 
 
-build --jobs=2
+build:remote --jobs=2
 
 
 
@@ -135,5 +135,9 @@ build --jobs=2
 
 
 
-build:remote --local_resources=memory=3000
+
+
+
+
 build:remote --local_resources=cpu=1
+build:remote --local_resources=ram=3000
