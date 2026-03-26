@@ -113,6 +113,12 @@ func TestUpstreamService_TheCocktailDB(t *testing.T) {
 	err = json.Unmarshal([]byte(textContent.Text), &theCocktailDBResponse)
 	require.NoError(t, err, "Failed to unmarshal JSON response")
 
+	if _, ok := theCocktailDBResponse["drinks"].(string); ok {
+
+	}
+	if theCocktailDBResponse["drinks"] == nil {
+
+	}
 	drinks, ok := theCocktailDBResponse["drinks"].([]interface{})
 	require.True(t, ok, "The drinks should be an array")
 	require.True(t, len(drinks) > 0, "The response should contain at least one drink")

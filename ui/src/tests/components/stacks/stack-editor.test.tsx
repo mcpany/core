@@ -5,10 +5,18 @@
 
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { StackEditor } from '@/components/stacks/stack-editor';
+import { apiClient } from '@/lib/client';
 import { vi } from 'vitest';
 
 // Mock the API client
-
+vi.mock('@/lib/client', () => ({
+  apiClient: {
+    getStackConfig: vi.fn(),
+    saveStackConfig: vi.fn(),
+    getCollection: vi.fn(), // Added getCollection mock
+    saveCollection: vi.fn(), // Added saveCollection mock
+  },
+}));
 
 // Mock ConfigEditor to render a simple textarea for testing
 vi.mock('@/components/stacks/config-editor', () => ({
@@ -23,7 +31,7 @@ vi.mock('@/components/stacks/config-editor', () => ({
 
 // Mock ServicePalette to show expected text
 vi.mock('@/components/stacks/service-palette', () => ({
-  ServicePalette: ({ _onTemplateSelect }: { _onTemplateSelect?: (template: unknown) => void }) => (
+  ServicePalette: ({ onTemplateSelect }: any) => (
     <div data-testid="service-palette">Service Palette</div>
   ),
 }));
@@ -35,7 +43,7 @@ vi.mock('@/components/stacks/stack-visualizer', () => ({
     const yaml = require('js-yaml');
     let hasServices = false;
     try {
-      const doc = yaml.load(yamlContent) as Record<string, unknown>;
+      const doc = yaml.load(yamlContent) as any;
       hasServices = doc?.services && Object.keys(doc.services).length > 0;
     } catch {}
     return (
@@ -59,10 +67,10 @@ describe('StackEditor', () => {
   });
 
   it('loads and displays configuration', async () => {
-    global.fetch = vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve({
+    (apiClient.getCollection as any).mockResolvedValue({
       name: 'test-stack',
       services: []
-    }) });
+    });
 
     render(<StackEditor stackId="test-stack" />);
 
@@ -76,12 +84,12 @@ describe('StackEditor', () => {
   });
 
   it('validates YAML content', async () => {
-    global.fetch = vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve({
+    (apiClient.getCollection as any).mockResolvedValue({
       name: 'test-stack',
       services: []
-    }) });
+    });
 
-    render(<StackEditor stackId="test-stack" />);
+    const { container } = render(<StackEditor stackId="test-stack" />);
 
     // Find textarea by selector if role is elusive
     await waitFor(() => expect(screen.getByTestId('config-editor-mock')).toBeInTheDocument());
@@ -102,7 +110,7 @@ describe('StackEditor', () => {
   });
 
   it('toggles palette and visualizer', async () => {
-    global.fetch = vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve({ name: 'test-stack', services: [] }) });
+    (apiClient.getCollection as any).mockResolvedValue({ name: 'test-stack', services: [] });
     render(<StackEditor stackId="test-stack" />);
 
     // Wait for the component to finish loading

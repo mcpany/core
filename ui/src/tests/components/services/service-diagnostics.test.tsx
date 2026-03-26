@@ -10,8 +10,15 @@ import { UpstreamServiceConfig } from '@/lib/client';
 import { vi } from 'vitest';
 
 // Mock apiClient
+vi.mock('@/lib/client', () => ({
+  apiClient: {
+    validateService: vi.fn(),
+    getServiceStatus: vi.fn(),
+    listTools: vi.fn(),
+  },
+}));
 
-
+import { apiClient } from '@/lib/client';
 
 // Helper to cast mocked function for typing
 const mockValidateService = apiClient.validateService as unknown as ReturnType<typeof vi.fn>;
