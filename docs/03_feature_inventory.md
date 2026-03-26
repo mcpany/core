@@ -1362,4 +1362,5 @@
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
 
 ## Evolution: [2026-06-18] Updates
-- [P0] TSE.
+- **Teammate Sovereignty Enforcer (TSE)**: (P0) Authoritative isolation kernel.
+- **Logic-Sovereignty Validator (LSV)**: (P0) Real-time logic guard.
