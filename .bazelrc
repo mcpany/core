@@ -139,5 +139,10 @@ build:remote --jobs=2
 
 
 
-build:remote --local_resources=cpu=1
-build:remote --local_resources=ram=3000
+
+
+
+
+
+build --local_resources=memory=2000
+build --local_resources=cpu=2
