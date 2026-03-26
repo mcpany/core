@@ -46,6 +46,10 @@ issues:
     - tests
     - examples
     - proto
+    - kubernetes
+    - ui
+    - hack
+    - scripts
   exclude-rules:
     - path: "_test.go"
       linters:
