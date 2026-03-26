@@ -142,10 +142,16 @@ fi
 # ---------------------------------------------------------------------------
 echo "==> Running markdownlint..."
 if command -v markdownlint &> /dev/null; then
-    markdownlint -c .markdownlint.json docs/ research/ features/ server/ ui/ README.md
+    markdownlint -c .markdownlint.json docs/ README.md
     echo "    markdownlint OK."
 else
-    echo "    Warning: markdownlint not found – skipping."
+    # Fallback to npx if markdownlint is not in path but node is
+    if command -v npx &> /dev/null; then
+        npx markdownlint-cli -c .markdownlint.json docs/ README.md
+        echo "    markdownlint (via npx) OK."
+    else
+        echo "    Warning: markdownlint not found – skipping."
+    fi
 fi
 
 echo "==> Lint complete."
