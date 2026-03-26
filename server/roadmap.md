@@ -1215,7 +1215,27 @@ These features represent the next logical steps for the product, focusing on Ent
 
 - **Synthetic Policy Synthesizer**: (P1) Experimental mesh-local policy generation service backed by hardware attestation.
 
-### Upcoming: [2026-06-05] - Part 2 - Part 2 - Part 2
+### Upcoming: [2026-06-05] - Part 2 - Part 2 - Part 2 - Part 2
+
+- **Intent-Splicing Detector (ISD)**: (P0) Structural validation middleware for the Semantic Integrity Bridge to prevent malicious instruction splicing in inter-agent streams.
+
+- **Recursive Accountability Tracker (RAT)**: (P0) Lifecycle-aware accounting service ensuring immediate revocation of session-bound capabilities upon task completion.
+
+- **HAIL Lineage Provider**: (P0) Identity middleware supporting Hardware-Attested Intent Lineage (HAIL) for non-repudiable mission-root attestation.
+
+- **Synthetic Policy Synthesizer**: (P1) Experimental mesh-local policy generation service backed by hardware attestation.
+
+### Upcoming: [2026-06-05] - Part 2 - Part 2
+
+- **Intent-Splicing Detector (ISD)**: (P0) Structural validation middleware for the Semantic Integrity Bridge to prevent malicious instruction splicing in inter-agent streams.
+
+- **Recursive Accountability Tracker (RAT)**: (P0) Lifecycle-aware accounting service ensuring immediate revocation of session-bound capabilities upon task completion.
+
+- **HAIL Lineage Provider**: (P0) Identity middleware supporting Hardware-Attested Intent Lineage (HAIL) for non-repudiable mission-root attestation.
+
+- **Synthetic Policy Synthesizer**: (P1) Experimental mesh-local policy generation service backed by hardware attestation.
+
+### Upcoming: [2026-06-05] - Part 3 - Part 2
 
 - **Intent-Splicing Detector (ISD)**: (P0) Structural validation middleware for the Semantic Integrity Bridge to prevent malicious instruction splicing in inter-agent streams.
 
@@ -1226,16 +1246,6 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Synthetic Policy Synthesizer**: (P1) Experimental mesh-local policy generation service backed by hardware attestation.
 
 ### Upcoming: [2026-06-05] - Part 2
-
-- **Intent-Splicing Detector (ISD)**: (P0) Structural validation middleware for the Semantic Integrity Bridge to prevent malicious instruction splicing in inter-agent streams.
-
-- **Recursive Accountability Tracker (RAT)**: (P0) Lifecycle-aware accounting service ensuring immediate revocation of session-bound capabilities upon task completion.
-
-- **HAIL Lineage Provider**: (P0) Identity middleware supporting Hardware-Attested Intent Lineage (HAIL) for non-repudiable mission-root attestation.
-
-- **Synthetic Policy Synthesizer**: (P1) Experimental mesh-local policy generation service backed by hardware attestation.
-
-### Upcoming: [2026-06-05] - Part 3
 
 - **Intent-Splicing Detector (ISD)**: (P0) Structural validation middleware for the Semantic Integrity Bridge to prevent malicious instruction splicing in inter-agent streams.
 
