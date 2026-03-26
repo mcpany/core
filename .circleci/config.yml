@@ -50,7 +50,9 @@ jobs:
             . venv/bin/activate
             # Ensure PATH includes tool install dir
             export PATH=$PWD/build/env/bin:$PATH
-            make lint
+            python3 server/tools/check_ts_doc.py ui/src
+            bazelisk run //:lint
+            bazelisk test //ui:typecheck //ui:lint
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
