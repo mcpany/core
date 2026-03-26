@@ -34,7 +34,7 @@ func StartStdioServer(t *testing.T, configFile string) (*MCPClient, func()) {
 	dbPath := filepath.Join(t.TempDir(), "test.db")
 
 	// Create command
-	cmd := exec.Command(serverBin, "run", "--stdio", "--config-path", configFile, "--db-path", dbPath, "--metrics-listen-address", LoopbackIP+":0") //nolint:gosec // Test helper
+	cmd := exec.Command(serverBin, "run", "--stdio", "--config-path", configFile, "--db-path", dbPath, "--metrics-listen-address", LoopbackIP+":0")
 	cmd.Dir = t.TempDir() // Isolate working directory
 	cmd.Env = append(os.Environ(),
 		"MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true",
@@ -74,7 +74,7 @@ func StartStdioServer(t *testing.T, configFile string) (*MCPClient, func()) {
 	}
 }
 
-// Update MCPClient for Stdio
+// Update MCPClient for Stdio.
 type MCPClient struct {
 	stdin  io.WriteCloser
 	stdout *bufio.Scanner

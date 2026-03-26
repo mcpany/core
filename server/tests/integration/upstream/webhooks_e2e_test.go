@@ -50,7 +50,7 @@ func webhookBinary(t *testing.T) string {
 	}
 	rootDir := integration.ProjectRoot(t)
 	webhookBin := filepath.Join(t.TempDir(), "webhooks")
-	cmd := exec.Command("go", "build", "-o", webhookBin, "./cmd/webhooks") //nolint:gosec
+	cmd := exec.Command("go", "build", "-o", webhookBin, "./cmd/webhooks")
 	cmd.Dir = rootDir
 	require.NoError(t, cmd.Run(), "Failed to build webhook server")
 	return webhookBin
@@ -63,7 +63,7 @@ func mockMCPBinary(t *testing.T) string {
 	}
 	rootDir := integration.ProjectRoot(t)
 	mockBin := filepath.Join(t.TempDir(), "mock_mcp")
-	cmd := exec.Command("go", "build", "-o", mockBin, "./tests/integration/upstream/testdata/mock_mcp") //nolint:gosec
+	cmd := exec.Command("go", "build", "-o", mockBin, "./tests/integration/upstream/testdata/mock_mcp")
 	cmd.Dir = rootDir
 	require.NoError(t, cmd.Run(), "Failed to build mock MCP server")
 	return mockBin
@@ -79,7 +79,7 @@ func TestWebhooksE2E(t *testing.T) {
 
 	const secret = "dGVzdC1zZWNyZXQtMTIz" //nolint:gosec // base64("test-secret-123")
 	secretPtr := secret                   // Create addressable variable
-	serverCmd := exec.Command(webhookBin) //nolint:gosec
+	serverCmd := exec.Command(webhookBin)
 	serverCmd.Stdout = os.Stdout
 	serverCmd.Stderr = os.Stderr
 	serverCmd.Env = append(os.Environ(), "WEBHOOK_SECRET="+secret, "PORT="+portStr, "MCPANY_ALLOW_LOOPBACK_RESOURCES=true")
@@ -179,7 +179,7 @@ func TestFullSystemWebhooks(t *testing.T) {
 	portStr := fmt.Sprintf("%d", port)
 
 	const secret = "dGVzdC1zZWNyZXQtMTIz" //nolint:gosec
-	serverCmd := exec.Command(webhookBin) //nolint:gosec
+	serverCmd := exec.Command(webhookBin)
 	serverCmd.Stdout = os.Stdout
 	serverCmd.Stderr = os.Stderr
 	serverCmd.Env = append(os.Environ(), "WEBHOOK_SECRET="+secret, "PORT="+portStr, "MCPANY_ALLOW_LOOPBACK_RESOURCES=true")
