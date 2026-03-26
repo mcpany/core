@@ -335,4 +335,4 @@ export function AlertList() {
     </div>
   );
 }
-// Verified synchronization with origin/main.
+// Sync with main
