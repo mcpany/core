@@ -67,7 +67,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/services/", a.handleServiceDetail(store))
 	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte("OK")) //nolint:errcheck
+		_, _ = w.Write([]byte("OK"))
 	})
 	// Doctor API
 	doctor := health.NewDoctor()
@@ -88,7 +88,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/execute", a.handleExecute())
 
 	mux.HandleFunc("/prompts", a.handlePrompts())
-	mux.HandleFunc("/prompts/", a.handlePromptExecute()) // Handles /prompts/{name}/execute
+	mux.HandleFunc("/prompts/", a.handlePromptExecute())	// Handles /prompts/{name}/execute
 
 	mux.HandleFunc("/resources", a.handleResources())
 	mux.HandleFunc("/resources/read", a.handleResourceRead())
@@ -298,7 +298,7 @@ func (a *Application) handleListServices(w http.ResponseWriter, r *http.Request,
 		buf = append(buf, b...)
 	}
 	buf = append(buf, ']')
-	_, _ = w.Write(buf) //nolint:errcheck
+	_, _ = w.Write(buf)
 }
 
 func (a *Application) handleCreateService(w http.ResponseWriter, r *http.Request, store storage.Storage) {
@@ -353,7 +353,7 @@ func (a *Application) handleCreateService(w http.ResponseWriter, r *http.Request
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	_, _ = w.Write([]byte("{}")) //nolint:errcheck
+	_, _ = w.Write([]byte("{}"))
 }
 
 func (a *Application) handleServiceValidate() http.HandlerFunc {
@@ -376,10 +376,10 @@ func (a *Application) handleServiceValidate() http.HandlerFunc {
 		if err := config.ValidateOrError(r.Context(), &svc); err != nil {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusBadRequest)
-			_ = json.NewEncoder(w).Encode(map[string]any{ //nolint:errcheck
-				"valid":   false,
-				"error":   err.Error(),
-				"details": "Static validation failed",
+			_ = json.NewEncoder(w).Encode(map[string]any{
+				"valid":	false,
+				"error":	err.Error(),
+				"details":	"Static validation failed",
 			})
 			return
 		}
@@ -429,16 +429,16 @@ func (a *Application) handleServiceValidate() http.HandlerFunc {
 		if checkErr != nil {
 			w.Header().Set("Content-Type", "application/json")
 			// Return 200 OK but with valid=false to distinguish from malformed request
-			_ = json.NewEncoder(w).Encode(map[string]any{ //nolint:errcheck
-				"valid":   false,
-				"error":   checkErr.Error(),
-				"details": checkDetails,
+			_ = json.NewEncoder(w).Encode(map[string]any{
+				"valid":	false,
+				"error":	checkErr.Error(),
+				"details":	checkDetails,
 			})
 			return
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(map[string]any{ //nolint:errcheck
+		_ = json.NewEncoder(w).Encode(map[string]any{
 			"valid": true,
 		})
 	}
@@ -570,7 +570,7 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 				return
 			}
 			w.Header().Set("Content-Type", "application/json")
-			_, _ = w.Write(b) //nolint:errcheck
+			_, _ = w.Write(b)
 		case http.MethodPut:
 			var svc configv1.UpstreamServiceConfig
 			body, err := readBodyWithLimit(w, r, 1048576)
@@ -581,7 +581,7 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			svc.SetName(name) // Force name match
+			svc.SetName(name)	// Force name match
 
 			// Validate service configuration before saving
 			if err := config.ValidateOrError(r.Context(), &svc); err != nil {
@@ -614,7 +614,7 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 				logging.GetLogger().Error("failed to reload config after update", "error", err)
 			}
 			w.WriteHeader(http.StatusOK)
-			_, _ = w.Write([]byte("{}")) //nolint:errcheck
+			_, _ = w.Write([]byte("{}"))
 		case http.MethodDelete:
 			if err := store.DeleteService(r.Context(), name); err != nil {
 				logging.GetLogger().Error("failed to delete service", "name", name, "error", err)
@@ -661,10 +661,10 @@ func (a *Application) handleServiceStatus(w http.ResponseWriter, r *http.Request
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(map[string]any{ //nolint:errcheck
-		"name":    name,
-		"status":  status,
-		"metrics": map[string]any{},
+	_ = json.NewEncoder(w).Encode(map[string]any{
+		"name":		name,
+		"status":	status,
+		"metrics":	map[string]any{},
 	})
 }
 
@@ -700,7 +700,7 @@ func (a *Application) handleServiceRestart(w http.ResponseWriter, r *http.Reques
 	}
 
 	w.WriteHeader(http.StatusOK)
-	_, _ = w.Write([]byte("{}")) //nolint:errcheck
+	_, _ = w.Write([]byte("{}"))
 }
 
 func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
@@ -724,7 +724,7 @@ func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
-			_, _ = w.Write(b) //nolint:errcheck
+			_, _ = w.Write(b)
 
 		case http.MethodPost:
 			var settings configv1.GlobalSettings
@@ -747,7 +747,7 @@ func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
 			}
 
 			w.WriteHeader(http.StatusOK)
-			_, _ = w.Write([]byte("{}")) //nolint:errcheck
+			_, _ = w.Write([]byte("{}"))
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
@@ -777,12 +777,12 @@ func (a *Application) handleTools() http.HandlerFunc {
 			buf = append(buf, ']')
 
 			w.Header().Set("Content-Type", "application/json")
-			_, _ = w.Write(buf) //nolint:errcheck
+			_, _ = w.Write(buf)
 
 		case http.MethodPut:
 			var req struct {
-				Name    string `json:"name"`
-				Disable bool   `json:"disable"`
+				Name	string	`json:"name"`
+				Disable	bool	`json:"disable"`
 			}
 			body, err := readBodyWithLimit(w, r, 1024*1024)
 			if err != nil {
@@ -896,7 +896,7 @@ func (a *Application) handleTools() http.HandlerFunc {
 			}
 
 			w.WriteHeader(http.StatusOK)
-			_, _ = w.Write([]byte("{}")) //nolint:errcheck
+			_, _ = w.Write([]byte("{}"))
 
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -939,7 +939,7 @@ func (a *Application) handleExecute() http.HandlerFunc {
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(result) //nolint:errcheck
+		_ = json.NewEncoder(w).Encode(result)
 	}
 }
 
@@ -969,7 +969,7 @@ func (a *Application) handlePrompts() http.HandlerFunc {
 				}
 			}
 
-			_ = json.NewEncoder(w).Encode(jsonPrompts) //nolint:errcheck
+			_ = json.NewEncoder(w).Encode(jsonPrompts)
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
@@ -982,7 +982,7 @@ func (a *Application) handleResources() http.HandlerFunc {
 		case http.MethodGet:
 			resources := a.ResourceManager.ListResources()
 			w.Header().Set("Content-Type", "application/json")
-			_ = json.NewEncoder(w).Encode(resources) //nolint:errcheck
+			_ = json.NewEncoder(w).Encode(resources)
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
@@ -1019,7 +1019,7 @@ func (a *Application) handleSecrets(store storage.Storage) http.HandlerFunc {
 				buf = append(buf, b...)
 			}
 			buf = append(buf, ']')
-			_, _ = w.Write(buf) //nolint:errcheck
+			_, _ = w.Write(buf)
 
 		case http.MethodPost:
 			var secret configv1.Secret
@@ -1050,7 +1050,7 @@ func (a *Application) handleSecrets(store storage.Storage) http.HandlerFunc {
 				logging.GetLogger().Error("failed to reload config after secret save", "error", err)
 			}
 			w.WriteHeader(http.StatusOK)
-			_, _ = w.Write([]byte("{}")) //nolint:errcheck
+			_, _ = w.Write([]byte("{}"))
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
@@ -1096,7 +1096,7 @@ func (a *Application) handleSecretDetail(store storage.Storage) http.HandlerFunc
 				http.Error(w, "Failed to marshal", http.StatusInternalServerError)
 				return
 			}
-			_, _ = w.Write(b) //nolint:errcheck
+			_, _ = w.Write(b)
 
 		case http.MethodPut:
 			var secret configv1.Secret
@@ -1124,7 +1124,7 @@ func (a *Application) handleSecretDetail(store storage.Storage) http.HandlerFunc
 				logging.GetLogger().Error("failed to reload config after secret update", "error", err)
 			}
 			w.WriteHeader(http.StatusOK)
-			_, _ = w.Write([]byte("{}")) //nolint:errcheck
+			_, _ = w.Write([]byte("{}"))
 
 		case http.MethodDelete:
 			if err := store.DeleteSecret(r.Context(), path); err != nil {
@@ -1167,7 +1167,7 @@ func (a *Application) handleSecretReveal(w http.ResponseWriter, r *http.Request,
 	logging.GetLogger().Info("Secret revealed", "id", id, "user", user)
 
 	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(map[string]string{ //nolint:errcheck
+	_ = json.NewEncoder(w).Encode(map[string]string{
 		"value": secret.GetValue(),
 	})
 }
@@ -1206,7 +1206,7 @@ func (a *Application) handleProfiles(store storage.Storage) http.HandlerFunc {
 				buf = append(buf, b...)
 			}
 			buf = append(buf, ']')
-			_, _ = w.Write(buf) //nolint:errcheck
+			_, _ = w.Write(buf)
 
 		case http.MethodPost:
 			var profile configv1.ProfileDefinition
@@ -1234,7 +1234,7 @@ func (a *Application) handleProfiles(store storage.Storage) http.HandlerFunc {
 				logging.GetLogger().Error("failed to reload config after profile save", "error", err)
 			}
 			w.WriteHeader(http.StatusOK)
-			_, _ = w.Write([]byte("{}")) //nolint:errcheck
+			_, _ = w.Write([]byte("{}"))
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
@@ -1276,7 +1276,7 @@ func (a *Application) handleProfileDetail(store storage.Storage) http.HandlerFun
 				http.Error(w, "Failed to marshal", http.StatusInternalServerError)
 				return
 			}
-			_, _ = w.Write(b) //nolint:errcheck
+			_, _ = w.Write(b)
 			return
 		}
 
@@ -1299,7 +1299,7 @@ func (a *Application) handleProfileDetail(store storage.Storage) http.HandlerFun
 				http.Error(w, "Failed to marshal", http.StatusInternalServerError)
 				return
 			}
-			_, _ = w.Write(b) //nolint:errcheck
+			_, _ = w.Write(b)
 
 		case http.MethodPut:
 			var profile configv1.ProfileDefinition
@@ -1311,7 +1311,7 @@ func (a *Application) handleProfileDetail(store storage.Storage) http.HandlerFun
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			profile.SetName(name) // Force name match
+			profile.SetName(name)	// Force name match
 
 			if err := store.SaveProfile(r.Context(), &profile); err != nil {
 				logging.GetLogger().Error("failed to save profile", "name", name, "error", err)
@@ -1322,7 +1322,7 @@ func (a *Application) handleProfileDetail(store storage.Storage) http.HandlerFun
 				logging.GetLogger().Error("failed to reload config after profile update", "error", err)
 			}
 			w.WriteHeader(http.StatusOK)
-			_, _ = w.Write([]byte("{}")) //nolint:errcheck
+			_, _ = w.Write([]byte("{}"))
 
 		case http.MethodDelete:
 			if err := store.DeleteProfile(r.Context(), name); err != nil {
@@ -1367,7 +1367,7 @@ func (a *Application) handleCollections(store storage.Storage) http.HandlerFunc 
 				buf = append(buf, b...)
 			}
 			buf = append(buf, ']')
-			_, _ = w.Write(buf) //nolint:errcheck
+			_, _ = w.Write(buf)
 
 		case http.MethodPost:
 			var collection configv1.Collection
@@ -1389,7 +1389,7 @@ func (a *Application) handleCollections(store storage.Storage) http.HandlerFunc 
 				return
 			}
 			w.WriteHeader(http.StatusCreated)
-			_, _ = w.Write([]byte("{}")) //nolint:errcheck
+			_, _ = w.Write([]byte("{}"))
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
@@ -1430,7 +1430,7 @@ func (a *Application) handleCollectionDetail(store storage.Storage) http.Handler
 				http.Error(w, "Failed to marshal", http.StatusInternalServerError)
 				return
 			}
-			_, _ = w.Write(b) //nolint:errcheck
+			_, _ = w.Write(b)
 			return
 		}
 
@@ -1459,7 +1459,7 @@ func (a *Application) handleCollectionDetail(store storage.Storage) http.Handler
 				http.Error(w, "Failed to marshal", http.StatusInternalServerError)
 				return
 			}
-			_, _ = w.Write(b) //nolint:errcheck
+			_, _ = w.Write(b)
 
 		case http.MethodPut:
 			var collection configv1.Collection
@@ -1471,7 +1471,7 @@ func (a *Application) handleCollectionDetail(store storage.Storage) http.Handler
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			collection.SetName(name) // Force name match
+			collection.SetName(name)	// Force name match
 
 			if err := store.SaveServiceCollection(r.Context(), &collection); err != nil {
 				logging.GetLogger().Error("failed to save collection", "name", name, "error", err)
@@ -1479,7 +1479,7 @@ func (a *Application) handleCollectionDetail(store storage.Storage) http.Handler
 				return
 			}
 			w.WriteHeader(http.StatusOK)
-			_, _ = w.Write([]byte("{}")) //nolint:errcheck
+			_, _ = w.Write([]byte("{}"))
 
 		case http.MethodDelete:
 			if err := store.DeleteServiceCollection(r.Context(), name); err != nil {
@@ -1520,7 +1520,7 @@ func (a *Application) handleCollectionApply(w http.ResponseWriter, r *http.Reque
 		// And we need to validate it.
 		if err := config.ValidateOrError(r.Context(), svc); err != nil {
 			logging.GetLogger().Error("invalid service in collection", "service", svc.GetName(), "error", err)
-			continue // Skip invalid? Or error out?
+			continue	// Skip invalid? Or error out?
 		}
 
 		if isUnsafeConfig(svc) && os.Getenv("MCPANY_ALLOW_UNSAFE_CONFIG") != util.TrueStr {
@@ -1541,7 +1541,7 @@ func (a *Application) handleCollectionApply(w http.ResponseWriter, r *http.Reque
 	}
 
 	w.WriteHeader(http.StatusOK)
-	_, _ = w.Write([]byte("{}")) //nolint:errcheck
+	_, _ = w.Write([]byte("{}"))
 }
 
 func isUnsafeConfig(service *configv1.UpstreamServiceConfig) bool {
