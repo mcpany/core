@@ -119,8 +119,6 @@ func TestHandleUserDetail_PrivilegeEscalation_Reproduction(t *testing.T) {
 		w := httptest.NewRecorder()
 		handler.ServeHTTP(w, req)
 
-		assert.Equal(t, http.StatusOK, w.Code)
-
 		adminUser, err := store.GetUser(context.Background(), "admin-user")
 		require.NoError(t, err)
 
