@@ -35,14 +35,52 @@ const (
 	// Error indicates a critical issue that must be fixed.
 	//
 	// Summary: Defines the Error severity level.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	Error Severity = iota
+
 	// Warning indicates a potential issue or best practice violation.
 	//
 	// Summary: Defines the Warning severity level.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	Warning
+
 	// Info indicates a suggestion or informational message.
 	//
 	// Summary: Defines the Info severity level.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	Info
 )
 
