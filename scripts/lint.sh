@@ -137,4 +137,15 @@ else
     echo "    To enable, add a :golangci_lint_bin data dep or run 'make prepare'."
 fi
 
+# ---------------------------------------------------------------------------
+# 4. markdownlint – lint markdown documentation.
+# ---------------------------------------------------------------------------
+echo "==> Running markdownlint..."
+if command -v markdownlint &> /dev/null; then
+    markdownlint -c .markdownlint.json docs/ research/ features/ server/ ui/ README.md
+    echo "    markdownlint OK."
+else
+    echo "    Warning: markdownlint not found – skipping."
+fi
+
 echo "==> Lint complete."
