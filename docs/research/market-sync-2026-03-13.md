@@ -12,7 +12,7 @@ Anthropic has patched **CVE-2026-25725**, a privilege escalation flaw where `set
 Security researchers are identifying "Prompt Paths" (indirect prompt injection) as the primary attack vector for 2026. Unlike traditional phishing, this involves hiding malicious instructions in untrusted data (web pages, emails, logs) that an agent consumes, tricking the agent into exfiltrating data or calling unauthorized tools. This necessitates a new class of **Prompt Path Protection Middleware**.
 
 ### 4. Agentic Swarms as Production Infrastructure
-The industry is moving from "Solo AI" to "Agentic Swarms " coordinated multi-agent systems where specialized agents (Architect, Specialist, Critic) work together. This confirms our pivot towards **A2A Interop** and the need for **Stateful A2A Mesh** architectures to handle machine-speed communication without human latency.
+The industry is moving from "Solo AI" to "Agentic Swarms"—coordinated multi-agent systems where specialized agents (Architect, Specialist, Critic) work together. This confirms our pivot towards **A2A Interop** and the need for **Stateful A2A Mesh** architectures to handle machine-speed communication without human latency.
 
 ## Autonomous Agent Pain Points
 - **Context Management Fatigue**: Developers are struggling with "token limits vs. context retention" trade-offs, making the OpenClaw ContextEngine highly attractive.

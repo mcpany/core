@@ -1362,13 +1362,11 @@
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
 
 ## Evolution: [2026-06-18] Updates
-
 ### Proposed Additions
 - **Reason-Graph Integrity (RGI) Provider**: (P0) Authoritative security middleware performing hardware-attested structural analysis to detect "Reason-Graph Collisions" (RGC).
 - **Mesh-Resident Policy Manager (MRPM)**: (P0) Federated policy service for hardware-attested "Mesh-Resident Policy Synthesis" (MRPS).
-- **AAG Middleware**: (P1) Optimization extension for DAG middleware implementing "Entropy-Aware Attention Gating."
 - **Spectral Attention Guard**: (P0) Advanced security service for DAG middleware that injects timing jitter to neutralize "Leaked Enclave-Timing" (LET).
 
 ### Priority Shifts
-- **Dynamic Attention Gating (DAG) Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory **AAG-compliant** attention gating.
-- **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Attention-Aware Stylometry (AASM)** defense.
+- **Dynamic Attention Gating (DAG) Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory AAG-compliant attention gating.
+- **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new Attention-Aware Stylometry (AASM) defense.

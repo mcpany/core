@@ -11,7 +11,7 @@
 *   **Impact**: We need to update the `TeammateTool` Orchestration Adapter to support CFRR signals, ensuring that MCP Any remains the authoritative hub for state reconciliation in decentralized swarms.
 
 ### Cognitive Load Shedding (CLS) as a Stability Pattern
-*   **Update**: As swarms reach 10+ subagent depths, frameworks are observing "Cognitive Meltdowns " infinite reasoning loops that exhaust token budgets and mission roots. "Cognitive Load Shedding" (CLS) is emerging as a critical pattern to gracefully degrade specialist autonomy when the mission-root anchor signals high stress.
+*   **Update**: As swarms reach 10+ subagent depths, frameworks are observing "Cognitive Meltdowns"—infinite reasoning loops that exhaust token budgets and mission roots. "Cognitive Load Shedding" (CLS) is emerging as a critical pattern to gracefully degrade specialist autonomy when the mission-root anchor signals high stress.
 *   **Impact**: MCP Any should implement a "CLS Controller" that can dynamically throttle or revoke subagent capabilities based on real-time reasoning intensity and mission stability scores.
 
 ## Strategic Evolution Findings

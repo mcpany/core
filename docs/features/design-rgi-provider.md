@@ -3,7 +3,7 @@
 **Created:** [2026-06-18]
 
 ## 1. Context and Scope
-As agent swarms become more complex and autonomous, they rely on hierarchical reasoning paths to solve multi-step problems. Today's market sync revealed the "Reason-Graph Collision" (RGC) exploit, where a malicious subagent can inject reasoning nodes that create structural cycles or "Cognitive Deadlocks" in the parent's reasoning process.
+As agent swarms become more complex and autonomous, they rely on hierarchical reasoning paths to solve multi-step problems. Today's market sync revealed the "Reason-Graph Collision" (RGC) exploit, where a malicious subagent can inject reasoning nodes that create structural cycles or cognitive deadlocks in the parent's reasoning process.
 
 The Reason-Graph Integrity (RGI) Provider is a core security service that performs hardware-attested structural analysis of an agent's reason-graph. It ensures that all reasoning paths remain acyclic and consistent with the hardware-attested Mission-Root anchors, neutralizing structural cognitive attacks.
 
@@ -14,7 +14,7 @@ The Reason-Graph Integrity (RGI) Provider is a core security service that perfor
     * Validate reasoning-path lineage against Mission-Root intent anchors.
     * Provide hardware-attested (TPM) signatures for verified reason-graph segments.
 * **Non-Goals:**
-    * Validating the semantic "truth" of an agent's reasoning (handled by AID Hub).
+    * Validating the semantic truth of an agent's reasoning (handled by AID Hub).
     * Managing token budgets (handled by RBF).
     * Providing long-term memory (handled by Blackboard).
 
@@ -23,7 +23,7 @@ The Reason-Graph Integrity (RGI) Provider is a core security service that perfor
 * **Primary Goal:** Prevent a specialized subagent from stalling the mission via structural reasoning collisions.
 * **The Happy Path (Tasks):**
     1. Parent Agent spawns a specialist subagent to perform code analysis.
-    2. Subagent attempts to inject a "Reasoning Loop" that claims task A depends on B, and B depends on A.
+    2. Subagent attempts to inject a reasoning loop that claims task A depends on B, and B depends on A.
     3. RGI Provider intercepts the graph update and performs cycle detection.
     4. RGI identifies the structural collision and rejects the reasoning node.
     5. RGI alerts the Parent Agent and prunes the compromised subagent's path.
