@@ -1,3 +1,0 @@
-#!/bin/bash
-cd /app/server
-GOGC=20 golangci-lint run --concurrency 1 -v --timeout 20m --fix ./pkg/app/...
