@@ -54,3 +54,6 @@ The **Environment Sovereignty Enforcer (ESE)** is a core security service for th
 
 ## 7. Evolutionary Changelog
 *   **2026-06-10:** Initial Document Creation.
+*   **2026-07-08: Jitter-Pattern Noise Injection**
+    * **Context:** Emergence of side-channel analysis targeting the ESE jitter patterns.
+    * **Architecture Adjustment:** Integrated adaptive noise injection for scrubbing timing, neutralizing sub-millisecond inference of host state.

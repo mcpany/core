@@ -8,6 +8,18 @@
 - **Metadata Sanitization Gateway**: (P0) Real-time semantic sanitizer for agent-ingested external metadata (GitHub issues, Slack messages) to neutralize instruction injection.
 - **Action-Chain Sovereignty Monitor**: (P0) High-speed monitoring service that validates agent workflow sequences against mission-root intents to prevent cascading failures.
 
+## Evolution: [2026-07-08] Updates
+
+### Proposed Additions
+- **Artifact Sovereignty Provider (ASP)**: (P0) Core security service that cryptographically binds agent-generated files to mission roots and hardware enclaves to prevent artifact hijacking.
+- **Environment-Bound Agency (EBA) Middleware**: (P0) Security layer mandating hardware-attested, strictly scoped access to environment variables to neutralize token leakage.
+- **SVG-Metadata Sanitization Bridge**: (P0) Multi-modal security service that scans generated visual artifacts for environment-variable smuggling (CVE-2026-10293 defense).
+- **Jitter-Pattern Noise Injector**: (P1) Side-channel defense that injects adaptive timing noise into the environment-scrubbing process to prevent host-state inference.
+
+### Priority Shifts
+- **CI/CD Cache Integrity Guard (CCIG)**: (Re-affirmed P0) Now elevated with the requirement for **ASP-compliant** artifact binding for build outputs.
+- **Environment Sovereignty Enforcer (ESE)**: (Re-affirmed P0) Designated as the primary enforcement point for **EBA-mandated** variable scoping.
+
 ## Evolution: [2026-07-06] Updates
 
 ### Proposed Additions

@@ -42,3 +42,6 @@ The discovery of "Multi-modal Trace Injection" (Context Smuggling via SVG, CSS, 
 
 ## 7. Evolutionary Changelog
 * **2026-05-21:** Initial Document Creation (Upgraded from Semantic Integrity Bridge).
+* **2026-07-08: SVG-Metadata Sanitization Upgrade**
+    * **Context:** Discovery of CVE-2026-10293 (Env var leakage via SVG).
+    * **Architecture Adjustment:** Added specific scanner for XML/SVG metadata fields to detect and strip environment-variable smuggling patterns before re-ingestion.
