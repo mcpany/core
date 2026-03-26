@@ -136,6 +136,11 @@
 *   **[P1] Automated Remediation Hub**: Verifiable audit trail service for AI-powered fixes to ensure SSDF compliance. (Added: 2026-07-07)
 *   **[P0] Metadata Sanitization Gateway**: Real-time semantic deconstruction of external metadata to neutralize injection exploits. (Added: 2026-07-07)
 
+#### Upcoming (2026-07-08 Evolution)
+*   **[P0] Action-Chain Sovereignty (ACS) Monitor**: Real-time workflow validator ensuring automated chains remain mission-anchored. (Added: 2026-07-08)
+*   **[P0] Metadata Sanitization Gateway**: (Promoted to Core Strategic Pillar) Mandatory semantic deconstruction of external metadata (GitHub, Slack). (Updated: 2026-07-08)
+*   **[P1] AI Agent Insider Threat Profiler**: CSAD extension for detecting machine-speed lateral movement and escalation. (Added: 2026-07-08)
+
 #### Upcoming (2026-03-20 Evolution)
 *   **[P0] Hardware-Attested Mission Manifest (HAMM) Provider**: Authoritative service for enforcing TPM-signed capability manifests. (Added: 2026-03-20)
 *   **[P0] Asynchronous Mailbox Sharding (AMS) Middleware**: High-density teammate coordination service with granular mailbox shards. (Added: 2026-03-20)

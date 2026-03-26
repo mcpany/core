@@ -1700,3 +1700,11 @@
 ### Priority Shifts
 - **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
 - **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.
+
+## Evolution: [2026-07-08] Updates
+
+### Proposed Additions
+- **Action-Chain Sovereignty (ACS) Monitor**: (P0) Authoritative workflow validator that performs real-time monitoring of automated action chains to prevent cascading failures.
+- **Metadata Sanitization Gateway (MSG)**: (P0) Real-time semantic deconstruction service for agent-ingested external metadata (GitHub, Slack) to neutralize instruction injection.
+- **AI Agent Insider Threat Behavior Profiler**: (P1) Advanced security middleware for the CSAD Hub designed to detect machine-speed privilege escalation and lateral movement.
+- **Teammate-Aware Policy Enforcer**: (P0) Role-based capability enforcement for parallel teammate coordination to prevent intra-swarm instruction splicing.

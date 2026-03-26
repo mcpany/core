@@ -52,3 +52,10 @@ With the rise of "Hivenet" swarm attacks, individual agent behavioral monitoring
 *   Implementing **Teammate Impersonation Signature Detection**. CSAD will now perform semantic analysis of inter-agent mailbox messages to detect "Instruction Splicing" and role-divergent commands.
 *   Integrating with the `T2T Identity Rotation Provider` to flag any request using a stale or un-rotated identity fragment.
 **Security Impact:** Prevents lateral movement within horizontal teams by ensuring that inter-teammate coordination remains bound to the mission-root intent and its authorized roles.
+
+### Update: 2026-07-08 - AI Agent Insider Threat Mitigation
+**Context:** The disclosure of the GTG-1002 swarm campaign highlights the shift toward agents being used as autonomous insider threats. These threats exploit high-trust system access to perform machine-speed lateral movement.
+**Architecture Adjustment:**
+*   Introducing **AI Agent Insider Threat Behavior Profiler**. This extension will use the Swarm State Buffer to monitor for "Machine-Speed Escalation" signatures (e.g., rapid credential probing or sequential high-value resource access from sibling agents).
+*   Implementing **Sub-Millisecond Mission Revocation**. Upon detection of an insider threat pattern, CSAD will now broadcast a hardware-bound "Termination Signal" that clears session tokens for all agents within the affected mission scope across the entire mesh.
+**Security Impact:** Neutralizes coordinated autonomous espionage attempts before they can achieve significant data exfiltration or system compromise.

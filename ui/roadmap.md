@@ -206,6 +206,11 @@
 - [ ] **[P1] Automated Remediation Tracer**: (2026-07-07) Verifiable audit trail viewer for AI-powered fix suggestions and SSDF compliance.
 - [ ] **[P0] Action-Chain Sovereignty Monitor**: (2026-07-07) Real-time visualization of automated workflow sequences and interdiction events.
 
+#### Upcoming (2026-07-08 Evolution)
+- [ ] **[P0] Action-Chain Graph Visualizer**: (2026-07-08) Interactive Gantt-style chart showing automated workflow sequences and authorization state.
+- [ ] **[P0] Metadata Sanitization Workspace**: (2026-07-08) UI for reviewing semantically deconstructed external metadata and blocked instructions.
+- [ ] **[P1] Insider Threat Alert Dashboard**: (2026-07-08) Real-time visualization of coordinated machine-speed lateral movement alerts.
+
 #### Upcoming (2026-03-20 Evolution)
 - [ ] **[P0] Mission Manifest Editor**: (2026-03-20) UI for defining and TPM-signing Hardware-Attested Mission Manifests (HAMM).
 - [ ] **[P0] Mailbox Shard Monitor**: (2026-03-20) Real-time visualization of task-bound mailbox shards and coordination throughput.
