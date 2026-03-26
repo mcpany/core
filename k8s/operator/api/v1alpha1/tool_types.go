@@ -1,5 +1,5 @@
-// Copyright 2026 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 Author(s) of MCP Any.
+// SPDX-License-Identifier: Apache-2.0.
 
 package v1alpha1
 
@@ -12,8 +12,8 @@ import (
 
 // ToolSpec defines the desired state of Tool.
 type ToolSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster.
+	// Important: Run "make" to regenerate code after modifying this file.
 
 	// Description is a human-readable description of the tool's purpose.
 	Description string `json:"description"`
@@ -27,8 +27,8 @@ type ToolSpec struct {
 
 // ToolStatus defines the observed state of Tool.
 type ToolStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster.
+	// Important: Run "make" to regenerate code after modifying this file.
 
 	// State represents the current state of the tool (Ready, NotReady, etc).
 	State string `json:"state"`

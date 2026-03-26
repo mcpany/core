@@ -1,5 +1,5 @@
-// Copyright 2025 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 Author(s) of MCP Any.
+// SPDX-License-Identifier: Apache-2.0.
 
 package resource
 
@@ -15,33 +15,33 @@ func TestMockManagerInterface(t *testing.T) {
 
 	mock := NewMockManagerInterface(ctrl)
 
-	// Exercise the mock methods to ensure coverage of generated code
+	// Exercise the mock methods to ensure coverage of generated code.
 
-	// AddResource
+	// AddResource.
 	mock.EXPECT().AddResource(gomock.Any()).Times(1)
 	mock.AddResource(nil)
 
-	// Clear
+	// Clear.
 	mock.EXPECT().Clear().Times(1)
 	mock.Clear()
 
-	// ClearResourcesForService
+	// ClearResourcesForService.
 	mock.EXPECT().ClearResourcesForService("service1").Times(1)
 	mock.ClearResourcesForService("service1")
 
-	// GetResource
+	// GetResource.
 	mock.EXPECT().GetResource("uri1").Return(nil, false).Times(1)
 	mock.GetResource("uri1")
 
-	// ListResources
+	// ListResources.
 	mock.EXPECT().ListResources().Return(nil).Times(1)
 	mock.ListResources()
 
-	// OnListChanged
+	// OnListChanged.
 	mock.EXPECT().OnListChanged(gomock.Any()).Times(1)
 	mock.OnListChanged(nil)
 
-	// RemoveResource
+	// RemoveResource.
 	mock.EXPECT().RemoveResource("uri2").Times(1)
 	mock.RemoveResource("uri2")
 }

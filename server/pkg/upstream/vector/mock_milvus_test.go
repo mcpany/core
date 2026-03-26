@@ -1,5 +1,5 @@
-// Copyright 2025 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 Author(s) of MCP Any.
+// SPDX-License-Identifier: Apache-2.0.
 
 package vector
 
@@ -13,9 +13,9 @@ import (
 // mockMilvusClient implements client.Client interface for testing.
 // Only methods used by MilvusClient are implemented.
 type mockMilvusClient struct {
-	client.Client // Embed to satisfy interface, will panic if unimplemented methods are called
+	client.Client // Embed to satisfy interface, will panic if unimplemented methods are called.
 
-	// Mock function implementations
+	// Mock function implementations.
 	hasCollectionFunc    func(ctx context.Context, name string) (bool, error)
 	loadCollectionFunc   func(ctx context.Context, name string, async bool, opts ...client.LoadCollectionOption) error
 	describeCollectionFunc func(ctx context.Context, name string) (*entity.Collection, error)

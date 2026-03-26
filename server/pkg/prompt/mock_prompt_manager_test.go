@@ -1,5 +1,5 @@
-// Copyright 2025 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 Author(s) of MCP Any.
+// SPDX-License-Identifier: Apache-2.0.
 
 package prompt
 
@@ -15,31 +15,31 @@ func TestMockManagerInterface(t *testing.T) {
 
 	mock := NewMockManagerInterface(ctrl)
 
-	// AddPrompt
+	// AddPrompt.
 	mock.EXPECT().AddPrompt(gomock.Any()).Times(1)
 	mock.AddPrompt(nil)
 
-	// Clear
+	// Clear.
 	mock.EXPECT().Clear().Times(1)
 	mock.Clear()
 
-	// ClearPromptsForService
+	// ClearPromptsForService.
 	mock.EXPECT().ClearPromptsForService("id").Times(1)
 	mock.ClearPromptsForService("id")
 
-	// GetPrompt
+	// GetPrompt.
 	mock.EXPECT().GetPrompt("name").Return(nil, false).Times(1)
 	mock.GetPrompt("name")
 
-	// ListPrompts
+	// ListPrompts.
 	mock.EXPECT().ListPrompts().Return(nil).Times(1)
 	mock.ListPrompts()
 
-	// SetMCPServer
+	// SetMCPServer.
 	mock.EXPECT().SetMCPServer(nil).Times(1)
 	mock.SetMCPServer(nil)
 
-	// UpdatePrompt
+	// UpdatePrompt.
 	mock.EXPECT().UpdatePrompt(gomock.Any()).Times(1)
 	mock.UpdatePrompt(nil)
 }

@@ -1,5 +1,5 @@
-// Copyright 2025 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 Author(s) of MCP Any.
+// SPDX-License-Identifier: Apache-2.0.
 
 // Package testutil provides testing utilities.
 package testutil
@@ -53,7 +53,7 @@ func (m *MockClientConn) SetClient(method string, client interface{}) {
 // Returns:
 //   - error: An error if the invocation fails.
 func (m *MockClientConn) Invoke(_ context.Context, _ string, _ interface{}, _ interface{}, _ ...grpc.CallOption) error {
-	// Not implemented for this mock
+	// Not implemented for this mock.
 	return nil
 }
 
