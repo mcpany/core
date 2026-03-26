@@ -16,7 +16,7 @@ go_test(
     srcs = ["browser_test.go"],
     embed = [":browser"],
     deps = [
+        "@com_github_playwright_community_playwright_go//:playwright-go",
         "@com_github_stretchr_testify//assert",
-        "@com_github_stretchr_testify//require",
     ],
 )

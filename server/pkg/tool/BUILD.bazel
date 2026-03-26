@@ -203,7 +203,6 @@ go_test(
         "websocket_tool_test.go",
         "zip_security_test.go",
     ],
-    data = ["//server/pkg/tool/testdata/jsonecho"],
     embed = [":tool"],
     tags = ["integration"],
     deps = [
