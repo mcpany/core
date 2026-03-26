@@ -88,14 +88,14 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
 
             if (!res.ok) return;
 
-            const etag = res.headers?.get ? res.headers.get('ETag') : null;
+            const etag = res.headers.get('ETag');
             if (etag) {
                 lastEtag.current = etag;
             }
 
             // ⚡ Bolt Optimization: Use text comparison to avoid expensive JSON operations.
             // res.text() + string comparison is much faster than res.json() + JSON.stringify().
-            const text = typeof res.text === 'function' ? await res.text() : JSON.stringify(await res.json());
+            const text = await res.text();
             let graph: Graph;
 
             if (text === lastTopologyText.current && lastGraph.current) {
