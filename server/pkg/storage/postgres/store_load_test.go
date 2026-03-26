@@ -17,13 +17,28 @@ import (
 )
 
 // TestStore_Load tests the Load method of the PostgreSQL store.
+//
+// Summary: Validates that the store correctly loads and parses all server configuration from the database.
+//
+// Parameters:
+//   - t (*testing.T): The testing context.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies testing state through assertions.
 func TestStore_Load(t *testing.T) {
 	t.Run("Happy Path", func(t *testing.T) {
 		db, mock, err := sqlmock.New()
 		require.NoError(t, err)
 		defer db.Close()
 
-		store := &Store{db: &DB{DB: db}}
+		pgDB := &DB{DB: db}
+		store := NewStore(pgDB)
 
 		svc := configv1.UpstreamServiceConfig_builder{Id: proto.String("service-1"), Name: proto.String("Service One")}.Build()
 		svcBytes, err := protojson.MarshalOptions{}.Marshal(svc)
@@ -65,10 +80,19 @@ func TestStore_Load(t *testing.T) {
 		require.NoError(t, err)
 		defer db.Close()
 
-		store := &Store{db: &DB{DB: db}}
+		pgDB := &DB{DB: db}
+		store := NewStore(pgDB)
 
 		mock.ExpectQuery(".*").
 			WillReturnError(errors.New("db error"))
+		mock.ExpectQuery(".*").
+			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
+		mock.ExpectQuery(".*").
+			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
+		mock.ExpectQuery(".*").
+			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
+		mock.ExpectQuery(".*").
+			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
 
 		cfg, err := store.Load(context.Background())
 		require.Error(t, err)
@@ -80,10 +104,20 @@ func TestStore_Load(t *testing.T) {
 		require.NoError(t, err)
 		defer db.Close()
 
-		store := &Store{db: &DB{DB: db}}
+		pgDB := &DB{DB: db}
+		store := NewStore(pgDB)
 
 		mock.ExpectQuery(".*").
 			WillReturnRows(sqlmock.NewRows([]string{"config_json"}).AddRow([]byte("invalid json")))
+
+		mock.ExpectQuery(".*").
+			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
+		mock.ExpectQuery(".*").
+			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
+		mock.ExpectQuery(".*").
+			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
+		mock.ExpectQuery(".*").
+			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
 
 		cfg, err := store.Load(context.Background())
 		require.Error(t, err)
@@ -95,13 +129,20 @@ func TestStore_Load(t *testing.T) {
 		require.NoError(t, err)
 		defer db.Close()
 
-		store := &Store{db: &DB{DB: db}}
+		pgDB := &DB{DB: db}
+		store := NewStore(pgDB)
 
 		mock.ExpectQuery(".*").
 			WillReturnError(sql.ErrNoRows)
-
+		mock.ExpectQuery(".*").
+			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
+		mock.ExpectQuery(".*").
+			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
+		mock.ExpectQuery(".*").
+			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
+		mock.ExpectQuery(".*").
+			WillReturnRows(sqlmock.NewRows([]string{"config_json"}))
 		cfg, err := store.Load(context.Background())
-		// Load will return error but we just want to ensure it completes.
 		require.Error(t, err)
 		require.Nil(t, cfg)
 	})
