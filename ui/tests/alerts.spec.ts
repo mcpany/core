@@ -88,4 +88,23 @@ test.describe('Alerts Page', () => {
     // Verify status changes to "resolved"
     await expect(row.getByText('resolved')).toBeVisible();
   });
+
+  test('should delete alert via dropdown', async ({ page }) => {
+    await page.goto('/alerts');
+
+    // Find a specific alert to delete
+    const row = page.getByRole('row').filter({ hasText: 'High CPU Usage' });
+
+    // Make sure it exists first
+    await expect(row).toBeVisible();
+
+    // Click "More Actions"
+    await row.getByRole('button', { name: 'Open menu' }).click();
+
+    // Click "Delete"
+    await page.getByRole('menuitem', { name: 'Delete' }).click();
+
+    // Wait for row to disappear
+    await expect(row).toBeHidden();
+  });
 });

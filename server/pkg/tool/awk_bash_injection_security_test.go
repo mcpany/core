@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"os"
+	"strings"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -52,17 +53,15 @@ func TestLocalCommandTool_BashAwkFileWrite_Repro(t *testing.T) {
 	t.Logf("Executing with payload: %s", payload)
 	_, err := localTool.Execute(context.Background(), req)
 
-	// If err is nil, check if file exists
+	// We expect this to fail due to the security fix.
 	if err == nil {
-		if _, err := os.Stat(tmpFile); err == nil {
-			t.Logf("Vulnerability Reproduced: Awk successfully wrote to %s via bash", tmpFile)
-			t.Fail()
-			os.Remove(tmpFile)
-		} else {
-			// Maybe execution failed for other reasons (awk not found?)
-			t.Logf("Execution succeeded but file not created? Check if awk/bash are available.")
-		}
+		t.Logf("Vulnerability Reproduced: Awk payload %q was allowed!", payload)
+		t.Fail()
+		os.Remove(tmpFile)
+	} else if !strings.Contains(err.Error(), "awk injection detected") {
+		t.Logf("Unexpected error: %v", err)
+		t.Fail()
 	} else {
-		t.Logf("Blocked: %v", err)
+		t.Logf("Blocked as expected: %v", err)
 	}
 }
