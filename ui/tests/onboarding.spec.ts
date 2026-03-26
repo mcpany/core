@@ -74,14 +74,8 @@ test.describe('Onboarding Flow', () => {
 
     // If it's STILL welcome, the seed data wasn't returned by /api/v1/services
     if (await welcome.isVisible()) {
-        // Just mock it as a fallback specifically for this test state
-        // if the global seed collection isn't propagating immediately.
-        // We only fall back to this if the DB seed takes too long.
-        await page.route('**/api/v1/services*', async route => {
-            await route.fulfill({ json: { services: [{ name: 'test-service' }] } });
-        });
-        await page.reload({ waitUntil: 'domcontentloaded' });
-        await page.waitForTimeout(2000);
+        console.log("Welcome screen is visible. The DB seed might have failed or not been fetched by UI.");
+        throw new Error("Welcome screen is visible. Expected Dashboard.");
     }
 
     // Assert Dashboard is visible
