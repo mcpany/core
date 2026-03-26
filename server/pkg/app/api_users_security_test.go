@@ -119,7 +119,7 @@ func TestHandleUserDetail_PrivilegeEscalation_Reproduction(t *testing.T) {
 		w := httptest.NewRecorder()
 		handler.ServeHTTP(w, req)
 
-		fetchedAdminUser, err := store.GetUser(context.Background(), adminUser)
+		fetchedAdminUser, err := store.GetUser(context.Background(), "admin-user")
 		require.NoError(t, err)
 
 		assert.Contains(t, fetchedAdminUser.GetRoles(), "admin")
@@ -128,15 +128,15 @@ func TestHandleUserDetail_PrivilegeEscalation_Reproduction(t *testing.T) {
 	t.Run("Victim Elevates Own Profile IDs", func(t *testing.T) {
 		payload := map[string]interface{}{
 			"user": map[string]interface{}{
-				"id":          victimUser,
+				"id":          "victim-user",
 				"profile_ids": []string{"admin-profile"},
 			},
 		}
 		body, err := json.Marshal(payload)
 		require.NoError(t, err)
 
-		req := httptest.NewRequest(http.MethodPut, "/users/"+victimUser, bytes.NewReader(body))
-		ctx := auth.ContextWithUser(req.Context(), victimUser)
+		req := httptest.NewRequest(http.MethodPut, "/users/victim-user", bytes.NewReader(body))
+		ctx := auth.ContextWithUser(req.Context(), "victim-user")
 		ctx = auth.ContextWithRoles(ctx, []string{"user"})
 		req = req.WithContext(ctx)
 
