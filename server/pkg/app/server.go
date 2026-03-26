@@ -2111,16 +2111,17 @@ func (a *Application) runServerMode(
 	})))
 
 	// Register Debugger API if enabled
-
-
-	// Register Context API
-	if standardMiddlewares != nil && standardMiddlewares.RecursiveContext != nil {
-		mux.Handle("/context/session", authMiddleware(standardMiddlewares.RecursiveContext.APIHandler()))
-		mux.Handle("/context/session/", authMiddleware(standardMiddlewares.RecursiveContext.APIHandler()))
-	}
-
 	if standardMiddlewares != nil && standardMiddlewares.Debugger != nil {
 		mux.Handle("/debug/entries", authMiddleware(standardMiddlewares.Debugger.APIHandler()))
+	}
+
+	// Register Recursive Context Manager
+	if standardMiddlewares != nil && standardMiddlewares.RecursiveContext == nil {
+		standardMiddlewares.RecursiveContext = middleware.NewRecursiveContextManager()
+	}
+	if standardMiddlewares != nil {
+		mux.Handle("/context/session", authMiddleware(standardMiddlewares.RecursiveContext.APIHandler()))
+		mux.Handle("/context/session/", authMiddleware(standardMiddlewares.RecursiveContext.APIHandler()))
 	}
 
 	httpBindAddress := bindAddress
@@ -2160,15 +2161,16 @@ func (a *Application) runServerMode(
 		if standardMiddlewares.ContextOptimizer != nil {
 			finalHandler = standardMiddlewares.ContextOptimizer.Handler(finalHandler)
 		}
-		// Recursive Context (outer to provide context for handlers)
-		if standardMiddlewares.RecursiveContext != nil {
-			finalHandler = standardMiddlewares.RecursiveContext.HandleContext(finalHandler)
-		}
-		// Debugger (outermost to capture all details)
+		// Debugger (outer to capture optimized response)
 		if standardMiddlewares.Debugger != nil {
 			finalHandler = standardMiddlewares.Debugger.Handler(finalHandler)
 		}
+		// Recursive Context
+		if standardMiddlewares.RecursiveContext != nil {
+			finalHandler = standardMiddlewares.RecursiveContext.HandleContext(finalHandler)
+		}
 	}
+
 	// Middleware order: SecurityHeaders -> CORS -> CSRF -> JSONRPCCompliance -> Recovery -> IPAllowList -> RateLimit -> (Debugger -> Optimizer -> Mux)
 	// We wrap everything with a debug logger to see what's coming in
 	handler := middleware.HTTPSecurityHeadersMiddleware(
@@ -2194,7 +2196,7 @@ func (a *Application) runServerMode(
 	grpcBindAddress := grpcPort
 
 	// Initialize gRPC Interceptors
-	grpcUnaryInterceptor := func(ctx context.Context, req any, _ *gogrpc.UnaryServerInfo, handler gogrpc.UnaryHandler) (any, error) {
+	grpcUnaryInterceptor := func(ctx context.Context, req interface{}, _ *gogrpc.UnaryServerInfo, handler gogrpc.UnaryHandler) (interface{}, error) {
 		if p, ok := peer.FromContext(ctx); ok {
 			ip := util.ExtractIP(p.Addr.String())
 			ctx = util.ContextWithRemoteIP(ctx, ip)
@@ -2205,7 +2207,7 @@ func (a *Application) runServerMode(
 		}
 		return handler(ctx, req)
 	}
-	grpcStreamInterceptor := func(srv any, ss gogrpc.ServerStream, _ *gogrpc.StreamServerInfo, handler gogrpc.StreamHandler) error {
+	grpcStreamInterceptor := func(srv interface{}, ss gogrpc.ServerStream, _ *gogrpc.StreamServerInfo, handler gogrpc.StreamHandler) error {
 		if p, ok := peer.FromContext(ss.Context()); ok {
 			ip := util.ExtractIP(p.Addr.String())
 			// Wrapper to modify context for stream
@@ -2630,7 +2632,7 @@ func startGrpcServer(
 // wrapBindError checks if the error is a port conflict and returns a user-friendly error message.
 func wrapBindError(err error, serverType, address, flag string) error {
 	if strings.Contains(err.Error(), "address already in use") || strings.Contains(err.Error(), "bind: permission denied") {
-		return fmt.Errorf("[ERROR] %s server failed to listen on %s: %w\n\n[TIP] Tip: The port is already in use or restricted. Try using a different port:\n   mcpany run %s <new_port>", serverType, address, err, flag)
+		return fmt.Errorf("❌ %s server failed to listen on %s: %w\n\n💡 Tip: The port is already in use or restricted. Try using a different port:\n   mcpany run %s <new_port>", serverType, address, err, flag)
 	}
 	return fmt.Errorf("%s server failed to listen: %w", serverType, err)
 }

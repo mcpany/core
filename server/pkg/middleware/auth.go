@@ -32,13 +32,13 @@ import (
 // Summary: Executes AuthMiddleware operation.
 //
 // Parameters:
-//   - None.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - (any): The result.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

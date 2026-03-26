@@ -68,13 +68,13 @@ type CachingMiddleware struct {
 // Summary: Initializes NewCachingMiddleware operation.
 //
 // Parameters:
-//   - None.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - (any): The result.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -153,13 +153,13 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 // Summary: Updates SetProviderFactory operation.
 //
 // Parameters:
-//   - None.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - (any): The result.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -187,13 +187,13 @@ func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 // Summary: Executes Execute operation.
 //
 // Parameters:
-//   - None.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - (any): The result.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -506,13 +506,13 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 // Summary: Executes Clear operation.
 //
 // Parameters:
-//   - None.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - (any): The result.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

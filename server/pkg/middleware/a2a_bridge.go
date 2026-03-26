@@ -38,13 +38,13 @@ type A2ABridgeMiddleware struct {
 // Summary: Initializes NewA2ABridgeMiddleware operation.
 //
 // Parameters:
-//   - None.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - (any): The result.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -75,13 +75,13 @@ func NewA2ABridgeMiddleware(contextManager *RecursiveContextManager) *A2ABridgeM
 // Summary: Executes Execute operation.
 //
 // Parameters:
-//   - None.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - (any): The result.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

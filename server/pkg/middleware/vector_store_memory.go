@@ -42,13 +42,13 @@ type VectorEntry struct {
 // Summary: Initializes NewSimpleVectorStore operation.
 //
 // Parameters:
-//   - None.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - (any): The result.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -74,13 +74,13 @@ func NewSimpleVectorStore() *SimpleVectorStore {
 // Summary: Executes Add operation.
 //
 // Parameters:
-//   - None.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - (any): The result.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -125,13 +125,13 @@ func (s *SimpleVectorStore) Add(_ context.Context, key string, vector []float32,
 // Summary: Executes Search operation.
 //
 // Parameters:
-//   - None.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - (any): The result.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -178,13 +178,13 @@ func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float3
 // Summary: Executes Prune operation.
 //
 // Parameters:
-//   - None.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - (any): The result.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
