@@ -998,7 +998,7 @@
 
 - **Synthetic Policy Workspace**: (P1) Interactive environment for reviewing and approving mesh-synthesized security policies.
 
-### Upcoming: [2026-06-05] - Part 2 - Part 2
+### Upcoming: [2026-06-05] - Part 2 - Part 2 - Part 2
 
 - **Intent-Splicing Audit Log**: (P0) Forensic UI for reviewing deconstructed inter-agent messages and splicing attempts.
 
@@ -1008,7 +1008,17 @@
 
 - **Synthetic Policy Workspace**: (P1) Interactive environment for reviewing and approving mesh-synthesized security policies.
 
-### Upcoming: [2026-06-05]
+### Upcoming: [2026-06-05] - Part 2
+
+- **Intent-Splicing Audit Log**: (P0) Forensic UI for reviewing deconstructed inter-agent messages and splicing attempts.
+
+- **Capability Accountability Dashboard**: (P0) Real-time tracker for session-bound capabilities and their lineage-aware expiration.
+
+- **HAIL Lineage Tracer**: (P0) Visual debugger for hardware-attested intent lineage (HAIL), mapping tool calls to root mission intents.
+
+- **Synthetic Policy Workspace**: (P1) Interactive environment for reviewing and approving mesh-synthesized security policies.
+
+### Upcoming: [2026-06-05] - Part 3
 
 - **Intent-Splicing Audit Log**: (P0) Forensic UI for reviewing deconstructed inter-agent messages and splicing attempts.
 
