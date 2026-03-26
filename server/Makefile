@@ -248,7 +248,7 @@ prepare:
 				touch "$$VENV_DIR/.installed"; \
 			fi; \
 			mkdir -p $(BUILD_DIR)/.cache/pre-commit; \
-			if ! GIT_CONFIG_GLOBAL=/dev/null PRE_COMMIT_HOME=$(BUILD_DIR)/.cache/pre-commit $(PYTHON_EXEC) -m pre_commit install; then \
+			if ! GIT_CONFIG_GLOBAL=/dev/null PRE_COMMIT_HOME=$(BUILD_DIR)/.cache/pre-commit $(PYTHON_EXEC) -m pre_commit install -c ../.pre-commit-config.yaml; then \
 				echo "\n\033[1;33mWARNING: pre-commit hook installation failed.\033[0m"; \
 				echo "\033[1;33mThis is likely because a global git hooks path is configured (core.hooksPath).\033[0m"; \
 				echo "\033[1;33mThe build will continue, but pre-commit hooks will not be active.\033[0m"; \
@@ -504,7 +504,7 @@ ifdef SHOULD_PROXY_TO_DOCKER
 else
 	@export PATH=$(TOOL_INSTALL_DIR):$$PATH && \
 	export PRE_COMMIT_HOME=$(BUILD_DIR)/.cache/pre-commit && \
-	pre-commit clean --config ../.pre-commit-config.yaml
+	pre-commit clean
 endif
 
 .PHONY: fix-license-header
@@ -513,7 +513,7 @@ fix-license-header:
 	@echo "Step 1: Removing existing headers..."
 	@$(GO_CMD) run tools/license/remove.go
 	@echo "Step 2: Adding correct headers via pre-commit..."
-	@export GOWORK=off && pre-commit run --config ../.pre-commit-config.yaml addlicense --all-files || true
+	@export GOWORK=off && pre-commit run addlicense --all-files || true
 .PHONY: clean-protos
 clean-protos:
 	@echo "Cleaning generated protobuf files..."
