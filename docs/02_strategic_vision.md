@@ -1351,7 +1351,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Metadata Sanitization Gateway**: To neutralize the "GitHub Triage" exploit pattern, we are mandating real-time semantic sanitization of all agent-ingested external metadata. This layer will strip malicious instructions from issue titles and messages before they reach the reasoning loop.
 - **Intra-Agent Action-Chain Monitoring**: We are implementing "Action-Chain Sovereignty" to detect and block cascading system failures. MCP Any will monitor the complete sequence of automated workflows, revoking capabilities if the chain diverges from the verified mission-root intent.
 
-<<<<<<< HEAD
 ## Strategic Evolution: [2026-03-26]
 ### Focus: Action-Chain Governance & Post-Quantum Mesh Integrity
 **Context**: The emergence of coordinated machine-speed "Swarm Attacks" (GTG-1002) and the proliferation of autonomous agents as "Insider Threats" confirm that perimeter defense is obsolete. We must now protect the **integrity of action chains** and move toward **Post-Quantum Mesh Security**. As agents become peer actors with inherited trust, infrastructure must provide **Always-on Attestation** and **Autonomous Containment**.
@@ -1360,9 +1359,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **CI/CD Cache Integrity Guard (CCIG)**: To neutralize "Agentic Social Engineering" in build pipelines, we are mandating CCIG. All agent-accessible caches must be cryptographically signed, ensuring that poisoned metadata cannot compromise the mission-root supply chain.
 - **Post-Quantum Mesh Handshake (PQMH)**: Supporting the NIST FIPS 203/204/205 standards, we are introducing PQMH. All inter-agent and node-to-node communications will transition to post-quantum resistant algorithms to ensure long-term mesh integrity.
 - **Metadata Sanitization Gateway (MSG)**: To counter instruction injection via external metadata (GitHub issues, Slack messages), MCP Any will implement MSG. This layer will perform real-time semantic sanitization of all ingested metadata before it reaches the agent's reasoning loop.
-=======
 ## Strategic Evolution: 2026-06-18
 - **Attention Sovereignty:** The primary bottleneck for agentic swarms is now "Attention Sharding" and the prevention of "Context Poisoning." MCP Any will transition into a **Reasoning-Aware Gateway** that enforces **Phase-Bound Reasoning Budgets (PBRB)**.
 - **Active Reasoning Firewall:** Moving beyond transport-layer security, we are implementing semantic gating to detect and terminate "Context-Window Ghosting" loops, ensuring orchestrator attention is never fully captured by rogue subagents.
 - **Universal Reasoning Bus:** We will expose a standardized "Reasoning Telemetry" interface, allowing external tools (e.g., OpenClaw, AutoGen) to offload their attention-management and budget-enforcement logic to MCP Any.
->>>>>>> 0ddf20d8 (Strategic Evolution & CI Hardening)
