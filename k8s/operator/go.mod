@@ -1,8 +1,6 @@
 module github.com/mcpany/core/operator
 
-go 1.24.0
-
-toolchain go1.24.3
+go 1.26.1
 
 require (
 	k8s.io/api v0.34.1
