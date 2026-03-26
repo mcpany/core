@@ -46,7 +46,6 @@ export enum ExportPolicy_Action {
  */
 export const CallPolicy = {};
 
-<<<<<<< HEAD
 /**
  * Mock type placeholder for CallPolicyRule.
  */
@@ -60,15 +59,6 @@ export const ExportPolicy = {};
 /**
  * Mock type placeholder for ExportRule.
  */
-=======
-/** Mock rule */
-export const CallPolicyRule = {};
-
-/** Mock policy */
-export const ExportPolicy = {};
-
-/** Mock export rule */
->>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
 export const ExportRule = {};
 
 /**

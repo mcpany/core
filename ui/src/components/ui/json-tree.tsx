@@ -6,18 +6,11 @@
 
 
 import React, { useState } from "react";
-import { ChevronDown, Copy, Check } from "lucide-react";
+import { ChevronRight, ChevronDown, Copy, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-<<<<<<< HEAD
 interface JsonTreeProps {
-=======
-/**
- * Props for the JsonTree component
- */
-export interface JsonTreeProps {
->>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
   data: unknown;
   level?: number;
   defaultExpandedLevel?: number;
@@ -26,7 +19,6 @@ export interface JsonTreeProps {
 
 /**
  * JsonTree component.
-<<<<<<< HEAD
  * Renders a recursive tree view of JSON data.
  *
  * @param props - The component props.
@@ -35,10 +27,6 @@ export interface JsonTreeProps {
  * @param props.defaultExpandedLevel - The level up to which nodes are expanded by default (default: 1).
  * @param props.className - The className.
  * @returns The rendered component.
-=======
- * Renders a recursive tree view of JSON data with high contrast,
- * subtle borders, and meaningful animations (Unifi/Apple aesthetic).
->>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
  */
 export function JsonTree({ data, level = 0, defaultExpandedLevel = 1, className }: JsonTreeProps) {
   const isObject = typeof data === 'object' && data !== null;
@@ -116,15 +104,9 @@ export function JsonTree({ data, level = 0, defaultExpandedLevel = 1, className 
       </div>
 
       {expanded && (
-<<<<<<< HEAD
         <div className="border-l border-white/10 ml-2 pl-2 flex flex-col">
           {entries.map(([key, value], idx) => (
             <div key={key} className="flex items-start gap-1">
-=======
-        <div className="border-l-[1.5px] border-border/40 ml-[6px] pl-4 flex flex-col my-1 relative before:absolute before:inset-y-0 before:-left-[1.5px] before:w-[1.5px] before:bg-gradient-to-b before:from-transparent before:via-border/40 before:to-transparent">
-          {entries.map(([key, value]) => (
-            <div key={key} className="flex items-start gap-2 py-0.5">
->>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
                {/* Key */}
                <div className="pt-[2px] shrink-0 text-purple-400">
                   {!isArray && (
