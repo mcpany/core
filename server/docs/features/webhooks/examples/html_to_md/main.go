@@ -13,18 +13,14 @@ import (
 	"github.com/google/uuid"
 )
 
-// WebhookRequest webhookRequest represents a webhook request.
-//
-// Summary: WebhookRequest represents a webhook request.
+// WebhookRequest matches the data payload sent by mcpany
 type WebhookRequest struct {
 	Kind     int            `json:"kind"` // 1=PreCall, 2=PostCall
 	ToolName string         `json:"tool_name"`
 	Result   any            `json:"result"`
 }
 
-// WebhookResponse webhookResponse represents a webhook response.
-//
-// Summary: WebhookResponse represents a webhook response.
+// WebhookResponse matches the expected response data
 type WebhookResponse struct {
 	ReplacementObject any `json:"replacement_object,omitempty"`
 }

@@ -14,9 +14,11 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-// ConnectionFactory connectionFactory represents a connection factory.
+// ConnectionFactory is responsible for creating new gRPC client connections.
+// It can be configured with a custom dialer for testing or special connection
+// scenarios.
 //
-// Summary: ConnectionFactory represents a connection factory.
+// Summary: Represents a ConnectionFactory.
 type ConnectionFactory struct {
 	dialer func(context.Context, string) (net.Conn, error)
 }
@@ -24,10 +26,10 @@ type ConnectionFactory struct {
 // NewConnectionFactory creates and returns a new ConnectionFactory with default
 // settings.
 //
-// Returns: - None.
+// Returns:
 //   - *ConnectionFactory: The result.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Initializes NewConnectionFactory operation.
@@ -38,7 +40,7 @@ type ConnectionFactory struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func NewConnectionFactory() *ConnectionFactory {
 	return &ConnectionFactory{}
@@ -47,15 +49,15 @@ func NewConnectionFactory() *ConnectionFactory {
 // WithDialer sets a custom dialer function for the ConnectionFactory. This is
 // useful for tests that need to mock the network connection.
 //
-// Parameters: - None.
+// Parameters:
 //   - dialer func(context.Context (string): The parameter.
 //   - (string): The parameter.
 //
-// Returns: - None.
+// Returns:
 //   - net.Conn: The result.
 //   - error): The result.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes WithDialer operation.
@@ -66,7 +68,7 @@ func NewConnectionFactory() *ConnectionFactory {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (f *ConnectionFactory) WithDialer(dialer func(context.Context, string) (net.Conn, error)) {
 	f.dialer = dialer
@@ -76,18 +78,18 @@ func (f *ConnectionFactory) WithDialer(dialer func(context.Context, string) (net
 // target address. It uses insecure credentials by default. If a custom dialer
 // has been set, it will be used for the connection.
 //
-// Parameters: - None.
+// Parameters:
 //   - _ (context.Context): The parameter.
 //   - targetAddress (string): The parameter.
 //
-// Returns: - None.
+// Returns:
 //   - *grpc.ClientConn: The result.
 //   - error: An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if ...
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Initializes NewConnection operation.
@@ -98,7 +100,7 @@ func (f *ConnectionFactory) WithDialer(dialer func(context.Context, string) (net
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (f *ConnectionFactory) NewConnection(_ context.Context, targetAddress string) (*grpc.ClientConn, error) {
 	opts := []grpc.DialOption{

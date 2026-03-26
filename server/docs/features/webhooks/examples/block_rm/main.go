@@ -15,26 +15,21 @@ import (
 	"github.com/google/uuid"
 )
 
-// WebhookRequest webhookRequest represents a webhook request.
-//
-// Summary: WebhookRequest represents a webhook request.
+// WebhookRequest matches the data payload sent by mcpany
 type WebhookRequest struct {
 	Kind     int            `json:"kind"` // 1=PreCall, 2=PostCall
 	ToolName string         `json:"tool_name"`
 	Inputs   map[string]any `json:"inputs"`
 }
 
-// WebhookResponse webhookResponse represents a webhook response.
-//
-// Summary: WebhookResponse represents a webhook response.
+// WebhookResponse matches the expected response data
 type WebhookResponse struct {
 	Allowed bool    `json:"allowed"`
 	Status  *Status `json:"status,omitempty"`
 }
 
-// Status status represents a status.
-//
-// Summary: Status represents a status.
+// Status represents the status of the webhook response.
+// It contains a code and a message.
 type Status struct {
 	Code    int32  `json:"code"`
 	Message string `json:"message"`

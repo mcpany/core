@@ -18,11 +18,11 @@ var exportRegexCache sync.Map
 //
 // Summary: Checks if an item should be exported based on policy.
 //
-// Parameters: - None.
+// Parameters:
 //   - name: string. The name of the item.
 //   - policy: *configv1.ExportPolicy. The export policy to evaluate.
 //
-// Returns: - None.
+// Returns:
 //   - bool: True if the item should be exported, false otherwise.
 func ShouldExport(name string, policy *configv1.ExportPolicy) bool {
 	if policy == nil {
@@ -73,13 +73,13 @@ func ShouldExport(name string, policy *configv1.ExportPolicy) bool {
 // If arguments is nil, it performs a static check (ignoring rules with argument_regex).
 // It returns true if the call is allowed, false otherwise.
 //
-// Parameters: - None.
+// Parameters:
 //   - policies: []*configv1.CallPolicy. The list of policies to evaluate.
 //   - toolName: string. The name of the tool being called.
 //   - callID: string. The unique ID of the call.
 //   - arguments: []byte. The arguments of the call (can be nil).
 //
-// Returns: - None.
+// Returns:
 //   - bool: True if the call is allowed, false otherwise.
 //   - error: An error if evaluation fails.
 func EvaluateCallPolicy(policies []*configv1.CallPolicy, toolName, callID string, arguments []byte) (bool, error) {
@@ -142,9 +142,9 @@ type compiledCallPolicyRule struct {
 	rule          *configv1.CallPolicyRule
 }
 
-// CompiledCallPolicy compiledCallPolicy represents a compiled call policy.
+// CompiledCallPolicy holds a compiled version of a call policy.
 //
-// Summary: CompiledCallPolicy represents a compiled call policy.
+// Summary: Represents a pre-compiled call policy for efficient evaluation.
 type CompiledCallPolicy struct {
 	policy        *configv1.CallPolicy
 	compiledRules []compiledCallPolicyRule
@@ -154,10 +154,10 @@ type CompiledCallPolicy struct {
 //
 // Summary: Compiles call policies for runtime usage.
 //
-// Parameters: - None.
+// Parameters:
 //   - policies: []*configv1.CallPolicy. The list of policies to compile.
 //
-// Returns: - None.
+// Returns:
 //   - []*CompiledCallPolicy: The compiled policies.
 //   - error: An error if compilation fails (e.g., invalid regex).
 func CompileCallPolicies(policies []*configv1.CallPolicy) ([]*CompiledCallPolicy, error) {
@@ -179,10 +179,10 @@ func CompileCallPolicies(policies []*configv1.CallPolicy) ([]*CompiledCallPolicy
 //
 // Summary: Compiles a single call policy.
 //
-// Parameters: - None.
+// Parameters:
 //   - policy: *configv1.CallPolicy. The policy to compile.
 //
-// Returns: - None.
+// Returns:
 //   - *CompiledCallPolicy: The compiled policy.
 //   - error: An error if compilation fails.
 func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, error) {
@@ -229,13 +229,13 @@ func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, er
 //
 // Summary: Evaluates compiled call policies.
 //
-// Parameters: - None.
+// Parameters:
 //   - policies: []*CompiledCallPolicy. The list of compiled policies to evaluate.
 //   - toolName: string. The name of the tool being called.
 //   - callID: string. The unique ID of the call.
 //   - arguments: []byte. The arguments of the call (can be nil).
 //
-// Returns: - None.
+// Returns:
 //   - bool: True if the call is allowed, false otherwise.
 //   - error: An error if evaluation fails.
 func EvaluateCompiledCallPolicy(policies []*CompiledCallPolicy, toolName, callID string, arguments []byte) (bool, error) {

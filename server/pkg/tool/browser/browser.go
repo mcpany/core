@@ -13,52 +13,45 @@ import (
 	"github.com/playwright-community/playwright-go"
 )
 
-// PageFetcher pageFetcher represents a page fetcher.
+// PageFetcher fetches the visible text content of a URL.
+// It is an interface so tests can inject a lightweight implementation without
+// requiring a real browser installation.
 //
-// Summary: PageFetcher represents a page fetcher.
+// Summary: Represents a PageFetcher.
 type PageFetcher interface {
 	// FetchText retrieves the text content of a URL.
 	//
 	// Summary: Retrieves the text content of a URL.
 	//
-	// Parameters: - None.
+// Parameters:
 	//   - ctx: context.Context. The context for the request.
 	//   - url: string. The URL to visit.
 	//
-	// Returns: - None.
+// Returns:
 	//   - string: The text content of the page.
 	//   - error: An error if the fetch fails.
 	//
-	// Errors: - None.
+// Errors:
 	//   - Returns error if any.
 	//
-	// Side Effects: - None.
+// Side Effects:
 	//   - None.
 	FetchText(ctx context.Context, url string) (string, error)
 }
 
-// Provider provider represents a provider.
+// Provider implements a basic browser automation tool.
 //
-// Summary: Provider represents a provider.
+// Summary: Tool provider for browsing web pages.
 type Provider struct {
 	fetcher PageFetcher // nil → default playwrightFetcher
 }
 
-// NewProvider creates a new provider.
+// NewProvider creates a new Provider.
 //
-// Summary: Creates a new provider.
-//
-// Parameters:
-//   - None.
+// Summary: Initializes a new browser provider.
 //
 // Returns:
-//   - *Provider: The result.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - *Provider: The initialized provider.
 func NewProvider() *Provider {
 	return &Provider{}
 }
@@ -67,15 +60,15 @@ func NewProvider() *Provider {
 //
 // Summary: Fetches the content of a web page.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx: context.Context. The context for the request.
 //   - url: string. The URL to visit.
 //
-// Returns: - None.
+// Returns:
 //   - string: The text content of the page.
 //   - error: An error if the URL is empty or the browser fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns "url is required" if url is empty.
 //   - Returns "failed to start playwright" or "failed to launch browser" if the browser fails to start.
 func (b *Provider) BrowsePage(ctx context.Context, url string) (string, error) {
@@ -93,21 +86,12 @@ func (b *Provider) BrowsePage(ctx context.Context, url string) (string, error) {
 	return strings.TrimSpace(content), nil
 }
 
-// ToolDefinition toolDefinition tool definition.
+// ToolDefinition returns the MCP tool definition.
 //
-// Summary: ToolDefinition tool definition.
-//
-// Parameters:
-//   - None.
+// Summary: Defines the metadata for the browse_page tool.
 //
 // Returns:
-//   - map[string]interface: The result.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - map[string]interface{}: The JSON schema definition of the tool.
 func (b *Provider) ToolDefinition() map[string]interface{} {
 	return map[string]interface{}{
 		"name":        "browse_page",
@@ -132,18 +116,18 @@ type playwrightFetcher struct{}
 //
 // Summary: Fetches the text content of a URL using playwright.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx: context.Context. The context for the request.
 //   - url: string. The URL to visit.
 //
-// Returns: - None.
+// Returns:
 //   - string: The text content of the page.
 //   - error: An error if the fetch fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns error if any.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (f *playwrightFetcher) FetchText(_ context.Context, url string) (string, error) {
 	pw, err := playwright.Run()

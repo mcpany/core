@@ -12,9 +12,11 @@ import (
 	"github.com/coreos/go-oidc/v3/oidc"
 )
 
-// OAuth2Authenticator oAuth2Authenticator represents a o auth2 authenticator.
+// OAuth2Authenticator implements the Authenticator interface for OAuth2-based
+// authentication using OpenID Connect (OIDC). It validates JWTs (JSON Web
+// Tokens) presented in the HTTP Authorization header.
 //
-// Summary: OAuth2Authenticator represents a o auth2 authenticator.
+// Summary: Represents a OAuth2Authenticator.
 type OAuth2Authenticator struct {
 	verifier  *oidc.IDTokenVerifier
 	audiences []string
@@ -24,11 +26,11 @@ type OAuth2Authenticator struct {
 // configuration. It initializes the OIDC provider and creates a verifier for
 // validating ID tokens.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx: The context for the OIDC provider initialization.
 //   - config: The OAuth2 configuration, including the issuer URL and client ID.
 //
-// Returns: - None.
+// Returns:
 //   - A new OAuth2Authenticator.
 //   - An error if the OIDC provider cannot be initialized.
 //
@@ -40,7 +42,7 @@ type OAuth2Authenticator struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func NewOAuth2Authenticator(ctx context.Context, config *OAuth2Config) (*OAuth2Authenticator, error) {
 	provider, err := oidc.NewProvider(ctx, config.IssuerURL)
@@ -74,11 +76,11 @@ func NewOAuth2Authenticator(ctx context.Context, config *OAuth2Config) (*OAuth2A
 // It checks for a "Bearer" token and verifies its signature, expiration, and
 // claims against the OIDC provider.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx: The request context.
 //   - r: The HTTP request to authenticate.
 //
-// Returns: - None.
+// Returns:
 //   - The context with the user's identity (email) on success.
 //   - An error if authentication fails.
 //
@@ -90,7 +92,7 @@ func NewOAuth2Authenticator(ctx context.Context, config *OAuth2Config) (*OAuth2A
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (a *OAuth2Authenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
 	authHeader := r.Header.Get("Authorization")

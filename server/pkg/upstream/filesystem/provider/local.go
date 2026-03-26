@@ -13,9 +13,9 @@ import (
 	"github.com/spf13/afero"
 )
 
-// LocalProvider localProvider represents a local provider.
+// LocalProvider provides access to the local filesystem.
 //
-// Summary: LocalProvider represents a local provider.
+// Summary: Represents a LocalProvider.
 type LocalProvider struct {
 	fs           afero.Fs
 	rootPaths    map[string]string
@@ -26,17 +26,17 @@ type LocalProvider struct {
 
 // NewLocalProvider creates a new LocalProvider from the given configuration.
 //
-// Parameters: - None.
+// Parameters:
 //   - _ (*configv1.OsFs): The parameter.
 //   - rootPaths (map[string]string): The parameter.
 //   - (allowedPaths): The parameter.
 //   - deniedPaths ([]string): The parameter.
 //   - symlinkMode (configv1.FilesystemUpstreamService_SymlinkMode): The parameter.
 //
-// Returns: - None.
+// Returns:
 //   - *LocalProvider: The result.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Initializes NewLocalProvider operation.
@@ -47,7 +47,7 @@ type LocalProvider struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string, allowedPaths, deniedPaths []string, symlinkMode configv1.FilesystemUpstreamService_SymlinkMode) *LocalProvider {
 	return &LocalProvider{
@@ -61,10 +61,10 @@ func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string, allowedPath
 
 // GetFs returns the underlying filesystem.
 //
-// Returns: - None.
+// Returns:
 //   - afero.Fs: The result.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Retrieves GetFs operation.
@@ -75,7 +75,7 @@ func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string, allowedPath
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (p *LocalProvider) GetFs() afero.Fs {
 	return p.fs
@@ -83,17 +83,17 @@ func (p *LocalProvider) GetFs() afero.Fs {
 
 // ResolvePath resolves the virtual path to a real path in the local filesystem.
 //
-// Parameters: - None.
+// Parameters:
 //   - virtualPath (string): The parameter.
 //
-// Returns: - None.
+// Returns:
 //   - string: The result.
 //   - error: An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if ...
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes ResolvePath operation.
@@ -104,7 +104,7 @@ func (p *LocalProvider) GetFs() afero.Fs {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (p *LocalProvider) ResolvePath(virtualPath string) (string, error) {
 	if len(p.rootPaths) == 0 {
@@ -357,13 +357,13 @@ func (p *LocalProvider) containsSymlink(virtualPath, bestMatchVirtual, bestMatch
 
 // Close closes the provider.
 //
-// Returns: - None.
+// Returns:
 //   - error: An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if ...
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes Close operation.
@@ -374,7 +374,7 @@ func (p *LocalProvider) containsSymlink(virtualPath, bestMatchVirtual, bestMatch
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (p *LocalProvider) Close() error {
 	return nil

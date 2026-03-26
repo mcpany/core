@@ -22,9 +22,7 @@ var (
 	port = flag.Int("port", 8085, "Port to listen on")
 )
 
-// OAuthServer oAuthServer represents a o auth server.
-//
-// Summary: OAuthServer represents a o auth server.
+// OAuthServer mocks an OAuth 2.0 Identity Provider.
 type OAuthServer struct {
 	// PrivateKey is the RSA private key used for signing tokens.
 	PrivateKey *rsa.PrivateKey

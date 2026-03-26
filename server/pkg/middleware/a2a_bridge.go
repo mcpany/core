@@ -13,25 +13,26 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// A2ABridgeMiddleware a2ABridgeMiddleware represents a a2 a bridge middleware.
+// A2ABridgeMiddleware represents the Agent-to-Agent (A2A) Bridge middleware.
+// It intercepts tool calls prefixed with "call_agent_" and bridges them to the A2A protocol.
 //
-// Summary: A2ABridgeMiddleware represents a a2 a bridge middleware.
+// Summary: Represents a A2ABridgeMiddleware.
 type A2ABridgeMiddleware struct {
 	contextManager *RecursiveContextManager
 }
 
 // NewA2ABridgeMiddleware creates a new A2ABridgeMiddleware.
 //
-// Parameters: - None.
+// Parameters:
 //   - contextManager (*RecursiveContextManager): The manager for A2A session tokens.
 //
-// Returns: - None.
+// Returns:
 //   - *A2ABridgeMiddleware: The newly created middleware.
 //
-// Errors: - None.
+// Errors:
 //   - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Allocates memory for the middleware struct.
 //
 // Summary: Initializes NewA2ABridgeMiddleware operation.
@@ -42,7 +43,7 @@ type A2ABridgeMiddleware struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func NewA2ABridgeMiddleware(contextManager *RecursiveContextManager) *A2ABridgeMiddleware {
 	return &A2ABridgeMiddleware{
@@ -52,20 +53,20 @@ func NewA2ABridgeMiddleware(contextManager *RecursiveContextManager) *A2ABridgeM
 
 // Execute processes the MCP request and intercepts A2A agent calls.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - method (string): The MCP method being called.
 //   - req (mcp.Request): The incoming MCP request.
 //   - next (mcp.MethodHandler): The next handler in the middleware chain.
 //
-// Returns: - None.
+// Returns:
 //   - mcp.Result: The result of the request, either intercepted or from the next handler.
 //   - error: Any error that occurred during processing.
 //
-// Errors: - None.
+// Errors:
 //   - Returns errors from the next handler if the request is not intercepted.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - May create a new session in the RecursiveContextManager if intercepted.
 //
 // Summary: Executes Execute operation.
@@ -76,7 +77,7 @@ func NewA2ABridgeMiddleware(contextManager *RecursiveContextManager) *A2ABridgeM
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (m *A2ABridgeMiddleware) Execute(ctx context.Context, method string, req mcp.Request, next mcp.MethodHandler) (mcp.Result, error) {
 	if method != "tools/call" {

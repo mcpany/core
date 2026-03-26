@@ -13,9 +13,18 @@ import (
 	"github.com/fsnotify/fsnotify"
 )
 
-// Watcher watcher represents a watcher.
+// Watcher monitors configuration files for changes and triggers a reload.
 //
-// Summary: Watcher represents a watcher.
+// Summary: A file system watcher for configuration reloading.
+//
+// It watches the parent directory of specified files to handle atomic saves (rename/move)
+// commonly used by text editors.
+//
+// Fields:
+//   - watcher (*fsnotify.Watcher): The underlying fsnotify watcher.
+//   - done (chan bool): Channel to signal shutdown.
+//   - mu (sync.Mutex): Mutex to protect concurrent access.
+//   - timer (*time.Timer): Timer for debouncing reload events.
 type Watcher struct {
 	watcher *fsnotify.Watcher
 	done    chan bool
@@ -25,17 +34,17 @@ type Watcher struct {
 
 // NewWatcher creates a new file watcher.
 //
-// Parameters: - None.
+// Parameters:
 //   - None.
 //
-// Returns: - None.
+// Returns:
 //   - *Watcher: The resulting *Watcher.
 //   - error: An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if the operation fails or is invalid.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Initializes NewWatcher operation.
@@ -46,7 +55,7 @@ type Watcher struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func NewWatcher() (*Watcher, error) {
 	watcher, err := fsnotify.NewWatcher()
@@ -64,17 +73,17 @@ func NewWatcher() (*Watcher, error) {
 //
 // Summary: Starts watching the specified paths for changes.
 //
-// Parameters: - None.
+// Parameters:
 //   - paths ([]string): A slice of file or directory paths to watch.
 //   - reloadFunc (func()): The function to call when a change is detected.
 //
-// Returns: - None.
+// Returns:
 //   - error: An error if adding paths to the watcher fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if adding a path to the watcher fails.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Starts a goroutine to process file events.
 //   - Registers directories with the OS watcher.
 func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
@@ -191,7 +200,7 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 
 // Close stops the file watcher and releases resources.
 //
-// Parameters: - None.
+// Parameters:
 //   - None.
 //
 // Summary: Executes Close operation.
@@ -202,7 +211,7 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (w *Watcher) Close() {
 	close(w.done)

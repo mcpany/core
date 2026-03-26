@@ -29,9 +29,12 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// Upstream upstream represents a upstream.
+// Upstream implements the upstream.Upstream interface for filesystem services.
 //
-// Summary: Upstream represents a upstream.
+// It provides tools for interacting with various filesystem backends (local,
+// S3, GCS, etc.) as defined in the service configuration.
+//
+// Summary: Represents a Upstream.
 type Upstream struct {
 	mu      sync.Mutex
 	closers []io.Closer
@@ -40,10 +43,10 @@ type Upstream struct {
 
 // NewUpstream creates a new instance of FilesystemUpstream.
 //
-// Returns: - None.
+// Returns:
 //   - upstream.Upstream: A new instance of the filesystem upstream.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Initializes NewUpstream operation.
@@ -54,7 +57,7 @@ type Upstream struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{
@@ -64,13 +67,13 @@ func NewUpstream() upstream.Upstream {
 
 // Shutdown implements the upstream.Upstream interface.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the shutdown operation (currently unused).
 //
-// Returns: - None.
+// Returns:
 //   - error: Always returns nil.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Stops the health checker.
 //   - Closes all registered filesystem providers.
 //
@@ -82,7 +85,7 @@ func NewUpstream() upstream.Upstream {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
@@ -99,7 +102,7 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 
 // Register processes the configuration for a filesystem service.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the registration process.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
 //   - toolManager (tool.ManagerInterface): The manager where discovered tools will be registered.
@@ -107,13 +110,13 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //   - _ (resource.ManagerInterface): Unused resource manager.
 //   - _ (bool): Unused reload flag.
 //
-// Returns: - None.
+// Returns:
 //   - string: The unique service ID.
 //   - []*configv1.ToolDefinition: A list of registered tool definitions.
 //   - []*configv1.ResourceDefinition: Always nil.
 //   - error: An error if registration fails.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Creates a filesystem provider.
 //   - Starts a health checker.
 //   - Registers tools with the tool manager.
@@ -126,7 +129,7 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (u *Upstream) Register(
 	ctx context.Context,
@@ -247,11 +250,11 @@ type fsCallable struct {
 //
 // Summary: Executes a filesystem tool.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx: context.Context. The execution context.
 //   - req: *tool.ExecutionRequest. The request containing arguments.
 //
-// Returns: - None.
+// Returns:
 //   - any: The result of the execution.
 //   - error: An error if execution fails.
 func (c *fsCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {

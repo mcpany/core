@@ -12,22 +12,9 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// SeedStandardData seedStandardData seed standard data.
-//
-// Summary: SeedStandardData seed standard data.
-//
-// Parameters:
-//   - t (*testing.T): The t.
-//   - serverInfo (*MCPANYTestServerInfo): The server info.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+// SeedStandardData populates the server with a standard set of data for E2E testing.
+// It registers a "Core" service (mocked) and a "Tools" service (mocked).
+// It also seeds some traffic history if supported.
 func SeedStandardData(t *testing.T, serverInfo *MCPANYTestServerInfo) {
 	t.Helper()
 

@@ -19,9 +19,7 @@ import (
 	mcpv1alpha1 "github.com/mcpany/core/operator/api/v1alpha1"
 )
 
-// MCPServerReconciler mCPServerReconciler represents a mcp server reconciler.
-//
-// Summary: MCPServerReconciler represents a mcp server reconciler.
+// MCPServerReconciler reconciles a MCPServer object
 type MCPServerReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
@@ -33,23 +31,17 @@ type MCPServerReconciler struct {
 //+kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=core,resources=services,verbs=get;list;watch;create;update;patch;delete
 
-// Reconcile reconcile reconcile.
+// Reconcile is part of the main kubernetes reconciliation loop which aims to
+// move the current state of the cluster closer to the desired state.
+// It creates or updates the Deployment and Service for the MCPServer.
 //
-// Summary: Reconcile reconcile.
+// Parameters: - None.
+//   - ctx: The context for the request.
+//   - req: The reconciliation request containing the namespaced name of the MCPServer.
 //
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (ctrl.Request): The req.
-//
-// Returns:
-//   - ctrl.Result: The result.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None.
+// Returns: - None.
+//   - ctrl.Result: The result of the reconciliation, indicating if the request should be requeued.
+//   - error: Any error that occurred during reconciliation.
 func (r *MCPServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
 
@@ -242,21 +234,13 @@ func labelsForMCPServer(name string) map[string]string {
 	return map[string]string{"app": "mcp-server", "mcp_cr": name}
 }
 
-// SetupWithManager setupWithManager setup with manager.
+// SetupWithManager sets up the controller with the Manager.
 //
-// Summary: SetupWithManager setup with manager.
+// Parameters: - None.
+//   - mgr: The controller manager.
 //
-// Parameters:
-//   - mgr (ctrl.Manager): The mgr.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None.
+// Returns: - None.
+//   - error: Any error that occurred during setup.
 func (r *MCPServerReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&mcpv1alpha1.MCPServer{}).

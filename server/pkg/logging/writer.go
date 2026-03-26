@@ -9,26 +9,26 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 )
 
-// RedactingWriter redactingWriter represents a redacting writer.
+// RedactingWriter is an io.Writer that redacts sensitive information from JSON logs.
 //
-// Summary: RedactingWriter represents a redacting writer.
+// Summary: Represents a RedactingWriter.
 type RedactingWriter struct {
 	w io.Writer
 }
 
 // Write implements io.Writer.
 //
-// Parameters: - None.
+// Parameters:
 //   - p ([]byte): The p parameter.
 //
-// Returns: - None.
+// Returns:
 //   - int: The resulting int.
 //   - error: An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if the operation fails or is invalid.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Updates Write operation.
@@ -39,7 +39,7 @@ type RedactingWriter struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (w *RedactingWriter) Write(p []byte) (n int, err error) {
 	// Attempt to redact JSON. RedactJSON handles validation internally.

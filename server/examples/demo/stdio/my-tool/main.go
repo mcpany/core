@@ -11,16 +11,12 @@ import (
 	"os"
 )
 
-// Request request represents a request.
-//
-// Summary: Request represents a request.
+// Request represents a tool request.
 type Request struct {
 	Name string `json:"name"`
 }
 
-// Response response represents a response.
-//
-// Summary: Response represents a response.
+// Response represents a tool response.
 type Response struct {
 	Message string `json:"message"`
 }

@@ -11,9 +11,9 @@ import (
 	"google.golang.org/grpc"
 )
 
-// MockClientConn mockClientConn represents a mock client conn.
+// MockClientConn is a mock implementation of grpc.ClientConnInterface for testing.
 //
-// Summary: MockClientConn represents a mock client conn.
+// Summary: Represents a MockClientConn.
 type MockClientConn struct {
 	grpc.ClientConnInterface
 	t       *testing.T
@@ -22,10 +22,10 @@ type MockClientConn struct {
 
 // NewMockClientConn creates a new mock client connection.
 //
-// Parameters: - None.
+// Parameters:
 //   - t: The testing instance.
 //
-// Returns: - None.
+// Returns:
 //   - *MockClientConn: A new mock client connection.
 //
 // Summary: Initializes NewMockClientConn operation.
@@ -36,7 +36,7 @@ type MockClientConn struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func NewMockClientConn(t *testing.T) *MockClientConn {
 	return &MockClientConn{
@@ -47,7 +47,7 @@ func NewMockClientConn(t *testing.T) *MockClientConn {
 
 // SetClient sets a mock client for a given type.
 //
-// Parameters: - None.
+// Parameters:
 //   - method: The method to mock.
 //   - client: The mock client implementation.
 //
@@ -59,7 +59,7 @@ func NewMockClientConn(t *testing.T) *MockClientConn {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (m *MockClientConn) SetClient(method string, client interface{}) {
 	m.clients[method] = client
@@ -67,14 +67,14 @@ func (m *MockClientConn) SetClient(method string, client interface{}) {
 
 // Invoke is a mock implementation of the Invoke method.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx: The context for the call.
 //   - method: The method being invoked.
 //   - args: The arguments for the method.
 //   - reply: The reply structure to fill.
 //   - opts: The call options.
 //
-// Returns: - None.
+// Returns:
 //   - error: An error if the invocation fails.
 //
 // Summary: Executes Invoke operation.
@@ -85,7 +85,7 @@ func (m *MockClientConn) SetClient(method string, client interface{}) {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (m *MockClientConn) Invoke(_ context.Context, _ string, _ interface{}, _ interface{}, _ ...grpc.CallOption) error {
 	// Not implemented for this mock
@@ -94,13 +94,13 @@ func (m *MockClientConn) Invoke(_ context.Context, _ string, _ interface{}, _ in
 
 // NewStream is a mock implementation of the NewStream method.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx: The context for the stream.
 //   - desc: The stream description.
 //   - method: The method being called.
 //   - opts: The call options.
 //
-// Returns: - None.
+// Returns:
 //   - grpc.ClientStream: The client stream.
 //   - error: An error if the stream creation fails.
 //
@@ -112,7 +112,7 @@ func (m *MockClientConn) Invoke(_ context.Context, _ string, _ interface{}, _ in
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (m *MockClientConn) NewStream(_ context.Context, _ *grpc.StreamDesc, method string, _ ...grpc.CallOption) (grpc.ClientStream, error) {
 	if client, ok := m.clients[method]; ok {

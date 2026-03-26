@@ -759,8 +759,3 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Multi-Modal Behavioral Attestation (MMBA)**: (P0) Identity service anchoring stylometric profiles to multi-modal trace history (Added: 2026-06-17).
 - **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
-
-### Strategic Updates: 2026-06-18
-- [ ] Implement RIA issuance and verification logic in `server/pkg/ria`.
-- [ ] Implement IBET (Intent-Bound Ephemeral Tunnels) for inter-agent transport.
-- [ ] Integrate MCLB heartbeat monitoring into the `TeammateTool` lifecycle.

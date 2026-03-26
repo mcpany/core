@@ -36,9 +36,12 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// Upstream upstream represents a upstream.
+// Upstream implements the upstream.Upstream interface for gRPC services.
 //
-// Summary: Upstream represents a upstream.
+// It uses gRPC reflection to discover services and methods, and creates tools
+// for them. It also manages a connection pool and a cache for reflection data.
+//
+// Summary: Represents a Upstream.
 type Upstream struct {
 	poolManager     *pool.Manager
 	reflectionCache *ttlcache.Cache[string, *descriptorpb.FileDescriptorSet]
@@ -50,13 +53,13 @@ type Upstream struct {
 
 // CheckHealth performs a health check on the upstream service.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the health check.
 //
-// Returns: - None.
+// Returns:
 //   - error: An error if the service is unhealthy.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Performs a health check RPC.
 //
 // Summary: Executes CheckHealth operation.
@@ -67,7 +70,7 @@ type Upstream struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
@@ -86,13 +89,13 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 
 // NewUpstream creates a new instance of Upstream.
 //
-// Parameters: - None.
+// Parameters:
 //   - poolManager (*pool.Manager): The connection pool manager to be used for managing gRPC connections.
 //
-// Returns: - None.
+// Returns:
 //   - upstream.Upstream: An implementation of the upstream.Upstream interface.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Starts a background cache cleaner.
 //
 // Summary: Initializes NewUpstream operation.
@@ -103,7 +106,7 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	cache := ttlcache.New[string, *descriptorpb.FileDescriptorSet](
@@ -120,13 +123,13 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 // Shutdown gracefully terminates the gRPC upstream service by shutting down the
 // associated connection pool.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the shutdown operation (currently unused).
 //
-// Returns: - None.
+// Returns:
 //   - error: Always returns nil.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Stops the health checker.
 //   - Stops the reflection cache.
 //   - Deregisters the connection pool.
@@ -139,7 +142,7 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
@@ -161,7 +164,7 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // definitions, and then creates and registers tools based on the discovered
 // methods and any MCP annotations.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The registration context.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the service.
 //   - toolManager (tool.ManagerInterface): The manager for tools.
@@ -169,13 +172,13 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //   - resourceManager (resource.ManagerInterface): The manager for resources.
 //   - isReload (bool): Indicates whether this is a reload.
 //
-// Returns: - None.
+// Returns:
 //   - string: The unique service ID.
 //   - []*configv1.ToolDefinition: Discovered tools.
 //   - []*configv1.ResourceDefinition: Discovered resources (currently unused for gRPC).
 //   - error: An error if registration fails.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Creates a gRPC connection pool.
 //   - Fetches and caches service descriptors (via reflection or config).
 //   - Registers tools and prompts.
@@ -188,7 +191,7 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (u *Upstream) Register(
 	ctx context.Context,

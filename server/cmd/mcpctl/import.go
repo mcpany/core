@@ -13,47 +13,74 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// ClaudeDesktopConfig claudeDesktopConfig represents a claude desktop config.
+// ClaudeDesktopConfig represents the structure of claude_desktop_config.json.
 //
-// Summary: ClaudeDesktopConfig represents a claude desktop config.
+// Summary: Configuration format used by Claude Desktop.
+//
+// Fields:
+//   - MCPServers: map[string]MCPServerConfig. A map of server names to their configurations.
 type ClaudeDesktopConfig struct {
 	MCPServers map[string]MCPServerConfig `json:"mcpServers"`
 }
 
-// MCPServerConfig mCPServerConfig represents a mcp server config.
+// MCPServerConfig represents a single server configuration in Claude Desktop.
 //
-// Summary: MCPServerConfig represents a mcp server config.
+// Summary: Configuration for a single MCP server in Claude Desktop.
+//
+// Fields:
+//   - Command: string. The command to execute to start the server.
+//   - Args: []string. The arguments to pass to the command.
+//   - Env: map[string]string. Environment variables to set for the server process.
 type MCPServerConfig struct {
 	Command string            `json:"command"`
 	Args    []string          `json:"args"`
 	Env     map[string]string `json:"env,omitempty"`
 }
 
-// McpAnyConfig mcpAnyConfig represents a mcp any config.
+// McpAnyConfig represents the target configuration structure for MCP Any.
 //
-// Summary: McpAnyConfig represents a mcp any config.
+// Summary:
+//   Configuration for the MCP Any server.
+//
+// Fields:
+//   - UpstreamServices: []UpstreamService. A list of upstream services to configure.
 type McpAnyConfig struct {
 	UpstreamServices []UpstreamService `yaml:"upstream_services"`
 }
 
-// UpstreamService upstreamService represents a upstream service.
+// UpstreamService represents a single upstream service configuration.
 //
-// Summary: UpstreamService represents a upstream service.
+// Summary:
+//   Configuration for a single upstream service.
+//
+// Fields:
+//   - Name: string. The name of the service.
+//   - McpService: *McpService. The MCP service configuration (optional).
 type UpstreamService struct {
 	Name       string      `yaml:"name"`
 	McpService *McpService `yaml:"mcp_service,omitempty"`
 }
 
-// McpService mcpService represents a mcp service.
+// McpService defines the configuration for an MCP-based service.
 //
-// Summary: McpService represents a mcp service.
+// Summary:
+//   Configuration for a service using the Model Context Protocol (MCP).
+//
+// Fields:
+//   - StdioConnection: *StdioConnection. Parameters for connecting via standard I/O (optional).
 type McpService struct {
 	StdioConnection *StdioConnection `yaml:"stdio_connection,omitempty"`
 }
 
-// StdioConnection stdioConnection represents a stdio connection.
+// StdioConnection defines the parameters for connecting to an MCP server via standard I/O.
 //
-// Summary: StdioConnection represents a stdio connection.
+// Summary:
+//   Parameters for connecting to an MCP server using standard input/output streams.
+//
+// Fields:
+//   - Command: string. The command to execute.
+//   - Args: []string. The arguments to pass to the command.
+//   - Env: map[string]string. The environment variables to set for the command.
 type StdioConnection struct {
 	Command string            `yaml:"command"`
 	Args    []string          `yaml:"args"`

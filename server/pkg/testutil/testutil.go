@@ -19,13 +19,13 @@ import (
 //
 // Summary: Helper to create a pool manager with a default "test-service" HTTP pool.
 //
-// Parameters: - None.
+// Parameters:
 //   - t: *testing.T. The testing object.
 //
-// Returns: - None.
+// Returns:
 //   - *pool.Manager: The initialized pool manager.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Registers "test-service" in the manager.
 func NewTestPoolManager(t *testing.T) *pool.Manager {
 	t.Helper()
@@ -45,9 +45,9 @@ func NewTestPoolManager(t *testing.T) *pool.Manager {
 	return pm
 }
 
-// MockAuthenticator mockAuthenticator represents a mock authenticator.
+// MockAuthenticator is a mock implementation of the auth.UpstreamAuthenticator interface.
 //
-// Summary: MockAuthenticator represents a mock authenticator.
+// Summary: Mock authenticator for testing upstream requests.
 type MockAuthenticator struct {
 	AuthenticateFunc func(req *http.Request) error
 }
@@ -56,13 +56,13 @@ type MockAuthenticator struct {
 //
 // Summary: Authenticates a request using the mock function.
 //
-// Parameters: - None.
+// Parameters:
 //   - req: *http.Request. The request to authenticate.
 //
-// Returns: - None.
+// Returns:
 //   - error: The error from AuthenticateFunc.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Invokes the injected AuthenticateFunc.
 func (m *MockAuthenticator) Authenticate(req *http.Request) error {
 	if m.AuthenticateFunc != nil {

@@ -10,22 +10,8 @@ import (
 	"testing"
 )
 
-// StartMockServer startMockServer start mock server.
-//
-// Summary: StartMockServer start mock server.
-//
-// Parameters:
-//   - t (*testing.T): The t.
-//   - handler (http.Handler): The handler.
-//
-// Returns:
-//   - *httptest.Server: The result.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+// StartMockServer starts a new mock server with the provided handler.
+// The caller is responsible for calling Close() on the returned server.
 func StartMockServer(t *testing.T, handler http.Handler) *httptest.Server {
 	t.Helper()
 	server := httptest.NewServer(handler)
@@ -33,22 +19,8 @@ func StartMockServer(t *testing.T, handler http.Handler) *httptest.Server {
 	return server
 }
 
-// DefaultMockHandler defaultMockHandler default mock handler.
-//
-// Summary: DefaultMockHandler default mock handler.
-//
-// Parameters:
-//   - t (*testing.T): The t.
-//   - responses (map[string]string): The responses.
-//
-// Returns:
-//   - http.Handler: The result.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+// DefaultMockHandler provides a simple way to define responses for specific paths.
+// It maps path -> response body (string or bytes).
 func DefaultMockHandler(t *testing.T, responses map[string]string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		bodyBytes, _ := io.ReadAll(r.Body)
@@ -75,22 +47,7 @@ func DefaultMockHandler(t *testing.T, responses map[string]string) http.Handler 
 	})
 }
 
-// CreateMockServerWithResponses persists the mock server with responses.
-//
-// Summary: Persists the mock server with responses.
-//
-// Parameters:
-//   - t (*testing.T): The t.
-//   - responses (map[string]string): The responses.
-//
-// Returns:
-//   - *httptest.Server: The result.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+// CreateMockServerWithResponses is a convenience function to start a server with static responses.
 func CreateMockServerWithResponses(t *testing.T, responses map[string]string) *httptest.Server {
 	return StartMockServer(t, DefaultMockHandler(t, responses))
 }

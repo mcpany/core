@@ -14,10 +14,10 @@ import (
 //
 // Summary: Lists all stored service templates.
 //
-// Parameters: - None.
+// Parameters:
 //   - _: context.Context. Unused.
 //
-// Returns: - None.
+// Returns:
 //   - []*configv1.ServiceTemplate: A list of service templates.
 //   - error: Always nil.
 func (s *Store) ListServiceTemplates(_ context.Context) ([]*configv1.ServiceTemplate, error) {
@@ -34,11 +34,11 @@ func (s *Store) ListServiceTemplates(_ context.Context) ([]*configv1.ServiceTemp
 //
 // Summary: Retrieves a service template by ID.
 //
-// Parameters: - None.
+// Parameters:
 //   - _: context.Context. Unused.
 //   - id: string. The template ID.
 //
-// Returns: - None.
+// Returns:
 //   - *configv1.ServiceTemplate: The template, or nil if not found.
 //   - error: Always nil.
 func (s *Store) GetServiceTemplate(_ context.Context, id string) (*configv1.ServiceTemplate, error) {
@@ -54,14 +54,14 @@ func (s *Store) GetServiceTemplate(_ context.Context, id string) (*configv1.Serv
 //
 // Summary: Stores a service template.
 //
-// Parameters: - None.
+// Parameters:
 //   - _: context.Context. Unused.
 //   - template: *configv1.ServiceTemplate. The template to save.
 //
-// Returns: - None.
+// Returns:
 //   - error: Always nil.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Updates the internal service template map.
 func (s *Store) SaveServiceTemplate(_ context.Context, template *configv1.ServiceTemplate) error {
 	s.mu.Lock()
@@ -74,14 +74,14 @@ func (s *Store) SaveServiceTemplate(_ context.Context, template *configv1.Servic
 //
 // Summary: Deletes a service template.
 //
-// Parameters: - None.
+// Parameters:
 //   - _: context.Context. Unused.
 //   - id: string. The template ID.
 //
-// Returns: - None.
+// Returns:
 //   - error: Always nil.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Removes from the internal service template map.
 func (s *Store) DeleteServiceTemplate(_ context.Context, id string) error {
 	s.mu.Lock()

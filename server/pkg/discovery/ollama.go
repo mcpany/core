@@ -17,9 +17,9 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// Provider provider represents a provider.
+// Provider defines the interface for auto-discovering local services.
 //
-// Summary: Provider represents a provider.
+// Summary: Represents a Provider.
 type Provider interface {
 	// Name returns the name of the discovery provider.
 	Name() string
@@ -27,9 +27,10 @@ type Provider interface {
 	Discover(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error)
 }
 
-// OllamaProvider ollamaProvider represents a ollama provider.
+// OllamaProvider discovers local Ollama instances.
+// OllamaProvider is a provider that discovers local Ollama instances.
 //
-// Summary: OllamaProvider represents a ollama provider.
+// Summary: Represents a OllamaProvider.
 type OllamaProvider struct {
 	Endpoint   string // e.g., "http://localhost:11434"
 	client     *http.Client
@@ -38,16 +39,16 @@ type OllamaProvider struct {
 
 // Name returns the name of the provider.
 //
-// Parameters: - None.
+// Parameters:
 //   - None.
 //
-// Returns: - None.
+// Returns:
 //   - string: The resulting string.
 //
-// Errors: - None.
+// Errors:
 //   - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes Name operation.
@@ -58,7 +59,7 @@ type OllamaProvider struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (p *OllamaProvider) Name() string {
 	return "ollama"
@@ -66,17 +67,17 @@ func (p *OllamaProvider) Name() string {
 
 // Discover attempts to find local Ollama instances and return them as tools.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the request.
 //
-// Returns: - None.
+// Returns:
 //   - []*configv1.UpstreamServiceConfig: The resulting []*configv1.UpstreamServiceConfig.
 //   - error: An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if the operation fails or is invalid.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes Discover operation.
@@ -87,7 +88,7 @@ func (p *OllamaProvider) Name() string {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (p *OllamaProvider) Discover(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	// ⚡ BOLT: Reuse http.Client to avoid socket exhaustion.

@@ -12,9 +12,9 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// ProviderStatus providerStatus represents a provider status.
+// ProviderStatus represents the status of a discovery provider.
 //
-// Summary: ProviderStatus represents a provider status.
+// Summary: Represents a ProviderStatus.
 type ProviderStatus struct {
 	Name            string
 	Status          string // "OK", "ERROR"
@@ -23,9 +23,9 @@ type ProviderStatus struct {
 	DiscoveredCount int
 }
 
-// Manager manager represents a manager.
+// Manager manages auto-discovery providers.
 //
-// Summary: Manager represents a manager.
+// Summary: Represents a Manager.
 type Manager struct {
 	providers []Provider
 	mu        sync.RWMutex
@@ -34,16 +34,16 @@ type Manager struct {
 
 // NewManager creates a new discovery manager.
 //
-// Parameters: - None.
+// Parameters:
 //   - None.
 //
-// Returns: - None.
+// Returns:
 //   - *Manager: The resulting *Manager.
 //
-// Errors: - None.
+// Errors:
 //   - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Initializes NewManager operation.
@@ -54,7 +54,7 @@ type Manager struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func NewManager() *Manager {
 	return &Manager{
@@ -64,16 +64,16 @@ func NewManager() *Manager {
 
 // RegisterProvider registers a new provider.
 //
-// Parameters: - None.
+// Parameters:
 //   - p (Provider): The p parameter.
 //
-// Returns: - None.
+// Returns:
 //   - None.
 //
-// Errors: - None.
+// Errors:
 //   - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes RegisterProvider operation.
@@ -84,7 +84,7 @@ func NewManager() *Manager {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (m *Manager) RegisterProvider(p Provider) {
 	m.mu.Lock()
@@ -98,16 +98,16 @@ func (m *Manager) RegisterProvider(p Provider) {
 
 // Run runs all registered providers and returns the aggregated discovered services. It also updates the internal status of each provider.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the request.
 //
-// Returns: - None.
+// Returns:
 //   - []*configv1.UpstreamServiceConfig: The resulting []*configv1.UpstreamServiceConfig.
 //
-// Errors: - None.
+// Errors:
 //   - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes Run operation.
@@ -118,7 +118,7 @@ func (m *Manager) RegisterProvider(p Provider) {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 	var allServices []*configv1.UpstreamServiceConfig
@@ -169,16 +169,16 @@ func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 
 // GetStatuses returns the current status of all providers.
 //
-// Parameters: - None.
+// Parameters:
 //   - None.
 //
-// Returns: - None.
+// Returns:
 //   - []*ProviderStatus: The resulting []*ProviderStatus.
 //
-// Errors: - None.
+// Errors:
 //   - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Retrieves GetStatuses operation.
@@ -189,7 +189,7 @@ func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (m *Manager) GetStatuses() []*ProviderStatus {
 	m.mu.RLock()
@@ -208,17 +208,17 @@ func (m *Manager) GetStatuses() []*ProviderStatus {
 
 // GetProviderStatus returns the status of a specific provider.
 //
-// Parameters: - None.
+// Parameters:
 //   - name (string): The name parameter.
 //
-// Returns: - None.
+// Returns:
 //   - *ProviderStatus: The resulting *ProviderStatus.
 //   - bool: True if successful, false otherwise.
 //
-// Errors: - None.
+// Errors:
 //   - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Retrieves GetProviderStatus operation.
@@ -229,7 +229,7 @@ func (m *Manager) GetStatuses() []*ProviderStatus {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (m *Manager) GetProviderStatus(name string) (*ProviderStatus, bool) {
 	m.mu.RLock()

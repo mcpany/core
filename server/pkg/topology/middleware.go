@@ -16,13 +16,13 @@ import (
 //
 // Summary: Creates an MCP middleware for tracking and recording session activity metrics.
 //
-// Parameters: - None.
+// Parameters:
 //   - next: mcp.MethodHandler. The next handler in the chain.
 //
-// Returns: - None.
+// Returns:
 //   - mcp.MethodHandler: The wrapped handler.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Extracts session ID from context or request.
 //   - Records duration, success/error status, and response size.
 //   - Calls m.RecordActivity to persist metrics.

@@ -20,13 +20,13 @@ import (
 // It is intended to inspect incoming requests and use the provided `AuthManager` to
 // verify credentials before passing the request to the next handler.
 //
-// Parameters: - None.
+// Parameters:
 //   - authManager (*auth.Manager): The authentication manager.
 //
-// Returns: - None.
+// Returns:
 //   - mcp.Middleware: The authentication middleware function.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Modifies the context to include authenticated user info.
 //
 // Summary: Executes AuthMiddleware operation.
@@ -37,7 +37,7 @@ import (
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func AuthMiddleware(authManager *auth.Manager) mcp.Middleware {
 	return func(next mcp.MethodHandler) mcp.MethodHandler {

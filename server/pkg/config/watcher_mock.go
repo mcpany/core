@@ -3,9 +3,9 @@
 
 package config
 
-// MockWatcher mockWatcher represents a mock watcher.
+// MockWatcher is a mock implementation of the Watcher for testing.
 //
-// Summary: MockWatcher represents a mock watcher.
+// Summary: Represents a MockWatcher.
 type MockWatcher struct {
 	WatchFunc func(paths []string, reloadFunc func())
 	CloseFunc func()
@@ -13,10 +13,10 @@ type MockWatcher struct {
 
 // NewMockWatcher creates a new mock watcher.
 //
-// Returns: - None.
+// Returns:
 //   - *MockWatcher: The result.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Initializes NewMockWatcher operation.
@@ -27,7 +27,7 @@ type MockWatcher struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func NewMockWatcher() *MockWatcher {
 	return &MockWatcher{}
@@ -35,17 +35,17 @@ func NewMockWatcher() *MockWatcher {
 
 // Watch mocks the Watch method.
 //
-// Parameters: - None.
+// Parameters:
 //   - paths ([]string): The parameter.
 //   - reloadFunc (func(): The parameter.
 //
-// Returns: - None.
+// Returns:
 //   - ) (error): An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if ...
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes Watch operation.
@@ -56,7 +56,7 @@ func NewMockWatcher() *MockWatcher {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (m *MockWatcher) Watch(paths []string, reloadFunc func()) error {
 	if m.WatchFunc != nil {
@@ -67,10 +67,10 @@ func (m *MockWatcher) Watch(paths []string, reloadFunc func()) error {
 
 // Close mocks the Close method.
 //
-// Parameters: - None.
+// Parameters:
 //   - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes Close operation.
@@ -81,7 +81,7 @@ func (m *MockWatcher) Watch(paths []string, reloadFunc func()) error {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (m *MockWatcher) Close() {
 	if m.CloseFunc != nil {

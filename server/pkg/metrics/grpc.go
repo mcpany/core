@@ -17,20 +17,21 @@ var (
 	metricGrpcConnectionsClosedTotal = []string{"grpc", "connections", "closed", "total"}
 )
 
-// GrpcStatsHandler grpcStatsHandler represents a grpc stats handler.
+// GrpcStatsHandler is a gRPC stats handler that records metrics for RPCs and connections.
+// It can optionally wrap another stats.Handler (e.g., OpenTelemetry).
 //
-// Summary: GrpcStatsHandler represents a grpc stats handler.
+// Summary: Represents a GrpcStatsHandler.
 type GrpcStatsHandler struct {
 	Wrapped stats.Handler
 }
 
 // TagRPC can be used to tag RPCs with custom information.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx: The context of the RPC.
 //   - info: Information about the RPC tag.
 //
-// Returns: - None.
+// Returns:
 //   - The context, potentially modified with new tags.
 //
 // Summary: Executes TagRPC operation.
@@ -41,7 +42,7 @@ type GrpcStatsHandler struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (h *GrpcStatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) context.Context {
 	if h.Wrapped != nil {
@@ -52,7 +53,7 @@ func (h *GrpcStatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) c
 
 // HandleRPC processes RPC stats and increments counters for started and finished RPCs.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx: The context of the RPC.
 //   - s: The RPC stats.
 //
@@ -64,7 +65,7 @@ func (h *GrpcStatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) c
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (h *GrpcStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 	if h.Wrapped != nil {
@@ -80,11 +81,11 @@ func (h *GrpcStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 
 // TagConn can be used to tag connections with custom information.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx: The context of the connection.
 //   - info: Information about the connection tag.
 //
-// Returns: - None.
+// Returns:
 //   - The context, potentially modified with new tags.
 //
 // Summary: Executes TagConn operation.
@@ -95,7 +96,7 @@ func (h *GrpcStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (h *GrpcStatsHandler) TagConn(ctx context.Context, info *stats.ConnTagInfo) context.Context {
 	if h.Wrapped != nil {
@@ -106,7 +107,7 @@ func (h *GrpcStatsHandler) TagConn(ctx context.Context, info *stats.ConnTagInfo)
 
 // HandleConn processes connection stats and increments counters for opened and closed connections.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx: The context of the connection.
 //   - s: The connection stats.
 //
@@ -118,7 +119,7 @@ func (h *GrpcStatsHandler) TagConn(ctx context.Context, info *stats.ConnTagInfo)
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (h *GrpcStatsHandler) HandleConn(ctx context.Context, s stats.ConnStats) {
 	if h.Wrapped != nil {

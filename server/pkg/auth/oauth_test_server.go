@@ -18,9 +18,9 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// MockOAuth2Server mockOAuth2Server represents a mock o auth2 server.
+// MockOAuth2Server serves as a mock OIDC/OAuth2 provider.
 //
-// Summary: MockOAuth2Server represents a mock o auth2 server.
+// Summary: Represents a MockOAuth2Server.
 type MockOAuth2Server struct {
 	*httptest.Server
 	PrivateKey *rsa.PrivateKey
@@ -29,16 +29,16 @@ type MockOAuth2Server struct {
 
 // NewMockOAuth2Server creates a new mock OAuth2 server. t is the t. Returns the result.
 //
-// Parameters: - None.
+// Parameters:
 //   - t (*testing.T): The t parameter.
 //
-// Returns: - None.
+// Returns:
 //   - *MockOAuth2Server: The resulting *MockOAuth2Server.
 //
-// Errors: - None.
+// Errors:
 //   - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Initializes NewMockOAuth2Server operation.
@@ -49,7 +49,7 @@ type MockOAuth2Server struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func NewMockOAuth2Server(t *testing.T) *MockOAuth2Server {
 	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
@@ -123,17 +123,17 @@ func NewMockOAuth2Server(t *testing.T) *MockOAuth2Server {
 
 // NewIDToken permits generating custom tokens signed by this server. t is the t. claims is the claims. Returns the result.
 //
-// Parameters: - None.
+// Parameters:
 //   - t (*testing.T): The t parameter.
 //   - claims (jwt.MapClaims): The claims parameter.
 //
-// Returns: - None.
+// Returns:
 //   - string: The resulting string.
 //
-// Errors: - None.
+// Errors:
 //   - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Initializes NewIDToken operation.
@@ -144,7 +144,7 @@ func NewMockOAuth2Server(t *testing.T) *MockOAuth2Server {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (s *MockOAuth2Server) NewIDToken(t *testing.T, claims jwt.MapClaims) string {
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)

@@ -5,12 +5,15 @@ import os
 import re
 import sys
 
-# Regex patterns for exported symbols
+# Regex patterns
 FUNC_PATTERN = re.compile(r'^func\s+([A-Z][a-zA-Z0-9_]*)\s*\((.*?)\)\s*(\(.*\)|[a-zA-Z0-9_*\[\]\.]*)?\s*{')
 TYPE_PATTERN = re.compile(r'^type\s+([A-Z][a-zA-Z0-9_]*)\s+(struct|interface)\s*{')
 METHOD_PATTERN = re.compile(r'^func\s+\((.*?)\)\s+([A-Z][a-zA-Z0-9_]*)\s*\((.*?)\)\s*(\(.*\)|[a-zA-Z0-9_*\[\]\.]*)?\s*{')
 
 def nice_name(name):
+    # Split camelCase -> "camel case"
+    # e.g. HTTPRateLimit -> HTTP Rate Limit
+    # e.g. SaveUser -> Save User
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1 \2', name)
     s2 = re.sub('([a-z0-9])([A-Z])', r'\1 \2', s1)
     return s2.lower()
@@ -76,8 +79,12 @@ def generate_doc(name, params, returns, receiver=None, is_type=False):
     summary = f"{name} {nice}."
 
     if is_type:
-        summary = f"Represents a {nice}."
-    elif name.startswith("New"):
+        summary = f"{name} represents a {nice}."
+        if name.endswith("Middleware"):
+            summary = f"{name} provides {nice} functionality."
+
+    # Common verbs
+    if name.startswith("New"):
         obj = nice_name(name[3:])
         summary = f"Creates a new {obj}."
     elif name.startswith("Get"):
@@ -101,12 +108,12 @@ def generate_doc(name, params, returns, receiver=None, is_type=False):
     lines = []
     lines.append(f"// {name} {summary[0].lower() + summary[1:]}\n")
     lines.append("//\n")
-    lines.append(f"// Summary: {summary}\n".
+    lines.append(f"// Summary: {summary}\n")
 
     if not is_type:
-        lines.append("//\n")
-        lines.append("// Parameters:\n")
         if params:
+            lines.append("//\n")
+            lines.append("// Parameters:\n")
             for pname, ptype in params:
                 if pname == "_":
                     desc = "Unused parameter."
@@ -118,28 +125,25 @@ def generate_doc(name, params, returns, receiver=None, is_type=False):
                     desc = f"The {nice_name(pname)}."
                 lines.append(f"//   - {pname} ({ptype}): {desc}\n")
         else:
-            lines.append("//   - None.\n")
+            lines.append("//\n")
+            lines.append("// Parameters:\n")
+            lines.append("//   None.\n")
 
-        lines.append("//\n")
-        lines.append("// Returns:\n")
         if returns:
+            lines.append("//\n")
+            lines.append("// Returns:\n")
             for rtype in returns:
                 desc = "The result."
                 if rtype == "error": desc = "An error if the operation fails."
                 lines.append(f"//   - {rtype}: {desc}\n")
         else:
-             lines.append("//   - None.\n")
-
-        lines.append("//\n")
-        lines.append("// Errors:\n")
-        if returns and "error" in returns:
-            lines.append("//   - Returns an error if the operation fails.\n")
-        else:
-            lines.append("//   - None.\n")
-
-        lines.append("//\n")
-        lines.append("// Side Effects:\n")
-        lines.append("//   - None.\n")
+             lines.append("//\n")
+             lines.append("// Returns:\n")
+             lines.append("//   None.\n")
+    else:
+        # For Types, we don't add Params/Returns
+        # Maybe "Fields" if we parsed them, but regex doesn't
+        pass
 
     return lines
 
@@ -150,7 +154,7 @@ def process_file(filepath):
     final_lines = []
     comment_buffer = []
 
-    for i, line in enumerate(lines):
+    for line in lines:
         stripped = line.strip()
         if stripped.startswith('//'):
             if stripped.startswith('//go:'):
@@ -184,20 +188,20 @@ def process_file(filepath):
                 is_type = True
 
             if target_name:
+                # SAFETY CHECK: If comments exist, DO NOT OVERWRITE unless trivial
                 has_comments = len(comment_buffer) > 0
-
-                # If it has comments, let's see if they are already compliant
-                is_compliant = False
+                is_trivial = False
                 if has_comments:
-                    text = "".join(comment_buffer)
-                    if "Summary:" in text and "Parameters:" in text and "Returns:" in text:
-                        is_compliant = True
+                    # Check if trivial (e.g. "// TODO")
+                    text = "".join(comment_buffer).lower()
+                    if "todo" in text or len(text) < 10:
+                        is_trivial = True
 
-                if is_compliant:
+                if has_comments and not is_trivial:
+                    # Preserve existing comments exactly
                     final_lines.extend(comment_buffer)
                 else:
-                    # Not compliant or no comments, generate new one
-                    # We might want to merge, but for speed, let's overwrite if not compliant
+                    # Generate new doc
                     new_doc = generate_doc(target_name, params, returns, receiver, is_type)
                     final_lines.extend(new_doc)
 
@@ -217,10 +221,8 @@ def process_file(filepath):
 
 def scan_dir(root_dir):
     for root, dirs, files in os.walk(root_dir):
-        if any(x in root for x in ["vendor", "node_modules", "zz_generated"]):
-            continue
         for file in files:
-            if file.endswith('.go') and not any(file.endswith(x) for x in ['_test.go', '.pb.go', '.pb.gw.go']):
+            if file.endswith('.go') and not file.endswith('_test.go') and 'vendor' not in root:
                 path = os.path.join(root, file)
                 try:
                     process_file(path)
@@ -235,4 +237,4 @@ if __name__ == '__main__':
             else:
                 process_file(arg)
     else:
-        scan_dir('.')
+        print("Usage: python doc_fixer.py <file_or_dir> ...")

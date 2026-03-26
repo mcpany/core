@@ -10,9 +10,9 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// OpenAPIProvider openAPIProvider represents a open api provider.
+// OpenAPIProvider discovers services via OpenAPI specifications.
 //
-// Summary: OpenAPIProvider represents a open api provider.
+// Summary: Represents a OpenAPIProvider.
 type OpenAPIProvider struct {
 	Endpoint string // e.g., "http://localhost:8080/openapi.json"
 }
@@ -27,7 +27,7 @@ type OpenAPIProvider struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (p *OpenAPIProvider) Name() string {
 	return "openapi"
@@ -43,7 +43,7 @@ func (p *OpenAPIProvider) Name() string {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (p *OpenAPIProvider) Discover(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	if p.Endpoint == "" {

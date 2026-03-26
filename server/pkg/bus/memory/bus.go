@@ -32,16 +32,16 @@ type DefaultBus[T any] struct {
 
 // New creates and returns a new instance of DefaultBus, which is the default, thread-safe implementation of the Bus interface. It is initialized with the default publish timeout. The type parameter T specifies the type of message that the bus will handle.
 //
-// Parameters: - None.
+// Parameters:
 //   - None.
 //
-// Returns: - None.
+// Returns:
 //   - *DefaultBus[T]: The resulting *DefaultBus[T].
 //
-// Errors: - None.
+// Errors:
 //   - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Initializes New operation.
@@ -52,7 +52,7 @@ type DefaultBus[T any] struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func New[T any]() *DefaultBus[T] {
 	return &DefaultBus[T]{
@@ -70,7 +70,7 @@ func New[T any]() *DefaultBus[T] {
 // full. If a timeout occurs, the message is dropped for that subscriber, and a
 // warning is logged.
 //
-// Parameters: - None.
+// Parameters:
 //   - topic: The topic to publish the message to.
 //   - msg: The message to be sent.
 //
@@ -82,7 +82,7 @@ func New[T any]() *DefaultBus[T] {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (b *DefaultBus[T]) Publish(_ context.Context, topic string, msg T) error {
 	b.mu.RLock()
@@ -123,7 +123,7 @@ func (b *DefaultBus[T]) Publish(_ context.Context, topic string, msg T) error {
 // Each subscriber is assigned a unique ID, and its channel is added to the list
 // of subscribers for the given topic.
 //
-// Parameters: - None.
+// Parameters:
 //   - topic: The topic to subscribe to.
 //   - handler: The function to execute when a message is received.
 //
@@ -139,7 +139,7 @@ func (b *DefaultBus[T]) Publish(_ context.Context, topic string, msg T) error {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (b *DefaultBus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	b.mu.Lock()
@@ -190,7 +190,7 @@ func (b *DefaultBus[T]) Subscribe(_ context.Context, topic string, handler func(
 // This is useful for scenarios where a component needs to wait for a specific
 // event to occur once and then stop listening.
 //
-// Parameters: - None.
+// Parameters:
 //   - topic: The topic to subscribe to.
 //   - handler: The function to execute.
 //
@@ -205,7 +205,7 @@ func (b *DefaultBus[T]) Subscribe(_ context.Context, topic string, handler func(
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (b *DefaultBus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	var once sync.Once

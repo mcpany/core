@@ -13,17 +13,17 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// Config config represents a config.
+// Config holds the configuration for the worker.
 //
-// Summary: Config represents a config.
+// Summary: Configuration for worker pool.
 type Config struct {
 	MaxWorkers   int
 	MaxQueueSize int
 }
 
-// Worker worker represents a worker.
+// Worker is responsible for processing jobs from the bus.
 //
-// Summary: Worker represents a worker.
+// Summary: Processes background jobs.
 type Worker struct {
 	busProvider *bus.Provider
 	pond        pond.Pool
@@ -36,11 +36,11 @@ type Worker struct {
 //
 // Summary: Initializes a new Worker.
 //
-// Parameters: - None.
+// Parameters:
 //   - busProvider: *bus.Provider. The bus provider.
 //   - cfg: *Config. The worker configuration.
 //
-// Returns: - None.
+// Returns:
 //   - *Worker: The initialized worker.
 func New(busProvider *bus.Provider, cfg *Config) *Worker {
 	return &Worker{
@@ -52,12 +52,21 @@ func New(busProvider *bus.Provider, cfg *Config) *Worker {
 	}
 }
 
-// Start start start.
+// Start starts the worker and its background tasks.
 //
-// Summary: Start start.
+// Summary: Starts the worker processing loop.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - ctx: context.Context. The context for the worker.
+func (w *Worker) Start(ctx context.Context) {
+	w.wg.Add(1)
+	go w.startToolExecutionWorker(ctx)
+}
+
+// Stop stops the worker and cleans up resources. Summary: Stops the worker. Side Effects: - Waits for pending jobs. - Unsubscribes from the bus.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
 //   - None.
@@ -66,24 +75,6 @@ func New(busProvider *bus.Provider, cfg *Config) *Worker {
 //   - None.
 //
 // Side Effects:
-//   - None.
-func (w *Worker) Start(ctx context.Context) {
-	w.wg.Add(1)
-	go w.startToolExecutionWorker(ctx)
-}
-
-// Stop stops the worker and cleans up resources. Summary: Stops the worker. Side Effects: - Waits for pending jobs. - Unsubscribes from the bus.
-//
-// Parameters: - None.
-//   - None.
-//
-// Returns: - None.
-//   - None.
-//
-// Errors: - None.
-//   - None.
-//
-// Side Effects: - None.
 //   - None.
 //
 // Summary: Executes Stop operation.
@@ -94,7 +85,7 @@ func (w *Worker) Start(ctx context.Context) {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (w *Worker) Stop() {
 	w.wg.Wait() // Wait for the subscription to be set up

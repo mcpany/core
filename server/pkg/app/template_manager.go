@@ -15,9 +15,9 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// TemplateManager templateManager represents a template manager.
+// TemplateManager manages the persistence and lifecycle of service templates.
 //
-// Summary: TemplateManager represents a template manager.
+// Summary: Represents a TemplateManager.
 type TemplateManager struct {
 	mu        sync.RWMutex
 	templates []*configv1.UpstreamServiceConfig
@@ -28,10 +28,10 @@ type TemplateManager struct {
 //
 // Summary: Initializes a new TemplateManager.
 //
-// Parameters: - None.
+// Parameters:
 //   - dataDir: string. The directory where template data is persisted.
 //
-// Returns: - None.
+// Returns:
 //   - *TemplateManager: The initialized manager.
 func NewTemplateManager(dataDir string) *TemplateManager {
 	tm := &TemplateManager{
@@ -128,21 +128,12 @@ func (tm *TemplateManager) save() error {
 	return os.WriteFile(tm.filePath, data, 0600)
 }
 
-// ListTemplates retrieves a list of templates.
+// ListTemplates returns a list of all stored templates.
 //
-// Summary: Retrieves a list of templates.
-//
-// Parameters:
-//   - None.
+// Summary: Retrieves all managed templates.
 //
 // Returns:
-//   - []*configv1.UpstreamServiceConfig: The result.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - []*configv1.UpstreamServiceConfig: A list of templates.
 func (tm *TemplateManager) ListTemplates() []*configv1.UpstreamServiceConfig {
 	tm.mu.RLock()
 	defer tm.mu.RUnlock()
@@ -158,10 +149,10 @@ func (tm *TemplateManager) ListTemplates() []*configv1.UpstreamServiceConfig {
 //
 // Summary: Persists a template.
 //
-// Parameters: - None.
+// Parameters:
 //   - template: *configv1.UpstreamServiceConfig. The template to save.
 //
-// Returns: - None.
+// Returns:
 //   - error: An error if persistence fails.
 func (tm *TemplateManager) SaveTemplate(template *configv1.UpstreamServiceConfig) error {
 	tm.mu.Lock()
@@ -192,10 +183,10 @@ func (tm *TemplateManager) SaveTemplate(template *configv1.UpstreamServiceConfig
 //
 // Summary: Removes a template.
 //
-// Parameters: - None.
+// Parameters:
 //   - idOrName: string. The ID or Name of the template to delete.
 //
-// Returns: - None.
+// Returns:
 //   - error: An error if deletion or persistence fails.
 func (tm *TemplateManager) DeleteTemplate(idOrName string) error {
 	tm.mu.Lock()

@@ -13,9 +13,9 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// CSRFMiddleware cSRFMiddleware represents a csrf middleware.
+// CSRFMiddleware protects against Cross-Site Request Forgery attacks.
 //
-// Summary: CSRFMiddleware represents a csrf middleware.
+// Summary: Middleware that blocks unauthorized cross-origin requests.
 type CSRFMiddleware struct {
 	allowedOrigins map[string]bool
 	mu             sync.RWMutex
@@ -25,13 +25,13 @@ type CSRFMiddleware struct {
 //
 // Summary: Initializes a new CSRFMiddleware with a list of allowed origins.
 //
-// Parameters: - None.
+// Parameters:
 //   - allowedOrigins: []string. A list of origin strings (e.g., "https://example.com") allowed to make requests.
 //
-// Returns: - None.
+// Returns:
 //   - *CSRFMiddleware: The initialized middleware.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Populates the internal allowed origins map.
 func NewCSRFMiddleware(allowedOrigins []string) *CSRFMiddleware {
 	m := &CSRFMiddleware{
@@ -41,21 +41,15 @@ func NewCSRFMiddleware(allowedOrigins []string) *CSRFMiddleware {
 	return m
 }
 
-// Update updates the .
+// Update updates the allowed origins.
 //
-// Summary: Updates the .
+// Summary: Updates the list of allowed origins at runtime.
 //
 // Parameters:
-//   - origins ([]string): The origins.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
+//   - origins: []string. The new list of allowed origins.
 //
 // Side Effects:
-//   - None.
+//   - Replaces the existing allowed origins map in a thread-safe manner.
 func (m *CSRFMiddleware) Update(origins []string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -69,13 +63,13 @@ func (m *CSRFMiddleware) Update(origins []string) {
 //
 // Summary: Returns an HTTP handler that enforces CSRF protection checks.
 //
-// Parameters: - None.
+// Parameters:
 //   - next: http.Handler. The next handler in the chain.
 //
-// Returns: - None.
+// Returns:
 //   - http.Handler: The wrapped handler.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Inspects Method, Headers, Origin, and Referer of incoming requests.
 //   - Blocks requests with 403 Forbidden if validation fails.
 //   - Logs warnings for blocked requests.

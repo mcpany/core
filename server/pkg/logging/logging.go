@@ -25,10 +25,10 @@ var (
 
 // SetLevel updates the global log level dynamically.
 //
-// Parameters: - None.
+// Parameters:
 //   - level (slog.Level): The new log level.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Updates the global log level atomic variable.
 //
 // Summary: Updates SetLevel operation.
@@ -39,7 +39,7 @@ var (
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func SetLevel(level slog.Level) {
 	programLevel.Set(level)
@@ -47,16 +47,16 @@ func SetLevel(level slog.Level) {
 
 // ForTestsOnlyResetLogger is for use in tests to reset the `sync.Once` mechanism. This allows the global logger to be re-initialized in different test cases. This function should not be used in production code.
 //
-// Parameters: - None.
+// Parameters:
 //   - None.
 //
-// Returns: - None.
+// Returns:
 //   - None.
 //
-// Errors: - None.
+// Errors:
 //   - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes ForTestsOnlyResetLogger operation.
@@ -67,7 +67,7 @@ func SetLevel(level slog.Level) {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func ForTestsOnlyResetLogger() {
 	mu.Lock()
@@ -83,13 +83,13 @@ func ForTestsOnlyResetLogger() {
 // This function is designed to be called only once, typically at the start of the application,
 // to ensure a consistent logging setup.
 //
-// Parameters: - None.
+// Parameters:
 //   - level (slog.Level): The minimum log level to be recorded.
 //   - output (io.Writer): The output destination for logs.
 //   - logFilePath (string): Optional path to a log file for JSON output.
 //   - format (...string): Optional format string ("json" or "text"). Defaults to "text".
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Sets the global logger instance.
 //   - May open a file for writing.
 //
@@ -101,7 +101,7 @@ func ForTestsOnlyResetLogger() {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func Init(level slog.Level, output io.Writer, logFilePath string, format ...string) {
 	mu.Lock()
@@ -174,10 +174,10 @@ func Init(level slog.Level, output io.Writer, logFilePath string, format ...stri
 // If the logger has not yet been initialized through a call to `Init`, this function will
 // initialize it with default settings: logging to `os.Stderr` at `slog.LevelInfo`.
 //
-// Returns: - None.
+// Returns:
 //   - *slog.Logger: The global `*slog.Logger` instance.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - May initialize the default logger if not already set.
 //
 // Summary: Retrieves GetLogger operation.
@@ -188,7 +188,7 @@ func Init(level slog.Level, output io.Writer, logFilePath string, format ...stri
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func GetLogger() *slog.Logger {
 	// ⚡ Bolt Optimization: Fast path to avoid lock contention on every log call.
@@ -211,13 +211,13 @@ func GetLogger() *slog.Logger {
 
 // ToSlogLevel converts a string log level to a slog.Level.
 //
-// Parameters: - None.
+// Parameters:
 //   - level (configv1.GlobalSettings_LogLevel): The log level from the configuration.
 //
-// Returns: - None.
+// Returns:
 //   - slog.Level: The corresponding slog.Level.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes ToSlogLevel operation.
@@ -228,7 +228,7 @@ func GetLogger() *slog.Logger {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func ToSlogLevel(level configv1.GlobalSettings_LogLevel) slog.Level {
 	switch level {

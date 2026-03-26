@@ -29,9 +29,13 @@ import (
 // Summary: Constant for "replace" merge strategy.
 const MergeStrategyReplace = "replace"
 
-// UpstreamServiceManager upstreamServiceManager represents a upstream service manager.
+// UpstreamServiceManager manages the lifecycle and configuration of upstream services.
 //
-// Summary: UpstreamServiceManager represents a upstream service manager.
+// Summary: Handles loading, validating, and merging service configurations from various sources.
+//
+// Side Effects:
+//   - Stores the final, merged UpstreamServiceConfig objects.
+//   - Makes HTTP requests to fetch remote configurations.
 type UpstreamServiceManager struct {
 	log               *slog.Logger
 	services          map[string]*configv1.UpstreamServiceConfig // Stores the final, merged UpstreamServiceConfig objects
@@ -48,10 +52,10 @@ type UpstreamServiceManager struct {
 //
 // Summary: Initializes a new UpstreamServiceManager with the specified profiles.
 //
-// Parameters: - None.
+// Parameters:
 //   - enabledProfiles ([]string): A list of profile names that are active. Services must match one of these profiles to be loaded.
 //
-// Returns: - None.
+// Returns:
 //   - (*UpstreamServiceManager): A pointer to a fully initialized UpstreamServiceManager.
 func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager {
 	if len(enabledProfiles) == 0 {
@@ -77,15 +81,15 @@ func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager
 //
 // Summary: Processes local and remote service configurations, merging them based on priority and name.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the operation.
 //   - config (*configv1.McpAnyServerConfig): The main server configuration containing service definitions and collection references.
 //
-// Returns: - None.
+// Returns:
 //   - ([]*configv1.UpstreamServiceConfig): A slice of merged service configurations.
 //   - (error): An error if any critical failure occurs during loading or merging.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - May clear existing services if a replace strategy is configured.
 //   - Fetches remote collections via HTTP.
 func (m *UpstreamServiceManager) LoadAndMergeServices(ctx context.Context, config *configv1.McpAnyServerConfig) ([]*configv1.UpstreamServiceConfig, error) {

@@ -24,9 +24,9 @@ const (
 	datadogBatchWait  = 1 * time.Second
 )
 
-// DatadogAuditStore datadogAuditStore represents a datadog audit store.
+// DatadogAuditStore sends audit logs to Datadog.
 //
-// Summary: DatadogAuditStore represents a datadog audit store.
+// Summary: Asynchronous audit store that forwards logs to Datadog's API.
 type DatadogAuditStore struct {
 	config *configv1.DatadogConfig
 	client *http.Client
@@ -40,13 +40,13 @@ type DatadogAuditStore struct {
 //
 // Summary: Initializes a new DatadogAuditStore with background workers.
 //
-// Parameters: - None.
+// Parameters:
 //   - config: *configv1.DatadogConfig. The Datadog configuration.
 //
-// Returns: - None.
+// Returns:
 //   - *DatadogAuditStore: The initialized store.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Starts background workers to process the log queue.
 func NewDatadogAuditStore(config *configv1.DatadogConfig) *DatadogAuditStore {
 	if config == nil {
@@ -118,17 +118,17 @@ func (e *DatadogAuditStore) worker() {
 //
 // Summary: Queues an audit entry for sending to Datadog.
 //
-// Parameters: - None.
+// Parameters:
 //   - _: context.Context. Unused.
 //   - entry: Entry. The audit entry to log.
 //
-// Returns: - None.
+// Returns:
 //   - error: An error if the queue is full.
 //
-// Errors: - None.
+// Errors:
 //   - Returns "audit queue full" if the buffer is exceeded.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Sends the entry to a buffered channel.
 func (e *DatadogAuditStore) Write(_ context.Context, entry Entry) error {
 	select {
@@ -188,32 +188,27 @@ func (e *DatadogAuditStore) sendBatch(batch []Entry) {
 //
 // Summary: Reads audit entries (Not implemented).
 //
-// Parameters: - None.
+// Parameters:
 //   - _: context.Context. Unused.
 //   - _: Filter. Unused.
 //
-// Returns: - None.
+// Returns:
 //   - []Entry: Nil.
 //   - error: Always returns "not implemented".
 func (e *DatadogAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for datadog audit store")
 }
 
-// Close close close.
+// Close closes the queue and waits for workers to finish.
 //
-// Summary: Close close.
-//
-// Parameters:
-//   - None.
+// Summary: Shuts down the Datadog audit store gracefully.
 //
 // Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - error: Always nil.
 //
 // Side Effects:
-//   - None.
+//   - Closes internal channels.
+//   - Flushes pending logs.
 func (e *DatadogAuditStore) Close() error {
 	if e.done != nil {
 		close(e.done)

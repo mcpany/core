@@ -7,9 +7,11 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// ToolSpec toolSpec represents a tool spec.
+// ToolSpec defines the desired state of Tool.
 //
-// Summary: ToolSpec represents a tool spec.
+// Summary: Specification for Tool resource.
+//
+// +kubebuilder:object:generate=true
 type ToolSpec struct {
 	// Type is the type of tool (e.g., "container", "binary", "script")
 	// +kubebuilder:validation:Enum=container;binary;script
@@ -28,9 +30,11 @@ type ToolSpec struct {
 	Content string `json:"content,omitempty"`
 }
 
-// ToolStatus toolStatus represents a tool status.
+// ToolStatus defines the observed state of Tool.
 //
-// Summary: ToolStatus represents a tool status.
+// Summary: Status of Tool resource.
+//
+// +kubebuilder:object:generate=true
 type ToolStatus struct {
 	// Ready indicates if the tool is ready to be used
 	Ready bool `json:"ready"`
@@ -38,10 +42,12 @@ type ToolStatus struct {
 	Message string `json:"message,omitempty"`
 }
 
+// +kubebuilder:object:root=true
+// +kubebuilder:subresource:status
 
-// Tool tool represents a tool.
+// Tool is the Schema for the tools API.
 //
-// Summary: Tool represents a tool.
+// Summary: Tool resource definition.
 type Tool struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -50,10 +56,11 @@ type Tool struct {
 	Status ToolStatus `json:"status,omitempty"`
 }
 
+// +kubebuilder:object:root=true
 
-// ToolList toolList represents a tool list.
+// ToolList contains a list of Tool.
 //
-// Summary: ToolList represents a tool list.
+// Summary: List of Tool resources.
 type ToolList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`

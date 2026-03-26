@@ -20,10 +20,10 @@ import (
 // representation, into a protobuf-defined *pb.Tool with a structured input
 // schema. This is used to standardize tool definitions within the system.
 //
-// Parameters: - None.
+// Parameters:
 //   - tool: *mcp.Tool. The MCP tool definition to convert.
 //
-// Returns: - None.
+// Returns:
 //   - *pb.Tool: The corresponding protobuf tool definition.
 //   - error: An error if conversion fails (e.g. invalid schema).
 //
@@ -35,7 +35,7 @@ import (
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func ConvertMCPToolToProto(tool *mcp.Tool) (*pb.Tool, error) {
 	if tool == nil {
@@ -120,10 +120,10 @@ func convertJSONSchemaToStruct(schema any) (*structpb.Struct, error) {
 // represent fields from a protobuf message, into a structpb.Struct that can be
 // used as the `properties` field in a JSON schema.
 //
-// Parameters: - None.
+// Parameters:
 //   - fields: []*protobufparser.McpField. The list of fields to convert.
 //
-// Returns: - None.
+// Returns:
 //   - *structpb.Struct: A struct representing the properties JSON schema.
 //   - error: An error if conversion fails.
 //
@@ -135,7 +135,7 @@ func convertJSONSchemaToStruct(schema any) (*structpb.Struct, error) {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func ConvertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) (*structpb.Struct, error) {
 	properties := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
@@ -163,12 +163,12 @@ func ConvertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) 
 // ConvertToolDefinitionToProto transforms a *configv1.ToolDefinition into a
 // *pb.Tool.
 //
-// Parameters: - None.
+// Parameters:
 //   - toolDef: *configv1.ToolDefinition. The tool definition from configuration.
 //   - inputSchema: *structpb.Struct. The input schema for the tool.
 //   - outputSchema: *structpb.Struct. The output schema for the tool.
 //
-// Returns: - None.
+// Returns:
 //   - *pb.Tool: The protobuf tool definition.
 //   - error: An error if conversion fails.
 //
@@ -180,7 +180,7 @@ func ConvertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) 
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func ConvertToolDefinitionToProto(toolDef *configv1.ToolDefinition, inputSchema, outputSchema *structpb.Struct) (*pb.Tool, error) {
 	if toolDef == nil {
@@ -225,11 +225,11 @@ func ConvertToolDefinitionToProto(toolDef *configv1.ToolDefinition, inputSchema,
 // "TYPE_INT32") to its corresponding JSON schema type ("string", "integer"). It
 // is a helper function for building JSON schemas from protobuf definitions.
 //
-// Parameters: - None.
+// Parameters:
 //   - scalarType: string. The protobuf scalar type name.
 //   - description: string. The description for the schema.
 //
-// Returns: - None.
+// Returns:
 //   - *jsonschema.Schema: The generated JSON schema.
 //   - error: An error if the scalar type is unsupported.
 //
@@ -241,7 +241,7 @@ func ConvertToolDefinitionToProto(toolDef *configv1.ToolDefinition, inputSchema,
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func GetJSONSchemaForScalarType(scalarType, description string) (*jsonschema.Schema, error) {
 	s := &jsonschema.Schema{
@@ -271,10 +271,10 @@ func GetJSONSchemaForScalarType(scalarType, description string) (*jsonschema.Sch
 // *mcp.Tool. This is the reverse of convertMCPToolToProto and is used when
 // exposing internally defined tools to the outside world.
 //
-// Parameters: - None.
+// Parameters:
 //   - pbTool: *pb.Tool. The protobuf tool definition to convert.
 //
-// Returns: - None.
+// Returns:
 //   - *mcp.Tool: The corresponding MCP tool definition.
 //   - error: An error if conversion fails.
 //
@@ -286,7 +286,7 @@ func GetJSONSchemaForScalarType(scalarType, description string) (*jsonschema.Sch
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func ConvertProtoToMCPTool(pbTool *pb.Tool) (*mcp.Tool, error) {
 	if pbTool == nil {

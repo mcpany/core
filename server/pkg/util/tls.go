@@ -21,10 +21,10 @@ import (
 // It also configures the client with a SafeDialer to prevent SSRF attacks against
 // cloud metadata services (LinkLocal addresses) and optionally private networks.
 //
-// Parameters: - None.
+// Parameters:
 //   - tlsConfig: The TLS settings to apply to the HTTP client's transport.
 //
-// Returns: - None.
+// Returns:
 //   - *http.Client: A configured *http.Client.
 //   - error: An error if the TLS configuration is invalid or files cannot be read.
 //
@@ -36,7 +36,7 @@ import (
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func NewHTTPClientWithTLS(tlsConfig *configv1.TLSConfig) (*http.Client, error) {
 	var tlsClientConfig *tls.Config

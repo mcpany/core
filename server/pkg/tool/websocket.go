@@ -21,9 +21,11 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// WebsocketTool websocketTool represents a websocket tool.
+// WebsocketTool implements the Tool interface for a tool exposed via a WebSocket
+// connection. It handles sending and receiving messages over a persistent
+// WebSocket connection managed by a connection pool.
 //
-// Summary: WebsocketTool represents a websocket tool.
+// Summary: A tool implementation for WebSocket services.
 type WebsocketTool struct {
 	tool              *v1.Tool
 	mcpTool           *mcp.Tool
@@ -41,14 +43,14 @@ type WebsocketTool struct {
 //
 // Summary: Initializes a new WebsocketTool.
 //
-// Parameters: - None.
+// Parameters:
 //   - tool: *v1.Tool. The protobuf definition of the tool.
 //   - poolManager: *pool.Manager. The manager for WebSocket connections.
 //   - serviceID: string. The ID of the WebSocket service.
 //   - authenticator: auth.UpstreamAuthenticator. The authenticator for the connection.
 //   - callDefinition: *configv1.WebsocketCallDefinition. Configuration for the WebSocket call.
 //
-// Returns: - None.
+// Returns:
 //   - *WebsocketTool: A new instance of WebsocketTool.
 func NewWebsocketTool(
 	tool *v1.Tool,
@@ -69,40 +71,22 @@ func NewWebsocketTool(
 	}
 }
 
-// Tool tool tool.
+// Tool returns the protobuf definition of the WebSocket tool.
 //
-// Summary: Tool tool.
-//
-// Parameters:
-//   - None.
+// Summary: Retrieves the underlying tool definition.
 //
 // Returns:
-//   - *v1.Tool: The result.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - *v1.Tool: The tool definition.
 func (t *WebsocketTool) Tool() *v1.Tool {
 	return t.tool
 }
 
-// MCPTool mCPTool mcp tool.
+// MCPTool returns the MCP tool definition.
 //
-// Summary: MCPTool mcp tool.
-//
-// Parameters:
-//   - None.
+// Summary: Retrieves the MCP-compatible tool definition.
 //
 // Returns:
-//   - *mcp.Tool: The result.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - *mcp.Tool: The MCP tool definition.
 func (t *WebsocketTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -114,21 +98,12 @@ func (t *WebsocketTool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
 
-// GetCacheConfig retrieves the cache config.
+// GetCacheConfig returns the cache configuration for the WebSocket tool.
 //
-// Summary: Retrieves the cache config.
-//
-// Parameters:
-//   - None.
+// Summary: Retrieves the cache configuration.
 //
 // Returns:
-//   - *configv1.CacheConfig: The result.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - *configv1.CacheConfig: The cache configuration.
 func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -140,11 +115,11 @@ func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
 // It retrieves a connection from the pool, sends the tool inputs as a message,
 // and waits for a single response message, which it then processes and returns.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx: context.Context. The execution context.
 //   - req: *ExecutionRequest. The request containing input arguments.
 //
-// Returns: - None.
+// Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
 func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {

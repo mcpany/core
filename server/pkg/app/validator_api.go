@@ -13,17 +13,17 @@ import (
 	"sigs.k8s.io/yaml"
 )
 
-// ValidateRequest validateRequest represents a validate request.
+// ValidateRequest represents the request body for the validation endpoint.
 //
-// Summary: ValidateRequest represents a validate request.
+// Summary: Represents a ValidateRequest.
 type ValidateRequest struct {
 	Content string `json:"content"`
 	Format  string `json:"format"` // "json" or "yaml"
 }
 
-// ValidateResponse validateResponse represents a validate response.
+// ValidateResponse represents the response body for the validation endpoint.
 //
-// Summary: ValidateResponse represents a validate response.
+// Summary: Represents a ValidateResponse.
 type ValidateResponse struct {
 	Valid   bool   `json:"valid"`
 	Error   string `json:"error,omitempty"`

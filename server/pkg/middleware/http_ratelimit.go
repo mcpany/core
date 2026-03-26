@@ -15,9 +15,9 @@ import (
 	"golang.org/x/time/rate"
 )
 
-// HTTPRateLimitMiddleware hTTPRateLimitMiddleware represents a http rate limit middleware.
+// HTTPRateLimitMiddleware provides global rate limiting for HTTP endpoints.
 //
-// Summary: HTTPRateLimitMiddleware represents a http rate limit middleware.
+// Summary: Middleware for rate limiting HTTP requests based on IP address.
 type HTTPRateLimitMiddleware struct {
 	limiters   *ttlcache.Cache[string, *rate.Limiter]
 	rps        rate.Limit
@@ -34,10 +34,10 @@ type HTTPRateLimitOption func(*HTTPRateLimitMiddleware)
 //
 // Summary: Configures the middleware to trust the X-Forwarded-For header.
 //
-// Parameters: - None.
+// Parameters:
 //   - trust: bool. Whether to trust the proxy headers.
 //
-// Returns: - None.
+// Returns:
 //   - HTTPRateLimitOption: The configuration option.
 func WithTrustProxy(trust bool) HTTPRateLimitOption {
 	return func(m *HTTPRateLimitMiddleware) {
@@ -49,12 +49,12 @@ func WithTrustProxy(trust bool) HTTPRateLimitOption {
 //
 // Summary: Initializes a new HTTP rate limit middleware.
 //
-// Parameters: - None.
+// Parameters:
 //   - rps: float64. Requests per second allowed per IP.
 //   - burst: int. Maximum burst size allowed per IP.
 //   - opts: ...HTTPRateLimitOption. Optional configuration options.
 //
-// Returns: - None.
+// Returns:
 //   - *HTTPRateLimitMiddleware: The initialized middleware instance.
 func NewHTTPRateLimitMiddleware(rps float64, burst int, opts ...HTTPRateLimitOption) *HTTPRateLimitMiddleware {
 	// ⚡ BOLT: Prevented unbounded memory growth by enforcing a capacity limit on the rate limiter cache.
@@ -82,10 +82,10 @@ func NewHTTPRateLimitMiddleware(rps float64, burst int, opts ...HTTPRateLimitOpt
 //
 // Summary: Returns a handler that enforces rate limiting.
 //
-// Parameters: - None.
+// Parameters:
 //   - next: http.Handler. The next handler in the chain.
 //
-// Returns: - None.
+// Returns:
 //   - http.Handler: The wrapped handler.
 func (m *HTTPRateLimitMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

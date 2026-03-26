@@ -16,9 +16,9 @@ import (
 	"github.com/PaesslerAG/jsonpath"
 )
 
-// HTTPEmbeddingProvider hTTPEmbeddingProvider represents a http embedding provider.
+// HTTPEmbeddingProvider implements a generic HTTP EmbeddingProvider.
 //
-// Summary: HTTPEmbeddingProvider represents a http embedding provider.
+// Summary: A generic provider that fetches embeddings from an arbitrary HTTP endpoint.
 type HTTPEmbeddingProvider struct {
 	url              string
 	headers          map[string]string
@@ -31,21 +31,21 @@ type HTTPEmbeddingProvider struct {
 //
 // Summary: Initializes a new HTTPEmbeddingProvider with custom request formatting.
 //
-// Parameters: - None.
+// Parameters:
 //   - url: string. The API endpoint URL.
 //   - headers: map[string]string. Custom HTTP headers to include in the request.
 //   - bodyTemplateStr: string. A Go template string for the request body (input text is available as {{.input}}).
 //   - responseJSONPath: string. The JSONPath expression to extract the embedding from the response.
 //
-// Returns: - None.
+// Returns:
 //   - *HTTPEmbeddingProvider: The initialized provider.
 //   - error: An error if the URL is empty or the body template is invalid.
 //
-// Errors: - None.
+// Errors:
 //   - Returns "url is required" if the URL is empty.
 //   - Returns error if template parsing fails.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Compiles the body template.
 func NewHTTPEmbeddingProvider(url string, headers map[string]string, bodyTemplateStr, responseJSONPath string) (*HTTPEmbeddingProvider, error) {
 	if url == "" {
@@ -70,22 +70,22 @@ func NewHTTPEmbeddingProvider(url string, headers map[string]string, bodyTemplat
 //
 // Summary: Generates an embedding by sending a templated HTTP request and extracting the result via JSONPath.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx: context.Context. The request context.
 //   - text: string. The input text to embed.
 //
-// Returns: - None.
+// Returns:
 //   - []float32: The extracted embedding vector.
 //   - error: An error if the request fails or response parsing fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns error if template execution fails.
 //   - Returns error if HTTP request creation or execution fails.
 //   - Returns error if the API returns a non-success status code.
 //   - Returns error if JSON unmarshaling or JSONPath extraction fails.
 //   - Returns error if the extracted result is not a number array or is empty.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Makes an HTTP POST request to the configured URL.
 func (p *HTTPEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
 	// Simple template replacement.

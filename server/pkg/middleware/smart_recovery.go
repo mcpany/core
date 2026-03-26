@@ -17,9 +17,9 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 )
 
-// SmartRecoveryMiddleware smartRecoveryMiddleware represents a smart recovery middleware.
+// SmartRecoveryMiddleware handles automatic error recovery using LLM.
 //
-// Summary: SmartRecoveryMiddleware represents a smart recovery middleware.
+// Summary: Represents a SmartRecoveryMiddleware.
 type SmartRecoveryMiddleware struct {
 	config      *configv1.SmartRecoveryConfig
 	llmClient   llm.Client
@@ -29,17 +29,17 @@ type SmartRecoveryMiddleware struct {
 
 // NewSmartRecoveryMiddleware creates a new SmartRecoveryMiddleware.
 //
-// Parameters: - None.
+// Parameters:
 //   - config (*configv1.SmartRecoveryConfig): The config parameter.
 //   - toolManager (tool.ManagerInterface): The toolManager parameter.
 //
-// Returns: - None.
+// Returns:
 //   - *SmartRecoveryMiddleware: The resulting *SmartRecoveryMiddleware.
 //
-// Errors: - None.
+// Errors:
 //   - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Initializes NewSmartRecoveryMiddleware operation.
@@ -50,7 +50,7 @@ type SmartRecoveryMiddleware struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManager tool.ManagerInterface) *SmartRecoveryMiddleware {
 	return &SmartRecoveryMiddleware{
@@ -61,19 +61,19 @@ func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManage
 
 // Execute executes the middleware logic.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - req (*tool.ExecutionRequest): The request object.
 //   - next (tool.ExecutionFunc): The next parameter.
 //
-// Returns: - None.
+// Returns:
 //   - any: The resulting any.
 //   - error: An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if the operation fails or is invalid.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes Execute operation.
@@ -84,7 +84,7 @@ func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManage
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (m *SmartRecoveryMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	if m.config == nil || !m.config.GetEnabled() {

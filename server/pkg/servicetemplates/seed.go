@@ -15,33 +15,33 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// Seeder seeder represents a seeder.
+// Seeder seeds the database with service templates.
 //
-// Summary: Seeder represents a seeder.
+// Summary: Represents a Seeder.
 type Seeder struct {
 	Store       storage.Storage
 	ExamplesDir string
 }
 
-// ConfigFile configFile represents a config file.
+// ConfigFile represents the structure of the config.yaml in examples.
 //
-// Summary: ConfigFile represents a config file.
+// Summary: Represents a ConfigFile.
 type ConfigFile struct {
 	UpstreamServices []map[string]any `yaml:"upstream_services"`
 }
 
 // Seed walks the examples directory and saves service templates.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the request.
 //
-// Returns: - None.
+// Returns:
 //   - error: An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if the operation fails or is invalid.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes Seed operation.
@@ -52,7 +52,7 @@ type ConfigFile struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (s *Seeder) Seed(ctx context.Context) error {
 	entries, err := os.ReadDir(s.ExamplesDir)

@@ -10,9 +10,9 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// GRPCProvider gRPCProvider represents a grpc provider.
+// GRPCProvider discovers services via gRPC reflection.
 //
-// Summary: GRPCProvider represents a grpc provider.
+// Summary: Represents a GRPCProvider.
 type GRPCProvider struct {
 	Endpoint string // e.g., "localhost:50051"
 }
@@ -27,7 +27,7 @@ type GRPCProvider struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (p *GRPCProvider) Name() string {
 	return "grpc"
@@ -43,7 +43,7 @@ func (p *GRPCProvider) Name() string {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (p *GRPCProvider) Discover(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	if p.Endpoint == "" {

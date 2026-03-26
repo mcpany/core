@@ -10,25 +10,26 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-// WebsocketClientWrapper websocketClientWrapper represents a websocket client wrapper.
+// WebsocketClientWrapper wraps a *websocket.Conn to adapt it for use in a
+// connection pool, implementing the pool.ClosableClient interface.
 //
-// Summary: WebsocketClientWrapper represents a websocket client wrapper.
+// Summary: Represents a WebsocketClientWrapper.
 type WebsocketClientWrapper struct {
 	Conn *websocket.Conn
 }
 
 // IsHealthy checks if the underlying WebSocket connection is still active. It sends a ping message with a short deadline to verify the connection's liveness.
 //
-// Parameters: - None.
+// Parameters:
 //   - _ (context.Context): The _ parameter.
 //
-// Returns: - None.
+// Returns:
 //   - bool: True if successful, false otherwise.
 //
-// Errors: - None.
+// Errors:
 //   - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Checks IsHealthy operation.
@@ -39,7 +40,7 @@ type WebsocketClientWrapper struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (w *WebsocketClientWrapper) IsHealthy(_ context.Context) bool {
 	// Send a ping to check the connection.
@@ -50,16 +51,16 @@ func (w *WebsocketClientWrapper) IsHealthy(_ context.Context) bool {
 
 // Close terminates the underlying WebSocket connection. Returns an error if the operation fails.
 //
-// Parameters: - None.
+// Parameters:
 //   - None.
 //
-// Returns: - None.
+// Returns:
 //   - error: An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if the operation fails or is invalid.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes Close operation.
@@ -70,7 +71,7 @@ func (w *WebsocketClientWrapper) IsHealthy(_ context.Context) bool {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (w *WebsocketClientWrapper) Close() error {
 	return w.Conn.Close()

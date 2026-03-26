@@ -13,9 +13,9 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-// Retry retry represents a retry.
+// Retry implements a retry policy for failed operations.
 //
-// Summary: Retry represents a retry.
+// Summary: Represents a Retry.
 type Retry struct {
 	config *configv1.RetryConfig
 }
@@ -25,13 +25,13 @@ type Retry struct {
 //
 // Summary: Creates a new retry policy.
 //
-// Parameters: - None.
+// Parameters:
 //   - config (*configv1.RetryConfig): The configuration for the retry policy.
 //
-// Returns: - None.
+// Returns:
 //   - *Retry: A new Retry instance.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func NewRetry(config *configv1.RetryConfig) *Retry {
 	if config == nil {
@@ -53,14 +53,14 @@ func NewRetry(config *configv1.RetryConfig) *Retry {
 //
 // Summary: Executes a function with retries.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - work (func(context.Context) error): The function to execute.
 //
-// Returns: - None.
+// Returns:
 //   - error: An error if all retries fail.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Executes the provided function multiple times.
 func (r *Retry) Execute(ctx context.Context, work func(context.Context) error) error {
 	var err error

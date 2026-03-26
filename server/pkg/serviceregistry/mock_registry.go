@@ -11,26 +11,26 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-// MockServiceRegistry mockServiceRegistry represents a mock service registry.
+// MockServiceRegistry is a mock implementation of ServiceRegistryInterface.
 //
-// Summary: MockServiceRegistry represents a mock service registry.
+// Summary: Represents a MockServiceRegistry.
 type MockServiceRegistry struct {
 	mock.Mock
 }
 
 // RegisterService registers a new upstream service based on the provided configuration.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The registration context.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the service.
 //
-// Returns: - None.
+// Returns:
 //   - string: The unique service ID.
 //   - []*configv1.ToolDefinition: A list of discovered tools.
 //   - []*configv1.ResourceDefinition: A list of discovered resources.
 //   - error: An error if registration fails.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Records method call for mock.
 //
 // Summary: Executes RegisterService operation.
@@ -41,7 +41,7 @@ type MockServiceRegistry struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (m *MockServiceRegistry) RegisterService(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	args := m.Called(ctx, serviceConfig)
@@ -50,14 +50,14 @@ func (m *MockServiceRegistry) RegisterService(ctx context.Context, serviceConfig
 
 // UnregisterService removes a service from the registry.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the unregistration.
 //   - serviceName (string): The name of the service to remove.
 //
-// Returns: - None.
+// Returns:
 //   - error: An error if the service is not found or shutdown fails.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Records method call for mock.
 //
 // Summary: Executes UnregisterService operation.
@@ -68,7 +68,7 @@ func (m *MockServiceRegistry) RegisterService(ctx context.Context, serviceConfig
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (m *MockServiceRegistry) UnregisterService(ctx context.Context, serviceName string) error {
 	args := m.Called(ctx, serviceName)
@@ -77,11 +77,11 @@ func (m *MockServiceRegistry) UnregisterService(ctx context.Context, serviceName
 
 // GetAllServices returns a list of all currently registered services.
 //
-// Returns: - None.
+// Returns:
 //   - []*configv1.UpstreamServiceConfig: A list of all registered service configurations.
 //   - error: An error if retrieval fails.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Records method call for mock.
 //
 // Summary: Retrieves GetAllServices operation.
@@ -92,7 +92,7 @@ func (m *MockServiceRegistry) UnregisterService(ctx context.Context, serviceName
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (m *MockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfig, error) {
 	args := m.Called()
@@ -104,14 +104,14 @@ func (m *MockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfi
 
 // GetServiceInfo retrieves the metadata for a service by its ID.
 //
-// Parameters: - None.
+// Parameters:
 //   - serviceID (string): The unique identifier of the service.
 //
-// Returns: - None.
+// Returns:
 //   - *tool.ServiceInfo: The service metadata.
 //   - bool: True if the service was found, false otherwise.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Records method call for mock.
 //
 // Summary: Retrieves GetServiceInfo operation.
@@ -122,7 +122,7 @@ func (m *MockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfi
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (m *MockServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	args := m.Called(serviceID)
@@ -134,14 +134,14 @@ func (m *MockServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInf
 
 // GetServiceConfig returns the configuration for a given service ID.
 //
-// Parameters: - None.
+// Parameters:
 //   - serviceID (string): The unique identifier of the service.
 //
-// Returns: - None.
+// Returns:
 //   - *configv1.UpstreamServiceConfig: The service configuration.
 //   - bool: True if the service was found, false otherwise.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Records method call for mock.
 //
 // Summary: Retrieves GetServiceConfig operation.
@@ -152,7 +152,7 @@ func (m *MockServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInf
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (m *MockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.UpstreamServiceConfig, bool) {
 	args := m.Called(serviceID)
@@ -164,14 +164,14 @@ func (m *MockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.Upst
 
 // GetServiceError returns the last known registration or health error for a service.
 //
-// Parameters: - None.
+// Parameters:
 //   - serviceID (string): The unique identifier of the service.
 //
-// Returns: - None.
+// Returns:
 //   - string: The error message.
 //   - bool: True if an error is present, false otherwise.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Records method call for mock.
 //
 // Summary: Retrieves GetServiceError operation.
@@ -182,7 +182,7 @@ func (m *MockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.Upst
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (m *MockServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 	args := m.Called(serviceID)

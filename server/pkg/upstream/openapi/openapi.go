@@ -31,9 +31,11 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// OpenAPIUpstream openAPIUpstream represents a open api upstream.
+// OpenAPIUpstream implements the upstream.Upstream interface for services that
+// are defined by an OpenAPI specification. It parses the spec, discovers the
+// available operations, and registers them as tools.
 //
-// Summary: OpenAPIUpstream represents a open api upstream.
+// Summary: Represents a OpenAPIUpstream.
 type OpenAPIUpstream struct { //nolint:revive
 	openapiCache *ttlcache.Cache[string, *openapi3.T]
 	httpClients  map[string]*http.Client
@@ -44,16 +46,16 @@ type OpenAPIUpstream struct { //nolint:revive
 // Shutdown gracefully terminates the OpenAPI upstream service. For HTTP-based
 // services, this typically means closing any persistent connections.
 //
-// Parameters: - None.
+// Parameters:
 //   - _ (context.Context): The parameter.
 //
-// Returns: - None.
+// Returns:
 //   - error: An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if ...
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes Shutdown operation.
@@ -64,7 +66,7 @@ type OpenAPIUpstream struct { //nolint:revive
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
@@ -80,10 +82,10 @@ func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 // NewOpenAPIUpstream creates a new instance of OpenAPIUpstream. It initializes a
 // cache for storing parsed OpenAPI documents to avoid redundant parsing.
 //
-// Returns: - None.
+// Returns:
 //   - upstream.Upstream: The result.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Initializes NewOpenAPIUpstream operation.
@@ -94,7 +96,7 @@ func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func NewOpenAPIUpstream() upstream.Upstream {
 	cache := ttlcache.New[string, *openapi3.T](
@@ -110,7 +112,7 @@ func NewOpenAPIUpstream() upstream.Upstream {
 
 // Register processes an OpenAPI service configuration. It parses the OpenAPI specification, extracts the operations, converts them into tools, and registers them with the tool manager.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
 //   - toolManager (tool.ManagerInterface): The toolManager parameter.
@@ -118,16 +120,16 @@ func NewOpenAPIUpstream() upstream.Upstream {
 //   - resourceManager (resource.ManagerInterface): The resourceManager parameter.
 //   - isReload (bool): The isReload parameter.
 //
-// Returns: - None.
+// Returns:
 //   - string: The resulting string.
 //   - []*configv1.ToolDefinition: The resulting []*configv1.ToolDefinition.
 //   - []*configv1.ResourceDefinition: The resulting []*configv1.ResourceDefinition.
 //   - error: An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if the operation fails or is invalid.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes Register operation.
@@ -138,7 +140,7 @@ func NewOpenAPIUpstream() upstream.Upstream {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (u *OpenAPIUpstream) Register(
 	ctx context.Context,
@@ -322,17 +324,17 @@ type httpClientImpl struct {
 // Do sends an HTTP request and returns an HTTP response, fulfilling the
 // client.HTTPClient interface.
 //
-// Parameters: - None.
+// Parameters:
 //   - req (*http.Request): The parameter.
 //
-// Returns: - None.
+// Returns:
 //   - *http.Response: The result.
 //   - error: An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if ...
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes Do operation.
@@ -343,7 +345,7 @@ type httpClientImpl struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (c *httpClientImpl) Do(req *http.Request) (*http.Response, error) {
 	return c.client.Do(req)

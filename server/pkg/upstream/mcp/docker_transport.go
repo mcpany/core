@@ -45,26 +45,27 @@ var newDockerClient = func(ops ...client.Opt) (dockerClient, error) {
 	return client.NewClientWithOpts(ops...)
 }
 
-// DockerTransport dockerTransport represents a docker transport.
+// DockerTransport implements the mcp.Transport interface to connect to a service
+// running inside a Docker container. It manages the container lifecycle.
 //
-// Summary: DockerTransport represents a docker transport.
+// Summary: Represents a DockerTransport.
 type DockerTransport struct {
 	StdioConfig *configv1.McpStdioConnection
 }
 
 // Connect establishes a connection to the service within the Docker container.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the request.
 //
-// Returns: - None.
+// Returns:
 //   - mcp.Connection: The result.
 //   - error: An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if ...
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes Connect operation.
@@ -75,7 +76,7 @@ type DockerTransport struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
@@ -218,17 +219,17 @@ type dockerConn struct {
 
 // Read decodes a single JSON-RPC message from the container's output stream.
 //
-// Parameters: - None.
+// Parameters:
 //   - _ (context.Context): The parameter.
 //
-// Returns: - None.
+// Returns:
 //   - jsonrpc.Message: The result.
 //   - error: An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if ...
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Retrieves Read operation.
@@ -239,7 +240,7 @@ type dockerConn struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
@@ -322,17 +323,17 @@ func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 
 // Write encodes and sends a JSON-RPC message to the container's input stream.
 //
-// Parameters: - None.
+// Parameters:
 //   - _ (context.Context): The parameter.
 //   - msg (jsonrpc.Message): The parameter.
 //
-// Returns: - None.
+// Returns:
 //   - error: An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if ...
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Updates Write operation.
@@ -343,7 +344,7 @@ func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (c *dockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	var method string
@@ -386,13 +387,13 @@ func (c *dockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 
 // Close terminates the connection by closing the underlying ReadWriteCloser.
 //
-// Returns: - None.
+// Returns:
 //   - error: An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if ...
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes Close operation.
@@ -403,7 +404,7 @@ func (c *dockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (c *dockerConn) Close() error {
 	return c.rwc.Close()
@@ -411,10 +412,10 @@ func (c *dockerConn) Close() error {
 
 // SessionID returns a static identifier for the Docker transport session.
 //
-// Returns: - None.
+// Returns:
 //   - string: The result.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes SessionID operation.
@@ -425,7 +426,7 @@ func (c *dockerConn) Close() error {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (c *dockerConn) SessionID() string {
 	return "docker-transport-session"
@@ -441,13 +442,13 @@ type dockerReadWriteCloser struct {
 
 // Close closes the underlying connection and removes the associated Docker container.
 //
-// Returns: - None.
+// Returns:
 //   - error: An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if ...
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes Close operation.
@@ -458,7 +459,7 @@ type dockerReadWriteCloser struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (c *dockerReadWriteCloser) Close() error {
 	err := c.WriteCloser.Close()
@@ -491,17 +492,17 @@ type slogWriter struct {
 // Write takes a byte slice, scans it for lines, and logs each line
 // individually using the configured slog.Logger and level.
 //
-// Parameters: - None.
+// Parameters:
 //   - p ([]byte): The parameter.
 //
-// Returns: - None.
+// Returns:
 //   - n (int): The result.
 //   - err (error): An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if ...
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Updates Write operation.
@@ -512,7 +513,7 @@ type slogWriter struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (s *slogWriter) Write(p []byte) (n int, err error) {
 	scanner := bufio.NewScanner(strings.NewReader(string(p)))
@@ -531,17 +532,17 @@ type tailBuffer struct {
 
 // Write writes data to the buffer, maintaining the size limit.
 //
-// Parameters: - None.
+// Parameters:
 //   - p ([]byte): The parameter.
 //
-// Returns: - None.
+// Returns:
 //   - n (int): The result.
 //   - err (error): An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if ...
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Updates Write operation.
@@ -552,7 +553,7 @@ type tailBuffer struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (b *tailBuffer) Write(p []byte) (n int, err error) {
 	b.mu.Lock()
@@ -568,10 +569,10 @@ func (b *tailBuffer) Write(p []byte) (n int, err error) {
 
 // String returns the buffered data as a string.
 //
-// Returns: - None.
+// Returns:
 //   - string: The result.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes String operation.
@@ -582,7 +583,7 @@ func (b *tailBuffer) Write(p []byte) (n int, err error) {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (b *tailBuffer) String() string {
 	b.mu.Lock()

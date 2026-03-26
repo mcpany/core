@@ -127,9 +127,23 @@ func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 	_, _ = fmt.Fprintf(w, "File '%s' uploaded successfully (size: %d bytes)", html.EscapeString(safeFilename), written)
 }
 
-// RunOptions runOptions represents a run options.
+// RunOptions configuration for starting the MCP Any application.
 //
-// Summary: RunOptions represents a run options.
+// Summary: Options for configuring the application runtime.
+//
+// Fields:
+//   - Ctx: context.Context. The context for the application.
+//   - Fs: afero.Fs. The filesystem interface.
+//   - Stdio: bool. Whether to run in stdio mode (for CLI/one-off usage).
+//   - JSONRPCPort: string. The port for the JSON-RPC/HTTP server.
+//   - GRPCPort: string. The port for the gRPC registration server.
+//   - ConfigPaths: []string. Paths to configuration files.
+//   - APIKey: string. The master API key for the server.
+//   - ShutdownTimeout: time.Duration. The timeout for graceful shutdown.
+//   - TLSCert: string. Path to the TLS certificate file.
+//   - TLSKey: string. Path to the TLS private key file.
+//   - TLSClientCA: string. Path to the TLS client CA certificate file (for mTLS).
+//   - DBPath: string. Path to the SQLite database file.
 type RunOptions struct {
 	Ctx             context.Context
 	Fs              afero.Fs
@@ -145,18 +159,18 @@ type RunOptions struct {
 	DBPath          string
 }
 
-// Runner runner represents a runner.
+// Runner defines the interface for running the application.
 //
-// Summary: Runner represents a runner.
+// Summary: Interface for application execution and management.
 type Runner interface {
 	// Run starts the application with the given options.
 	//
 	// Summary: Starts the application.
 	//
-	// Parameters: - None.
+// Parameters:
 	//   - opts: RunOptions. The configuration for running.
 	//
-	// Returns: - None.
+// Returns:
 	//   - error: An error if startup or execution fails.
 	Run(opts RunOptions) error
 
@@ -164,19 +178,39 @@ type Runner interface {
 	//
 	// Summary: Triggers a configuration reload.
 	//
-	// Parameters: - None.
+// Parameters:
 	//   - ctx: context.Context. The context for the operation.
 	//   - fs: afero.Fs. The filesystem.
 	//   - configPaths: []string. Paths to configuration files.
 	//
-	// Returns: - None.
+// Returns:
 	//   - error: An error if reload fails.
 	ReloadConfig(ctx context.Context, fs afero.Fs, configPaths []string) error
 }
 
-// Application application represents a application.
+// Application is the main application struct, holding the dependencies and logic for the MCP Any server.
 //
-// Summary: Application represents a application.
+// Summary: The main application container.
+//
+// Fields:
+//   - PromptManager: prompt.ManagerInterface. Manages AI prompts.
+//   - ToolManager: tool.ManagerInterface. Manages tools and execution.
+//   - ResourceManager: resource.ManagerInterface. Manages resources (files, data).
+//   - ServiceRegistry: serviceregistry.ServiceRegistryInterface. Manages upstream service connections.
+//   - TopologyManager: *topology.Manager. Manages the topology of the server.
+//   - UpstreamFactory: factory.Factory. Creates upstream service clients.
+//   - Storage: storage.Storage. Persistent storage interface.
+//   - TemplateManager: *TemplateManager. Manages templates.
+//   - SkillManager: *skill.Manager. Manages agent skills.
+//   - AlertsManager: *alerts.Manager. Manages system alerts.
+//   - DiscoveryManager: *discovery.Manager. Manages auto-discovery of services.
+//   - SettingsManager: *GlobalSettingsManager. Manages dynamic global settings.
+//   - ProfileManager: *profile.Manager. Manages user profiles.
+//   - AuthManager: *auth.Manager. Manages authentication and authorization.
+//   - RegistrationRetryDelay: time.Duration. Delay between service registration retries.
+//   - MetricsGatherer: prometheus.Gatherer. Interface for gathering metrics.
+//   - BoundHTTPPort: atomic.Int32. The actual bound HTTP port.
+//   - BoundGRPCPort: atomic.Int32. The actual bound gRPC port.
 type Application struct {
 	runStdioModeFunc func(ctx context.Context, mcpSrv *mcpserver.Server) error
 	PromptManager    prompt.ManagerInterface
@@ -274,21 +308,12 @@ type statsCacheEntry struct {
 	ExpiresAt time.Time
 }
 
-// NewApplication creates a new application.
+// NewApplication creates a new Application with default dependencies.
 //
-// Summary: Creates a new application.
-//
-// Parameters:
-//   - None.
+// Summary: Initializes a new Application instance.
 //
 // Returns:
-//   - *Application: The result.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - (*Application): The initialized application.
 func NewApplication() *Application {
 	busProvider, _ := bus.NewProvider(nil)
 	return &Application{
@@ -313,13 +338,13 @@ func NewApplication() *Application {
 //
 // Summary: Executes the application.
 //
-// Parameters: - None.
+// Parameters:
 //   - opts (RunOptions): The runtime options.
 //
-// Returns: - None.
+// Returns:
 //   - (error): An error if execution fails.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Starts HTTP and gRPC servers.
 //   - Initializes background workers.
 //   - Loads configuration.
@@ -895,15 +920,15 @@ func (a *Application) Run(opts RunOptions) error {
 //
 // Summary: Reloads application configuration from disk/storage.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the reload operation.
 //   - fs (afero.Fs): The filesystem interface for reading configuration files.
 //   - configPaths ([]string): A slice of paths to configuration files to reload.
 //
-// Returns: - None.
+// Returns:
 //   - (error): An error if the configuration reload fails.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Reads configuration files.
 //   - Updates global settings, user auth, profiles, and service registry.
 func (a *Application) ReloadConfig(ctx context.Context, fs afero.Fs, configPaths []string) error {
@@ -1333,10 +1358,10 @@ func (a *Application) generateConfigDiff(oldConfig, newConfig map[string]string)
 //
 // It blocks until the startup process is complete or the context is canceled.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context to wait on.
 //
-// Returns: - None.
+// Returns:
 //   - (error): nil if startup completes successfully, or a context error if canceled.
 func (a *Application) WaitForStartup(ctx context.Context) error {
 	select {
@@ -1350,10 +1375,10 @@ func (a *Application) WaitForStartup(ctx context.Context) error {
 // setup initializes the filesystem for the server. It ensures that a valid
 // afero.Fs is available, returning an error if a nil filesystem is provided.
 //
-// Parameters: - None.
+// Parameters:
 //   - fs (afero.Fs): The filesystem to be validated.
 //
-// Returns: - None.
+// Returns:
 //   - (afero.Fs): A non-nil afero.Fs.
 //   - (error): An error if the provided filesystem is nil.
 func setup(fs afero.Fs) (afero.Fs, error) {
@@ -1371,11 +1396,11 @@ func setup(fs afero.Fs) (afero.Fs, error) {
 // debugging and simple, single-client scenarios. It uses the standard input
 // and output as the transport layer.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for managing the server's lifecycle.
 //   - mcpSrv (*mcpserver.Server): The MCP server instance to run.
 //
-// Returns: - None.
+// Returns:
 //   - (error): An error if the server fails to run in stdio mode.
 func runStdioMode(ctx context.Context, mcpSrv *mcpserver.Server) error {
 	log := logging.GetLogger()
@@ -1461,12 +1486,12 @@ func (a *Application) filesystemHealthCheck(_ context.Context) health.CheckResul
 // sends an HTTP GET request. It expects a 200 OK status code for a successful
 // health check.
 //
-// Parameters: - None.
+// Parameters:
 //   - out (io.Writer): The writer to which the success message will be written.
 //   - addr (string): The address (host:port) on which the server is running.
 //   - timeout (time.Duration): The maximum duration to wait for the health check.
 //
-// Returns: - None.
+// Returns:
 //   - (error): nil if healthy, or an error if the health check fails.
 func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
@@ -1482,12 +1507,12 @@ func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 // sends an HTTP GET request. It expects a 200 OK status code for a successful
 // health check.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for managing the health check's lifecycle.
 //   - out (io.Writer): The writer to which the success message will be written.
 //   - addr (string): The address (host:port) on which the server is running.
 //
-// Returns: - None.
+// Returns:
 //   - (error): nil if healthy, or an error if the health check fails.
 func HealthCheckWithContext(
 	ctx context.Context,
@@ -1528,7 +1553,7 @@ func HealthCheckWithContext(
 // starts the HTTP server for JSON-RPC and the gRPC server for service
 // registration, and handles graceful shutdown.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for managing the server's lifecycle.
 //   - mcpSrv (*mcpserver.Server): The MCP server instance.
 //   - bus (*bus.Provider): The message bus for inter-component communication.
@@ -1545,7 +1570,7 @@ func HealthCheckWithContext(
 //   - tlsKey (string): Path to TLS key.
 //   - tlsClientCA (string): Path to TLS Client CA.
 //
-// Returns: - None.
+// Returns:
 //   - (error): An error if any of the servers fail to start or run.
 //
 //nolint:gocyclo
@@ -2518,10 +2543,10 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 //
 // Summary: Middleware to add HTTP request to context.
 //
-// Parameters: - None.
+// Parameters:
 //   - next (http.Handler): The next handler.
 //
-// Returns: - None.
+// Returns:
 //   - (http.Handler): The wrapped handler.
 func (a *Application) HTTPRequestContextMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

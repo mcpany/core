@@ -45,9 +45,11 @@ const (
 	StatusSkipped Status = "SKIPPED"
 )
 
-// CheckResult checkResult represents a check result.
+// CheckResult represents the result of a single service check.
 //
-// Summary: CheckResult represents a check result.
+// It aggregates the status, any message, and potential error encountered during the check.
+//
+// Summary: Represents a CheckResult.
 type CheckResult struct {
 	// ServiceName is the name of the service being checked.
 	ServiceName string
@@ -64,14 +66,14 @@ type CheckResult struct {
 // It iterates through all upstream services defined in the configuration and executes
 // the appropriate check logic for each service type.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx: context.Context. The context for the request, used for timeouts and cancellation.
 //   - config: *configv1.McpAnyServerConfig. The server configuration containing upstream service definitions.
 //
-// Returns: - None.
+// Returns:
 //   - []CheckResult: A slice of results for each checked service.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Performs network I/O to connect to upstream services.
 //
 // Summary: Executes RunChecks operation.
@@ -82,7 +84,7 @@ type CheckResult struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []CheckResult {
 	// Using 'services' variable to support existing loop
@@ -113,14 +115,14 @@ func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []Check
 // It dispatches the check to the specific handler based on the service type (HTTP, gRPC, etc.)
 // and handles upstream authentication checks if configured.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx: context.Context. The context for the request.
 //   - service: *configv1.UpstreamServiceConfig. The configuration of the service to check.
 //
-// Returns: - None.
+// Returns:
 //   - CheckResult: The result of the connectivity check.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Performs network I/O to connect to the upstream service.
 //
 // Summary: Executes CheckService operation.
@@ -131,7 +133,7 @@ func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []Check
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func CheckService(ctx context.Context, service *configv1.UpstreamServiceConfig) CheckResult {
 	// 5 second timeout for checks

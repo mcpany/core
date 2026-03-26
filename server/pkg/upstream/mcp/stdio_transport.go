@@ -17,26 +17,27 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// StdioTransport stdioTransport represents a stdio transport.
+// StdioTransport implements mcp.Transport for a local command,
+// capturing stderr to provide better error messages on failure.
 //
-// Summary: StdioTransport represents a stdio transport.
+// Summary: Represents a StdioTransport.
 type StdioTransport struct {
 	Command *exec.Cmd
 }
 
 // Connect starts the command and returns a connection.
 //
-// Parameters: - None.
+// Parameters:
 //   - _ (context.Context): The parameter.
 //
-// Returns: - None.
+// Returns:
 //   - mcp.Connection: The result.
 //   - error: An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if ...
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes Connect operation.
@@ -47,7 +48,7 @@ type StdioTransport struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (t *StdioTransport) Connect(_ context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
@@ -113,17 +114,17 @@ type stdioConn struct {
 
 // Read reads a JSON-RPC message from the standard output of the command.
 //
-// Parameters: - None.
+// Parameters:
 //   - _ (context.Context): The parameter.
 //
-// Returns: - None.
+// Returns:
 //   - jsonrpc.Message: The result.
 //   - error: An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if ...
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Retrieves Read operation.
@@ -134,7 +135,7 @@ type stdioConn struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
@@ -224,17 +225,17 @@ func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 
 // Write writes a JSON-RPC message to the standard input of the command.
 //
-// Parameters: - None.
+// Parameters:
 //   - _ (context.Context): The parameter.
 //   - msg (jsonrpc.Message): The parameter.
 //
-// Returns: - None.
+// Returns:
 //   - error: An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if ...
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Updates Write operation.
@@ -245,7 +246,7 @@ func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	var method string
@@ -288,13 +289,13 @@ func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 
 // Close terminates the command and closes the streams.
 //
-// Returns: - None.
+// Returns:
 //   - error: An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if ...
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes Close operation.
@@ -305,7 +306,7 @@ func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (c *stdioConn) Close() error {
 	c.mutex.Lock()
@@ -324,10 +325,10 @@ func (c *stdioConn) Close() error {
 
 // SessionID returns a static session ID for the stdio connection.
 //
-// Returns: - None.
+// Returns:
 //   - string: The result.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes SessionID operation.
@@ -338,7 +339,7 @@ func (c *stdioConn) Close() error {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (c *stdioConn) SessionID() string {
 	return "stdio-session"

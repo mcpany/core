@@ -66,16 +66,16 @@ var (
 
 // PrometheusMetricsMiddleware provides protocol-level metrics for all MCP requests. It intercepts requests to track duration, success/failure counts, payload sizes, and token counts.
 //
-// Parameters: - None.
+// Parameters:
 //   - t (tokenizer.Tokenizer): The t parameter.
 //
-// Returns: - None.
+// Returns:
 //   - mcp.Middleware: The resulting mcp.Middleware.
 //
-// Errors: - None.
+// Errors:
 //   - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes PrometheusMetricsMiddleware operation.
@@ -86,7 +86,7 @@ var (
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func PrometheusMetricsMiddleware(t tokenizer.Tokenizer) mcp.Middleware {
 	registerProtocolMetricsOnce.Do(func() {
@@ -235,11 +235,11 @@ func estimateResultTokens(t tokenizer.Tokenizer, res mcp.Result) int {
 
 // CalculateToolResultTokens calculates the number of tokens in a tool result.
 //
-// Parameters: - None.
+// Parameters:
 //   - t: tokenizer.Tokenizer. The tokenizer to use for counting.
 //   - result: any. The result object to analyze (can be *mcp.CallToolResult, string, []byte, or others).
 //
-// Returns: - None.
+// Returns:
 //   - int: The estimated token count.
 //
 // Summary: Executes CalculateToolResultTokens operation.
@@ -250,7 +250,7 @@ func estimateResultTokens(t tokenizer.Tokenizer, res mcp.Result) int {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func CalculateToolResultTokens(t tokenizer.Tokenizer, result any) int {
 	if result == nil {

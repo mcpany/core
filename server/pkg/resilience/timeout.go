@@ -9,9 +9,9 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-// Timeout timeout represents a timeout.
+// Timeout implements a timeout policy for operations.
 //
-// Summary: Timeout represents a timeout.
+// Summary: Enforces a maximum duration for operations.
 type Timeout struct {
 	duration *durationpb.Duration
 }
@@ -20,10 +20,10 @@ type Timeout struct {
 //
 // Summary: Initializes a new Timeout policy.
 //
-// Parameters: - None.
+// Parameters:
 //   - duration: *durationpb.Duration. The timeout duration.
 //
-// Returns: - None.
+// Returns:
 //   - *Timeout: The initialized timeout policy.
 func NewTimeout(duration *durationpb.Duration) *Timeout {
 	return &Timeout{
@@ -35,17 +35,17 @@ func NewTimeout(duration *durationpb.Duration) *Timeout {
 //
 // Summary: Executes work within a timed context.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx: context.Context. The parent context.
 //   - work: func(context.Context) error. The function to execute.
 //
-// Returns: - None.
+// Returns:
 //   - error: An error if the work fails or the timeout is exceeded.
 //
-// Errors: - None.
+// Errors:
 //   - Returns context.DeadlineExceeded if the timeout is reached.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Creates a child context with a deadline.
 func (t *Timeout) Execute(ctx context.Context, work func(context.Context) error) error {
 	ctx, cancel := context.WithTimeout(ctx, t.duration.AsDuration())

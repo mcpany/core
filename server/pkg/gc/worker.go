@@ -14,9 +14,9 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// Config config represents a config.
+// Config defines the configuration for the GC Worker.
 //
-// Summary: Config represents a config.
+// Summary: Represents a Config.
 type Config struct {
 	Enabled  bool
 	Interval time.Duration
@@ -24,25 +24,25 @@ type Config struct {
 	Paths    []string
 }
 
-// Worker worker represents a worker.
+// Worker implements a background worker for garbage collection.
 //
-// Summary: Worker represents a worker.
+// Summary: Represents a Worker.
 type Worker struct {
 	config Config
 }
 
 // New creates a new GC Worker. config holds the configuration settings. Returns the result.
 //
-// Parameters: - None.
+// Parameters:
 //   - config (Config): The config parameter.
 //
-// Returns: - None.
+// Returns:
 //   - *Worker: The resulting *Worker.
 //
-// Errors: - None.
+// Errors:
 //   - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Initializes New operation.
@@ -53,7 +53,7 @@ type Worker struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func New(config Config) *Worker {
 	if config.Interval <= 0 {
@@ -69,16 +69,16 @@ func New(config Config) *Worker {
 
 // Start runs the GC worker in the background. It returns immediately and runs cleanup periodically until the context is canceled.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the request.
 //
-// Returns: - None.
+// Returns:
 //   - None.
 //
-// Errors: - None.
+// Errors:
 //   - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes Start operation.
@@ -89,7 +89,7 @@ func New(config Config) *Worker {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (w *Worker) Start(ctx context.Context) {
 	if !w.config.Enabled {

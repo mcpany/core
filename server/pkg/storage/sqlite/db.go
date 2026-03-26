@@ -14,9 +14,9 @@ import (
 	_ "modernc.org/sqlite" // Register sqlite driver
 )
 
-// DB dB represents a db.
+// DB wraps the sql.DB connection.
 //
-// Summary: DB represents a db.
+// Summary: Represents a DB.
 type DB struct {
 	*sql.DB
 }
@@ -25,14 +25,14 @@ type DB struct {
 //
 // Summary: Initializes a SQLite database connection.
 //
-// Parameters: - None.
+// Parameters:
 //   - path (string): The file path to the SQLite database.
 //
-// Returns: - None.
+// Returns:
 //   - *DB: The database connection.
 //   - error: An error if the database cannot be opened or initialized.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Creates the database file and directories if they don't exist.
 //   - Initializes the database schema.
 func NewDB(path string) (*DB, error) {

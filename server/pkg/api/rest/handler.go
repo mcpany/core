@@ -19,7 +19,7 @@ import (
 //
 // Summary: Validates configuration content against schema and logic.
 //
-// Parameters: - None.
+// Parameters:
 //   - w (http.ResponseWriter): The response writer.
 //   - r (*http.Request): The HTTP request containing the configuration in the body.
 //
@@ -27,12 +27,12 @@ import (
 //
 //	None.
 //
-// Errors: - None.
+// Errors:
 //   - 405 Method Not Allowed: If method is not POST.
 //   - 400 Bad Request: If body is invalid or content is missing.
 //   - 500 Internal Server Error: If response encoding fails or engine initialization fails.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Reads the request body.
 //   - Writes JSON response to the response writer.
 func ValidateConfigHandler(w http.ResponseWriter, r *http.Request) {

@@ -20,9 +20,7 @@ var (
 	ServiceStartupTimeout = 15 * time.Second
 )
 
-// AITool aITool represents a ai tool.
-//
-// Summary: AITool represents a ai tool.
+// AITool represents an AI tool used in testing.
 type AITool interface {
 	// Install performs any necessary installation steps for the AI tool.
 	Install()

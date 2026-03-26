@@ -26,17 +26,17 @@ type Label = metrics.Label
 //
 // Summary: Creates a new Prometheus sink.
 //
-// Parameters: - None.
+// Parameters:
 //   - None.
 //
-// Returns: - None.
+// Returns:
 //   - *prometheus.PrometheusSink: The initialized Prometheus sink.
 //   - error: An error if the sink creation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if the sink creation fails.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func NewPrometheusSink() (*prometheus.PrometheusSink, error) {
 	return prometheus.NewPrometheusSink()
@@ -51,16 +51,16 @@ var initOnce sync.Once
 // It sets up a global metrics collector that can be used throughout the application.
 // The metrics are exposed on the /metrics endpoint.
 //
-// Parameters: - None.
+// Parameters:
 //   - None.
 //
-// Returns: - None.
+// Returns:
 //   - error: An error if the initialization fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if the sink creation or global metrics initialization fails.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Sets a global metrics collector.
 func Initialize() error {
 	var err error
@@ -88,13 +88,13 @@ func Initialize() error {
 //
 // Summary: Retrieves the metrics HTTP handler.
 //
-// Parameters: - None.
+// Parameters:
 //   - None.
 //
-// Returns: - None.
+// Returns:
 //   - http.Handler: An http.Handler that serves the Prometheus metrics.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func Handler() http.Handler {
 	return promhttp.Handler()
@@ -104,16 +104,16 @@ func Handler() http.Handler {
 //
 // Summary: Starts the metrics server.
 //
-// Parameters: - None.
+// Parameters:
 //   - addr: string. The address to listen on (e.g., ":8080").
 //
-// Returns: - None.
+// Returns:
 //   - error: An error if the server fails to start.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if the server fails to start.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Starts an HTTP server.
 func StartServer(addr string) error {
 	mux := http.NewServeMux()
@@ -140,24 +140,18 @@ func StartServer(addr string) error {
 	return server.Serve(ln)
 }
 
-// SetGauge setGauge set gauge.
+// SetGauge sets the value of a gauge.
 //
-// Summary: SetGauge set gauge.
+// Summary: Sets a gauge metric.
 //
 // Parameters:
-//   - name (string): The name.
-//   - val (float32): The val.
-//   - labels (....string): The labels.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
+//   - name: string. The name of the gauge.
+//   - val: float32. The value to set.
+//   - labels: ...string. A list of labels to apply to the gauge.
 //
 // Side Effects:
-//   - None.
-func SetGauge(name string, val float32, labels ....string) {
+//   - Updates a global gauge metric.
+func SetGauge(name string, val float32, labels ...string) {
 	var metricLabels []metrics.Label
 	if len(labels) > 0 {
 		metricLabels = []metrics.Label{
@@ -167,125 +161,89 @@ func SetGauge(name string, val float32, labels ....string) {
 	metrics.SetGaugeWithLabels([]string{name}, val, metricLabels)
 }
 
-// IncrCounter incrCounter incr counter.
+// IncrCounter increments a counter.
 //
-// Summary: IncrCounter incr counter.
+// Summary: Increments a counter metric.
 //
 // Parameters:
-//   - name ([]string): The name.
-//   - val (float32): The val.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
+//   - name: []string. The name of the counter (as a path).
+//   - val: float32. The amount to increment.
 //
 // Side Effects:
-//   - None.
+//   - Increments a global counter metric.
 func IncrCounter(name []string, val float32) {
 	metrics.IncrCounter(name, val)
 }
 
-// IncrCounterWithLabels incrCounterWithLabels incr counter with labels.
+// IncrCounterWithLabels increments a counter with labels.
 //
-// Summary: IncrCounterWithLabels incr counter with labels.
+// Summary: Increments a labeled counter metric.
 //
 // Parameters:
-//   - name ([]string): The name.
-//   - val (float32): The val.
-//   - labels ([]metrics.Label): The labels.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
+//   - name: []string. The name of the counter (as a path).
+//   - val: float32. The amount to increment.
+//   - labels: []metrics.Label. The labels to apply.
 //
 // Side Effects:
-//   - None.
+//   - Increments a global labeled counter metric.
 func IncrCounterWithLabels(name []string, val float32, labels []metrics.Label) {
 	metrics.IncrCounterWithLabels(name, val, labels)
 }
 
-// MeasureSince measureSince measure since.
+// MeasureSince measures the time since a given start time and records it.
 //
-// Summary: MeasureSince measure since.
+// Summary: Records a latency metric.
 //
 // Parameters:
-//   - name ([]string): The name.
-//   - start (time.Time): The start.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
+//   - name: []string. The name of the metric (as a path).
+//   - start: time.Time. The start time.
 //
 // Side Effects:
-//   - None.
+//   - Updates a global latency metric.
 func MeasureSince(name []string, start time.Time) {
 	metrics.MeasureSince(name, start)
 }
 
-// MeasureSinceWithLabels measureSinceWithLabels measure since with labels.
+// MeasureSinceWithLabels measures the time since a given start time and records it with labels.
 //
-// Summary: MeasureSinceWithLabels measure since with labels.
+// Summary: Records a labeled latency metric.
 //
 // Parameters:
-//   - name ([]string): The name.
-//   - start (time.Time): The start.
-//   - labels ([]metrics.Label): The labels.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
+//   - name: []string. The name of the metric (as a path).
+//   - start: time.Time. The start time.
+//   - labels: []metrics.Label. The labels to apply.
 //
 // Side Effects:
-//   - None.
+//   - Updates a global labeled latency metric.
 func MeasureSinceWithLabels(name []string, start time.Time, labels []metrics.Label) {
 	metrics.MeasureSinceWithLabels(name, start, labels)
 }
 
-// AddSample addSample add sample.
+// AddSample adds a sample to a histogram/summary.
 //
-// Summary: AddSample add sample.
+// Summary: Adds a sample to a metric.
 //
 // Parameters:
-//   - name ([]string): The name.
-//   - val (float32): The val.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
+//   - name: []string. The name of the metric (as a path).
+//   - val: float32. The value to sample.
 //
 // Side Effects:
-//   - None.
+//   - Updates a global sample metric.
 func AddSample(name []string, val float32) {
 	metrics.AddSample(name, val)
 }
 
-// AddSampleWithLabels addSampleWithLabels add sample with labels.
+// AddSampleWithLabels adds a sample to a histogram/summary with labels.
 //
-// Summary: AddSampleWithLabels add sample with labels.
+// Summary: Adds a labeled sample to a metric.
 //
 // Parameters:
-//   - name ([]string): The name.
-//   - val (float32): The val.
-//   - labels ([]metrics.Label): The labels.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
+//   - name: []string. The name of the metric (as a path).
+//   - val: float32. The value to sample.
+//   - labels: []metrics.Label. The labels to apply.
 //
 // Side Effects:
-//   - None.
+//   - Updates a global labeled sample metric.
 func AddSampleWithLabels(name []string, val float32, labels []metrics.Label) {
 	metrics.AddSampleWithLabels(name, val, labels)
 }

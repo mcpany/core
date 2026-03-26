@@ -18,18 +18,18 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-// AuthTestRequest authTestRequest represents a auth test request.
+// AuthTestRequest defines the structure for an authentication test request.
 //
-// Summary: AuthTestRequest represents a auth test request.
+// Summary: Represents a AuthTestRequest.
 type AuthTestRequest struct {
 	CredentialID  string         `json:"credential_id"`
 	ServiceType   string         `json:"service_type"`
 	ServiceConfig map[string]any `json:"service_config"`
 }
 
-// AuthTestResponse authTestResponse represents a auth test response.
+// AuthTestResponse defines the structure for an authentication test response.
 //
-// Summary: AuthTestResponse represents a auth test response.
+// Summary: Represents a AuthTestResponse.
 type AuthTestResponse struct {
 	Success bool   `json:"success"`
 	Message string `json:"message"`

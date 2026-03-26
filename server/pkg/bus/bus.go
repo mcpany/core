@@ -26,12 +26,12 @@ type Bus[T any] interface {
 	// is sent to each subscriber's channel, and the handler is invoked by a
 	// dedicated goroutine for that subscriber.
 	//
-	// Parameters: - None.
+// Parameters:
 	//   - ctx: context.Context. Controls the lifecycle of the publish operation (e.g. timeouts).
 	//   - topic: string. The destination topic for the message.
 	//   - msg: T. The payload message to be broadcasted.
 	//
-	// Returns: - None.
+// Returns:
 	//   - error: An error if the publish operation fails (e.g. underlying transport error).
 	Publish(ctx context.Context, topic string, msg T) error
 
@@ -39,13 +39,13 @@ type Bus[T any] interface {
 	// dedicated goroutine for the subscription to process messages from a
 	// channel.
 	//
-	// Parameters: - None.
+// Parameters:
 	//   - ctx: context.Context. Controls the setup of the subscription. Note that context cancellation.
 	//     may not automatically unsubscribe depending on implementation; use the returned unsubscribe function..
 	//   - topic: string. The topic to listen to.
 	//   - handler: func(T). The callback function invoked for each received message.
 	//
-	// Returns: - None.
+// Returns:
 	//   - func(): A cleanup function that removes the subscription when called.
 	Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func())
 
@@ -53,19 +53,26 @@ type Bus[T any] interface {
 	// for a given topic. After the handler is called, the subscription is
 	// automatically removed.
 	//
-	// Parameters: - None.
+// Parameters:
 	//   - ctx: context.Context. Controls the setup of the subscription.
 	//   - topic: string. The topic to listen to.
 	//   - handler: func(T). The callback function invoked for the single received message.
 	//
-	// Returns: - None.
+// Returns:
 	//   - func(): A cleanup function that removes the subscription if called before the first message.
 	SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func())
 }
 
-// Provider provider represents a provider.
+// Provider is a thread-safe container for managing multiple, type-safe bus
+// instances, with each bus being dedicated to a specific topic. It ensures that
+// for any given topic, there is only one bus instance, creating one on demand
+// if it doesn't already exist.
 //
-// Summary: Provider represents a provider.
+// This allows different parts of the application to get a bus for a specific
+// message type and topic without needing to manage the lifecycle of the bus
+// instances themselves.
+//
+// Summary: Represents a Provider.
 type Provider struct {
 	buses  *xsync.Map[string, any]
 	config *bus.MessageBus
@@ -96,7 +103,7 @@ var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 	if NewProviderHook != nil {
@@ -161,7 +168,7 @@ var GetBusHook func(p *Provider, topic string) (any, error)
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func GetBus[T any](p *Provider, topic string) (Bus[T], error) {
 	if GetBusHook != nil {

@@ -22,9 +22,9 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// Tool tool represents a tool.
+// Tool implements the Tool interface for a tool that executes a SQL query.
 //
-// Summary: Tool represents a tool.
+// Summary: Represents a Tool.
 type Tool struct {
 	tool        *v1.Tool
 	mcpTool     *mcp.Tool
@@ -38,17 +38,17 @@ type Tool struct {
 
 // NewTool creates a new SQL Tool.
 //
-// Parameters: - None.
+// Parameters:
 //   - t (*v1.Tool): The parameter.
 //   - db (*sql.DB): The parameter.
 //   - callDef (*configv1.SqlCallDefinition): The parameter.
 //   - policies ([]*configv1.CallPolicy): The parameter.
 //   - callID (string): The parameter.
 //
-// Returns: - None.
+// Returns:
 //   - *Tool: The result.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Initializes NewTool operation.
@@ -59,7 +59,7 @@ type Tool struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, policies []*configv1.CallPolicy, callID string) *Tool {
 	compiled, err := tool.CompileCallPolicies(policies)
@@ -78,10 +78,10 @@ func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, polici
 
 // Tool returns the protobuf definition of the tool.
 //
-// Returns: - None.
+// Returns:
 //   - *v1.Tool: The result.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes Tool operation.
@@ -92,7 +92,7 @@ func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, polici
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (t *Tool) Tool() *v1.Tool {
 	return t.tool
@@ -100,10 +100,10 @@ func (t *Tool) Tool() *v1.Tool {
 
 // MCPTool returns the MCP tool definition.
 //
-// Returns: - None.
+// Returns:
 //   - *mcp.Tool: The result.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes MCPTool operation.
@@ -114,7 +114,7 @@ func (t *Tool) Tool() *v1.Tool {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (t *Tool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
@@ -129,10 +129,10 @@ func (t *Tool) MCPTool() *mcp.Tool {
 
 // GetCacheConfig returns the cache configuration for the tool.
 //
-// Returns: - None.
+// Returns:
 //   - *configv1.CacheConfig: The result.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Retrieves GetCacheConfig operation.
@@ -143,7 +143,7 @@ func (t *Tool) MCPTool() *mcp.Tool {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDef == nil {
@@ -154,18 +154,18 @@ func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 
 // Execute runs the SQL query with the provided inputs.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - req (*tool.ExecutionRequest): The parameter.
 //
-// Returns: - None.
+// Returns:
 //   - any: The result.
 //   - error: An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if ...
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes Execute operation.
@@ -176,7 +176,7 @@ func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (t *Tool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	if t.initError != nil {

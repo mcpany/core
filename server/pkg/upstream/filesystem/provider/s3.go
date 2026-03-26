@@ -16,26 +16,26 @@ import (
 	"github.com/spf13/afero"
 )
 
-// S3Provider s3Provider represents a s3 provider.
+// S3Provider provides access to files in an S3 bucket.
 //
-// Summary: S3Provider represents a s3 provider.
+// Summary: Represents a S3Provider.
 type S3Provider struct {
 	fs afero.Fs
 }
 
 // NewS3Provider creates a new S3Provider from the given configuration.
 //
-// Parameters: - None.
+// Parameters:
 //   - config (*configv1.S3Fs): The parameter.
 //
-// Returns: - None.
+// Returns:
 //   - *S3Provider: The result.
 //   - error: An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if ...
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Initializes NewS3Provider operation.
@@ -46,7 +46,7 @@ type S3Provider struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func NewS3Provider(config *configv1.S3Fs) (*S3Provider, error) {
 	if config == nil {
@@ -87,10 +87,10 @@ func NewS3Provider(config *configv1.S3Fs) (*S3Provider, error) {
 
 // GetFs returns the underlying filesystem.
 //
-// Returns: - None.
+// Returns:
 //   - afero.Fs: The result.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Retrieves GetFs operation.
@@ -101,7 +101,7 @@ func NewS3Provider(config *configv1.S3Fs) (*S3Provider, error) {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (p *S3Provider) GetFs() afero.Fs {
 	return p.fs
@@ -109,17 +109,17 @@ func (p *S3Provider) GetFs() afero.Fs {
 
 // ResolvePath resolves the virtual path to a real path in the bucket.
 //
-// Parameters: - None.
+// Parameters:
 //   - virtualPath (string): The parameter.
 //
-// Returns: - None.
+// Returns:
 //   - string: The result.
 //   - error: An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if ...
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes ResolvePath operation.
@@ -130,7 +130,7 @@ func (p *S3Provider) GetFs() afero.Fs {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (p *S3Provider) ResolvePath(virtualPath string) (string, error) {
 	// For S3, just clean the path. It's virtual relative to the bucket.
@@ -150,13 +150,13 @@ func (p *S3Provider) ResolvePath(virtualPath string) (string, error) {
 
 // Close closes the provider.
 //
-// Returns: - None.
+// Returns:
 //   - error: An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if ...
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes Close operation.
@@ -167,7 +167,7 @@ func (p *S3Provider) ResolvePath(virtualPath string) (string, error) {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (p *S3Provider) Close() error {
 	// S3 provider doesn't hold open connections that need explicit closing typically,

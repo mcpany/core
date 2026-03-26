@@ -15,9 +15,12 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 )
 
-// UpstreamWorker upstreamWorker represents a upstream worker.
+// UpstreamWorker is a background worker that handles tool execution requests. It
+// listens for ToolExecutionRequest messages on the event bus, uses the
+// tool manager to execute the requested tool, and then publishes the outcome as
+// a ToolExecutionResult message.
 //
-// Summary: UpstreamWorker represents a upstream worker.
+// Summary: Represents a UpstreamWorker.
 type UpstreamWorker struct {
 	bus         *bus.Provider
 	toolManager tool.ManagerInterface
@@ -26,11 +29,11 @@ type UpstreamWorker struct {
 
 // NewUpstreamWorker creates a new UpstreamWorker.
 //
-// Parameters: - None.
+// Parameters:
 //   - bus: The event bus used for receiving requests and publishing results.
 //   - toolManager: The tool manager that will handle the actual tool execution.
 //
-// Returns: - None.
+// Returns:
 //   - *UpstreamWorker: A new upstream worker.
 //
 // Summary: Initializes NewUpstreamWorker operation.
@@ -41,7 +44,7 @@ type UpstreamWorker struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *UpstreamWorker {
 	return &UpstreamWorker{
@@ -54,7 +57,7 @@ func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *Up
 // requests on the event bus and will continue to process them until the
 // provided context is canceled.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx: The context that controls the lifecycle of the worker.
 //
 // Summary: Executes Start operation.
@@ -65,7 +68,7 @@ func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *Up
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (w *UpstreamWorker) Start(ctx context.Context) {
 	w.wg.Add(1)
@@ -120,16 +123,16 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 
 // Stop waits for the worker to stop.
 //
-// Parameters: - None.
+// Parameters:
 //   - None.
 //
-// Returns: - None.
+// Returns:
 //   - None.
 //
-// Errors: - None.
+// Errors:
 //   - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes Stop operation.
@@ -140,7 +143,7 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (w *UpstreamWorker) Stop() {
 	w.wg.Wait()

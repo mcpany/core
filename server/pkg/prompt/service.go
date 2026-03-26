@@ -11,9 +11,11 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// Service service represents a service.
+// Service handles the business logic for the prompts feature. It provides
+// methods for listing available prompts and retrieving a specific prompt by
+// name.
 //
-// Summary: Service represents a service.
+// Summary: Represents a Service.
 type Service struct {
 	promptManager ManagerInterface
 	mcpServer     *mcp.Server
@@ -23,10 +25,10 @@ type Service struct {
 //
 // Summary: Initializes a new Prompt Service.
 //
-// Parameters: - None.
+// Parameters:
 //   - promptManager: ManagerInterface. The manager handling prompt lifecycle.
 //
-// Returns: - None.
+// Returns:
 //   - *Service: The initialized service.
 func NewService(promptManager ManagerInterface) *Service {
 	s := &Service{
@@ -40,7 +42,7 @@ func NewService(promptManager ManagerInterface) *Service {
 //
 // Summary: Configures the underlying MCP server.
 //
-// Parameters: - None.
+// Parameters:
 //   - mcpServer: *mcp.Server. The MCP server instance.
 //
 // Returns: - None.
@@ -63,11 +65,11 @@ func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 //
 // Summary: Lists all available prompts.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx: context.Context. The context for the request.
 //   - req: *mcp.ListPromptsRequest. The request object.
 //
-// Returns: - None.
+// Returns:
 //   - *mcp.ListPromptsResult: The list of prompts.
 //   - error: An error if the operation fails.
 func (s *Service) ListPrompts(
@@ -88,11 +90,11 @@ func (s *Service) ListPrompts(
 //
 // Summary: Retrieves and executes a specific prompt.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx: context.Context. The context for the request.
 //   - req: *mcp.GetPromptRequest. The request containing the prompt name and arguments.
 //
-// Returns: - None.
+// Returns:
 //   - *mcp.GetPromptResult: The result of the prompt execution.
 //   - error: An error if the prompt is not found or execution fails.
 //

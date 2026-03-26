@@ -9,19 +9,19 @@ import (
 	"github.com/spf13/afero"
 )
 
-// TmpfsProvider tmpfsProvider represents a tmpfs provider.
+// TmpfsProvider provides access to a temporary in-memory filesystem.
 //
-// Summary: TmpfsProvider represents a tmpfs provider.
+// Summary: Represents a TmpfsProvider.
 type TmpfsProvider struct {
 	fs afero.Fs
 }
 
 // NewTmpfsProvider creates a new TmpfsProvider.
 //
-// Returns: - None.
+// Returns:
 //   - *TmpfsProvider: The result.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Initializes NewTmpfsProvider operation.
@@ -32,7 +32,7 @@ type TmpfsProvider struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func NewTmpfsProvider() *TmpfsProvider {
 	return &TmpfsProvider{
@@ -42,10 +42,10 @@ func NewTmpfsProvider() *TmpfsProvider {
 
 // GetFs returns the underlying filesystem.
 //
-// Returns: - None.
+// Returns:
 //   - afero.Fs: The result.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Retrieves GetFs operation.
@@ -56,7 +56,7 @@ func NewTmpfsProvider() *TmpfsProvider {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (p *TmpfsProvider) GetFs() afero.Fs {
 	return p.fs
@@ -64,17 +64,17 @@ func (p *TmpfsProvider) GetFs() afero.Fs {
 
 // ResolvePath resolves the virtual path to a real path.
 //
-// Parameters: - None.
+// Parameters:
 //   - virtualPath (string): The parameter.
 //
-// Returns: - None.
+// Returns:
 //   - string: The result.
 //   - error: An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if ...
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes ResolvePath operation.
@@ -85,7 +85,7 @@ func (p *TmpfsProvider) GetFs() afero.Fs {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (p *TmpfsProvider) ResolvePath(virtualPath string) (string, error) {
 	// For MemMapFs, just clean the path. It's virtual.
@@ -94,13 +94,13 @@ func (p *TmpfsProvider) ResolvePath(virtualPath string) (string, error) {
 
 // Close closes the provider.
 //
-// Returns: - None.
+// Returns:
 //   - error: An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if ...
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes Close operation.
@@ -111,7 +111,7 @@ func (p *TmpfsProvider) ResolvePath(virtualPath string) (string, error) {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (p *TmpfsProvider) Close() error {
 	return nil

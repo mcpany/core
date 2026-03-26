@@ -19,13 +19,13 @@ import (
 // It establishes the connection between Cobra command flags and Viper's configuration management,
 // enabling flag parsing and environment variable overrides (using the "MCPANY_" prefix).
 //
-// Parameters: - None.
+// Parameters:
 //   - cmd (*cobra.Command): The command instance to which the persistent flags will be attached.
 //
-// Returns: - None.
+// Returns:
 //   - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Modifies the global Viper configuration state.
 //   - Registers flags on the provided Cobra command.
 //   - Exits the application on error.
@@ -38,7 +38,7 @@ import (
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func BindRootFlags(cmd *cobra.Command) {
 	viper.AutomaticEnv()
@@ -93,14 +93,14 @@ func BindRootFlags(cmd *cobra.Command) {
 // It defines flags specific to the server operation, such as port configurations,
 // authentication keys, and runtime modes (e.g., stdio).
 //
-// Parameters: - None.
+// Parameters:
 //   - cmd (*cobra.Command): The command instance to which the server flags will be attached.
 //
 // Returns: - None.
 //
 //	None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Modifies the global Viper configuration state.
 //   - Registers flags on the provided Cobra command.
 //   - Exits the application on error.
@@ -113,7 +113,7 @@ func BindRootFlags(cmd *cobra.Command) {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func BindServerFlags(cmd *cobra.Command) {
 	cmd.Flags().String("grpc-port", "", "Port for the gRPC registration server. If not specified, gRPC registration is disabled. Env: MCPANY_GRPC_PORT")
@@ -154,14 +154,14 @@ func BindServerFlags(cmd *cobra.Command) {
 // This is a helper function that orchestrates the binding of all necessary flags by delegating
 // to BindRootFlags and BindServerFlags.
 //
-// Parameters: - None.
+// Parameters:
 //   - cmd (*cobra.Command): The command instance to which the flags will be attached.
 //
 // Returns: - None.
 //
 //	None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Modifies the global Viper configuration state.
 //   - Registers flags on the provided Cobra command.
 //
@@ -173,7 +173,7 @@ func BindServerFlags(cmd *cobra.Command) {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func BindFlags(cmd *cobra.Command) {
 	BindRootFlags(cmd)

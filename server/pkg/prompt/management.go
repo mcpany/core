@@ -12,54 +12,58 @@ import (
 	xsync "github.com/puzpuzpuz/xsync/v4"
 )
 
-// ManagerInterface managerInterface represents a manager interface.
+// ManagerInterface defines the interface for a prompt manager.
 //
-// Summary: ManagerInterface represents a manager interface.
+// It manages the lifecycle, registration, and retrieval of prompts within the system.
+//
+// Summary: Represents a ManagerInterface.
 type ManagerInterface interface {
 	// AddPrompt registers a new prompt.
 	//
-	// Parameters: - None.
+// Parameters:
 	//   - prompt: Prompt. The prompt definition to add.
 	AddPrompt(prompt Prompt)
 
 	// UpdatePrompt updates an existing prompt.
 	//
-	// Parameters: - None.
+// Parameters:
 	//   - prompt: Prompt. The prompt with updated information.
 	UpdatePrompt(prompt Prompt)
 
 	// GetPrompt retrieves a prompt by its name.
 	//
-	// Parameters: - None.
+// Parameters:
 	//   - name: string. The unique name of the prompt.
 	//
-	// Returns: - None.
+// Returns:
 	//   - Prompt: The prompt instance.
 	//   - bool: True if the prompt was found, false otherwise.
 	GetPrompt(name string) (Prompt, bool)
 
 	// ListPrompts returns all registered prompts.
 	//
-	// Returns: - None.
+// Returns:
 	//   - []Prompt: A slice of all registered prompts.
 	ListPrompts() []Prompt
 
 	// ClearPromptsForService removes all prompts associated with a specific service.
 	//
-	// Parameters: - None.
+// Parameters:
 	//   - serviceID: string. The unique identifier of the service.
 	ClearPromptsForService(serviceID string)
 
 	// SetMCPServer sets the MCP server provider.
 	//
-	// Parameters: - None.
+// Parameters:
 	//   - mcpServer: MCPServerProvider. The provider interface.
 	SetMCPServer(mcpServer MCPServerProvider)
 }
 
-// Manager manager represents a manager.
+// Manager is a thread-safe manager for registering and retrieving prompts.
 //
-// Summary: Manager represents a manager.
+// It supports concurrent access and uses caching for efficient list operations.
+//
+// Summary: Represents a Manager.
 type Manager struct {
 	prompts       *xsync.Map[string, Prompt]
 	mcpServer     MCPServerProvider
@@ -69,7 +73,7 @@ type Manager struct {
 
 // NewManager creates and returns a new, empty Manager.
 //
-// Returns: - None.
+// Returns:
 //   - *Manager: A pointer to the newly created Manager.
 //
 // Summary: Initializes NewManager operation.
@@ -80,7 +84,7 @@ type Manager struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func NewManager() *Manager {
 	return &Manager{
@@ -90,7 +94,7 @@ func NewManager() *Manager {
 
 // SetMCPServer provides the Manager with a reference to the MCP server.
 //
-// Parameters: - None.
+// Parameters:
 //   - mcpServer: MCPServerProvider. The MCP server provider.
 //
 // Summary: Updates SetMCPServer operation.
@@ -101,7 +105,7 @@ func NewManager() *Manager {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (pm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 	pm.mu.Lock()
@@ -114,10 +118,10 @@ func (pm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 // If a prompt with the same name already exists, it will be overwritten, and a warning
 // will be logged.
 //
-// Parameters: - None.
+// Parameters:
 //   - prompt: Prompt. The prompt to add.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Updates the internal prompt registry.
 //   - Invalidates the list cache.
 //
@@ -129,7 +133,7 @@ func (pm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (pm *Manager) AddPrompt(prompt Prompt) {
 	promptName := prompt.Prompt().Name
@@ -149,10 +153,10 @@ func (pm *Manager) AddPrompt(prompt Prompt) {
 //
 // If the prompt does not exist, it will be added.
 //
-// Parameters: - None.
+// Parameters:
 //   - prompt: Prompt. The prompt definition to update.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Updates the internal prompt registry.
 //   - Invalidates the list cache.
 //
@@ -164,7 +168,7 @@ func (pm *Manager) AddPrompt(prompt Prompt) {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (pm *Manager) UpdatePrompt(prompt Prompt) {
 	pm.prompts.Store(prompt.Prompt().Name, prompt)
@@ -175,10 +179,10 @@ func (pm *Manager) UpdatePrompt(prompt Prompt) {
 
 // GetPrompt retrieves a prompt from the manager by its name.
 //
-// Parameters: - None.
+// Parameters:
 //   - name: string. The name of the prompt.
 //
-// Returns: - None.
+// Returns:
 //   - Prompt: The prompt instance.
 //   - bool: True if found, false otherwise.
 //
@@ -190,7 +194,7 @@ func (pm *Manager) UpdatePrompt(prompt Prompt) {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (pm *Manager) GetPrompt(name string) (Prompt, bool) {
 	prompt, ok := pm.prompts.Load(name)
@@ -201,7 +205,7 @@ func (pm *Manager) GetPrompt(name string) (Prompt, bool) {
 //
 // It uses a read-through cache to improve performance.
 //
-// Returns: - None.
+// Returns:
 //   - []Prompt: A slice of currently registered prompts.
 //
 // Summary: Executes ListPrompts operation.
@@ -212,7 +216,7 @@ func (pm *Manager) GetPrompt(name string) (Prompt, bool) {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (pm *Manager) ListPrompts() []Prompt {
 	// ⚡ Bolt: Use a read-through cache to avoid repeated map iteration and slice allocation.
@@ -254,10 +258,10 @@ func (pm *Manager) ListPrompts() []Prompt {
 
 // ClearPromptsForService removes all prompts associated with a given service.
 //
-// Parameters: - None.
+// Parameters:
 //   - serviceID: string. The unique identifier of the service.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Removes matching prompts from the registry.
 //   - Invalidates the list cache.
 //
@@ -269,7 +273,7 @@ func (pm *Manager) ListPrompts() []Prompt {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (pm *Manager) ClearPromptsForService(serviceID string) {
 	changed := false

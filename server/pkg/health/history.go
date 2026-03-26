@@ -8,17 +8,17 @@ import (
 	"time"
 )
 
-// HistoryPoint historyPoint represents a history point.
+// HistoryPoint represents a single point in time for a service's health.
 //
-// Summary: HistoryPoint represents a history point.
+// Summary: A data point representing service health status at a specific time.
 type HistoryPoint struct {
 	Timestamp int64  `json:"timestamp"` // Unix millis
 	Status    string `json:"status"`
 }
 
-// ServiceHealthHistory serviceHealthHistory represents a service health history.
+// ServiceHealthHistory stores the history for a service.
 //
-// Summary: ServiceHealthHistory represents a service health history.
+// Summary: Collection of historical health data points for a service.
 type ServiceHealthHistory struct {
 	Points []HistoryPoint
 }
@@ -28,22 +28,17 @@ var (
 	historyMu    sync.RWMutex
 )
 
-// AddHealthStatus addHealthStatus add health status.
+// AddHealthStatus adds a status point to the history.
 //
-// Summary: AddHealthStatus add health status.
+// Summary: Records a new health status point for a service.
 //
 // Parameters:
-//   - serviceName (string): The service name.
-//   - status (string): The status.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
+//   - serviceName: string. The name of the service.
+//   - status: string. The health status (e.g., "healthy", "unhealthy").
 //
 // Side Effects:
-//   - None.
+//   - Updates the global historyStore.
+//   - Prunes history if it exceeds 1000 points.
 func AddHealthStatus(serviceName string, status string) {
 	historyMu.Lock()
 	defer historyMu.Unlock()
@@ -79,21 +74,15 @@ func AddHealthStatus(serviceName string, status string) {
 	}
 }
 
-// GetHealthHistory retrieves the health history.
+// GetHealthHistory returns the history for all services.
 //
-// Summary: Retrieves the health history.
-//
-// Parameters:
-//   - None.
+// Summary: Retrieves the complete health history map.
 //
 // Returns:
-//   - map[string][]HistoryPoint: The result.
-//
-// Errors:
-//   - None.
+//   - map[string][]HistoryPoint: A map of service names to their health history points.
 //
 // Side Effects:
-//   - None.
+//   - Acquires a read lock on the history store.
 func GetHealthHistory() map[string][]HistoryPoint {
 	historyMu.RLock()
 	defer historyMu.RUnlock()

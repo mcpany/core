@@ -13,28 +13,19 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// MockTool mockTool represents a mock tool.
+// MockTool is a mock implementation of the tool.Tool interface for testing.
 //
-// Summary: MockTool represents a mock tool.
+// Summary: Mock tool for unit testing.
 type MockTool struct {
 	ExecuteFunc func(ctx context.Context, req *tool.ExecutionRequest) (any, error)
 }
 
-// Tool tool tool.
+// Tool returns a basic tool definition for the mock tool.
 //
-// Summary: Tool tool.
-//
-// Parameters:
-//   - None.
+// Summary: Returns the tool definition.
 //
 // Returns:
-//   - *v1.Tool: The result.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - *v1.Tool: A minimal tool definition.
 func (m *MockTool) Tool() *v1.Tool {
 	return v1.Tool_builder{
 		Name: proto.String("mock-tool"),
@@ -45,15 +36,15 @@ func (m *MockTool) Tool() *v1.Tool {
 //
 // Summary: Executes the mock tool logic.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx: context.Context. The execution context.
 //   - req: *tool.ExecutionRequest. The tool execution request.
 //
-// Returns: - None.
+// Returns:
 //   - any: The result from ExecuteFunc.
 //   - error: The error from ExecuteFunc.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Invokes the injected ExecuteFunc.
 func (m *MockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	if m.ExecuteFunc != nil {
@@ -62,21 +53,12 @@ func (m *MockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any
 	return nil, nil
 }
 
-// GetCacheConfig retrieves the cache config.
+// GetCacheConfig returns nil for the mock tool.
 //
-// Summary: Retrieves the cache config.
-//
-// Parameters:
-//   - None.
+// Summary: Returns cache configuration (nil for mock).
 //
 // Returns:
-//   - *configv1.CacheConfig: The result.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - *configv1.CacheConfig: Always nil.
 func (m *MockTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }

@@ -39,9 +39,9 @@ var (
 	metricCacheErrors = []string{"cache", "errors"}
 )
 
-// CachingMiddleware cachingMiddleware represents a caching middleware.
+// CachingMiddleware handles caching of tool execution results.
 //
-// Summary: CachingMiddleware represents a caching middleware.
+// Summary: Represents a CachingMiddleware.
 type CachingMiddleware struct {
 	cache           *cache.Cache[any]
 	toolManager     tool.ManagerInterface
@@ -53,16 +53,16 @@ type CachingMiddleware struct {
 
 // NewCachingMiddleware creates a new CachingMiddleware. toolManager is the toolManager. Returns the result.
 //
-// Parameters: - None.
+// Parameters:
 //   - toolManager (tool.ManagerInterface): The toolManager parameter.
 //
-// Returns: - None.
+// Returns:
 //   - *CachingMiddleware: The resulting *CachingMiddleware.
 //
-// Errors: - None.
+// Errors:
 //   - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Initializes NewCachingMiddleware operation.
@@ -73,7 +73,7 @@ type CachingMiddleware struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware {
 	goCacheStore := gocache_store.NewGoCache(go_cache.New(5*time.Minute, 10*time.Minute))
@@ -135,16 +135,16 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 
 // SetProviderFactory allows overriding the default provider factory for testing. factory is the factory.
 //
-// Parameters: - None.
+// Parameters:
 //   - factory (ProviderFactory): The factory parameter.
 //
-// Returns: - None.
+// Returns:
 //   - None.
 //
-// Errors: - None.
+// Errors:
 //   - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Updates SetProviderFactory operation.
@@ -155,7 +155,7 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 	m.providerFactory = factory
@@ -163,19 +163,19 @@ func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 
 // Execute executes the caching middleware. ctx is the context for the request. req is the request object. next is the next. Returns the result. Returns an error if the operation fails.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - req (*tool.ExecutionRequest): The request object.
 //   - next (tool.ExecutionFunc): The next parameter.
 //
-// Returns: - None.
+// Returns:
 //   - any: The resulting any.
 //   - error: An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if the operation fails or is invalid.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes Execute operation.
@@ -186,7 +186,7 @@ func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := tool.GetFromContext(ctx)
@@ -482,16 +482,16 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 
 // Clear clears the cache. ctx is the context for the request. Returns an error if the operation fails.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the request.
 //
-// Returns: - None.
+// Returns:
 //   - error: An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if the operation fails or is invalid.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes Clear operation.
@@ -502,7 +502,7 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (m *CachingMiddleware) Clear(ctx context.Context) error {
 	return m.cache.Clear(ctx)

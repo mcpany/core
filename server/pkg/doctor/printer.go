@@ -14,7 +14,7 @@ import (
 //
 // It formats the check results with status icons and alignment for readability.
 //
-// Parameters: - None.
+// Parameters:
 //   - w: io.Writer. The writer to output the results to (e.g., os.Stdout). If nil, defaults to os.Stdout.
 //   - results: []CheckResult. The list of check results to print.
 //
@@ -22,7 +22,7 @@ import (
 //
 //	None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Writes formatted text to the provided writer.
 //
 // Summary: Executes PrintResults operation.
@@ -33,7 +33,7 @@ import (
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func PrintResults(w io.Writer, results []CheckResult) {
 	if w == nil {

@@ -10,9 +10,9 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// GraphQLProvider graphQLProvider represents a graph ql provider.
+// GraphQLProvider discovers services via GraphQL introspection.
 //
-// Summary: GraphQLProvider represents a graph ql provider.
+// Summary: Represents a GraphQLProvider.
 type GraphQLProvider struct {
 	Endpoint string // e.g., "http://localhost:8080/graphql"
 }
@@ -27,7 +27,7 @@ type GraphQLProvider struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (p *GraphQLProvider) Name() string {
 	return "graphql"
@@ -43,7 +43,7 @@ func (p *GraphQLProvider) Name() string {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (p *GraphQLProvider) Discover(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	if p.Endpoint == "" {

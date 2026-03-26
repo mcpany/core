@@ -22,9 +22,9 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 )
 
-// Upstream upstream represents a upstream.
+// Upstream implements the upstream.Upstream interface for SQL databases.
 //
-// Summary: Upstream represents a upstream.
+// Summary: Represents a Upstream.
 type Upstream struct {
 	db *sql.DB
 	mu sync.Mutex
@@ -32,10 +32,10 @@ type Upstream struct {
 
 // NewUpstream creates a new SQL upstream.
 //
-// Returns: - None.
+// Returns:
 //   - *Upstream: The result.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Initializes NewUpstream operation.
@@ -46,7 +46,7 @@ type Upstream struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func NewUpstream() *Upstream {
 	return &Upstream{}
@@ -54,16 +54,16 @@ func NewUpstream() *Upstream {
 
 // Shutdown closes the database connection.
 //
-// Parameters: - None.
+// Parameters:
 //   - _ (context.Context): The parameter.
 //
-// Returns: - None.
+// Returns:
 //   - error: An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if ...
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes Shutdown operation.
@@ -74,7 +74,7 @@ func NewUpstream() *Upstream {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
@@ -91,7 +91,7 @@ func ptr(s string) *string {
 
 // Register discovers and registers tools from the SQL configuration. ctx is the context for the request. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
 //   - toolManager (tool.ManagerInterface): The toolManager parameter.
@@ -99,16 +99,16 @@ func ptr(s string) *string {
 //   - _ (resource.ManagerInterface): The _ parameter.
 //   - _ (bool): The _ parameter.
 //
-// Returns: - None.
+// Returns:
 //   - string: The resulting string.
 //   - []*configv1.ToolDefinition: The resulting []*configv1.ToolDefinition.
 //   - []*configv1.ResourceDefinition: The resulting []*configv1.ResourceDefinition.
 //   - error: An error if the operation fails.
 //
-// Errors: - None.
+// Errors:
 //   - Returns an error if the operation fails or is invalid.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Executes Register operation.
@@ -119,7 +119,7 @@ func ptr(s string) *string {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (u *Upstream) Register(
 	ctx context.Context,

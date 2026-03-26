@@ -26,9 +26,13 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// Upstream upstream represents a upstream.
+// Upstream implements the upstream.Upstream interface for services that
+// are exposed as command-line tools.
 //
-// Summary: Upstream represents a upstream.
+// It discovers and registers tools based on a list of commands defined in the
+// service configuration.
+//
+// Summary: Represents a Upstream.
 type Upstream struct {
 	mu      sync.Mutex
 	checker health.Checker
@@ -36,13 +40,13 @@ type Upstream struct {
 
 // Shutdown implements the upstream.Upstream interface.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the shutdown operation (currently unused).
 //
-// Returns: - None.
+// Returns:
 //   - error: Always returns nil.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Stops the health checker.
 //
 // Summary: Executes Shutdown operation.
@@ -53,7 +57,7 @@ type Upstream struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
@@ -67,10 +71,10 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 
 // NewUpstream creates a new instance of CommandUpstream.
 //
-// Returns: - None.
+// Returns:
 //   - upstream.Upstream: A new instance of the command upstream.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 //
 // Summary: Initializes NewUpstream operation.
@@ -81,7 +85,7 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{}
@@ -90,7 +94,7 @@ func NewUpstream() upstream.Upstream {
 // Register processes the configuration for a command-line service, creates a
 // new tool for each defined command, and registers them with the tool manager.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx (context.Context): The context for the registration process.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
 //   - toolManager (tool.ManagerInterface): The manager where discovered tools will be registered.
@@ -98,13 +102,13 @@ func NewUpstream() upstream.Upstream {
 //   - resourceManager (resource.ManagerInterface): The manager where discovered resources will be registered.
 //   - isReload (bool): Indicates whether this is a configuration reload.
 //
-// Returns: - None.
+// Returns:
 //   - string: The unique service ID.
 //   - []*configv1.ToolDefinition: A list of registered tool definitions.
 //   - []*configv1.ResourceDefinition: A list of registered resource definitions.
 //   - error: An error if registration fails.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Starts a health checker for the service.
 //   - Registers tools and prompts with their respective managers.
 //
@@ -116,7 +120,7 @@ func NewUpstream() upstream.Upstream {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (u *Upstream) Register(
 	ctx context.Context,

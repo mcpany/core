@@ -18,9 +18,11 @@ import (
 	"github.com/spf13/afero"
 )
 
-// Updater updater represents a updater.
+// Updater handles the self-update process.
 //
-// Summary: Updater represents a updater.
+// It manages checking for updates on GitHub and applying them to the local executable.
+//
+// Summary: Represents a Updater.
 type Updater struct {
 	client     *github.Client
 	httpClient *http.Client
@@ -28,11 +30,11 @@ type Updater struct {
 
 // NewUpdater creates a new Updater.
 //
-// Parameters: - None.
+// Parameters:
 //   - httpClient: *http.Client. The HTTP client to use for network requests. If nil, http.DefaultClient is used.
 //   - githubAPIURL: string. Optional URL for the GitHub API (useful for Enterprise GitHub).
 //
-// Returns: - None.
+// Returns:
 //   - *Updater: A new Updater instance.
 //
 // Summary: Initializes NewUpdater operation.
@@ -43,7 +45,7 @@ type Updater struct {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 	if httpClient == nil {
@@ -66,13 +68,13 @@ func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 //
 // It compares the provided current version tag with the latest release tag on the repository.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx: context.Context. The context for the request.
 //   - owner: string. The GitHub repository owner (e.g., "mcpany").
 //   - repo: string. The GitHub repository name (e.g., "core").
 //   - currentVersion: string. The current version tag of the application.
 //
-// Returns: - None.
+// Returns:
 //   - *github.RepositoryRelease: The release information if an update is available, nil otherwise.
 //   - bool: True if a newer version is available, false otherwise.
 //   - error: An error if the check fails (e.g., network error, API rate limit).
@@ -85,7 +87,7 @@ func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersion string) (*github.RepositoryRelease, bool, error) {
 	release, _, err := u.client.Repositories.GetLatestRelease(ctx, owner, repo)
@@ -104,7 +106,7 @@ func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersio
 //
 // It handles downloading artifacts, verifying SHA256 checksums, and safely swapping the binary.
 //
-// Parameters: - None.
+// Parameters:
 //   - ctx: context.Context. The context for the request.
 //   - fs: afero.Fs. The file system abstraction (usually afero.NewOsFs()).
 //   - executablePath: string. The path to the currently running executable to replace.
@@ -112,10 +114,10 @@ func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersio
 //   - assetName: string. The name of the binary asset to download.
 //   - checksumsAssetName: string. The name of the checksums file asset.
 //
-// Returns: - None.
+// Returns:
 //   - error: An error if any step of the update process fails (download, verify, replace).
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Writes temporary files to disk.
 //   - Modifies the executable file on disk.
 //
@@ -127,7 +129,7 @@ func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersio
 //
 // Errors: - None.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func (u *Updater) UpdateTo(ctx context.Context, fs afero.Fs, executablePath string, release *github.RepositoryRelease, assetName, checksumsAssetName string) error {
 	var asset *github.ReleaseAsset

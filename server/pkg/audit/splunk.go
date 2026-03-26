@@ -23,9 +23,9 @@ const (
 	splunkBatchWait  = 1 * time.Second
 )
 
-// SplunkAuditStore splunkAuditStore represents a splunk audit store.
+// SplunkAuditStore sends audit logs to Splunk HTTP Event Collector.
 //
-// Summary: SplunkAuditStore represents a splunk audit store.
+// Summary: Asynchronous audit store that pushes logs to Splunk via HEC.
 type SplunkAuditStore struct {
 	config *configv1.SplunkConfig
 	client *http.Client
@@ -38,13 +38,13 @@ type SplunkAuditStore struct {
 //
 // Summary: Initializes a new SplunkAuditStore with background workers.
 //
-// Parameters: - None.
+// Parameters:
 //   - config: *configv1.SplunkConfig. The Splunk HEC configuration.
 //
-// Returns: - None.
+// Returns:
 //   - *SplunkAuditStore: The initialized store.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Starts background workers.
 func NewSplunkAuditStore(config *configv1.SplunkConfig) *SplunkAuditStore {
 	if config == nil {
@@ -109,17 +109,17 @@ func (e *SplunkAuditStore) worker() {
 //
 // Summary: Queues an audit entry for sending to Splunk.
 //
-// Parameters: - None.
+// Parameters:
 //   - _: context.Context. Unused.
 //   - entry: Entry. The audit entry.
 //
-// Returns: - None.
+// Returns:
 //   - error: An error if the queue is full.
 //
-// Errors: - None.
+// Errors:
 //   - Returns "audit queue full" if the buffer is exhausted.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - Sends entry to a buffered channel.
 func (e *SplunkAuditStore) Write(_ context.Context, entry Entry) error {
 	select {
@@ -180,32 +180,27 @@ func (e *SplunkAuditStore) sendBatch(batch []Entry) {
 //
 // Summary: Reads audit entries (Not implemented).
 //
-// Parameters: - None.
+// Parameters:
 //   - _: context.Context. Unused.
 //   - _: Filter. Unused.
 //
-// Returns: - None.
+// Returns:
 //   - []Entry: Nil.
 //   - error: Always returns "not implemented".
 func (e *SplunkAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for splunk audit store")
 }
 
-// Close close close.
+// Close closes the queue and waits for workers to finish.
 //
-// Summary: Close close.
-//
-// Parameters:
-//   - None.
+// Summary: Shuts down the Splunk audit store.
 //
 // Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - error: Always nil.
 //
 // Side Effects:
-//   - None.
+//   - Closes channels.
+//   - Flushes pending batches.
 func (e *SplunkAuditStore) Close() error {
 	if e.done != nil {
 		close(e.done)
