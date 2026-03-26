@@ -35,7 +35,7 @@ func TestLinter_Run_PlainTextSecrets(t *testing.T) {
 	}.Build()
 
 	svc := configv1.UpstreamServiceConfig_builder{
-		Id:           ptr("test-service"),
+		Name:         ptr("test-service"),
 		UpstreamAuth: auth,
 		HttpService:  httpSvc,
 	}.Build()
@@ -66,7 +66,7 @@ func TestLinter_Run_ShellInjection(t *testing.T) {
 	}.Build()
 
 	svc := configv1.UpstreamServiceConfig_builder{
-		Id:                 ptr("risky-service"),
+		Name:               ptr("risky-service"),
 		CommandLineService: cmdSvc,
 	}.Build()
 
@@ -94,7 +94,7 @@ func TestLinter_Run_InsecureHTTP(t *testing.T) {
 	}.Build()
 
 	svc := configv1.UpstreamServiceConfig_builder{
-		Id:          ptr("insecure-service"),
+		Name:        ptr("insecure-service"),
 		HttpService: httpSvc,
 	}.Build()
 
@@ -127,7 +127,7 @@ func TestLinter_Run_CacheTTL(t *testing.T) {
 	}.Build()
 
 	svc := configv1.UpstreamServiceConfig_builder{
-		Id:          ptr("cache-service"),
+		Name:        ptr("cache-service"),
 		HttpService: httpSvc,
 		Cache:       cacheCfg,
 	}.Build()
@@ -150,4 +150,39 @@ func TestLinter_Run_CacheTTL(t *testing.T) {
 		}
 	}
 	assert.True(t, found, "Expected info about 0 TTL cache")
+}
+
+func TestLinter_Run_DuplicateServiceId(t *testing.T) {
+	svc1 := configv1.UpstreamServiceConfig_builder{
+		Name: ptr("duplicate"),
+		HttpService: configv1.HttpUpstreamService_builder{
+			Address: ptr("https://api1.com"),
+		}.Build(),
+	}.Build()
+
+	svc2 := configv1.UpstreamServiceConfig_builder{
+		Name: ptr("duplicate"),
+		HttpService: configv1.HttpUpstreamService_builder{
+			Address: ptr("https://api2.com"),
+		}.Build(),
+	}.Build()
+
+	cfg := configv1.McpAnyServerConfig_builder{
+		UpstreamServices: []*configv1.UpstreamServiceConfig{svc1, svc2},
+	}.Build()
+
+	linter := NewLinter(cfg)
+	results, err := linter.Run(context.Background())
+	assert.NoError(t, err)
+
+	found := false
+	for _, r := range results {
+		if r.Severity == Error &&
+			strings.Contains(r.Message,
+				"duplicate service name found") {
+			found = true
+			break
+		}
+	}
+	assert.True(t, found, "Expected error about duplicate ID")
 }
