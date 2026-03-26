@@ -312,11 +312,32 @@ func (m *AuditMiddleware) ClearHistory() {
 	}
 }
 
+<<<<<<< HEAD
+// Broadcast manually broadcasts an audit entry, used primarily for test seeding.
+//
+// Summary: Broadcasts an audit entry.
+//
+// Parameters:
+//   - entry (audit.Entry): The audit entry to broadcast.
+func (m *AuditMiddleware) Broadcast(entry audit.Entry) {
+	if m.broadcaster != nil {
+		m.broadcaster.Broadcast(entry)
+	}
+}
+
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 // SubscribeWithHistory returns a channel that will receive broadcast messages,
 // and the current history of messages.
 //
 // Summary: Subscribes to audit events with history.
 //
+<<<<<<< HEAD
+// Parameters:
+//   - None.
+//
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 // Returns:
 //   - chan any: A channel receiving new audit entries.
 //   - []any: A slice of historical audit entries.

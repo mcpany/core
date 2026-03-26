@@ -5,6 +5,10 @@ package middleware
 
 import (
 	"context"
+<<<<<<< HEAD
+	"encoding/json"
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	"net/http"
 	"sort"
 	"sync"
@@ -190,6 +194,11 @@ type StandardMiddlewares struct {
 	SmartRecovery    *SmartRecoveryMiddleware
 	RecursiveContext *RecursiveContextManager
 	A2ABridge        *A2ABridgeMiddleware
+<<<<<<< HEAD
+	ESB              *ESBMiddleware
+	CFIA             *CFIAMiddleware
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	Cleanup          func() error
 }
 
@@ -233,6 +242,10 @@ func InitStandardMiddlewares(
 	contextOptimizerConfig *configv1.ContextOptimizerConfig,
 	debuggerConfig *configv1.DebuggerConfig,
 	smartRecoveryConfig *configv1.SmartRecoveryConfig,
+<<<<<<< HEAD
+	cfiaConfig *CFIAConfig,
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 ) (*StandardMiddlewares, error) {
 	// 1. Logging
 	RegisterMCP("logging", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
@@ -449,6 +462,69 @@ func InitStandardMiddlewares(
 		}
 	})
 
+<<<<<<< HEAD
+	esbMiddleware := NewESBMiddleware(nil)
+	RegisterMCP("esb", func(cfg *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
+		if cfg != nil {
+			esbMiddleware = NewESBMiddleware(cfg)
+		} else {
+			esbMiddleware = NewESBMiddleware(nil)
+		}
+		return func(next mcp.MethodHandler) mcp.MethodHandler {
+			return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+				// Call the ESB execute which wraps the next handler
+				return esbMiddleware.Execute(ctx, method, req, next)
+			}
+		}
+	})
+
+	// Context-File Integrity Attestation (CFIA)
+	var cfiaMiddleware *CFIAMiddleware
+	if cfiaConfig != nil && cfiaConfig.Enabled {
+		cfiaMiddleware = NewCFIAMiddleware(*cfiaConfig)
+		RegisterMCP("cfia", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
+			return func(next mcp.MethodHandler) mcp.MethodHandler {
+				return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+					if method != "tools/call" {
+						return next(ctx, method, req)
+					}
+
+					callReq, ok := req.(*mcp.CallToolRequest)
+					if !ok {
+						return next(ctx, method, req)
+					}
+
+					var args map[string]interface{}
+					if callReq.Params.Arguments != nil {
+						// Attempt to unmarshal json.RawMessage to map[string]interface{}
+						_ = json.Unmarshal(callReq.Params.Arguments, &args)
+					}
+
+					executionReq := &tool.ExecutionRequest{
+						ToolName:  callReq.Params.Name,
+						Arguments: args,
+					}
+
+					result, err := cfiaMiddleware.Execute(ctx, executionReq, func(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
+						return next(ctx, method, req)
+					})
+					if err != nil {
+						return nil, err
+					}
+
+					// Convert `any` back to `mcp.Result` safely
+					mcpResult, ok := result.(mcp.Result)
+					if ok {
+						return mcpResult, nil
+					}
+					return &mcp.CallToolResult{}, nil
+				}
+			}
+		})
+	}
+
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	return &StandardMiddlewares{
 		Audit:            audit,
 		GlobalRateLimit:  globalRateLimit,
@@ -457,6 +533,11 @@ func InitStandardMiddlewares(
 		SmartRecovery:    smartRecovery,
 		RecursiveContext: recursiveContext,
 		A2ABridge:        a2aBridge,
+<<<<<<< HEAD
+		ESB:              esbMiddleware,
+		CFIA:             cfiaMiddleware,
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 		Cleanup:          audit.Close,
 	}, nil
 }

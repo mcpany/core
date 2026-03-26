@@ -37,6 +37,18 @@ func (m *featureSamplingTool) Tool() *v1.Tool {
 	return m.tool
 }
 
+<<<<<<< HEAD
+
+func (m *featureSamplingTool) IsStreaming() bool {
+	return false
+}
+
+func (m *featureSamplingTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, nil
+}
+
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (m *featureSamplingTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 	// 1. Get Session/Sampler from context
 	sampler, ok := tool.GetSession(ctx)

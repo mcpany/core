@@ -34,6 +34,18 @@ func (m *mockMapTool) Tool() *v1.Tool {
 	return m.tool
 }
 
+<<<<<<< HEAD
+
+func (m *mockMapTool) IsStreaming() bool {
+	return false
+}
+
+func (m *mockMapTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, nil
+}
+
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (m *mockMapTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	return m.result, nil
 }

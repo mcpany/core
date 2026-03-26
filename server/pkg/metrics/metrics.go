@@ -26,6 +26,12 @@ type Label = metrics.Label
 //
 // Summary: Creates a Prometheus sink.
 //
+<<<<<<< HEAD
+// Parameters:
+//   - None.
+//
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 // Returns:
 //   - *prometheus.PrometheusSink: The initialized Prometheus sink.
 //   - error: An error if the sink creation fails.

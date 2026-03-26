@@ -315,11 +315,19 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			}
 
 			if !available {
+<<<<<<< HEAD
+				_, _ = fmt.Fprintln(cmd.OutOrStdout(), "You are already running the latest version.")
+				return nil
+			}
+
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "A new version is available: %s. Updating...\n", release.GetTagName())
+=======
 				fmt.Println("You are already running the latest version.")
 				return nil
 			}
 
 			fmt.Printf("A new version is available: %s. Updating...\n", release.GetTagName())
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
 			assetName := fmt.Sprintf("server-%s-%s", runtime.GOOS, runtime.GOARCH)
 			checksumsAssetName := "checksums.txt"
@@ -338,7 +346,11 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				return fmt.Errorf("failed to update: %w", err)
 			}
 
+<<<<<<< HEAD
+			_, _ = fmt.Fprintln(cmd.OutOrStdout(), "Update successful.")
+=======
 			fmt.Println("Update successful.")
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 			return nil
 		},
 	}
@@ -382,7 +394,11 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				return fmt.Errorf("failed to load configurations: %w", err)
 			}
 
+<<<<<<< HEAD
+			_, _ = fmt.Fprintln(cmd.OutOrStdout(), "Running doctor checks...")
+=======
 			fmt.Println("Running doctor checks...")
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 			results := doctor.RunChecks(context.Background(), configs)
 
 			doctor.PrintResults(cmd.OutOrStdout(), results)
@@ -398,7 +414,11 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			if hasErrors {
 				return fmt.Errorf("doctor checks failed with errors")
 			}
+<<<<<<< HEAD
+			_, _ = fmt.Fprintln(cmd.OutOrStdout(), "All checks passed!")
+=======
 			fmt.Println("All checks passed!")
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 			return nil
 		},
 	}
@@ -412,8 +432,13 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 	generateCmd := &cobra.Command{
 		Use:   "generate",
 		Short: "Generate configuration",
+<<<<<<< HEAD
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			_, _ = fmt.Fprintln(cmd.OutOrStdout(), "MCP Any CLI: Configuration Generator")
+=======
 		RunE: func(_ *cobra.Command, _ []string) error {
 			fmt.Println("MCP Any CLI: Configuration Generator")
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
 			generator := config.NewGenerator()
 			configData, err := generator.Generate()
@@ -421,8 +446,13 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				return err
 			}
 
+<<<<<<< HEAD
+			_, _ = fmt.Fprintln(cmd.OutOrStdout(), "\nGenerated configuration:")
+			_, _ = fmt.Fprint(cmd.OutOrStdout(), string(configData))
+=======
 			fmt.Println("\nGenerated configuration:")
 			fmt.Print(string(configData))
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
 			return nil
 		},
@@ -450,7 +480,11 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				return err
 			}
 
+<<<<<<< HEAD
+			_, _ = fmt.Fprintln(cmd.OutOrStdout(), doc)
+=======
 			fmt.Println(doc)
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 			return nil
 		},
 	}
@@ -477,7 +511,11 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 		Use:   "check [file]",
 		Short: "Check a configuration file against the JSON Schema",
 		Args:  cobra.ExactArgs(1),
+<<<<<<< HEAD
+		RunE: func(cmd *cobra.Command, args []string) error {
+=======
 		RunE: func(_ *cobra.Command, args []string) error {
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 			filename := args[0]
 			data, err := os.ReadFile(filename)
 			if err != nil {
@@ -494,7 +532,11 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				return fmt.Errorf("configuration schema validation failed: %w", err)
 			}
 
+<<<<<<< HEAD
+			_, _ = fmt.Fprintln(cmd.OutOrStdout(), "Configuration schema is valid.")
+=======
 			fmt.Println("Configuration schema is valid.")
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 			return nil
 		},
 	}
@@ -528,7 +570,11 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 
 			checkConnection, _ := cmd.Flags().GetBool("check-connection")
 			if checkConnection {
+<<<<<<< HEAD
+				_, _ = fmt.Fprintln(cmd.OutOrStdout(), "Running connection checks...")
+=======
 				fmt.Println("Running connection checks...")
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 				results := doctor.RunChecks(context.Background(), configs)
 				doctor.PrintResults(cmd.OutOrStdout(), results)
 
@@ -597,6 +643,56 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 	rootCmd.AddCommand(lintCmd)
 	rootCmd.AddCommand(configCmd)
 
+<<<<<<< HEAD
+	initCmd := &cobra.Command{
+		Use:   "init",
+		Short: "Initialize a new MCP Any configuration file interactively",
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			if _, err := fmt.Fprintln(cmd.OutOrStdout(), "MCP Any CLI: Initialization Wizard"); err != nil {
+				return err
+			}
+			if _, err := fmt.Fprintln(cmd.OutOrStdout(), "Generating a minimal config.yaml..."); err != nil {
+				return err
+			}
+
+			minimalConfig := `global_settings:
+  mcp_listen_address: ":50050"
+  metrics_listen_address: ":9090"
+  log_level: "info"
+upstream_services:
+  - name: "example-service"
+    http_service:
+      address: "https://httpbin.org"
+      tools:
+        - name: "get_example"
+          description: "Get example data"
+          call_id: "get-example-call"
+          input_schema:
+            type: "object"
+            properties: {}
+      calls:
+        get-example-call:
+          method: "HTTP_METHOD_GET"
+          endpoint_path: "/get"
+`
+			fs := afero.NewOsFs()
+			err := afero.WriteFile(fs, "config.yaml", []byte(minimalConfig), 0o600)
+			if err != nil {
+				return fmt.Errorf("failed to write config.yaml: %w", err)
+			}
+			if _, err := fmt.Fprintln(cmd.OutOrStdout(), "Successfully created config.yaml in the current directory."); err != nil {
+				return err
+			}
+			if _, err := fmt.Fprintln(cmd.OutOrStdout(), "Run 'mcpany run' to start the server."); err != nil {
+				return err
+			}
+			return nil
+		},
+	}
+	rootCmd.AddCommand(initCmd)
+
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	config.BindRootFlags(rootCmd)
 
 	return rootCmd

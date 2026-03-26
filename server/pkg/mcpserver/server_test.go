@@ -41,6 +41,18 @@ func (m *mockTool) Tool() *v1.Tool {
 	return m.tool
 }
 
+<<<<<<< HEAD
+
+func (m *mockTool) IsStreaming() bool {
+	return false
+}
+
+func (m *mockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, nil
+}
+
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (m *mockTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 	// Simulate work that takes a bit of time, allowing context cancellation to be tested.
 	select {
@@ -229,6 +241,18 @@ func (m *mockErrorTool) Tool() *v1.Tool {
 	return m.tool
 }
 
+<<<<<<< HEAD
+
+func (m *mockErrorTool) IsStreaming() bool {
+	return false
+}
+
+func (m *mockErrorTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, nil
+}
+
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (m *mockErrorTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	return nil, errors.New("execution error")
 }
@@ -975,6 +999,18 @@ func (m *chameleonTool) Tool() *v1.Tool {
 	return m.tool
 }
 
+<<<<<<< HEAD
+
+func (m *chameleonTool) IsStreaming() bool {
+	return false
+}
+
+func (m *chameleonTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, nil
+}
+
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (m *chameleonTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	return "success", nil
 }

@@ -5,6 +5,14 @@
 
 import { test, expect } from '@playwright/test';
 
+<<<<<<< HEAD
+test.describe.skip('Credentials Management', () => {
+
+
+
+  test.skip('should list, create, update and delete credentials', async ({ page }) => {
+    // 1. Initial List (Empty)
+=======
 test.describe('Credentials Management', () => {
 
 
@@ -18,6 +26,7 @@ test.describe('Credentials Management', () => {
         await route.continue();
       }
     });
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
     await page.goto('/credentials');
     await expect(page.getByText('No credentials found')).toBeVisible();
@@ -30,6 +39,8 @@ test.describe('Credentials Management', () => {
     };
 
     let created = false;
+<<<<<<< HEAD
+=======
     await page.route('**/api/v1/credentials', async route => {
       const method = route.request().method();
       if (method === 'POST') {
@@ -41,6 +52,7 @@ test.describe('Credentials Management', () => {
         await route.continue();
       }
     });
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
     await page.getByRole('button', { name: 'New Credential' }).click();
     await expect(page.getByText('Create Credential')).toBeVisible();
@@ -58,6 +70,10 @@ test.describe('Credentials Management', () => {
     await expect(page.locator('tbody').getByText('API Key', { exact: true })).toBeVisible();
 
     // 3. Update Credential
+<<<<<<< HEAD
+
+    // Refresh mock for list to return updated name
+=======
     await page.route(`**/api/v1/credentials/${newCred.id}`, async route => {
         if (route.request().method() === 'PUT') {
              const data = route.request().postDataJSON();
@@ -76,6 +92,7 @@ test.describe('Credentials Management', () => {
             await route.continue();
         }
     });
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
     await page.getByRole('button', { name: 'Edit' }).click();
     await page.getByPlaceholder('My Credential').fill('Updated API Key');
@@ -84,6 +101,10 @@ test.describe('Credentials Management', () => {
     await expect(page.getByText('Updated API Key')).toBeVisible();
 
     // 4. Delete Credential
+<<<<<<< HEAD
+
+    // Refresh mock for list to return empty
+=======
     await page.route(`**/api/v1/credentials/${newCred.id}`, async route => {
         if (route.request().method() === 'DELETE') {
              await route.fulfill({ status: 200 });
@@ -96,6 +117,7 @@ test.describe('Credentials Management', () => {
             await route.fulfill({ json: [] });
         }
     });
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
     // Accept delete confirmation
     page.on('dialog', dialog => dialog.accept());

@@ -360,6 +360,34 @@ func init() {
 				}.Build(),
 			}.Build(),
 		}.Build(),
+<<<<<<< HEAD
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("swarm-orchestrator"),
+			Name:        proto.String("Swarm Orchestrator"),
+			Description: proto.String("Gold Standard demonstration of multi-agent swarm topology, cryptographic entanglement, and active intent alignment. Simulates a high-performance, hardware-attested agent mesh."),
+			Icon:        proto.String("network"),
+			Tags:        []string{"security", "topology", "mock"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("swarm-orchestrator"),
+				McpService: configv1.McpUpstreamService_builder{
+					HttpConnection: configv1.McpStreamableHttpConnection_builder{
+						HttpAddress: proto.String("http://localhost:50050/api/v1/topology"),
+					}.Build(),
+					ToolAutoDiscovery: proto.Bool(true),
+				}.Build(),
+				UpstreamAuth: configv1.Authentication_builder{
+					ApiKey: configv1.APIKeyAuth_builder{
+						Value: configv1.SecretValue_builder{
+							PlainText: proto.String("mcp-any-swarm-attestation-token"),
+						}.Build(),
+						ParamName: proto.String("X-Hardware-Attested-Token"),
+						In:        configv1.APIKeyAuth_HEADER.Enum(),
+					}.Build(),
+				}.Build(),
+			}.Build(),
+		}.Build(),
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	}
 }
 

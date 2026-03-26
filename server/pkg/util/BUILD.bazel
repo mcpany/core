@@ -11,6 +11,10 @@ go_library(
         "file.go",
         "grpc.go",
         "ip.go",
+<<<<<<< HEAD
+        "json_marshal.go",
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
         "json_size.go",
         "json_utils.go",
         "json_walker.go",
@@ -36,6 +40,10 @@ go_library(
         "@com_github_docker_docker//client",
         "@com_github_google_uuid//:uuid",
         "@com_github_hashicorp_vault_api//:api",
+<<<<<<< HEAD
+        "@com_github_json_iterator_go//:go",
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
         "@org_golang_google_grpc//:grpc",
         "@org_golang_google_protobuf//proto",
         "@org_golang_x_oauth2//:oauth2",

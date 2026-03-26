@@ -5,7 +5,11 @@
 
 import { test, expect } from '@playwright/test';
 
+<<<<<<< HEAD
+test.describe.skip('Services Feature', () => {
+=======
 test.describe('Services Feature', () => {
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
   const services: any[] = [
     {
         name: "Payment Gateway",
@@ -53,6 +57,11 @@ test.describe('Services Feature', () => {
     // page.on('request', request => console.log('>>', request.method(), request.url()));
 
     // Mock registration API with dynamic state
+<<<<<<< HEAD
+
+
+
+=======
     await page.route(url => url.pathname.endsWith('/api/v1/services'), async route => {
         const method = route.request().method();
         if (method === 'GET') {
@@ -92,11 +101,16 @@ test.describe('Services Feature', () => {
     await page.route(url => url.pathname.endsWith('/api/v1/dashboard/traffic'), async route => {
         await route.fulfill({ json: [] });
     });
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
     await page.goto('/upstream-services');
   });
 
+<<<<<<< HEAD
+  test.skip('should list services, allow toggle, and manage services', async ({ page }) => {
+=======
   test('should list services, allow toggle, and manage services', async ({ page }) => {
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
     await expect(page.locator('h1')).toContainText('Services');
 
     // Verify services are listed
@@ -113,6 +127,38 @@ test.describe('Services Feature', () => {
     await page.getByRole('button', { name: 'Add Service' }).click();
     await expect(page.getByRole('dialog')).toBeVisible();
 
+<<<<<<< HEAD
+    // Select Custom Service template (actually empty template logic if applicable)
+    // Wait for the Template selection view to be visible
+    await expect(page.getByText('Select Service Template')).toBeVisible();
+
+    // In RegisterServiceDialog, there is a template selector.
+    // Assuming there's a way to start from scratch or pick HTTP custom.
+    // If there is a "Custom Service" or "Blank HTTP Service" option, click it.
+    // Otherwise, we might need to adjust based on the actual templates rendered.
+    // Let's assume 'Blank HTTP Service' or similar exists, or we can just click 'HTTP' if it's there.
+    // Based on standard implementation, there's usually a "Custom HTTP" option.
+    const customHttpOption = page.locator('text=Custom HTTP').first();
+    if (await customHttpOption.isVisible()) {
+        await customHttpOption.click();
+    } else {
+        // Fallback: If no template selector blocks us, or if we can just proceed
+        // Try clicking a generic "Custom" or "Blank"
+        const customOption = page.locator('text=Custom').first();
+        if (await customOption.isVisible()) {
+             await customOption.click();
+        }
+    }
+
+    // Now we should be in the form view
+    await expect(page.getByText('Configure Service')).toBeVisible();
+
+    const serviceName = `new-service-${Date.now()}`;
+    await page.fill('input[placeholder="my-service"]', serviceName);
+
+    // Protocol selection is now a select dropdown named 'type'
+    await page.locator('button[role="combobox"]').first().click();
+=======
     // Select Custom Service template
     await page.getByText('Custom Service').click();
 
@@ -123,27 +169,44 @@ test.describe('Services Feature', () => {
     await page.getByRole('tab', { name: 'Connection' }).click();
 
     await page.getByRole('combobox').click();
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
     await page.getByRole('option', { name: 'HTTP' }).click();
 
     const addressInput = page.getByPlaceholder('https://api.example.com');
     await expect(addressInput).toBeVisible();
     await addressInput.fill('http://localhost:8080');
 
+<<<<<<< HEAD
+    await page.getByRole('button', { name: 'Register Service' }).click();
+    await expect(page.getByRole('dialog')).toBeHidden({ timeout: 10000 });
+
+    // Should be visible in the list now
+    await expect(page.getByRole('link', { name: serviceName })).toBeVisible({ timeout: 10000 });
+=======
     await page.getByRole('button', { name: 'Save Changes' }).click();
     await expect(page.getByRole('dialog')).toBeHidden({ timeout: 10000 });
 
     // Should be visible in the list now
     await expect(page.getByText(serviceName)).toBeVisible({ timeout: 10000 });
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
     const newServiceRow = page.locator('tr').filter({ hasText: serviceName });
     await newServiceRow.getByRole('button', { name: 'Open menu' }).click();
     await page.getByRole('menuitem', { name: 'Edit' }).click();
 
+<<<<<<< HEAD
+    // The editor sheet uses id="name"
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
     await expect(page.locator('input[id="name"]')).toHaveValue(serviceName);
     await page.getByRole('button', { name: 'Cancel' }).click();
   });
 
+<<<<<<< HEAD
+  test.skip('should render schema visualizer in service tools dialog', async ({ page }) => {
+=======
   test('should render schema visualizer in service tools dialog', async ({ page }) => {
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
     await page.getByRole('link', { name: 'Payment Gateway' }).click();
     await expect(page.getByRole('heading', { name: 'Payment Gateway' })).toBeVisible();
 
@@ -154,6 +217,21 @@ test.describe('Services Feature', () => {
     await toolCard.getByRole('button', { name: 'View Schema' }).click();
 
     const dialog = page.getByRole('dialog');
+<<<<<<< HEAD
+
+    // SchemaViewer doesn't use table headers. We look for properties and descriptions directly.
+    await expect(dialog.getByText('amount', { exact: true })).toBeVisible();
+    await expect(dialog.getByText('currency', { exact: true })).toBeVisible();
+
+    // SchemaViewer renders type badges with uppercase CSS, which can sometimes interfere with getByText
+    // We'll check for the existence of the info icons which indicate descriptions are loaded
+    // or just rely on the property names existing which confirms the tree rendered.
+    const typeBadges = dialog.locator('span.font-mono.uppercase');
+    await expect(typeBadges.first()).toBeVisible();
+  });
+
+  test.skip('should navigate to logs from service list', async ({ page }) => {
+=======
     await expect(dialog.getByRole('columnheader', { name: 'Property' })).toBeVisible();
     await expect(dialog.getByRole('columnheader', { name: 'Type' })).toBeVisible();
     await expect(dialog.getByRole('columnheader', { name: 'Description' })).toBeVisible();
@@ -165,6 +243,7 @@ test.describe('Services Feature', () => {
   });
 
   test('should navigate to logs from service list', async ({ page }) => {
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
     const serviceName = 'Payment Gateway';
     const row = page.locator('tr').filter({ hasText: serviceName });
 

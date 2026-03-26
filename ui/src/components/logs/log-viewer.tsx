@@ -50,6 +50,15 @@ export const timeFormatter = typeof Intl !== 'undefined' ? new Intl.DateTimeForm
   second: 'numeric',
 }) : null;
 
+<<<<<<< HEAD
+const getLevelBadgeClasses = (level: LogLevel) => {
+  switch (level) {
+    case "INFO": return "bg-blue-500/10 text-blue-500 border border-blue-500/20 shadow-[0_0_10px_rgba(59,130,246,0.1)]"
+    case "WARN": return "bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 shadow-[0_0_10px_rgba(234,179,8,0.1)]"
+    case "ERROR": return "bg-red-500/10 text-red-500 border border-red-500/30 shadow-[0_0_15px_rgba(239,68,68,0.2)]"
+    case "DEBUG": return "bg-gray-500/10 text-gray-400 border border-gray-500/20"
+    default: return "bg-background text-foreground border border-border"
+=======
 const getLevelColor = (level: LogLevel) => {
   switch (level) {
     case "INFO": return "text-blue-400"
@@ -57,6 +66,7 @@ const getLevelColor = (level: LogLevel) => {
     case "ERROR": return "text-red-400"
     case "DEBUG": return "text-gray-400"
     default: return "text-foreground"
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
   }
 }
 
@@ -132,6 +142,83 @@ const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRe
     return null;
   }, [isExpanded, isPotentialJson, log.message]);
 
+<<<<<<< HEAD
+  const rowClasses = cn(
+    "group flex flex-col items-start p-3 sm:p-4 rounded-xl transition-all duration-200 ease-out break-words border mb-2",
+    "bg-background/40 backdrop-blur-md hover:bg-background/60 shadow-sm hover:shadow-md",
+    log.level === "ERROR" ? "border-red-500/30" : "border-border/50",
+    isExpanded && isPotentialJson ? "ring-1 ring-primary/20" : ""
+  );
+
+  return (
+    <div
+      className={rowClasses}
+      style={{ contentVisibility: 'auto', containIntrinsicSize: '0 64px' } as React.CSSProperties}
+    >
+      <div
+        className={cn("flex flex-row w-full items-start gap-3 sm:gap-4", isPotentialJson ? "cursor-pointer" : "")}
+        onClick={() => isPotentialJson && setIsExpanded(!isExpanded)}
+      >
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 shrink-0 min-w-[140px] pt-0.5">
+              <span className={cn("inline-flex items-center justify-center px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wider uppercase", getLevelBadgeClasses(log.level))}>
+                {log.level}
+              </span>
+              <span className="text-muted-foreground whitespace-nowrap opacity-60 font-mono text-[10px] sm:text-xs hidden sm:inline-block">
+                {log.formattedTime || (timeFormatter ? timeFormatter.format(new Date(log.timestamp)) : new Date(log.timestamp).toLocaleTimeString())}
+              </span>
+          </div>
+
+          <div className="flex-1 min-w-0 flex flex-col">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-3 flex-1 min-w-0">
+                {log.source && (
+                  <span
+                    className="inline-block truncate font-mono text-[10px] sm:text-xs shrink-0 text-[hsl(var(--source-hue),60%,40%)] dark:text-[hsl(var(--source-hue),60%,70%)] font-medium bg-[hsl(var(--source-hue),60%,40%,0.1)] dark:bg-[hsl(var(--source-hue),60%,70%,0.1)] px-1.5 py-0.5 rounded-sm"
+                    style={{ "--source-hue": getSourceHue(log.source) } as React.CSSProperties}
+                    title={log.source}
+                  >
+                    <HighlightText text={log.source} regex={highlightRegex} />
+                  </span>
+                )}
+                <span className="text-foreground/90 font-mono text-[11px] sm:text-sm pl-0 flex-1 break-all whitespace-pre-wrap leading-relaxed">
+                   <HighlightText text={log.message} regex={highlightRegex} />
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0 pt-0.5">
+                 {duration && (
+                  <span className="inline-flex items-center rounded bg-muted/50 border border-border/50 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground font-mono">
+                    {duration}
+                  </span>
+                )}
+                 {isPotentialJson && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }}
+                      className="text-muted-foreground hover:text-foreground transition-colors p-1 rounded-full hover:bg-muted"
+                      aria-label={isExpanded ? "Collapse JSON" : "Expand JSON"}
+                    >
+                      {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                    </button>
+                 )}
+              </div>
+            </div>
+
+            <div className={cn("grid transition-all duration-300 ease-in-out", isExpanded && isPotentialJson ? "grid-rows-[1fr] opacity-100 mt-3" : "grid-rows-[0fr] opacity-0")}>
+              <div className="overflow-hidden">
+                {isExpanded && isPotentialJson && (
+                  <div className="w-full max-w-full overflow-x-auto text-xs bg-[#1e1e1e] dark:bg-black/40 rounded-lg border border-border/40 p-4 shadow-inner">
+                    {jsonContent ? (
+                      <Suspense fallback={<div className="animate-pulse h-8 bg-muted/20 rounded" />}><JsonViewer data={jsonContent} /></Suspense>
+                    ) : (
+                      <div className="p-3 bg-red-500/10 text-red-400 rounded-md border border-red-500/20 italic text-sm">
+                        Failed to parse JSON payload
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+=======
   return (
     <div
       className="group flex flex-col items-start hover:bg-white/5 p-2 sm:p-1 rounded transition-colors break-words border-b border-white/5 sm:border-0"
@@ -198,6 +285,7 @@ const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRe
                 )}
               </div>
             )}
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
           </div>
       </div>
     </div>

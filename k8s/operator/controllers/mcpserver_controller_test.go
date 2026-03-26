@@ -7,7 +7,11 @@ import (
 	"context"
 	"testing"
 
+<<<<<<< HEAD
+	mcpv1alpha1 "github.com/mcpany/core/k8s/operator/api/v1alpha1"
+=======
 	mcpv1alpha1 "github.com/mcpany/core/operator/api/v1alpha1"
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -34,6 +38,10 @@ func TestMCPServerReconciler_Reconcile(t *testing.T) {
 			Replicas:    &replicas,
 			Image:       "mcpany/server:latest",
 			ServiceType: "ClusterIP",
+<<<<<<< HEAD
+			ConfigMap:   "my-config-map",
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 		},
 	}
 

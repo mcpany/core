@@ -21,6 +21,23 @@ import (
 )
 
 // handleStackConfig handles getting and setting the configuration of a stack (collection) in YAML format.
+<<<<<<< HEAD
+//
+// Summary: Handles stack config requests.
+//
+// Parameters:
+//   - store (storage.Storage): The storage interface.
+//
+// Returns:
+//   - http.HandlerFunc: The handler function.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (a *Application) handleStackConfig(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Only supporting GET and POST for now (POST updates/saves)

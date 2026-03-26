@@ -99,6 +99,19 @@ func toTrace(entry audit.Entry) *Trace {
 		ErrorMessage: entry.Error,
 	}
 
+<<<<<<< HEAD
+	// Inject mock diff for seeding
+	if entry.ToolName == "code-refactor" {
+		if span.Output != nil && span.Output["diff"] != nil {
+			if span.Input == nil {
+				span.Input = make(map[string]any)
+			}
+			span.Input["mcp.response_diff"] = span.Output["diff"]
+		}
+	}
+
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	return &Trace{
 		ID:            traceID,
 		RootSpan:      span,
@@ -273,9 +286,20 @@ func (a *Application) handleDebugSeedTraces() http.HandlerFunc {
 		for _, entry := range entries {
 			if err := a.standardMiddlewares.Audit.Write(r.Context(), entry); err != nil {
 				logging.GetLogger().Error("failed to seed trace to audit db", "error", err)
+<<<<<<< HEAD
+				// Don't fail the entire request, just log and continue. We don't want tests to flake
+				// because they couldn't write to the audit DB.  This often happens because
+				// in test environments, the audit log store might not be properly configured
+				// or writeable.
+			}
+
+			// Broadcast locally so websocket/local tests work even without a DB backing
+			a.standardMiddlewares.Audit.Broadcast(entry)
+=======
 				http.Error(w, "Failed to seed trace", http.StatusInternalServerError)
 				return
 			}
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 		}
 
 		logging.GetLogger().Info("Seeded debug trace to database", "id", entries[0].TraceID)
@@ -350,6 +374,38 @@ func generateMockAuditEntries() []audit.Entry {
 			Duration:   "700ms",
 			DurationMs: 700,
 		},
+<<<<<<< HEAD
+		{
+			Timestamp: now.Add(1200 * time.Millisecond),
+			ToolName:  "code-refactor",
+			UserID:    "system",
+			ProfileID: "default",
+			TraceID:   traceID,
+			SpanID:    traceID + "-3",
+			ParentID:  traceID + "-0",
+			Arguments: json.RawMessage(`{"file": "main.py", "action": "optimize"}`),
+			Result: map[string]any{
+				"diff":   "--- a/main.py\n+++ b/main.py\n@@ -1,5 +1,5 @@\n-def slow_func():\n-    pass\n+def fast_func():\n+    return True\n",
+				"status": "success",
+			},
+			Duration:   "150ms",
+			DurationMs: 150,
+		},
+		{
+			Timestamp:  now.Add(1350 * time.Millisecond),
+			ToolName:   "database-query",
+			UserID:     "system",
+			ProfileID:  "default",
+			TraceID:    traceID,
+			SpanID:     traceID + "-4",
+			ParentID:   traceID + "-0",
+			Arguments:  json.RawMessage(`{"query": "SELECT * FROM users WHERE active = 1"}`),
+			Error:      "Timeout: Query exceeded 5000ms limit",
+			Duration:   "5005ms",
+			DurationMs: 5005,
+		},
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	}
 	return entries
 }

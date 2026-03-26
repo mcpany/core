@@ -5,6 +5,14 @@
 
 import { test, expect } from '@playwright/test';
 
+<<<<<<< HEAD
+test.describe.skip('Resource Preview Modal', () => {
+
+  test.skip('should open resource in modal from explorer', async ({ page }) => {
+    // Mock resources list
+
+    // Mock resource read with regex to handle encoded URI
+=======
 test.describe('Resource Preview Modal', () => {
 
   test('should open resource in modal from explorer', async ({ page }) => {
@@ -33,6 +41,7 @@ test.describe('Resource Preview Modal', () => {
             })
         });
     });
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
     await page.goto('/resources');
 

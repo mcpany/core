@@ -10,7 +10,11 @@ Configure the interceptors and processing steps that occur between the client an
 ### 1. Visual Pipeline
 Navigate to `/middleware`. The interface visualizes the request flow from left to right.
 
+<<<<<<< HEAD
+![Middleware Pipeline](../screenshots/middleware.png)
+=======
 ![Middleware Pipeline](screenshots/middleware_pipeline.png)
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
 ### 2. Configure a Component
 Click on any middleware block (e.g., **"Rate Limit"**) to inspect its settings.

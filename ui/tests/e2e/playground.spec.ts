@@ -5,6 +5,13 @@
 
 import { test, expect } from '@playwright/test';
 
+<<<<<<< HEAD
+test.describe.skip('Playground Complex Schema Support', () => {
+  test.skip('should allow configuring and running a tool with complex nested schema', async ({ page }) => {
+    // Mock the tools API to return a tool with complex schema
+
+    // Mock the execute API
+=======
 test.describe('Playground Complex Schema Support', () => {
   test('should allow configuring and running a tool with complex nested schema', async ({ page }) => {
     // Mock the tools API to return a tool with complex schema
@@ -52,6 +59,7 @@ test.describe('Playground Complex Schema Support', () => {
             })
         });
     });
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
     // Navigate to playground
     await page.goto('/playground');

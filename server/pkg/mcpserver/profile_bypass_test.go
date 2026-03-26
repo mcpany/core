@@ -39,6 +39,18 @@ func (m *mockBypassTool) MCPTool() *mcp.Tool {
 	return t
 }
 
+<<<<<<< HEAD
+
+func (m *mockBypassTool) IsStreaming() bool {
+	return false
+}
+
+func (m *mockBypassTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, nil
+}
+
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (m *mockBypassTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return "success", nil
 }

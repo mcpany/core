@@ -25,6 +25,18 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+<<<<<<< HEAD
+
+func (m *rateLimitMockTool) IsStreaming() bool {
+	return false
+}
+
+func (m *rateLimitMockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, nil
+}
+
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 type rateLimitMockTool struct {
 	toolProto *v1.Tool
 	mock.Mock

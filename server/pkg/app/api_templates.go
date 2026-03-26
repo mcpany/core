@@ -17,6 +17,23 @@ import (
 )
 
 // handleTemplates handles listing and creating service templates.
+<<<<<<< HEAD
+//
+// Summary: Handles templates.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - http.HandlerFunc: The handler function.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (a *Application) handleTemplates() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -81,6 +98,23 @@ func (a *Application) handleTemplates() http.HandlerFunc {
 }
 
 // handleTemplateDetail handles retrieving and deleting a specific service template.
+<<<<<<< HEAD
+//
+// Summary: Handles template detail.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - http.HandlerFunc: The handler function.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (a *Application) handleTemplateDetail() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)

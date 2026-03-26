@@ -17,6 +17,10 @@ test.describe('Services Verification', () => {
 
     // 3. Verify Sheet/Dialog Opens
     await expect(page.getByRole('dialog')).toBeVisible();
+<<<<<<< HEAD
+    await expect(page.getByText('Select Service Template')).toBeVisible();
+=======
     await expect(page.getByText('New Service')).toBeVisible();
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
   });
 });

@@ -1,9 +1,14 @@
 build/
 node_modules/
+<<<<<<< HEAD
+docs/
+server/build/
+=======
 docker/
 docs/
 server/build/
 server/docker/
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 server/docs/
 server/tests/integration/upstream/node_modules/
 ui/node_modules/

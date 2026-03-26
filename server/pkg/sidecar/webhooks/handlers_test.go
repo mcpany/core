@@ -594,3 +594,55 @@ func TestPaginateHandler_LargeString(t *testing.T) {
 	assert.Contains(t, repl, "(Total: 10240 chars)")
 	// Expected content length should be roughly 100 + headers
 }
+<<<<<<< HEAD
+
+func TestPaginateRecursive(t *testing.T) {
+	// 1. String > 1024*1024
+	largeStr := make([]byte, 1024*1024+1)
+	for i := range largeStr {
+		largeStr[i] = 'a'
+	}
+	res1 := paginateRecursive(string(largeStr), 1, 10)
+	if res1 != "Error: Input too large" {
+		t.Errorf("expected Error: Input too large, got %v", res1)
+	}
+
+	// 2. Start >= totalRunes
+	res2 := paginateRecursive("abc", 2, 10)
+	if res2 != "Page 2 (empty). Total length: 3" {
+		t.Errorf("expected Page 2 (empty). Total length: 3, got %v", res2)
+	}
+
+	// 3. Normal paginate
+	res3 := paginateRecursive("abcdefghij", 1, 5)
+	if res3 != "Page 1/2:\nabcde\n(Total: 10 chars)" {
+		t.Errorf("expected Page 1/2:\nabcde\n(Total: 10 chars), got %v", res3)
+	}
+
+	// 4. []any
+	slice := []any{"abc", "def"}
+	res4 := paginateRecursive(slice, 1, 10)
+	sliceRes := res4.([]any)
+	if sliceRes[0] != "Page 1/1:\nabc\n(Total: 3 chars)" {
+		t.Errorf("expected paginated slice, got %v", sliceRes[0])
+	}
+
+	// 5. fallback
+	res5 := paginateRecursive(123, 1, 10)
+	if res5 != 123 {
+		t.Errorf("expected 123, got %v", res5)
+	}
+}
+
+func TestPaginateRecursiveMap(t *testing.T) {
+	m := map[string]any{
+		"a": "abc",
+	}
+	res := paginateRecursive(m, 1, 10)
+	resM := res.(map[string]any)
+	if resM["a"] != "Page 1/1:\nabc\n(Total: 3 chars)" {
+		t.Errorf("expected paginated map value, got %v", resM["a"])
+	}
+}
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))

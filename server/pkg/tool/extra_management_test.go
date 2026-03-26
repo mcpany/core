@@ -28,6 +28,27 @@ type mockToolSimple struct {
 	serviceID   string
 }
 
+<<<<<<< HEAD
+func (m *mockToolSimple) IsStreaming() bool {
+	return false
+}
+
+func (m *mockToolSimple) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
+	ch := make(chan any, 1)
+	go func() {
+		defer close(ch)
+		res, err := m.Execute(ctx, req)
+		if err != nil {
+			ch <- err
+		} else {
+			ch <- res
+		}
+	}()
+	return ch, nil
+}
+
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (m *mockToolSimple) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if m.executeFunc != nil {
 		return m.executeFunc(ctx, req)

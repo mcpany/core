@@ -1078,6 +1078,18 @@ func TestGRPCUpstream_Register_DisabledTool_Reflection(t *testing.T) {
 	assert.NotContains(t, toolNames, "GetWeather")
 }
 
+<<<<<<< HEAD
+
+func (m *simpleMockTool) IsStreaming() bool {
+	return false
+}
+
+func (m *simpleMockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, nil
+}
+
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 type simpleMockTool struct {
 	t *routerv1.Tool
 }

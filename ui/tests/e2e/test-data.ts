@@ -4,9 +4,12 @@
  */
 
 import { request, APIRequestContext } from '@playwright/test';
+<<<<<<< HEAD
+=======
 import { ServiceTemplate } from '../../../proto/config/v1/service_template';
 import { UpstreamServiceConfig } from '../../../proto/config/v1/upstream_service';
 import { User } from '../../../proto/config/v1/user';
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
 const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
@@ -103,7 +106,11 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                 }
             }
         }
+<<<<<<< HEAD
+    ];
+=======
     ].map((service) => UpstreamServiceConfig.toJSON(UpstreamServiceConfig.fromJSON(service)));
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
     const templates = [
         {
@@ -160,7 +167,11 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                 }
             }
         }
+<<<<<<< HEAD
+    ];
+=======
     ].map((template) => ServiceTemplate.toJSON(ServiceTemplate.fromJSON(template)));
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
     const users = [
         {
@@ -175,8 +186,32 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             roles: ["admin"],
             profile_ids: ["dev", "prod"]
         }
+<<<<<<< HEAD
+    ];
+
+        const traces = [
+        {
+            id: 'trace-1',
+            rootSpan: {
+              id: 'span-1',
+              name: 'calculate_sum',
+              serviceName: 'Math',
+              type: 'tool',
+              status: 'success',
+              startTime: Date.now() - 150,
+              endTime: Date.now(),
+              children: [],
+            },
+            timestamp: new Date().toISOString(),
+            totalDuration: 150,
+            status: 'success',
+            trigger: 'user'
+        }
+    ];
+=======
     ].map((user) => User.toJSON(User.fromJSON(user)));
 
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
     const seedRequest = {
         upstream_services: services,
         service_templates: templates,
@@ -311,3 +346,32 @@ export const cleanupCollection = async (name?: string, requestContext?: APIReque
         // Ignore cleanup errors (collection may not exist)
     }
 };
+<<<<<<< HEAD
+
+export const seedTraces = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    const trace = {
+        id: 'trace-1',
+        rootSpan: {
+            id: 'span-1',
+            name: 'calculate_sum',
+            serviceName: 'Math',
+            type: 'tool',
+            status: 'success',
+            startTime: Date.now() - 150,
+            endTime: Date.now(),
+            children: []
+        },
+        timestamp: new Date().toISOString(),
+        totalDuration: 150,
+        status: 'success',
+        trigger: 'user'
+    };
+    try {
+        await context.post('/api/v1/debug/traces', { data: [trace], headers: HEADERS });
+    } catch (e) {
+        console.log(`Failed to seed trace: ${e}`);
+    }
+};
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))

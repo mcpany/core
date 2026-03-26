@@ -33,6 +33,16 @@ func TestIsDockerSocketAccessible(t *testing.T) {
 	})
 }
 
+<<<<<<< HEAD
+func TestInitDockerClientDefault(t *testing.T) {
+	originalClient := dockerClient
+	defer func() { dockerClient = originalClient }()
+	dockerClient = nil
+	initDockerClientDefault()
+}
+
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func TestCloseDockerClient(t *testing.T) {
 	// t.Parallel() removed due to global variable modification
 	// This is a smoke test to ensure CloseDockerClient doesn't panic.

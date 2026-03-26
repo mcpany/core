@@ -15,5 +15,10 @@ Navigate to `/prompts`.
 ![Prompts List](screenshots/prompts_list.png)
 
 ### 2. Use Prompt
+<<<<<<< HEAD
+Click **"Open in Playground"** on any item.
+This will redirect you to the **Playground**, where you can use the prompt template.
+=======
 Click **"Use Prompt"** on any item.
 This will redirect you to the **Playground**, pre-loading the selected prompt template and generating a form for its arguments.
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))

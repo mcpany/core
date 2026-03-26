@@ -4,6 +4,12 @@ toolchain go1.26.1
 
 use (
 	.
+<<<<<<< HEAD
+	../proto
+// ./examples/upstream_service_demo/grpc/client
+// ./examples/upstream_service_demo/grpc/greeter_server
+=======
 	// ./examples/upstream_service_demo/grpc/client
 	// ./examples/upstream_service_demo/grpc/greeter_server
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 )

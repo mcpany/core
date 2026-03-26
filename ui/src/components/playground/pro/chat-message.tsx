@@ -104,7 +104,12 @@ function analyzeError(error: string): string | null {
 export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
     const [copied, setCopied] = useState(false);
     const [showDiff, setShowDiff] = useState(false);
+<<<<<<< HEAD
+    const { theme, resolvedTheme } = useTheme();
+    const isDark = theme === "dark" || resolvedTheme === "dark";
+=======
     const { theme } = useTheme();
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
     const copyToClipboard = (text: string) => {
         navigator.clipboard.writeText(text);
@@ -269,12 +274,19 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
                             original={JSON.stringify(prevUnwrapped, null, 2)}
                             modified={JSON.stringify(currUnwrapped, null, 2)}
                             language="json"
+<<<<<<< HEAD
+                            theme={isDark ? "dracula" : "light"}
+                            onMount={(_editor: any, monaco: any) => {
+                                defineDraculaTheme(monaco);
+                                monaco.editor.setTheme(isDark ? "dracula" : "light");
+=======
                             theme={theme === "dark" ? "dracula" : "light"}
                             onMount={(_editor: any, monaco: any) => {
                                 if (theme === "dark") {
                                     defineDraculaTheme(monaco);
                                     monaco.editor.setTheme("dracula");
                                 }
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
                             }}
                             options={{
                                 readOnly: true,

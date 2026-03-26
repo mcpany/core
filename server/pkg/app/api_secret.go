@@ -16,6 +16,24 @@ import (
 )
 
 // listSecretsHandler returns all secrets (masked).
+<<<<<<< HEAD
+//
+// Summary: Lists all secrets.
+//
+// Parameters:
+//   - w (http.ResponseWriter): The response writer.
+//   - r (*http.Request): The HTTP request.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - Writes HTTP errors on failure.
+//
+// Side Effects:
+//   - None.
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (a *Application) listSecretsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		writeError(w, fmt.Errorf("method not allowed"))
@@ -38,6 +56,24 @@ func (a *Application) listSecretsHandler(w http.ResponseWriter, r *http.Request)
 }
 
 // getSecretHandler returns a secret by ID (masked).
+<<<<<<< HEAD
+//
+// Summary: Gets a secret by ID.
+//
+// Parameters:
+//   - w (http.ResponseWriter): The response writer.
+//   - r (*http.Request): The HTTP request.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - Writes HTTP errors on failure.
+//
+// Side Effects:
+//   - None.
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (a *Application) getSecretHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		writeError(w, fmt.Errorf("method not allowed"))
@@ -67,6 +103,24 @@ func (a *Application) getSecretHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // createSecretHandler creates or updates a secret.
+<<<<<<< HEAD
+//
+// Summary: Creates or updates a secret.
+//
+// Parameters:
+//   - w (http.ResponseWriter): The response writer.
+//   - r (*http.Request): The HTTP request.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - Writes HTTP errors on failure.
+//
+// Side Effects:
+//   - None.
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (a *Application) createSecretHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		writeError(w, fmt.Errorf("method not allowed"))
@@ -111,6 +165,24 @@ func (a *Application) createSecretHandler(w http.ResponseWriter, r *http.Request
 }
 
 // deleteSecretHandler deletes a secret.
+<<<<<<< HEAD
+//
+// Summary: Deletes a secret.
+//
+// Parameters:
+//   - w (http.ResponseWriter): The response writer.
+//   - r (*http.Request): The HTTP request.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - Writes HTTP errors on failure.
+//
+// Side Effects:
+//   - None.
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (a *Application) deleteSecretHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodDelete {
 		writeError(w, fmt.Errorf("method not allowed"))
@@ -133,6 +205,24 @@ func (a *Application) deleteSecretHandler(w http.ResponseWriter, r *http.Request
 }
 
 // revealSecretHandler reveals a secret value.
+<<<<<<< HEAD
+//
+// Summary: Reveals a secret.
+//
+// Parameters:
+//   - w (http.ResponseWriter): The response writer.
+//   - r (*http.Request): The HTTP request.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - Writes HTTP errors on failure.
+//
+// Side Effects:
+//   - Updates the last used timestamp.
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (a *Application) revealSecretHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		writeError(w, fmt.Errorf("method not allowed"))
@@ -167,6 +257,24 @@ func (a *Application) revealSecretHandler(w http.ResponseWriter, r *http.Request
 	writeJSON(w, http.StatusOK, map[string]string{"value": secret.GetValue()})
 }
 
+<<<<<<< HEAD
+// sanitizeSecret redacts the secret value.
+//
+// Summary: Redacts secret value.
+//
+// Parameters:
+//   - s (*configv1.Secret): The secret to sanitize.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies the secret object.
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func sanitizeSecret(s *configv1.Secret) {
 	if s == nil {
 		return

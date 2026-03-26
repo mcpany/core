@@ -5,6 +5,11 @@
 
 import { test, expect } from '@playwright/test';
 
+<<<<<<< HEAD
+test.skip('Live Trace Inspector and Replay Flow', async ({ page }) => {
+  // Navigate to traces page
+  // Mock traces API
+=======
 test('Live Trace Inspector and Replay Flow', async ({ page }) => {
   // Navigate to traces page
   // Mock traces API
@@ -28,6 +33,7 @@ test('Live Trace Inspector and Replay Flow', async ({ page }) => {
       ]
     });
   });
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
   // Navigate to traces page
   await page.goto('/traces');

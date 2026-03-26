@@ -9,6 +9,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Plus, Trash2, Webhook } from "lucide-react";
+<<<<<<< HEAD
+import { WizardWebhook } from "../wizard-context";
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
 /**
  * StepWebhooks component.
@@ -19,16 +23,26 @@ export function StepWebhooks() {
   const { config } = state;
 
   const addWebhook = (type: 'preCallHooks' | 'postCallHooks') => {
+<<<<<<< HEAD
+      const newHook: WizardWebhook = {
+=======
       const newHook = {
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
           name: `webhook-${Date.now()}`,
           webhook: {
               url: "https://",
               timeout: "5s",
               webhookSecret: ""
           }
+<<<<<<< HEAD
+      };
+
+      const hooks = (config[type] as WizardWebhook[]) ? [...(config[type] as WizardWebhook[])] : [];
+=======
       } as any;
 
       const hooks = config[type] ? [...config[type]] : [];
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
       hooks.push(newHook);
 
       updateConfig({
@@ -37,7 +51,11 @@ export function StepWebhooks() {
   };
 
   const removeWebhook = (type: 'preCallHooks' | 'postCallHooks', index: number) => {
+<<<<<<< HEAD
+      const hooks = (config[type] as WizardWebhook[]) ? [...(config[type] as WizardWebhook[])] : [];
+=======
       const hooks = config[type] ? [...config[type]] : [];
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
       hooks.splice(index, 1);
       updateConfig({
           [type]: hooks
@@ -45,17 +63,30 @@ export function StepWebhooks() {
   };
 
   const updateWebhook = (type: 'preCallHooks' | 'postCallHooks', index: number, field: string, value: string) => {
+<<<<<<< HEAD
+      const hooks = (config[type] as WizardWebhook[]) ? [...(config[type] as WizardWebhook[])] : [];
+      const hook = { ...hooks[index] };
+=======
       const hooks = config[type] ? [...config[type]] : [];
       const hook = { ...(hooks[index] as unknown as Record<string, unknown>) };
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
       if (field === 'name') {
           hook.name = value;
       } else {
+<<<<<<< HEAD
+           const currentWebhook = hook.webhook || { url: "", webhookSecret: "", timeout: "" };
+           hook.webhook = { ...currentWebhook, [field]: value };
+      }
+
+      hooks[index] = hook;
+=======
            const currentWebhook = hook.webhook || { url: "", webhookSecret: "" };
            hook.webhook = { ...currentWebhook, [field]: value } as any;
       }
 
       hooks[index] = hook as any;
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
       updateConfig({
           [type]: hooks
       });
@@ -73,7 +104,11 @@ export function StepWebhooks() {
           </p>
 
           <div className="space-y-4">
+<<<<<<< HEAD
+              {(config.preCallHooks as WizardWebhook[])?.map((hook: WizardWebhook, idx: number) => (
+=======
               {config.preCallHooks?.map((hook: any, idx: number) => (
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
                   <Card key={idx}>
                       <CardContent className="pt-6 grid gap-4">
                           <div className="flex justify-between items-start">
@@ -133,7 +168,11 @@ export function StepWebhooks() {
               Webhooks executed after the upstream service call. Can be used for logging or result transformation.
           </p>
            <div className="space-y-4">
+<<<<<<< HEAD
+              {(config.postCallHooks as WizardWebhook[])?.map((hook: WizardWebhook, idx: number) => (
+=======
               {config.postCallHooks?.map((hook: any, idx: number) => (
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
                   <Card key={idx}>
                       <CardContent className="pt-6 grid gap-4">
                           <div className="flex justify-between items-start">
@@ -220,7 +259,11 @@ export function StepWebhooks() {
                           val._processed_at = new Date().toISOString();
                           val._transformed = true;
                           if (config.preCallHooks?.length) {
+<<<<<<< HEAD
+                              val._hooks_applied = (config.preCallHooks as WizardWebhook[]).map((h: WizardWebhook) => h.name);
+=======
                               val._hooks_applied = config.preCallHooks.map((h: any) => h.name);
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
                           }
                           if (outputEl) outputEl.textContent = JSON.stringify(val, null, 2);
                       } catch (e) {

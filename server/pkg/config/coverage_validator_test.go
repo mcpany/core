@@ -476,7 +476,11 @@ func TestValidateWebSocketService_Coverage(t *testing.T) {
         },
           {
             name: "output_schema_error",
+<<<<<<< HEAD
 				service: configv1.WebsocketUpstreamService_builder{
+=======
+				service: configv1.WebsocketUpstreamService_builder{
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 				Address: proto.String("ws://example.com"),
 				Calls: map[string]*configv1.WebsocketCallDefinition{
 					"test": configv1.WebsocketCallDefinition_builder{
@@ -492,7 +496,11 @@ func TestValidateWebSocketService_Coverage(t *testing.T) {
         },
          {
             name: "valid_service",
+<<<<<<< HEAD
 				service: configv1.WebsocketUpstreamService_builder{
+=======
+				service: configv1.WebsocketUpstreamService_builder{
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 				Address: proto.String("ws://example.com"),
 				Calls: map[string]*configv1.WebsocketCallDefinition{
 					"test": configv1.WebsocketCallDefinition_builder{
@@ -532,7 +540,11 @@ func TestValidateContainerEnvironment_Coverage(t *testing.T) {
             expectErr: "",
         },
         {
+<<<<<<< HEAD
 				name: "empty_host_path",
+=======
+				name: "empty_host_path",
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 			env: configv1.ContainerEnvironment_builder{
 				Image: proto.String("alpine"),
 				Volumes: map[string]string{
@@ -542,7 +554,11 @@ func TestValidateContainerEnvironment_Coverage(t *testing.T) {
 			expectErr: "container environment volume host path is empty",
         },
         {
+<<<<<<< HEAD
 				name: "empty_container_path",
+=======
+				name: "empty_container_path",
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 			env: configv1.ContainerEnvironment_builder{
 				Image: proto.String("alpine"),
 				Volumes: map[string]string{
@@ -552,7 +568,11 @@ func TestValidateContainerEnvironment_Coverage(t *testing.T) {
 			expectErr: "container environment volume container path is empty",
         },
         {
+<<<<<<< HEAD
 				name: "insecure_host_path",
+=======
+				name: "insecure_host_path",
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 			env: configv1.ContainerEnvironment_builder{
 				Image: proto.String("alpine"),
 				Volumes: map[string]string{
@@ -584,7 +604,11 @@ func TestValidateAPIKeyAuth_Coverage(t *testing.T) {
         expectErr string
     }{
         {
+<<<<<<< HEAD
 				name: "empty_param_name",
+=======
+				name: "empty_param_name",
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 			apiKey: configv1.APIKeyAuth_builder{
 				ParamName: proto.String(""),
 			}.Build(),
@@ -592,7 +616,11 @@ func TestValidateAPIKeyAuth_Coverage(t *testing.T) {
 			expectErr: "param_name",
         },
         {
+<<<<<<< HEAD
 				name: "outgoing_missing_value",
+=======
+				name: "outgoing_missing_value",
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 			apiKey: configv1.APIKeyAuth_builder{
 				ParamName: proto.String("api_key"),
 			}.Build(),
@@ -600,7 +628,11 @@ func TestValidateAPIKeyAuth_Coverage(t *testing.T) {
 			expectErr: "api key 'value' is missing",
         },
         {
+<<<<<<< HEAD
 				name: "incoming_missing_config",
+=======
+				name: "incoming_missing_config",
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 			apiKey: configv1.APIKeyAuth_builder{
 				ParamName:         proto.String("api_key"),
 				VerificationValue: proto.String(""),
@@ -610,7 +642,11 @@ func TestValidateAPIKeyAuth_Coverage(t *testing.T) {
         },
         {
              name: "invalid_secret_value",
+<<<<<<< HEAD
 				apiKey: configv1.APIKeyAuth_builder{
+=======
+				apiKey: configv1.APIKeyAuth_builder{
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 				ParamName: proto.String("api_key"),
 				Value: configv1.SecretValue_builder{
 					EnvironmentVariable: proto.String("MISSING_VAR"),
@@ -620,7 +656,11 @@ func TestValidateAPIKeyAuth_Coverage(t *testing.T) {
              expectErr: "api key secret validation failed",
         },
         {
+<<<<<<< HEAD
 				name: "valid_incoming_api_key",
+=======
+				name: "valid_incoming_api_key",
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 			apiKey: configv1.APIKeyAuth_builder{
 				ParamName:         proto.String("api_key"),
 				VerificationValue: proto.String("secret"),
@@ -697,7 +737,11 @@ func TestValidateBasicAuth_Coverage(t *testing.T) {
         expectErr string
     }{
         {
+<<<<<<< HEAD
 				name: "empty_username",
+=======
+				name: "empty_username",
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 			auth: configv1.BasicAuth_builder{
 				Username: proto.String(""),
 			}.Build(),

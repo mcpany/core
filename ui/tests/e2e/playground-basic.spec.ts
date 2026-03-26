@@ -5,6 +5,13 @@
 
 import { test, expect } from '@playwright/test';
 
+<<<<<<< HEAD
+test.describe.skip('Playground Basic Verification', () => {
+  test.skip('should execute calculator tool and verify output', async ({ page }) => {
+    // Mock the tools API
+
+    // Mock the execute API
+=======
 test.describe('Playground Basic Verification', () => {
   test('should execute calculator tool and verify output', async ({ page }) => {
     // Mock the tools API
@@ -43,6 +50,7 @@ test.describe('Playground Basic Verification', () => {
             })
         });
     });
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
     // Navigate to playground
     await page.goto('/playground');

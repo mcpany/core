@@ -42,7 +42,11 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
 
 // Re-export generated types
 export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition, ServiceProvenance };
+<<<<<<< HEAD
+export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '@proto/api/v1/registration';
+=======
 export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '../../../proto/api/v1/registration';
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
 /**
  * ServiceTemplate defines a template for an upstream service.
@@ -126,7 +130,18 @@ const rpc = new GrpcWebImpl(getBaseUrl(), {
 });
 const registrationClient = new RegistrationServiceClientImpl(rpc);
 
+<<<<<<< HEAD
+/**
+ * Fetches data with authentication headers attached.
+ *
+ * @param input The request info or URL.
+ * @param init The request initialization options.
+ * @returns The response from the fetch request.
+ */
+export const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
+=======
 const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
     const headers = new Headers(init?.headers);
     // Inject Authorization header from localStorage if available
     if (typeof window !== 'undefined') {
@@ -349,6 +364,18 @@ const getMetadata = () => {
  * API Client for interacting with the MCP Any server.
  */
 export const apiClient = {
+<<<<<<< HEAD
+    /**
+     * Retrieves the current active intent alignment status.
+     * @returns A promise that resolves to an array of SubagentStatus.
+     */
+    getActiveIntentAlignment: async () => {
+        const res = await fetchWithAuth('/api/v1/alignment/status');
+        if (!res.ok) throw new Error('Failed to fetch intent alignment status');
+        return res.json();
+    },
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
     // Services (Migrated to gRPC)
 
     /**

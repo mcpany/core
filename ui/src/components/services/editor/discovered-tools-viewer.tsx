@@ -14,7 +14,11 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
+<<<<<<< HEAD
+import { SchemaViewer } from "@/components/tools/schema-viewer";
+=======
 import { JsonView } from "@/components/ui/json-view";
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
 interface DiscoveredToolsViewerProps {
     tools: ToolDefinition[];
@@ -66,12 +70,17 @@ export function DiscoveredToolsViewer({ tools }: DiscoveredToolsViewerProps) {
 
                                     <div>
                                         <div className="text-xs font-semibold text-muted-foreground mb-1.5 uppercase tracking-wider">Input Schema</div>
+<<<<<<< HEAD
+                                        <div className="bg-muted/40 rounded-md border overflow-hidden p-4">
+                                            <SchemaViewer schema={(tool.inputSchema || {}) as any} />
+=======
                                         <div className="bg-muted/40 rounded-md border overflow-hidden">
                                             <JsonView
                                                 data={tool.inputSchema}
                                                 maxHeight={300}
                                                 className="bg-transparent border-none text-xs"
                                             />
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
                                         </div>
                                     </div>
                                 </div>

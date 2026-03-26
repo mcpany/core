@@ -4,7 +4,10 @@
 run:
   timeout: 5m
   tests: false
+<<<<<<< HEAD
+=======
   modules-download-mode: readonly
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
 linters:
   enable:
@@ -42,7 +45,10 @@ issues:
     - vendor
     - node_modules
     - .cache
+<<<<<<< HEAD
+=======
     - bazel-.*
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
   exclude-rules:
     - path: "_test.go"
       linters:
@@ -51,6 +57,16 @@ issues:
       linters:
         - "revive"
       text: "var-naming: avoid meaningless package names"
+<<<<<<< HEAD
+  skip-files:
+    - '.*\.pb\.go$'
+    - lll
+    - funlen
+    - wsl
+    - gci
+    - gofumpt
+=======
   exclude-files:
     - ".*\\.pb\\.go$"
     - ".*\\.pb\\.gw\\.go$"
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))

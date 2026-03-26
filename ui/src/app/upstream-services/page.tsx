@@ -25,6 +25,10 @@ import { ServiceEditor } from "@/components/services/editor/service-editor";
 import { ServiceTemplateSelector } from "@/components/services/service-template-selector";
 import { ServiceTemplate } from "@/lib/templates";
 import { BulkServiceImport } from "@/components/services/bulk-service-import";
+<<<<<<< HEAD
+import { RegisterServiceDialog } from "@/components/register-service-dialog";
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 import {
     Dialog,
     DialogContent,
@@ -196,12 +200,15 @@ export default function ServicesPage() {
       setIsSheetOpen(true);
   }, []);
 
+<<<<<<< HEAD
+=======
   const openNew = () => {
       setSelectedService(null);
       setConfiguringTemplate(null);
       setIsSheetOpen(true);
   };
 
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
   const initServiceFromConfig = (config: Partial<UpstreamServiceConfig>) => {
       // Deep copy config to avoid mutating template
       // ⚡ BOLT: Replaced slow JSON.parse(JSON.stringify()) with native structuredClone to avoid main thread blocking and reduce memory overhead during deep object cloning.
@@ -435,9 +442,16 @@ export default function ServicesPage() {
                     />
                 </DialogContent>
             </Dialog>
+<<<<<<< HEAD
+            <RegisterServiceDialog
+                onSuccess={fetchServices}
+                trigger={<Button><Plus className="mr-2 h-4 w-4" /> Add Service</Button>}
+            />
+=======
             <Button onClick={openNew}>
                 <Plus className="mr-2 h-4 w-4" /> Add Service
             </Button>
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
         </div>
       </div>
 

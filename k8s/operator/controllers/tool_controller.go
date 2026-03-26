@@ -11,7 +11,11 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
+<<<<<<< HEAD
+	mcpanyv1alpha1 "github.com/mcpany/core/k8s/operator/api/v1alpha1"
+=======
 	mcpanyv1alpha1 "github.com/mcpany/core/operator/api/v1alpha1"
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 )
 
 // ToolReconciler reconciles a Tool object.
@@ -42,7 +46,11 @@ type ToolReconciler struct {
 // Side Effects:
 //   - Reads and updates Tool resources in the cluster.
 //   - May create or update related resources.
+<<<<<<< HEAD
+func (r *ToolReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+=======
 func (r *ToolReconciler) Reconcile(ctx context.Context, _ ctrl.Request) (ctrl.Result, error) {
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	_ = log.FromContext(ctx)
 
 	// TODO(user): your logic here

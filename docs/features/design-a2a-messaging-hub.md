@@ -90,3 +90,13 @@ With the transition of the Agent2Agent (A2A) protocol to the Linux Foundation, i
 *   Integrating **MSSQ (Machine-Speed Swarm Quarantine)** triggers into the `/v1/a2a/mailbox` and delivery logic. The Hub will now check the high-speed bitset for quarantine status before delivering any task proposal or message.
 *   Enforcing **Mandatory Discovery Auth** for all UAB-connected peers, aligning with the Gemini CLI v0.33.0 baseline. Capability metadata is now cryptographically masked until a verified mission-bound handshake is completed.
 **Security Impact:** Neutralizes "Hivenet" propagation by cutting off inter-agent communication channels in sub-milliseconds and ensures "Zero-Visibility" for unauthenticated probes.
+<<<<<<< HEAD
+
+### Update: 2026-03-23 - A2A Authentication Proxy & Sandbox Identity
+**Context:** Gemini CLI v0.34.0 has standardized HTTP authentication for remote A2A agents and authenticated agent card discovery. Simultaneously, the rise of RL-driven swarms demands hardware-bound environment attestation.
+**Architecture Adjustment:**
+* **A2A Authentication Proxy:** Introducing a mandatory authentication gate for the `/v1/a2a/propose` and `/v1/a2a/mailbox` endpoints in Section 4. The hub will now validate bearer tokens against a verified peer registry.
+* **Execution Identity Integration:** Extending the A2A Task Card in Section 4 to include a `sandbox_attestation` field, allowing agents running in gVisor to prove their environment integrity.
+**Security Impact:** Eliminates unauthenticated capability probes and provides a foundation for zero-trust inter-agent delegation in heterogeneous meshes.
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))

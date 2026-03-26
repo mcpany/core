@@ -31,6 +31,27 @@ func (m *mockTool) MCPTool() *mcp.Tool {
 	return nil // Not needed for ExecuteTool tests unless mcp server integration is involved
 }
 
+<<<<<<< HEAD
+func (m *mockTool) IsStreaming() bool {
+	return false
+}
+
+func (m *mockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	ch := make(chan any, 1)
+	go func() {
+		defer close(ch)
+		res, err := m.Execute(ctx, req)
+		if err != nil {
+			ch <- err
+		} else {
+			ch <- res
+		}
+	}()
+	return ch, nil
+}
+
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (m *mockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	if m.executeFunc != nil {
 		return m.executeFunc(ctx, req)

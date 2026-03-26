@@ -13,7 +13,14 @@ go_library(
 
 go_test(
     name = "browser_test",
+<<<<<<< HEAD
+    srcs = [
+        "browser_playwright_test.go",
+        "browser_test.go",
+    ],
+=======
     srcs = ["browser_test.go"],
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
     embed = [":browser"],
     deps = [
         "@com_github_stretchr_testify//assert",

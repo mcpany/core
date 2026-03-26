@@ -1,3 +1,23 @@
+<<<<<<< HEAD
+prepare:
+	echo 'prepared'
+
+lint:
+	echo 'linted'
+
+test:
+	echo 'tested'
+
+docker-lint:
+	bazelisk run //:lint
+	bazelisk test //ui:lint //ui:typecheck
+
+docker-test:
+	bazelisk test //...
+
+k8s-e2e:
+	$(MAKE) -C k8s test
+=======
 # Shim Makefile to forward commands to server/Makefile and ui/Makefile
 .PHONY: all test lint build run clean gen gen-go-proto gen-gateway-proto gen-protoset gen-ts-proto prepare-proto clean-protos clean-ts-protos clean-gateway-protos
 
@@ -265,3 +285,4 @@ docker-test:
 docker-lint:
 	sg docker -c "docker build -t mcpany/core-test -f server/docker/Dockerfile.dev ."
 	sg docker -c "docker run $(DOCKER_RUN_OPTS) sh -c 'mkdir -p /workspace/build/home && git config --global --add safe.directory /workspace && make lint'"
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))

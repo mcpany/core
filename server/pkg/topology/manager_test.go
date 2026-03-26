@@ -105,6 +105,18 @@ func (m *MockToolManager) GetToolCountForService(serviceID string) int {
 }
 
 // MockTool is a mock implementation of tool.Tool
+<<<<<<< HEAD
+
+func (m *MockTool) IsStreaming() bool {
+	return false
+}
+
+func (m *MockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, nil
+}
+
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 type MockTool struct {
 	mock.Mock
 }

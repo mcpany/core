@@ -10,9 +10,55 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
+<<<<<<< HEAD
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
+// MockSession mocks the tool.Session interface
+type MockSession struct {
+	mock.Mock
+}
+
+func (m *MockSession) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
+	args := m.Called(ctx, params)
+	if res := args.Get(0); res != nil {
+		return res.(*mcp.CreateMessageResult), args.Error(1)
+	}
+	return nil, args.Error(1)
+}
+
+func (m *MockSession) SessionID() string {
+	args := m.Called()
+	return args.String(0)
+}
+
+func (m *MockSession) GetUpstreamSession() mcp.Session {
+	args := m.Called()
+	if res := args.Get(0); res != nil {
+		return res.(mcp.Session)
+	}
+	return nil
+}
+
+func (m *MockSession) Stop() error {
+	args := m.Called()
+	return args.Error(0)
+}
+
+func (m *MockSession) ListRoots(ctx context.Context) (*mcp.ListRootsResult, error) {
+	args := m.Called(ctx)
+	if res := args.Get(0); res != nil {
+		return res.(*mcp.ListRootsResult), args.Error(1)
+	}
+	return nil, args.Error(1)
+}
+
+=======
+	"github.com/stretchr/testify/require"
+)
+
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func TestHandleCreateMessage(t *testing.T) {
 	u := NewUpstream(configv1.GlobalSettings_builder{}.Build()).(*Upstream)
 	ctx := context.Background()

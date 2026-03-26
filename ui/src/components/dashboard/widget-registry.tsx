@@ -10,6 +10,10 @@ import { LazyRequestVolumeChart, LazyTopToolsWidget, LazyHealthHistoryChart, Laz
 import { ToolFailureRateWidget } from "@/components/dashboard/tool-failure-rate-widget";
 import { QuickActionsWidget } from "@/components/dashboard/quick-actions-widget";
 import { NetworkGraphWidget } from "@/components/dashboard/network-graph-widget";
+<<<<<<< HEAD
+import { ActiveIntentAlignmentWidget } from "@/components/dashboard/active-intent-alignment-widget";
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse, Zap, Share2, ClipboardCheck } from "lucide-react";
 
 /**
@@ -45,6 +49,17 @@ export interface WidgetDefinition {
  */
 export const WIDGET_DEFINITIONS: WidgetDefinition[] = [
     {
+<<<<<<< HEAD
+        type: "intent-alignment",
+        title: "Active Intent Alignment Monitor",
+        description: "Visual indicator for AIA heartbeat status and semantic drift alerts.",
+        defaultSize: "third",
+        component: ActiveIntentAlignmentWidget,
+        icon: Activity
+    },
+    {
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
         type: "metrics",
         title: "Metrics Overview",
         description: "Key performance indicators including RPS, Latency, and Error Rate.",
@@ -124,6 +139,17 @@ export const WIDGET_DEFINITIONS: WidgetDefinition[] = [
         component: LazyAuditLogWidget,
         icon: ClipboardCheck
     },
+<<<<<<< HEAD
+    {
+        type: "swarm-topology",
+        title: "Swarm Topology",
+        description: "Multi-Agent Swarm Topology & Sovereignty Monitor.",
+        defaultSize: "two-thirds",
+        component: React.lazy(() => import('./swarm-topology-widget').then(m => ({ default: m.SwarmTopologyWidget }))),
+        icon: Share2
+    },
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 ];
 
 /**

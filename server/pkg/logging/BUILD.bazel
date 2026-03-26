@@ -42,5 +42,10 @@ go_test(
         "//server/pkg/audit",
         "@com_github_stretchr_testify//assert",
         "@com_github_stretchr_testify//require",
+<<<<<<< HEAD
+        "@com_github_stretchr_testify//mock",
+        "//server/pkg/validation",
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
     ],
 )

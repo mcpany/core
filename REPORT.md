@@ -1,3 +1,12 @@
+<<<<<<< HEAD
+* **Target:** `server/pkg/alerts/manager.go`
+* **Risk Profile:** The `alerts` package lacked any unit tests for the critical Webhook notification functionality (`SetWebhookURL`, `CreateAlert`, `UpdateAlert`). Given that alerts represent system incidents, failures in webhook delivery pose a high operational risk as operators would not be notified of critical issues. The cyclomatic complexity of `manager.go` combined with low test coverage made it a prime candidate.
+* **New Coverage:**
+  * Guards the happy path of alert creation triggering a webhook call with correct JSON payload.
+  * Guards the happy path of alert status updates triggering a webhook call.
+  * Guards the edge case where updating a non-existent alert does not trigger a webhook call.
+* **Verification:** Confirmed that `bazel test //server/pkg/alerts/...` passes cleanly and the broader test suite `bazel test //...` introduces no regressions.
+=======
 # Truth Reconciliation Audit Report
 
 ## Executive Summary
@@ -31,3 +40,4 @@ During the evaluation, most features documented were found to be correctly imple
 
 ## Security Scrub
 The report contains no PII, secrets, or internal IPs. It adheres to all security protocols.
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))

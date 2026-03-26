@@ -20,13 +20,32 @@ export enum WizardStep {
 /**
  * WizardState type definition.
  */
+<<<<<<< HEAD
+export interface WizardWebhook {
+    name: string;
+    webhook: {
+        url: string;
+        timeout?: string;
+        webhookSecret?: string;
+    };
+}
+
+/**
+ * WizardState type definition.
+ */
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 export interface WizardState {
     currentStep: WizardStep;
     config: Partial<UpstreamServiceConfig>;
     // Temporary state for the wizard that might not map 1:1 to config yet
     selectedTemplateId?: string;
     params: Record<string, string>; // Key-Value pairs for parameters/env vars
+<<<<<<< HEAD
+    webhooks: WizardWebhook[];
+=======
     webhooks: any[]; // TODO: Define webhook type
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
     transformers: any[];
     authType?: 'local' | 'new';
     authCredentialId?: string;
@@ -123,9 +142,20 @@ export function WizardProvider({ children }: { children: ReactNode }) {
                 }
                 return { valid: true }; // Parameters are usually optional
             case WizardStep.WEBHOOKS:
+<<<<<<< HEAD
+                for (const hook of (state.config.preCallHooks as WizardWebhook[] || [])) {
+                     if (hook.webhook && !hook.webhook.url) {
+                         return { valid: false, error: "Pre-Call Webhook URL is required" };
+                     }
+                }
+                for (const hook of (state.config.postCallHooks as WizardWebhook[] || [])) {
+                     if (hook.webhook && !hook.webhook.url) {
+                         return { valid: false, error: "Post-Call Webhook URL is required" };
+=======
                 for (const hook of state.webhooks) {
                      if (hook.webhook && !hook.webhook.url) {
                          return { valid: false, error: "Webhook URL is required" };
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
                      }
                 }
                 return { valid: true };

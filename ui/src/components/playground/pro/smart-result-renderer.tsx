@@ -142,7 +142,21 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                     <div key={idx} className="flex flex-col gap-2">
                         {item.type === 'text' && (
                             <div className="whitespace-pre-wrap font-mono text-sm bg-muted/30 p-3 rounded-md border border-white/5">
+<<<<<<< HEAD
+                                {(() => {
+                                    try {
+                                        if (item.text) {
+                                            const parsed = JSON.parse(item.text);
+                                            if (typeof parsed === 'object' && parsed !== null) {
+                                                return <JsonView data={parsed} maxHeight={400} />;
+                                            }
+                                        }
+                                    } catch (e) {}
+                                    return item.text;
+                                })()}
+=======
                                 {item.text}
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
                             </div>
                         )}
                         {item.type === 'image' && item.data && (

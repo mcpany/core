@@ -6,6 +6,15 @@
 
 import { test, expect } from '@playwright/test';
 
+<<<<<<< HEAD
+test.describe.skip('Marketplace Wizard and Service Lifecycle', () => {
+
+  test.beforeEach(async ({ page }) => {
+    // Mock API responses
+
+
+
+=======
 test.describe('Marketplace Wizard and Service Lifecycle', () => {
 
   test.beforeEach(async ({ page }) => {
@@ -37,6 +46,7 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
         }]
       });
     });
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
     // Mock Templates API
     const templates: any[] = [
@@ -67,6 +77,14 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
         },
       },
     ];
+<<<<<<< HEAD
+
+
+    // Mock Auth Test
+  });
+
+  test.skip('Complete CUJ: Create Config -> Instantiate -> Manage', async ({ page }) => {
+=======
     await page.route('**/api/v1/templates', async route => {
       if (route.request().method() === 'GET') {
         await route.fulfill({ json: templates });
@@ -95,6 +113,7 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
   });
 
   test('Complete CUJ: Create Config -> Instantiate -> Manage', async ({ page }) => {
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
     // 1. Navigate to Marketplace
     await page.goto('/marketplace');
     await expect(page.getByText('Marketplace', { exact: true }).first()).toBeVisible();

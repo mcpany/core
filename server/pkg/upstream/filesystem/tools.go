@@ -10,6 +10,27 @@ import (
 	"github.com/spf13/afero"
 )
 
+<<<<<<< HEAD
+// getTools returns a list of filesystem tools.
+//
+// Summary: Returns filesystem tools.
+//
+// Parameters:
+//   - prov (provider.Provider): The filesystem provider.
+//   - fs (afero.Fs): The filesystem instance.
+//   - readOnly (bool): Whether the tools should be read-only.
+//   - rootPaths (map[string]string): The allowed root paths.
+//
+// Returns:
+//   - []filesystemToolDef: The list of tools.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func getTools(prov provider.Provider, fs afero.Fs, readOnly bool, rootPaths map[string]string) []filesystemToolDef {
 	return []filesystemToolDef{
 		listDirectoryTool(prov, fs),

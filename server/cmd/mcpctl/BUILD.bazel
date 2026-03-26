@@ -8,6 +8,10 @@ go_library(
     srcs = [
         "doctor.go",
         "import.go",
+<<<<<<< HEAD
+        "init.go",
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
         "main.go",
         "tool.go",
     ],
@@ -35,6 +39,10 @@ go_test(
     srcs = [
         "doctor_test.go",
         "import_test.go",
+<<<<<<< HEAD
+        "init_test.go",
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
         "main_test.go",
         "tool_test.go",
         "validate_test.go",

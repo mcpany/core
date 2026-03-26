@@ -7,12 +7,20 @@
 
 import { useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+<<<<<<< HEAD
+=======
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FileJson, Table as TableIcon, Terminal, FileText } from "lucide-react";
 import { JsonView } from "@/components/ui/json-view";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+<<<<<<< HEAD
+import { SmartTable } from "./smart-table";
+
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
 interface RichResultViewerProps {
     result: any;
@@ -125,8 +133,39 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         return null;
     }, [content]);
 
+<<<<<<< HEAD
+    const { isTableEligible, tableData } = useMemo(() => {
+        if (mcpContent) return { isTableEligible: false, tableData: [] };
+
+        // 1. Array of objects
+        if (Array.isArray(content) && content.length > 0 && typeof content[0] === 'object' && content[0] !== null) {
+            return { isTableEligible: true, tableData: content };
+        }
+
+        // 2. Object with a single key that is an array of objects
+        if (content && typeof content === 'object' && !Array.isArray(content) && content !== null) {
+            const keys = Object.keys(content);
+            if (keys.length === 1) {
+                const innerData = content[keys[0]];
+                if (Array.isArray(innerData) && innerData.length > 0 && typeof innerData[0] === 'object' && innerData[0] !== null) {
+                    return { isTableEligible: true, tableData: innerData };
+                }
+            }
+
+            // 3. Heuristic: Object with exactly one array of objects, and other simple properties (e.g. metadata)
+            const arrayProps = Object.entries(content).filter(([_, val]) =>
+                Array.isArray(val) && val.length > 0 && typeof val[0] === 'object' && val[0] !== null
+            );
+            if (arrayProps.length === 1) {
+                 return { isTableEligible: true, tableData: arrayProps[0][1] as any[] };
+            }
+        }
+
+        return { isTableEligible: false, tableData: [] };
+=======
     const isTableEligible = useMemo(() => {
         return !mcpContent && Array.isArray(content) && content.length > 0 && typeof content[0] === 'object' && content[0] !== null;
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
     }, [content, mcpContent]);
 
     // Get columns for table
@@ -135,13 +174,21 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         // aggregate all keys from all objects to handle sparse data
         const keys = new Set<string>();
         // Limit rows scanned for columns to avoid perf issues on huge datasets
+<<<<<<< HEAD
+        tableData.slice(0, 50).forEach((item: any) => {
+=======
         content.slice(0, 50).forEach((item: any) => {
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
             if (typeof item === 'object' && item !== null) {
                 Object.keys(item).forEach(k => keys.add(k));
             }
         });
         return Array.from(keys);
+<<<<<<< HEAD
+    }, [tableData, isTableEligible]);
+=======
     }, [content, isTableEligible]);
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
     const renderCell = (value: any) => {
         if (value === null || value === undefined) return <span className="text-muted-foreground">-</span>;
@@ -187,6 +234,11 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
 
             {isTableEligible && (
                 <TabsContent value="table" className="border rounded-md">
+<<<<<<< HEAD
+                    <div className="h-[400px]">
+                        <SmartTable data={tableData} />
+                    </div>
+=======
                     <ScrollArea className="h-[400px]">
                         <Table>
                             <TableHeader>
@@ -209,16 +261,25 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
                             </TableBody>
                         </Table>
                     </ScrollArea>
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
                 </TabsContent>
             )}
 
             <TabsContent value="json">
+<<<<<<< HEAD
+                <JsonView data={content} maxHeight={400} defaultExpandedLevel={2} smartTable={true} />
+=======
                 <JsonView data={content} maxHeight={400} defaultExpandedLevel={2} />
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
             </TabsContent>
 
             {isExtracted && (
                 <TabsContent value="raw">
+<<<<<<< HEAD
+                    <JsonView data={result} maxHeight={400} smartTable={true} />
+=======
                     <JsonView data={result} maxHeight={400} />
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
                 </TabsContent>
             )}
         </Tabs>

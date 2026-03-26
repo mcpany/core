@@ -20,7 +20,11 @@ import (
 )
 
 func TestUpstreamService_FunTranslations(t *testing.T) {
+<<<<<<< HEAD
+	 // Removed skip
+=======
 	// t.SkipNow() // Removed skip
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 

@@ -18,6 +18,10 @@ interface KeyValueEditorProps {
 }
 
 interface KeyValuePair {
+<<<<<<< HEAD
+    id: string;
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
     key: string;
     value: string;
 }
@@ -30,7 +34,11 @@ export function KeyValueEditor({ initialValues, onChange, keyPlaceholder = "Key"
 
     useEffect(() => {
         if (initialValues) {
+<<<<<<< HEAD
+            setPairs(Object.entries(initialValues).map(([key, value]) => ({ id: crypto.randomUUID(), key, value })));
+=======
             setPairs(Object.entries(initialValues).map(([key, value]) => ({ key, value })));
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
         } else {
             setPairs([]);
         }
@@ -47,7 +55,11 @@ export function KeyValueEditor({ initialValues, onChange, keyPlaceholder = "Key"
     };
 
     const addPair = () => {
+<<<<<<< HEAD
+        const newPairs = [...pairs, { id: crypto.randomUUID(), key: "", value: "" }];
+=======
         const newPairs = [...pairs, { key: "", value: "" }];
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
         setPairs(newPairs);
         // Do not update parent on add, wait for input
     };
@@ -71,8 +83,15 @@ export function KeyValueEditor({ initialValues, onChange, keyPlaceholder = "Key"
 
     return (
         <div className="space-y-2">
+<<<<<<< HEAD
+            {/* ⚡ BOLT: [Render Optimization] Use stable IDs instead of array index for list keys to prevent React state/focus loss and unnecessary remounts.
+                Randomized Selection from Top 5 High-Impact Targets (Render Category) */}
+            {pairs.map((pair, index) => (
+                <div key={pair.id} className="flex items-center gap-2">
+=======
             {pairs.map((pair, index) => (
                 <div key={index} className="flex items-center gap-2">
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
                     <Input
                         placeholder={keyPlaceholder}
                         value={pair.key}

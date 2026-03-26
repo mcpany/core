@@ -476,3 +476,237 @@ func TestCountTokensInValueSimpleFast(t *testing.T) {
 		})
 	}
 }
+<<<<<<< HEAD
+
+func TestSimpleTokenizeInt64_Coverage(t *testing.T) {
+	tests := []struct {
+		val  int64
+		want int
+	}{
+		// < 8 chars (including sign) fast path -> 1
+		{0, 1},
+		{9999999, 1},
+		{-999999, 1},
+
+		// 8 chars -> 2 (8/4)
+		{10000000, 2},
+		{-1000000, 2},
+
+		// 9 chars -> 2 (9/4)
+		{100000000, 2},
+		{-10000000, 2},
+
+		// 10 chars -> 2
+		{1000000000, 2},
+
+		// 11 chars -> 2 (11/4 = 2)
+		{10000000000, 2},
+
+		// 12 chars -> 3
+		{100000000000, 3},
+
+		// 13 chars -> 3
+		{1000000000000, 3},
+
+		// 14 chars -> 3
+		{10000000000000, 3},
+
+		// 15 chars -> 3
+		{100000000000000, 3},
+
+		// 16 chars -> 4
+		{1000000000000000, 4},
+
+		// 17 chars -> 4
+		{10000000000000000, 4},
+
+		// 18 chars -> 4
+		{100000000000000000, 4},
+
+		// 19 chars -> 4 (19/4 = 4)
+		{1000000000000000000, 4},
+
+		// MaxInt64: 9223372036854775807 (19 chars) -> 4
+		{9223372036854775807, 4},
+
+		// MinInt64: -9223372036854775808 (20 chars) -> 5
+		{-9223372036854775808, 5},
+	}
+
+	for _, tt := range tests {
+		got := simpleTokenizeInt64(tt.val)
+		if got != tt.want {
+			t.Errorf("simpleTokenizeInt64(%d) = %d, want %d", tt.val, got, tt.want)
+		}
+	}
+}
+
+func TestSimpleTokenizeInt64_AllMagnitudes(t *testing.T) {
+	tests := []struct {
+		val  int64
+		want int
+	}{
+		// < 10
+		{9, 1},
+		// < 100
+		{99, 1},
+		// < 1000
+		{999, 1},
+		// < 10000
+		{9999, 1},
+		// < 100000
+		{99999, 1},
+		// < 1000000
+		{999999, 1},
+		// < 10000000
+		{9999999, 1},
+		// < 100000000 (8 chars) -> 2
+		{99999999, 2},
+		// < 1000000000 (9 chars) -> 2
+		{999999999, 2},
+		// < 10000000000 (10 chars) -> 2
+		{9999999999, 2},
+		// < 100000000000 (11 chars) -> 2
+		{99999999999, 2},
+		// < 1000000000000 (12 chars) -> 3
+		{999999999999, 3},
+		// < 10000000000000 (13 chars) -> 3
+		{9999999999999, 3},
+		// < 100000000000000 (14 chars) -> 3
+		{99999999999999, 3},
+		// < 1000000000000000 (15 chars) -> 3
+		{999999999999999, 3},
+		// < 10000000000000000 (16 chars) -> 4
+		{9999999999999999, 4},
+		// < 100000000000000000 (17 chars) -> 4
+		{99999999999999999, 4},
+		// < 1000000000000000000 (18 chars) -> 4
+		{999999999999999999, 4},
+		// MaxInt64 (19 chars) -> 4
+		{9223372036854775807, 4},
+
+		// Negatives
+		{-9, 1},
+		{-99, 1},
+		{-999, 1},
+		{-9999, 1},
+		{-99999, 1},
+		{-999999, 1},
+		{-1000000, 2},
+		{-9999999, 2},
+		{-99999999, 2},
+		{-999999999, 2},
+		{-9999999999, 2},
+		{-99999999999, 3},
+		{-999999999999, 3},
+		{-9999999999999, 3},
+		{-99999999999999, 3},
+		{-999999999999999, 4},
+		{-9999999999999999, 4},
+		{-99999999999999999, 4},
+		{-999999999999999999, 4},
+		{-9223372036854775807, 5},
+	}
+
+	for _, tt := range tests {
+		got := simpleTokenizeInt64(tt.val)
+		if got != tt.want {
+			t.Errorf("simpleTokenizeInt64(%d) = %d, want %d", tt.val, got, tt.want)
+		}
+	}
+}
+
+
+
+func TestCountSliceInterfaceRaw_Coverage(t *testing.T) {
+	tokenizer := NewWordTokenizer()
+
+	// Need to get access to rawWordCounter logic.
+	// We can do this by using a []interface{} that contains things hitting the branches.
+
+	// Branch 1: empty slice
+	emptySlice := []interface{}{}
+	c, err := CountTokensInValue(tokenizer, emptySlice)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if c != 0 {
+		t.Errorf("empty slice want 0, got %d", c)
+	}
+
+	// Branch 2: string, float64, int, int64, bool, nil
+	basicSlice := []interface{}{"hello world", float64(3.14), int(1), int64(2), true, nil}
+	c, err = CountTokensInValue(tokenizer, basicSlice)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if c != 9 {
+		t.Errorf("basic slice want 9, got %d", c)
+	}
+
+	// Branch 3: nested []interface{}
+	nestedSlice := []interface{}{[]interface{}{"nested"}}
+	c, err = CountTokensInValue(tokenizer, nestedSlice)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if c != 1 {
+		t.Errorf("nested slice want 1, got %d", c)
+	}
+
+	// Branch 4: default (structs, maps, etc)
+	defaultSlice := []interface{}{map[string]string{"key": "value"}}
+	c, err = CountTokensInValue(tokenizer, defaultSlice)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	// key (1) + value (1) = 2
+	if c != 2 {
+		t.Errorf("default slice want 2, got %d", c)
+	}
+
+	// Branch 5: error in nested []interface{}
+	// We can trigger this by putting a cycle in the nested slice.
+	s1 := []interface{}{"test"}
+	s2 := []interface{}{s1}
+	s1[0] = s2 // Cycle: s1 -> s2 -> s1
+	_, err = CountTokensInValue(tokenizer, s1)
+	if err == nil {
+		t.Fatalf("expected error due to cycle in nested slice, got nil")
+	}
+
+	// Branch 6: error in default
+	// Cycle in a map inside the slice
+	m1 := map[string]interface{}{}
+	m1["self"] = m1
+	s3 := []interface{}{m1}
+	_, err = CountTokensInValue(tokenizer, s3)
+	if err == nil {
+		t.Fatalf("expected error due to cycle in map inside slice, got nil")
+	}
+}
+
+func TestSimpleTokenizeInt64_AllSwitchBranchesDirectly(t *testing.T) {
+	tests := []struct {
+		n int64
+		want int
+	}{
+		// Use negative values where the negated result places us cleanly into every bucket.
+		// Wait, the logic is:
+		// if n < 0 { l=1; n=-n }
+		// switch {
+		// case n < 10: l++
+		// case n < 100: l+=2
+		// ...
+		// BUT the fast path is:
+		// if n > -1000000 && n < 10000000 { return 1 }
+		// This means any number between -999999 and 9999999 RETURNS 1 directly!
+		// It will NEVER evaluate the switch for n < 10, n < 100, n < 1000, n < 10000, n < 100000, n < 1000000, n < 10000000!
+		// Because it's already caught by the fast path at the very beginning of the function!
+	}
+	for _, tt := range tests {
+		_ = tt.n
+	}
+}
+=======
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))

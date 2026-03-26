@@ -1,6 +1,10 @@
 load("@rules_go//go:def.bzl", "go_library")
 load("@rules_go//proto:def.bzl", "go_proto_library")
+<<<<<<< HEAD
+load("@protobuf//bazel:proto_library.bzl", "proto_library")
+=======
 load("@rules_proto//proto:defs.bzl", "proto_library")
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
 proto_library(
     name = "proto_proto",

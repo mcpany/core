@@ -5,6 +5,17 @@
 
 import { test, expect } from '@playwright/test';
 
+<<<<<<< HEAD
+test.describe.skip('Bulk Service Actions', () => {
+
+  test.beforeEach(async ({ page }) => {
+    // Mock services API
+
+     // Mock doctor API
+  });
+
+  test.skip('should select all services and show bulk actions', async ({ page }) => {
+=======
 test.describe('Bulk Service Actions', () => {
 
   test.beforeEach(async ({ page }) => {
@@ -30,6 +41,7 @@ test.describe('Bulk Service Actions', () => {
   });
 
   test('should select all services and show bulk actions', async ({ page }) => {
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
     await page.goto('/upstream-services');
 
     // Wait for services to load
@@ -46,7 +58,11 @@ test.describe('Bulk Service Actions', () => {
     await expect(page.getByRole('button', { name: 'Delete' })).toBeVisible();
   });
 
+<<<<<<< HEAD
+  test.skip('should select individual services', async ({ page }) => {
+=======
   test('should select individual services', async ({ page }) => {
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
      await page.goto('/upstream-services');
      await expect(page.getByText('service-1')).toBeVisible();
 
@@ -61,6 +77,11 @@ test.describe('Bulk Service Actions', () => {
      await expect(page.getByText('2 selected')).toBeVisible();
   });
 
+<<<<<<< HEAD
+  test.skip('should toggle services', async ({ page }) => {
+      // Mock the toggle API
+      const toggleRequests: string[] = [];
+=======
   test('should toggle services', async ({ page }) => {
       // Mock the toggle API
       const toggleRequests: string[] = [];
@@ -72,6 +93,7 @@ test.describe('Bulk Service Actions', () => {
               await route.continue();
           }
       });
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
       await page.goto('/upstream-services');
       await expect(page.getByText('service-1')).toBeVisible();
@@ -89,6 +111,11 @@ test.describe('Bulk Service Actions', () => {
       expect(toggleRequests.some(url => url.includes('service-3'))).toBeTruthy();
   });
 
+<<<<<<< HEAD
+    test.skip('should delete services', async ({ page }) => {
+      // Mock the delete API
+      const deleteRequests: string[] = [];
+=======
     test('should delete services', async ({ page }) => {
       // Mock the delete API
       const deleteRequests: string[] = [];
@@ -100,6 +127,7 @@ test.describe('Bulk Service Actions', () => {
             await route.continue();
           }
       });
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
       // Handle confirm dialog
       page.on('dialog', dialog => dialog.accept());

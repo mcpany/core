@@ -13,7 +13,26 @@ import (
 
 // handleInitiateOAuth handles the request to initiate an OAuth2 flow.
 // POST /auth/oauth/initiate
+<<<<<<< HEAD
+// Body: {\"service_id\": \"github\", \"redirect_url\": \"...\"}.
+//
+// Summary: Handles OAuth2 initiation.
+//
+// Parameters:
+//   - w (http.ResponseWriter): The response writer.
+//   - r (*http.Request): The HTTP request.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - Writes HTTP errors on invalid request or unauthorized access.
+//
+// Side Effects:
+//   - None.
+=======
 // Body: {"service_id": "github", "redirect_url": "..."}.
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (a *Application) handleInitiateOAuth(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -66,8 +85,28 @@ func (a *Application) handleInitiateOAuth(w http.ResponseWriter, r *http.Request
 
 // handleOAuthCallback handles the OAuth2 callback.
 // POST /auth/oauth/callback
+<<<<<<< HEAD
+// Body: {\"service_id\": \"github\", \"code\": \"...\", \"redirect_url\": \"...\"}
+// Note: Usually callbacks are GET requests to the frontend, which then POST code to backend.
+//
+// Summary: Handles OAuth2 callback.
+//
+// Parameters:
+//   - w (http.ResponseWriter): The response writer.
+//   - r (*http.Request): The HTTP request.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - Writes HTTP errors on invalid request or unauthorized access.
+//
+// Side Effects:
+//   - None.
+=======
 // Body: {"service_id": "github", "code": "...", "redirect_url": "..."}
 // Note: Usually callbacks are GET requests to the frontend, which then POST code to backend.
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (a *Application) handleOAuthCallback(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)

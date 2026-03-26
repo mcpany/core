@@ -8,6 +8,10 @@ import { test, expect } from '@playwright/test';
 test.describe('Settings & Secrets', () => {
   test.beforeEach(async ({ page }) => {
     // Mock Global Settings API
+<<<<<<< HEAD
+
+    // Mock other noisy endpoints
+=======
     await page.route(/\/api\/v1\/settings/, async route => {
       if (route.request().method() === 'GET') {
         await route.fulfill({
@@ -35,10 +39,14 @@ test.describe('Settings & Secrets', () => {
     await page.route(/\/api\/v1\/topology/, async route => {
         await route.fulfill({ status: 200, json: { nodes: [], edges: [] } });
     });
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
     // Mock Secrets API with state
     const secretsStore: any[] = [];
 
+<<<<<<< HEAD
+
+=======
     await page.route(/\/api\/v1\/secrets/, async route => {
       const method = route.request().method();
 
@@ -83,6 +91,7 @@ test.describe('Settings & Secrets', () => {
             await route.continue();
         }
     });
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
     await page.goto('/settings');
   });

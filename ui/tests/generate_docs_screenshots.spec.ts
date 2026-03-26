@@ -247,7 +247,11 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         // Click Add Service (Button)
         await page.getByRole('button', { name: 'Add Service' }).click();
         await page.waitForTimeout(1000);
+<<<<<<< HEAD
+        await expect(page.getByText('Select Service Template')).toBeVisible();
+=======
         await expect(page.getByText('New Service')).toBeVisible();
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_add_dialog.png') });
 
@@ -702,7 +706,11 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         });
 
         await testBtn.click();
+<<<<<<< HEAD
+        await expect(page.getByText('Test passed: 200 OK').first()).toBeVisible();
+=======
         await expect(page.getByText('Test passed: 200 OK')).toBeVisible();
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'verification.png') });
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'test_connection.png') }); // Alias

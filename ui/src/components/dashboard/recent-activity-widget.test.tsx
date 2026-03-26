@@ -43,7 +43,11 @@ describe("RecentActivityWidget", () => {
     mockFetch.mockReturnValue(new Promise(() => {}));
 
     render(<RecentActivityWidget />);
+<<<<<<< HEAD
+    expect(screen.getByText(/Loading timeline/i)).toBeInTheDocument();
+=======
     expect(screen.getByText(/Loading activity/i)).toBeInTheDocument();
+>>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
   });
 
   it("renders traces when fetch succeeds", async () => {
