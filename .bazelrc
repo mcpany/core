@@ -120,4 +120,4 @@ test --local_test_jobs=1
 
 
 
-build --jobs=2
+build:remote --jobs=2
