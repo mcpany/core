@@ -1,6 +1,6 @@
 /**
- * Copyright 2026 Author(s) of MCP An.
- * SPDX-License-Identifier: Apache-2..
+ * Copyright 2026 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**

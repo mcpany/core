@@ -1,4 +1,4 @@
-// Copyright 2026 Author(s) of MCP Any.
+// Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0.
 
 package controllers
@@ -120,8 +120,8 @@ func (r *MCPServerReconciler) deploymentForMCPServer(m *mcpv1alpha1.MCPServer) *
 				},
 				Spec: corev1.PodSpec{
 					Containers: []corev1.Container{{
-						Image:   m.Spec.Image,
-						Name:    "mcp-server",
+						Image: m.Spec.Image,
+						Name:  "mcp-server",
 						Ports: []corev1.ContainerPort{{
 							ContainerPort: 8080,
 							Name:          "http",

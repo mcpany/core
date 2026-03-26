@@ -1,4 +1,4 @@
-// Copyright 2026 Author(s) of MCP Any.
+// Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0.
 
 package tests
@@ -194,9 +194,9 @@ nodes:
 
 	t.Log("Executing npx playwright test in", uiDir)
 	if err := playwrightCmd.Run(); err != nil {
-						cmd := exec.Command("sh", "-c", "kubectl get pods -n mcp-system; kubectl logs -n mcp-system -l app.kubernetes.io/name=server --all-containers=true --tail=1000")
-						out, _ := cmd.CombinedOutput()
-						t.Logf("Server Logs:\n%s", out)
+		cmd := exec.Command("sh", "-c", "kubectl get pods -n mcp-system; kubectl logs -n mcp-system -l app.kubernetes.io/name=server --all-containers=true --tail=1000")
+		out, _ := cmd.CombinedOutput()
+		t.Logf("Server Logs:\n%s", out)
 		t.Fatalf("UI Tests failed: %v", err)
 	}
 }
