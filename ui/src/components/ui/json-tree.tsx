@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import React, { useState } from "react";
 import { ChevronRight, ChevronDown, Copy, Check } from "lucide-react";

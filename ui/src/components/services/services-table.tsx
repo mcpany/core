@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import {
   Table,
@@ -30,7 +30,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import Link from "next/link";
+import { Link } from 'react-router-dom';
 import { UpstreamServiceConfig } from "@/lib/client";
 
 interface ServicesTableProps {
@@ -77,7 +77,7 @@ export function ServicesTable({ services, loading, onToggle, onDelete }: Service
           {services.map((service) => (
             <TableRow key={service.id || service.name}>
               <TableCell className="font-medium">
-                <Link href={`/services/${service.name}`} className="hover:underline">
+                <Link to={`/services/${service.name}`} className="hover:underline">
                     {service.name}
                 </Link>
               </TableCell>

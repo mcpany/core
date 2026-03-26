@@ -2,9 +2,6 @@
  * Copyright 2025 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
-
-"use client"
-
 import {
   LayoutDashboard,
   Server,
@@ -30,8 +27,8 @@ import {
   Workflow,
   Brain
 } from "lucide-react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { Link } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 
 import {
   Sidebar,
@@ -100,6 +97,11 @@ const platformItems = [
     icon: Layers,
   },
   {
+    title: "HITL Approvals",
+    url: "/hitl",
+    icon: ShieldCheck,
+  },
+  {
     title: "Analytics",
     url: "/stats",
     icon: Activity,
@@ -108,6 +110,11 @@ const platformItems = [
     title: "Context",
     url: "/context",
     icon: Brain,
+  },
+  {
+    title: "Blackboard",
+    url: "/blackboard",
+    icon: Database,
   },
   {
     title: "Marketplace",
@@ -131,6 +138,11 @@ const devItems = [
     title: "Visualizer",
     url: "/visualizer",
     icon: Workflow,
+  },
+  {
+    title: "Universal Agent Bus",
+    url: "/universal-agent-bus",
+    icon: Network,
   },
   {
     title: "Schema Validation",
@@ -206,7 +218,7 @@ const configItems = [
  * @returns {JSX.Element} The rendered sidebar component.
  */
 export function AppSidebar() {
-  const pathname = usePathname()
+  const { pathname } = useLocation()
   const { user, login } = useUser()
 
   const isAdmin = user?.roles?.includes('admin');
@@ -254,7 +266,7 @@ export function AppSidebar() {
               {filteredPlatformItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={pathname === item.url} tooltip={item.title}>
-                    <Link href={item.url}>
+                    <Link to={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>
@@ -272,7 +284,7 @@ export function AppSidebar() {
               {devItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={pathname === item.url} tooltip={item.title}>
-                    <Link href={item.url}>
+                    <Link to={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>
@@ -292,7 +304,7 @@ export function AppSidebar() {
                 {filteredConfigItems.map((item) => (
                     <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild isActive={pathname === item.url} tooltip={item.title}>
-                        <Link href={item.url}>
+                        <Link to={item.url}>
                         <item.icon />
                         <span>{item.title}</span>
                         </Link>

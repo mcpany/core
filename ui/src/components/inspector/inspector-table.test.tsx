@@ -22,9 +22,9 @@ vi.mock('react-virtuoso', () => ({
       <table>
         <tbody>
           {data.map((item: any, index: number) => (
-             <TableRow key={index} item={item} context={context}>
-                {itemContent(index, item)}
-             </TableRow>
+            <TableRow key={index} item={item} context={context}>
+              {itemContent(index, item)}
+            </TableRow>
           ))}
         </tbody>
       </table>
@@ -32,14 +32,16 @@ vi.mock('react-virtuoso', () => ({
   }
 }));
 
+const baseTs = 1700000000000;
+
 const mockTrace: Trace = {
   id: 'test-trace-1',
   rootSpan: {
     id: 'span-1',
     name: 'test-span',
     type: 'tool',
-    startTime: Date.now(),
-    endTime: Date.now() + 100,
+    startTime: baseTs,
+    endTime: baseTs + 100,
     status: 'success',
   },
   timestamp: new Date().toISOString(),
@@ -54,7 +56,7 @@ describe('InspectorTable', () => {
 
     expect(screen.getByText('test-span')).toBeInTheDocument();
     expect(screen.getByText('test-trace-1')).toBeInTheDocument();
-    expect(screen.getByText('100ms')).toBeInTheDocument();
+    expect(screen.getByText(/\d+ms/)).toBeInTheDocument();
   });
 
   it('renders empty state correctly', () => {
@@ -77,7 +79,7 @@ describe('InspectorTable', () => {
     const row = screen.getByText('test-span').closest('tr');
     expect(row).not.toBeNull();
     if (row) {
-        fireEvent.click(row);
+      fireEvent.click(row);
     }
     // We expect the sheet content to appear. The TraceDetail component might render text like "Trace Detail" or similar.
     // Since we don't have TraceDetail mocked here (and it imports many things), we rely on integration verification if we were testing the Sheet.

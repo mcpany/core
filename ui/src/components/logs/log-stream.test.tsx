@@ -4,7 +4,7 @@
  */
 
 import React from "react";
-import { render, screen, fireEvent, act } from "@testing-library/react";
+import { render, screen, fireEvent, act } from "../../tests/test-utils";
 import { LogStream } from "./log-stream";
 import { vi } from "vitest";
 

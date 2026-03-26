@@ -1,0 +1,5 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+# Patch files applied to external Go module dependencies via go_deps.module_override.
+exports_files(glob(["*.patch"]))

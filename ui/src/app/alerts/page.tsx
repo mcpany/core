@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import { AlertList } from "@/components/alerts/alert-list";
 import { AlertStats } from "@/components/alerts/alert-stats";

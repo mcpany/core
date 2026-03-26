@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
 
-import Link from "next/link";
+
+import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, ShoppingBag, BookOpen, CheckCircle2, Circle } from "lucide-react";
@@ -41,7 +41,7 @@ export function OnboardingHero() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Link href="/upstream-services">
+            <Link to="/upstream-services">
               <Button size="lg" className="w-full">
                 Connect Your First Service
               </Button>
@@ -60,7 +60,7 @@ export function OnboardingHero() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Link href="/marketplace">
+            <Link to="/marketplace">
               <Button variant="outline" size="lg" className="w-full">
                 Explore Marketplace
               </Button>

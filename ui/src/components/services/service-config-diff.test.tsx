@@ -24,39 +24,40 @@ vi.mock("next-themes", () => ({
 }));
 
 const mockServiceOriginal: UpstreamServiceConfig = {
-    id: "s1",
-    name: "Service 1",
-    version: "1.0",
-    disable: false,
-    priority: 0,
-    loadBalancingStrategy: 0,
-    tags: ["prod"],
-    sanitizedName: "service-1",
-    callPolicies: [],
-    preCallHooks: [],
-    postCallHooks: [],
+  id: "s1",
+  name: "Service 1",
+  version: "1.0",
+  disable: false,
+  priority: 0,
+  loadBalancingStrategy: 0,
+  tags: ["prod"],
+  sanitizedName: "service-1",
+  callPolicies: [],
+  preCallHooks: [],
+  postCallHooks: [],
+  prompts: [],
+  autoDiscoverTool: false,
+  configError: "",
+  readOnly: false,
+  configurationSchema: "",
+  httpService: {
+    address: "http://localhost:8080",
+    tools: [],
+    calls: {},
+    resources: [],
     prompts: [],
-    autoDiscoverTool: false,
-    configError: "",
-    readOnly: false,
-    httpService: {
-        address: "http://localhost:8080",
-        tools: [],
-        calls: {},
-        resources: [],
-        prompts: [],
-        healthCheck: undefined,
-        tlsConfig: undefined
-    }
+    healthCheck: undefined,
+    tlsConfig: undefined
+  }
 };
 
 const mockServiceModified: UpstreamServiceConfig = {
-    ...mockServiceOriginal,
-    name: "Service 1 Updated",
-    httpService: {
-        ...mockServiceOriginal.httpService!,
-        address: "http://localhost:9090"
-    }
+  ...mockServiceOriginal,
+  name: "Service 1 Updated",
+  httpService: {
+    ...mockServiceOriginal.httpService!,
+    address: "http://localhost:9090"
+  }
 };
 
 describe("ServiceConfigDiff", () => {

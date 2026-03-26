@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import React from "react";
 
@@ -112,6 +112,45 @@ export function SchemaForm({
               <label htmlFor={`${_prefix}${key}`} className="text-sm font-medium">
                 {fieldLabel}
               </label>
+            </div>
+          );
+        }
+
+        if (propSchema.type === "string" && (propSchema.contentEncoding === "base64" || propSchema.format === "binary")) {
+          return (
+            <div key={key} className="space-y-1">
+              <label htmlFor={`${_prefix}${key}`} className="block text-sm font-medium">
+                {fieldLabel} <span className="text-xs text-muted-foreground">(File Upload)</span>
+              </label>
+              <input
+                id={`${_prefix}${key}`}
+                type="file"
+                className="border rounded px-2 py-1 text-sm w-full"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+
+                  const reader = new FileReader();
+                  reader.onload = (ev) => {
+                    const result = ev.target?.result as string;
+                    // result is a data URL like "data:image/png;base64,iVBORw0KGgo..."
+                    // We need to extract the base64 part
+                    const base64Index = result.indexOf("base64,");
+                    if (base64Index !== -1) {
+                      const base64Data = result.substring(base64Index + 7);
+                      handleChange(key, base64Data);
+                    } else {
+                      handleChange(key, result);
+                    }
+                  };
+                  reader.readAsDataURL(file);
+                }}
+              />
+              {fieldValue && (
+                <div className="text-xs text-green-600 truncate mt-1">
+                  File loaded ({fieldValue.length > 50 ? fieldValue.substring(0, 50) + "..." : fieldValue})
+                </div>
+              )}
             </div>
           );
         }

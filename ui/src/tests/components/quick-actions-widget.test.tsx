@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen } from '../../tests/test-utils';
 import { QuickActionsWidget } from '../../components/dashboard/quick-actions-widget';
 import { describe, it, expect } from 'vitest';
 

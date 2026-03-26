@@ -43,6 +43,7 @@ mcpany.db
 .audits/
 .audit/
 *.txt
+!**/requirements_lock.txt
 
 # Lint reports
 lint_report.*
@@ -63,6 +64,11 @@ server/examples/demo/stdio/my-tool-bin
 *.test
 package-lock.json
 proto/google
+# Generated TypeScript proto bindings — produced by Bazel (//proto:ts_proto)
+# and placed in bazel-out. Do NOT commit these files; run `bazel build //proto:ts_proto`
+# or `bazel build //ui:build` instead.
+proto/**/*.ts
+proto/**/*.d.ts
 client_info.json
 oauth_env.sh
 AUDIT_REPORT.md

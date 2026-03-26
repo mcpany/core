@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
 
-import { useState, useEffect } from "react";
+
+import { useState, useEffect, useMemo } from "react";
 import {
     Plus,
     Trash2,
@@ -145,10 +145,18 @@ export function SecretsManager() {
     };
 
     const safeSecrets = Array.isArray(secrets) ? secrets : [];
-    const filteredSecrets = safeSecrets.filter(s =>
-        s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        s.key.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+
+    // ⚡ BOLT: Memoize filtered secrets and avoid calling toLowerCase() repeatedly inside the filter loop.
+    // Randomized Selection from Top 5 High-Impact Targets
+    const filteredSecrets = useMemo(() => {
+        const query = searchQuery.toLowerCase();
+        if (!query) return safeSecrets;
+
+        return safeSecrets.filter(s =>
+            s.name.toLowerCase().includes(query) ||
+            s.key.toLowerCase().includes(query)
+        );
+    }, [safeSecrets, searchQuery]);
 
     return (
         <div className="space-y-4 h-full flex flex-col">

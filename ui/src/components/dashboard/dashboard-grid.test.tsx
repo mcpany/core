@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, act } from "../../tests/test-utils";
 import { DashboardGrid } from "./dashboard-grid";
 import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
 
@@ -215,6 +215,8 @@ describe("DashboardGrid", () => {
     // I must modify the implementation to ensure migration is saved.
 
     expect(updated.length).toBeGreaterThan(0);
+    expect(updated[0].instanceId).toBeDefined();
+    expect(updated[0].type).toBe("metrics");
   });
 
   it("opens customization menu", async () => {

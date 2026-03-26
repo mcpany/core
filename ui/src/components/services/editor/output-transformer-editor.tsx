@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import { useState, useEffect, useMemo } from "react";
 import { OutputTransformer, OutputTransformer_OutputFormat } from "@proto/config/v1/call";

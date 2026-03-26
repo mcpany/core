@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import { apiClient, ToolDefinition } from "@/lib/client";
 
@@ -29,7 +29,7 @@ import { ChatMessage, Message } from "./chat-message";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 
-import { useSearchParams } from "next/navigation";
+import { useSearchParams } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ToolRunner } from "@/components/playground/tool-runner";
 import { Zap } from "lucide-react";
@@ -41,7 +41,7 @@ import { Zap } from "lucide-react";
 export function PlaygroundClientPro() {
   const [messages, setMessages, isInitialized] = useLocalStorage<Message[]>("playground-messages", []);
   const [input, setInput] = useState("");
-  const searchParams = useSearchParams();
+  const [searchParams] = useSearchParams();
 
   // Initialize with welcome message
   useEffect(() => {

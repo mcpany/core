@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent } from "../../tests/test-utils";
 import { ServiceList } from "./service-list";
 import { UpstreamServiceConfig } from "@/lib/client";
 import { ServiceHealthProvider } from "@/contexts/service-health-context";
@@ -26,12 +26,13 @@ const mockServices: UpstreamServiceConfig[] = [
     autoDiscoverTool: false,
     configError: "",
     readOnly: false,
+    configurationSchema: "",
     httpService: {
-        address: "http://localhost:8080",
-        tools: [],
-        calls: {},
-        resources: [],
-        prompts: []
+      address: "http://localhost:8080",
+      tools: [],
+      calls: {},
+      resources: [],
+      prompts: []
     }
   },
   {
@@ -50,12 +51,13 @@ const mockServices: UpstreamServiceConfig[] = [
     autoDiscoverTool: false,
     configError: "",
     readOnly: false,
+    configurationSchema: "",
     httpService: {
-        address: "http://localhost:8081",
-        tools: [],
-        calls: {},
-        resources: [],
-        prompts: []
+      address: "http://localhost:8081",
+      tools: [],
+      calls: {},
+      resources: [],
+      prompts: []
     }
   }
 ];

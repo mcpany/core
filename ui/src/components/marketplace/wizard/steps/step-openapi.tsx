@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { OpenapiUpstreamService } from '@proto/config/v1/upstream_service';
 
 /**
  * StepOpenAPI component.
@@ -19,9 +20,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export function StepOpenAPI() {
     const { state, updateConfig } = useWizard();
     const { config } = state;
-    const openapi = config.openapiService || { address: '', specUrl: '', specContent: '', tools: [] };
+    const openapi: OpenapiUpstreamService = config.openapiService || {
+        address: '',
+        specUrl: '',
+        specContent: '',
+        tools: [],
+        resources: [],
+        calls: {},
+        prompts: [],
+    };
 
-    const updateOpenAPI = (updates: Partial<typeof openapi>) => {
+    const updateOpenAPI = (updates: Partial<OpenapiUpstreamService>) => {
         updateConfig({
             openapiService: {
                 ...openapi,

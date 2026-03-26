@@ -3,13 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import { ToolDefinition } from "@/lib/client";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Play, FileJson } from "lucide-react";
-import Link from "next/link";
+import { Link } from 'react-router-dom';
 import {
     Dialog,
     DialogContent,
@@ -18,7 +18,7 @@ import {
     DialogDescription,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { SchemaVisualizer } from "@/components/schema-visualizer";
+import { SchemaViewer } from "@/components/tools/schema-viewer";
 
 
 interface ServiceToolsProps {
@@ -48,7 +48,7 @@ export function ServiceTools({ tools }: ServiceToolsProps) {
                     </CardHeader>
                     <CardContent className="flex-1 flex items-end gap-2 mt-auto pt-0">
                          <div className="flex gap-2 w-full">
-                            <Link href={`/playground?tool=${tool.name}`} className="flex-1">
+                            <Link to={`/playground?tool=${tool.name}`} className="flex-1">
                                 <Button variant="outline" className="w-full">
                                     <Play className="mr-2 h-4 w-4" /> Try
                                 </Button>
@@ -68,7 +68,7 @@ export function ServiceTools({ tools }: ServiceToolsProps) {
                                         </DialogDescription>
                                     </DialogHeader>
                                     <div className="rounded-md border overflow-hidden">
-                                        <SchemaVisualizer schema={tool.inputSchema || {}} />
+                                        <SchemaViewer schema={(tool.inputSchema || {}) as any} />
                                     </div>
                                 </DialogContent>
                             </Dialog>

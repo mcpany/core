@@ -1,6 +1,7 @@
 # Bazel configuration for MCP Any
 
-# build --config=remote
+build --config=remote
+test --config=remote
 
 # Enable disk cache for fast incremental builds
 build --disk_cache=~/.cache/bazel-disk-cache
@@ -23,9 +24,6 @@ build --action_env=CGO_ENABLED=1
 
 # Increase test timeout for integration tests
 test --test_timeout=300,600,900,1800
-
-# Allow all test sizes (default only runs small+medium)
-test --test_size_filters=-enormous
 
 # Enable sandboxing for hermeticity
 build --spawn_strategy=sandboxed,local
@@ -99,21 +97,11 @@ common:buildbuddy-official --remote_executor=grpcs://onehumancorp.buildbuddy.io
 common:buildbuddy-official --remote_cache_compression
 common:buildbuddy-official --jobs=200
 common:buildbuddy-official --remote_local_fallback
+# Default read-only key
+common:buildbuddy-official --remote_header=x-buildbuddy-api-key=vGFjlQg7X49NwoQHAfRW
 
 # Set buildbuddy as the default configuration for all builds
 build:remote --config=buildbuddy-official
-# Work around remote-exec protoc virtual import path failures in Bazel 9.
-build:remote --strategy=GenProtoDescriptorSet=local
-# Ensure Go toolchain compile actions run remotely under --config=remote,
-# avoiding local sandbox tool path resolution failures.
-# Use specific action names instead of a broad regexp to avoid accidentally
-# forcing non-compilable actions (e.g. GoTestGenTest) into remote-only mode.
-# Include sandboxed,local fallback so that actions with `no-remote-exec` exec
-# requirements (e.g. CGO recompile steps) can still fall back to local execution.
-build:remote --strategy=GoCompilePkg=remote,sandboxed,local
-build:remote --strategy=GoCompilePkgExternal=remote,sandboxed,local
-build:remote --strategy=GoLink=remote,sandboxed,local
-build:remote --strategy=GoStdlib=remote,sandboxed,local
 # Avoid local test host overload for targets that cannot run remotely
 # (e.g. no-remote-exec Playwright/integration tests).
 test:remote --local_test_jobs=8

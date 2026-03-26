@@ -1,36 +1,34 @@
 # Truth Reconciliation Audit Report
 
-## 1. Executive Summary
-An extensive "Truth Reconciliation Audit" was performed, sampling 10 distinct documentation files (spanning UI, Configuration, Security, and Core Server capabilities). The codebase was mapped against the `roadmap.md` files for both `server` and `ui` to ensure strict alignment. Overall, the codebase health is excellent with a 90% alignment out-of-the-box. One discrepancy was identified and remediated in the UI Inspector feature where the implementation drifted from the intended verification state. All other features (Playground, Context Optimizer, DLP, Audit Logging, etc.) exhibit perfect synchronization between documentation, roadmap, and implementation.
+## Executive Summary
+A comprehensive 10-file truth reconciliation audit was performed spanning documentation, roadmap items, and current codebase implementations. The audit confirmed strong alignment across 90% of the surveyed surfaces, with the UI correctly implementing advanced topologies, traces, and system diagnostics as outlined. However, one discrepancy was identified and remediated regarding the "Browser-Side HTTP Connectivity Check" documentation. The system is now 100% aligned with the sampled Product Roadmap.
 
-## 2. Verification Matrix
+## Verification Matrix
 
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `ui/docs/features/playground.md` | ALIGNED | Verified "Native File Upload" (base64) & "Copy as Code" exist in `file-input.tsx` & `tool-runner.tsx` | Found in codebase. |
-| `ui/docs/features/traces.md` | DEBT | Engineered fix for `SelectValue` text mismatch ("All Statuses" instead of "All Types") | Code refactored & UI Test passed. |
-| `ui/docs/features/logs.md` | ALIGNED | Verified "Structured Log Viewer" & Syntax Highlighting exist | Found in `log-viewer.tsx`. |
-| `ui/docs/features/marketplace.md` | ALIGNED | Verified Export/Share logic (Redact, Template Variables) | Found in `share-collection-dialog.tsx`. |
-| `ui/docs/features/test_connection.md` | ALIGNED | Verified Connection Diagnostic tool flows | Found in `connection-diagnostic.tsx`. |
-| `server/docs/features/context_optimizer.md` | ALIGNED | Verified `max_chars` truncation logic & 32000 default | Found in `context_optimizer.go`. |
-| `server/docs/features/health-checks.md` | ALIGNED | Verified HTTP, gRPC, WebSocket, FS, CLI health checks | Found in `health/health.go`. |
-| `server/docs/features/dlp.md` | ALIGNED | Verified tool input/output PII redaction | Found in `middleware/dlp.go`. |
-| `server/docs/features/dynamic_registration.md` | ALIGNED | Verified GraphQL & OpenAPI introspection | Found in `upstream/graphql.go` & `openapi.go`. |
-| `server/docs/features/audit_logging.md` | ALIGNED | Verified SQLite, File, Postgres, Webhook, Splunk sinks | Found in `audit/*`. |
+| `ui/docs/features/tool-diff.md` | Aligned | Verified UI Implementation | `ReplayDiffDialog` and diffing views are present in `ui/src/components/traces/replay-diff-dialog.tsx`. |
+| `ui/docs/features/diagnostics.md` | Aligned | Verified UI Implementation | `SystemHealth` provides diagnostic cards in `ui/src/components/diagnostics/system-health.tsx`. |
+| `ui/docs/features/network.md` | Aligned | Verified UI Implementation | `NetworkGraphClient` correctly uses ReactFlow in `ui/src/components/network/network-graph-client.tsx`. |
+| `ui/docs/features/recursive_context.md` | Aligned | Verified Server/UI Implementation | Recursive Context Protocol is managed via `RecursiveContextManager` in `server/pkg/middleware/recursive_context.go`. |
+| `server/docs/features/sso.md` | Aligned | Verified Server Implementation | SSO capabilities implemented via `server/pkg/middleware/sso.go`. |
+| `server/docs/features/guardrails.md` | Aligned | Verified Server Implementation | Prompt injection guardrails exist via `server/pkg/middleware/guardrails.go`. |
+| `server/docs/features/audit_logging.md` | Aligned | Verified Server Implementation | Diverse audit storage patterns exist in `server/pkg/audit/*.go`. |
+| `ui/docs/features/hitl.md` | Aligned | Verified Server/UI Implementation | HITL dashboards and middleware are present (`hitl-dashboard.tsx`, `hitl.go`). |
+| `ui/docs/features/connect-client-center.md` | Aligned | Verified UI Implementation | `ConnectClientDialog` effectively handles connection strings in `ui/src/components/connect-client-button.tsx`. |
+| `ui/docs/features/browser_connectivity_check.md` | **Diverged** | Engineered Missing Implementation | Added browser `fetch` with `mode: 'no-cors'` to `ui/src/components/diagnostics/connection-diagnostic.tsx`. |
 
-## 3. Remediation Log
+## Remediation Log
+**Case B: Roadmap Debt (Code is Missing)**
+The documentation `ui/docs/features/browser_connectivity_check.md` clearly states that the Connection Diagnostics interface must use a `fetch` with `mode: 'no-cors'` from the browser to determine client-side vs server-side connectivity issues (especially useful for Docker/VPN boundaries).
 
-*   **Code Fixes (Case B: Roadmap Debt):**
-    *   **Feature:** Inspector (Live Traces) Dashboard Filtering.
-    *   **Discrepancy:** The filter dropdown for trace types was incorrectly displaying the placeholder "All Statuses" instead of the intended "All Types". This caused a failure in the Playwright UI verification script (`verify_inspector.py`) which acts as the operational contract.
-    *   **Action:** Modified `ui/src/app/inspector/page.tsx` to correctly display `<SelectValue placeholder="All Types" />`.
-    *   **Testing:** Reran the Playwright test `verify_inspector.py` which successfully matched the locator and captured `verification_inspector.png`. No new tests needed as the existing verification script covers this line of code.
+This logic was missing from the actual component (`ui/src/components/diagnostics/connection-diagnostic.tsx`).
 
-*   **Documentation Updates (Case A: Documentation Drift):**
-    *   None required. The documentation accurately reflected the Roadmap, and the code was the source of the drift in the single issue found.
+**Engineering Fix:**
+- Injected `Browser Connectivity Check` as step 1.5 in the diagnostics workflow when `service.httpService.address` is present.
+- Implemented a `fetch(service.httpService.address, { mode: 'no-cors', method: 'GET' })` call with performance benchmarking.
+- Added strict error handling with a context-aware severity diagnostic result on failure.
+- Updated `ui/src/components/diagnostics/connection-diagnostic.test.tsx` to assert the newly introduced step to conform to TDD standards. `make test` passes successfully.
 
-## 4. Security Scrub
-*   No PII was exposed during the audit.
-*   No raw secrets or API keys are included in this report.
-*   No internal Google IPs or proprietary infrastructure details are present.
-*   The `docker-compose.yml` was used strictly for isolated topology analysis.
+## Security Scrub
+This report has been reviewed and contains NO PII, secrets, API keys, or internal Google IP structures.

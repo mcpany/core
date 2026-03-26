@@ -3,6 +3,7 @@
 
 load("@gazelle//:def.bzl", "gazelle")
 load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
+load("//proto:ts_proto_rules.bzl", "ts_wkt_gen")
 
 # gazelle:prefix github.com/mcpany/core
 # gazelle:exclude build
@@ -62,6 +63,13 @@ sh_binary(
     data = [
         "//server:go.mod",
         "//server:go.sum",
+        # Bazel-managed tool binaries so the script never calls `bazel run`
+        # recursively.  They are located at runtime via $RUNFILES_DIR.
+        # NOTE: @gazelle//:gazelle is intentionally NOT listed here because its
+        # BUILD.bazel references @bazel_skylib_gazelle_plugin which is only a
+        # dev_dependency of the gazelle module and is not available to consumers.
+        # Gazelle can be run separately with: bazel run //:gazelle
+        "@buildifier_prebuilt//:buildifier",
     ],
 )
 
@@ -73,6 +81,23 @@ alias(
 alias(
     name = "buildozer",
     actual = "@buildozer//:buildozer",
+)
+
+# ---------------------------------------------------------------------------
+# Well-known-type TypeScript bindings
+#
+# Generated here (root package) so that declare_file("google/protobuf/*.ts")
+# produces files at bazel-out/.../bin/google/protobuf/*.ts — the path that
+# ts-proto uses when computing relative imports from proto/config/v1/ etc.
+# ---------------------------------------------------------------------------
+ts_wkt_gen(
+    name = "gen_wkt_ts_files",
+    protos = [
+        "@protobuf//:duration_proto",
+        "@protobuf//:struct_proto",
+        "@protobuf//:timestamp_proto",
+    ],
+    visibility = ["//visibility:public"],
 )
 
 config_setting(

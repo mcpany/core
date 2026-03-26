@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -16,7 +16,7 @@ interface Webhook {
     events: string[];
 }
 
-import Link from "next/link";
+import { Link } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 /**
@@ -45,17 +45,17 @@ export default function WebhooksPage() {
             <Tabs defaultValue="webhooks" className="space-y-4 flex-1 flex flex-col">
                 <TabsList>
                     <TabsTrigger value="profiles" asChild>
-                        <Link href="/settings">Profiles</Link>
+                        <Link to="/settings">Profiles</Link>
                     </TabsTrigger>
                     <TabsTrigger value="webhooks">Webhooks</TabsTrigger>
                     <TabsTrigger value="secrets" asChild>
-                        <Link href="/settings">Secrets & Keys</Link>
+                        <Link to="/settings">Secrets & Keys</Link>
                     </TabsTrigger>
                     <TabsTrigger value="auth" asChild>
-                        <Link href="/settings">Authentication</Link>
+                        <Link to="/settings">Authentication</Link>
                     </TabsTrigger>
                     <TabsTrigger value="general" asChild>
-                        <Link href="/settings">General</Link>
+                        <Link to="/settings">General</Link>
                     </TabsTrigger>
                 </TabsList>
                 <TabsContent value="webhooks" className="space-y-4">

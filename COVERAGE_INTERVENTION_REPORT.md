@@ -1,21 +1,9 @@
 # Coverage Intervention Report
 
-**Target:** `server/pkg/tokenizer/tokenizer.go`
-**Function:** `countTokensInValueSimpleFast`
-
-**Risk Profile:**
-This utility function handles rate-limiting and billing token calculations across various map, slice, and primitive inputs. It has a high cyclomatic complexity (35) due to its switch statements and optimizations, yet it was missing tests for many of its critical paths, posing a high risk for billing or API limits bugs in edge cases. This function was selected based on its core utility nature combined with its 59.8% test coverage before intervention.
-
-**New Coverage:**
-The following logic paths are now guarded by the new table-driven tests:
-- `map[string]int`, `map[string]int64`, `map[string]float64`, `map[string]bool`
-- `[]byte` (empty and non-empty)
-- Primitives (`int`, `int64`, `bool`)
-- `float64` (integer and fractional variants)
-- Slices (`[]string`, `[]int`, `[]int64`, `[]bool`, `[]float64`)
-- `map[string]string`
-- Edge cases (`nil`, unhandled types)
-The function's test coverage increased from **59.8% to 97.7%**.
-
-**Verification:**
-Confirmed that `go test ./pkg/tokenizer/...` passes cleanly. The implementation adheres to the existing `SimpleTokenizer` mocking and testing patterns, utilizing a Go table-driven test style matching `server/pkg/tokenizer/tokenizer_test.go`. The test logic preserves "Do No Harm" by introducing tests seamlessly alongside existing ones.
+* **Target:** `server/pkg/tokenizer/tokenizer.go`
+* **Risk Profile:** This file contains highly complex and recursive reflection logic for tokenizing arbitrarily structured generic JSON data. Methods like `countTokensInValueRecursive`, `countTokensReflectMap`, and `countTokensReflectStruct` lacked test coverage on deep fallback and error paths (e.g. cycle detection, reflection panics on unsupported types). Since this code parses unknown structured input payloads to calculate token limits for LLM interactions, unhandled errors or panics in this file represent a severe security/reliability risk (e.g., recursive exhaustion, crashing the MCP server on a bad user payload).
+* **New Coverage:** The following logic paths are now guarded by comprehensive tests:
+  - Error paths and recursion cycle detection in generic types (`reflectSlice`, `reflectMap`, `reflectStruct`).
+  - Fallback behaviors for `countTokensInValueRecursive` handling unsupported payload types.
+  - Edge cases for fast-path primitive tokenization (e.g. `simpleTokenizeInt` with large negative numbers and zero values).
+* **Verification:** `make test` successfully tests the new components alongside all existing legacy tests. The overall file coverage has increased significantly, reaching >95% statement coverage with the new regression safety nets in place. No panics are used in the tests to artificial bump coverage metrics.

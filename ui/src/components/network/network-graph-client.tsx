@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import React, { useState, useMemo, useCallback } from 'react';
-import { useRouter } from "next/navigation";
+import { useNavigate as useRouter } from 'react-router-dom';
 import {
     ReactFlow,
 
@@ -386,7 +386,7 @@ export function NetworkGraphFlow({ widgetMode = false }: NetworkGraphFlowProps) 
                                         else if (id.startsWith("svc-")) source = id.replace("svc-", "");
                                         // For tools or others, we default to ALL or keep generic
 
-                                        router.push(`/logs?source=${source}`);
+                                        router(`/logs?source=${source}`);
                                     }}
                                 >
                                     View Logs

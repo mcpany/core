@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useNavigate as useRouter } from 'react-router-dom';
 import {
   MessageSquare,
   Search,
@@ -243,7 +243,7 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
   };
 
   const openInPlayground = () => {
-      router.push("/playground");
+      router("/playground");
       toast({
           title: "Navigating to Playground",
           description: "You can paste the prompt result there.",

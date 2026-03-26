@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import { User, Bot, Terminal, Sparkles, AlertCircle, Check, Copy, RotateCcw, Lightbulb, GitCompare } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -12,18 +12,17 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { SmartResultRenderer } from "./smart-result-renderer";
 import { estimateTokens, formatTokenCount } from "@/lib/tokens";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useTheme } from "next-themes";
 import { defineDraculaTheme } from "@/lib/monaco-theme";
-import dynamic from "next/dynamic";
 import { unwrapMcpResult, deepParseJson } from "@/lib/mcp-unwrap";
 
 // ⚡ BOLT: Lazy load heavy dependencies to improve initial bundle size and TTI.
 // Randomized Selection from Top 5 High-Impact Targets
-const SyntaxHighlighter = dynamic(
+const _SyntaxHighlighterLazy = lazy(
     () => import('react-syntax-highlighter/dist/esm/light').then(async (mod) => {
         const jsonLang = await import('react-syntax-highlighter/dist/esm/languages/hljs/json');
         const jsLang = await import('react-syntax-highlighter/dist/esm/languages/hljs/javascript');
@@ -33,20 +32,20 @@ const SyntaxHighlighter = dynamic(
         mod.default.registerLanguage('javascript', jsLang.default);
         mod.default.registerLanguage('python', pythonLang.default);
         mod.default.registerLanguage('bash', bashLang.default);
-        return mod.default;
-    }),
-    {
-        ssr: false,
-        loading: () => <div className="p-4 bg-[rgba(0,0,0,0.4)] h-12 animate-pulse rounded" />,
-    }
+        return { default: mod.default };
+    })
+);
+const SyntaxHighlighter = (props: any) => (
+    <Suspense fallback={<div className="p-4 bg-[rgba(0,0,0,0.4)] h-12 animate-pulse rounded" />}>
+        <_SyntaxHighlighterLazy {...props} />
+    </Suspense>
 );
 
-const DiffEditor = dynamic(
-    () => import("@monaco-editor/react").then((mod) => mod.DiffEditor),
-    {
-        ssr: false,
-        loading: () => <div className="h-full w-full bg-[#1e1e1e] animate-pulse rounded-md" />,
-    }
+const _DiffEditorLazy = lazy(() => import("@monaco-editor/react").then((mod) => ({ default: mod.DiffEditor })));
+const DiffEditor = (props: any) => (
+    <Suspense fallback={<div className="h-full w-full bg-[#1e1e1e] animate-pulse rounded-md" />}>
+        <_DiffEditorLazy {...props} />
+    </Suspense>
 );
 
 /**
@@ -105,7 +104,8 @@ function analyzeError(error: string): string | null {
 export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
     const [copied, setCopied] = useState(false);
     const [showDiff, setShowDiff] = useState(false);
-    const { theme } = useTheme();
+    const { theme, resolvedTheme } = useTheme();
+    const isDark = theme === "dark" || resolvedTheme === "dark";
 
     const copyToClipboard = (text: string) => {
         navigator.clipboard.writeText(text);
@@ -270,12 +270,10 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
                             original={JSON.stringify(prevUnwrapped, null, 2)}
                             modified={JSON.stringify(currUnwrapped, null, 2)}
                             language="json"
-                            theme={theme === "dark" ? "dracula" : "light"}
-                            onMount={(editor, monaco) => {
-                                if (theme === "dark") {
-                                    defineDraculaTheme(monaco);
-                                    monaco.editor.setTheme("dracula");
-                                }
+                            theme={isDark ? "dracula" : "light"}
+                            onMount={(_editor: any, monaco: any) => {
+                                defineDraculaTheme(monaco);
+                                monaco.editor.setTheme(isDark ? "dracula" : "light");
                             }}
                             options={{
                                 readOnly: true,

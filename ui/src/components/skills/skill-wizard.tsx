@@ -1,10 +1,10 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-'use client';
+
 
 import React, { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useNavigate, useParams } from "react-router-dom";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -23,7 +23,7 @@ const STEPS = ['Metadata', 'Instructions', 'Assets'];
 export default function SkillWizard() {
   const params = useParams();
   const name = params?.name as string | undefined;
-  const router = useRouter();
+  const navigate = useNavigate();
   const isEdit = !!name;
 
   const [currentStep, setCurrentStep] = useState(0);
@@ -52,7 +52,7 @@ export default function SkillWizard() {
       setSkill(data);
     } catch (err: any) {
       toast.error('Failed to load skill: ' + err.message);
-      router.push('/skills');
+      navigate('/skills');
     } finally {
       setLoading(false);
     }
@@ -99,7 +99,7 @@ export default function SkillWizard() {
         toast.success('Assets uploaded');
       }
 
-      router.push('/skills');
+      navigate('/skills');
     } catch (err: any) {
       toast.error('Failed to save skill: ' + err.message);
     } finally {

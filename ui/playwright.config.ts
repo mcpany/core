@@ -9,7 +9,8 @@ import os from 'os';
 // Use TEST_PORT env var if set, otherwise default to 9111
 const PORT = process.env.TEST_PORT || 9111;
 const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || `http://localhost:${PORT}`;
-const NEXT_DEV_COMMAND = process.env.NEXT_DEV_COMMAND || `npx next dev -p ${PORT}`;
+// When run under Bazel the playwright_test.sh sets VITE_DEV_COMMAND.
+const VITE_DEV_COMMAND = process.env.VITE_DEV_COMMAND || `npx vite --port ${PORT} --strictPort`;
 const TEST_MATCH = process.env.PLAYWRIGHT_TEST_MATCH;
 
 export default defineConfig({
@@ -48,7 +49,7 @@ export default defineConfig({
   webServer: process.env.SKIP_WEBSERVER
     ? undefined
     : {
-      command: NEXT_DEV_COMMAND,
+      command: VITE_DEV_COMMAND,
       url: BASE_URL,
       reuseExistingServer: true,
       timeout: 300000,

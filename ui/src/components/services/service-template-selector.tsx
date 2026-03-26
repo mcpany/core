@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import { useState, useMemo } from "react";
 import { SERVICE_TEMPLATES, ServiceTemplate } from "@/lib/templates";

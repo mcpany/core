@@ -1,20 +1,15 @@
 # Copyright 2026 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
-load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
 load("@protobuf//bazel:proto_library.bzl", "proto_library")
-load("@rules_go//go:def.bzl", "go_library")
 load("@rules_go//proto:def.bzl", "go_proto_library")
+load("//proto:ts_proto_rules.bzl", "ts_proto_gen")
 
-copy_to_bin(
+# Generate TypeScript bindings from the proto files using Bazel.
+# Files are placed in bazel-out; they are NOT persisted in the source tree.
+ts_proto_gen(
     name = "ts_proto_files",
-    srcs = glob(
-        [
-            "*.d.ts",
-            "*.ts",
-        ],
-        allow_empty = True,
-    ),
+    proto = ":v1_proto",
     visibility = ["//visibility:public"],
 )
 
@@ -33,40 +28,37 @@ proto_library(
     ],
 )
 
+# go_proto_library with grpc-gateway compiler generates both gRPC stubs and
+# HTTP/JSON reverse-proxy code (*.pb.gw.go) at build time.
+# No generated files are stored in the source tree.
 go_proto_library(
-    name = "v1_go_proto",
+    name = "api",
     compilers = [
         "@rules_go//proto:go_proto",
         "@rules_go//proto:go_grpc_v2",
+        "@com_github_grpc_ecosystem_grpc_gateway_v2//protoc-gen-grpc-gateway:go_gen_grpc_gateway_opaque",
     ],
     importpath = "github.com/mcpany/core/proto/api/v1",
     proto = ":v1_proto",
     visibility = ["//visibility:public"],
     deps = [
         "//proto/config/v1:config",
-        "@org_golang_google_genproto_googleapis_api//annotations",
-        "@org_golang_google_protobuf//types/gofeaturespb",
-    ],
-)
-
-go_library(
-    name = "api",
-    srcs = [
-        "catalog_service.pb.gw.go",
-        "registration.pb.gw.go",
-        "skill_service.pb.gw.go",
-    ],
-    embed = [":v1_go_proto"],
-    importpath = "github.com/mcpany/core/proto/api/v1",
-    visibility = ["//visibility:public"],
-    deps = [
         "@com_github_grpc_ecosystem_grpc_gateway_v2//runtime",
         "@com_github_grpc_ecosystem_grpc_gateway_v2//utilities",
+        "@org_golang_google_genproto_googleapis_api//annotations",
         "@org_golang_google_grpc//:grpc",
         "@org_golang_google_grpc//codes",
         "@org_golang_google_grpc//grpclog",
         "@org_golang_google_grpc//metadata",
         "@org_golang_google_grpc//status",
         "@org_golang_google_protobuf//proto",
+        "@org_golang_google_protobuf//types/gofeaturespb",
     ],
+)
+
+# Backward-compatible alias for existing consumers of :v1_go_proto.
+alias(
+    name = "v1_go_proto",
+    actual = ":api",
+    visibility = ["//visibility:public"],
 )

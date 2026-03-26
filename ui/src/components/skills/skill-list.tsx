@@ -1,14 +1,14 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-'use client';
+
 
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardDescription, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Plus, Trash2, Edit } from 'lucide-react';
 import { Skill, SkillService } from '@/lib/skill-service';
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
 /**
@@ -53,7 +53,7 @@ export default function SkillList() {
     <div className="container mx-auto py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Agent Skills</h1>
-        <Link href="/skills/create">
+        <Link to="/skills/create">
           <Button>
             <Plus className="mr-2 h-4 w-4" /> Create Skill
           </Button>
@@ -67,7 +67,7 @@ export default function SkillList() {
               <CardTitle className="flex justify-between items-center">
                 <span>{skill.name}</span>
                 <div className="flex gap-2">
-                  <Link href={`/skills/${skill.name}/edit`}>
+                  <Link to={`/skills/${skill.name}/edit`}>
                     <Button variant="ghost" size="icon" className="h-8 w-8">
                       <Edit className="h-4 w-4" />
                     </Button>
@@ -98,7 +98,7 @@ export default function SkillList() {
                     {skill.assets.length} Assets
                   </span>
                 )}
-                <Link href={`/skills/${skill.name}`} className="ml-auto text-primary hover:underline">
+                <Link to={`/skills/${skill.name}`} className="ml-auto text-primary hover:underline">
                   View Details
                 </Link>
               </div>

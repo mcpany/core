@@ -128,11 +128,11 @@ test.describe('Playground Complex UI', () => {
 
     // Sidebar should be open by default on desktop.
     // Select create_user from the sidebar
-    // We target the tool name in the sidebar
+    // We target the tool name in the sidebar. The UI changed to click the entire tool card in the pro sidebar.
     await page.getByText('create_user').first().click();
 
-    // Click the Use Tool button that appears after expanding
-    await page.getByRole('button', { name: /^Use$/i }).first().click();
+    // Note: The UI now changes the active tab based on clicking the tool directly,
+    // there is no "Use" button to expand, it's just a card click.
 
     // Verify Tool Runner tab is active
     await expect(page.getByRole('tab', { name: 'Tool Runner' })).toBeVisible();

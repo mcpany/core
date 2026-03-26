@@ -3,13 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Search, AlertCircle, CheckCircle2, Clock, Terminal, Database, User, Webhook as WebhookIcon, Play, Pause } from "lucide-react";
-import { Trace, SpanStatus } from "@/app/api/traces/route"; // Import type from route (or move types to shared)
+import type { Trace, SpanStatus } from "@/types/trace";
 import { formatDistanceToNow } from "date-fns";
 import React, { memo, useMemo } from "react";
 import { Virtuoso } from "react-virtuoso";

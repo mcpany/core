@@ -1,27 +1,24 @@
 # Copyright 2026 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
-load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
-
 # gazelle:go_proto_compilers @rules_go//proto:go_proto
 # gazelle:go_grpc_compilers @rules_go//proto:go_proto,@rules_go//proto:go_grpc_v2
 
-copy_to_bin(
-    name = "ts_proto_root_files",
-    srcs = glob(
-        [
-            "google/**/*.ts",
-            "google/**/*.d.ts",
-        ],
-        allow_empty = True,
-    ),
-    visibility = ["//visibility:public"],
-)
+# ---------------------------------------------------------------------------
+# Well-known-type TypeScript bindings are generated at the repo root so that
+# declare_file("google/protobuf/*.ts") produces files under
+# bazel-out/.../bin/google/protobuf/ — the path ts-proto emits relative imports
+# against (e.g. "../../../google/protobuf/duration" from proto/config/v1/).
+# See //:gen_wkt_ts_files in BUILD.bazel.
+# ---------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+# Aggregate all generated TypeScript proto bindings consumed by the UI.
+# ---------------------------------------------------------------------------
 filegroup(
     name = "ts_proto",
     srcs = [
-        ":ts_proto_root_files",
+        "//:gen_wkt_ts_files",
         "//proto/api/v1:ts_proto_files",
         "//proto/bus:ts_proto_files",
         "//proto/config/v1:ts_proto_files",

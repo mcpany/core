@@ -1,28 +1,45 @@
---- ui/src/components/dashboard/dashboard-grid.tsx
-+++ ui/src/components/dashboard/dashboard-grid.tsx
-@@ -107,11 +107,15 @@
-                 type: string; // Actually 'wide'|'half' etc in some cases, but mapped
-                 hidden?: boolean;
-             }
--            const migrated: WidgetInstance[] = parsed.map((w: LegacyWidget) => ({
--                instanceId: crypto.randomUUID(),
--                type: w.id, // In legacy, id was effectively the type
--                title: WIDGET_DEFINITIONS.find(d => d.type === w.id)?.title || w.title,
--                size: (["full", "half", "third", "two-thirds"].includes(w.type) ? w.type : "third") as WidgetSize,
--                hidden: w.hidden ?? false
--            }));
-+            // ⚡ BOLT: [Render Optimization] Use Map for Legacy Widget Migration title lookups
-+            // Randomized Selection from Top 5 High-Impact Targets (Algorithmic)
-+            const widgetDefMap = new Map(WIDGET_DEFINITIONS.map(def => [def.type, def]));
-+            const migrated: WidgetInstance[] = parsed.map((w: LegacyWidget) => {
-+                const def = widgetDefMap.get(w.id);
-+                return {
-+                    instanceId: crypto.randomUUID(),
-+                    type: w.id, // In legacy, id was effectively the type
-+                    title: def?.title || w.title,
-+                    size: (["full", "half", "third", "two-thirds"].includes(w.type) ? w.type : "third") as WidgetSize,
-+                    hidden: w.hidden ?? false
-+                };
-+            });
-
-             // Filter out any invalid types
+--- ui/src/lib/client.ts
++++ ui/src/lib/client.ts
+@@ -572,7 +572,13 @@
+             payload.grpc_service = { address: config.grpcService.address };
+         }
+         if (config.commandLineService) {
+-            payload.command_line_service = CommandLineUpstreamService.toJSON(config.commandLineService);
++            payload.command_line_service = {
++                command: config.commandLineService.command,
++                args: config.commandLineService.args || [],
++                working_directory: config.commandLineService.workingDirectory,
++                environment: config.commandLineService.env,
++                env: config.commandLineService.env
++            };
+         }
+         if (config.mcpService) {
+             payload.mcp_service = { ...config.mcpService };
+@@ -678,7 +684,11 @@
+             payload.grpc_service = { address: config.grpcService.address };
+         }
+         if (config.commandLineService) {
+-            payload.command_line_service = CommandLineUpstreamService.toJSON(config.commandLineService);
++            payload.command_line_service = {
++                command: config.commandLineService.command,
++                args: config.commandLineService.args || [],
++                working_directory: config.commandLineService.workingDirectory,
++            };
+         }
+         if (config.mcpService) {
+             payload.mcp_service = { ...config.mcpService };
+@@ -803,7 +813,13 @@
+             payload.grpc_service = { address: config.grpcService.address };
+         }
+         if (config.commandLineService) {
+-            payload.command_line_service = CommandLineUpstreamService.toJSON(config.commandLineService);
++            payload.command_line_service = {
++                command: config.commandLineService.command,
++                args: config.commandLineService.args || [],
++                working_directory: config.commandLineService.workingDirectory,
++                env: config.commandLineService.env,
++                container_environment: config.commandLineService.containerEnvironment, // Include this if needed
++            };
+         }
+         if (config.mcpService) {
+             payload.mcp_service = { ...config.mcpService };

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
@@ -11,12 +11,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Clock, ChevronDown, ChevronRight, Activity, Terminal, Code, Cpu, Database, Globe, Play, Download, Copy, Lightbulb, AlertTriangle, Coins, RefreshCcw } from "lucide-react";
+import { Clock, ChevronDown, ChevronRight, Activity, Terminal, Code, Cpu, Database, Globe, Play, Download, Copy, Lightbulb, AlertTriangle, Coins, RefreshCcw, MessageSquare } from "lucide-react";
 import { Trace, Span } from "@/types/trace";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import React from "react";
-import { useRouter } from "next/navigation";
+import { useNavigate as useRouter } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { JsonView } from "@/components/ui/json-view";
 import { RichResultViewer } from "@/components/tools/rich-result-viewer";
@@ -39,6 +39,7 @@ function SpanIcon({ type }: { type: Span['type'] }) {
         case 'service': return <Globe className="h-3 w-3 text-indigo-500" />;
         case 'resource': return <Database className="h-3 w-3 text-cyan-500" />;
         case 'core': return <Cpu className="h-3 w-3 text-blue-500" />;
+        case 'prompt': return <MessageSquare className="h-3 w-3 text-purple-500" />;
         default: return <Activity className="h-3 w-3 text-muted-foreground" />;
     }
 }
@@ -198,7 +199,7 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
     const handleReplay = (toolName: string, args: Record<string, unknown> | undefined) => {
          const argsStr = JSON.stringify(args || {});
          const encodedArgs = encodeURIComponent(argsStr);
-         router.push(`/playground?tool=${toolName}&args=${encodedArgs}`);
+         router(`/playground?tool=${toolName}&args=${encodedArgs}`);
     };
 
     const handleExportJSON = () => {
@@ -384,13 +385,13 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                                 <h3 className="text-sm font-medium flex items-center gap-2 text-primary">
                                     <Code className="h-4 w-4" /> Request Payload
                                 </h3>
-                                <JsonView data={trace.rootSpan.input} maxHeight={400} />
+                                <JsonView data={trace.rootSpan.input} maxHeight={400} smartTable={true} />
                             </div>
                             <div className="space-y-2">
                                 <h3 className="text-sm font-medium flex items-center gap-2 text-primary">
                                     <Terminal className="h-4 w-4" /> Response Payload
                                 </h3>
-                                <JsonView data={trace.rootSpan.output} maxHeight={400} />
+                                <JsonView data={trace.rootSpan.output} maxHeight={400} smartTable={true} />
                             </div>
                         </div>
                      </ScrollArea>

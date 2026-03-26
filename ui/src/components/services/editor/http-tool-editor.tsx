@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import { useState, useEffect } from "react";
 import { ToolDefinition } from "@proto/config/v1/tool";

@@ -1,7 +1,7 @@
 # Dockerfile.ci
 # Optimized CI builder image based on Alpine Linux
 
-FROM golang:1.24-alpine
+FROM golang:1.26-alpine
 
 # Install system tools
 # libc6-compat and gcompat are needed for some pre-compiled binaries (protoc, node, etc)

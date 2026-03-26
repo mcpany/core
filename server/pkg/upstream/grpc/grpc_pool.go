@@ -38,6 +38,20 @@ type poolWithChecker[T pool.ClosableClient] struct {
 //
 // Side Effects:
 //   - Stops the health checker.
+//
+// Summary: Executes Close operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (p *poolWithChecker[T]) Close() error {
 	if p.checker != nil {
 		p.checker.Stop()
@@ -70,6 +84,20 @@ func (p *poolWithChecker[T]) Close() error {
 // Side Effects:
 //   - Reads certificate files if mTLS is configured.
 //   - Initializes gRPC clients.
+//
+// Summary: Initializes NewGrpcPool operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func NewGrpcPool(
 	minSize, maxSize int,
 	idleTimeout time.Duration,

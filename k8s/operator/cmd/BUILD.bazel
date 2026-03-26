@@ -1,4 +1,68 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
 load("@rules_go//go:def.bzl", "go_binary", "go_library")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
+load("@rules_pkg//pkg:mappings.bzl", "pkg_attributes", "pkg_files")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+
+go_library(
+    name = "operator_cmd_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/mcpany/core/operator/cmd",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//k8s/operator/api/v1alpha1",
+        "//k8s/operator/controllers",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_apimachinery//pkg/util/runtime",
+        "@io_k8s_client_go//kubernetes/scheme",
+        "@io_k8s_client_go//plugin/pkg/client/auth",
+        "@io_k8s_sigs_controller_runtime//:controller-runtime",
+        "@io_k8s_sigs_controller_runtime//pkg/healthz",
+        "@io_k8s_sigs_controller_runtime//pkg/log/zap",
+        "@io_k8s_sigs_controller_runtime//pkg/metrics/server",
+    ],
+)
+
+go_binary(
+    name = "operator",
+    embed = [":cmd_lib"],
+    gc_linkopts = [
+        "-s",
+        "-w",
+    ],
+    pure = "on",
+    visibility = ["//visibility:public"],
+)
+
+pkg_files(
+    name = "operator_binary_files",
+    srcs = [":operator"],
+    attributes = pkg_attributes(mode = "0755"),
+    prefix = "/",
+)
+
+pkg_tar(
+    name = "operator_layer",
+    srcs = [":operator_binary_files"],
+)
+
+oci_image(
+    name = "operator_image",
+    base = "@debian_bookworm_slim",
+    entrypoint = ["/operator"],
+    tars = [":operator_layer"],
+    user = "65532:65532",
+)
+
+oci_load(
+    name = "operator_tarball",
+    image = ":operator_image",
+    repo_tags = ["mcpany/operator:latest"],
+    tags = ["manual"],
+    visibility = ["//visibility:public"],
+)
 
 go_library(
     name = "cmd_lib",
@@ -8,19 +72,13 @@ go_library(
     deps = [
         "@com_github_mcpany_core//operator/api/v1alpha1",
         "@com_github_mcpany_core//operator/controllers",
-        "@io_k8s_apimachinery//pkg/runtime:go_default_library",
-        "@io_k8s_apimachinery//pkg/util/runtime:go_default_library",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_apimachinery//pkg/util/runtime",
         "@io_k8s_client_go//kubernetes/scheme",
         "@io_k8s_client_go//plugin/pkg/client/auth",
-        "@io_k8s_sigs_controller_runtime//:go_default_library",
-        "@io_k8s_sigs_controller_runtime//pkg/healthz:go_default_library",
-        "@io_k8s_sigs_controller_runtime//pkg/log/zap:go_default_library",
-        "@io_k8s_sigs_controller_runtime//pkg/metrics/server:go_default_library",
+        "@io_k8s_sigs_controller_runtime//:controller-runtime",
+        "@io_k8s_sigs_controller_runtime//pkg/healthz",
+        "@io_k8s_sigs_controller_runtime//pkg/log/zap",
+        "@io_k8s_sigs_controller_runtime//pkg/metrics/server",
     ],
-)
-
-go_binary(
-    name = "cmd",
-    embed = [":cmd_lib"],
-    visibility = ["//visibility:public"],
 )
