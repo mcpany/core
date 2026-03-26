@@ -54,6 +54,7 @@ jobs:
             cd server
             go mod edit -dropreplace github.com/mcpany/core/proto || true
             go mod edit -replace github.com/mcpany/core/proto=../proto || true
+            go get -u github.com/mcpany/core/proto@latest || true
             go mod tidy || true
             golangci-lint run --timeout 10m
       - save_cache:
