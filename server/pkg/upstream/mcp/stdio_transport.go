@@ -35,6 +35,12 @@ type StdioTransport struct {
 // Returns:
 //   - mcp.Connection: The established connection.
 //   - error: An error if the connection fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (t *StdioTransport) Connect(_ context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
 
@@ -107,6 +113,12 @@ type stdioConn struct {
 // Returns:
 //   - jsonrpc.Message: The read message.
 //   - error: An error if reading fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
 	if err := c.decoder.Decode(&raw); err != nil {
@@ -203,6 +215,12 @@ func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 //
 // Returns:
 //   - error: An error if writing fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	var method string
 	var params any
@@ -248,6 +266,15 @@ func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 //
 // Returns:
 //   - error: An error if closing fails.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (c *stdioConn) Close() error {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
@@ -269,6 +296,15 @@ func (c *stdioConn) Close() error {
 //
 // Returns:
 //   - string: The session ID.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (c *stdioConn) SessionID() string {
 	return "stdio-session"
 }

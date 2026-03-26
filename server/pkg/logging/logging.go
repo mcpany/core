@@ -29,6 +29,15 @@ var (
 //
 // Parameters:
 //   - level (slog.Level): The new log level.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func SetLevel(level slog.Level) {
 	programLevel.Set(level)
 }
@@ -36,6 +45,18 @@ func SetLevel(level slog.Level) {
 // ForTestsOnlyResetLogger is for use in tests to reset the sync.Once mechanism.
 //
 // Summary: Resets the global logger for testing purposes.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func ForTestsOnlyResetLogger() {
 	mu.Lock()
 	defer mu.Unlock()
@@ -53,6 +74,15 @@ func ForTestsOnlyResetLogger() {
 //   - output (io.Writer): The output destination for logs.
 //   - logFilePath (string): Optional path to a log file for JSON output.
 //   - format (...string): Optional format string ("json" or "text"). Defaults to "text".
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func Init(level slog.Level, output io.Writer, logFilePath string, format ...string) {
 	mu.Lock()
 	defer mu.Unlock()
@@ -125,6 +155,15 @@ func Init(level slog.Level, output io.Writer, logFilePath string, format ...stri
 //
 // Returns:
 //   - *slog.Logger: The global logger instance.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func GetLogger() *slog.Logger {
 	// ⚡ Bolt Optimization: Fast path to avoid lock contention on every log call.
 	// Atomic load is much cheaper than mutex lock.
@@ -153,6 +192,12 @@ func GetLogger() *slog.Logger {
 //
 // Returns:
 //   - slog.Level: The corresponding slog.Level.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func ToSlogLevel(level configv1.GlobalSettings_LogLevel) slog.Level {
 	switch level {
 	case configv1.GlobalSettings_LOG_LEVEL_DEBUG:

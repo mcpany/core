@@ -48,6 +48,12 @@ var (
 //
 // Side Effects:
 //   - Updates a global variable protected by a mutex.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 func SetGlobalAlertConfig(cfg *configv1.AlertConfig) {
 	globalAlertConfigMu.Lock()
 	defer globalAlertConfigMu.Unlock()
@@ -82,6 +88,9 @@ type HTTPServiceWithHealthCheck interface {
 //
 // Side Effects:
 //   - Registers metrics for the health check.
+//
+// Errors:
+//   - None.
 func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 	if uc == nil {
 		return nil

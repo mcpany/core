@@ -48,6 +48,15 @@ var (
 // Parameters:
 //   - name: string. The name of the middleware.
 //   - factory: Factory. The factory function to create the middleware.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func Register(name string, factory Factory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
@@ -61,6 +70,15 @@ func Register(name string, factory Factory) {
 // Parameters:
 //   - name: string. The name of the middleware.
 //   - factory: MCPFactory. The factory function to create the MCP middleware.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func RegisterMCP(name string, factory MCPFactory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
@@ -76,6 +94,12 @@ func RegisterMCP(name string, factory MCPFactory) {
 //
 // Returns:
 //   - []func(http.Handler) http.Handler: A slice of HTTP middleware functions.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) http.Handler {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()
@@ -108,6 +132,12 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 //
 // Returns:
 //   - []func(mcp.MethodHandler) mcp.MethodHandler: A slice of MCP middleware functions.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler) mcp.MethodHandler {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()

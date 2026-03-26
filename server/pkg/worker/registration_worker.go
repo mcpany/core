@@ -42,6 +42,12 @@ type ServiceRegistrationWorker struct {
 //
 // Returns:
 //   - *ServiceRegistrationWorker: The new worker instance.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregistry.ServiceRegistryInterface) *ServiceRegistrationWorker {
 	return &ServiceRegistrationWorker{
 		bus:             bus,
@@ -56,6 +62,15 @@ func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregi
 //
 // Parameters:
 //   - d (time.Duration): The retry delay duration.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (w *ServiceRegistrationWorker) SetRetryDelay(d time.Duration) {
 	w.retryDelay = d
 }
@@ -66,6 +81,15 @@ func (w *ServiceRegistrationWorker) SetRetryDelay(d time.Duration) {
 //
 // Parameters:
 //   - ctx (context.Context): The lifecycle context.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	log := logging.GetLogger().With("component", "ServiceRegistrationWorker")
@@ -290,6 +314,18 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 // Stop waits for the worker to stop.
 //
 // Summary: Executes Stop operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (w *ServiceRegistrationWorker) Stop() {
 	w.wg.Wait()
 }

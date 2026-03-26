@@ -81,6 +81,12 @@ type OpenAIClient struct {
 //
 // Returns:
 //   - *OpenAIClient: The initialized OpenAI client.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewOpenAIClient(apiKey string, baseURL string) *OpenAIClient {
 	if baseURL == "" {
 		baseURL = "https://api.openai.com/v1"
@@ -119,6 +125,12 @@ type openAIChatResponse struct {
 // Returns:
 //   - *ChatResponse: The chat response.
 //   - error: An error if the request fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (c *OpenAIClient) ChatCompletion(ctx context.Context, req ChatRequest) (*ChatResponse, error) {
 	reqBody := openAIChatRequest(req)
 	bodyBytes, err := json.Marshal(reqBody)

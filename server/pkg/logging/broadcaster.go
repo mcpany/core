@@ -31,6 +31,15 @@ var (
 //
 // Returns:
 //   - *Broadcaster: The new Broadcaster instance.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewBroadcaster() *Broadcaster {
 	return &Broadcaster{
 		subscribers: make(map[chan any]struct{}),
@@ -42,6 +51,18 @@ func NewBroadcaster() *Broadcaster {
 // Reset clears the broadcaster history and subscribers.
 //
 // Summary: Executes Reset operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (b *Broadcaster) Reset() {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -57,6 +78,15 @@ func (b *Broadcaster) Reset() {
 //
 // Returns:
 //   - chan any: The subscription channel.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (b *Broadcaster) Subscribe() chan any {
 	return b.SubscribeBuffered(100)
 }
@@ -70,6 +100,12 @@ func (b *Broadcaster) Subscribe() chan any {
 //
 // Returns:
 //   - chan any: The subscription channel.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (b *Broadcaster) SubscribeBuffered(size int) chan any {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -85,6 +121,15 @@ func (b *Broadcaster) SubscribeBuffered(size int) chan any {
 // Returns:
 //   - chan any: The subscription channel.
 //   - []any: The history of messages.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (b *Broadcaster) SubscribeWithHistory() (chan any, []any) {
 	return b.SubscribeWithHistoryBuffered(100)
 }
@@ -99,6 +144,12 @@ func (b *Broadcaster) SubscribeWithHistory() (chan any, []any) {
 // Returns:
 //   - chan any: The subscription channel.
 //   - []any: The history of messages.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (b *Broadcaster) SubscribeWithHistoryBuffered(size int) (chan any, []any) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -138,6 +189,15 @@ func (b *Broadcaster) SubscribeWithHistoryBuffered(size int) (chan any, []any) {
 //
 // Parameters:
 //   - ch (chan any): The channel to unsubscribe.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (b *Broadcaster) Unsubscribe(ch chan any) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -153,6 +213,15 @@ func (b *Broadcaster) Unsubscribe(ch chan any) {
 //
 // Parameters:
 //   - msg (any): The message to broadcast.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (b *Broadcaster) Broadcast(msg any) {
 	// ⚡ BOLT: Optimized Broadcast to use interface{} (any) instead of []byte.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -183,6 +252,18 @@ func (b *Broadcaster) Broadcast(msg any) {
 // ClearHistory clears the history of the broadcaster without removing subscribers.
 //
 // Summary: Executes ClearHistory operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (b *Broadcaster) ClearHistory() {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -197,6 +278,15 @@ func (b *Broadcaster) ClearHistory() {
 //
 // Returns:
 //   - []any: The history of messages.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (b *Broadcaster) GetHistory() []any {
 	b.mu.RLock()
 	defer b.mu.RUnlock()
@@ -230,6 +320,15 @@ func (b *Broadcaster) GetHistory() []any {
 //
 // Parameters:
 //   - messages ([]any): The messages to add to history.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (b *Broadcaster) Hydrate(messages []any) {
 	b.mu.Lock()
 	defer b.mu.Unlock()

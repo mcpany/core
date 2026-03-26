@@ -73,6 +73,15 @@ type McpField struct {
 //
 // Returns:
 //   - string: The name of the field.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (f *McpField) GetName() string {
 	return f.Name
 }
@@ -83,6 +92,15 @@ func (f *McpField) GetName() string {
 //
 // Returns:
 //   - string: The description of the field.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (f *McpField) GetDescription() string {
 	return f.Description
 }
@@ -93,6 +111,15 @@ func (f *McpField) GetDescription() string {
 //
 // Returns:
 //   - string: The string representation of the field's type.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (f *McpField) GetType() string {
 	return f.Type
 }
@@ -103,6 +130,15 @@ func (f *McpField) GetType() string {
 //
 // Returns:
 //   - bool: True if the field is repeated, false otherwise.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (f *McpField) GetIsRepeated() bool {
 	return f.IsRepeated
 }
@@ -365,6 +401,12 @@ type McpResource struct {
 // Returns:
 //   - *descriptorpb.FileDescriptorSet: The discovered file descriptor set.
 //   - error: An error if reflection fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func ParseProtoByReflection(ctx context.Context, target string) (*descriptorpb.FileDescriptorSet, error) {
 	// Create a context with a timeout for the entire reflection process
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
@@ -557,6 +599,12 @@ func getFileDescriptorByFilename(stream reflectpb.ServerReflection_ServerReflect
 // Returns:
 //   - *ParsedMcpAnnotations: The extracted definitions.
 //   - error: An error if extraction fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func ExtractMcpDefinitions(fds *descriptorpb.FileDescriptorSet) (*ParsedMcpAnnotations, error) {
 	if fds == nil {
 		return nil, fmt.Errorf("FileDescriptorSet is nil")

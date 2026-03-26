@@ -71,6 +71,12 @@ func NewWithClient[T any](client *redis.Client) *Bus[T] {
 //
 // Returns:
 //   - error: An error if marshaling or publishing fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 	payload, err := json.Marshal(msg)
 	if err != nil {
@@ -90,6 +96,12 @@ func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 //
 // Returns:
 //   - func(): A function that unsubscribes the handler when called.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("redis bus: handler cannot be nil")
@@ -150,6 +162,12 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 //
 // Returns:
 //   - func(): A function that unsubscribes the handler.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("redis bus: handler cannot be nil")
@@ -187,6 +205,15 @@ func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T
 //
 // Returns:
 //   - error: An error if closing fails.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) Close() error {
 	return b.client.Close()
 }

@@ -38,6 +38,15 @@ type SimpleTokenizer struct{}
 //
 // Returns:
 //   - *SimpleTokenizer: The initialized simple tokenizer.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewSimpleTokenizer() *SimpleTokenizer {
 	return &SimpleTokenizer{}
 }
@@ -52,6 +61,12 @@ func NewSimpleTokenizer() *SimpleTokenizer {
 // Returns:
 //   - int: The estimated token count.
 //   - error: An error if counting fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (t *SimpleTokenizer) CountTokens(text string) (int, error) {
 	if len(text) == 0 {
 		return 0, nil
@@ -77,6 +92,15 @@ type WordTokenizer struct {
 //
 // Returns:
 //   - *WordTokenizer: The initialized word tokenizer.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewWordTokenizer() *WordTokenizer {
 	return &WordTokenizer{Factor: 1.3}
 }
@@ -91,6 +115,12 @@ func NewWordTokenizer() *WordTokenizer {
 // Returns:
 //   - int: The estimated token count.
 //   - error: An error if counting fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (t *WordTokenizer) CountTokens(text string) (int, error) {
 	if len(text) == 0 {
 		return 0, nil
@@ -180,6 +210,12 @@ func countWords(text string) int {
 // Returns:
 //   - int: The total estimated token count.
 //   - error: An error if counting fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 	// OPTIMIZATION: Handle common primitive types and simple collections
 	// without allocating the 'visited' map. This significantly improves performance
@@ -224,6 +260,12 @@ type rawWordCounter struct{}
 // Returns:
 //   - int: The word count.
 //   - error: An error if counting fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (r *rawWordCounter) CountTokens(text string) (int, error) {
 	return countWords(text), nil
 }

@@ -40,6 +40,12 @@ type poolWithChecker[T pool.ClosableClient] struct {
 //
 // Side Effects:
 //   - Stops the health checker and closes the pool.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 func (p *poolWithChecker[T]) Close() error {
 	if p.checker != nil {
 		p.checker.Stop()

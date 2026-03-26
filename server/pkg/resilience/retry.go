@@ -33,6 +33,9 @@ type Retry struct {
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - None.
 func NewRetry(config *configv1.RetryConfig) *Retry {
 	if config == nil {
 		config = &configv1.RetryConfig{}
@@ -62,6 +65,9 @@ func NewRetry(config *configv1.RetryConfig) *Retry {
 //
 // Side Effects:
 //   - Executes the provided function multiple times.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 func (r *Retry) Execute(ctx context.Context, work func(context.Context) error) error {
 	var err error
 	// Use int64 for attempts to match usage, though retries count is usually small.

@@ -31,6 +31,15 @@ type Generator struct {
 //
 // Returns:
 //   - *Generator: The initialized configuration generator.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewGenerator() *Generator {
 	return &Generator{
 		Reader: bufio.NewReader(os.Stdin),
@@ -44,6 +53,15 @@ func NewGenerator() *Generator {
 // Returns:
 //   - []byte: The generated configuration as a YAML byte slice.
 //   - error: An error if generation fails.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (g *Generator) Generate() ([]byte, error) {
 	serviceType, err := g.prompt("🤖 Enter service type (http, grpc, openapi, graphql): ")
 	if err != nil {

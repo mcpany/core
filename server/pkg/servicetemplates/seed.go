@@ -39,6 +39,12 @@ type ConfigFile struct {
 //
 // Returns:
 //   - error: Returns an error if directory scanning or template saving fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (s *Seeder) Seed(ctx context.Context) error {
 	entries, err := os.ReadDir(s.ExamplesDir)
 	if err != nil {

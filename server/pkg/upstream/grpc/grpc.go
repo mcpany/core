@@ -60,6 +60,12 @@ type Upstream struct {
 //
 // Returns:
 //   - error: An error if the service is unhealthy.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -84,6 +90,12 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 //
 // Returns:
 //   - upstream.Upstream: The initialized gRPC upstream.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	cache := ttlcache.New[string, *descriptorpb.FileDescriptorSet](
 		ttlcache.WithTTL[string, *descriptorpb.FileDescriptorSet](5 * time.Minute),
@@ -105,6 +117,12 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 //
 // Returns:
 //   - error: An error if shutdown fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {

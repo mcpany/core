@@ -37,6 +37,12 @@ type UpstreamWorker struct {
 //
 // Returns:
 //   - *UpstreamWorker: The new upstream worker instance.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *UpstreamWorker {
 	return &UpstreamWorker{
 		bus:         bus,
@@ -50,6 +56,15 @@ func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *Up
 //
 // Parameters:
 //   - ctx (context.Context): The lifecycle context.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (w *UpstreamWorker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	log := logging.GetLogger().With("component", "UpstreamWorker")
@@ -104,6 +119,18 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 // Stop waits for the worker to stop.
 //
 // Summary: Executes Stop operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (w *UpstreamWorker) Stop() {
 	w.wg.Wait()
 }

@@ -32,6 +32,9 @@ type LocalLimiter struct {
 //
 // Side Effects:
 //   - Consumes 1 token from the bucket if allowed.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 func (l *LocalLimiter) Allow(_ context.Context) (bool, error) {
 	return l.Limiter.Allow(), nil
 }
@@ -50,6 +53,9 @@ func (l *LocalLimiter) Allow(_ context.Context) (bool, error) {
 //
 // Side Effects:
 //   - Consumes n tokens from the bucket if allowed.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 func (l *LocalLimiter) AllowN(_ context.Context, n int) (bool, error) {
 	return l.Limiter.AllowN(time.Now(), n), nil
 }
@@ -64,6 +70,12 @@ func (l *LocalLimiter) AllowN(_ context.Context, n int) (bool, error) {
 //
 // Side Effects:
 //   - Modifies the underlying rate.Limiter state.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 func (l *LocalLimiter) Update(rps float64, burst int) {
 	limit := rate.Limit(rps)
 	if l.Limit() != limit {
@@ -85,6 +97,15 @@ type LocalStrategy struct{}
 //
 // Returns:
 //   - *LocalStrategy: The initialized strategy.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewLocalStrategy() *LocalStrategy {
 	return &LocalStrategy{}
 }
@@ -106,6 +127,9 @@ func NewLocalStrategy() *LocalStrategy {
 //
 // Side Effects:
 //   - Sets a minimum burst of 1 if configured lower.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 func (s *LocalStrategy) Create(_ context.Context, _, _, _ string, config *configv1.RateLimitConfig) (Limiter, error) {
 	rps := config.GetRequestsPerSecond()
 	burst := int(config.GetBurst())

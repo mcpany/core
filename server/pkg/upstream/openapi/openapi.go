@@ -52,6 +52,12 @@ type OpenAPIUpstream struct { //nolint:revive
 //
 // Returns:
 //   - error: Nil.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -69,6 +75,15 @@ func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 //
 // Returns:
 //   - upstream.Upstream: A new OpenAPI upstream instance.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewOpenAPIUpstream() upstream.Upstream {
 	cache := ttlcache.New[string, *openapi3.T](
 		ttlcache.WithTTL[string, *openapi3.T](5 * time.Minute),
@@ -288,6 +303,12 @@ type httpClientImpl struct {
 // Returns:
 //   - *http.Response: The http response.
 //   - error: An error if the request fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (c *httpClientImpl) Do(req *http.Request) (*http.Response, error) {
 	return c.client.Do(req)
 }

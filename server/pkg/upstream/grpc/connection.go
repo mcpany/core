@@ -29,6 +29,15 @@ type ConnectionFactory struct {
 //
 // Returns:
 //   - *ConnectionFactory: The initialized connection factory.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewConnectionFactory() *ConnectionFactory {
 	return &ConnectionFactory{}
 }
@@ -39,6 +48,15 @@ func NewConnectionFactory() *ConnectionFactory {
 //
 // Parameters:
 //   - dialer: func(context.Context, string) (net.Conn, error). The custom dialer function.
+//
+// Returns:
+//   - See return values.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (f *ConnectionFactory) WithDialer(dialer func(context.Context, string) (net.Conn, error)) {
 	f.dialer = dialer
 }
@@ -54,6 +72,12 @@ func (f *ConnectionFactory) WithDialer(dialer func(context.Context, string) (net
 // Returns:
 //   - *grpc.ClientConn: The established connection.
 //   - error: An error if the connection fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (f *ConnectionFactory) NewConnection(_ context.Context, targetAddress string) (*grpc.ClientConn, error) {
 	opts := []grpc.DialOption{
 		grpc.WithTransportCredentials(insecure.NewCredentials()),

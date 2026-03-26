@@ -49,6 +49,9 @@ type PolicyHook struct {
 // Side Effects:
 //   - Compiles regex patterns from the policy rules.
 //   - Logs errors for invalid regexes.
+//
+// Errors:
+//   - None.
 func NewPolicyHook(policy *configv1.CallPolicy) *PolicyHook {
 	compiledRules := make([]compiledRule, len(policy.GetRules()))
 	for i, rule := range policy.GetRules() {
@@ -173,6 +176,9 @@ type WebhookClient struct {
 //
 // Side Effects:
 //   - Initializes HTTP client and optional signer.
+//
+// Errors:
+//   - None.
 func NewWebhookClient(config *configv1.WebhookConfig) *WebhookClient {
 	timeout := 5 * time.Second
 	if t := config.GetTimeout(); t != nil {
@@ -277,6 +283,12 @@ type WebhookHook struct {
 //
 // Returns:
 //   - *WebhookHook: The initialized hook.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewWebhookHook(config *configv1.WebhookConfig) *WebhookHook {
 	return &WebhookHook{
 		client: NewWebhookClient(config),
@@ -463,6 +475,9 @@ type SigningRoundTripper struct {
 // Side Effects:
 //   - Reads and buffers the request body for signing.
 //   - Modifies request headers.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 func (s *SigningRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	if s.signer != nil {
 		payload := []byte{} // Signing requires payload, but request body might be stream.

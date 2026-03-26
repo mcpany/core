@@ -108,6 +108,12 @@ func (m *AuditMiddleware) initializeStore(config *configv1.AuditConfig) error {
 //
 // Side Effects:
 //   - Replaces the current audit store.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 func (m *AuditMiddleware) SetStore(store audit.Store) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -187,6 +193,9 @@ func (m *AuditMiddleware) UpdateConfig(auditConfig *configv1.AuditConfig) error 
 //
 // Side Effects:
 //   - Writes an audit log entry to the configured store.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	m.mu.RLock()
 	auditConfig := m.config
@@ -306,6 +315,15 @@ func (m *AuditMiddleware) writeLog(ctx context.Context, store audit.Store, entry
 //
 // Side Effects:
 //   - Clears the history in the broadcaster.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 func (m *AuditMiddleware) ClearHistory() {
 	if m.broadcaster != nil {
 		m.broadcaster.ClearHistory()
@@ -326,6 +344,9 @@ func (m *AuditMiddleware) ClearHistory() {
 //
 // Side Effects:
 //   - Adds a new subscriber to the broadcaster.
+//
+// Errors:
+//   - None.
 func (m *AuditMiddleware) SubscribeWithHistory() (chan any, []any) {
 	return m.broadcaster.SubscribeWithHistory()
 }
@@ -338,6 +359,12 @@ func (m *AuditMiddleware) SubscribeWithHistory() (chan any, []any) {
 //   - []any: A slice of audit entries.
 //
 // Side Effects:
+//   - None.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
 //   - None.
 func (m *AuditMiddleware) GetHistory() []any {
 	return m.broadcaster.GetHistory()
@@ -352,6 +379,12 @@ func (m *AuditMiddleware) GetHistory() []any {
 //
 // Side Effects:
 //   - Removes the subscriber from the broadcaster.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 func (m *AuditMiddleware) Unsubscribe(ch chan any) {
 	m.broadcaster.Unsubscribe(ch)
 }
@@ -393,6 +426,12 @@ func (m *AuditMiddleware) Read(ctx context.Context, filter audit.Filter) ([]audi
 //
 // Side Effects:
 //   - Closes the audit store connection.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 func (m *AuditMiddleware) Close() error {
 	m.mu.Lock()
 	defer m.mu.Unlock()

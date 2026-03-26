@@ -89,6 +89,9 @@ func NewS3Provider(config *configv1.S3Fs) (*S3Provider, error) {
 //
 // Side Effects:
 //   - None.
+//
+// Parameters:
+//   - None.
 func (p *S3Provider) GetFs() afero.Fs {
 	return p.fs
 }
@@ -136,6 +139,9 @@ func (p *S3Provider) ResolvePath(virtualPath string) (string, error) {
 //   - None.
 //
 // Side Effects:
+//   - None.
+//
+// Parameters:
 //   - None.
 func (p *S3Provider) Close() error {
 	// S3 provider doesn't hold open connections that need explicit closing typically,

@@ -134,6 +134,12 @@ type ServiceRegistry struct {
 //
 // Returns:
 //   - *ServiceRegistry: The initialized service registry.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManager prompt.ManagerInterface, resourceManager resource.ManagerInterface, authManager *auth.Manager) *ServiceRegistry {
 	return &ServiceRegistry{
 		serviceConfigs:  make(map[string]*config.UpstreamServiceConfig),
@@ -162,6 +168,12 @@ func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManag
 //   - []*config.ToolDefinition: Discovered tools.
 //   - []*config.ResourceDefinition: Discovered resources.
 //   - error: An error if registration fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) (string, []*config.ToolDefinition, []*config.ResourceDefinition, error) {
 	r.mu.Lock()
 
@@ -296,6 +308,15 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 // Parameters:
 //   - serviceID: string. The unique service identifier.
 //   - info: *tool.ServiceInfo. The service metadata.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (r *ServiceRegistry) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -312,6 +333,12 @@ func (r *ServiceRegistry) AddServiceInfo(serviceID string, info *tool.ServiceInf
 // Returns:
 //   - *tool.ServiceInfo: The service metadata.
 //   - bool: True if the service was found, false otherwise.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (r *ServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -341,6 +368,12 @@ func (r *ServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 // Returns:
 //   - *config.UpstreamServiceConfig: The service configuration.
 //   - bool: True if the service was found, false otherwise.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamServiceConfig, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -364,6 +397,12 @@ func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamSe
 //
 // Returns:
 //   - error: An error if deletion fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -407,6 +446,12 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 // Returns:
 //   - string: The error message.
 //   - bool: True if an error exists, false otherwise.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (r *ServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -424,6 +469,15 @@ func (r *ServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 // Parameters:
 //   - ctx: context.Context. The execution context.
 //   - interval: time.Duration. The frequency of health checks.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (r *ServiceRegistry) StartHealthChecks(ctx context.Context, interval time.Duration) {
 	go func() {
 		ticker := time.NewTicker(interval)
@@ -506,6 +560,12 @@ func (r *ServiceRegistry) checkAllHealth(ctx context.Context) {
 //
 // Returns:
 //   - error: An error if any service fails to shutdown.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (r *ServiceRegistry) Close(ctx context.Context) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -530,6 +590,15 @@ func (r *ServiceRegistry) Close(ctx context.Context) error {
 // Returns:
 //   - []*config.UpstreamServiceConfig: A slice of all registered service configurations.
 //   - error: An error if retrieval fails.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (r *ServiceRegistry) GetAllServices() ([]*config.UpstreamServiceConfig, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()

@@ -109,6 +109,9 @@ func NewSftpProvider(config *configv1.SftpFs) (*SftpProvider, error) {
 //
 // Side Effects:
 //   - None.
+//
+// Parameters:
+//   - None.
 func (p *SftpProvider) GetFs() afero.Fs {
 	return p.fs
 }
@@ -150,6 +153,9 @@ func (p *SftpProvider) ResolvePath(virtualPath string) (string, error) {
 //
 // Side Effects:
 //   - Terminates the TCP connection to the remote host.
+//
+// Parameters:
+//   - None.
 func (p *SftpProvider) Close() error {
 	if p.client != nil {
 		_ = p.client.Close()
@@ -434,6 +440,12 @@ func (s *sftpFs) Stat(name string) (os.FileInfo, error) {
 //
 // Returns:
 //   - string: The name of the filesystem.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
 func (s *sftpFs) Name() string {
 	return "sftp"
 }
@@ -543,6 +555,9 @@ type sftpFile struct {
 //
 // Returns:
 //   - error: An error if closure fails.
+//
+// Parameters:
+//   - None.
 func (f *sftpFile) Close() error {
 	return f.f.Close()
 }
@@ -700,6 +715,12 @@ func (f *sftpFile) WriteAt(p []byte, off int64) (n int, err error) {
 //
 // Returns:
 //   - string: The file name.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
 func (f *sftpFile) Name() string {
 	return f.f.Name()
 }
@@ -784,6 +805,9 @@ func (f *sftpFile) Readdirnames(n int) ([]string, error) {
 // Returns:
 //   - os.FileInfo: File information.
 //   - error: An error if stat fails.
+//
+// Parameters:
+//   - None.
 func (f *sftpFile) Stat() (os.FileInfo, error) {
 	return f.f.Stat()
 }
@@ -803,6 +827,9 @@ func (f *sftpFile) Stat() (os.FileInfo, error) {
 //
 // Returns:
 //   - error: Nil.
+//
+// Parameters:
+//   - None.
 func (f *sftpFile) Sync() error {
 	return nil
 }

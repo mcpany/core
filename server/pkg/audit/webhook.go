@@ -46,6 +46,9 @@ type WebhookAuditStore struct {
 //
 // Side Effects:
 //   - Starts background workers.
+//
+// Errors:
+//   - None.
 func NewWebhookAuditStore(webhookURL string, headers map[string]string) *WebhookAuditStore {
 	store := &WebhookAuditStore{
 		webhookURL: webhookURL,
@@ -114,6 +117,9 @@ func (s *WebhookAuditStore) worker() {
 //
 // Side Effects:
 //   - Queues the entry for processing.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 func (s *WebhookAuditStore) Write(_ context.Context, entry Entry) error {
 	select {
 	case s.queue <- entry:
@@ -172,6 +178,9 @@ func (s *WebhookAuditStore) sendBatch(batch []Entry) {
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 func (s *WebhookAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for webhook audit store")
 }
@@ -188,6 +197,9 @@ func (s *WebhookAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 //
 // Side Effects:
 //   - Stops background workers and drains the queue.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 func (s *WebhookAuditStore) Close() error {
 	if s.done != nil {
 		close(s.done)

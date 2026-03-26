@@ -42,6 +42,9 @@ type DoctorRunner struct {
 // Side Effects:
 //   - Prints check results to r.Out.
 //   - Makes HTTP requests to the running server.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 func (r *DoctorRunner) Run(cmd *cobra.Command, _ []string) error {
 	ctx := cmd.Context()
 	if ctx == nil {

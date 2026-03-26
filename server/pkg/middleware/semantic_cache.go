@@ -86,6 +86,9 @@ type SemanticCache struct {
 // Side Effects:
 //   - Sets a default threshold of 0.9 if the provided threshold is <= 0.
 //   - Creates a memory-based vector store if store is nil.
+//
+// Errors:
+//   - None.
 func NewSemanticCache(provider EmbeddingProvider, store VectorStore, threshold float32) *SemanticCache {
 	if threshold <= 0 {
 		threshold = 0.9 // Default high threshold
@@ -150,6 +153,9 @@ func (c *SemanticCache) Get(ctx context.Context, key string, input string) (any,
 //
 // Side Effects:
 //   - Writes to the underlying VectorStore.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 func (c *SemanticCache) Set(ctx context.Context, key string, embedding []float32, result any, ttl time.Duration) error {
 	return c.store.Add(ctx, key, embedding, result, ttl)
 }

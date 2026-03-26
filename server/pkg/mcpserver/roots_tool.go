@@ -32,6 +32,15 @@ type RootsTool struct {
 //
 // Returns:
 //   - *RootsTool: A new instance of RootsTool.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewRootsTool() *RootsTool {
 	inputSchema := &structpb.Struct{
 		Fields: map[string]*structpb.Value{
@@ -59,6 +68,15 @@ func NewRootsTool() *RootsTool {
 //
 // Returns:
 //   - *v1.Tool: The protobuf tool definition.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *RootsTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -69,6 +87,15 @@ func (t *RootsTool) Tool() *v1.Tool {
 //
 // Returns:
 //   - *mcp.Tool: The MCP tool definition.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *RootsTool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
@@ -84,6 +111,12 @@ func (t *RootsTool) MCPTool() *mcp.Tool {
 // Returns:
 //   - any: The result of the roots list operation.
 //   - error: An error if the list operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 	session, ok := tool.GetSession(ctx)
 	if !ok {
@@ -104,6 +137,15 @@ func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any,
 //
 // Returns:
 //   - *configv1.CacheConfig: The caching configuration.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *RootsTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }

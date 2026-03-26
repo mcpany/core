@@ -40,6 +40,12 @@ type MockManagerInterfaceMockRecorder struct {
 //
 // Returns:
 //   - *MockManagerInterface: The new mock manager instance.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewMockManagerInterface(ctrl *gomock.Controller) *MockManagerInterface {
 	mock := &MockManagerInterface{ctrl: ctrl}
 	mock.recorder = &MockManagerInterfaceMockRecorder{mock}
@@ -52,6 +58,15 @@ func NewMockManagerInterface(ctrl *gomock.Controller) *MockManagerInterface {
 //
 // Returns:
 //   - *MockManagerInterfaceMockRecorder: The recorder instance.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockManagerInterface) EXPECT() *MockManagerInterfaceMockRecorder {
 	return m.recorder
 }
@@ -62,6 +77,15 @@ func (m *MockManagerInterface) EXPECT() *MockManagerInterfaceMockRecorder {
 //
 // Parameters:
 //   - resource (Resource): The resource to be added.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockManagerInterface) AddResource(resource Resource) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AddResource", resource)
@@ -76,6 +100,12 @@ func (m *MockManagerInterface) AddResource(resource Resource) {
 //
 // Returns:
 //   - *gomock.Call: The recorded call object.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (mr *MockManagerInterfaceMockRecorder) AddResource(resource any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddResource", reflect.TypeOf((*MockManagerInterface)(nil).AddResource), resource)
@@ -84,6 +114,18 @@ func (mr *MockManagerInterfaceMockRecorder) AddResource(resource any) *gomock.Ca
 // Clear mocks base method.
 //
 // Summary: Mocks the Clear method for testing.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockManagerInterface) Clear() {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "Clear")
@@ -95,6 +137,15 @@ func (m *MockManagerInterface) Clear() {
 //
 // Returns:
 //   - *gomock.Call: The recorded call object.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (mr *MockManagerInterfaceMockRecorder) Clear() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Clear", reflect.TypeOf((*MockManagerInterface)(nil).Clear))
@@ -106,6 +157,15 @@ func (mr *MockManagerInterfaceMockRecorder) Clear() *gomock.Call {
 //
 // Parameters:
 //   - serviceID (string): The identifier of the service.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockManagerInterface) ClearResourcesForService(serviceID string) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "ClearResourcesForService", serviceID)
@@ -120,6 +180,12 @@ func (m *MockManagerInterface) ClearResourcesForService(serviceID string) {
 //
 // Returns:
 //   - *gomock.Call: The recorded call object.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (mr *MockManagerInterfaceMockRecorder) ClearResourcesForService(serviceID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ClearResourcesForService", reflect.TypeOf((*MockManagerInterface)(nil).ClearResourcesForService), serviceID)
@@ -135,6 +201,12 @@ func (mr *MockManagerInterfaceMockRecorder) ClearResourcesForService(serviceID a
 // Returns:
 //   - Resource: The mocked resource instance.
 //   - bool: Whether the resource was found.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockManagerInterface) GetResource(uri string) (Resource, bool) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetResource", uri)
@@ -152,6 +224,12 @@ func (m *MockManagerInterface) GetResource(uri string) (Resource, bool) {
 //
 // Returns:
 //   - *gomock.Call: The recorded call object.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (mr *MockManagerInterfaceMockRecorder) GetResource(uri any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetResource", reflect.TypeOf((*MockManagerInterface)(nil).GetResource), uri)
@@ -163,6 +241,15 @@ func (mr *MockManagerInterfaceMockRecorder) GetResource(uri any) *gomock.Call {
 //
 // Returns:
 //   - []Resource: A slice of mocked resource instances.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockManagerInterface) ListResources() []Resource {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListResources")
@@ -176,6 +263,15 @@ func (m *MockManagerInterface) ListResources() []Resource {
 //
 // Returns:
 //   - *gomock.Call: The recorded call object.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (mr *MockManagerInterfaceMockRecorder) ListResources() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListResources", reflect.TypeOf((*MockManagerInterface)(nil).ListResources))
@@ -187,6 +283,15 @@ func (mr *MockManagerInterfaceMockRecorder) ListResources() *gomock.Call {
 //
 // Parameters:
 //   - arg0 (func()): The callback function for changes.
+//
+// Returns:
+//   - See return values.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockManagerInterface) OnListChanged(arg0 func()) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "OnListChanged", arg0)
@@ -201,6 +306,12 @@ func (m *MockManagerInterface) OnListChanged(arg0 func()) {
 //
 // Returns:
 //   - *gomock.Call: The recorded call object.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (mr *MockManagerInterfaceMockRecorder) OnListChanged(arg0 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "OnListChanged", reflect.TypeOf((*MockManagerInterface)(nil).OnListChanged), arg0)
@@ -212,6 +323,15 @@ func (mr *MockManagerInterfaceMockRecorder) OnListChanged(arg0 any) *gomock.Call
 //
 // Parameters:
 //   - uri (string): The URI of the resource to remove.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockManagerInterface) RemoveResource(uri string) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "RemoveResource", uri)
@@ -226,6 +346,12 @@ func (m *MockManagerInterface) RemoveResource(uri string) {
 //
 // Returns:
 //   - *gomock.Call: The recorded call object.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (mr *MockManagerInterfaceMockRecorder) RemoveResource(uri any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveResource", reflect.TypeOf((*MockManagerInterface)(nil).RemoveResource), uri)

@@ -33,6 +33,9 @@ type A2ABridgeMiddleware struct {
 //
 // Side Effects:
 //   - Allocates memory for the middleware struct.
+//
+// Errors:
+//   - None.
 func NewA2ABridgeMiddleware(contextManager *RecursiveContextManager) *A2ABridgeMiddleware {
 	return &A2ABridgeMiddleware{
 		contextManager: contextManager,
@@ -55,6 +58,9 @@ func NewA2ABridgeMiddleware(contextManager *RecursiveContextManager) *A2ABridgeM
 //
 // Side Effects:
 //   - May create a new session in the RecursiveContextManager if intercepted.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 func (m *A2ABridgeMiddleware) Execute(ctx context.Context, method string, req mcp.Request, next mcp.MethodHandler) (mcp.Result, error) {
 	if method != "tools/call" {
 		return next(ctx, method, req)

@@ -69,6 +69,15 @@ type Manager struct {
 //
 // Returns:
 //   - *Manager: The initialized manager.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewManager() *Manager {
 	m := &Manager{
 		alerts: make(map[string]*Alert),
@@ -98,6 +107,15 @@ func (m *Manager) seedData() {
 //
 // Returns:
 //   - []*Alert: A slice of alerts sorted from newest to oldest.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) ListAlerts() []*Alert {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -121,6 +139,12 @@ func (m *Manager) ListAlerts() []*Alert {
 //
 // Returns:
 //   - *Alert: The requested alert, or nil.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) GetAlert(id string) *Alert {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -136,6 +160,12 @@ func (m *Manager) GetAlert(id string) *Alert {
 //
 // Returns:
 //   - *Alert: The created alert with generated metadata.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) CreateAlert(alert *Alert) *Alert {
 	m.mu.Lock()
 	if alert.ID == "" {
@@ -183,6 +213,15 @@ func (m *Manager) CreateAlert(alert *Alert) *Alert {
 //
 // Returns:
 //   - *AlertStats: An object containing current alert metrics.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) GetAlertStats() *AlertStats {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -221,6 +260,12 @@ func (m *Manager) GetAlertStats() *AlertStats {
 //
 // Returns:
 //   - *Alert: The updated alert object, or nil if not found.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 	m.mu.Lock()
 	existing, ok := m.alerts[id]
@@ -272,6 +317,15 @@ func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 //
 // Returns:
 //   - string: The webhook URL.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) GetWebhookURL() string {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -284,6 +338,15 @@ func (m *Manager) GetWebhookURL() string {
 //
 // Parameters:
 //   - url: string. The new webhook URL.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) SetWebhookURL(url string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -296,6 +359,15 @@ func (m *Manager) SetWebhookURL(url string) {
 //
 // Returns:
 //   - []*AlertRule: A slice of all managed alert rules.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) ListRules() []*AlertRule {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -318,6 +390,12 @@ func (m *Manager) ListRules() []*AlertRule {
 //
 // Returns:
 //   - *AlertRule: The requested rule, or nil.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) GetRule(id string) *AlertRule {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -333,6 +411,12 @@ func (m *Manager) GetRule(id string) *AlertRule {
 //
 // Returns:
 //   - *AlertRule: The created rule with its generated ID.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) CreateRule(rule *AlertRule) *AlertRule {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -354,6 +438,12 @@ func (m *Manager) CreateRule(rule *AlertRule) *AlertRule {
 //
 // Returns:
 //   - *AlertRule: The updated rule object, or nil if not found.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) UpdateRule(id string, rule *AlertRule) *AlertRule {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -381,6 +471,12 @@ func (m *Manager) UpdateRule(id string, rule *AlertRule) *AlertRule {
 //
 // Returns:
 //   - error: Always nil in the current implementation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) DeleteRule(id string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()

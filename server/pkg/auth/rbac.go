@@ -25,6 +25,12 @@ const RolesContextKey authContextKey = "user_roles"
 //
 // Returns:
 //   - context.Context: The new context with roles.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func ContextWithRoles(ctx context.Context, roles []string) context.Context {
 	return context.WithValue(ctx, RolesContextKey, roles)
 }
@@ -39,6 +45,12 @@ func ContextWithRoles(ctx context.Context, roles []string) context.Context {
 // Returns:
 //   - []string: The user roles.
 //   - bool: True if roles were found, false otherwise.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func RolesFromContext(ctx context.Context) ([]string, bool) {
 	val, ok := ctx.Value(RolesContextKey).([]string)
 	return val, ok
@@ -56,6 +68,15 @@ type RBACEnforcer struct {
 //
 // Returns:
 //   - *RBACEnforcer: The initialized enforcer.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewRBACEnforcer() *RBACEnforcer {
 	return &RBACEnforcer{}
 }
@@ -70,6 +91,12 @@ func NewRBACEnforcer() *RBACEnforcer {
 //
 // Returns:
 //   - bool: True if the user has the role, false otherwise.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (e *RBACEnforcer) HasRole(user *configv1.User, role string) bool {
 	if user == nil {
 		return false
@@ -87,6 +114,12 @@ func (e *RBACEnforcer) HasRole(user *configv1.User, role string) bool {
 //
 // Returns:
 //   - bool: True if the user has any of the roles, false otherwise.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (e *RBACEnforcer) HasAnyRole(user *configv1.User, roles []string) bool {
 	if user == nil {
 		return false
@@ -109,6 +142,12 @@ func (e *RBACEnforcer) HasAnyRole(user *configv1.User, roles []string) bool {
 //
 // Returns:
 //   - bool: True if the role is found in the context, false otherwise.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (e *RBACEnforcer) HasRoleInContext(ctx context.Context, role string) bool {
 	roles, ok := RolesFromContext(ctx)
 	if !ok {

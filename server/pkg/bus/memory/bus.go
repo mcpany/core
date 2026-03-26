@@ -54,6 +54,12 @@ func New[T any]() *DefaultBus[T] {
 //
 // Returns:
 //   - error: Nil if successful.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (b *DefaultBus[T]) Publish(_ context.Context, topic string, msg T) error {
 	b.mu.RLock()
 	defer b.mu.RUnlock()
@@ -96,6 +102,12 @@ func (b *DefaultBus[T]) Publish(_ context.Context, topic string, msg T) error {
 //
 // Returns:
 //   - func(): An unsubscribe function to stop listening.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (b *DefaultBus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -149,6 +161,12 @@ func (b *DefaultBus[T]) Subscribe(_ context.Context, topic string, handler func(
 //
 // Returns:
 //   - func(): An unsubscribe function.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (b *DefaultBus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	var once sync.Once
 	var unsub func()

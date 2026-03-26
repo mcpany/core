@@ -36,6 +36,12 @@ type PineconeClient struct {
 // Returns:
 //   - *PineconeClient: A pointer to the initialized PineconeClient.
 //   - error: Returns an error if the API key is missing or the host cannot be determined.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func NewPineconeClient(config *configv1.PineconeVectorDB) (*PineconeClient, error) {
 	if config.GetApiKey() == "" {
 		return nil, fmt.Errorf("api_key is required for Pinecone")
@@ -130,6 +136,12 @@ func (c *PineconeClient) doRequest(ctx context.Context, method, path string, bod
 // Returns:
 //   - map[string]interface{}: A map containing matched vectors, scores, and metadata from the API response.
 //   - error: Returns an error if the HTTP request fails or the API returns an error status.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (c *PineconeClient) Query(ctx context.Context, vector []float32, topK int64, filter map[string]interface{}, namespace string) (map[string]interface{}, error) {
 	req := map[string]interface{}{
 		"vector":          vector,
@@ -159,6 +171,12 @@ func (c *PineconeClient) Query(ctx context.Context, vector []float32, topK int64
 // Returns:
 //   - map[string]interface{}: A map containing the API response, typically including the number of upserted vectors.
 //   - error: Returns an error if the HTTP request fails or the API returns an error status.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (c *PineconeClient) Upsert(ctx context.Context, vectors []map[string]interface{}, namespace string) (map[string]interface{}, error) {
 	req := map[string]interface{}{
 		"vectors": vectors,
@@ -183,6 +201,12 @@ func (c *PineconeClient) Upsert(ctx context.Context, vectors []map[string]interf
 // Returns:
 //   - map[string]interface{}: A map containing the API response.
 //   - error: Returns an error if the HTTP request fails or the API returns an error status.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (c *PineconeClient) Delete(ctx context.Context, ids []string, namespace string, filter map[string]interface{}) (map[string]interface{}, error) {
 	req := map[string]interface{}{}
 	if len(ids) > 0 {
@@ -213,6 +237,12 @@ func (c *PineconeClient) Delete(ctx context.Context, ids []string, namespace str
 // Returns:
 //   - map[string]interface{}: A map containing index statistics such as vector count and dimension.
 //   - error: Returns an error if the HTTP request fails or the API returns an error status.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (c *PineconeClient) DescribeIndexStats(ctx context.Context, filter map[string]interface{}) (map[string]interface{}, error) {
 	req := map[string]interface{}{}
 	if filter != nil {

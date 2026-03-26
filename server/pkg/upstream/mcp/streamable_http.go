@@ -141,6 +141,12 @@ type ClientSession interface {
 //
 // Side Effects:
 //   - Modifies the global newClientImplForTesting variable.
+//
+// Returns:
+//   - See return values.
+//
+// Errors:
+//   - None.
 func SetNewClientImplForTesting(f func(client *mcp.Client, stdioConfig *configv1.McpStdioConnection, httpAddress string, httpClient *http.Client) client.MCPClient) {
 	newClientImplForTesting = f
 }
@@ -154,6 +160,12 @@ func SetNewClientImplForTesting(f func(client *mcp.Client, stdioConfig *configv1
 //
 // Side Effects:
 //   - Modifies the global newClientForTesting variable.
+//
+// Returns:
+//   - See return values.
+//
+// Errors:
+//   - None.
 func SetNewClientForTesting(f func(impl *mcp.Implementation) *mcp.Client) {
 	newClientForTesting = f
 }
@@ -167,6 +179,12 @@ func SetNewClientForTesting(f func(impl *mcp.Implementation) *mcp.Client) {
 //
 // Side Effects:
 //   - Modifies the global connectForTesting variable.
+//
+// Returns:
+//   - See return values.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 func SetConnectForTesting(f func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error)) {
 	connectForTesting = f
 }
@@ -269,6 +287,9 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Side Effects:
 //   - Allocates memory for the upstream and its session registry.
+//
+// Errors:
+//   - None.
 func NewUpstream(globalSettings *configv1.GlobalSettings) upstream.Upstream {
 	return &Upstream{
 		sessionRegistry: NewSessionRegistry(),
@@ -297,6 +318,12 @@ type mcpPrompt struct {
 //
 // Returns:
 //   - *mcp.Prompt: The mcp prompt definition.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
 func (p *mcpPrompt) Prompt() *mcp.Prompt {
 	return p.mcpPrompt
 }
@@ -313,6 +340,12 @@ func (p *mcpPrompt) Prompt() *mcp.Prompt {
 //
 // Returns:
 //   - string: The service ID.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
 func (p *mcpPrompt) Service() string {
 	return p.service
 }
@@ -447,6 +480,12 @@ type mcpResource struct {
 //
 // Returns:
 //   - *mcp.Resource: The mcp resource definition.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
 func (r *mcpResource) Resource() *mcp.Resource {
 	return r.mcpResource
 }
@@ -463,6 +502,12 @@ func (r *mcpResource) Resource() *mcp.Resource {
 //
 // Returns:
 //   - string: The service ID.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
 func (r *mcpResource) Service() string {
 	return r.service
 }

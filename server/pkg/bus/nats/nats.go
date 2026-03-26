@@ -67,6 +67,15 @@ func New[T any](config *bus.NatsBus) (*Bus[T], error) {
 // Returns:
 //
 //	None.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) Close() {
 	if b.nc != nil {
 		b.nc.Close()
@@ -87,6 +96,12 @@ func (b *Bus[T]) Close() {
 //
 // Returns:
 //   - error: An error if publishing fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) Publish(_ context.Context, topic string, msg T) error {
 	data, err := json.Marshal(msg)
 	if err != nil {
@@ -106,6 +121,12 @@ func (b *Bus[T]) Publish(_ context.Context, topic string, msg T) error {
 //
 // Returns:
 //   - func(): A function that unsubscribes the handler.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	sub, _ := b.nc.Subscribe(topic, func(m *natsgo.Msg) {
 		var msg T
@@ -129,6 +150,12 @@ func (b *Bus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (un
 //
 // Returns:
 //   - func(): A function that unsubscribes the handler.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) SubscribeOnce(_ context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	sub, err := b.nc.Subscribe(topic, func(m *natsgo.Msg) {
 		var msg T

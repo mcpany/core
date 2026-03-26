@@ -60,6 +60,12 @@ type CachingMiddleware struct {
 //
 // Returns:
 //   - *CachingMiddleware: The initialized caching middleware.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware {
 	goCacheStore := gocache_store.NewGoCache(go_cache.New(5*time.Minute, 10*time.Minute))
 	cacheManager := cache.New[any](goCacheStore)
@@ -124,6 +130,15 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 //
 // Parameters:
 //   - factory: ProviderFactory. The embedding provider factory.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 	m.providerFactory = factory
 }
@@ -140,6 +155,12 @@ func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 // Returns:
 //   - any: The result of the tool execution.
 //   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := tool.GetFromContext(ctx)
 	if !ok {
@@ -441,6 +462,12 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 //
 // Returns:
 //   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (m *CachingMiddleware) Clear(ctx context.Context) error {
 	return m.cache.Clear(ctx)
 }

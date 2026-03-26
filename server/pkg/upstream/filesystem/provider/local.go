@@ -65,6 +65,9 @@ func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string, allowedPath
 //
 // Side Effects:
 //   - None.
+//
+// Parameters:
+//   - None.
 func (p *LocalProvider) GetFs() afero.Fs {
 	return p.fs
 }
@@ -347,6 +350,9 @@ func (p *LocalProvider) containsSymlink(virtualPath, bestMatchVirtual, bestMatch
 //   - None.
 //
 // Side Effects:
+//   - None.
+//
+// Parameters:
 //   - None.
 func (p *LocalProvider) Close() error {
 	return nil

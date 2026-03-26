@@ -26,6 +26,15 @@ type ActionableError struct {
 //
 // Returns:
 //   - string: The formatted error message with suggestion.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (e *ActionableError) Error() string {
 	return fmt.Sprintf("%v\n\t-> Fix: %s", e.Err, e.Suggestion)
 }
@@ -36,6 +45,15 @@ func (e *ActionableError) Error() string {
 //
 // Returns:
 //   - error: The underlying error.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (e *ActionableError) Unwrap() error {
 	return e.Err
 }
@@ -56,6 +74,9 @@ func (e *ActionableError) Unwrap() error {
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 func WrapActionableError(context string, err error) error {
 	if err == nil {
 		return nil

@@ -26,6 +26,12 @@ import (
 //
 // Returns:
 //   - grpc.UnaryClientInterceptor: The gRPC interceptor.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func UnaryClientInterceptor(retryConfig *configv1.RetryConfig) grpc.UnaryClientInterceptor {
 	return func(ctx context.Context, method string, req, reply any, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 		b := newBackoff(ctx, retryConfig)

@@ -30,6 +30,12 @@ type WebsocketClientWrapper struct {
 //
 // Returns:
 //   - bool: True if the ping was successful, false otherwise.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (w *WebsocketClientWrapper) IsHealthy(_ context.Context) bool {
 	// Send a ping to check the connection.
 	// A short deadline is used to prevent blocking.
@@ -43,6 +49,15 @@ func (w *WebsocketClientWrapper) IsHealthy(_ context.Context) bool {
 //
 // Returns:
 //   - error: An error if the closure fails.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (w *WebsocketClientWrapper) Close() error {
 	return w.Conn.Close()
 }

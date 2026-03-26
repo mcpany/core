@@ -20,6 +20,15 @@ type ResourceMCPServer struct {
 //
 // Returns:
 //   - map[string]interface{}: The Terraform schema map.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func Schema() map[string]interface{} {
 	return map[string]interface{}{
 		"name": map[string]interface{}{
@@ -51,6 +60,12 @@ func Schema() map[string]interface{} {
 //
 // Returns:
 //   - error: An error if creation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func Create(_ *ResourceMCPServer) error {
 	// Simulate API call to provision resources
 	return nil
@@ -66,6 +81,12 @@ func Create(_ *ResourceMCPServer) error {
 // Returns:
 //   - *ResourceMCPServer: The read resource object.
 //   - error: An error if reading fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func Read(name string) (*ResourceMCPServer, error) {
 	return &ResourceMCPServer{
 		Name:    name,

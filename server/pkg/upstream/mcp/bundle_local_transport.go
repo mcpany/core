@@ -30,6 +30,12 @@ type BundleLocalTransport struct {
 // Returns:
 //   - mcp.Connection: The established connection.
 //   - error: An error if connection fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (t *BundleLocalTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	cmd := exec.CommandContext(ctx, t.Command, t.Args...) //nolint:gosec // Trusted configuration
 	cmd.Env = t.Env

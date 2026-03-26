@@ -31,6 +31,12 @@ type MockServiceRegistry struct {
 //   - []*configv1.ToolDefinition: A list of discovered tools.
 //   - []*configv1.ResourceDefinition: A list of discovered resources.
 //   - error: An error if registration fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (m *MockServiceRegistry) RegisterService(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	args := m.Called(ctx, serviceConfig)
 	return args.String(0), args.Get(1).([]*configv1.ToolDefinition), args.Get(2).([]*configv1.ResourceDefinition), args.Error(3)
@@ -46,6 +52,12 @@ func (m *MockServiceRegistry) RegisterService(ctx context.Context, serviceConfig
 //
 // Returns:
 //   - error: An error if the service is not found or shutdown fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (m *MockServiceRegistry) UnregisterService(ctx context.Context, serviceName string) error {
 	args := m.Called(ctx, serviceName)
 	return args.Error(0)
@@ -58,6 +70,15 @@ func (m *MockServiceRegistry) UnregisterService(ctx context.Context, serviceName
 // Returns:
 //   - []*configv1.UpstreamServiceConfig: A list of all registered service configurations.
 //   - error: An error if retrieval fails.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (m *MockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfig, error) {
 	args := m.Called()
 	if args.Get(0) == nil {
@@ -76,6 +97,12 @@ func (m *MockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfi
 // Returns:
 //   - *tool.ServiceInfo: The service metadata.
 //   - bool: True if the service was found, false otherwise.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	args := m.Called(serviceID)
 	if info, ok := args.Get(0).(*tool.ServiceInfo); ok {
@@ -94,6 +121,12 @@ func (m *MockServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInf
 // Returns:
 //   - *configv1.UpstreamServiceConfig: The service configuration.
 //   - bool: True if the service was found, false otherwise.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.UpstreamServiceConfig, bool) {
 	args := m.Called(serviceID)
 	if config, ok := args.Get(0).(*configv1.UpstreamServiceConfig); ok {
@@ -112,6 +145,12 @@ func (m *MockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.Upst
 // Returns:
 //   - string: The error message.
 //   - bool: True if an error is present, false otherwise.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 	args := m.Called(serviceID)
 	return args.String(0), args.Bool(1)

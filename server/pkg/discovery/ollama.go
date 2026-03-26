@@ -43,6 +43,15 @@ type OllamaProvider struct {
 //
 // Returns:
 //   - string: The name of the provider.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (p *OllamaProvider) Name() string {
 	return "ollama"
 }
@@ -57,6 +66,12 @@ func (p *OllamaProvider) Name() string {
 // Returns:
 //   - []*configv1.UpstreamServiceConfig: The discovered Ollama service configurations.
 //   - error: An error if discovery fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (p *OllamaProvider) Discover(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	// ⚡ BOLT: Reuse http.Client to avoid socket exhaustion.
 	// Randomized Selection from Top 5 High-Impact Targets

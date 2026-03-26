@@ -71,6 +71,12 @@ type CheckResult struct {
 //
 // Returns:
 //   - []CheckResult: A slice of check results for all upstream services, including those skipped.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []CheckResult {
 	// Using 'services' variable to support existing loop
 	services := config.GetUpstreamServices()
@@ -105,6 +111,12 @@ func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []Check
 //
 // Returns:
 //   - CheckResult: The resulting status, message, and error for the service check.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func CheckService(ctx context.Context, service *configv1.UpstreamServiceConfig) CheckResult {
 	// 5 second timeout for checks
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)

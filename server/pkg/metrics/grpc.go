@@ -35,6 +35,12 @@ type GrpcStatsHandler struct {
 //
 // Returns:
 //   - context.Context: The context, potentially modified with new tags.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (h *GrpcStatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) context.Context {
 	if h.Wrapped != nil {
 		ctx = h.Wrapped.TagRPC(ctx, info)
@@ -49,6 +55,15 @@ func (h *GrpcStatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) c
 // Parameters:
 //   - ctx: context.Context. The context of the RPC.
 //   - s: stats.RPCStats. The RPC stats.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (h *GrpcStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 	if h.Wrapped != nil {
 		h.Wrapped.HandleRPC(ctx, s)
@@ -71,6 +86,12 @@ func (h *GrpcStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 //
 // Returns:
 //   - context.Context: The context, potentially modified with new tags.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (h *GrpcStatsHandler) TagConn(ctx context.Context, info *stats.ConnTagInfo) context.Context {
 	if h.Wrapped != nil {
 		ctx = h.Wrapped.TagConn(ctx, info)
@@ -85,6 +106,15 @@ func (h *GrpcStatsHandler) TagConn(ctx context.Context, info *stats.ConnTagInfo)
 // Parameters:
 //   - ctx: context.Context. The context of the connection.
 //   - s: stats.ConnStats. The connection stats.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (h *GrpcStatsHandler) HandleConn(ctx context.Context, s stats.ConnStats) {
 	if h.Wrapped != nil {
 		h.Wrapped.HandleConn(ctx, s)

@@ -28,6 +28,9 @@ type TmpfsProvider struct {
 //
 // Side Effects:
 //   - Allocates memory for the in-memory filesystem state.
+//
+// Parameters:
+//   - None.
 func NewTmpfsProvider() *TmpfsProvider {
 	return &TmpfsProvider{
 		fs: afero.NewMemMapFs(),
@@ -45,6 +48,9 @@ func NewTmpfsProvider() *TmpfsProvider {
 //   - None.
 //
 // Side Effects:
+//   - None.
+//
+// Parameters:
 //   - None.
 func (p *TmpfsProvider) GetFs() afero.Fs {
 	return p.fs
@@ -82,6 +88,9 @@ func (p *TmpfsProvider) ResolvePath(virtualPath string) (string, error) {
 //   - None.
 //
 // Side Effects:
+//   - None.
+//
+// Parameters:
 //   - None.
 func (p *TmpfsProvider) Close() error {
 	return nil

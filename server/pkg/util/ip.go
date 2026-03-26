@@ -27,6 +27,12 @@ const remoteIPContextKey = contextKey("remote_ip")
 //
 // Returns:
 //   - context.Context: A new context with the remote IP attached.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func ContextWithRemoteIP(ctx context.Context, ip string) context.Context {
 	return context.WithValue(ctx, remoteIPContextKey, ip)
 }
@@ -42,6 +48,12 @@ func ContextWithRemoteIP(ctx context.Context, ip string) context.Context {
 //
 // Returns:
 //   - string: The cleaned IP address string, or an empty string if the address is invalid.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func ExtractIP(addr string) string {
 	ipStr, _, err := net.SplitHostPort(addr)
 	if err != nil {
@@ -73,6 +85,12 @@ func ExtractIP(addr string) string {
 //
 // Returns:
 //   - string: The best-effort client IP address.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func GetClientIP(r *http.Request, trustProxy bool) string {
 	if trustProxy {
 		// Prefer X-Real-IP as it is usually a single IP set by the trusted proxy.
@@ -109,6 +127,12 @@ func GetClientIP(r *http.Request, trustProxy bool) string {
 // Returns:
 //   - string: The remote IP address.
 //   - bool: True if the IP was found, false otherwise.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func RemoteIPFromContext(ctx context.Context) (string, bool) {
 	ip, ok := ctx.Value(remoteIPContextKey).(string)
 	return ip, ok
@@ -126,6 +150,12 @@ func RemoteIPFromContext(ctx context.Context) (string, bool) {
 //
 // Returns:
 //   - bool: True if the IP is a private network address.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func IsPrivateNetworkIP(ip net.IP) bool {
 	return validation.IsPrivateNetworkIP(ip)
 }
@@ -141,6 +171,12 @@ func IsPrivateNetworkIP(ip net.IP) bool {
 //
 // Returns:
 //   - bool: True if the IP is private, link-local, or loopback.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func IsPrivateIP(ip net.IP) bool {
 	return validation.IsPrivateIP(ip)
 }

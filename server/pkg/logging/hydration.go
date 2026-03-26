@@ -20,6 +20,12 @@ import (
 //
 // Returns:
 //   - error: An error if reading or parsing fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func HydrateFromFile(path string) error {
 	lines, err := util.ReadLastNLines(path, 1000)
 	if err != nil {

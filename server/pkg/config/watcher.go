@@ -39,6 +39,15 @@ type Watcher struct {
 // Returns:
 //   - *Watcher: The initialized watcher.
 //   - error: An error if the watcher cannot be created.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func NewWatcher() (*Watcher, error) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -186,6 +195,15 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 //
 // Side Effects:
 //   - Closes the done channel and the underlying watcher.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 func (w *Watcher) Close() {
 	close(w.done)
 	_ = w.watcher.Close()

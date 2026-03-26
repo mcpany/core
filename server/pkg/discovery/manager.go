@@ -38,6 +38,15 @@ type Manager struct {
 //
 // Returns:
 //   - *Manager: The initialized discovery manager.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewManager() *Manager {
 	return &Manager{
 		statuses: make(map[string]*ProviderStatus),
@@ -50,6 +59,15 @@ func NewManager() *Manager {
 //
 // Parameters:
 //   - p: Provider. The discovery provider to register.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) RegisterProvider(p Provider) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -69,6 +87,12 @@ func (m *Manager) RegisterProvider(p Provider) {
 //
 // Returns:
 //   - []*configv1.UpstreamServiceConfig: The slice of discovered service configurations.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 	var allServices []*configv1.UpstreamServiceConfig
 	log := logging.GetLogger()
@@ -122,6 +146,15 @@ func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 //
 // Returns:
 //   - []*ProviderStatus: A slice of provider statuses.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) GetStatuses() []*ProviderStatus {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -147,6 +180,12 @@ func (m *Manager) GetStatuses() []*ProviderStatus {
 // Returns:
 //   - *ProviderStatus: The status of the provider.
 //   - bool: True if the provider status was found, false otherwise.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) GetProviderStatus(name string) (*ProviderStatus, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

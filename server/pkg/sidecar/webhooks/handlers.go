@@ -43,6 +43,9 @@ type MarkdownHandler struct{}
 //
 // Side Effects:
 //   - Writes the converted Markdown to the response.
+//
+// Errors:
+//   - None.
 func (h *MarkdownHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -116,6 +119,9 @@ type TruncateHandler struct{}
 //
 // Side Effects:
 //   - Writes the truncated text to the response.
+//
+// Errors:
+//   - None.
 func (h *TruncateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -195,6 +201,9 @@ type PaginateHandler struct{}
 //
 // Side Effects:
 //   - Writes the paginated content to the response.
+//
+// Errors:
+//   - None.
 func (h *PaginateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)

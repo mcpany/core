@@ -71,6 +71,9 @@ func NewFileAuditStore(path string) (*FileAuditStore, error) {
 //
 // Side Effects:
 //   - Writes data to the file or stdout.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 	// ⚡ BOLT: Serialize JSON outside the lock to reduce critical section duration.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -106,6 +109,12 @@ func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 // Returns:
 //   - []Entry: Nil.
 //   - error: Always returns "not implemented".
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (s *FileAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for file audit store")
 }
@@ -119,6 +128,12 @@ func (s *FileAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 //
 // Side Effects:
 //   - Closes the file descriptor.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 func (s *FileAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

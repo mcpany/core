@@ -83,6 +83,9 @@ func NewZipProvider(config *configv1.ZipFs) (*ZipProvider, error) {
 //
 // Side Effects:
 //   - None.
+//
+// Parameters:
+//   - None.
 func (p *ZipProvider) GetFs() afero.Fs {
 	return p.fs
 }
@@ -120,6 +123,9 @@ func (p *ZipProvider) ResolvePath(virtualPath string) (string, error) {
 //
 // Side Effects:
 //   - Closes the file handle on the host filesystem.
+//
+// Parameters:
+//   - None.
 func (p *ZipProvider) Close() error {
 	if p.closer != nil {
 		return p.closer.Close()

@@ -17,6 +17,15 @@ import (
 // Parameters:
 //   - w: io.Writer. The writer to output the results to.
 //   - results: []CheckResult. The list of check results to print.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func PrintResults(w io.Writer, results []CheckResult) {
 	if w == nil {
 		w = os.Stdout
