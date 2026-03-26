@@ -161,6 +161,12 @@
 *   **[P0] Monotonic Jitter Provider**: Hardware-attested timing variation service to neutralize enclave timing side-channels. (Added: 2026-07-04)
 *   **[P1] Context Compaction Quorum Hub**: Consensus-based state summarization service for large mesh efficiency. (Added: 2026-07-04)
 
+#### Upcoming (2026-03-26 Evolution)
+*   **[P0] Action-Chain Sovereignty Monitor (ACSM)**: Real-time validation of complete agent workflow sequences against mission-root intents. (Added: 2026-03-26)
+*   **[P0] CI/CD Cache Integrity Guard (CCIG)**: Mandatory cryptographic signing and verification for all agent-accessible build caches. (Added: 2026-03-26)
+*   **[P0] Metadata Sanitization Gateway (MSG)**: Real-time semantic deconstruction of ingested metadata to neutralize instruction injection. (Added: 2026-03-26)
+*   **[P1] Post-Quantum Mesh Handshake (PQMH)**: Transition inter-agent transport to NIST-standard quantum-resistant algorithms. (Added: 2026-03-26)
+
 #### Upcoming (2026-03-25 Evolution)
 *   **[P0] Hardware-Attested Monotonic Depth-Counters**: physical constraint enforcement for recursive delegations to prevent infinite resource loops. (Added: 2026-03-25)
 *   **[P0] Relational PoI Chain Validator**: cryptographic lineage verification for every tool call to neutralize "Intent Ghosting" vulnerabilities. (Added: 2026-03-25)

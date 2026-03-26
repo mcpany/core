@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-03-26] Updates
+
+### Proposed Additions
+- **Action-Chain Sovereignty Monitor (ACSM)**: (P0) Real-time monitoring service that validates complete agent workflow sequences against mission-root intents to prevent cascading failures.
+- **CI/CD Cache Integrity Guard (CCIG)**: (P0) Authoritative validator for agent-accessible build caches, requiring cryptographic signatures to prevent supply-chain poisoning.
+- **Metadata Sanitization Gateway (MSG)**: (P0) Real-time semantic sanitizer for agent-ingested external metadata (GitHub, Slack) to neutralize instruction injection.
+- **Post-Quantum Mesh Handshake (PQMH) Provider**: (P1) Security service implementing NIST-standard post-quantum resistant algorithms (FIPS 203/204/205) for long-term mesh integrity.
+
+### Priority Shifts
+- **WASM-BSH State Sanitizer**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Action-Chain** validation integration.
+- **A2A Authenticated Handshake Provider**: (Re-affirmed P0) Designated as the primary integration point for **PQMH** transition.
+
 ## Evolution: [2026-07-07] Updates
 
 ### Proposed Additions

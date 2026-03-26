@@ -646,6 +646,12 @@
 - [ ] **[P0] Sharded Mailbox Hub Monitor**: (2026-06-24) Real-time visualization of lock-free teammate synchronization and CRDT conflict resolution.
 - [ ] **[P1] ZKD Discovery Portal**: (2026-06-24) Authorization workspace for reviewing and masking agent capability cards during the discovery phase.
 
+#### Upcoming (2026-03-26 Evolution)
+- [ ] **[P0] Action-Chain Sovereignty Monitor**: Real-time visualization of automated workflow sequences and interdiction events. (Added: 2026-03-26)
+- [ ] **[P0] Cache Integrity Auditor**: Visual workspace for verifying cryptographic signatures of CI/CD build caches. (Added: 2026-03-26)
+- [ ] **[P0] Metadata Sanitization Log**: Security dashboard for reviewing redacted coordination messages and metadata probes. (Added: 2026-03-26)
+- [ ] **[P1] Post-Quantum Status Widget**: Monitor for quantum-resistant handshake status and mesh integrity. (Added: 2026-03-26)
+
 #### Upcoming (2026-06-25 Evolution)
 - [ ] **[P0] Attention Heatmap Visualizer**: Real-time dashboard for monitoring reasoning-density and ADF-gated noise. (Added: 2026-06-25)
 - [ ] **[P0] HLES Status Monitor**: Security widget for visualizing hardware-locked identity buffer status and environment isolation. (Added: 2026-06-25)
