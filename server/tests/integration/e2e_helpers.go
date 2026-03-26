@@ -223,7 +223,7 @@ func runfilesWorkspaceName() string {
 
 func runfilesRoots() []string {
 	workspace := runfilesWorkspaceName()
-	roots := make([]string, 0, 4)
+	roots := make([]string, 0, 2)
 	for _, base := range []string{os.Getenv("TEST_SRCDIR"), os.Getenv("RUNFILES_DIR")} {
 		if base == "" {
 			continue

@@ -61,7 +61,7 @@ func TestHTTPGateway_RegisterService(t *testing.T) {
 	require.NoError(t, err)
 	httpReq.Header.Set("Content-Type", "application/json")
 
-	client := &http.Client{Timeout: 30 * time.Second}
+	client := &http.Client{Timeout: 5 * time.Second}
 	resp, err := client.Do(httpReq)
 	require.NoError(t, err)
 	defer func() { _ = resp.Body.Close() }()
