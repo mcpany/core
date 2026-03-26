@@ -1839,6 +1839,9 @@ func TestHandleSecrets_RBAC_Enforcement(t *testing.T) {
 
 	// Try to get secrets without admin role
 	resp, _ := http.Get(ts.URL + "/secrets")
+	if resp != nil && resp.Body != nil {
+		defer resp.Body.Close()
+	}
 	assert.Equal(t, http.StatusForbidden, resp.StatusCode)
 
 	// Try to POST secrets without admin role
@@ -1851,5 +1854,8 @@ func TestHandleSecrets_RBAC_Enforcement(t *testing.T) {
 	}
 	bodyBytes, _ := json.Marshal(body)
 	respPost, _ := http.Post(ts.URL+"/secrets", "application/json", bytes.NewReader(bodyBytes))
+	if respPost != nil && respPost.Body != nil {
+		defer respPost.Body.Close()
+	}
 	assert.Equal(t, http.StatusForbidden, respPost.StatusCode)
 }
