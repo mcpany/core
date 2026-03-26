@@ -11,8 +11,13 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "react-jsx",
+    "jsx": "preserve",
     "types": ["node", "jest", "@testing-library/jest-dom", "vitest/globals"],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
@@ -28,6 +33,6 @@
     },
     "rootDirs": [".", ".."]
   },
-  "include": ["**/*.ts", "**/*.tsx", "../proto/**/*.ts"],
+  "include": ["**/*.ts", "**/*.tsx", "../proto/**/*.ts", ".next/types/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }
