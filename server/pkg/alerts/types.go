@@ -70,12 +70,8 @@ type AlertRule struct {
 //
 // Summary: Represents a AlertStats.
 type AlertStats struct {
-	ActiveCritical      int    `json:"activeCritical"`
-	ActiveCriticalTrend string `json:"activeCriticalTrend"`
-	ActiveWarning       int    `json:"activeWarning"`
-	ActiveWarningTrend  string `json:"activeWarningTrend"`
-	MTTR                string `json:"mttr"`
-	MTTRTrend           string `json:"mttrTrend"`
-	TotalToday          int    `json:"totalToday"`
-	TotalTodayTrend     string `json:"totalTodayTrend"`
+	ActiveCritical int    `json:"activeCritical"`
+	ActiveWarning  int    `json:"activeWarning"`
+	MTTR           string `json:"mttr"`
+	TotalToday     int    `json:"totalToday"`
 }
