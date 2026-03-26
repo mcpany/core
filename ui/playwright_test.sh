@@ -188,7 +188,7 @@ else
 fi
 
 if [[ -n "$spec_path" ]]; then
-  escaped_spec="$(printf "%s" "$selected_spec" | sed -e "s/[.[\*^\$()+?{}|]/\\\\&/g")"
+  escaped_spec="$(printf '%s' "$selected_spec" | sed -e "s/[.[\*^\$()+?{}|]/\\\\&/g")"
   export PLAYWRIGHT_TEST_MATCH="(^|.*/)${escaped_spec}$"
 fi
 
