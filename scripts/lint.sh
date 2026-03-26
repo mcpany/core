@@ -70,14 +70,18 @@ fi
 # Run lint for each module in go.work
 echo "    Checking modules..."
 LINT_FAILED=0
-# Explicitly list modules to be sure
-MODULES="./ ./k8s/operator ./server ./server/examples/upstream_service_demo/grpc/client ./server/examples/upstream_service_demo/grpc/greeter_server"
+# Parse go.work to get directories
+MODULES=$(grep -E '^\s+\./' go.work | sed 's/^\s+//')
+if [ -z "$MODULES" ]; then
+    # Fallback to manual list if parsing fails
+    MODULES="./ ./k8s/operator ./server ./server/docs/features/webhooks/examples/block_rm ./server/docs/features/webhooks/examples/html_to_md ./server/examples/upstream_service_demo/grpc/client ./server/examples/upstream_service_demo/grpc/greeter_server"
+fi
+
 for dir in $MODULES; do
     echo "    Checking $dir..."
     (
         cd "$dir"
         CONFIG=""
-        # Use absolute path for config to be safe
         if [ -f ".golangci.yml" ]; then
             CONFIG=".golangci.yml"
         elif [ -f "$PROJECT_ROOT/server/.golangci.yml" ]; then
@@ -94,7 +98,6 @@ done
 
 if [ "$LINT_FAILED" -ne 0 ]; then
     echo "==> Lint FAILED."
-    # Use a safe way to fail that works in the sandbox
     false
 fi
 

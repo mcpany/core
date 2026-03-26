@@ -4,6 +4,8 @@ use (
 	./
 	./k8s/operator
 	./server
+	./server/docs/features/webhooks/examples/block_rm
+	./server/docs/features/webhooks/examples/html_to_md
 	./server/examples/upstream_service_demo/grpc/client
 	./server/examples/upstream_service_demo/grpc/greeter_server
 )
