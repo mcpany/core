@@ -10,7 +10,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestWeatherProto(t *testing.T) {
+// TestWeatherProto ...
+// Summary: TestWeatherProto
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	req := &GetWeatherRequest{}
 	assert.NotNil(t, req)
 	assert.NotNil(t, req.ProtoReflect())

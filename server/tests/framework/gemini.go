@@ -16,7 +16,7 @@ import (
 )
 
 // DefaultModel is the default Gemini model to use.
-// Summary: Default model constant.
+ // Summary: Default model.
 const DefaultModel = "gemini-2.5-flash"
 
 // GeminiCLI handles interactions with the Gemini CLI tool for testing.

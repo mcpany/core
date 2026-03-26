@@ -29,7 +29,16 @@ func init() {
 	}
 }
 
-func TestOperatorE2E(t *testing.T) {
+// TestOperatorE2E ...
+// Summary: TestOperatorE2E
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if os.Getenv("E2E") != "true" {
 		t.Skip("Skipping E2E test. Set E2E=true to run.")
 	}

@@ -17,7 +17,16 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
-func TestMCPServerReconciler_Reconcile(t *testing.T) {
+// TestMCPServerReconciler_Reconcile ...
+// Summary: TestMCPServerReconciler_Reconcile
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Register operator types with the scheme
 	s := scheme.Scheme
 	_ = mcpv1alpha1.SchemeBuilder.AddToScheme(s)

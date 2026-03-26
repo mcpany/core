@@ -20,7 +20,8 @@ import (
 )
 
 // MCPServerReconciler reconciles a MCPServer object
-type MCPServerReconciler struct {
+// MCPServerReconciler reconciles a MCPServer object
+// Summary: MCPServerReconciler
 	client.Client
 	Scheme *runtime.Scheme
 }
@@ -42,7 +43,22 @@ type MCPServerReconciler struct {
 // Returns:
 //   - ctrl.Result: The result of the reconciliation, indicating if the request should be requeued.
 //   - error: Any error that occurred during reconciliation.
-func (r *MCPServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+// Reconcile is part of the main kubernetes reconciliation loop which aims to
+// Summary: Reconcile
+// move the current state of the cluster closer to the desired state.
+// It creates or updates the Deployment and Service for the MCPServer.
+//
+// Parameters:
+//   - ctx: The context for the request.
+//   - req: The reconciliation request containing the namespaced name of the MCPServer.
+//
+// Returns:
+//   - ctrl.Result: The result of the reconciliation, indicating if the request should be requeued.
+//   - error: Any error that occurred during reconciliation.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	_ = log.FromContext(ctx)
 
 	// Fetch the MCPServer instance
@@ -241,7 +257,18 @@ func labelsForMCPServer(name string) map[string]string {
 //
 // Returns:
 //   - error: Any error that occurred during setup.
-func (r *MCPServerReconciler) SetupWithManager(mgr ctrl.Manager) error {
+// SetupWithManager sets up the controller with the Manager.
+// Summary: SetupWithManager
+//
+// Parameters:
+//   - mgr: The controller manager.
+//
+// Returns:
+//   - error: Any error that occurred during setup.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&mcpv1alpha1.MCPServer{}).
 		Owns(&appsv1.Deployment{}).

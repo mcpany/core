@@ -17,7 +17,9 @@ import (
 // ToolReconciler reconciles a Tool object.
 //
 // Summary: Controller for reconciling Tool resources.
-type ToolReconciler struct {
+// ToolReconciler reconciles a Tool object.
+//
+// Summary: Controller for reconciling Tool resources.
 	client.Client
 	Scheme *runtime.Scheme
 }
@@ -42,7 +44,24 @@ type ToolReconciler struct {
 // Side Effects:
 //   - Reads and updates Tool resources in the cluster.
 //   - May create or update related resources.
-func (r *ToolReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+// Reconcile is part of the main kubernetes reconciliation loop which aims to
+// move the current state of the cluster closer to the desired state.
+//
+// Summary: Reconciles a Tool object.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - req: ctrl.Request. The reconciliation request.
+//
+// Returns:
+//   - ctrl.Result: The result of the reconciliation.
+//   - error: Any error that occurred.
+//
+// Side Effects:
+//   - Reads and updates Tool resources in the cluster.
+//   - May create or update related resources.
+// Errors:
+//   - None.
 	_ = log.FromContext(ctx)
 
 	// TODO(user): your logic here
@@ -59,7 +78,19 @@ func (r *ToolReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 //
 // Returns:
 //   - error: Any error that occurred during setup.
-func (r *ToolReconciler) SetupWithManager(mgr ctrl.Manager) error {
+// SetupWithManager sets up the controller with the Manager.
+//
+// Summary: Sets up the controller with the Manager.
+//
+// Parameters:
+//   - mgr: ctrl.Manager. The controller manager.
+//
+// Returns:
+//   - error: Any error that occurred during setup.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&mcpanyv1alpha1.Tool{}).
 		Complete(r)

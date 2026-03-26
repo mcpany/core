@@ -15,7 +15,7 @@ var (
 )
 
 func main() {
-	err := filepath.Walk("server", func(path string, info os.FileInfo, err error) error {
+	err := filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -93,7 +93,7 @@ func processFile(path string) error {
 					if strings.Contains(dl, "Side Effects:") { hasSideEffects = true }
 				}
 
-				// Copy existing first doc line
+				// Always copy first doc line
 				newLines = append(newLines, lines[docStart])
 
 				if !hasSummary {
@@ -101,7 +101,7 @@ func processFile(path string) error {
 					changed = true
 				}
 
-				// Copy remaining existing doc lines
+				// Copy remaining doc lines
 				for j := docStart + 1; j < i; j++ {
 					newLines = append(newLines, lines[j])
 				}
