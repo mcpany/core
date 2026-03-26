@@ -1,0 +1,18 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "wasm",
+    srcs = ["runtime.go"],
+    importpath = "github.com/mcpany/core/server/pkg/wasm",
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "wasm_test",
+    srcs = ["runtime_test.go"],
+    embed = [":wasm"],
+    deps = ["@com_github_stretchr_testify//assert"],
+)

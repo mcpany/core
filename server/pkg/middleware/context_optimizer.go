@@ -1,0 +1,239 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+package middleware
+
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"strings"
+	"sync"
+
+	"github.com/tidwall/gjson"
+)
+
+// ContextOptimizer optimises the context size of responses.
+//
+// Summary: Middleware that truncates excessively long string values in JSON responses to fit within a context window.
+type ContextOptimizer struct {
+	MaxChars int
+}
+
+// NewContextOptimizer creates a new ContextOptimizer.
+//
+// Summary: Initializes a new ContextOptimizer with a maximum character limit.
+//
+// Parameters:
+//   - maxChars: int. The maximum allowed number of characters for string values in the JSON response.
+//
+// Returns:
+//   - *ContextOptimizer: The initialized optimizer.
+func NewContextOptimizer(maxChars int) *ContextOptimizer {
+	return &ContextOptimizer{
+		MaxChars: maxChars,
+	}
+}
+
+var bufferPool = sync.Pool{
+	New: func() any {
+		return &responseBuffer{
+			body: &bytes.Buffer{},
+		}
+	},
+}
+
+// Handler returns the middleware handler.
+//
+// Summary: Returns an HTTP handler that intercepts and potentially truncates response bodies.
+//
+// Parameters:
+//   - next: http.Handler. The next handler in the chain.
+//
+// Returns:
+//   - http.Handler: The wrapped handler.
+//
+// Side Effects:
+//   - Buffers the entire response body.
+//   - Modifies the response body if it contains JSON strings exceeding MaxChars.
+//   - Updates the Content-Length header.
+func (co *ContextOptimizer) Handler(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		wb := bufferPool.Get().(*responseBuffer)
+		wb.ResponseWriter = w
+		wb.body.Reset()
+		wb.checked = false
+		wb.shouldBuffer = false
+		wb.status = http.StatusOK // Default status
+		wb.wroteHeader = false
+
+		defer func() {
+			wb.ResponseWriter = nil // Avoid holding reference
+			// If buffer is too large (>1MB), replace it with a new one to release memory
+			if wb.body.Cap() > 1024*1024 {
+				wb.body = &bytes.Buffer{}
+			}
+			bufferPool.Put(wb)
+		}()
+
+		next.ServeHTTP(wb, r)
+
+		// If we didn't buffer, it means we passed through the original writer (streaming).
+		// In that case, we don't need to do anything here.
+		if !wb.isBuffering() {
+			return
+		}
+
+		// Only check successful JSON responses
+		// Note: w.shouldBuffer should already cover the content-type check, but we double check for safety
+		contentType := wb.Header().Get("Content-Type")
+		if wb.status == http.StatusOK && (contentType == "application/json" || strings.HasPrefix(contentType, "application/json;")) {
+			bodyBytes := wb.body.Bytes()
+
+			type modification struct {
+				start       int
+				end         int
+				replacement []byte
+			}
+			var mods []modification
+
+			// Check if result.content exists and is an array
+			resultContent := gjson.GetBytes(bodyBytes, "result.content")
+			if resultContent.IsArray() {
+				resultContent.ForEach(func(_, value gjson.Result) bool {
+					text := value.Get("text")
+					// Use len(text.String()) to check length.
+					// Note: gjson text.String() handles escape characters correctly for length check
+					if text.Exists() {
+						str := text.String()
+						runes := []rune(str)
+						if len(runes) > co.MaxChars {
+							// Found a text that needs truncation
+							truncated := string(runes[:co.MaxChars]) + fmt.Sprintf("...[TRUNCATED %d chars]", len(runes)-co.MaxChars)
+							// Marshal the truncated string to get valid JSON string representation (with quotes and escapes)
+							replacement, _ := json.Marshal(truncated)
+							mods = append(mods, modification{
+								start:       text.Index,
+								end:         text.Index + len(text.Raw),
+								replacement: replacement,
+							})
+						}
+					}
+					return true // continue
+				})
+			}
+
+			if len(mods) > 0 {
+				// Rebuild the body with modifications
+				var newBody bytes.Buffer
+				// Pre-allocate buffer with rough size estimate (original size should be enough since we are shortening)
+				newBody.Grow(len(bodyBytes))
+
+				lastPos := 0
+				for _, mod := range mods {
+					// Append data before the modification
+					newBody.Write(bodyBytes[lastPos:mod.start])
+					// Append the replacement
+					newBody.Write(mod.replacement)
+					// Advance position
+					lastPos = mod.end
+				}
+				// Append remaining data
+				newBody.Write(bodyBytes[lastPos:])
+
+				// Write new body
+				// Use original writer to write. We must write header first.
+				// Update Content-Length because body size changed
+				wb.Header().Set("Content-Length", fmt.Sprintf("%d", newBody.Len()))
+				wb.ResponseWriter.WriteHeader(wb.status)
+				if _, err := wb.ResponseWriter.Write(newBody.Bytes()); err != nil {
+					_ = err
+				}
+				return
+			}
+		}
+
+		// If not modified, write original body
+		wb.ResponseWriter.WriteHeader(wb.status)
+		if _, err := wb.ResponseWriter.Write(wb.body.Bytes()); err != nil {
+			_ = err
+		}
+	})
+}
+
+type responseBuffer struct {
+	http.ResponseWriter
+	body         *bytes.Buffer
+	shouldBuffer bool
+	checked      bool
+	status       int
+	wroteHeader  bool
+}
+
+func (w *responseBuffer) isBuffering() bool {
+	// If explicitly set to false, then false.
+	if w.checked && !w.shouldBuffer {
+		return false
+	}
+	// If true or nil (default), we assume buffering for now, OR we haven't written yet.
+	return true
+}
+
+func (w *responseBuffer) checkBuffer() {
+	if !w.checked {
+		ct := w.Header().Get("Content-Type")
+		// We only buffer application/json.
+		w.shouldBuffer = ct == "application/json" || strings.HasPrefix(ct, "application/json;")
+		w.checked = true
+	}
+}
+
+// Write writes the data to the buffer or the underlying ResponseWriter.
+//
+// Summary: Writes data to the internal buffer if enabled, or directly to the response writer.
+//
+// Parameters:
+//   - b: []byte. The data to write.
+//
+// Returns:
+//   - int: The number of bytes written.
+//   - error: An error if the write fails.
+//
+// Side Effects:
+//   - Appends to the body buffer if buffering is enabled.
+//   - Writes to the underlying ResponseWriter otherwise.
+func (w *responseBuffer) Write(b []byte) (int, error) {
+	w.checkBuffer()
+
+	if !w.wroteHeader {
+		w.WriteHeader(http.StatusOK)
+	}
+
+	if w.shouldBuffer {
+		return w.body.Write(b)
+	}
+	return w.ResponseWriter.Write(b)
+}
+
+// WriteHeader captures the status code and decides whether to buffer based on headers.
+//
+// Summary: Writes the HTTP status code.
+//
+// Parameters:
+//   - statusCode: int. The HTTP status code.
+//
+// Side Effects:
+//   - Sets the internal status code.
+//   - Checks content-type headers to determine if buffering is needed.
+func (w *responseBuffer) WriteHeader(statusCode int) {
+	if w.wroteHeader {
+		return
+	}
+	w.status = statusCode
+	w.wroteHeader = true
+	w.checkBuffer()
+	if !w.shouldBuffer {
+		w.ResponseWriter.WriteHeader(statusCode)
+	}
+}

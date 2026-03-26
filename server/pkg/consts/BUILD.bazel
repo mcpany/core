@@ -1,0 +1,18 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "consts",
+    srcs = ["consts.go"],
+    importpath = "github.com/mcpany/core/server/pkg/consts",
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "consts_test",
+    srcs = ["consts_test.go"],
+    embed = [":consts"],
+    deps = ["@com_github_stretchr_testify//assert"],
+)

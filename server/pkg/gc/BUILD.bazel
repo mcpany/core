@@ -1,0 +1,22 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "gc",
+    srcs = ["worker.go"],
+    importpath = "github.com/mcpany/core/server/pkg/gc",
+    visibility = ["//visibility:public"],
+    deps = ["//server/pkg/logging"],
+)
+
+go_test(
+    name = "gc_test",
+    srcs = ["worker_test.go"],
+    embed = [":gc"],
+    deps = [
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+    ],
+)

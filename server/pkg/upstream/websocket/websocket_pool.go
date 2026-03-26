@@ -1,0 +1,66 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+package websocket
+
+import (
+	"context"
+	"fmt"
+	"time"
+
+	"github.com/gorilla/websocket"
+	"github.com/mcpany/core/server/pkg/client"
+	"github.com/mcpany/core/server/pkg/pool"
+)
+
+// Pool is a type alias for a pool of WebSocket client connections.
+// It simplifies the type signature for WebSocket connection pools.
+//
+// Summary: Represents a Pool.
+type Pool = pool.Pool[*client.WebsocketClientWrapper]
+
+// NewPool creates a new connection pool for WebSocket clients. It
+// configures the pool with a factory function that establishes new WebSocket
+// connections to the specified address.
+//
+// Parameters:
+//   - maxSize: The maximum number of connections the pool can hold.
+//   - idleTimeout: The duration after which an idle connection may be closed.
+//   - address: The target URL of the WebSocket server.
+//
+// Returns:
+//   - Pool: A new WebSocket client pool.
+//   - error: An error if the pool cannot be created.
+//
+// Summary: Initializes NewPool operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+func NewPool(maxSize int, idleTimeout time.Duration, address string) (Pool, error) {
+	factory := func(_ context.Context) (*client.WebsocketClientWrapper, error) {
+		conn, resp, err := websocket.DefaultDialer.Dial(address, nil)
+		if err != nil {
+			return nil, fmt.Errorf("failed to connect to websocket server %s: %w", address, err)
+		}
+		defer func() { _ = resp.Body.Close() }()
+		return &client.WebsocketClientWrapper{Conn: conn}, nil
+	}
+
+	// The generic pool expects idleTimeout as an int (seconds).
+	// We'll use a minSize of 0 for this pool.
+	p, err := pool.New(factory, 0, 0, maxSize, idleTimeout, false)
+	if err != nil {
+		return nil, err
+	}
+
+	return p, nil
+}

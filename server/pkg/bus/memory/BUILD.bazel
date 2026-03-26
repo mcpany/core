@@ -1,0 +1,25 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "memory",
+    srcs = ["bus.go"],
+    importpath = "github.com/mcpany/core/server/pkg/bus/memory",
+    visibility = ["//visibility:public"],
+    deps = ["//server/pkg/logging"],
+)
+
+go_test(
+    name = "memory_test",
+    srcs = [
+        "bus_latency_test.go",
+        "bus_test.go",
+    ],
+    embed = [":memory"],
+    deps = [
+        "//server/pkg/logging",
+        "@com_github_stretchr_testify//assert",
+    ],
+)

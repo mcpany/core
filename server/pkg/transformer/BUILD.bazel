@@ -1,0 +1,41 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "transformer",
+    srcs = [
+        "parser.go",
+        "template.go",
+        "transformer.go",
+    ],
+    importpath = "github.com/mcpany/core/server/pkg/transformer",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_antchfx_xmlquery//:xmlquery",
+        "@com_github_antchfx_xpath//:xpath",
+        "@com_github_itchyny_gojq//:gojq",
+        "@com_github_valyala_fasttemplate//:fasttemplate",
+        "@io_k8s_client_go//util/jsonpath",
+    ],
+)
+
+go_test(
+    name = "transformer_test",
+    srcs = [
+        "benchmark_test.go",
+        "bugfix_test.go",
+        "parser_extra_test.go",
+        "parser_integration_test.go",
+        "parser_test.go",
+        "template_test.go",
+        "transformer_coverage_test.go",
+        "transformer_test.go",
+    ],
+    embed = [":transformer"],
+    deps = [
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+    ],
+)

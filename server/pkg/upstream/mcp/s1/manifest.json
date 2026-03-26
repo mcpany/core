@@ -1,0 +1,6 @@
+{
+			"server": {
+				"type": "uv",
+				"entry_point": "script.py"
+			}
+		}

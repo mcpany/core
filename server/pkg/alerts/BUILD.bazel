@@ -1,0 +1,27 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "alerts",
+    srcs = [
+        "manager.go",
+        "types.go",
+    ],
+    importpath = "github.com/mcpany/core/server/pkg/alerts",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//server/pkg/logging",
+        "@com_github_google_uuid//:uuid",
+    ],
+)
+
+go_test(
+    name = "alerts_test",
+    srcs = [
+        "manager_test.go",
+        "rules_test.go",
+    ],
+    embed = [":alerts"],
+)
