@@ -744,3 +744,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Monologue Splicing Detector (MSD)**: (P0) Security middleware for the ARI Hub to protect the immutability of reasoning traces. (Added: 2026-06-16)
 - **Common Trust Root (CTR) Authority**: (P0) Authoritative authority for reconciling identity strength across heterogeneous swarms. (Added: 2026-06-16)
 - **RTCS Shadowing Guard**: (P1) Extension for UACO mailbox sharding to prevent malicious capability card shadowing. (Added: 2026-06-16)
+
+### Upcoming: [2026-06-17]
+- **Layer-7 Semantic Inspection Hub (L7SIH)**: (P0) Advanced security middleware for the ISD Hub performing real-time analysis to neutralize REE. (Added: 2026-06-17)
+- **Environment Sovereignty Enforcer (ESE)**: (P0) Core security service mandating hardware-attested environment scrubbing. (Added: 2026-06-17)
+- **Continuous Fragment-Integrity Attestation (CFIA)**: (P1) Lifecycle management service for sharded meshes to counter MRLB. (Added: 2026-06-17)
+- **Hardware-Locked Environmental Handshake (HLEH)**: (P0) Authoritative gateway mandating proof of environmental purity. (Added: 2026-06-17)

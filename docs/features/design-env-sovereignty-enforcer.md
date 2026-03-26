@@ -54,3 +54,7 @@ The **Environment Sovereignty Enforcer (ESE)** is a core security service for th
 
 ## 7. Evolutionary Changelog
 *   **2026-06-10:** Initial Document Creation.
+*   **2026-06-17:** **Addressing ILPE (Identity Leakage via Process Environment)**
+    *   **Context:** Market sync revealed a new exploit pattern where mission-root identity tokens are exfiltrated via standard process environment blocks.
+    *   **Architecture Adjustment:** Mandating **Hardware-Attested Environment Scrubbing** in Section 4. All tool-executing specialists are now required to provide a TPM-signed proof of environment purity before receiving any session-bound capability.
+    *   **Security Impact:** Mitigates the risk of mission-root token exfiltration by malicious subagents or un-attested tools.

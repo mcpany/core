@@ -1349,6 +1349,18 @@
 - **Shadowing Protection for SMS**: (P1) Security extension for the Sharded Mailbox Sovereignty (SMS) middleware to prevent Recursive Task-Card Shadowing (RTCS) in UACO mailboxes.
 - **Common Trust Root (CTR) Provider**: (P0) Authoritative authority that reconciles identity strength across heterogeneous swarms, providing a unified trust signal for deep delegations.
 
+## Evolution: [2026-06-17] Updates
+
+### Proposed Additions [2026-06-17]
+- **Layer-7 Semantic Inspection Hub (L7SIH)**: (P0) Advanced security middleware that performs real-time, high-entropy semantic analysis of inter-teammate coordination to neutralize REE.
+- **Environment Sovereignty Enforcer (ESE)**: (P0) Core security service mandating hardware-attested "Environment Scrubbing" for tool-executing specialists.
+- **Continuous Fragment-Integrity Attestation (CFIA) Provider**: (P1) Lifecycle management service for sharded meshes that provides cryptographically signed proofs of shard-level integrity to counter MRLB.
+- **Hardware-Locked Environmental Handshake (HLEH) Gateway**: (P0) Authoritative gateway mandating hardware-bound proof of environmental purity before granting tool-access.
+
+### Priority Shifts [2026-06-17]
+- **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **L7SIH** integration to counter high-entropy noise injection.
+- **Cross-Framework Identity Relay (CFIR)**: (Re-affirmed P0) Designated as the primary integration point for **ESE-compliant** environment scrubbing.
+
 ### Priority Shifts [2026-06-16]
 - **Sovereign Mesh Identity (SMI) Relay**: (Re-affirmed P0) Now elevated with the requirement for mandatory **CFIR** integration to solve identity fragmentation.
 - **Sharded Mailbox Sovereignty (SMS) Middleware**: (Re-affirmed P0) Evolving to support **RTCS-Resilient** discovery tokens.

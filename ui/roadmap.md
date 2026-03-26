@@ -582,3 +582,9 @@
 - [ ] **[P0] Monologue Integrity Monitor**: Forensic UI for reviewing semantic hash-chains and monologue splicing alerts. (Added: 2026-06-16)
 - [ ] **[P0] CTR Trust Authority Dashboard**: Authoritative UI for managing and reviewing Common Trust Root attestation events. (Added: 2026-06-16)
 - [ ] **[P1] RTCS Shadowing Alerts**: Real-time visualization of UACO mailbox conflicts and shadowing attempts. (Added: 2026-06-16)
+
+### Upcoming: [2026-06-17]
+- [ ] **[P0] L7 Semantic Analysis Viewer**: (2026-06-17) Real-time visualization of coordination entropy and REE noise levels.
+- [ ] **[P0] Environment Purity Dashboard**: (2026-06-17) Visual tracker for hardware-attested environment scrubbing and ILPE-risk indicators.
+- [ ] **[P1] Fragment Integrity Monitor**: (2026-06-17) Real-time status for CFIA-signed shards and dormant logic bomb alerts.
+- [ ] **[P0] Environmental Handshake Debugger**: (2026-06-17) Forensic tool for visualizing HLEH proofs and environmental attestation flows.

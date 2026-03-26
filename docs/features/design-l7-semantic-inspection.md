@@ -58,3 +58,7 @@ The **Layer-7 Semantic Inspection Hub (L7SIH)** is designed to address the emerg
 
 ## 7. Evolutionary Changelog
 *   **2026-06-10:** Initial Document Creation.
+*   **2026-06-17:** **Addressing REE (Reasoning Entropy Exhaustion)**
+    *   **Context:** Market sync revealed a new exploit pattern where subagents flood the mailbox with "hallucinatory noise" to blind parent agents.
+    *   **Architecture Adjustment:** Introducing **Semantic Entropy Scoring** in Section 4. Messages exceeding a configurable entropy threshold relative to the mission-root baseline are automatically quarantined.
+    *   **Security Impact:** Mitigates the risk of parent-agent context-window eviction by malicious subagent noise.
