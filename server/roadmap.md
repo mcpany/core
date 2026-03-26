@@ -757,3 +757,7 @@ These features represent the next logical steps for the product, focusing on Ent
 #### Upcoming (2026-06-18 Evolution)
 *   **[P0] Teammate Sovereignty Enforcer (TSE)**: Isolation kernel for parallel teams. (Added: 2026-06-18)
 *   **[P0] Logic-Sovereignty Validator (LSV)**: Reasoning path deconstruction. (Added: 2026-06-18)
+
+### Upcoming (Updated 2026-06-18)
+- [P0] Teammate Sovereignty Enforcer (Kernel-level isolation)
+- [P1] Request-Side Injection Shield (CVE-2026-30741 mitigation)

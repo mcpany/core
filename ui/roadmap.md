@@ -594,3 +594,7 @@
 
 - [ ] **[P0] Teammate Isolation Monitor**: (2026-06-18)
 - [ ] **[P0] Logic-Sovereignty Path Tracer**: (2026-06-18)
+
+### Upcoming (Updated 2026-06-18)
+- [P0] Per-Agent Sovereignty Visualization
+- [P1] Real-time Inter-Agent Logic-Path Monitoring

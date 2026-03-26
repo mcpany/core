@@ -1050,3 +1050,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 Infrastructure must move beyond transport-layer security to authoritative interdiction of the reasoning path.
 - **Teammate Sovereignty Enforcer (TSE)**: Authoritative isolation kernel for parallel teams.
 - **Logic-Sovereignty Validator (LSV)**: Real-time reasoning path deconstruction.
+
+## Strategic Evolution: 2026-06-18
+Transitioning from simple tool-proxying to **Logic-Path Interdiction**. Introduced the Logic-Sovereignty Validator (LSV) to intercept "Logic Bombs" in agent-generated code before local execution.
