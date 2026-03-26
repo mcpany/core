@@ -72,7 +72,7 @@ func TestUpstreamService_GRPCExample(t *testing.T) {
 		UpstreamServiceType: "grpc",
 		BuildUpstream: func(t *testing.T) *integration.ManagedProcess {
 			// 1. Generate Protobuf Files
-			if os.Getenv("SKIP_PROTO_GENERATION") != "true" {
+			if os.Getenv("SKIP_PROTO_GENERATION") != integration.TrueStr {
 				generateCmd := exec.Command("./generate.sh")
 				generateCmd.Dir = root + "/examples/upstream_service_demo/grpc/greeter_server"
 				if err := generateCmd.Run(); err != nil {

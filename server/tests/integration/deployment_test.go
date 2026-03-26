@@ -5,9 +5,9 @@ package integration_test
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"io"
-	"net"
 	"net/http"
 	"os"
 	"os/exec"
@@ -142,7 +142,7 @@ func TestDockerCompose(t *testing.T) {
 	payload := `{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "docker-http-echo/-/echo", "arguments": {"message": "Hello from Docker!"}}, "id": 1}`
 	var resp *http.Response
 	require.Eventually(t, func() bool {
-		req, err := http.NewRequest("POST", "http://127.0.0.1:50050/mcp", bytes.NewBufferString(payload))
+		req, err := http.NewRequestWithContext(context.Background(), "POST", "http://127.0.0.1:50050/mcp", bytes.NewBufferString(payload))
 		if err != nil {
 			t.Logf("failed to create request: %v", err)
 			return false
@@ -312,16 +312,3 @@ func TestK8sFullStack(t *testing.T) {
 	})
 }
 
-func findFreePort(t *testing.T) int {
-	t.Helper()
-	addr, err := net.ResolveTCPAddr("tcp", "127.0.0.1:0")
-	if err != nil {
-		t.Fatalf("failed to resolve tcp addr: %v", err)
-	}
-	l, err := net.ListenTCP("tcp", addr)
-	if err != nil {
-		t.Fatalf("failed to listen on tcp addr: %v", err)
-	}
-	defer func() { _ = l.Close() }()
-	return l.Addr().(*net.TCPAddr).Port
-}

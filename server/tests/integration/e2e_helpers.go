@@ -156,6 +156,8 @@ const (
 	localHeaderMcpSessionID = "Mcp-Session-Id"
 	dockerCmd               = "docker"
 	sudoCmd                 = "sudo"
+	TrueStr                 = "true"
+	testService             = "test-service"
 	// LoopbackIP is the default loopback IP for testing.
 	LoopbackIP      = "127.0.0.1"
 	loopbackIP      = LoopbackIP
@@ -174,7 +176,7 @@ var (
 func getDockerCommand() (string, []string) {
 	dockerOnce.Do(func() {
 		// Environment variable overrides detection.
-		if val := os.Getenv("USE_SUDO_FOR_DOCKER"); val == "true" || val == "1" {
+		if val := os.Getenv("USE_SUDO_FOR_DOCKER"); val == TrueStr || val == "1" {
 			dockerCommand = sudoCmd
 			dockerArgs = []string{dockerCmd}
 			return
@@ -1267,7 +1269,7 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 		"--db-path", dbPath,
 	}
 	args = append(args, extraArgs...)
-	env := []string{"MCPANY_LOG_LEVEL=debug", "NATS_URL=" + natsURL, "MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true", "MCPANY_ENABLE_FILE_CONFIG=true", "MCP_ALLOW_UNSAFE_SETUP_COMMANDS=true"}
+	env := []string{"MCPANY_LOG_LEVEL=debug", "NATS_URL=" + natsURL, "MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=" + TrueStr, "MCPANY_ENABLE_FILE_CONFIG=" + TrueStr, "MCP_ALLOW_UNSAFE_SETUP_COMMANDS=" + TrueStr}
 	if sudo, ok := os.LookupEnv("USE_SUDO_FOR_DOCKER"); ok {
 		env = append(env, "USE_SUDO_FOR_DOCKER="+sudo)
 	}

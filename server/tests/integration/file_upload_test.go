@@ -5,6 +5,7 @@ package integration
 
 import (
 	"bytes"
+	"context"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -50,7 +51,7 @@ func TestFileUpload(t *testing.T) {
 	require.NoError(t, writer.Close())
 
 	// Create a new request
-	req, err := http.NewRequest("POST", server.JSONRPCEndpoint+"/upload", body)
+	req, err := http.NewRequestWithContext(context.Background(), "POST", server.JSONRPCEndpoint+"/upload", body)
 	require.NoError(t, err)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	// Set Authorization header

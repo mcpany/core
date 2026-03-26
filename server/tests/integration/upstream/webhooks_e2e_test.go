@@ -90,7 +90,8 @@ func TestWebhooksE2E(t *testing.T) {
 
 	// Wait for server to start
 	require.Eventually(t, func() bool {
-		resp, err := http.Get(fmt.Sprintf("http://127.0.0.1:%d/markdown", port)) // Endpoint exists (POST only but connectable)
+		req, _ := http.NewRequestWithContext(context.Background(), "GET", fmt.Sprintf("http://127.0.0.1:%d/markdown", port), nil)
+		resp, err := http.DefaultClient.Do(req) // Endpoint exists (POST only but connectable)
 		if resp != nil {
 			defer func() { _ = resp.Body.Close() }()
 		}
@@ -187,7 +188,8 @@ func TestFullSystemWebhooks(t *testing.T) {
 
 	// Wait for webhook server
 	require.Eventually(t, func() bool {
-		resp, err := http.Get(fmt.Sprintf("http://127.0.0.1:%d/markdown", port))
+		req, _ := http.NewRequestWithContext(context.Background(), "GET", fmt.Sprintf("http://127.0.0.1:%d/markdown", port), nil)
+		resp, err := http.DefaultClient.Do(req)
 		if resp != nil && resp.Body != nil {
 			defer func() { _ = resp.Body.Close() }()
 		}

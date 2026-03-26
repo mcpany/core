@@ -19,7 +19,7 @@ import (
 func TestCreateTempConfigFile(t *testing.T) {
 	t.Parallel()
 	// Create a dummy config
-	serviceName := "test-service"
+	serviceName := testService
 	config := &configv1.UpstreamServiceConfig{}
 	config.SetName(serviceName)
 
@@ -62,7 +62,7 @@ func TestWaitForText(t *testing.T) {
 }
 
 func TestDockerHelpers(t *testing.T) {
-	if os.Getenv("CI") == "true" || os.Getenv("GITHUB_ACTIONS") == "true" {
+	if os.Getenv("CI") == TrueStr || os.Getenv("GITHUB_ACTIONS") == TrueStr {
 		t.Log("Skipping TestDockerHelpers in CI environment (CI/GITHUB_ACTIONS=true)")
 		// t.Skip("Skipping TestDockerHelpers in CI due to potential rate limiting/network issues")
 	}
