@@ -57,7 +57,7 @@ jobs:
             . venv/bin/activate
             # Ensure PATH includes tool install dir
             export PATH=$PWD/build/env/bin:$PATH
-            make lint
+            make lint > lint_output.txt 2>&1 || (cat lint_output.txt && exit 1)
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
