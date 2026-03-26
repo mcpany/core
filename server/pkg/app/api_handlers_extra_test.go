@@ -43,8 +43,8 @@ func TestHandleListServices_ToolCountInjection(t *testing.T) {
 		Name: proto.String("Service 2"),
 	}.Build()
 
-	mockRegistry.On("GetAllServices").Return([]*configv1.UpstreamServiceConfig{svc1, svc2}, nil)
-	mockRegistry.On("GetServiceError", mock.Anything).Return("", false)
+	mockRegistry.Mock.On("GetAllServices").Return([]*configv1.UpstreamServiceConfig{svc1, svc2}, nil)
+	mockRegistry.Mock.On("GetServiceError", mock.Anything).Return("", false)
 
 	// Add tools to ToolManager using TestMockTool (defined in api_test.go)
 	app.ToolManager.AddTool(&TestMockTool{

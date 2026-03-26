@@ -61,7 +61,7 @@ func TestHandleDashboardMetrics_Trends(t *testing.T) {
 		Id:   proto.String("test-service"),
 		Name: proto.String("test-service"),
 	}.Build()
-	mockRegistry.On("GetAllServices").Return([]*configv1.UpstreamServiceConfig{svc}, nil)
+	mockRegistry.Mock.On("GetAllServices").Return([]*configv1.UpstreamServiceConfig{svc}, nil)
 
 	app := &Application{
 		ServiceRegistry: mockRegistry,

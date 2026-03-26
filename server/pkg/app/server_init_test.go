@@ -22,7 +22,7 @@ type MockStore struct {
 }
 
 func (m *MockStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
-	args := m.Called(ctx)
+	args := m.Mock.Called(ctx)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
@@ -30,12 +30,12 @@ func (m *MockStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, err
 }
 
 func (m *MockStore) Watch(ctx context.Context) (<-chan *configv1.McpAnyServerConfig, error) {
-	args := m.Called(ctx)
+	args := m.Mock.Called(ctx)
 	return nil, args.Error(1)
 }
 
 func (m *MockStore) ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
-	args := m.Called(ctx)
+	args := m.Mock.Called(ctx)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
@@ -43,7 +43,7 @@ func (m *MockStore) ListServices(ctx context.Context) ([]*configv1.UpstreamServi
 }
 
 func (m *MockStore) GetService(ctx context.Context, id string) (*configv1.UpstreamServiceConfig, error) {
-	args := m.Called(ctx, id)
+	args := m.Mock.Called(ctx, id)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
@@ -51,17 +51,17 @@ func (m *MockStore) GetService(ctx context.Context, id string) (*configv1.Upstre
 }
 
 func (m *MockStore) SaveService(ctx context.Context, svc *configv1.UpstreamServiceConfig) error {
-	args := m.Called(ctx, svc)
+	args := m.Mock.Called(ctx, svc)
 	return args.Error(0)
 }
 
 func (m *MockStore) DeleteService(ctx context.Context, id string) error {
-	args := m.Called(ctx, id)
+	args := m.Mock.Called(ctx, id)
 	return args.Error(0)
 }
 
 func (m *MockStore) GetGlobalSettings(ctx context.Context) (*configv1.GlobalSettings, error) {
-	args := m.Called(ctx)
+	args := m.Mock.Called(ctx)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
@@ -70,7 +70,7 @@ func (m *MockStore) GetGlobalSettings(ctx context.Context) (*configv1.GlobalSett
 
 // Secrets
 func (m *MockStore) ListSecrets(ctx context.Context) ([]*configv1.Secret, error) {
-	args := m.Called(ctx)
+	args := m.Mock.Called(ctx)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
@@ -78,7 +78,7 @@ func (m *MockStore) ListSecrets(ctx context.Context) ([]*configv1.Secret, error)
 }
 
 func (m *MockStore) GetSecret(ctx context.Context, id string) (*configv1.Secret, error) {
-	args := m.Called(ctx, id)
+	args := m.Mock.Called(ctx, id)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
@@ -86,23 +86,23 @@ func (m *MockStore) GetSecret(ctx context.Context, id string) (*configv1.Secret,
 }
 
 func (m *MockStore) SaveSecret(ctx context.Context, secret *configv1.Secret) error {
-	args := m.Called(ctx, secret)
+	args := m.Mock.Called(ctx, secret)
 	return args.Error(0)
 }
 
 func (m *MockStore) DeleteSecret(ctx context.Context, id string) error {
-	args := m.Called(ctx, id)
+	args := m.Mock.Called(ctx, id)
 	return args.Error(0)
 }
 
 // Users
 func (m *MockStore) CreateUser(ctx context.Context, user *configv1.User) error {
-	args := m.Called(ctx, user)
+	args := m.Mock.Called(ctx, user)
 	return args.Error(0)
 }
 
 func (m *MockStore) GetUser(ctx context.Context, id string) (*configv1.User, error) {
-	args := m.Called(ctx, id)
+	args := m.Mock.Called(ctx, id)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
@@ -110,7 +110,7 @@ func (m *MockStore) GetUser(ctx context.Context, id string) (*configv1.User, err
 }
 
 func (m *MockStore) ListUsers(ctx context.Context) ([]*configv1.User, error) {
-	args := m.Called(ctx)
+	args := m.Mock.Called(ctx)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
@@ -118,18 +118,18 @@ func (m *MockStore) ListUsers(ctx context.Context) ([]*configv1.User, error) {
 }
 
 func (m *MockStore) UpdateUser(ctx context.Context, user *configv1.User) error {
-	args := m.Called(ctx, user)
+	args := m.Mock.Called(ctx, user)
 	return args.Error(0)
 }
 
 func (m *MockStore) DeleteUser(ctx context.Context, id string) error {
-	args := m.Called(ctx, id)
+	args := m.Mock.Called(ctx, id)
 	return args.Error(0)
 }
 
 // Profiles
 func (m *MockStore) ListProfiles(ctx context.Context) ([]*configv1.ProfileDefinition, error) {
-	args := m.Called(ctx)
+	args := m.Mock.Called(ctx)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
@@ -137,7 +137,7 @@ func (m *MockStore) ListProfiles(ctx context.Context) ([]*configv1.ProfileDefini
 }
 
 func (m *MockStore) GetProfile(ctx context.Context, name string) (*configv1.ProfileDefinition, error) {
-	args := m.Called(ctx, name)
+	args := m.Mock.Called(ctx, name)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
@@ -145,18 +145,18 @@ func (m *MockStore) GetProfile(ctx context.Context, name string) (*configv1.Prof
 }
 
 func (m *MockStore) SaveProfile(ctx context.Context, profile *configv1.ProfileDefinition) error {
-	args := m.Called(ctx, profile)
+	args := m.Mock.Called(ctx, profile)
 	return args.Error(0)
 }
 
 func (m *MockStore) DeleteProfile(ctx context.Context, name string) error {
-	args := m.Called(ctx, name)
+	args := m.Mock.Called(ctx, name)
 	return args.Error(0)
 }
 
 // Service Collections
 func (m *MockStore) ListServiceCollections(ctx context.Context) ([]*configv1.Collection, error) {
-	args := m.Called(ctx)
+	args := m.Mock.Called(ctx)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
@@ -164,7 +164,7 @@ func (m *MockStore) ListServiceCollections(ctx context.Context) ([]*configv1.Col
 }
 
 func (m *MockStore) GetServiceCollection(ctx context.Context, name string) (*configv1.Collection, error) {
-	args := m.Called(ctx, name)
+	args := m.Mock.Called(ctx, name)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
@@ -172,23 +172,23 @@ func (m *MockStore) GetServiceCollection(ctx context.Context, name string) (*con
 }
 
 func (m *MockStore) SaveServiceCollection(ctx context.Context, collection *configv1.Collection) error {
-	args := m.Called(ctx, collection)
+	args := m.Mock.Called(ctx, collection)
 	return args.Error(0)
 }
 
 func (m *MockStore) DeleteServiceCollection(ctx context.Context, name string) error {
-	args := m.Called(ctx, name)
+	args := m.Mock.Called(ctx, name)
 	return args.Error(0)
 }
 
 // Tokens
 func (m *MockStore) SaveToken(ctx context.Context, token *configv1.UserToken) error {
-	args := m.Called(ctx, token)
+	args := m.Mock.Called(ctx, token)
 	return args.Error(0)
 }
 
 func (m *MockStore) GetToken(ctx context.Context, userID, serviceID string) (*configv1.UserToken, error) {
-	args := m.Called(ctx, userID, serviceID)
+	args := m.Mock.Called(ctx, userID, serviceID)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
@@ -196,13 +196,13 @@ func (m *MockStore) GetToken(ctx context.Context, userID, serviceID string) (*co
 }
 
 func (m *MockStore) DeleteToken(ctx context.Context, userID, serviceID string) error {
-	args := m.Called(ctx, userID, serviceID)
+	args := m.Mock.Called(ctx, userID, serviceID)
 	return args.Error(0)
 }
 
 // Credentials
 func (m *MockStore) ListCredentials(ctx context.Context) ([]*configv1.Credential, error) {
-	args := m.Called(ctx)
+	args := m.Mock.Called(ctx)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
@@ -210,7 +210,7 @@ func (m *MockStore) ListCredentials(ctx context.Context) ([]*configv1.Credential
 }
 
 func (m *MockStore) GetCredential(ctx context.Context, id string) (*configv1.Credential, error) {
-	args := m.Called(ctx, id)
+	args := m.Mock.Called(ctx, id)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
@@ -218,22 +218,22 @@ func (m *MockStore) GetCredential(ctx context.Context, id string) (*configv1.Cre
 }
 
 func (m *MockStore) SaveCredential(ctx context.Context, cred *configv1.Credential) error {
-	args := m.Called(ctx, cred)
+	args := m.Mock.Called(ctx, cred)
 	return args.Error(0)
 }
 
 func (m *MockStore) DeleteCredential(ctx context.Context, id string) error {
-	args := m.Called(ctx, id)
+	args := m.Mock.Called(ctx, id)
 	return args.Error(0)
 }
 
 func (m *MockStore) Close() error {
-	args := m.Called()
+	args := m.Mock.Called()
 	return args.Error(0)
 }
 
 func (m *MockStore) SaveGlobalSettings(ctx context.Context, settings *configv1.GlobalSettings) error {
-	args := m.Called(ctx, settings)
+	args := m.Mock.Called(ctx, settings)
 	return args.Error(0)
 }
 
@@ -243,7 +243,7 @@ func (m *MockStore) HasConfigSources() bool {
 
 // Service Templates
 func (m *MockStore) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTemplate, error) {
-	args := m.Called(ctx)
+	args := m.Mock.Called(ctx)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
@@ -251,7 +251,7 @@ func (m *MockStore) ListServiceTemplates(ctx context.Context) ([]*configv1.Servi
 }
 
 func (m *MockStore) GetServiceTemplate(ctx context.Context, id string) (*configv1.ServiceTemplate, error) {
-	args := m.Called(ctx, id)
+	args := m.Mock.Called(ctx, id)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
@@ -259,22 +259,22 @@ func (m *MockStore) GetServiceTemplate(ctx context.Context, id string) (*configv
 }
 
 func (m *MockStore) SaveServiceTemplate(ctx context.Context, tmpl *configv1.ServiceTemplate) error {
-	args := m.Called(ctx, tmpl)
+	args := m.Mock.Called(ctx, tmpl)
 	return args.Error(0)
 }
 
 func (m *MockStore) DeleteServiceTemplate(ctx context.Context, id string) error {
-	args := m.Called(ctx, id)
+	args := m.Mock.Called(ctx, id)
 	return args.Error(0)
 }
 
 func (m *MockStore) SaveLog(ctx context.Context, entry *logging.LogEntry) error {
-	args := m.Called(ctx, entry)
+	args := m.Mock.Called(ctx, entry)
 	return args.Error(0)
 }
 
 func (m *MockStore) GetRecentLogs(ctx context.Context, limit int) ([]*logging.LogEntry, error) {
-	args := m.Called(ctx, limit)
+	args := m.Mock.Called(ctx, limit)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
@@ -285,38 +285,38 @@ func TestInitializeDatabase_Empty(t *testing.T) {
 	mockStore := new(MockStore)
 	app := &Application{}
 
-	mockStore.On("ListServices", mock.Anything).Return(([]*configv1.UpstreamServiceConfig)(nil), nil)
-	mockStore.On("GetGlobalSettings", mock.Anything).Return((*configv1.GlobalSettings)(nil), nil)
-	mockStore.On("SaveGlobalSettings", mock.Anything, mock.Anything).Return(nil)
-	mockStore.On("SaveService", mock.Anything, mock.Anything).Return(nil)
+	mockStore.Mock.On("ListServices", mock.Anything).Return(([]*configv1.UpstreamServiceConfig)(nil), nil)
+	mockStore.Mock.On("GetGlobalSettings", mock.Anything).Return((*configv1.GlobalSettings)(nil), nil)
+	mockStore.Mock.On("SaveGlobalSettings", mock.Anything, mock.Anything).Return(nil)
+	mockStore.Mock.On("SaveService", mock.Anything, mock.Anything).Return(nil)
 	// Template Init expectations
 	// Template Init expectations
-	mockStore.On("ListServiceTemplates", mock.Anything).Return(([]*configv1.ServiceTemplate)(nil), nil)
-	mockStore.On("SaveServiceTemplate", mock.Anything, mock.Anything).Return(nil)
+	mockStore.Mock.On("ListServiceTemplates", mock.Anything).Return(([]*configv1.ServiceTemplate)(nil), nil)
+	mockStore.Mock.On("SaveServiceTemplate", mock.Anything, mock.Anything).Return(nil)
 	// Collection Init expectations
-	mockStore.On("ListServiceCollections", mock.Anything).Return(([]*configv1.Collection)(nil), nil)
-	mockStore.On("SaveServiceCollection", mock.Anything, mock.Anything).Return(nil)
+	mockStore.Mock.On("ListServiceCollections", mock.Anything).Return(([]*configv1.Collection)(nil), nil)
+	mockStore.Mock.On("SaveServiceCollection", mock.Anything, mock.Anything).Return(nil)
 	// Admin User Init expectations
-	mockStore.On("ListUsers", mock.Anything).Return(([]*configv1.User)(nil), nil)
-	mockStore.On("CreateUser", mock.Anything, mock.Anything).Return(nil)
+	mockStore.Mock.On("ListUsers", mock.Anything).Return(([]*configv1.User)(nil), nil)
+	mockStore.Mock.On("CreateUser", mock.Anything, mock.Anything).Return(nil)
 
 	err := app.initializeDatabase(context.Background(), mockStore, nil)
 	assert.NoError(t, err)
 
-	mockStore.AssertExpectations(t)
+	mockStore.Mock.AssertExpectations(t)
 }
 
 func TestInitializeDatabase_AlreadyInitialized(t *testing.T) {
 	mockStore := new(MockStore)
 	app := &Application{}
 
-	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{{}}, nil)
+	mockStore.Mock.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{{}}, nil)
 
 	err := app.initializeDatabase(context.Background(), mockStore, nil)
 	assert.NoError(t, err)
 
-	mockStore.AssertNotCalled(t, "SaveGlobalSettings")
-	mockStore.AssertNotCalled(t, "SaveService")
+	mockStore.Mock.AssertNotCalled(t, "SaveGlobalSettings")
+	mockStore.Mock.AssertNotCalled(t, "SaveService")
 }
 
 func TestInitializeDatabase_SkipsWhenConfigProvidesGlobalSettings(t *testing.T) {
@@ -332,9 +332,9 @@ func TestInitializeDatabase_SkipsWhenConfigProvidesGlobalSettings(t *testing.T) 
 	err := app.initializeDatabase(context.Background(), mockStore, cfg)
 	assert.NoError(t, err)
 
-	mockStore.AssertNotCalled(t, "ListServices")
-	mockStore.AssertNotCalled(t, "SaveGlobalSettings")
-	mockStore.AssertNotCalled(t, "SaveService")
+	mockStore.Mock.AssertNotCalled(t, "ListServices")
+	mockStore.Mock.AssertNotCalled(t, "SaveGlobalSettings")
+	mockStore.Mock.AssertNotCalled(t, "SaveService")
 }
 
 func TestInitializeDatabase_NotStorage(t *testing.T) {
@@ -352,7 +352,7 @@ type MockSimpleStore struct {
 }
 
 func (m *MockSimpleStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
-	args := m.Called(ctx)
+	args := m.Mock.Called(ctx)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
@@ -383,7 +383,7 @@ func TestInitializeDatabase_Errors(t *testing.T) {
 		mockStore := new(MockStore)
 		app := &Application{}
 
-		mockStore.On("ListServices", mock.Anything).Return(([]*configv1.UpstreamServiceConfig)(nil), errors.New("list services error"))
+		mockStore.Mock.On("ListServices", mock.Anything).Return(([]*configv1.UpstreamServiceConfig)(nil), errors.New("list services error"))
 
 		err := app.initializeDatabase(context.Background(), mockStore, nil)
 		assert.Error(t, err)
@@ -394,9 +394,9 @@ func TestInitializeDatabase_Errors(t *testing.T) {
 		mockStore := new(MockStore)
 		app := &Application{}
 
-		mockStore.On("ListServices", mock.Anything).Return(([]*configv1.UpstreamServiceConfig)(nil), nil)
-		mockStore.On("GetGlobalSettings", mock.Anything).Return((*configv1.GlobalSettings)(nil), nil)
-		mockStore.On("SaveGlobalSettings", mock.Anything, mock.Anything).Return(errors.New("save global error"))
+		mockStore.Mock.On("ListServices", mock.Anything).Return(([]*configv1.UpstreamServiceConfig)(nil), nil)
+		mockStore.Mock.On("GetGlobalSettings", mock.Anything).Return((*configv1.GlobalSettings)(nil), nil)
+		mockStore.Mock.On("SaveGlobalSettings", mock.Anything, mock.Anything).Return(errors.New("save global error"))
 
 		err := app.initializeDatabase(context.Background(), mockStore, nil)
 		assert.Error(t, err)
@@ -407,10 +407,10 @@ func TestInitializeDatabase_Errors(t *testing.T) {
 		mockStore := new(MockStore)
 		app := &Application{}
 
-		mockStore.On("ListServices", mock.Anything).Return(([]*configv1.UpstreamServiceConfig)(nil), nil)
-		mockStore.On("GetGlobalSettings", mock.Anything).Return((*configv1.GlobalSettings)(nil), nil)
-		mockStore.On("SaveGlobalSettings", mock.Anything, mock.Anything).Return(nil)
-		mockStore.On("SaveService", mock.Anything, mock.Anything).Return(errors.New("save service error"))
+		mockStore.Mock.On("ListServices", mock.Anything).Return(([]*configv1.UpstreamServiceConfig)(nil), nil)
+		mockStore.Mock.On("GetGlobalSettings", mock.Anything).Return((*configv1.GlobalSettings)(nil), nil)
+		mockStore.Mock.On("SaveGlobalSettings", mock.Anything, mock.Anything).Return(nil)
+		mockStore.Mock.On("SaveService", mock.Anything, mock.Anything).Return(errors.New("save service error"))
 
 		err := app.initializeDatabase(context.Background(), mockStore, nil)
 		assert.Error(t, err)
@@ -423,11 +423,11 @@ func TestInitializeAdminUser_RandomPassword(t *testing.T) {
 	app := &Application{}
 
 	// Mocking empty users list
-	mockStore.On("ListUsers", mock.Anything).Return(([]*configv1.User)(nil), nil)
+	mockStore.Mock.On("ListUsers", mock.Anything).Return(([]*configv1.User)(nil), nil)
 
 	// Capture the user passed to CreateUser
 	var capturedUser *configv1.User
-	mockStore.On("CreateUser", mock.Anything, mock.MatchedBy(func(u *configv1.User) bool {
+	mockStore.Mock.On("CreateUser", mock.Anything, mock.MatchedBy(func(u *configv1.User) bool {
 		capturedUser = u
 		return true
 	})).Return(nil)

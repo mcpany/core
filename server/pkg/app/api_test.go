@@ -881,22 +881,22 @@ type MockServiceRegistry struct {
 }
 
 func (m *MockServiceRegistry) RegisterService(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
-	args := m.Called(ctx, serviceConfig)
+	args := m.Mock.Called(ctx, serviceConfig)
 	return args.String(0), args.Get(1).([]*configv1.ToolDefinition), args.Get(2).([]*configv1.ResourceDefinition), args.Error(3)
 }
 
 func (m *MockServiceRegistry) UnregisterService(ctx context.Context, serviceName string) error {
-	args := m.Called(ctx, serviceName)
+	args := m.Mock.Called(ctx, serviceName)
 	return args.Error(0)
 }
 
 func (m *MockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfig, error) {
-	args := m.Called()
+	args := m.Mock.Called()
 	return args.Get(0).([]*configv1.UpstreamServiceConfig), args.Error(1)
 }
 
 func (m *MockServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
-	args := m.Called(serviceID)
+	args := m.Mock.Called(serviceID)
 	if info := args.Get(0); info != nil {
 		return info.(*tool.ServiceInfo), args.Bool(1)
 	}
@@ -904,7 +904,7 @@ func (m *MockServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInf
 }
 
 func (m *MockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.UpstreamServiceConfig, bool) {
-	args := m.Called(serviceID)
+	args := m.Mock.Called(serviceID)
 	if cfg := args.Get(0); cfg != nil {
 		return cfg.(*configv1.UpstreamServiceConfig), args.Bool(1)
 	}
@@ -912,7 +912,7 @@ func (m *MockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.Upst
 }
 
 func (m *MockServiceRegistry) GetServiceError(serviceID string) (string, bool) {
-	args := m.Called(serviceID)
+	args := m.Mock.Called(serviceID)
 	return args.String(0), args.Bool(1)
 }
 
@@ -935,10 +935,10 @@ func TestHandleServices_IncludesError(t *testing.T) {
 	service3.SetName("service-3")
 	service3.SetSanitizedName("service-3-sanitized")
 
-	mockRegistry.On("GetAllServices").Return([]*configv1.UpstreamServiceConfig{service1, service2, service3}, nil)
-	mockRegistry.On("GetServiceError", "service-1").Return("", false)
-	mockRegistry.On("GetServiceError", "service-2").Return("Connection refused", true)
-	mockRegistry.On("GetServiceError", "service-3-sanitized").Return("Another error", true)
+	mockRegistry.Mock.On("GetAllServices").Return([]*configv1.UpstreamServiceConfig{service1, service2, service3}, nil)
+	mockRegistry.Mock.On("GetServiceError", "service-1").Return("", false)
+	mockRegistry.Mock.On("GetServiceError", "service-2").Return("Connection refused", true)
+	mockRegistry.Mock.On("GetServiceError", "service-3-sanitized").Return("Another error", true)
 
 	app := NewApplication()
 	app.ServiceRegistry = mockRegistry

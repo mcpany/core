@@ -28,17 +28,17 @@ type MockAuditStore struct {
 }
 
 func (m *MockAuditStore) Write(ctx context.Context, entry audit.Entry) error {
-	args := m.Called(ctx, entry)
+	args := m.Mock.Called(ctx, entry)
 	return args.Error(0)
 }
 
 func (m *MockAuditStore) Read(ctx context.Context, filter audit.Filter) ([]audit.Entry, error) {
-	args := m.Called(ctx, filter)
+	args := m.Mock.Called(ctx, filter)
 	return args.Get(0).([]audit.Entry), args.Error(1)
 }
 
 func (m *MockAuditStore) Close() error {
-	args := m.Called()
+	args := m.Mock.Called()
 	return args.Error(0)
 }
 
@@ -69,7 +69,7 @@ func TestHandleAuditExport_Mock(t *testing.T) {
 				Result:     "success",
 			},
 		}
-		mockStore.On("Read", mock.Anything, mock.Anything).Return(entries, nil).Once()
+		mockStore.Mock.On("Read", mock.Anything, mock.Anything).Return(entries, nil).Once()
 
 		req := httptest.NewRequest(http.MethodGet, "/audit/export", nil)
 		w := httptest.NewRecorder()
@@ -87,7 +87,7 @@ func TestHandleAuditExport_Mock(t *testing.T) {
 	})
 
 	t.Run("StoreError", func(t *testing.T) {
-		mockStore.On("Read", mock.Anything, mock.Anything).Return([]audit.Entry{}, assert.AnError).Once()
+		mockStore.Mock.On("Read", mock.Anything, mock.Anything).Return([]audit.Entry{}, assert.AnError).Once()
 
 		req := httptest.NewRequest(http.MethodGet, "/audit/export", nil)
 		w := httptest.NewRecorder()

@@ -25,32 +25,32 @@ type MockServiceRegistryForDashboard struct {
 }
 
 func (m *MockServiceRegistryForDashboard) RegisterService(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
-	args := m.Called(ctx, serviceConfig)
+	args := m.Mock.Called(ctx, serviceConfig)
 	return args.String(0), nil, nil, args.Error(3)
 }
 
 func (m *MockServiceRegistryForDashboard) UnregisterService(ctx context.Context, serviceName string) error {
-	args := m.Called(ctx, serviceName)
+	args := m.Mock.Called(ctx, serviceName)
 	return args.Error(0)
 }
 
 func (m *MockServiceRegistryForDashboard) GetAllServices() ([]*configv1.UpstreamServiceConfig, error) {
-	args := m.Called()
+	args := m.Mock.Called()
 	return args.Get(0).([]*configv1.UpstreamServiceConfig), args.Error(1)
 }
 
 func (m *MockServiceRegistryForDashboard) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
-	args := m.Called(serviceID)
+	args := m.Mock.Called(serviceID)
 	return nil, args.Bool(1)
 }
 
 func (m *MockServiceRegistryForDashboard) GetServiceConfig(serviceID string) (*configv1.UpstreamServiceConfig, bool) {
-	args := m.Called(serviceID)
+	args := m.Mock.Called(serviceID)
 	return nil, args.Bool(1)
 }
 
 func (m *MockServiceRegistryForDashboard) GetServiceError(serviceID string) (string, bool) {
-	args := m.Called(serviceID)
+	args := m.Mock.Called(serviceID)
 	return args.String(0), args.Bool(1)
 }
 
@@ -75,8 +75,8 @@ func TestHandleDashboardHealth_Integration(t *testing.T) {
 		Name: proto.String("test-service"),
 	}.Build()
 
-	mockRegistry.On("GetAllServices").Return([]*configv1.UpstreamServiceConfig{svc}, nil)
-	mockRegistry.On("GetServiceError", serviceID).Return("", false)
+	mockRegistry.Mock.On("GetAllServices").Return([]*configv1.UpstreamServiceConfig{svc}, nil)
+	mockRegistry.Mock.On("GetServiceError", serviceID).Return("", false)
 
 	app := &Application{
 		ServiceRegistry: mockRegistry,
