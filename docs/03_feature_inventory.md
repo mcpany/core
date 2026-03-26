@@ -1364,18 +1364,20 @@
 ## Evolution: [2026-06-18] Updates
 
 ### Proposed Additions
-- **Cognitive Entropy Controller (CEC)**: (P0) Hardware-accelerated monitor for
- reasoning path entropy, neutralizing cumulative intent drift.
+- **Cognitive Entropy Controller (CEC)**: (P0) Hardware-accelerated monitor
+for reasoning path entropy, neutralizing cumulative intent drift.
 - **Sovereign Fragment Compressor (SFC)**: (P0) HLCC-compliant TPM-signed
- context snapshoting for secure cross-framework state transfer.
-- **Mesh Policy Synchronizer (MPS)**: (P0) Real-time synchronization of security
- guardrails across agent swarms to neutralize policy drift in horizontal meshes.
+context snapshoting for secure cross-framework state transfer.
+- **Mesh Policy Synchronizer (MPS)**: (P0) Real-time synchronization of
+security guardrails across agent swarms to neutralize policy drift in
+horizontal meshes.
 - **Reasoning Noise-Injection (RNI) Middleware**: (P0) Side-channel mitigation
- for all inter-agent transport channels to counter Reasoning-Path Echo (RPE)
- attacks (CVE-2026-70102).
+for all inter-agent transport channels to counter Reasoning-Path Echo (RPE)
+attacks (CVE-2026-70102).
 
 ### Priority Shifts
-- **Atomic Reasoning Integrity (ARI) Validator**: (Re-affirmed P0) Now elevated
- with the requirement for mandatory **CEC-compliant** entropy governance.
-- **Stylometric Metadata Sanitizer (SMS)**: (Re-affirmed P0) Evolving to support
- the new **SFC-compliant** context snapshotting requirements.
+- **Atomic Reasoning Integrity (ARI) Validator**: (Re-affirmed P0) Now
+elevated with the requirement for mandatory **CEC-compliant** entropy
+governance.
+- **Stylometric Metadata Sanitizer (SMS)**: (Re-affirmed P0) Evolving to
+support the new **SFC-compliant** context snapshotting requirements.

@@ -1048,23 +1048,23 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ## Strategic Evolution: [2026-06-18]
 ### Focus: Cognitive Entropy Governance & Teammate Policy Synchronization
 **Context**: Today's research into the Reasoning-Path Echo (RPE) side-channel
- (CVE-2026-70102) and the emergence of parallel team "Policy Drift" reveals
- that transport isolation is no longer sufficient. We must govern the
- *statistical entropy* of the reasoning path and ensure security policies are
- synchronized across the mesh in sub-10ms intervals.
+(CVE-2026-70102) and the emergence of parallel team "Policy Drift" reveals
+that transport isolation is no longer sufficient. We must govern the
+*statistical entropy* of the reasoning path and ensure security policies are
+synchronized across the mesh in sub-10ms intervals.
 **Strategic Pivot**:
 - **Active Entropy Control**: MCP Any will transition from passive transport
- to an Active Entropy Controller. We will implement hardware-accelerated
- monitors to detect high-entropy reasoning injections designed to probe
- mission-root constraints.
+to an Active Entropy Controller. We will implement hardware-accelerated
+monitors to detect high-entropy reasoning injections designed to probe
+mission-root constraints.
 - **Mesh Policy Synchronization (MPS)**: Supporting horizontal teammate teams,
- MCP Any will act as the authoritative hub for policy distribution. We will
- provide the infrastructure for real-time (sub-10ms) synchronization of
- security guardrails across disparate frameworks (OpenClaw, Claude, Gemini).
+MCP Any will act as the authoritative hub for policy distribution. We will
+provide the infrastructure for real-time (sub-10ms) synchronization of
+security guardrails across disparate frameworks (OpenClaw, Claude, Gemini).
 - **Reasoning Noise-Injection (RNI)**: To neutralize RPE side-channel attacks,
- MCP Any will implement RNI. This layer will inject hardware-attested timing
- jitter into inter-agent communication channels, preventing timing-based
- reconstruction of sensitive prompts.
+MCP Any will implement RNI. Th is layer will inject hardware-attested timing
+jitter into inter-agent communication channels, preventing timing-based
+reconstruction of sensitive prompts.
 - **Hardware-Locked Snapshot Compression**: Leveraging Gemini CLI's HLCC, we
- will implement TPM-signed context snapshots. This allows secure, verifiable
- state transfer between cloud-sandboxed agents and local specialist teammates.
+will implement TPM-signed context snapshots. Th is allows secure, verifiable
+state transfer between cloud-sandboxed agents and local specialist teammates.

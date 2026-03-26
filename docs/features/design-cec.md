@@ -10,10 +10,9 @@ Reasoning traces in deep agent swarms are vulnerable to "Entropy Injection"
 attacks, where high-entropy noise is injected into subagent responses to
 bypass mission-root constraints or trigger context-window eviction.
 
-The Cognitive Entropy Controller (CEC) provides high-performance,
-hardware-accelerated monitoring of semantic entropy within the agentic
-bus. It ensures that the reasoning path remains stable and aligned with
-the primary intent.
+The Cognitive Entropy Controller (CEC) provides high-performance, hardware-
+accelerated monitoring of semantic entropy within the agentic bus. It ensures
+that the reasoning path remains stable and aligned with the primary intent.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
@@ -27,8 +26,8 @@ the primary intent.
 
 ## 3. Critical User Journey (CUJ)
 * **User Persona:** Security Auditor for Autonomous Swarms.
-* **Primary Goal:** Prevent a specialized subagent from "blinding" the
-  parent agent via high-entropy noise injection.
+* **Primary Goal:** Prevent a specialized subagent from "blinding" the parent
+agent via high-entropy noise injection.
 * **The Happy Path (Tasks):**
     1. The Auditor defines an entropy policy for the mission.
     2. A subagent generates a reasoning trace with anomalous noise.
@@ -51,15 +50,15 @@ the primary intent.
 
 ## 5. Alternatives Considered
 * **Software-based Entropy Calculation:** Rejected due to high latency
-  blocking real-time agent coordination.
+blocking real-time agent coordination.
 * **Post-hoc Audit Logs:** Rejected because they don't prevent the immediate
-  exploitation of the parent's context window.
+exploitation of the parent's context window.
 
 ## 6. Cross-Cutting Concerns
 * **Security (Zero Trust):** Entropy thresholds are cryptographically signed
-  at mission boot and cannot be modified by subagents.
-* **Observability:** Real-time entropy scores are exported to the
-  Entropy Monitor Dashboard.
+at mission boot and cannot be modified by subagents.
+* **Observability:** Real-time entropy scores are exported to the Entropy
+Monitor Dashboard.
 
 ## 7. Evolutionary Changelog
 * **2026-06-18:** Initial Document Creation.
