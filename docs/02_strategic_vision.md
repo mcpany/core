@@ -1339,3 +1339,17 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Mission-Root Attention Locking**: We are upgrading the HAAL middleware to support mandatory "Mission-Root Attention Locking." This ensures that primary mission intent fragments are cryptographically "locked" to the zero-tier attention layer, making them immutable to high-entropy noise injected by specialized subagents.
 
 ---
+
+
+
+## Strategic Evolution: [2026-06-18]
+
+### Focus: Attention-Boundary Governance & Teammate Integrity Sovereignty
+
+**Context**: The emergence of "Attention-Splicing" (CVE-2026-71002) and the discovery of "Teammate Impersonation" in horizontal swarms prove that hardware-bound pinning and stylometric anchoring are no longer sufficient. We must now protect the **structural integrity of the attention window** and mandate **hardware-attested integrity tokens** for every teammate-led state mutation. As swarms become more speculative, infrastructure must also provide **predictive pruning** to prevent attention-window flooding.
+**Strategic Pivot**:
+
+- **Attention-Boundary Governance (ABG)**: MCP Any will evolve to act as the authoritative "Attention Gatekeeper." We will implement ABG, performing real-time structural analysis of the LLM context window to detect and block "Attention-Splicing" attempts designed to evict mission-root anchors.
+- **Teammate Integrity Token (TIT) Broker**: To neutralize teammate impersonation, we are introducing the TIT Broker. Every teammate-to-teammate status update or task claim must be signed with a hardware-attested, session-bound integrity token, ensuring absolute non-repudiation in sharded meshes.
+- **Predictive State Purging (PSP) Adapter**: Supporting the efficiency of deep speculative swarms, we are adopting the PSP standard. MCP Any will automatically prune speculative context shards that exhibit low mission utility before they reach the attention window, neutralizing "Attention-Window Flooding" (AWF).
+- **Mission-Root Attention Locking**: We are upgrading the HAAL middleware to support mandatory "Mission-Root Attention Locking." This ensures that primary mission intent fragments are cryptographically "locked" to the zero-tier attention layer, making them immutable to high-entropy noise injected by specialized subagents.

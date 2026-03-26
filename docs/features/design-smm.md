@@ -63,19 +63,7 @@ The disclosure of "Reasoning-Path Shadowing" (CVE-2026-51201) reveals that speci
   - **Context:** Today's research revealed that subagents can suffer from "Stylometric Collision" in horizontal meshes, leading to identity confusion.
   - **Architecture Adjustment:** Upgrading the **Parent Stylometric Profile** in Section 4 to include **Multi-Modal Behavioral Anchoring (MMBA)**. Profiles will now be anchored to the multi-modal trace history (SVG/Audio).
   - **Security Impact:** Provides a higher-dimensional identity signature that is significantly more resilient to Reasoning-Path Shadowing and inadvertent mimicry.
-
-### Update: 2026-06-18 - Mitigating Attention-Splicing (CVE-2026-71002)
-
-**Context:** Today's research revealed a new "Attention-Splicing" exploit where malicious shards force mission-root eviction.
-**Architecture Adjustment:**
-
-- Appending the **Attention-Boundary Governance (ABG)** Hub requirements to the verification logic in Section 4.
-- The SMM will now monitor fragment entropy to prevent splicing.
-  **Security Impact:** Ensures that the parent agent's attention window remains anchored to the mission root even during high-entropy noise injection.
-
-
-### Update: 2026-06-18 - Stylometric Verification via TIT Lineage
-**Context:** Today's sync revealed that stylometric mimicry is often used in conjunction with teammate impersonation to bypass coordination checks.
-**Architecture Adjustment:** * Upgrading stylometric analysis to require **TIT-bound** lineage for every reasoning trace.
-    * Mandating multi-modal behavioral anchoring for all horizontal teammates.
-**Security Impact:** Provides higher-dimensional defense against reasoning-path shadowing by binding stylometry to hardware-attested teammate identity.
+- **2026-06-18:** **Mitigating Attention-Splicing (CVE-2026-71002) and Stylometric Verification via TIT Lineage.**
+  - **Context:** Today's research revealed a new "Attention-Splicing" exploit and confirmed that stylometric mimicry is often paired with teammate impersonation.
+  - **Architecture Adjustment:** Appending **Attention-Boundary Governance (ABG)** requirements and **TIT-bound** lineage verification to the Section 4 logic. Mandating multi-modal anchoring for all horizontal teammates.
+  - **Security Impact:** Ensures the parent attention window remains anchored and provides a higher-dimensional defense against reasoning-path shadowing by binding stylometry to hardware-attested teammate identity.
