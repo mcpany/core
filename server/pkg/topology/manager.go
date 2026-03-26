@@ -263,6 +263,9 @@ func (m *Manager) handleActivity(event activityEvent) {
 //
 // Side Effects:
 //   - Sends an activity event to the processing channel (non-blocking).
+//
+// Returns:
+//   - None.
 func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, latency time.Duration, isError bool, serviceID string, responseLen int64) {
 	// ⚡ BOLT: Shallow copy meta to prevent race conditions as map is passed by reference
 	metaCopy := make(map[string]interface{}, len(meta))
@@ -295,6 +298,9 @@ func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, 
 //
 // Side Effects:
 //   - Closes the shutdown channel, stopping the background loop.
+//
+// Returns:
+//   - None.
 func (m *Manager) Close() {
 	close(m.shutdownCh)
 }
@@ -480,6 +486,9 @@ func (m *Manager) GetTrafficHistory(serviceID string) []TrafficPoint {
 // Side Effects:
 //   - Modifies the internal traffic history state.
 //   - Updates the "seed-data" session stats.
+//
+// Returns:
+//   - None.
 func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 	m.mu.Lock()
 	defer m.mu.Unlock()

@@ -57,6 +57,9 @@ func NewStaticResource(def *configv1.ResourceDefinition, serviceID string) *Stat
 //
 // Returns:
 //   - *mcp.Resource: The MCP resource definition.
+//
+// Parameters:
+//   - None.
 func (r *StaticResource) Resource() *mcp.Resource {
 	return r.resource
 }
@@ -67,6 +70,9 @@ func (r *StaticResource) Resource() *mcp.Resource {
 //
 // Returns:
 //   - string: The service ID.
+//
+// Parameters:
+//   - None.
 func (r *StaticResource) Service() string {
 	return r.serviceID
 }

@@ -120,6 +120,9 @@ func NewTemplatedPrompt(definition *configv1.PromptDefinition, serviceID string)
 //
 // Returns:
 //   - *mcp.Prompt: The MCP prompt definition.
+//
+// Parameters:
+//   - None.
 func (p *TemplatedPrompt) Prompt() *mcp.Prompt {
 	args := make([]*mcp.PromptArgument, 0)
 	if p.definition.GetInputSchema() != nil {
@@ -179,6 +182,9 @@ func (p *TemplatedPrompt) Prompt() *mcp.Prompt {
 //
 // Returns:
 //   - string: The service ID.
+//
+// Parameters:
+//   - None.
 func (p *TemplatedPrompt) Service() string {
 	return p.serviceID
 }
@@ -189,6 +195,9 @@ func (p *TemplatedPrompt) Service() string {
 //
 // Returns:
 //   - *configv1.PromptDefinition: The definition proto.
+//
+// Parameters:
+//   - None.
 func (p *TemplatedPrompt) Definition() *configv1.PromptDefinition {
 	return p.definition
 }

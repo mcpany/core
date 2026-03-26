@@ -90,6 +90,9 @@ func (m *GlobalSettingsManager) Update(settings *config_v1.GlobalSettings, expli
 //
 // Returns:
 //   - string: The API key.
+//
+// Parameters:
+//   - None.
 func (m *GlobalSettingsManager) GetAPIKey() string {
 	val := m.apiKey.Load()
 	if val == nil {
@@ -104,6 +107,9 @@ func (m *GlobalSettingsManager) GetAPIKey() string {
 //
 // Returns:
 //   - []string: A list of allowed IP CIDRs or addresses.
+//
+// Parameters:
+//   - None.
 func (m *GlobalSettingsManager) GetAllowedIPs() []string {
 	val := m.allowedIPs.Load()
 	if val == nil {
@@ -118,6 +124,9 @@ func (m *GlobalSettingsManager) GetAllowedIPs() []string {
 //
 // Returns:
 //   - []string: A list of allowed origins.
+//
+// Parameters:
+//   - None.
 func (m *GlobalSettingsManager) GetAllowedOrigins() []string {
 	val := m.allowedOrigins.Load()
 	if val == nil {

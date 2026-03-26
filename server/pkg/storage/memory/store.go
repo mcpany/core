@@ -48,6 +48,9 @@ type Store struct {
 //
 // Side Effects:
 //   - Allocates internal maps and slices.
+//
+// Parameters:
+//   - None.
 func NewStore() *Store {
 	return &Store{
 		services:           make(map[string]*configv1.UpstreamServiceConfig),
@@ -320,6 +323,9 @@ func (s *Store) DeleteService(_ context.Context, name string) error {
 //
 // Returns:
 //   - error: Always nil.
+//
+// Parameters:
+//   - None.
 func (s *Store) Close() error {
 	return nil
 }
@@ -330,6 +336,9 @@ func (s *Store) Close() error {
 //
 // Returns:
 //   - bool: Always true.
+//
+// Parameters:
+//   - None.
 func (s *Store) HasConfigSources() bool {
 	return true
 }

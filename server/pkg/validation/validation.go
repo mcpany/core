@@ -144,6 +144,9 @@ var (
 //
 // Parameters:
 //   - paths: []string. The list of allowed paths.
+//
+// Returns:
+//   - None.
 func SetAllowedPaths(paths []string) {
 	allowedPaths = paths
 }

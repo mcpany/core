@@ -134,6 +134,9 @@ type Manager struct {
 //
 // Returns:
 //   - *Manager: A new Manager instance.
+//
+// Parameters:
+//   - None.
 func NewManager() *Manager {
 	return &Manager{
 		resources: make(map[string]Resource),
@@ -224,6 +227,9 @@ func (rm *Manager) RemoveResource(uri string) {
 //
 // Returns:
 //   - []Resource: A slice of currently registered resources.
+//
+// Parameters:
+//   - None.
 func (rm *Manager) ListResources() []Resource {
 	// ⚡ Bolt: Use a read-through cache to avoid repeated map iteration and slice allocation.
 	// The cache is invalidated on any write operation (Add/Remove).

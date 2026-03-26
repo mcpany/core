@@ -61,6 +61,9 @@ func (t *CallableTool) Execute(ctx context.Context, req *ExecutionRequest) (any,
 //
 // Returns:
 //   - Callable: The underlying callable.
+//
+// Parameters:
+//   - None.
 func (t *CallableTool) Callable() Callable {
 	return t.callable
 }

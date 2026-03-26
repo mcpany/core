@@ -209,6 +209,9 @@ func (e *DatadogAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 // Side Effects:
 //   - Closes internal channels.
 //   - Flushes pending logs.
+//
+// Parameters:
+//   - None.
 func (e *DatadogAuditStore) Close() error {
 	if e.done != nil {
 		close(e.done)

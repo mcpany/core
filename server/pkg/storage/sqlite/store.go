@@ -50,6 +50,9 @@ func NewStore(db *DB) *Store {
 //
 // Side Effects:
 //   - Closes the connection to SQLite.
+//
+// Parameters:
+//   - None.
 func (s *Store) Close() error {
 	return s.db.Close()
 }
@@ -64,6 +67,9 @@ func (s *Store) Close() error {
 //   - bool: True always for DB store.
 //
 // Side Effects:
+//   - None.
+//
+// Parameters:
 //   - None.
 func (s *Store) HasConfigSources() bool {
 	return true

@@ -151,6 +151,9 @@ func StartServer(addr string) error {
 //
 // Side Effects:
 //   - Updates a global gauge metric.
+//
+// Returns:
+//   - None.
 func SetGauge(name string, val float32, labels ...string) {
 	var metricLabels []metrics.Label
 	if len(labels) > 0 {
@@ -171,6 +174,9 @@ func SetGauge(name string, val float32, labels ...string) {
 //
 // Side Effects:
 //   - Increments a global counter metric.
+//
+// Returns:
+//   - None.
 func IncrCounter(name []string, val float32) {
 	metrics.IncrCounter(name, val)
 }
@@ -186,6 +192,9 @@ func IncrCounter(name []string, val float32) {
 //
 // Side Effects:
 //   - Increments a global labeled counter metric.
+//
+// Returns:
+//   - None.
 func IncrCounterWithLabels(name []string, val float32, labels []metrics.Label) {
 	metrics.IncrCounterWithLabels(name, val, labels)
 }
@@ -200,6 +209,9 @@ func IncrCounterWithLabels(name []string, val float32, labels []metrics.Label) {
 //
 // Side Effects:
 //   - Updates a global latency metric.
+//
+// Returns:
+//   - None.
 func MeasureSince(name []string, start time.Time) {
 	metrics.MeasureSince(name, start)
 }
@@ -215,6 +227,9 @@ func MeasureSince(name []string, start time.Time) {
 //
 // Side Effects:
 //   - Updates a global labeled latency metric.
+//
+// Returns:
+//   - None.
 func MeasureSinceWithLabels(name []string, start time.Time, labels []metrics.Label) {
 	metrics.MeasureSinceWithLabels(name, start, labels)
 }
@@ -229,6 +244,9 @@ func MeasureSinceWithLabels(name []string, start time.Time, labels []metrics.Lab
 //
 // Side Effects:
 //   - Updates a global sample metric.
+//
+// Returns:
+//   - None.
 func AddSample(name []string, val float32) {
 	metrics.AddSample(name, val)
 }
@@ -244,6 +262,9 @@ func AddSample(name []string, val float32) {
 //
 // Side Effects:
 //   - Updates a global labeled sample metric.
+//
+// Returns:
+//   - None.
 func AddSampleWithLabels(name []string, val float32, labels []metrics.Label) {
 	metrics.AddSampleWithLabels(name, val, labels)
 }

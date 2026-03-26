@@ -60,6 +60,9 @@ func NewDynamicResource(def *configv1.ResourceDefinition, t tool.Tool) (*Dynamic
 //
 // Returns:
 //   - *mcp.Resource: The MCP resource definition.
+//
+// Parameters:
+//   - None.
 func (r *DynamicResource) Resource() *mcp.Resource {
 	return r.resource
 }
@@ -70,6 +73,9 @@ func (r *DynamicResource) Resource() *mcp.Resource {
 //
 // Returns:
 //   - string: The service ID.
+//
+// Parameters:
+//   - None.
 func (r *DynamicResource) Service() string {
 	return r.tool.Tool().GetServiceId()
 }

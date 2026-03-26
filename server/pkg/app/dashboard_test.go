@@ -135,7 +135,7 @@ func TestDashboardMetrics(t *testing.T) {
 	// Wait, SeedTrafficHistory implementation:
 	// m.trafficHistory[targetTime.Unix()] = &MinuteStats{
 	// 	Requests: p.Total,
-	// 	Errors:   p.Errors,
+	// 	Errors:   p.Errors,.
 	// 	Latency:  p.Latency * p.Total, // Reverse average
 	// }
 	// And GetStats implementation:

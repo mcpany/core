@@ -190,6 +190,9 @@ func (w *gzipResponseWriter) Write(b []byte) (int, error) {
 // Side Effects:
 //   - Sets the internal status code.
 //   - May trigger an immediate flush if the content type is not compressible.
+//
+// Returns:
+//   - None.
 func (w *gzipResponseWriter) WriteHeader(code int) {
 	if w.headerWritten {
 		return

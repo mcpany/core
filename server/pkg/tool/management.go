@@ -306,6 +306,9 @@ func NewManager(bus *bus.Provider) *Manager {
 //
 // Side Effects:
 //   - Updates internal profile definitions and caches.
+//
+// Returns:
+//   - None.
 func (tm *Manager) SetProfiles(enabled []string, defs []*configv1.ProfileDefinition) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
@@ -582,6 +585,9 @@ func (tm *Manager) matchesProperties(annotations *v1.ToolAnnotations, props map[
 //
 // Side Effects:
 //   - Appends middleware to the internal list.
+//
+// Returns:
+//   - None.
 func (tm *Manager) AddMiddleware(middleware ExecutionMiddleware) {
 	tm.middlewares = append(tm.middlewares, middleware)
 }
@@ -597,6 +603,9 @@ func (tm *Manager) AddMiddleware(middleware ExecutionMiddleware) {
 //
 // Side Effects:
 //   - Updates the internal mcpServer reference.
+//
+// Returns:
+//   - None.
 func (tm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
@@ -791,6 +800,9 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 //
 // Side Effects:
 //   - Stores service info in the internal map.
+//
+// Returns:
+//   - None.
 func (tm *Manager) AddServiceInfo(serviceID string, info *ServiceInfo) {
 	if info.Config != nil {
 		var preHooks []PreCallHook
@@ -863,6 +875,9 @@ func (tm *Manager) GetServiceInfo(serviceID string) (*ServiceInfo, bool) {
 //
 // Returns:
 //   - []*ServiceInfo: A slice of ServiceInfo structs.
+//
+// Parameters:
+//   - None.
 func (tm *Manager) ListServices() []*ServiceInfo {
 	var services []*ServiceInfo
 	tm.serviceInfo.Range(func(_ string, value *ServiceInfo) bool {
@@ -1096,6 +1111,9 @@ func (tm *Manager) GetTool(toolName string) (Tool, bool) {
 //
 // Returns:
 //   - []Tool: A slice of Tool instances.
+//
+// Parameters:
+//   - None.
 func (tm *Manager) ListTools() []Tool {
 	tm.toolsMutex.RLock()
 	if tm.cachedTools != nil {
@@ -1150,6 +1168,9 @@ func (tm *Manager) rebuildCachedTools() []Tool {
 //
 // Side Effects:
 //   - Updates internal caches if they are invalid.
+//
+// Parameters:
+//   - None.
 func (tm *Manager) ListMCPTools() []*mcp.Tool {
 	tm.toolsMutex.RLock()
 	if tm.cachedMCPTools != nil {
@@ -1203,6 +1224,9 @@ func (tm *Manager) ListMCPTools() []*mcp.Tool {
 // Side Effects:
 //   - Removes entries from the tools map and secondary indices.
 //   - Invalidates internal caches.
+//
+// Returns:
+//   - None.
 func (tm *Manager) ClearToolsForService(serviceID string) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()

@@ -108,6 +108,9 @@ func (m *AuditMiddleware) initializeStore(config *configv1.AuditConfig) error {
 //
 // Side Effects:
 //   - Replaces the current audit store.
+//
+// Returns:
+//   - None.
 func (m *AuditMiddleware) SetStore(store audit.Store) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -306,6 +309,12 @@ func (m *AuditMiddleware) writeLog(ctx context.Context, store audit.Store, entry
 //
 // Side Effects:
 //   - Clears the history in the broadcaster.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
 func (m *AuditMiddleware) ClearHistory() {
 	if m.broadcaster != nil {
 		m.broadcaster.ClearHistory()
@@ -339,6 +348,9 @@ func (m *AuditMiddleware) SubscribeWithHistory() (chan any, []any) {
 //
 // Side Effects:
 //   - None.
+//
+// Parameters:
+//   - None.
 func (m *AuditMiddleware) GetHistory() []any {
 	return m.broadcaster.GetHistory()
 }
@@ -352,6 +364,9 @@ func (m *AuditMiddleware) GetHistory() []any {
 //
 // Side Effects:
 //   - Removes the subscriber from the broadcaster.
+//
+// Returns:
+//   - None.
 func (m *AuditMiddleware) Unsubscribe(ch chan any) {
 	m.broadcaster.Unsubscribe(ch)
 }
@@ -393,6 +408,9 @@ func (m *AuditMiddleware) Read(ctx context.Context, filter audit.Filter) ([]audi
 //
 // Side Effects:
 //   - Closes the audit store connection.
+//
+// Parameters:
+//   - None.
 func (m *AuditMiddleware) Close() error {
 	m.mu.Lock()
 	defer m.mu.Unlock()

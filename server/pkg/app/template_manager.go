@@ -134,6 +134,9 @@ func (tm *TemplateManager) save() error {
 //
 // Returns:
 //   - []*configv1.UpstreamServiceConfig: A list of templates.
+//
+// Parameters:
+//   - None.
 func (tm *TemplateManager) ListTemplates() []*configv1.UpstreamServiceConfig {
 	tm.mu.RLock()
 	defer tm.mu.RUnlock()

@@ -35,6 +35,9 @@ type peerConnectionWrapper struct {
 //
 // Returns:
 //   - error: An error if the operation fails.
+//
+// Parameters:
+//   - None.
 func (w *peerConnectionWrapper) Close() error {
 	if w.PeerConnection == nil {
 		return nil
@@ -156,6 +159,9 @@ func (t *WebrtcTool) newPeerConnection(_ context.Context) (*peerConnectionWrappe
 //
 // Returns:
 //   - *v1.Tool: The tool definition.
+//
+// Parameters:
+//   - None.
 func (t *WebrtcTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -166,6 +172,9 @@ func (t *WebrtcTool) Tool() *v1.Tool {
 //
 // Returns:
 //   - *mcp.Tool: The MCP tool definition.
+//
+// Parameters:
+//   - None.
 func (t *WebrtcTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -183,6 +192,9 @@ func (t *WebrtcTool) MCPTool() *mcp.Tool {
 //
 // Returns:
 //   - *configv1.CacheConfig: The cache configuration.
+//
+// Parameters:
+//   - None.
 func (t *WebrtcTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -358,6 +370,9 @@ func (t *WebrtcTool) executeWithPeerConnection(ctx context.Context, req *Executi
 //
 // Returns:
 //   - error: Always nil.
+//
+// Parameters:
+//   - None.
 func (t *WebrtcTool) Close() error {
 	if t.webrtcPool != nil {
 		_ = t.webrtcPool.Close()

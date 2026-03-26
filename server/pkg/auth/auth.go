@@ -337,6 +337,9 @@ type Manager struct {
 //
 // Returns:
 //   - *Manager: A new Manager instance.
+//
+// Parameters:
+//   - None.
 func NewManager() *Manager {
 	return &Manager{
 		authenticators: xsync.NewMap[string, Authenticator](),
@@ -353,6 +356,9 @@ func NewManager() *Manager {
 //
 // Side Effects:
 //   - Updates the internal user map.
+//
+// Returns:
+//   - None.
 func (am *Manager) SetUsers(users []*configv1.User) {
 	am.usersMu.Lock()
 	defer am.usersMu.Unlock()
@@ -370,6 +376,9 @@ func (am *Manager) SetUsers(users []*configv1.User) {
 //
 // Side Effects:
 //   - Updates the internal storage reference.
+//
+// Returns:
+//   - None.
 func (am *Manager) SetStorage(s storage.Storage) {
 	am.mu.Lock()
 	defer am.mu.Unlock()
@@ -402,6 +411,9 @@ func (am *Manager) GetUser(id string) (*configv1.User, bool) {
 //
 // Side Effects:
 //   - Updates the internal API key.
+//
+// Returns:
+//   - None.
 func (am *Manager) SetAPIKey(apiKey string) {
 	am.apiKey = apiKey
 }
@@ -511,6 +523,9 @@ func (am *Manager) GetAuthenticator(serviceID string) (Authenticator, bool) {
 //
 // Side Effects:
 //   - Removes an entry from the authenticators map.
+//
+// Returns:
+//   - None.
 func (am *Manager) RemoveAuthenticator(serviceID string) {
 	am.authenticators.Delete(serviceID)
 }

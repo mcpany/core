@@ -236,6 +236,9 @@ func (s *PostgresVectorStore) Search(ctx context.Context, key string, query []fl
 //
 // Side Effects:
 //   - Deletes rows from the 'semantic_cache_entries' table.
+//
+// Returns:
+//   - None.
 func (s *PostgresVectorStore) Prune(ctx context.Context, key string) {
 	query := "DELETE FROM semantic_cache_entries WHERE expires_at <= $1"
 	args := []interface{}{time.Now()}
@@ -257,6 +260,9 @@ func (s *PostgresVectorStore) Prune(ctx context.Context, key string) {
 //
 // Side Effects:
 //   - Closes the DB connection.
+//
+// Parameters:
+//   - None.
 func (s *PostgresVectorStore) Close() error {
 	return s.db.Close()
 }

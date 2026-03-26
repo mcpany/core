@@ -50,6 +50,9 @@ func NewCSRFMiddleware(allowedOrigins []string) *CSRFMiddleware {
 //
 // Side Effects:
 //   - Replaces the existing allowed origins map in a thread-safe manner.
+//
+// Returns:
+//   - None.
 func (m *CSRFMiddleware) Update(origins []string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()

@@ -164,6 +164,9 @@ func (w *bodyLogWriter) Write(b []byte) (int, error) {
 // Side Effects:
 //   - Sets the status code on the writer.
 //   - Writes the header to the underlying http.ResponseWriter.
+//
+// Returns:
+//   - None.
 func (w *bodyLogWriter) WriteHeader(statusCode int) {
 	if w.wroteHeader {
 		return
@@ -322,6 +325,9 @@ func isTextContent(contentType string) bool {
 //
 // Side Effects:
 //   - Acquires a read lock on the ring buffer.
+//
+// Parameters:
+//   - None.
 func (d *Debugger) Entries() []DebugEntry {
 	d.mu.RLock()
 	defer d.mu.RUnlock()
@@ -344,6 +350,9 @@ func (d *Debugger) Entries() []DebugEntry {
 //
 // Side Effects:
 //   - Encodes the entries to JSON and writes to the response.
+//
+// Parameters:
+//   - None.
 func (d *Debugger) APIHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

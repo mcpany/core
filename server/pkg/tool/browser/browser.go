@@ -52,6 +52,9 @@ type Provider struct {
 //
 // Returns:
 //   - *Provider: The initialized provider.
+//
+// Parameters:
+//   - None.
 func NewProvider() *Provider {
 	return &Provider{}
 }
@@ -92,6 +95,9 @@ func (b *Provider) BrowsePage(ctx context.Context, url string) (string, error) {
 //
 // Returns:
 //   - map[string]interface{}: The JSON schema definition of the tool.
+//
+// Parameters:
+//   - None.
 func (b *Provider) ToolDefinition() map[string]interface{} {
 	return map[string]interface{}{
 		"name":        "browse_page",

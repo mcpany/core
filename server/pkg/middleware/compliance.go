@@ -101,6 +101,9 @@ type smartResponseWriter struct {
 //
 // Returns:
 //   - http.Header: The header map.
+//
+// Parameters:
+//   - None.
 func (w *smartResponseWriter) Header() http.Header {
 	return w.header
 }
@@ -111,6 +114,9 @@ func (w *smartResponseWriter) Header() http.Header {
 //
 // Parameters:
 //   - code: int. The HTTP status code.
+//
+// Returns:
+//   - None.
 func (w *smartResponseWriter) WriteHeader(code int) {
 	if w.committed {
 		return
@@ -186,6 +192,9 @@ func (w *smartResponseWriter) flushHeader() {
 // Returns: - None.
 //
 //	None.
+//
+// Parameters:
+//   - None.
 func (w *smartResponseWriter) Flush() {
 	if w.passThrough {
 		if f, ok := w.w.(http.Flusher); ok {

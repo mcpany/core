@@ -49,6 +49,9 @@ var (
 //
 // Side Effects:
 //   - Initializes the singleton on first call.
+//
+// Parameters:
+//   - None.
 func NewTextParser() *TextParser {
 	defaultTextParserOnce.Do(func() {
 		defaultTextParser = &TextParser{

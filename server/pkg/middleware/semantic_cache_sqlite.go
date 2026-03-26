@@ -266,6 +266,9 @@ func (s *SQLiteVectorStore) Search(ctx context.Context, key string, query []floa
 // Side Effects:
 //   - Removes items from memory.
 //   - Deletes rows from SQLite database.
+//
+// Returns:
+//   - None.
 func (s *SQLiteVectorStore) Prune(ctx context.Context, key string) {
 	s.memoryStore.Prune(ctx, key)
 
@@ -279,6 +282,9 @@ func (s *SQLiteVectorStore) Prune(ctx context.Context, key string) {
 //
 // Returns:
 //   - error: An error if closing fails.
+//
+// Parameters:
+//   - None.
 func (s *SQLiteVectorStore) Close() error {
 	return s.db.Close()
 }

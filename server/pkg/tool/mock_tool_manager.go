@@ -55,6 +55,9 @@ func NewMockManagerInterface(ctrl *gomock.Controller) *MockManagerInterface {
 //
 // Returns:
 //   - *MockManagerInterfaceMockRecorder: The recorder.
+//
+// Parameters:
+//   - None.
 func (m *MockManagerInterface) EXPECT() *MockManagerInterfaceMockRecorder {
 	return m.recorder
 }
@@ -65,6 +68,9 @@ func (m *MockManagerInterface) EXPECT() *MockManagerInterfaceMockRecorder {
 //
 // Parameters:
 //   - middleware: ExecutionMiddleware. The middleware to add.
+//
+// Returns:
+//   - None.
 func (m *MockManagerInterface) AddMiddleware(middleware ExecutionMiddleware) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AddMiddleware", middleware)
@@ -91,6 +97,9 @@ func (mr *MockManagerInterfaceMockRecorder) AddMiddleware(middleware any) *gomoc
 // Parameters:
 //   - serviceID: string. The service ID.
 //   - info: *ServiceInfo. The service info.
+//
+// Returns:
+//   - None.
 func (m *MockManagerInterface) AddServiceInfo(serviceID string, info *ServiceInfo) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AddServiceInfo", serviceID, info)
@@ -147,6 +156,9 @@ func (mr *MockManagerInterfaceMockRecorder) AddTool(tool any) *gomock.Call {
 //
 // Parameters:
 //   - serviceID: string. The service ID.
+//
+// Returns:
+//   - None.
 func (m *MockManagerInterface) ClearToolsForService(serviceID string) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "ClearToolsForService", serviceID)
@@ -364,6 +376,9 @@ func (mr *MockManagerInterfaceMockRecorder) IsServiceAllowed(serviceID, profileI
 //
 // Returns:
 //   - []*mcp.Tool: The list of MCP tools.
+//
+// Parameters:
+//   - None.
 func (m *MockManagerInterface) ListMCPTools() []*mcp.Tool {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListMCPTools")
@@ -377,6 +392,9 @@ func (m *MockManagerInterface) ListMCPTools() []*mcp.Tool {
 //
 // Returns:
 //   - *gomock.Call: The mock call.
+//
+// Parameters:
+//   - None.
 func (mr *MockManagerInterfaceMockRecorder) ListMCPTools() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListMCPTools", reflect.TypeOf((*MockManagerInterface)(nil).ListMCPTools))
@@ -388,6 +406,9 @@ func (mr *MockManagerInterfaceMockRecorder) ListMCPTools() *gomock.Call {
 //
 // Returns:
 //   - []*ServiceInfo: The list of services.
+//
+// Parameters:
+//   - None.
 func (m *MockManagerInterface) ListServices() []*ServiceInfo {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListServices")
@@ -401,6 +422,9 @@ func (m *MockManagerInterface) ListServices() []*ServiceInfo {
 //
 // Returns:
 //   - *gomock.Call: The mock call.
+//
+// Parameters:
+//   - None.
 func (mr *MockManagerInterfaceMockRecorder) ListServices() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListServices", reflect.TypeOf((*MockManagerInterface)(nil).ListServices))
@@ -412,6 +436,9 @@ func (mr *MockManagerInterfaceMockRecorder) ListServices() *gomock.Call {
 //
 // Returns:
 //   - []Tool: The list of tools.
+//
+// Parameters:
+//   - None.
 func (m *MockManagerInterface) ListTools() []Tool {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListTools")
@@ -425,6 +452,9 @@ func (m *MockManagerInterface) ListTools() []Tool {
 //
 // Returns:
 //   - *gomock.Call: The mock call.
+//
+// Parameters:
+//   - None.
 func (mr *MockManagerInterfaceMockRecorder) ListTools() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTools", reflect.TypeOf((*MockManagerInterface)(nil).ListTools))
@@ -436,6 +466,9 @@ func (mr *MockManagerInterfaceMockRecorder) ListTools() *gomock.Call {
 //
 // Parameters:
 //   - mcpServer: MCPServerProvider. The MCP server provider.
+//
+// Returns:
+//   - None.
 func (m *MockManagerInterface) SetMCPServer(mcpServer MCPServerProvider) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "SetMCPServer", mcpServer)
@@ -462,6 +495,9 @@ func (mr *MockManagerInterfaceMockRecorder) SetMCPServer(mcpServer any) *gomock.
 // Parameters:
 //   - enabled: []string. Enabled profiles.
 //   - defs: []*v1.ProfileDefinition. Profile definitions.
+//
+// Returns:
+//   - None.
 func (m *MockManagerInterface) SetProfiles(enabled []string, defs []*v1.ProfileDefinition) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "SetProfiles", enabled, defs)

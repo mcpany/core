@@ -53,6 +53,9 @@ type Doctor struct {
 //
 // Side Effects:
 //   - Initializes internal maps and HTTP client.
+//
+// Parameters:
+//   - None.
 func NewDoctor() *Doctor {
 	return &Doctor{
 		checks:     make(map[string]CheckFunc),
@@ -70,6 +73,9 @@ func NewDoctor() *Doctor {
 //
 // Side Effects:
 //   - Updates the internal checks map.
+//
+// Returns:
+//   - None.
 func (d *Doctor) AddCheck(name string, check CheckFunc) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
@@ -88,6 +94,9 @@ func (d *Doctor) AddCheck(name string, check CheckFunc) {
 //   - Makes an external network call to google.com (connectivity check).
 //   - Reads environment variables (Auth checks).
 //   - Writes JSON response to the client.
+//
+// Parameters:
+//   - None.
 func (d *Doctor) Handler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		report := DoctorReport{
