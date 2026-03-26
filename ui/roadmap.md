@@ -331,3 +331,6 @@
 *   **Quorum Monitoring Dashboard**: (P0) Real-time visualization of multi-agent voting and quorum status.
 *   **Adaptive Budgeting Telemetry**: (P1) Resource usage vs. intent budget visualization for agent swarms.
 *   **SACH Capability Lease Viewer**: (P0) Secure interface for viewing and revoking inter-agent capability leases.
+- [ ] **[P0] Quorum Consensus Monitor**: Real-time visualization of kernel-attested swarm votes. (Added: 2026-05-02)
+- [ ] **[P0] SACH Lease Viewer**: Security dashboard for monitoring and revoking active sub-second capability leases. (Added: 2026-05-02)
+- [ ] **[P1] ISRQ Budgeting Dashboard**: Visualization of intent-bound resource consumption (Disk/Network/CPU). (Added: 2026-05-02)

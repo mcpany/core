@@ -48,3 +48,10 @@ With the maturation of multi-agent agent frameworks like OpenClaw and Gemini Swa
 
 ## 7. Evolutionary Changelog
 * **2026-05-02:** Initial Document Creation.
+
+### Update: 2026-05-02 - Kernel-Bound Quorum Attestation
+**Context:** Today's market sync revealed the KBIA shift in OpenClaw.
+**Architecture Adjustment:**
+- Quorum approval tokens will now optionally include **Kernel-Bound eBPF signatures**.
+- The Hub will verify that the majority of voters are operating within an attested OS kernel state before granting high-risk tool access.
+**Security Impact:** Prevents "User-Space Spoofing" where a single compromised agent attempts to fake a swarm consensus.

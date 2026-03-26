@@ -570,3 +570,11 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ## Strategic Evolution: [2026-05-02]
 ### Pivot toward Kernel-Bound Intent Brokerage
 Today's research into OpenClaw v2026.5.2 and Gemini CLI v0.41.0 confirms the industry is shifting from "Policy-Based Access" to **Kernel-Bound Intent Attestation (KBIA)**. MCP Any's vision for a Universal Agent Bus must now encompass acting as a **High-Fidelity Intent Translator**. We will prioritize the development of the **Kernel-Bound Intent (KBI) Broker** to allow seamless resource quota management across disparate agent frameworks. Additionally, the discovery of "Context-Mirroring" vulnerabilities mandates the immediate elevation of **Swarm-Aware Capability Handoff (SACH) Gateway** as a core security prerequisite.
+
+## Strategic Evolution: [2026-05-02]
+### Focus: Kernel-Bound Intent Brokerage & Swarm-Aware Leasing
+**Context**: The industry is shifting toward hardware and kernel-level attestation (KBIA) to combat user-space intent mutation. Simultaneously, the need for sub-second capability handoffs (SACH) in deep swarms requires a more reactive trust model.
+**Strategic Pivot**:
+- **Kernel-Bound Intent (KBI) Broker**: MCP Any will act as the universal bridge for kernel-level intent signals. We will translate OS-level eBPF attestation tokens into MCP capability grants, ensuring "In-Process Integrity."
+- **SACH Gateway**: We are implementing a high-performance "Lease Broker" for A2A capabilities. This allows agents to delegate micro-privileges within a swarm without full re-attestation, neutralizing "Context-Mirroring" attacks.
+- **Intent-Scoped Resource Quotas (ISRQ)**: Leveraging our middleware, we will dynamically enforce resource budgets that are semantically bound to the agent's active mission, preventing "Silent Resource Exfiltration."

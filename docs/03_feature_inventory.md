@@ -811,3 +811,14 @@
 ### Priority Shifts
 - **Adaptive Intent Budgeting (AIB)**: (Promoted to P0) Critical for aligning with the latest Claude Code and Gemini CLI ISRQ enforcement.
 - **SACH Gateway**: (Promoted to P0) Designated as the primary defense against the newly discovered "Context-Mirroring" identity spoofing exploit.
+
+## Evolution: [2026-05-02] Updates
+
+### Proposed Additions
+- **Kernel-Bound Intent (KBI) Broker**: (P0) A kernel-resident security utility for translating KBIA tokens into MCP Any security policies.
+- **Swarm-Aware Capability Handoff (SACH) Gateway**: (P0) High-performance middleware for the A2A Messaging Hub that manages sub-second "Capability Leases."
+- **Intent-Scoped Resource Quota (ISRQ) Middleware**: (P1) Resource management layer that binds hardware quotas (Disk/Network) to signed semantic intents.
+
+### Priority Shifts
+- **Adaptive Intent Budgeting (AIB)**: (Promoted to P0) Critical for aligning with the latest Claude Code and Gemini CLI ISRQ enforcement.
+- **SACH Gateway**: (Promoted to P0) Designated as the primary defense against the newly discovered "Context-Mirroring" identity spoofing exploit.

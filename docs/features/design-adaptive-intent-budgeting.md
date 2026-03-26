@@ -48,3 +48,10 @@ With the introduction of Intent-Scoped Resource Quotas (ISRQ) in Claude Code and
 
 ## 7. Evolutionary Changelog
 * **2026-05-02:** Initial Document Creation.
+
+### Update: 2026-05-02 - Integration with ISRQ (Intent-Scoped Resource Quotas)
+**Context:** Aligning with Anthropic's ISRQ standard and Google's SACH leases.
+**Architecture Adjustment:**
+- Budgeting will now enforce **L4 Resource Leases** (Network/Disk IOPS) in addition to token/compute limits.
+- Implementation of "Burst Leases" that allow temporary resource spikes during high-confidence reasoning steps.
+**Security Impact:** Mitigates silent data exfiltration by capping network bandwidth based on the complexity of the declared intent.

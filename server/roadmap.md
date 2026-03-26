@@ -483,3 +483,6 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **Contextual Quorum (CQ) Hub Integration**: (P0) Coordinate multi-agent voting on tool execution requests.
 *   **Adaptive Intent Budgeting (AIB) Middleware**: (P0) Implement dynamic token and compute lease scaling.
 *   **Kernel-Bound Intent (KBI) Broker**: (P0) Translate KBIA tokens into hardware-bound resource quotas.
+*   **[P0] Kernel-Bound Intent (KBI) Broker**: Integration of eBPF-based intent attestation for OS-level tool protection. (Added: 2026-05-02)
+*   **[P0] SACH Gateway Implementation**: High-speed capability leasing for A2A swarms to combat Context-Mirroring. (Added: 2026-05-02)
+*   **[P1] ISRQ Middleware**: Enforcement of intent-scoped hardware resource quotas. (Added: 2026-05-02)
