@@ -40,13 +40,13 @@ func TestRedisBus_Integration_Subscribe(t *testing.T) {
 	defer cancel()
 
 	topic := "test-topic"
-	msg := "hello"
+	msg := "hello-msg"
 
 	var wg sync.WaitGroup
 	wg.Add(1)
 
 	handler := func(m string) {
-		assert.Equal(t, msg, m)
+		assert.Equal(t, "hello-msg", m)
 		wg.Done()
 	}
 
@@ -132,8 +132,8 @@ func TestRedisBus_Integration_Unsubscribe(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	topic := "test-topic"
-	msg1 := "hello"
+	topic := "test-topic-unsubscribe"
+	msg1 := "hello-msg"
 	msg2 := "world"
 
 	var receivedMessages []string
@@ -169,7 +169,7 @@ func TestRedisBus_Integration_Unsubscribe(t *testing.T) {
 	mu.Unlock()
 
 	assert.Len(t, messages, 1)
-	assert.Equal(t, msg1, messages[0])
+	assert.Equal(t, "hello-msg", messages[0])
 }
 
 func TestRedisBus_Integration_Concurrent(t *testing.T) {

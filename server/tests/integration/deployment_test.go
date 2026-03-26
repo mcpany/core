@@ -157,6 +157,11 @@ func TestDockerCompose(t *testing.T) {
 			t.Logf("curl request failed: %v", err)
 			return false
 		}
+		defer func() {
+			if resp != nil && resp.Body != nil {
+				_ = resp.Body.Close()
+			}
+		}()
 		if resp.StatusCode != http.StatusOK {
 			t.Logf("Status code: %d", resp.StatusCode)
 			_ = resp.Body.Close()

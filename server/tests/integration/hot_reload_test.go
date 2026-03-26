@@ -16,7 +16,7 @@ import (
 
 func TestHotReload(t *testing.T) {
 	if testing.Short() {
-		// t.Skip("Skipping integration test in short mode")
+		t.Skip("Skipping integration test in short mode")
 	}
 
 	// 1. Initial Config
@@ -112,7 +112,7 @@ upstream_services:
           method: HTTP_METHOD_GET
           endpoint_path: "/b"
 `
-	err := os.WriteFile(configPath, []byte(updatedConfig), 0644)
+	err := os.WriteFile(configPath, []byte(updatedConfig), 0600)
 	require.NoError(t, err)
 
 	// 4. Wait for Reload (Debounce is likely few seconds)

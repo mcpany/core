@@ -55,7 +55,6 @@ func TestUpstreamService_MCP_Playwright_Stdio(t *testing.T) {
 				"npm install --no-optional @playwright/mcp > /dev/null 2>&1",
 			}
 			integration.RegisterStdioServiceWithSetup(t, registrationClient, serviceID, cmd, true, npmDir, "", setupCommands, env, args...)
-
 		},
 		InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {
 			ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)

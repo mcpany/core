@@ -195,7 +195,7 @@ const manifestJSON = `
 
 func createE2EBundle(t *testing.T, dir string) string {
 	bundlePath := filepath.Join(dir, "e2e_test.mcpb")
-	file, err := os.Create(bundlePath) //nolint:gosec // Test file
+	file, err := os.Create(bundlePath)
 	require.NoError(t, err)
 	defer func() { _ = file.Close() }()
 
