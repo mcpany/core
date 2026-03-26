@@ -575,12 +575,6 @@ func RedactDSN(dsn string) string {
 					return m
 				}
 
-				// If the "password" contains a comma, it is likely a multi-host list
-				// (e.g. scylla://node1:9042,node2:9042). Do not redact host lists.
-				if strings.Contains(potentialPass, ",") {
-					return m
-				}
-
 				// Fix: http/https often use named ports (e.g. http://myservice:web) or are misinterpreted
 				// as user:password when missing @. We should not redact if it looks like http/https.
 				// However, if the DSN contains an '@', it strongly suggests credentials, so we should allow redaction
