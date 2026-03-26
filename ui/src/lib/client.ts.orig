@@ -42,7 +42,7 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
     /**
      * Overridden to properly support the latest CommandLineUpstreamService structure with args array
      */
-    commandLineService?: CommandLineUpstreamService | any | undefined;
+    commandLineService?: CommandLineUpstreamService | undefined;
 }
 
 // Re-export generated types
