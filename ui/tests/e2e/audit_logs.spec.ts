@@ -43,9 +43,11 @@ test.describe('Audit Logs Viewer', () => {
     // A more active loop checking for logs in case websocket fails and requires explicit filtering
     for (let i = 0; i < 5; i++) {
         if (await listUsers.isVisible()) break;
-        try {
-            await page.click('button:has-text("Filter")');
-        } catch(e) {}
+        // The list might be empty, try clicking filter
+        const filterBtn = page.getByRole('button', { name: 'Filter' });
+        if (await filterBtn.isVisible()) {
+          await filterBtn.click();
+        }
         await page.waitForTimeout(1500);
     }
 
