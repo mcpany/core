@@ -42,6 +42,9 @@ issues:
     - node_modules
     - .cache
     - proto
+  skip-dirs:
+    - proto
+    - vendor
   exclude-rules:
     - path: "_test.go"
       linters:
