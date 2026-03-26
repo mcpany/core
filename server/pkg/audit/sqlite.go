@@ -324,7 +324,7 @@ func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, er
 //
 // Side Effects:
 //   - Scans the entire audit_logs table.
-func (s *SQLiteAuditStore) Verify(_ bool) (bool, error) {
+func (s *SQLiteAuditStore) Verify() (bool, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
