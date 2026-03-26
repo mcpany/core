@@ -129,8 +129,9 @@ fi
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
     # Disable Go GC explicitly and limit heap memory exactly below docker bounds.
     # Set to run in a single concurrent thread to prevent bloat.
-    GOGC=off GOMEMLIMIT=800MiB "$GOLANGCI_LINT_BIN" run --timeout 20m --fix -j 1 \
-        ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
+    # Analyze in batches to reduce AST memory load.
+    GOGC=off GOMEMLIMIT=1500MiB "$GOLANGCI_LINT_BIN" run --timeout 20m --fix -j 1 ./server/cmd/... ./server/pkg/...
+    GOGC=off GOMEMLIMIT=1500MiB "$GOLANGCI_LINT_BIN" run --timeout 20m --fix -j 1 ./server/tests/... ./server/examples/...
     echo "    golangci-lint OK."
 else
     echo "    Warning: golangci-lint not found (skipping Go linting)."

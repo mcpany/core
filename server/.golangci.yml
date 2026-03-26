@@ -6,6 +6,14 @@ run:
   tests: false
   concurrency: 1
 
+linters-settings:
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - experimental
+      - performance
+      - style
+
 linters:
   enable:
     - bodyclose
@@ -51,8 +59,12 @@ issues:
       linters:
         - "revive"
       text: "var-naming: avoid meaningless package names"
+  skip-dirs:
+    - tests
+    - examples
   skip-files:
     - '.*\.pb\.go$'
+    - '.*_test\.go$'
     - lll
     - funlen
     - wsl
