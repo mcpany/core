@@ -502,7 +502,6 @@
 - [ ] **[P0] Teammate Handshake Monitor**: Real-time status indicator for ATH identity exchange in horizontal swarms. (Added: 2026-05-29)
 - [ ] **[P0] Context Fragment Auditor**: UI for inspecting and approving sharded mailbox fragments flagged by the mesh-bound isolation engine. (Added: 2026-05-29)
 
-#### Upcoming (2026-06-02 Evolution)
-- [ ] **[P0] Reasoning Path Auditor**: UI for inspecting hardware-attested RPA tokens and cognitive lineages. (Added: 2026-06-02)
-- [ ] **[P0] Spectral Jitter Monitor**: Real-time visualization of timing jitter injected by the Spectral Mitigator. (Added: 2026-06-02)
-- [ ] **[P0] Autonomous Quorum Workspace**: Authorization UI for multi-agent verification quorums and AVQ attestation status. (Added: 2026-06-02)
+### Upcoming (June 2026 Update)
+*   **P1:** AVQ Quorum Status Dashboard.
+*   **P2:** Real-time MTTC Visualization.

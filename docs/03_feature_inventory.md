@@ -1172,14 +1172,8 @@
 - **Differential Context Guarding (DCG) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Mesh-Bound Sovereignty**.
 - **SMI Relay Provider**: (Re-affirmed P0) Evolving to act as the authoritative backend for the **Atomic Teammate Handshake (ATH)**.
 
-## Evolution: [2026-06-02] Updates
-
-### Proposed Additions
-- **Reasoning Path Attestation (RPA) Provider**: (P0) Advanced extension for the SRM Provider that cryptographically signs every step in an agent's chain-of-thought using hardware (TPM) attestation.
-- **Spectral Reasoning Mitigator**: (P0) Security middleware that injects reasoning-aware timing jitter into ARE headers to neutralize timing-based side-channel attacks in autonomous swarms.
-- **CSP v1.0 Native Bridge**: (P0) Authoritative adapter for the OpenClaw Context Sovereignty Protocol, providing recursive redaction and ownership hooks for context sidecars.
-- **Dynamic Context Sharding Adapter**: (P0) High-efficiency coordination middleware that enables granular context streaming between teammates, neutralizing "Mailbox Lock" bottlenecks.
-
-### Priority Shifts
-- **SRM Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Hardware-Bound RPA** to ensure cognitive path integrity.
-- **Mailbox Integrity Middleware**: (Re-affirmed P0) Evolving to support **CSP-compliant recursive redaction** for sharded teammate meshes.
+### Priority Additions: 2026-06-02
+*   **[P0] RPA Provider (Reasoning-Path Attestation):** Hardware-bound proof-of-reasoning for swarm nodes.
+*   **[P0] Spectral Reasoning Mitigator:** Latency jitter injection for tool-bus calls.
+*   **[P1] CSP v1.0 Native Bridge:** Direct support for Context Shard Protocols.
+*   **[P1] Dynamic Context Sharding Adapter:** Automatic sharding of large local environments to match agent window constraints.

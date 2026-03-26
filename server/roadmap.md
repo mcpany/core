@@ -662,7 +662,7 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Atomic Teammate Handshake (ATH) Gateway**: Mandatory identity exchange before teammate task delegation in horizontal teams. (Added: 2026-05-29)
 *   **[P0] Mesh-Bound Context Sovereignty Bridge**: Semantic fragment analysis across teammate boundaries for horizontal team stability. (Added: 2026-05-29)
 
-#### Upcoming (2026-06-02 Evolution)
-*   **[P0] Reasoning Path Attestation (RPA) Provider**: Cryptographically sign internal reasoning monologues using hardware (TPM) attestation. (Added: 2026-06-02)
-*   **[P0] Spectral Reasoning Mitigator**: Inject reasoning-aware timing jitter into ARE headers to neutralize timing-based side-channel attacks. (Added: 2026-06-02)
-*   **[P0] Autonomous Verification Quorum (AVQ) Hub**: Distributed security middleware for hardware-attested, multi-agent task validation. (Added: 2026-06-02)
+### Upcoming (June 2026 Update)
+*   **P0:** RPA Attestation Engine (Core integration).
+*   **P0:** Spectral Timing Jitter Middleware.
+*   **P1:** CSP 1.0 Adapter (Alpha).
