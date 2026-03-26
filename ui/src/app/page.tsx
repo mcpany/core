@@ -25,24 +25,30 @@ export default function DashboardPage() {
   const [hasServices, setHasServices] = useState(false);
 
   useEffect(() => {
+    let mounted = true;
     async function checkServices() {
         try {
             const services = await apiClient.listServices();
-            setHasServices(services && services.length > 0);
+            if (mounted) {
+              setHasServices(services && services.length > 0);
+              setLoading(false);
+            }
         } catch (e) {
             console.error("Failed to check services", e);
-            // Default to showing dashboard if error, to avoid getting stuck on hero
-            setHasServices(true);
-        } finally {
-            setLoading(false);
+            if (mounted) {
+              // Default to showing dashboard if error, to avoid getting stuck on hero
+              setHasServices(true);
+              setLoading(false);
+            }
         }
     }
     checkServices();
+    return () => { mounted = false; };
   }, []);
 
   if (loading) {
       return (
-          <div className="flex h-screen items-center justify-center">
+          <div className="flex h-full min-h-[50vh] items-center justify-center">
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
       );
