@@ -58,11 +58,3 @@ MCP Any needs to bridge the "Attestation Gap" for these non-structural context s
 
 ## 7. Evolutionary Changelog
 * **2026-06-20:** Initial Document Creation.
-* **2026-06-21:** Added support for **Resumption-Aware Attestation**. CFIA signatures are now persistent across MRCP-mediated mission resumptions, eliminating redundant user approvals for previously verified context files.
-
-### Update: 2026-06-29 - CFIA v2: Human-in-the-Loop Sovereignty
-**Context:** The disclosure of markdown-based "Deceptive Context" attacks reveals that agents cannot distinguish between user-intended instructions and repository-injected "Invisible" commands.
-**Architecture Adjustment:**
-* Mandating **Manual Hashing & Signing** (HITL) for all natural-language context ingestion.
-* Introducing **Attention-Anchor Matching**: The CFIA provider now provides a cryptographically signed "Attention Anchor" for each verified file, which is consumed by the ALT middleware to verify reasoning drivers.
-**Security Impact:** Prevents repository files from silently hijacking agent reasoning, even if they pass basic sandbox checks.

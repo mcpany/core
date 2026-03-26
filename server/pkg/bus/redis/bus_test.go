@@ -778,7 +778,7 @@ func TestBus_SubscribeOnce_CancelledContext(t *testing.T) {
 // SPDX-License-Identifier: Apache-2.0
 
 func TestBus_Subscribe_ConcurrentSubscribers(t *testing.T) {
-
+	// t.Skip("Skipping flaky concurrent subscribers test")
 	client := setupRedisIntegrationTest(t)
 	// Explicitly close client to avoid leaks if this test becomes sensitive or other tests run
 	defer client.Close()

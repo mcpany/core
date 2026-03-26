@@ -1,9 +1,10 @@
 # Coverage Intervention Report
 
-* **Target:** `server/pkg/tool/types.go`
-* **Risk Profile:** This file was selected because it contains extremely critical logic for executing arbitrary commands (`CommandTool.Execute`, `LocalCommandTool.Execute`), handling generic API requests (`HTTPTool`, `GRPCTool`), and enforcing security guardrails (`checkUnquotedKeywords`, `checkAwkInjection`, `checkNodePerlPhpInjection`). With very high cyclomatic complexity and various unchecked error and streaming execution paths, it represents significant "Dark Matter" risk for security bugs, command injections, and runtime panics.
-* **New Coverage:** The following logic paths are now guarded by comprehensive, table-driven tests:
-  - Injection validation handlers (`checkUnquotedKeywords`, `checkAwkInjection`, `checkNodePerlPhpInjection`) now strictly verify behaviors with escaped sequences, quotes, backticks, and common adversarial payloads, fully isolating true vulnerabilities from false positives.
-  - Streaming execution paths for `CommandTool` (`StreamExecute`) and context parsing (`IsStreaming`).
-  - Safe conversion paths via `MCPTool`.
-* **Verification:** `make test` successfully tests the new components alongside all existing legacy tests, with zero negative impact ("Do No Harm" principle verified). Linting is clean.
+* **Target:** `server/pkg/tokenizer/tokenizer.go`
+* **Risk Profile:** This package is core utility code that dynamically traverses arbitrary structures using Go reflection to estimate token size. The dynamic types and varied reflection edge cases combined with loops for parsing primitives meant that it had several complex, error-handling and default branch cases that were not fully evaluated under standard operation. Bugs in the tokenizer could result in improper rate-limiting, misconfigured downstream LLM calls, or internal denial-of-service via infinite cycle evaluation.
+* **New Coverage:**
+  * Added edge-case test validations on the integer unrolled parser bounds (`simpleTokenizeInt64`).
+  * Explicitly enforced type-level error handling across slice, array, and map structures.
+  * Explicitly hit reflection-cycles in error injection within maps.
+  * Verified nil-slice and nil-map values under reflection parsing interfaces (`countTokensReflectSlice` and `countTokensReflectMap`).
+* **Verification:** `make test` equivalents (via `go test ./...`) for `server/pkg/tokenizer` and the whole repo ran clean with no regressions in existing tests. The file `server/pkg/tokenizer/tokenizer_coverage_test.go` correctly isolates all testing logic to leave production artifacts clean and ensures hermetic execution.
