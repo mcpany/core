@@ -68,7 +68,7 @@ func TestDockerHelpers(t *testing.T) {
 	}
 	t.Parallel()
 	if !IsDockerSocketAccessible() {
-		t.Skip("Docker is not available")
+		// t.Skip("Docker is not available")
 	}
 
 	// Test StartDockerContainer
@@ -79,7 +79,7 @@ func TestDockerHelpers(t *testing.T) {
 
 	// Verify the container is running
 	dockerExe, dockerArgs := getDockerCommand()
-	psCmd := exec.Command(dockerExe, append(dockerArgs, "ps", "-f", fmt.Sprintf("name=%s", containerName))...)
+	psCmd := exec.Command(dockerExe, append(dockerArgs, "ps", "-f", fmt.Sprintf("name=%s", containerName))...) //nolint:gosec // Test helper
 	out, err := psCmd.Output()
 	require.NoError(t, err, "docker ps command failed. Output: %s", string(out))
 	assert.Contains(t, string(out), containerName)

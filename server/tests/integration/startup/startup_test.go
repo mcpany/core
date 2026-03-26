@@ -25,7 +25,7 @@ func TestStartupWithFailingUpstream(t *testing.T) {
 	t.Setenv("MCPANY_ENABLE_FILE_CONFIG", "true")
 
 	// 1. Start a working upstream service
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = fmt.Fprintln(w, `{"message": "hello"}`)
 	}))
@@ -122,8 +122,8 @@ upstream_services:
 
 	defer cancel()
 
-	httpURL := fmt.Sprintf("http://127.0.0.1:%d/healthz", jsonrpcPort)
-	integration.WaitForHTTPHealth(t, httpURL, 10*time.Second)
+	httpUrl := fmt.Sprintf("http://127.0.0.1:%d/healthz", jsonrpcPort)
+	integration.WaitForHTTPHealth(t, httpUrl, 10*time.Second)
 
 	// Include /mcp and api_key in the endpoint
 	endpoint := fmt.Sprintf("http://127.0.0.1:%d/mcp?api_key=test-api-key", jsonrpcPort)
@@ -202,7 +202,7 @@ upstream_services:
 `, ts.URL, ts.URL) // Point failing-service to working URL
 
 	// Overwrite config file
-	err = os.WriteFile(tmpFile.Name(), []byte(newConfigContent), 0600)
+	err = os.WriteFile(tmpFile.Name(), []byte(newConfigContent), 0644)
 	require.NoError(t, err)
 
 	t.Log("Triggering config reload...")

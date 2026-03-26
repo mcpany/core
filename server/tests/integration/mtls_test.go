@@ -32,7 +32,7 @@ func generateMTLSCerts(t *testing.T, dir string) {
 
 	writePEM := func(path, pemType string, data []byte) {
 		t.Helper()
-		f, err := os.Create(path)
+		f, err := os.Create(path) //nolint:gosec
 		require.NoError(t, err)
 		defer f.Close()
 		require.NoError(t, pem.Encode(f, &pem.Block{Type: pemType, Bytes: data}))
@@ -106,12 +106,12 @@ func TestMTLSAuthentication(t *testing.T) {
 	}))
 
 	// Configure the server with mTLS
-	caCert, err := os.ReadFile(filepath.Join(certDir, "ca.crt"))
+	caCert, err := os.ReadFile(filepath.Join(certDir, "ca.crt")) //nolint:gosec
 	require.NoError(t, err)
 	caCertPool := x509.NewCertPool()
 	caCertPool.AppendCertsFromPEM(caCert)
 
-	serverCert, err := tls.LoadX509KeyPair(filepath.Join(certDir, "server.crt"), filepath.Join(certDir, "server.key"))
+	serverCert, err := tls.LoadX509KeyPair(filepath.Join(certDir, "server.crt"), filepath.Join(certDir, "server.key")) //nolint:gosec
 	require.NoError(t, err)
 
 	server.TLS = &tls.Config{ //nolint:gosec

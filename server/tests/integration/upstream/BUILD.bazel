@@ -1,7 +1,18 @@
 # Copyright 2026 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
-load("@rules_go//go:def.bzl", "go_test")
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "upstream",
+    srcs = ["jwks.go"],
+    importpath = "github.com/mcpany/core/server/tests/integration/upstream",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_go_jose_go_jose_v4//:go-jose",
+        "@com_github_golang_jwt_jwt_v5//:jwt",
+    ],
+)
 
 go_test(
     name = "upstream_test",
@@ -15,7 +26,6 @@ go_test(
         "http_health_check_test.go",
         "http_test.go",
         "jwks_test.go",
-        "jwks_test_util_test.go",
         "mcp_bundle_test.go",
         "mcp_playwright_stdio_test.go",
         "mcp_stdio_docker_test.go",
@@ -39,6 +49,7 @@ go_test(
         "//server/tests/integration/cmd/mocks/webrtc_weather_server",
         "//server/tests/integration/upstream/testdata/mock_mcp",
     ],
+    embed = [":upstream"],
     tags = ["integration"],
     deps = [
         "//proto/api/v1:api",
@@ -52,7 +63,6 @@ go_test(
         "//server/pkg/util",
         "//server/tests/framework",
         "//server/tests/integration",
-        "@com_github_go_jose_go_jose_v4//:go-jose",
         "@com_github_golang_jwt_jwt_v5//:jwt",
         "@com_github_modelcontextprotocol_go_sdk//mcp",
         "@com_github_spf13_afero//:afero",

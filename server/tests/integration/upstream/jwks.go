@@ -13,14 +13,14 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-type jwksSigner struct {
+type jwksSigner struct { //nolint:unused
 	key    *rsa.PrivateKey
 	keyID  string
 	jwk    jose.JSONWebKey
 	jwkSet jose.JSONWebKeySet
 }
 
-func newJwksSigner() (*jwksSigner, error) {
+func newJwksSigner() (*jwksSigner, error) { //nolint:unused
 	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
 		return nil, err
@@ -43,7 +43,7 @@ func newJwksSigner() (*jwksSigner, error) {
 	}, nil
 }
 
-func (s *jwksSigner) newJWT(issuer string, audience []string) (string, error) {
+func (s *jwksSigner) newJWT(issuer string, audience []string) (string, error) { //nolint:unused
 	claims := jwt.RegisteredClaims{
 		Issuer:    issuer,
 		Audience:  audience,
@@ -55,6 +55,6 @@ func (s *jwksSigner) newJWT(issuer string, audience []string) (string, error) {
 	return token.SignedString(s.key)
 }
 
-func (s *jwksSigner) jwks() *jose.JSONWebKeySet {
+func (s *jwksSigner) jwks() *jose.JSONWebKeySet { //nolint:unused
 	return &s.jwkSet
 }
