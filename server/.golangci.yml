@@ -51,6 +51,7 @@ issues:
     - node_modules
     - .cache
     - proto
+    - ui
   exclude-rules:
     - path: "_test.go"
       linters:
