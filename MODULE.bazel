@@ -40,9 +40,6 @@ go_deps.gazelle_override(
     path = "github.com/bufbuild/protocompile",
 )
 go_deps.gazelle_override(
-    directives = [
-        "gazelle:resolve go google.golang.org/genproto/googleapis/api/annotations @org_golang_google_genproto_googleapis_api//annotations",
-    ],
     path = "google.golang.org/genproto/googleapis/api",
 )
 
@@ -138,7 +135,6 @@ use_repo(
     "io_opentelemetry_go_otel_sdk",
     "io_opentelemetry_go_otel_sdk_metric",
     "org_golang_google_api",
-    "org_golang_google_genproto_googleapis_api",
     "org_golang_google_grpc",
     "org_golang_google_grpc_cmd_protoc_gen_go_grpc",
     "org_golang_google_protobuf",
