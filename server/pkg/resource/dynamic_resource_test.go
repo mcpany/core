@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"testing"
 
 	"github.com/mcpany/core/server/pkg/tool"
@@ -54,6 +55,14 @@ func (m *MockTool) MCPTool() *mcp.Tool {
 		return nil
 	}
 	return args.Get(0).(*mcp.Tool)
+}
+
+func (m *MockTool) IsStreaming() bool {
+	return false
+}
+
+func (m *MockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, fmt.Errorf("mock tool does not support streaming execution")
 }
 
 func TestNewDynamicResource(t *testing.T) {

@@ -284,3 +284,11 @@ func (t *Tool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, er
 	metrics.IncrCounter([]string{"sql", "request", "success"}, 1)
 	return results, nil
 }
+
+func (t *Tool) IsStreaming() bool {
+	return false
+}
+
+func (t *Tool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, fmt.Errorf("sql tool does not support streaming execution")
+}

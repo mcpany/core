@@ -5,6 +5,7 @@ package mcpserver_test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	bus_pb "github.com/mcpany/core/proto/bus"
@@ -37,6 +38,14 @@ func (m *mockBypassTool) Tool() *v1.Tool {
 func (m *mockBypassTool) MCPTool() *mcp.Tool {
 	t, _ := tool.ConvertProtoToMCPTool(m.tool)
 	return t
+}
+
+func (m *mockBypassTool) IsStreaming() bool {
+	return false
+}
+
+func (m *mockBypassTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, fmt.Errorf("mock bypass tool does not support streaming execution")
 }
 
 func (m *mockBypassTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {

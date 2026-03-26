@@ -6,6 +6,7 @@ package mcpserver_test
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"testing"
 
 	"github.com/mcpany/core/server/pkg/auth"
@@ -71,6 +72,14 @@ func (m *samplingTool) GetCacheConfig() *configv1.CacheConfig {
 func (m *samplingTool) MCPTool() *mcp.Tool {
 	t, _ := tool.ConvertProtoToMCPTool(m.tool)
 	return t
+}
+
+func (m *samplingTool) IsStreaming() bool {
+	return false
+}
+
+func (m *samplingTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, fmt.Errorf("mock sampling tool does not support streaming execution")
 }
 
 func TestSamplingSupport(t *testing.T) {

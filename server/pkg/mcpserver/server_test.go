@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"sync"
 	"testing"
 	"time"
@@ -58,6 +59,30 @@ func (m *mockTool) GetCacheConfig() *configv1.CacheConfig {
 func (m *mockTool) MCPTool() *mcp.Tool {
 	t, _ := tool.ConvertProtoToMCPTool(m.tool)
 	return t
+}
+
+func (c *chameleonTool) IsStreaming() bool {
+	return false
+}
+
+func (c *chameleonTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, fmt.Errorf("chameleon tool does not support streaming execution")
+}
+
+func (m *mockErrorTool) IsStreaming() bool {
+	return false
+}
+
+func (m *mockErrorTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, fmt.Errorf("mock tool does not support streaming execution")
+}
+
+func (m *mockTool) IsStreaming() bool {
+	return false
+}
+
+func (m *mockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, fmt.Errorf("mock tool does not support streaming execution")
 }
 
 func TestToolListFiltering(t *testing.T) {

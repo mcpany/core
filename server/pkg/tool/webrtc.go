@@ -364,3 +364,11 @@ func (t *WebrtcTool) Close() error {
 	}
 	return nil
 }
+
+func (t *WebrtcTool) IsStreaming() bool {
+	return false
+}
+
+func (t *WebrtcTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
+	return nil, fmt.Errorf("webrtc tool does not support streaming execution")
+}

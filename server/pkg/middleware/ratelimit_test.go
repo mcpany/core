@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"testing"
 
@@ -46,6 +47,14 @@ func (m *rateLimitMockTool) GetCacheConfig() *configv1.CacheConfig {
 func (m *rateLimitMockTool) MCPTool() *mcp.Tool {
 	t, _ := tool.ConvertProtoToMCPTool(m.toolProto)
 	return t
+}
+
+func (m *rateLimitMockTool) IsStreaming() bool {
+	return false
+}
+
+func (m *rateLimitMockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, fmt.Errorf("mock tool does not support streaming execution")
 }
 
 type rateLimitMockToolManager struct {

@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/base64"
+	"fmt"
 	"log/slog"
 	"testing"
 
@@ -62,6 +63,14 @@ func (m *mockResourceTool) GetCacheConfig() *configv1.CacheConfig {
 func (m *mockResourceTool) MCPTool() *mcp.Tool {
 	t, _ := tool.ConvertProtoToMCPTool(m.Tool())
 	return t
+}
+
+func (m *mockResourceTool) IsStreaming() bool {
+	return false
+}
+
+func (m *mockResourceTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, fmt.Errorf("mock resource tool does not support streaming execution")
 }
 
 func TestServer_CallTool_ResourceResult(t *testing.T) {

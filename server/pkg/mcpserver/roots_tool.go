@@ -186,5 +186,13 @@ func (t *RootsTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }
 
+func (t *RootsTool) IsStreaming() bool {
+	return false
+}
+
+func (t *RootsTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, fmt.Errorf("roots tool does not support streaming execution")
+}
+
 // Verify that RootsTool implements tool.Tool.
 var _ tool.Tool = (*RootsTool)(nil)

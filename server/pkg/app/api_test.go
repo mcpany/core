@@ -1392,6 +1392,14 @@ func (m *TestMockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) 
 }
 func (m *TestMockTool) GetCacheConfig() *configv1.CacheConfig { return nil }
 
+func (m *TestMockTool) IsStreaming() bool {
+	return false
+}
+
+func (m *TestMockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, fmt.Errorf("mock tool does not support streaming execution")
+}
+
 type MockServiceStore struct {
 	services []*configv1.UpstreamServiceConfig
 }

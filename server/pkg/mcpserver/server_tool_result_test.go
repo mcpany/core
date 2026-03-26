@@ -6,6 +6,7 @@ package mcpserver_test
 import (
 	"context"
 	"encoding/base64"
+	"fmt"
 	"testing"
 
 	bus_pb "github.com/mcpany/core/proto/bus"
@@ -59,6 +60,14 @@ func (m *mockMapResultTool) GetCacheConfig() *configv1.CacheConfig {
 func (m *mockMapResultTool) MCPTool() *mcp.Tool {
 	t, _ := tool.ConvertProtoToMCPTool(m.Tool())
 	return t
+}
+
+func (m *mockMapResultTool) IsStreaming() bool {
+	return false
+}
+
+func (m *mockMapResultTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, fmt.Errorf("mock map tool does not support streaming execution")
 }
 
 func TestServer_CallTool_ResultHandling(t *testing.T) {

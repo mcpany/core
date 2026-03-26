@@ -5,6 +5,7 @@ package tool
 
 import (
 	"context"
+	"errors"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -63,4 +64,12 @@ func (t *CallableTool) Execute(ctx context.Context, req *ExecutionRequest) (any,
 //   - Callable: The underlying callable.
 func (t *CallableTool) Callable() Callable {
 	return t.callable
+}
+
+func (t *CallableTool) IsStreaming() bool {
+	return false
+}
+
+func (t *CallableTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
+	return nil, errors.New("callable tool does not support streaming execution")
 }

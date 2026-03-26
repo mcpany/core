@@ -191,3 +191,11 @@ func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any
 
 	return result, nil
 }
+
+func (t *WebsocketTool) IsStreaming() bool {
+	return false
+}
+
+func (t *WebsocketTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
+	return nil, fmt.Errorf("websocket tool does not support streaming execution")
+}
