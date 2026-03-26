@@ -21,7 +21,6 @@ import (
 
 func TestExampleConfigs(t *testing.T) {
 	if _, err := exec.LookPath("go"); err != nil || os.Getenv("BAZEL_TEST") != "" || os.Getenv("TEST_WORKSPACE") != "" {
-		t.Skip("Skipping examples test in bazel sandbox due to missing go.mod for building binaries")
 	}
 	if _, err := os.Stat("examples/demo/stdio/my-tool-bin"); err != nil {
 		// Make a dummy executable if it doesn't exist so the test passes

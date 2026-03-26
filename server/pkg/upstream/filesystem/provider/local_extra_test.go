@@ -34,7 +34,6 @@ func TestResolvePath_BrokenSymlink(t *testing.T) {
 
 func TestResolvePath_PermissionDenied(t *testing.T) {
 	if os.Getuid() == 0 {
-		// t.Skip("Skipping permission denied test as root user")
 	}
 
 	rootDir, err := os.MkdirTemp("", "fs_perm_test")

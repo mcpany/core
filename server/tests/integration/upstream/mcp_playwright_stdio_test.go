@@ -36,7 +36,6 @@ func TestUpstreamService_MCP_Playwright_Stdio(t *testing.T) {
 		RegisterUpstream: func(t *testing.T, registrationClient apiv1.RegistrationServiceClient, _ string) {
 			npxPath, err := exec.LookPath("npx")
 			if err != nil {
-				// t.Skipf("Skipping Playwright stdio test: npx not found in PATH: %v", err)
 			}
 
 			const serviceID = "playwright"
