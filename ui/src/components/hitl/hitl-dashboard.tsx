@@ -7,6 +7,23 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
+/**
+ * HitlDashboard component for managing Human-in-the-Loop approvals.
+ *
+ * Summary: Renders a dashboard for reviewing and managing pending HITL approvals.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - JSX.Element: The rendered dashboard component.
+ *
+ * Errors/Throws:
+ *   - None explicitly thrown by the component itself.
+ *
+ * Side Effects:
+ *   - Uses local React state to manage approval statuses.
+ */
 export function HitlDashboard() {
     const [approvals, setApprovals] = useState([
         { id: "1", tool: "database.drop_table", intent: "Drop users table", status: "pending" }

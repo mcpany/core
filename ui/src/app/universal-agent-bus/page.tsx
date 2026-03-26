@@ -19,6 +19,23 @@ import {
   Activity
 } from "lucide-react";
 
+/**
+ * UniversalAgentBusPage component for managing the Universal Agent Bus.
+ *
+ * Summary: Renders a dashboard with metrics for the Universal Agent Bus.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - JSX.Element: The rendered layout for the agent bus dashboard.
+ *
+ * Errors/Throws:
+ *   - None explicitly thrown by the component.
+ *
+ * Side Effects:
+ *   - Renders multiple dashboard cards.
+ */
 export default function UniversalAgentBusPage() {
   return (
     <div className="p-6 space-y-6">

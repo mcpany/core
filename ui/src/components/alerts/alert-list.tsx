@@ -26,7 +26,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
-import { CheckCircle2, AlertCircle, AlertTriangle, Search, Filter, MoreHorizontal, Clock, RefreshCw, Activity, Loader2, PlayCircle, PauseCircle } from "lucide-react";
+import { CheckCircle2, AlertCircle, AlertTriangle, Search, Filter, MoreHorizontal, Clock, RefreshCw, Activity, Loader2, PlayCircle, PauseCircle, Trash2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -99,6 +99,47 @@ export function AlertList() {
               description: "Failed to update some alerts."
           });
       }
+  };
+
+  const handleBulkDelete = async () => {
+      const selectedIds = Array.from(selected);
+      try {
+          await Promise.all(selectedIds.map(id => apiClient.deleteAlert(id)));
+
+          setAlerts(prev => prev.filter(a => !selectedIds.includes(a.id)));
+
+          toast({
+              title: "Alerts Deleted",
+              description: `${selectedIds.length} alert(s) deleted.`
+          });
+          setSelected(new Set());
+      } catch (e) {
+          console.error("Failed to bulk delete alerts", e);
+          fetchAlerts(); // Revert
+          toast({
+              variant: "destructive",
+              title: "Error",
+              description: "Failed to delete some alerts."
+          });
+      }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+        await apiClient.deleteAlert(id);
+        setAlerts(prev => prev.filter(a => a.id !== id));
+        toast({
+            title: "Alert Deleted",
+            description: `Alert has been deleted.`,
+        });
+    } catch (error) {
+        console.error(error);
+        toast({
+            title: "Error",
+            description: "Failed to delete alert",
+            variant: "destructive",
+        });
+    }
   };
 
   const fetchAlerts = async () => {
@@ -185,6 +226,9 @@ export function AlertList() {
               </Button>
               <Button size="sm" variant="ghost" onClick={() => handleBulkStatusChange('resolved')} className="h-8 text-green-600 hover:text-green-700 hover:bg-green-100 dark:hover:bg-green-900/20">
                   <CheckCircle2 className="mr-2 h-4 w-4" /> Resolve
+              </Button>
+              <Button size="sm" variant="ghost" onClick={() => handleBulkDelete()} className="h-8 text-red-600 hover:text-red-700 hover:bg-red-100 dark:hover:bg-red-900/20">
+                  <Trash2 className="mr-2 h-4 w-4" /> Delete
               </Button>
           </div>
       )}
@@ -322,6 +366,9 @@ export function AlertList() {
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleStatusChange(alert.id, 'resolved')} disabled={alert.status === 'resolved'}>
                             Resolve
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleDelete(alert.id)} className="text-red-600 focus:text-red-600">
+                            Delete
                         </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
