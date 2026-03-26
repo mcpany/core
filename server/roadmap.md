@@ -754,9 +754,6 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
 
-#### Upcoming (2026-06-18 Evolution)
-*   **[P0] Teammate Sovereignty Enforcer (TSE)**: Isolation kernel for parallel teams. (Added: 2026-06-18)
-*   **[P0] Logic-Sovereignty Validator (LSV)**: Reasoning path deconstruction. (Added: 2026-06-18)
 
 ### Upcoming (Updated 2026-06-18)
 - [P0] Teammate Sovereignty Enforcer (Kernel-level isolation)
