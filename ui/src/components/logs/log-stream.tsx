@@ -183,13 +183,16 @@ export function LogStream({
   // Optimization: Extract unique sources from logs efficiently
   const uniqueSources = React.useMemo(() => {
     const sources = new Set<string>()
+    if (source) {
+      sources.add(source)
+    }
     logs.forEach(log => {
       if (log.source) {
         sources.add(log.source)
       }
     })
     return Array.from(sources).sort()
-  }, [logs])
+  }, [logs, source])
 
   // Optimization: Memoize filtered logs and pre-calculate lowercase search query
   // to avoid O(N) redundant string operations during filtering
