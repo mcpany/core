@@ -37,25 +37,25 @@ jobs:
           command: |
             curl -fsSL https://deb.nodesource.com/setup_23.x | sudo -E bash -
             sudo apt-get install -y nodejs
-      - run:
-          name: Install Bazelisk
-          command: |
-            sudo curl -L https://github.com/bazelbuild/bazelisk/releases/download/v1.19.0/bazelisk-linux-amd64 -o /usr/local/bin/bazelisk
-            sudo chmod +x /usr/local/bin/bazelisk
       - restore_cache:
           keys:
             - v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
             - v1-lint-
       - run:
+          name: Prepare Environment
+          command: make prepare
+      - run:
           name: Run Lint
           command: |
             . venv/bin/activate
-            python3 server/tools/check_ts_doc.py ui/src
-            bazelisk run //:lint
-            bazelisk test //ui:typecheck //ui:lint
+            # Ensure PATH includes tool install dir
+            export PATH=$PWD/build/env/bin:$PATH
+            make lint
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
+            - "build/env/bin"
+            - "build/.cache"
             - "venv"
 
 workflows:
