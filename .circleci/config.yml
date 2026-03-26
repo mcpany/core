@@ -21,7 +21,7 @@ commands:
             # But CircleCI shallow clones can be tricky.
             # Simple approach: If all changed files match docs, exit 0 (success) immediately?
             # Actually, CircleCI doesn't have an easy "skip remaining steps" without failing or using conditional steps for EVERYTHING.
-            # We will rely on the fact that 'make lint' itself might be fast or we just run it.
+            # We will rely on the fact that 'make lint'
             # However, the user asked for similar logic.
             # For now, let's just run it. If strict parity is needed, we'd add complex logic.
             echo "Running lint on all commits"
@@ -58,6 +58,7 @@ jobs:
             # Ensure PATH includes tool install dir
             export PATH=$PWD/build/env/bin:$PATH
             make lint
+            pre-commit run --all-files
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum ".pre-commit-config.yaml" }}
           paths:
