@@ -476,7 +476,6 @@ func TestCountTokensInValueSimpleFast(t *testing.T) {
 		})
 	}
 }
-<<<<<<< HEAD
 
 func TestSimpleTokenizeInt64_Coverage(t *testing.T) {
 	tests := []struct {
@@ -708,5 +707,3 @@ func TestSimpleTokenizeInt64_AllSwitchBranchesDirectly(t *testing.T) {
 		_ = tt.n
 	}
 }
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))

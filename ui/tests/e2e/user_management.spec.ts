@@ -71,11 +71,7 @@ test.describe('User Management', () => {
 
         // Verify user created in list
         // Use a more specific row locator
-<<<<<<< HEAD
         const row = page.getByTestId('user-row-test-api-user');
-=======
-        const row = page.locator('tr').filter({ hasText: 'test-api-user' });
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
         await expect(row).toBeVisible({ timeout: 15000 });
 
         // Row should indicate API Key auth

@@ -11,11 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-<<<<<<< HEAD
 import { Clock, ChevronDown, ChevronRight, Activity, Terminal, Code, Cpu, Database, Globe, Play, Download, Copy, Lightbulb, AlertTriangle, Coins, RefreshCcw, MessageSquare } from "lucide-react";
-=======
-import { Clock, ChevronDown, ChevronRight, Activity, Terminal, Code, Cpu, Database, Globe, Play, Download, Copy, Lightbulb, AlertTriangle, Coins, RefreshCcw } from "lucide-react";
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 import { Trace, Span } from "@/types/trace";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -43,10 +39,7 @@ function SpanIcon({ type }: { type: Span['type'] }) {
         case 'service': return <Globe className="h-3 w-3 text-indigo-500" />;
         case 'resource': return <Database className="h-3 w-3 text-cyan-500" />;
         case 'core': return <Cpu className="h-3 w-3 text-blue-500" />;
-<<<<<<< HEAD
         case 'prompt': return <MessageSquare className="h-3 w-3 text-purple-500" />;
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
         default: return <Activity className="h-3 w-3 text-muted-foreground" />;
     }
 }
@@ -392,21 +385,13 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                                 <h3 className="text-sm font-medium flex items-center gap-2 text-primary">
                                     <Code className="h-4 w-4" /> Request Payload
                                 </h3>
-<<<<<<< HEAD
                                 <JsonView data={trace.rootSpan.input} maxHeight={400} smartTable={true} />
-=======
-                                <JsonView data={trace.rootSpan.input} maxHeight={400} />
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
                             </div>
                             <div className="space-y-2">
                                 <h3 className="text-sm font-medium flex items-center gap-2 text-primary">
                                     <Terminal className="h-4 w-4" /> Response Payload
                                 </h3>
-<<<<<<< HEAD
                                 <JsonView data={trace.rootSpan.output} maxHeight={400} smartTable={true} />
-=======
-                                <JsonView data={trace.rootSpan.output} maxHeight={400} />
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
                             </div>
                         </div>
                      </ScrollArea>

@@ -43,7 +43,6 @@ The emergence of "Ghost-Execution" exploits in the Gemini CLI ecosystem has high
 
 ## 7. Evolutionary Changelog
 * **2026-05-10:** Initial Document Creation.
-<<<<<<< HEAD
 
 ### Update: 2026-03-24 - Neutralizing Settings-as-Shell Discovery
 **Context:** Today's market sync confirmed that Gemini CLI executes `tools.discoveryCommand` from project-local settings during startup, creating an immediate RCE vector for malicious repositories.
@@ -51,5 +50,3 @@ The emergence of "Ghost-Execution" exploits in the Gemini CLI ecosystem has high
 * Mandating "Isolated Discovery Environments" for all project-local configurations.
 * Introducing a "Discovery Quarantine" where tool schemas are held until a hardware-attested user signal is received.
 **Security Impact:** Neutralizes startup-time RCE in cloned repositories and prevents "Context Poisoning" during the discovery phase.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))

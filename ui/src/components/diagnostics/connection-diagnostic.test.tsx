@@ -167,11 +167,7 @@ describe("ConnectionDiagnosticDialog", () => {
 
         // Verify success log
         await waitFor(() => {
-<<<<<<< HEAD
             expect(screen.getByText(/✓ Fetch succeeded in/)).toBeInTheDocument();
-=======
-            expect(screen.getByText(/Successfully connected to HTTP server from browser/)).toBeInTheDocument();
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
         });
     });
 
@@ -356,24 +352,14 @@ describe("ConnectionDiagnosticDialog", () => {
 
         // Wait for failure
         await waitFor(() => {
-<<<<<<< HEAD
             expect(screen.getByText("Fetch Error")).toBeInTheDocument();
-=======
-            expect(screen.getByText("Not Accessible")).toBeInTheDocument();
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
         });
 
         // Check for the warning message in logs
         // We use getAllByText or check for partial text
         await waitFor(() => {
-<<<<<<< HEAD
             expect(screen.getByText((content) => content.includes("Your browser cannot reach the upstream service"))).toBeInTheDocument();
         });
-=======
-            expect(screen.getByText((content) => content.includes("WARNING: You are using 'localhost'"))).toBeInTheDocument();
-        });
-        expect(screen.getByText((content) => content.includes("host.docker.internal"))).toBeInTheDocument();
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
         // Restore fetch
         global.fetch = originalFetch;

@@ -12,11 +12,7 @@ go_library(
     importpath = "github.com/mcpany/core/k8s/operator/controllers",
     visibility = ["//k8s/operator:__subpackages__"],
     deps = [
-<<<<<<< HEAD
         "//k8s/operator/api/v1alpha1",
-=======
-        "@com_github_mcpany_core//operator/api/v1alpha1",
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
         "@io_k8s_api//apps/v1:apps",
         "@io_k8s_api//core/v1:core",
         "@io_k8s_apimachinery//pkg/api/errors",
@@ -38,11 +34,7 @@ go_test(
         "manual",
     ],
     deps = [
-<<<<<<< HEAD
         "//k8s/operator/api/v1alpha1",
-=======
-        "@com_github_mcpany_core//operator/api/v1alpha1",
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
         "@io_k8s_api//apps/v1:apps",
         "@io_k8s_api//core/v1:core",
         "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",

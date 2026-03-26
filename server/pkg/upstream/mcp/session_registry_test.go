@@ -4,7 +4,6 @@
 package mcp
 
 import (
-<<<<<<< HEAD
 	"testing"
 
 	mcp_sdk "github.com/modelcontextprotocol/go-sdk/mcp"
@@ -15,35 +14,6 @@ func TestSessionRegistry(t *testing.T) {
 	registry := NewSessionRegistry()
 	mockDownstream := new(MockSession)
 	mockUpstream := &mcp_sdk.ServerSession{} // Using ServerSession as a dummy implementer of mcp.Session (interface check)
-=======
-	"context"
-	"testing"
-
-	"github.com/modelcontextprotocol/go-sdk/mcp"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
-)
-
-// MockSession mocks the tool.Session interface.
-type MockSession struct {
-	mock.Mock
-}
-
-func (m *MockSession) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
-	args := m.Called(ctx, params)
-	return args.Get(0).(*mcp.CreateMessageResult), args.Error(1)
-}
-
-func (m *MockSession) ListRoots(ctx context.Context) (*mcp.ListRootsResult, error) {
-	args := m.Called(ctx)
-	return args.Get(0).(*mcp.ListRootsResult), args.Error(1)
-}
-
-func TestSessionRegistry(t *testing.T) {
-	registry := NewSessionRegistry()
-	mockDownstream := new(MockSession)
-	mockUpstream := &mcp.ServerSession{} // Using ServerSession as a dummy implementer of mcp.Session (interface check)
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
 	// Register
 	registry.Register(mockUpstream, mockDownstream)
@@ -60,7 +30,6 @@ func TestSessionRegistry(t *testing.T) {
 	_, ok = registry.Get(mockUpstream)
 	require.False(t, ok)
 }
-<<<<<<< HEAD
 
 func TestSessionRegistry_Concurrency(t *testing.T) {
 	registry := NewSessionRegistry()
@@ -116,5 +85,3 @@ func TestSessionRegistry_MultipleSessions(t *testing.T) {
 	require.True(t, ok2)
 	require.Equal(t, mockDownstream2, got2)
 }
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))

@@ -4,7 +4,6 @@
  */
 
 import { test, expect } from '@playwright/test';
-<<<<<<< HEAD
 import { seedGlobalState, seedTraces } from './test-data';
 
 test.describe.skip('Trace Viewer', () => {
@@ -14,39 +13,6 @@ test.describe.skip('Trace Viewer', () => {
 
     await seedGlobalState(request);
     await seedTraces(request);
-=======
-import { seedGlobalState } from './test-data';
-
-test.describe('Trace Viewer', () => {
-  test.beforeEach(async ({ page, request }) => {
-    // Mock Traces API for all tests in this suite.
-    // The app fetches /api/v1/traces (with the v1 prefix).
-    await page.route('**/api/v1/traces', async route => {
-      await route.fulfill({
-        json: [
-          {
-            id: 'trace-1',
-            rootSpan: {
-              id: 'span-1',
-              name: 'calculate_sum',
-              serviceName: 'Math',
-              type: 'tool',
-              status: 'success',
-              startTime: Date.now() - 150,
-              endTime: Date.now(),
-              children: [],
-            },
-            timestamp: new Date().toISOString(),
-            totalDuration: 150,
-            status: 'success',
-            trigger: 'user'
-          }
-        ]
-      });
-    });
-
-    await seedGlobalState(request);
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
     await page.goto('/login');
     await page.waitForLoadState('networkidle');

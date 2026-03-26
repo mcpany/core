@@ -199,12 +199,9 @@ func TestOpenAPIUpstream_Register_SpecUrl(t *testing.T) {
 	}))
 	defer ts.Close()
 
-<<<<<<< HEAD
 	// Need to allow loopback for the httptest server to work
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	config := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service-url"),
 		OpenapiService: configv1.OpenapiUpstreamService_builder{
@@ -223,7 +220,6 @@ func TestOpenAPIUpstream_Register_SpecUrl(t *testing.T) {
 	mockToolManager.AssertExpectations(t)
 }
 
-<<<<<<< HEAD
 func TestOpenAPIUpstream_Register_SpecUrl_SSRF(t *testing.T) {
 	ctx := context.Background()
 	mockToolManager := new(MockToolManager)
@@ -255,8 +251,6 @@ func TestOpenAPIUpstream_Register_SpecUrl_SSRF(t *testing.T) {
 	assert.Contains(t, err.Error(), "OpenAPI spec content is missing")
 }
 
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func TestOpenAPIUpstream_Register_InvalidSpecUrl(t *testing.T) {
 	ctx := context.Background()
 	mockToolManager := new(MockToolManager)

@@ -36,7 +36,6 @@ func (m *samplingTool) Tool() *v1.Tool {
 	return m.tool
 }
 
-<<<<<<< HEAD
 
 func (m *samplingTool) IsStreaming() bool {
 	return false
@@ -46,8 +45,6 @@ func (m *samplingTool) StreamExecute(ctx context.Context, req *tool.ExecutionReq
 	return nil, nil
 }
 
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (m *samplingTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 	sampler, ok := tool.GetSampler(ctx)
 	if !ok {

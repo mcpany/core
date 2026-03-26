@@ -757,7 +757,6 @@ func (a *Application) handleTools() http.HandlerFunc {
 			}
 			w.Header().Set("Content-Type", "application/json")
 			_ = json.NewEncoder(w).Encode(toolList)
-<<<<<<< HEAD
 		case http.MethodPut:
 			var req struct {
 				Name    string `json:"name"`
@@ -781,8 +780,6 @@ func (a *Application) handleTools() http.HandlerFunc {
 			w.Header().Set("Content-Type", "application/json")
 			_ = json.NewEncoder(w).Encode(map[string]any{"status": "ok", "name": req.Name, "disable": req.Disable})
 
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}

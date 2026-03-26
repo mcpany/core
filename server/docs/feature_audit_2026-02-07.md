@@ -13,11 +13,7 @@ A comprehensive audit was performed on 10 distinct features (5 UI, 5 Server) aga
 | `ui/docs/features/native_file_upload_playground.md` | **Verified** | None | Code exists in `ui/src/components/ui/file-input.tsx` and `ui/src/components/playground/schema-form.tsx`. Base64 conversion verified. |
 | `ui/docs/features/structured_log_viewer.md` | **Verified** | None | Code exists in `ui/src/components/logs/log-stream.tsx`. JSON detection and expansion verified. |
 | `ui/docs/features/tool_search_bar.md` | **Verified** | None | Code exists in `ui/src/components/tools/smart-tool-search.tsx`. Client-side search logic verified. |
-<<<<<<< HEAD
 | `server/docs/features/health-checks.md` | **Verified** | None | Code exists in `server/pkg/health/health.go` and upstream implementations (`http`, `grpc`, etc.). |
-=======
-| `server/docs/features/health-checks.md` | **Verified** | None | Code exists in `server/pkg/health/checker.go` and upstream implementations (`http`, `grpc`, etc.). |
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 | `server/docs/features/context_optimizer.md` | **Verified** | None | Code exists in `server/pkg/middleware/context_optimizer.go`. Truncation logic verified. |
 | `server/docs/features/schema-validation.md` | **Verified** | None | Code exists in `server/pkg/config/schema_validation.go` and `server/pkg/config/load.go`. Startup validation verified. |
 | `server/docs/features/prompts/README.md` | **Verified** | None | Code exists in `server/pkg/prompt/service.go` and config schema (`proto/config/v1/upstream_service.proto`). |

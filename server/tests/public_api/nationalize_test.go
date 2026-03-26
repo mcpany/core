@@ -20,11 +20,7 @@ import (
 )
 
 func TestUpstreamService_Nationalize(t *testing.T) {
-<<<<<<< HEAD
 
-=======
-	// t.SkipNow()
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 

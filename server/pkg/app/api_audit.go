@@ -15,7 +15,6 @@ import (
 )
 
 // handleAuditLogs handles requests to list audit logs.
-<<<<<<< HEAD
 //
 // Summary: Lists audit logs.
 //
@@ -31,8 +30,6 @@ import (
 //
 // Side Effects:
 //   - None.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (a *Application) handleAuditLogs(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -95,7 +92,6 @@ func (a *Application) handleAuditLogs(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-<<<<<<< HEAD
 // handleAuditExport exports audit logs as CSV.
 //
 // Summary: Exports audit logs.
@@ -112,8 +108,6 @@ func (a *Application) handleAuditLogs(w http.ResponseWriter, r *http.Request) {
 //
 // Side Effects:
 //   - Writes CSV to response.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (a *Application) handleAuditExport(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)

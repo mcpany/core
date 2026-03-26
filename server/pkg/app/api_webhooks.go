@@ -11,7 +11,6 @@ import (
 	"github.com/mcpany/core/server/pkg/webhooks"
 )
 
-<<<<<<< HEAD
 // handleWebhooks returns a handler for webhook list operations.
 //
 // Summary: Handles webhooks.
@@ -27,8 +26,6 @@ import (
 //
 // Side Effects:
 //   - None.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (a *Application) handleWebhooks() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -55,7 +52,6 @@ func (a *Application) handleWebhooks() http.HandlerFunc {
 	}
 }
 
-<<<<<<< HEAD
 // handleWebhookDetail returns a handler for webhook detail operations.
 //
 // Summary: Handles webhook detail.
@@ -71,8 +67,6 @@ func (a *Application) handleWebhooks() http.HandlerFunc {
 //
 // Side Effects:
 //   - None.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (a *Application) handleWebhookDetail() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		path := strings.TrimPrefix(r.URL.Path, "/webhooks/")
@@ -106,7 +100,6 @@ func (a *Application) handleWebhookDetail() http.HandlerFunc {
 	}
 }
 
-<<<<<<< HEAD
 // handleWebhookTest handles testing a webhook.
 //
 // Summary: Tests a webhook.
@@ -124,8 +117,6 @@ func (a *Application) handleWebhookDetail() http.HandlerFunc {
 //
 // Side Effects:
 //   - Triggers the webhook HTTP call.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (a *Application) handleWebhookTest(w http.ResponseWriter, r *http.Request, id string) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)

@@ -20,11 +20,7 @@ import (
 )
 
 func TestCacheMiddleware_CacheHit(t *testing.T) {
-<<<<<<< HEAD
 
-=======
-	// // t.Skip("Skipping flaky test: tool registration times out intermittently.")
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	var requestCount int32
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		atomic.AddInt32(&requestCount, 1)
@@ -86,11 +82,7 @@ upstream_services:
 }
 
 func TestCacheMiddleware_CacheExpires(t *testing.T) {
-<<<<<<< HEAD
 
-=======
-	// // t.Skip("Skipping flaky test: tool registration times out intermittently.")
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	var requestCount int32
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		atomic.AddInt32(&requestCount, 1)

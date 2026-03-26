@@ -21,7 +21,6 @@ import (
 // Helper to handle builders or direct structs
 // Since we had issues with builders, we use direct structs.
 
-<<<<<<< HEAD
 
 func (m *callPolicyMockTool) IsStreaming() bool {
 	return false
@@ -31,8 +30,6 @@ func (m *callPolicyMockTool) StreamExecute(ctx context.Context, req *tool.Execut
 	return nil, nil
 }
 
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 type callPolicyMockTool struct {
 	toolProto *v1.Tool
 	mock.Mock

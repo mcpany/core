@@ -213,14 +213,8 @@ func (u *OpenAPIUpstream) Register(
 		}
 
 		if specURL != "" {
-<<<<<<< HEAD
 			client := util.NewSafeHTTPClient()
 			client.Timeout = 30 * time.Second
-=======
-			client := &http.Client{
-				Timeout: 30 * time.Second,
-			}
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 			req, err := http.NewRequestWithContext(ctx, "GET", specURL, nil)
 			if err != nil {
 				logging.GetLogger().Warn("Failed to create request for OpenAPI spec", "url", specURL, "error", err)

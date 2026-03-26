@@ -13,7 +13,6 @@ import (
 	"github.com/spf13/afero"
 )
 
-<<<<<<< HEAD
 // readFileTool creates a tool for reading a file.
 //
 // Summary: Creates read file tool.
@@ -30,8 +29,6 @@ import (
 //
 // Side Effects:
 //   - None.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func readFileTool(prov provider.Provider, fs afero.Fs) filesystemToolDef {
 	return filesystemToolDef{
 		Name:        "read_file",
@@ -80,7 +77,6 @@ func readFileTool(prov provider.Provider, fs afero.Fs) filesystemToolDef {
 	}
 }
 
-<<<<<<< HEAD
 // writeFileTool creates a tool for writing a file.
 //
 // Summary: Creates write file tool.
@@ -98,8 +94,6 @@ func readFileTool(prov provider.Provider, fs afero.Fs) filesystemToolDef {
 //
 // Side Effects:
 //   - None.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func writeFileTool(prov provider.Provider, fs afero.Fs, readOnly bool) filesystemToolDef {
 	return filesystemToolDef{
 		Name:        "write_file",
@@ -282,7 +276,6 @@ func safeRemove(fs afero.Fs, path string, recursive bool) error {
 	return fs.Remove(path)
 }
 
-<<<<<<< HEAD
 // moveFileTool creates a tool for moving a file.
 //
 // Summary: Creates move file tool.
@@ -300,8 +293,6 @@ func safeRemove(fs afero.Fs, path string, recursive bool) error {
 //
 // Side Effects:
 //   - None.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func moveFileTool(prov provider.Provider, fs afero.Fs, readOnly bool) filesystemToolDef {
 	return filesystemToolDef{
 		Name:        "move_file",
@@ -350,7 +341,6 @@ func moveFileTool(prov provider.Provider, fs afero.Fs, readOnly bool) filesystem
 	}
 }
 
-<<<<<<< HEAD
 // deleteFileTool creates a tool for deleting a file.
 //
 // Summary: Creates delete file tool.
@@ -368,8 +358,6 @@ func moveFileTool(prov provider.Provider, fs afero.Fs, readOnly bool) filesystem
 //
 // Side Effects:
 //   - None.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func deleteFileTool(prov provider.Provider, fs afero.Fs, readOnly bool) filesystemToolDef {
 	return filesystemToolDef{
 		Name:        "delete_file",

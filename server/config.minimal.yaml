@@ -86,7 +86,6 @@ upstream_services:
       calls:
         verified_tool:
           args: ['{"status": "verified"}']
-<<<<<<< HEAD
 
   - id: "diff-test-service"
     name: "diff-test-service"
@@ -103,5 +102,3 @@ upstream_services:
       calls:
         diff_test_tool:
           args: ['-c', 'if [ ! -f /tmp/diff_state ]; then echo "{\"value\":\"Version 1\"}"; touch /tmp/diff_state; else echo "{\"value\":\"Version 2\"}"; rm /tmp/diff_state; fi']
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))

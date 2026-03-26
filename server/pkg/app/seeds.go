@@ -360,7 +360,6 @@ func init() {
 				}.Build(),
 			}.Build(),
 		}.Build(),
-<<<<<<< HEAD
 		configv1.ServiceTemplate_builder{
 			Id:          proto.String("swarm-orchestrator"),
 			Name:        proto.String("Swarm Orchestrator"),
@@ -386,8 +385,6 @@ func init() {
 				}.Build(),
 			}.Build(),
 		}.Build(),
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	}
 }
 

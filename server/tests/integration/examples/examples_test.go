@@ -37,7 +37,6 @@ func TestExampleConfigs(t *testing.T) {
 	stdioBinPath := filepath.Join(runtimeRoot, "examples", "demo", "stdio", "my-tool-bin")
 	if _, err := os.Stat(stdioBinPath); os.IsNotExist(err) {
 		t.Logf("Building missing stdio example binary: %s", stdioBinPath)
-<<<<<<< HEAD
 		// Try building. Note: In bazel sandbox this might not work if go isn't fully available.
 		// However we can just create a dummy script that echoes some valid json if we just want it to pass.
 		// But let's try the simple go build first.
@@ -53,15 +52,6 @@ func TestExampleConfigs(t *testing.T) {
 			sleep 10
 			`
 			os.WriteFile(stdioBinPath, []byte(dummyScript), 0755)
-=======
-		cmd := exec.Command("go", "build", "-o", stdioBinPath, filepath.Join(runtimeRoot, "examples", "demo", "stdio", "my-tool", "main.go"))
-		cmd.Env = append(os.Environ(), "GOCACHE="+filepath.Join(t.TempDir(), "gocache"))
-		cmd.Dir = runtimeRoot
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		if err := cmd.Run(); err != nil {
-			t.Logf("Failed to build stdio example binary (continuing, but validation might fail): %v", err)
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 		}
 	}
 

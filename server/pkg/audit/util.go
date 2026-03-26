@@ -12,7 +12,6 @@ import (
 
 // computeHash computes the hash for the audit entry using SHA-256.
 // It uses a JSON array structure for unambiguous serialization.
-<<<<<<< HEAD
 //
 // Summary: Computes hash for audit entry.
 //
@@ -35,8 +34,6 @@ import (
 //
 // Side Effects:
 //   - None.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func computeHash(timestamp, toolName, userID, profileID, args, result, errorMsg string, durationMs int64, prevHash string) string {
 	// Use JSON array for unambiguous serialization
 	fields := []any{timestamp, toolName, userID, profileID, args, result, errorMsg, durationMs, prevHash}
@@ -47,7 +44,6 @@ func computeHash(timestamp, toolName, userID, profileID, args, result, errorMsg 
 
 // computeHashV0 computes the hash using the legacy method (vulnerable to collision).
 // Kept for backward compatibility verification.
-<<<<<<< HEAD
 //
 // Summary: Computes hash using legacy method.
 //
@@ -70,8 +66,6 @@ func computeHash(timestamp, toolName, userID, profileID, args, result, errorMsg 
 //
 // Side Effects:
 //   - None.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func computeHashV0(timestamp, toolName, userID, profileID, args, result, errorMsg string, durationMs int64, prevHash string) string {
 	data := fmt.Sprintf("%s|%s|%s|%s|%s|%s|%s|%d|%s",
 		timestamp, toolName, userID, profileID, args, result, errorMsg, durationMs, prevHash)

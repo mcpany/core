@@ -27,11 +27,7 @@ type server struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
-<<<<<<< HEAD
 func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
-=======
-func (s *server) SayHello(_ context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	log.Printf("Received: %v", in.GetName())
 	return &pb.HelloReply{Message: "Hello " + in.GetName()}, nil
 }

@@ -1,10 +1,6 @@
 # Webhooks
 
-<<<<<<< HEAD
 **Status:** Implemented
-=======
-**Status:** Config-Driven (UI Planned)
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
 ## Goal
 
@@ -12,7 +8,6 @@ Intercept and modify tool executions. Webhooks utilize CloudEvents for a standar
 
 ## Configuration
 
-<<<<<<< HEAD
 Webhooks can be configured both via the UI dashboard and `config.yaml` under each upstream service as `pre_call_hooks` and `post_call_hooks`.
 
 ### UI Dashboard
@@ -22,9 +17,6 @@ Navigate to `/webhooks` to access the Webhooks management console. Here you can:
 - **Status Management**: Instantly enable or disable specific webhooks via toggle switches.
 - **Testing**: Trigger test events (`/api/v1/webhooks/:id/test`) to verify connectivity and validate payloads.
 - **Delete Webhooks**: Remove unused or obsolete webhooks from your configuration.
-=======
-Webhooks are currently configured via `config.yaml` under each upstream service as `pre_call_hooks` and `post_call_hooks`. The UI dashboard at `/webhooks` provides a preview of future management capabilities but is not yet fully functional for creating or modifying these hooks.
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
 ### YAML Example
 

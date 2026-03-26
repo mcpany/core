@@ -17,7 +17,6 @@ import (
 )
 
 // POST /api/v1/skills.
-<<<<<<< HEAD
 //
 // Summary: Handles skills.
 //
@@ -32,8 +31,6 @@ import (
 //
 // Side Effects:
 //   - None.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (a *Application) handleSkills() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -71,7 +68,6 @@ func (a *Application) handleSkills() http.HandlerFunc {
 }
 
 // DELETE /api/v1/skills/{name}.
-<<<<<<< HEAD
 //
 // Summary: Handles skill detail.
 //
@@ -86,8 +82,6 @@ func (a *Application) handleSkills() http.HandlerFunc {
 //
 // Side Effects:
 //   - None.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (a *Application) handleSkillDetail() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Extract skill name from URL path
@@ -148,7 +142,6 @@ func (a *Application) handleSkillDetail() http.HandlerFunc {
 // handleUploadSkillAsset returns a handler that saves an asset for a skill.
 // POST /api/v1/skills/{name}/assets
 // Query Param: path (relative path).
-<<<<<<< HEAD
 //
 // Summary: Uploads a skill asset.
 //
@@ -163,8 +156,6 @@ func (a *Application) handleSkillDetail() http.HandlerFunc {
 //
 // Side Effects:
 //   - None.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (a *Application) handleUploadSkillAsset() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {

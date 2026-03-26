@@ -594,7 +594,6 @@ func TestPaginateHandler_LargeString(t *testing.T) {
 	assert.Contains(t, repl, "(Total: 10240 chars)")
 	// Expected content length should be roughly 100 + headers
 }
-<<<<<<< HEAD
 
 func TestPaginateRecursive(t *testing.T) {
 	// 1. String > 1024*1024
@@ -644,5 +643,3 @@ func TestPaginateRecursiveMap(t *testing.T) {
 		t.Errorf("expected paginated map value, got %v", resM["a"])
 	}
 }
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))

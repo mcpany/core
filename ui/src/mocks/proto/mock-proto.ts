@@ -45,7 +45,6 @@ export enum ExportPolicy_Action {
  * Mock type placeholders for policy-related proto messages.
  */
 export const CallPolicy = {};
-<<<<<<< HEAD
 
 /**
  * Mock type placeholder for CallPolicyRule.
@@ -60,10 +59,6 @@ export const ExportPolicy = {};
 /**
  * Mock type placeholder for ExportRule.
  */
-=======
-export const CallPolicyRule = {};
-export const ExportPolicy = {};
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 export const ExportRule = {};
 
 /**

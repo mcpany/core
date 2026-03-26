@@ -7,7 +7,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-<<<<<<< HEAD
 	"errors"
 	"net/http"
 	"net/http/httptest"
@@ -20,20 +19,10 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/assert"
-=======
-	"net/http"
-	"net/http/httptest"
-	"testing"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/storage/memory"
-	"github.com/stretchr/testify/require"
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
 
-<<<<<<< HEAD
 // mockStore is a proxy store to inject test errors to verify retry behavior in clearData and seedData.
 type mockStore struct {
 	storage.Storage
@@ -502,11 +491,6 @@ func TestSeedData(t *testing.T) {
 func TestHandleDebugSeed(t *testing.T) {
 	// Setup application with memory storage
 	store := &mockStore{Storage: memory.NewStore()}
-=======
-func TestHandleDebugSeed(t *testing.T) {
-	// Setup application with memory storage
-	store := memory.NewStore()
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	app := &Application{
 		Storage:     store,
 		configPaths: []string{}, // Empty paths to avoid FS usage
@@ -554,7 +538,6 @@ func TestHandleDebugSeed(t *testing.T) {
 	require.NotNil(t, svc)
 	require.Equal(t, "new-service", svc.GetName())
 }
-<<<<<<< HEAD
 
 func TestHandleDebugSeed_MethodsAndErrors(t *testing.T) {
 	// Setup application with memory storage
@@ -613,5 +596,3 @@ func TestHandleDebugSeed_MethodsAndErrors(t *testing.T) {
 		store.SaveServiceErr = nil // clean up
 	})
 }
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))

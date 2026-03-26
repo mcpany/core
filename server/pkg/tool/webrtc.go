@@ -202,7 +202,6 @@ func (t *WebrtcTool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - any: The result of the execution.
 //   - error: An error if execution fails.
-<<<<<<< HEAD
 //
 // IsStreaming returns true if the tool supports streaming.
 //
@@ -258,8 +257,6 @@ func (t *WebrtcTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (
 //
 // Side Effects:
 //   - Makes a WebRTC network call.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (t *WebrtcTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.webrtcPool == nil {
 		// Fallback to creating a new connection if the pool is not initialized

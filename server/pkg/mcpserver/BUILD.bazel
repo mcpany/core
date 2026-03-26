@@ -25,10 +25,7 @@ go_library(
         "//server/pkg/appconsts",
         "//server/pkg/auth",
         "//server/pkg/bus",
-<<<<<<< HEAD
         "//server/pkg/cah",
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
         "//server/pkg/catalog",
         "//server/pkg/config",
         "//server/pkg/consts",
@@ -45,10 +42,6 @@ go_library(
         "//server/pkg/util",
         "//server/pkg/validation",
         "@com_github_google_uuid//:uuid",
-<<<<<<< HEAD
-=======
-        "@com_github_json_iterator_go//:go",
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
         "@com_github_modelcontextprotocol_go_sdk//mcp",
         "@org_golang_google_grpc//codes",
         "@org_golang_google_grpc//status",

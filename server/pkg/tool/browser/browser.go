@@ -109,7 +109,6 @@ func (b *Provider) ToolDefinition() map[string]interface{} {
 	}
 }
 
-<<<<<<< HEAD
 // playwrightRunner abstracts playwright execution so we can inject a mock for hermetic testing.
 type playwrightRunner interface {
 	Run() (playwrightImpl, error)
@@ -300,10 +299,6 @@ func (r *realLocator) TextContent(options ...playwright.LocatorTextContentOption
 type playwrightFetcher struct {
 	runner playwrightRunner
 }
-=======
-// playwrightFetcher is the production PageFetcher that uses playwright-go.
-type playwrightFetcher struct{}
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
 // FetchText fetches the text content of a URL using playwright.
 //
@@ -323,16 +318,12 @@ type playwrightFetcher struct{}
 // Side Effects:
 //   - None.
 func (f *playwrightFetcher) FetchText(_ context.Context, url string) (string, error) {
-<<<<<<< HEAD
 	r := f.runner
 	if r == nil {
 		r = &defaultPlaywrightRunner{}
 	}
 
 	pw, err := r.Run()
-=======
-	pw, err := playwright.Run()
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	if err != nil {
 		return "", fmt.Errorf("could not start playwright: %w", err)
 	}
@@ -342,11 +333,7 @@ func (f *playwrightFetcher) FetchText(_ context.Context, url string) (string, er
 		}
 	}()
 
-<<<<<<< HEAD
 	browser, err := pw.Chromium().Launch(playwright.BrowserTypeLaunchOptions{
-=======
-	browser, err := pw.Chromium.Launch(playwright.BrowserTypeLaunchOptions{
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 		Headless: playwright.Bool(true),
 	})
 	if err != nil {

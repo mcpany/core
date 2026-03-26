@@ -15,11 +15,7 @@ As the number of connected services and tools grows, finding a specific tool can
 
 ## Visuals
 
-<<<<<<< HEAD
 ![Tool Search Bar](../screenshots/global_search.png)
-=======
-![Tool Search Bar](../../../.audit/ui/2026-01-21/tool_search_bar.png)
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
 ## Technical Details
 

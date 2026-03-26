@@ -703,7 +703,6 @@ global_settings:
 		})
 	}
 }
-<<<<<<< HEAD
 
 // TestInitCmd tests the init command.
 func TestInitCmd(t *testing.T) {
@@ -740,5 +739,3 @@ func TestInitCmd(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Contains(t, string(content), "global_settings:")
 }
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))

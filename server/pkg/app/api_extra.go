@@ -12,7 +12,6 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-<<<<<<< HEAD
 // handleResourceRead handles reading a resource.
 //
 // Summary: Handles reading a resource.
@@ -28,8 +27,6 @@ import (
 //
 // Side Effects:
 //   - None.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (a *Application) handleResourceRead() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
@@ -60,7 +57,6 @@ func (a *Application) handleResourceRead() http.HandlerFunc {
 	}
 }
 
-<<<<<<< HEAD
 // handlePromptExecute handles executing a prompt.
 //
 // Summary: Handles executing a prompt.
@@ -76,8 +72,6 @@ func (a *Application) handleResourceRead() http.HandlerFunc {
 //
 // Side Effects:
 //   - None.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (a *Application) handlePromptExecute() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Path: /prompts/{name}/execute

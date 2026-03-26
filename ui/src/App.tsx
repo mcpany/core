@@ -37,11 +37,8 @@ const ServiceResourcePage = lazy(() => import("./app/service/[id]/resource/[name
 const ServiceToolPage = lazy(() => import("./app/service/[id]/tool/[name]/page"));
 const SettingsMiddlewarePage = lazy(() => import("./app/settings/middleware/page"));
 const SettingsPage = lazy(() => import("./app/settings/page"));
-<<<<<<< HEAD
 const HitlPage = lazy(() => import("./app/hitl/page"));
 const BlackboardPage = lazy(() => import("./app/blackboard/page"));
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 const SettingsWebhooksPage = lazy(() => import("./app/settings/webhooks/page"));
 const SkillEditPage = lazy(() => import("./app/skills/[name]/edit/page"));
 const SkillNamePage = lazy(() => import("./app/skills/[name]/page"));
@@ -57,10 +54,7 @@ const UpstreamServicesPage = lazy(() => import("./app/upstream-services/page"));
 const UsersPage = lazy(() => import("./app/users/page"));
 const VisualizerPage = lazy(() => import("./app/visualizer/page"));
 const WebhooksPage = lazy(() => import("./app/webhooks/page"));
-<<<<<<< HEAD
 const UniversalAgentBusPage = lazy(() => import("./app/universal-agent-bus/page"));
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
 const PageFallback = () => (
   <div className="flex items-center justify-center h-full min-h-[200px]">
@@ -90,11 +84,8 @@ export default function App() {
           <Route path="/audit" element={<AuditPage />} />
           <Route path="/config-validator" element={<ConfigValidatorPage />} />
           <Route path="/context" element={<ContextPage />} />
-<<<<<<< HEAD
           <Route path="/hitl" element={<HitlPage />} />
           <Route path="/blackboard" element={<BlackboardPage />} />
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
           <Route path="/credentials" element={<CredentialsPage />} />
           <Route path="/diagnostics" element={<DiagnosticsPage />} />
           <Route path="/inspector" element={<InspectorPage />} />
@@ -130,10 +121,7 @@ export default function App() {
           <Route path="/users" element={<UsersPage />} />
           <Route path="/visualizer" element={<VisualizerPage />} />
           <Route path="/webhooks" element={<WebhooksPage />} />
-<<<<<<< HEAD
           <Route path="/universal-agent-bus" element={<UniversalAgentBusPage />} />
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
           {/* Legacy redirect */}
           <Route path="/topology" element={<Navigate to="/network" replace />} />

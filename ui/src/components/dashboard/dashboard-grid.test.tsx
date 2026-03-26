@@ -215,11 +215,8 @@ describe("DashboardGrid", () => {
     // I must modify the implementation to ensure migration is saved.
 
     expect(updated.length).toBeGreaterThan(0);
-<<<<<<< HEAD
     expect(updated[0].instanceId).toBeDefined();
     expect(updated[0].type).toBe("metrics");
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
   });
 
   it("opens customization menu", async () => {

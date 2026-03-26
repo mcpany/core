@@ -25,7 +25,6 @@ describe('RichResultViewer', () => {
 
     expect(screen.getByRole('img')).toHaveAttribute('src', 'data:image/png;base64,base64data');
   });
-<<<<<<< HEAD
 
   it('detects nested arrays for tables', () => {
     const { getByText } = render(
@@ -40,6 +39,4 @@ describe('RichResultViewer', () => {
     );
     expect(getByText('Table')).toBeInTheDocument();
   });
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 });

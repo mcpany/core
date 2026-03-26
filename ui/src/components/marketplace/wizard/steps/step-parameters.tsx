@@ -31,7 +31,6 @@ export function StepParameters() {
         updateState({ params: newParams });
 
         // Also update config env
-<<<<<<< HEAD
         if (config.commandLineService) {
             const env: any = { ...config.commandLineService.env };
 
@@ -54,15 +53,6 @@ export function StepParameters() {
                 }
             }
 
-=======
-        // TODO: Sync `params` to `config.commandLineService.env` more robustly
-        // For now we just update basic env
-        if (config.commandLineService) {
-            const env: any = {};
-            Object.entries(newParams).forEach(([k, v]) => {
-                env[k] = { plainText: v };
-            });
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
             updateConfig({
                 commandLineService: {
                     ...config.commandLineService,
@@ -83,15 +73,8 @@ export function StepParameters() {
         updateState({ params: newParams });
          // Sync with config
          if (config.commandLineService) {
-<<<<<<< HEAD
             const env: any = { ...config.commandLineService.env };
             delete env[key];
-=======
-            const env: any = {};
-            Object.entries(newParams).forEach(([k, v]) => {
-                env[k] = { plainText: v };
-            });
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
             updateConfig({
                 commandLineService: {
                     ...config.commandLineService,

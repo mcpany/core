@@ -7,19 +7,13 @@ go_library(
     name = "middleware",
     srcs = [
         "a2a_bridge.go",
-<<<<<<< HEAD
         "aia_broker.go",
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
         "audit.go",
         "auth.go",
         "binary_utils.go",
         "cache.go",
         "call_policy.go",
-<<<<<<< HEAD
         "cfia.go",
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
         "compliance.go",
         "context_optimizer.go",
         "cors.go",
@@ -28,10 +22,7 @@ go_library(
         "debug.go",
         "debugger.go",
         "dlp.go",
-<<<<<<< HEAD
         "esb.go",
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
         "global_ratelimit.go",
         "guardrails.go",
         "gzip.go",
@@ -106,10 +97,7 @@ go_test(
     name = "middleware_test",
     srcs = [
         "a2a_bridge_test.go",
-<<<<<<< HEAD
         "aia_broker_test.go",
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
         "audit_export_test.go",
         "audit_test.go",
         "auth_benchmark_test.go",
@@ -121,10 +109,7 @@ go_test(
         "cache_test.go",
         "call_policy_fail_closed_test.go",
         "call_policy_test.go",
-<<<<<<< HEAD
         "cfia_test.go",
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
         "compliance_extra_test.go",
         "compliance_test.go",
         "context_optimizer_test.go",

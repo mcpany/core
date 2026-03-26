@@ -100,11 +100,7 @@ func TestInitStandardMiddlewares(t *testing.T) {
 	cachingMiddleware := &CachingMiddleware{}
 
 	// Call InitStandardMiddlewares
-<<<<<<< HEAD
 	standardMiddlewares, err := InitStandardMiddlewares(authManager, mockToolManager, auditConfig, cachingMiddleware, nil, nil, nil, nil, nil, nil)
-=======
-	standardMiddlewares, err := InitStandardMiddlewares(authManager, mockToolManager, auditConfig, cachingMiddleware, nil, nil, nil, nil, nil)
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	assert.NoError(t, err)
 	assert.NotNil(t, standardMiddlewares)
 	if standardMiddlewares.Cleanup != nil {
@@ -248,11 +244,7 @@ func TestInitStandardMiddlewares_AuditError(t *testing.T) {
 	cachingMiddleware := &CachingMiddleware{}
 
 	// Call InitStandardMiddlewares
-<<<<<<< HEAD
 	standardMiddlewares, err := InitStandardMiddlewares(authManager, mockToolManager, auditConfig, cachingMiddleware, nil, nil, nil, nil, nil, nil)
-=======
-	standardMiddlewares, err := InitStandardMiddlewares(authManager, mockToolManager, auditConfig, cachingMiddleware, nil, nil, nil, nil, nil)
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	assert.Error(t, err)
 	assert.Nil(t, standardMiddlewares)
 }

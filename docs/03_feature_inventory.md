@@ -1,6 +1,5 @@
 # Feature Inventory: MCP Any
 
-<<<<<<< HEAD
 ## Evolution: [2026-03-26] Updates
 
 ### Proposed Additions
@@ -102,15 +101,12 @@
 - **Teammate Task-List Arbiter**: (Evolved to LFTC) Now designated as the primary mechanism for lock-free horizontal coordination.
 - **Discovery Sandbox Middleware**: (Promoted to P0) Critical requirement for neutralizing startup-time RCE in agent environments.
 
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 ## Current Backlog (P0/P1)
 - **Policy Firewall**: Rego/CEL based hooking for tool calls.
 - **HITL Middleware**: Suspension protocol for user approval flows.
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
-<<<<<<< HEAD
 ## Evolution: [2026-03-20] Updates
 
 ### Proposed Additions
@@ -166,17 +162,11 @@
 - **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SSM** integration to counter mimicry attacks.
 - **Capability Garbage Collection (CGC) Provider**: (Re-affirmed P0) Designated as a critical mechanism for supporting the new **Temporal Sovereignty** requirements.
 
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 ## Evolution: [2026-05-23] Updates
 
 ### Proposed Additions
 - **Federated Swarm Identity (FSI) Provider**: (P0) A local identity service that issues hardware-attested, cross-framework tokens for secure teammate verification in heterogeneous meshes.
-<<<<<<< HEAD
 - **Intent-Leakage Shield (ILS) Middleware**: (P0) Security extension for the MRP middleware that monitors semantic entropy and blocks subagent requests designed to probe mission-root constraints.
-=======
-- **Intent-Leakage Shielding (ILS) Middleware**: (P0) Security extension for the MRP middleware that monitors semantic entropy and blocks subagent requests designed to probe mission-root constraints.
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 - **Hardware-Attested Discovery Handshake (HADH) Gateway**: (P0) Advanced discovery service that mandates hardware-bound handshakes before revealing any agent capabilities to peers.
 - **Reasoning-Effort Quota Controller**: (P0) Resource management middleware that dynamically throttles high-intensity reasoning (e.g., `x-gemini-reasoning-effort`) to prevent Agentic DoS.
 
@@ -602,10 +592,7 @@
 - **LFTA Trust Lease Manager**: Promoted to **P0**. Essential for scaling high-frequency attestation in deep swarms.
 
 ---
-<<<<<<< HEAD
 ---
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
 ## Evolution: [2026-04-17] Updates
 
@@ -957,7 +944,6 @@
 ### Deprecations / Monitoring
 - **Framework-Specific Feedback Logs**: Monitoring for deprecation. Feedback should be normalized via the Unified Telemetry Bridge.
 
-<<<<<<< HEAD
 ## Evolution: [2026-03-20] Updates
 
 ### Proposed Additions
@@ -970,8 +956,6 @@
 - **A2A Messaging Hub**: (Re-affirmed P0) Now designated as the primary backend for the **A2A Multi-Channel Inbox Bridge**.
 - **Shared KV Store (Blackboard)**: (Re-affirmed P0) Evolving to support **AMS-compliant** granular state synchronization.
 
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 ---
 
 ## Evolution: [2026-03-21] Updates
@@ -987,24 +971,15 @@
 ## Evolution: [2026-03-22] Updates
 
 ### Proposed Additions
-<<<<<<< HEAD
 - **UACO Agentic SLA Middleware**: (P0) Enforcement layer for hardware-attested resource contracts (token budget, reasoning time) during task delegation.
 - **Lock-Free Mesh Coordination**: (P0) Sharded, CRDT-based mailbox synchronization to eliminate "Mailbox Lock" bottlenecks in horizontal swarms.
 - **ARL (Attestation Revocation List) Provider**: (P0) Real-time, hardware-bound capability revocation service to neutralize "Trust Lease" vulnerabilities.
-=======
-- **UACO Agentic SLA Middleware**: (P0) Enforcement layer for resource contracts (token budget, reasoning time) during UACO task delegation.
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 - **Federated Policy Synchronizer**: (P1) A secure bus for synchronizing CAC hashes and allowed-origin lists across multiple MCP Any instances.
 - **Ghost Shell Execution Mode**: (P0) Isolated, instrumented profiling environment for un-attested hooks, providing behavioral insights before attestation.
 
 ### Priority Shifts
-<<<<<<< HEAD
 - **UACO v1.5 RCC Validator**: Re-affirmed as **P0**. Essential foundation for the new SLA middleware and capability revocation.
 - **Shared KV Store (Blackboard)**: (Re-affirmed P0) Evolving to support **Lock-Free Sharding** and CRDT-based state reconciliation.
-=======
-- **UACO v1.5 RCC Validator**: Re-affirmed as **P0**. Essential foundation for the new SLA middleware.
-- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Expanded to support "SLA-Aware State Locking" to prevent resource-heavy contention.
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
 ### Deprecations / Monitoring
 - **Unbounded Task Delegation**: Moving toward total deprecation. All UACO delegations must eventually include a resource contract (SLA).
@@ -1034,7 +1009,6 @@
 - **BSH State Buffer**: (P1) High-speed memory-mapped buffer for binary state handoffs between agents to minimize context transfer latency.
 - **Ghost Shell Hook Profiler**: (P0) Instrumented sandbox for behavioral profiling of un-attested configuration hooks, detecting "Binary Smuggling" before host execution.
 
-<<<<<<< HEAD
 ## Evolution: [2026-03-25] (Iteration 5) Updates
 
 ### Proposed Additions
@@ -1069,11 +1043,6 @@
 ### Priority Shifts
 - **Autonomous Intent Reconciliation (AIR) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SIA** integration to counter stylometric spoofing.
 - **Hardware-Attested Attention Locking (HAAL)**: (Re-affirmed P0) Evolving into the **Active Attention Enforcer** to counter attention drift.
-=======
-### Priority Shifts
-- **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
-- **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
 ---
 
@@ -1295,11 +1264,7 @@
 - **Self-Healing Consensus Hub**: (P0) A coordination service that provides a standardized interface for swarm state reconciliation, leveraging MAQ for authoritative "Truth Brokering."
 
 ### Priority Shifts
-<<<<<<< HEAD
 - **Deterministic Attestation Gateway**: (Re-affirmed P0) Expanded to include Resident Integrity Monitor for continuous lifecycle protection.
-=======
-- **Deterministic Attestation Gateway**: (Re-affirmed P0) Expanded to support the new Resident Integrity Monitor for continuous lifecycle protection.
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 - **TPM-Bound Configuration Boot**: (Re-affirmed P0) Now considered the prerequisite foundation for RIG-mediated boundary expansions.
 
 ## Evolution: [2026-04-15] Updates
@@ -1400,11 +1365,7 @@
 ## Evolution: [2026-05-29] Updates
 
 ### Proposed Additions
-<<<<<<< HEAD
 - **Collective Swomaly Detection (CSAD) Hub**: (P0) Advanced security middleware that performs cross-agent behavioral analysis to detect coordinated "Hivenet" swarm attacks.
-=======
-- **Collective Swarm Anomaly Detection (CSAD) Hub**: (P0) Advanced security middleware that performs cross-agent behavioral analysis to detect coordinated "Hivenet" swarm attacks.
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 - **Cross-Mesh Command Sovereignty (CMCS) Provider**: (P0) Identity service that issues hardware-attested "Mesh Tokens" for inter-teammate mailbox validation in horizontal swarms.
 - **Atomic Teammate Handshake (ATH) Gateway**: (P0) Security middleware mandating hardware-attested identity exchange before teammate task delegation.
 - **Mesh-Bound Context Sovereignty Bridge**: (P0) Security extension for the DCG middleware that performs semantic fragment analysis across teammate boundaries.
@@ -1412,7 +1373,6 @@
 ### Priority Shifts
 - **Differential Context Guarding (DCG) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Mesh-Bound Sovereignty**.
 - **SMI Relay Provider**: (Re-affirmed P0) Evolving to act as the authoritative backend for the **Atomic Teammate Handshake (ATH)**.
-<<<<<<< HEAD
 
 ## Evolution: [2026-06-02] Updates
 
@@ -1752,5 +1712,3 @@
 ### Priority Shifts
 - **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
 - **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))

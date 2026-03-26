@@ -45,7 +45,6 @@ The Cyera Research report (2026) on Gemini CLI vulnerabilities has highlighted t
 
 ## 7. Evolutionary Changelog
 * **2026-05-13:** Initial Document Creation.
-<<<<<<< HEAD
 
 ### Update: 2026-03-24 - Implementing Argument-Level Semantic Validation (ALSV)
 **Context:** Research into OpenClaw (CVE-2026-32000, CVE-2026-22169) revealed that simple binary allowlisting is insufficient to prevent RCE via dangerous flags or shell fallbacks.
@@ -53,5 +52,3 @@ The Cyera Research report (2026) on Gemini CLI vulnerabilities has highlighted t
 * Integrating ALSV into the Pre-Hook phase of the Command Adapter.
 * Transitioning from simple allowlisting to "Binary Security Profiles" that define authorized flags and value patterns.
 **Security Impact:** Prevents flag-based hijacking (e.g., `--compress-program`) and eliminates shell-fallback injection vectors.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))

@@ -43,7 +43,6 @@ The emergence of "Reasoning Hijacking" via monologue injection represents a crit
 
 ## 7. Evolutionary Changelog
 * **2026-05-19:** Initial Document Creation.
-<<<<<<< HEAD
 
 ### Update: 2026-06-03 - Cross-Framework Attestation Translation
 **Context:** Gemini's proprietary hardware-attested reasoning paths are incompatible with the OpenClaw SRM format, creating a trust gap in heterogeneous teams.
@@ -58,5 +57,3 @@ The emergence of "Reasoning Hijacking" via monologue injection represents a crit
 * **RPI Validation**: Evolving the SRM Provider to support RPI validation. We will now verify model-issued, hardware-signed reasoning fragments at each step of the chain-of-thought.
 * **Semantic Hash-Chaining**: Implementing semantic hash-chains that link hardware-signed fragments to the parent mission-root, neutralizing "Attention-Density" exhaustion attacks.
 **Security Impact:** Ensures the "Cognitive Path" remains untampered and non-repudiable across heterogeneous framework handoffs.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))

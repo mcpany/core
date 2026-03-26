@@ -116,7 +116,6 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
     updateStep("config", { status: "success", detail: "Configuration valid" });
 
     // --- Step 1.5: Browser Connectivity (WebSocket & HTTP) ---
-<<<<<<< HEAD
     if (service.httpService && service.httpService.address) {
         updateStep("browser_connectivity", { status: "running" });
         addLog("browser_connectivity", `Attempting browser-side fetch to ${service.httpService.address}...`);
@@ -141,9 +140,6 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
             return;
         }
     } else if (service.websocketService) {
-=======
-    if (service.websocketService) {
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
         updateStep("browser_connectivity", { status: "running" });
         addLog("browser_connectivity", `Attempting to connect to ${url} from browser...`);
 

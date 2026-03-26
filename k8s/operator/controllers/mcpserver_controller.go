@@ -16,7 +16,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-<<<<<<< HEAD
 	mcpv1alpha1 "github.com/mcpany/core/k8s/operator/api/v1alpha1"
 )
 
@@ -24,12 +23,6 @@ import (
 // MCPServerReconciler reconciles an MCPServer object
 //
 // Summary: Reconciles an MCPServer object.
-=======
-	mcpv1alpha1 "github.com/mcpany/core/operator/api/v1alpha1"
-)
-
-// MCPServerReconciler reconciles a MCPServer object.
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 type MCPServerReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
@@ -43,7 +36,6 @@ type MCPServerReconciler struct {
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
-<<<<<<< HEAD
 //
 // Summary: Reconciles the given request.
 //
@@ -60,17 +52,6 @@ type MCPServerReconciler struct {
 //
 // Side Effects:
 //   - Modifies Kubernetes resources.
-=======
-// It creates or updates the Deployment and Service for the MCPServer.
-//
-// Parameters:
-//   - ctx: The context for the request.
-//   - req: The reconciliation request containing the namespaced name of the MCPServer.
-//
-// Returns:
-//   - ctrl.Result: The result of the reconciliation, indicating if the request should be requeued.
-//   - error: Any error that occurred during reconciliation.
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (r *MCPServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
 
@@ -265,7 +246,6 @@ func labelsForMCPServer(name string) map[string]string {
 
 // SetupWithManager sets up the controller with the Manager.
 //
-<<<<<<< HEAD
 // Summary: Sets up the controller with the Manager.
 //
 // Parameters:
@@ -279,13 +259,6 @@ func labelsForMCPServer(name string) map[string]string {
 //
 // Side Effects:
 //   - Registers the controller with the manager.
-=======
-// Parameters:
-//   - mgr: The controller manager.
-//
-// Returns:
-//   - error: Any error that occurred during setup.
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (r *MCPServerReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&mcpv1alpha1.MCPServer{}).

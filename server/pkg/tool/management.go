@@ -11,10 +11,6 @@ import (
 	"time"
 
 	// Use json-iterator for faster JSON operations.
-<<<<<<< HEAD
-=======
-	json "github.com/json-iterator/go"
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
 	"github.com/google/uuid"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -1034,11 +1030,7 @@ func (tm *Manager) AddTool(tool Tool) error {
 					)
 				}
 
-<<<<<<< HEAD
 				jsonResult, err := util.FastMarshalToString(result.Result)
-=======
-				jsonResult, err := json.Marshal(result.Result)
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 				if err != nil {
 					return nil, fmt.Errorf("failed to marshal tool result: %w", err)
 				}
@@ -1047,11 +1039,7 @@ func (tm *Manager) AddTool(tool Tool) error {
 					Content: []mcp.Content{
 						&mcp.TextContent{
 							// ⚡ Bolt Optimization: Use Zero-copy conversion for large JSON payloads
-<<<<<<< HEAD
 							Text: jsonResult,
-=======
-							Text: util.BytesToString(jsonResult),
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 						},
 					},
 				}, nil

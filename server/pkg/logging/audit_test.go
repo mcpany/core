@@ -4,12 +4,9 @@
 package logging
 
 import (
-<<<<<<< HEAD
 	"os"
 	"github.com/mcpany/core/server/pkg/validation"
 	configv1 "github.com/mcpany/core/proto/config/v1"
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	"bytes"
 	"context"
 	"io"
@@ -68,7 +65,6 @@ func TestAuditHandler_Export(t *testing.T) {
 	assert.Contains(t, string(entry.Arguments), "foo")
 	assert.Contains(t, string(entry.Arguments), "bar")
 }
-<<<<<<< HEAD
 
 func TestAuditHandler_Enabled(t *testing.T) {
 	nextHandler := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelError})
@@ -127,5 +123,3 @@ func TestNewAuditHandler_InitializeStore(t *testing.T) {
 		_ = s.Close()
 	}
 }
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))

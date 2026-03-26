@@ -160,17 +160,9 @@ pkg_files(
 # Package the minimal node_modules needed by vite preview (vite itself + proxy deps).
 # We conservatively include the full node_modules; a future optimisation can
 # prune dev-only packages.
-<<<<<<< HEAD
 # NOTE: The rule ui_node_modules_files is removed due to Bazel rules_js naming conflicts
 # when mapping node_modules containing .aspect_rules_js internal symlinks.
 # Vite build artifacts in :ui_dist_files already contain bundled frontend assets.
-=======
-pkg_files(
-    name = "ui_node_modules_files",
-    srcs = [":node_modules"],
-    prefix = "/app/node_modules",
-)
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
 # Static config files required by `vite preview` at runtime.
 pkg_files(

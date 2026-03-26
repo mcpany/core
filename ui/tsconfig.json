@@ -18,10 +18,7 @@
       "@/*": ["./src/*"],
       "github.com/mcpany/core/*": ["../*"],
       "@proto/*": [
-<<<<<<< HEAD
         "../bazel-out/k8-fastbuild/bin/proto/*",
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
         "../proto/*"
       ],
       "@bufbuild/protobuf/wire": ["./node_modules/@bufbuild/protobuf/dist/esm/wire/index.js"],

@@ -12,10 +12,7 @@ import (
 
 	"github.com/modelcontextprotocol/go-sdk/jsonrpc"
 	"github.com/stretchr/testify/assert"
-<<<<<<< HEAD
 	"github.com/stretchr/testify/require"
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 )
 
 func TestStdioTransport_CaptureStderr(t *testing.T) {
@@ -94,7 +91,6 @@ func TestStdioTransport_Success(t *testing.T) {
 	assert.True(t, ok)
 	assert.Equal(t, "ping", reqRead.Method)
 }
-<<<<<<< HEAD
 
 func TestStdioTransport_ConnectAndReadWrite(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -206,5 +202,3 @@ func TestStdioTransport_ReadBadJSON(t *testing.T) {
     _, err = conn.Read(ctx)
     assert.Error(t, err)
 }
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))

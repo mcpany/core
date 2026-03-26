@@ -32,7 +32,6 @@ func (m *MockTool) Tool() *v1.Tool {
 	return args.Get(0).(*v1.Tool)
 }
 
-<<<<<<< HEAD
 func (m *MockTool) IsStreaming() bool {
 	return false
 }
@@ -51,8 +50,6 @@ func (m *MockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest
 	return ch, nil
 }
 
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (m *MockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (interface{}, error) {
 	args := m.Called(ctx, req)
 	if args.Get(0) == nil {

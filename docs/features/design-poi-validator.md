@@ -57,7 +57,6 @@ With the rise of "Context-Mirroring" attacks (CVE-2026-34015), it's no longer en
         * **Context**: The release of the UACO v1.8 draft introduces Recursive Intent Delegation (RID) to combat "Intent Hijacking."
         * **Architecture Adjustment**: Expanded the `verifyIntent` logic to support recursive depth checks and mutation boundary validation. The validator now tracks the entire "Intent Lineage" to ensure relational integrity.
         * **Security Impact**: Eliminates "Intent Ghosting" and ensures that subagents operate strictly within the bounds defined by their lineage.
-<<<<<<< HEAD
     ### Update: 2026-03-24 (v2) - Relational Intent Integrity
     **Context:** Today's market sync revealed the escalation of "Context-Mirroring" attacks (CVE-2026-34015) and the need for UACO v1.7 PoI compliance.
     **Architecture Adjustment:** * Expanding PoI validation to include "Intent Chain" verification.
@@ -70,5 +69,3 @@ With the rise of "Context-Mirroring" attacks (CVE-2026-34015), it's no longer en
     * Mandatory **Relational PoI Chain** verification for every tool call.
     * Introduction of "Lineage-Bound Scoping" where subagent capabilities are dynamically restricted based on the most restrictive intent in its parentage chain.
     **Security Impact:** Eliminates "Intent Ghosting" by ensuring no unauthorized intent can shadow the mission root.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))

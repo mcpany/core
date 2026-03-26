@@ -260,7 +260,6 @@ func TestRun(t *testing.T) {
 	}
 	t.Fatalf("Server failed to start after 20 attempts: %v", runErr)
 }
-<<<<<<< HEAD
 
 func TestWSHandler_UpgradeError(t *testing.T) {
 	// Send plain HTTP GET request to WS handler, it should fail to upgrade
@@ -291,5 +290,3 @@ func TestWSHandler_UnexpectedCloseError(t *testing.T) {
 
 	// Handler will log and exit
 }
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))

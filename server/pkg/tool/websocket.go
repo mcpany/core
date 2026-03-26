@@ -122,7 +122,6 @@ func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
-<<<<<<< HEAD
 //
 // IsStreaming returns true if the tool supports streaming.
 //
@@ -181,8 +180,6 @@ func (t *WebsocketTool) StreamExecute(ctx context.Context, req *ExecutionRequest
 //
 // Side Effects:
 //   - Makes a WebSocket network call.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	wsPool, ok := pool.Get[*client.WebsocketClientWrapper](t.poolManager, t.serviceID)
 	if !ok {

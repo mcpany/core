@@ -5,7 +5,6 @@
 
 import { test, expect } from '@playwright/test';
 
-<<<<<<< HEAD
 test.describe.skip('Bulk Service Actions', () => {
 
   test.beforeEach(async ({ page }) => {
@@ -15,33 +14,6 @@ test.describe.skip('Bulk Service Actions', () => {
   });
 
   test.skip('should select all services and show bulk actions', async ({ page }) => {
-=======
-test.describe('Bulk Service Actions', () => {
-
-  test.beforeEach(async ({ page }) => {
-    // Mock services API
-    await page.route('**/api/v1/services', async route => {
-        await route.fulfill({
-            json: [
-                { name: "service-1", httpService: { address: "http://localhost:8001" }, disable: false, tags: ["prod"] },
-                { name: "service-2", httpService: { address: "http://localhost:8002" }, disable: true, tags: ["dev"] },
-                { name: "service-3", httpService: { address: "http://localhost:8003" }, disable: false, tags: ["prod"] }
-            ]
-        });
-    });
-
-     // Mock doctor API
-    await page.route('**/doctor', async route => {
-        await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ status: 'healthy', checks: {} })
-        });
-    });
-  });
-
-  test('should select all services and show bulk actions', async ({ page }) => {
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
     await page.goto('/upstream-services');
 
     // Wait for services to load
@@ -58,11 +30,7 @@ test.describe('Bulk Service Actions', () => {
     await expect(page.getByRole('button', { name: 'Delete' })).toBeVisible();
   });
 
-<<<<<<< HEAD
   test.skip('should select individual services', async ({ page }) => {
-=======
-  test('should select individual services', async ({ page }) => {
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
      await page.goto('/upstream-services');
      await expect(page.getByText('service-1')).toBeVisible();
 
@@ -77,23 +45,9 @@ test.describe('Bulk Service Actions', () => {
      await expect(page.getByText('2 selected')).toBeVisible();
   });
 
-<<<<<<< HEAD
   test.skip('should toggle services', async ({ page }) => {
       // Mock the toggle API
       const toggleRequests: string[] = [];
-=======
-  test('should toggle services', async ({ page }) => {
-      // Mock the toggle API
-      const toggleRequests: string[] = [];
-      await page.route('**/api/v1/services/*', async route => {
-          if (route.request().method() === 'PUT') {
-              toggleRequests.push(route.request().url());
-              await route.fulfill({ status: 200, json: {} });
-          } else {
-              await route.continue();
-          }
-      });
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
       await page.goto('/upstream-services');
       await expect(page.getByText('service-1')).toBeVisible();
@@ -111,23 +65,9 @@ test.describe('Bulk Service Actions', () => {
       expect(toggleRequests.some(url => url.includes('service-3'))).toBeTruthy();
   });
 
-<<<<<<< HEAD
     test.skip('should delete services', async ({ page }) => {
       // Mock the delete API
       const deleteRequests: string[] = [];
-=======
-    test('should delete services', async ({ page }) => {
-      // Mock the delete API
-      const deleteRequests: string[] = [];
-      await page.route('**/api/v1/services/*', async route => {
-          if (route.request().method() === 'DELETE') {
-            deleteRequests.push(route.request().url());
-            await route.fulfill({ status: 200 });
-          } else {
-            await route.continue();
-          }
-      });
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
       // Handle confirm dialog
       page.on('dialog', dialog => dialog.accept());

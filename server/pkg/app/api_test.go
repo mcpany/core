@@ -1387,7 +1387,6 @@ type TestMockTool struct {
 
 func (m *TestMockTool) Tool() *mcp_router_v1.Tool { return m.toolDef }
 func (m *TestMockTool) MCPTool() *mcp.Tool        { return nil }
-<<<<<<< HEAD
 
 func (m *TestMockTool) IsStreaming() bool {
 	return false
@@ -1397,8 +1396,6 @@ func (m *TestMockTool) StreamExecute(ctx context.Context, req *tool.ExecutionReq
 	return nil, nil
 }
 
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (m *TestMockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return nil, nil
 }

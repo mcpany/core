@@ -22,11 +22,7 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-<<<<<<< HEAD
 func TestHandleUsers_Table(t *testing.T) {
-=======
-func TestHandleUsers_List(t *testing.T) {
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	app := NewApplication()
 	app.fs = afero.NewMemMapFs()
 	app.AuthManager = auth.NewManager()
@@ -34,7 +30,6 @@ func TestHandleUsers_List(t *testing.T) {
 	app.Storage = store
 	handler := app.handleUsers(store)
 
-<<<<<<< HEAD
 	// Create a user first to test listing and conflicts
 	user := configv1.User_builder{Id: proto.String("user1")}.Build()
 	require.NoError(t, store.CreateUser(context.Background(), user))
@@ -156,30 +151,6 @@ func TestHandleUsers_List(t *testing.T) {
 			}
 		})
 	}
-=======
-	// Create a user first
-	user := configv1.User_builder{Id: proto.String("user1")}.Build()
-	require.NoError(t, store.CreateUser(context.Background(), user))
-
-	req := httptest.NewRequest(http.MethodGet, "/users", nil)
-	// Inject admin role
-	ctx := auth.ContextWithRoles(req.Context(), []string{"admin"})
-	req = req.WithContext(ctx)
-
-	w := httptest.NewRecorder()
-	handler(w, req)
-
-	assert.Equal(t, http.StatusOK, w.Code)
-	var users []json.RawMessage
-	err := json.Unmarshal(w.Body.Bytes(), &users)
-	require.NoError(t, err)
-	assert.Len(t, users, 1)
-
-	var u configv1.User
-	err = protojson.Unmarshal(users[0], &u)
-	require.NoError(t, err)
-	assert.Equal(t, "user1", u.GetId())
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 }
 
 func TestHandleUserDetail(t *testing.T) {
@@ -191,7 +162,6 @@ func TestHandleUserDetail(t *testing.T) {
 	handler := app.handleUserDetail(store)
 
 	// Create a user
-<<<<<<< HEAD
 	user := configv1.User_builder{
 		Id: proto.String("user1"),
 		Roles: []string{"user"},
@@ -441,88 +411,6 @@ func TestHashUserPassword(t *testing.T) {
 		err := hashUserPassword(ctx, user, store, nil)
 		require.NoError(t, err)
 		assert.Equal(t, "", user.GetAuthentication().GetBasicAuth().GetPasswordHash())
-=======
-	user := configv1.User_builder{Id: proto.String("user1")}.Build()
-	require.NoError(t, store.CreateUser(context.Background(), user))
-
-	t.Run("Get User", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodGet, "/users/user1", nil)
-		// Inject auth context (user accessing self)
-		ctx := auth.ContextWithUser(req.Context(), "user1")
-		req = req.WithContext(ctx)
-
-		w := httptest.NewRecorder()
-		handler(w, req)
-
-		assert.Equal(t, http.StatusOK, w.Code)
-		var u configv1.User
-		err := protojson.Unmarshal(w.Body.Bytes(), &u)
-		require.NoError(t, err)
-		assert.Equal(t, "user1", u.GetId())
-	})
-
-	t.Run("Get Non-Existent User", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodGet, "/users/unknown", nil)
-		// Inject admin role to bypass "own user" check and hit 404
-		ctx := auth.ContextWithUser(req.Context(), "admin")
-		ctx = auth.ContextWithRoles(ctx, []string{"admin"})
-		req = req.WithContext(ctx)
-
-		w := httptest.NewRecorder()
-		handler(w, req)
-		assert.Equal(t, http.StatusNotFound, w.Code)
-	})
-
-	t.Run("Update User", func(t *testing.T) {
-		updatedUser := configv1.User_builder{
-			Id: proto.String("user1"),
-			Authentication: configv1.Authentication_builder{
-				BasicAuth: configv1.BasicAuth_builder{
-					PasswordHash: proto.String("newpass"),
-				}.Build(),
-			}.Build(),
-		}.Build()
-		// Wrap in { user: ... }
-		opts := protojson.MarshalOptions{UseProtoNames: true}
-		userBytes, _ := opts.Marshal(updatedUser)
-		bodyMap := map[string]json.RawMessage{
-			"user": json.RawMessage(userBytes),
-		}
-		body, _ := json.Marshal(bodyMap)
-
-		req := httptest.NewRequest(http.MethodPut, "/users/user1", bytes.NewReader(body))
-		// Inject auth context (user accessing self)
-		ctx := auth.ContextWithUser(req.Context(), "user1")
-		req = req.WithContext(ctx)
-
-		w := httptest.NewRecorder()
-		handler(w, req)
-
-		assert.Equal(t, http.StatusOK, w.Code)
-
-		// Verify update in store
-		u, err := store.GetUser(context.Background(), "user1")
-		require.NoError(t, err)
-		// Password should be hashed (not "newpass")
-		assert.NotEqual(t, "newpass", u.GetAuthentication().GetBasicAuth().GetPasswordHash())
-		assert.True(t, strings.HasPrefix(u.GetAuthentication().GetBasicAuth().GetPasswordHash(), "$2"))
-	})
-
-	t.Run("Delete User", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodDelete, "/users/user1", nil)
-		// Inject auth context (user deleting self)
-		ctx := auth.ContextWithUser(req.Context(), "user1")
-		req = req.WithContext(ctx)
-
-		w := httptest.NewRecorder()
-		handler(w, req)
-		assert.Equal(t, http.StatusNoContent, w.Code)
-
-		// Verify deletion
-		u, err := store.GetUser(context.Background(), "user1")
-		require.NoError(t, err)
-		assert.Nil(t, u)
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	})
 }
 

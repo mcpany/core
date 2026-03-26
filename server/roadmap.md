@@ -4,13 +4,8 @@
 *   **[Security] Policy Firewall Engine:** Implement Rego/CEL based hooking for tool calls.
 *   **[Security] Granular Scopes:** implement capability-based token system (`fs:read:/tmp`).
 *   **[Comms] Recursive Context Protocol:** Standardize headers for Subagent inheritance.
-<<<<<<< HEAD
 *   **[x] [State] Shared Key-Value Store:** Embedded SQLite "Blackboard" tool for agents.
 *   **[x] [Security] HITL Middleware:** Suspension protocol for user approval flows.
-=======
-*   **[State] Shared Key-Value Store:** Embedded SQLite "Blackboard" tool for agents.
-*   **[Security] HITL Middleware:** Suspension protocol for user approval flows.
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
 ## 2. Updated Roadmap
 
@@ -18,22 +13,14 @@
 
 #### Upcoming (2026-02-23 Evolution)
 *   **[P0] Recursive Context Protocol**: Finalize header-based context inheritance for swarms.
-<<<<<<< HEAD
 *   **[x] [P0] Zero-Trust Subagent Scoping**: Implement intent-bound capability tokens.
-=======
-*   **[P0] Zero-Trust Subagent Scoping**: Implement intent-bound capability tokens.
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 *   **[P1] Environment Bridging Middleware**: Secure state sync between cloud sandboxes and local tools.
 *   **[P1] Machine-Checkable Security Contracts**: Declarative tool safety models.
 *   **[P0] Multi-Agent Session Management**: Session-aware middleware for agent coordination (Added: 2026-02-24).
 *   **[P1] Unified MCP Discovery Service**: Automated registry for Stdio/HTTP/FastMCP servers (Added: 2026-02-24).
 
 #### Upcoming (2026-02-25 Evolution)
-<<<<<<< HEAD
 *   **[x] [P0] On-Demand Discovery Middleware (Lazy-MCP)**: Implements similarity-based tool searching to prevent context pollution. (Added: 2026-02-25)
-=======
-*   **[P0] On-Demand Discovery Middleware (Lazy-MCP)**: Implements similarity-based tool searching to prevent context pollution. (Added: 2026-02-25)
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 *   **[P0] Supply Chain Integrity Guard**: Cryptographic provenance verification for MCP servers to prevent unauthorized tool injection. (Added: 2026-02-25)
 *   **[P1] FastMCP Metadata Support**: Support for Pythonic FastMCP decorators and native Gemini CLI slash command mapping. (Added: 2026-02-25)
 
@@ -119,14 +106,10 @@
 *   **[P0] Identity-Bound Discovery (IBD)**: Mission-token gated tool and capability discovery. (Added: 2026-03-17)
 
 #### Upcoming (2026-03-22 Evolution)
-<<<<<<< HEAD
 *   **[P0] Premium Tool Execution Timeline**: (2026-03-21) Blueprint for high-fidelity interactive timeline.
 *   **[P0] UACO Agentic SLA Middleware**: Enforcement of hardware-attested resource contracts (token budget, reasoning time) during task delegation. (Added: 2026-03-22)
 *   **[P0] Lock-Free Mesh Coordination**: CRDT-based mailbox synchronization to eliminate "Mailbox Lock" bottlenecks in horizontal swarms. (Added: 2026-03-22)
 *   **[P0] ARL (Attestation Revocation List) Provider**: Real-time, hardware-bound capability revocation service to neutralize "Trust Lease" vulnerabilities. (Added: 2026-03-22)
-=======
-*   **[P0] UACO Agentic SLA Middleware**: Enforcement of resource contracts (token budget, reasoning time) during task delegation. (Added: 2026-03-22)
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 *   **[P0] Ghost Shell Execution Mode**: Isolated profiling environment for behavioral analysis of un-attested hooks. (Added: 2026-03-22)
 *   **[P1] Federated Policy Synchronizer**: Secure bus for synchronizing security guardrails across multiple MCP Any instances. (Added: 2026-03-22)
 
@@ -143,7 +126,6 @@
 *   **[P0] Relational PoI Enforcement**: Advanced intent-chain validation to prevent "Context-Mirroring" attacks. (Added: 2026-03-24)
 *   **[P0] Ghost Shell Hook Profiler**: Instrumented sandbox for behavioral profiling of un-attested configuration hooks. (Added: 2026-03-24)
 *   **[P1] BSH State Differential Sync**: Optimized binary state transfer that only sends deltas between agent handoffs. (Added: 2026-03-24)
-<<<<<<< HEAD
 *   **[P0] Discovery-Phase Sandbox Middleware**: Ephemeral execution for discovery commands to neutralize startup-time RCE. (Added: 2026-03-24)
 *   **[P0] Lock-Free Teammate Coordination (LFTC)**: CRDT-based mailbox synchronization for horizontal swarms. (Added: 2026-03-24)
 *   **[P0] Argument-Level Semantic Validator (ALSV)**: Deep-inspection for command arguments to prevent shell-fallback exploits. (Added: 2026-03-24)
@@ -229,15 +211,6 @@
 *   **[P0] Multi-Signature Skill Attestation (MSSA)**: Mandatory auditor attestation for dynamic tool grafting and high-risk skill installation. (Added: 2026-06-27)
 *   **[P1] Reasoning Path Integrity (RPI) Validator**: Support for ARE v1.8 hardware-signed reasoning fragments and semantic hash-chaining. (Added: 2026-06-27)
 
-=======
-
-#### Upcoming (2026-03-25 Evolution)
-*   **[P0] WASM-BSH State Sanitizer**: Pluggable WASM-based validation for binary context handoffs. (Added: 2026-03-25)
-*   **[P0] Zero-Copy BSH Transport**: Shared-memory based state transfer for sub-millisecond swarm handoffs. (Added: 2026-03-25)
-*   **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited Recursive Intent Delegation. (Added: 2026-03-25)
-*   **[P1] Predictive Resource Locking**: Intent-aware concurrency control for the Shared Blackboard. (Added: 2026-03-25)
-
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
@@ -765,7 +738,6 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Authenticated A2A Discovery Enforcer**: Mandatory cryptographic masking of agent capability cards for unauthenticated peers. (Added: 2026-06-01)
 
 #### Upcoming (2026-05-29 Evolution)
-<<<<<<< HEAD
 *   **[x]** **[P0] Collective Swarm Anomaly Detection (CSAD) Hub**: Cross-agent behavioral analysis middleware to detect "Hivenet" swarm attacks (Implemented via Multi-Agent Swarm Topology Monitor).
 *   **[P0] Cross-Mesh Command Sovereignty (CMCS) Provider**: Hardware-attested "Mesh Tokens" for inter-teammate mailbox validation in horizontal swarms. (Added: 2026-05-29)
 *   **[P0] Atomic Teammate Handshake (ATH) Gateway**: Mandatory identity exchange before teammate task delegation in horizontal teams. (Added: 2026-05-29)
@@ -955,9 +927,3 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Zero-Copy BSH Transport**: Shared-memory based state transfer for sub-millisecond swarm handoffs. (Added: 2026-03-25)
 *   **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited Recursive Intent Delegation. (Added: 2026-03-25)
 *   **[P1] Predictive Resource Locking**: Intent-aware concurrency control for the Shared Blackboard. (Added: 2026-03-25)
-=======
-*   **[P0] Collective Swarm Anomaly Detection (CSAD) Hub**: Cross-agent behavioral analysis middleware to detect "Hivenet" swarm attacks. (Added: 2026-05-29)
-*   **[P0] Cross-Mesh Command Sovereignty (CMCS) Provider**: Hardware-attested "Mesh Tokens" for inter-teammate mailbox validation in horizontal swarms. (Added: 2026-05-29)
-*   **[P0] Atomic Teammate Handshake (ATH) Gateway**: Mandatory identity exchange before teammate task delegation in horizontal teams. (Added: 2026-05-29)
-*   **[P0] Mesh-Bound Context Sovereignty Bridge**: Semantic fragment analysis across teammate boundaries for horizontal team stability. (Added: 2026-05-29)
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))

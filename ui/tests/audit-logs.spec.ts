@@ -4,16 +4,10 @@
  */
 
 
-<<<<<<< HEAD
 import { test, expect } from '@playwright/test';
 import * as path from 'path';
 import * as fs from 'fs';
 import { seedGlobalState } from './e2e/test-data';
-=======
-import { test } from '@playwright/test';
-import * as path from 'path';
-import * as fs from 'fs';
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
 test.describe('Feature Screenshot', () => {
     // Enabled audit screenshots
@@ -22,7 +16,6 @@ test.describe('Feature Screenshot', () => {
     // Use test-results directory which is writable in CI
     const auditDir = path.join(process.cwd(), 'test-results/artifacts/audit/ui', date);
 
-<<<<<<< HEAD
     test.beforeAll(async ({ request }) => {
         // Attempt to seed data if backend is available
         try {
@@ -31,9 +24,6 @@ test.describe('Feature Screenshot', () => {
             console.warn('Backend not available for seeding, proceeding without it:', e);
         }
 
-=======
-    test.beforeAll(async () => {
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
         try {
             if (!fs.existsSync(auditDir)) {
                 fs.mkdirSync(auditDir, { recursive: true });
@@ -54,7 +44,6 @@ test.describe('Feature Screenshot', () => {
     }
   });
 
-<<<<<<< HEAD
   test('Verify RichResultViewer and Export', async ({ page }) => {
     // We can't rely on the backend being alive or correctly seeded in this specific test
     // environment, so we intercept the API calls to guarantee the UI has data to render.
@@ -107,11 +96,6 @@ test.describe('Feature Screenshot', () => {
 
     // Close dialog
     await page.keyboard.press('Escape');
-=======
-  test('Export Audit Logs to CSV', async ({ page }) => {
-    await page.goto('/audit');
-    await page.waitForSelector('text=Audit Logs');
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
     // Start waiting for download before clicking.
     const downloadPromise = page.waitForEvent('download', { timeout: 10000 }).catch(() => null);
@@ -120,7 +104,6 @@ test.describe('Feature Screenshot', () => {
     const exportBtn = page.locator('button:has-text("Export CSV")');
     await exportBtn.waitFor({ state: 'visible' });
 
-<<<<<<< HEAD
     // Click it (which triggers an export on backend)
     await page.route('**/api/v1/audit/export*', async route => {
         await route.fulfill({ status: 200, body: 'a,b,c\n1,2,3' });
@@ -130,19 +113,5 @@ test.describe('Feature Screenshot', () => {
 
     // We mocked it so no actual file is downloaded, just checking the Toast
     await expect(page.locator('text=Export Successful').first()).toBeVisible();
-=======
-    // Check if we need to mock since we are not fully seeding audit data for this specific test
-    // but the backend handles /api/v1/audit/export naturally.
-    await exportBtn.click();
-
-    const download = await downloadPromise;
-    if (download) {
-        const suggestedFilename = download.suggestedFilename();
-        if (!suggestedFilename.includes('audit_export')) {
-             throw new Error(`Unexpected filename: ${suggestedFilename}`);
-        }
-        await download.cancel();
-    }
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
   });
 });

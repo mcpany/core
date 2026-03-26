@@ -10,7 +10,6 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
-<<<<<<< HEAD
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
@@ -54,11 +53,6 @@ func (m *MockSession) ListRoots(ctx context.Context) (*mcp.ListRootsResult, erro
 	return nil, args.Error(1)
 }
 
-=======
-	"github.com/stretchr/testify/require"
-)
-
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func TestHandleCreateMessage(t *testing.T) {
 	u := NewUpstream(configv1.GlobalSettings_builder{}.Build()).(*Upstream)
 	ctx := context.Background()

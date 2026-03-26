@@ -97,14 +97,11 @@ const platformItems = [
     icon: Layers,
   },
   {
-<<<<<<< HEAD
     title: "HITL Approvals",
     url: "/hitl",
     icon: ShieldCheck,
   },
   {
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
     title: "Analytics",
     url: "/stats",
     icon: Activity,
@@ -115,14 +112,11 @@ const platformItems = [
     icon: Brain,
   },
   {
-<<<<<<< HEAD
     title: "Blackboard",
     url: "/blackboard",
     icon: Database,
   },
   {
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
     title: "Marketplace",
     url: "/marketplace",
     icon: ShoppingBag,
@@ -146,14 +140,11 @@ const devItems = [
     icon: Workflow,
   },
   {
-<<<<<<< HEAD
     title: "Universal Agent Bus",
     url: "/universal-agent-bus",
     icon: Network,
   },
   {
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
     title: "Schema Validation",
     url: "/playground/schema",
     icon: ShieldCheck,

@@ -35,7 +35,6 @@ var (
 )
 
 // trackBundle marks a service ID as active.
-<<<<<<< HEAD
 //
 // Summary: Tracks a bundle.
 //
@@ -50,14 +49,11 @@ var (
 //
 // Side Effects:
 //   - Modifies global activeBundles map.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func trackBundle(serviceID string) {
 	activeBundles.Store(serviceID, true)
 }
 
 // untrackBundle marks a service ID as inactive.
-<<<<<<< HEAD
 //
 // Summary: Untracks a bundle.
 //
@@ -72,15 +68,12 @@ func trackBundle(serviceID string) {
 //
 // Side Effects:
 //   - Modifies global activeBundles map.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func untrackBundle(serviceID string) {
 	activeBundles.Delete(serviceID)
 }
 
 // triggerGC checks if it's time to run garbage collection and starts it in a
 // background goroutine if necessary.
-<<<<<<< HEAD
 // triggerGC checks if it's time to run garbage collection and starts it in a background goroutine if necessary.
 //
 // Summary: Triggers garbage collection.
@@ -96,10 +89,6 @@ func untrackBundle(serviceID string) {
 //
 // Side Effects:
 //   - Starts a goroutine.
-=======
-// triggerGC checks if it's time to run garbage collection and starts it in a
-// background goroutine if necessary.
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func triggerGC() {
 	now := time.Now().Unix()
 	last := lastGCTimestamp.Load()
@@ -114,7 +103,6 @@ func triggerGC() {
 	}
 }
 
-<<<<<<< HEAD
 // runGC scans the bundle base directory and removes any directories that do not correspond to an active service ID.
 //
 // Summary: Runs garbage collection.
@@ -130,10 +118,6 @@ func triggerGC() {
 //
 // Side Effects:
 //   - Deletes files and directories.
-=======
-// runGC scans the bundle base directory and removes any directories that do not
-// correspond to an active service ID.
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func runGC(baseDir string) {
 	log := logging.GetLogger()
 	entries, err := os.ReadDir(baseDir)

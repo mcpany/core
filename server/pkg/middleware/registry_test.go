@@ -15,7 +15,6 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-<<<<<<< HEAD
 // ClearRegistryForTesting is used only in testing to clear the global registry
 func ClearRegistryForTesting() {
 	globalRegistry.mu.Lock()
@@ -26,9 +25,6 @@ func ClearRegistryForTesting() {
 
 func TestRegistry_HTTPMiddlewares(t *testing.T) {
 	t.Cleanup(ClearRegistryForTesting)
-=======
-func TestRegistry_HTTPMiddlewares(t *testing.T) {
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	// Register a test middleware
 	mwName := "test-http-middleware"
 	mwHeaderKey := "X-Test-Middleware"
@@ -103,7 +99,6 @@ func TestRegistry_HTTPMiddlewares(t *testing.T) {
 		assert.Len(t, mws, 2)
 	})
 
-<<<<<<< HEAD
 	t.Run("sorts_middlewares_by_priority", func(t *testing.T) {
 		// Test multiple middlewares to ensure sort.Slice handles out-of-order priorities
 		mw1 := "sort-test-1"
@@ -170,8 +165,6 @@ func TestRegistry_HTTPMiddlewares(t *testing.T) {
 		assert.Equal(t, []string{"1", "2", "3"}, rr.Header().Values("X-Order"))
 	})
 
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	t.Run("ignore_disabled_middleware", func(t *testing.T) {
 		configs := []*configv1.Middleware{
 			configv1.Middleware_builder{
@@ -197,10 +190,7 @@ func TestRegistry_HTTPMiddlewares(t *testing.T) {
 }
 
 func TestRegistry_MCPMiddlewares(t *testing.T) {
-<<<<<<< HEAD
 	t.Cleanup(ClearRegistryForTesting)
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	mwName := "test-mcp-middleware"
 	RegisterMCP(mwName, func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
 		return func(next mcp.MethodHandler) mcp.MethodHandler {
@@ -223,7 +213,6 @@ func TestRegistry_MCPMiddlewares(t *testing.T) {
 		assert.Len(t, mws, 1)
 	})
 
-<<<<<<< HEAD
 	t.Run("sorts_middlewares_by_priority", func(t *testing.T) {
 		// Test multiple middlewares to ensure sort.Slice handles out-of-order priorities
 		mw1 := "mcp-sort-test-1"
@@ -292,8 +281,6 @@ func TestRegistry_MCPMiddlewares(t *testing.T) {
 		assert.Equal(t, []string{"1", "2", "3"}, resultTrace)
 	})
 
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	t.Run("ignore_disabled_mcp_middleware", func(t *testing.T) {
 		configs := []*configv1.Middleware{
 			configv1.Middleware_builder{
@@ -321,10 +308,7 @@ func TestInitStandardMiddlewares_ContextOptimizer_Default(t *testing.T) {
 		config, // Pass empty config
 		nil,
 		nil,
-<<<<<<< HEAD
 		nil,
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	)
 	assert.NoError(t, err)
 	assert.NotNil(t, stdMws.ContextOptimizer)

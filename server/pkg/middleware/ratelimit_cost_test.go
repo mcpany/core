@@ -60,7 +60,6 @@ func (m *MockToolManagerForCost) ToolMatchesProfile(tool tool.Tool, profileID st
 }
 
 // MockToolForCost is a mock for tool.Tool
-<<<<<<< HEAD
 
 func (m *MockToolForCost) IsStreaming() bool {
 	return false
@@ -70,8 +69,6 @@ func (m *MockToolForCost) StreamExecute(ctx context.Context, req *tool.Execution
 	return nil, nil
 }
 
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 type MockToolForCost struct {
 	mock.Mock
 }

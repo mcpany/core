@@ -147,7 +147,6 @@ func (t *RootsTool) MCPTool() *mcp.Tool {
 //
 // Side Effects:
 //   - None.
-<<<<<<< HEAD
 
 // IsStreaming indicates whether this tool supports streaming execution.
 //
@@ -207,8 +206,6 @@ func (t *RootsTool) StreamExecute(ctx context.Context, req *tool.ExecutionReques
 //
 // Side Effects:
 //   - Sends a "roots/list" request to the client.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 	session, ok := tool.GetSession(ctx)
 	if !ok {

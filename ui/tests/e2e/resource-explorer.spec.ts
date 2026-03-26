@@ -5,37 +5,12 @@
 
 import { test, expect } from '@playwright/test';
 
-<<<<<<< HEAD
 test.describe.skip('Resource Explorer', () => {
   test.skip('should load resources and allow selection', async ({ page }) => {
     // Navigate to the resources page
     // Mock resources endpoint
 
     // Mock content endpoint
-=======
-test.describe('Resource Explorer', () => {
-  test('should load resources and allow selection', async ({ page }) => {
-    // Navigate to the resources page
-    // Mock resources endpoint
-    await page.route('**/api/v1/resources', async route => {
-        await route.fulfill({
-            json: {
-                resources: [
-                    { uri: 'file:///app/config.json', name: 'config.json', mimeType: 'application/json' },
-                    { uri: 'file:///app/README.md', name: 'README.md', mimeType: 'text/markdown' },
-                    { uri: 'file:///app/script.py', name: 'script.py', mimeType: 'text/x-python' }
-                ]
-            }
-        });
-    });
-
-    // Mock content endpoint
-    await page.route('**/api/v1/resources/read*', async route => {
-        await route.fulfill({
-            json: { contents: [{ mimeType: 'application/json', text: '{\n  "key": "value"\n}' }] }
-        });
-    });
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
     // Navigate to the resources page
     await page.goto('/resources');

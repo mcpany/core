@@ -47,7 +47,6 @@ func (m *MockTool) MCPTool() *mcp.Tool {
 	return nil
 }
 
-<<<<<<< HEAD
 // IsStreaming returns whether the mock tool supports streaming.
 //
 // Summary: Checks if the mock tool supports streaming.
@@ -98,8 +97,6 @@ func (m *MockTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 	return ch, nil
 }
 
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 // Execute calls the mock ExecuteFunc if set, otherwise returns nil.
 //
 // Summary: Executes the mock tool.
@@ -111,15 +108,12 @@ func (m *MockTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
-<<<<<<< HEAD
 //
 // Errors:
 //   - Returns the error returned by the underlying mock ExecuteFunc.
 //
 // Side Effects:
 //   - Calls the underlying mock ExecuteFunc.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (m *MockTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if m.ExecuteFunc != nil {
 		return m.ExecuteFunc(ctx, req)

@@ -5,10 +5,7 @@
 package tool
 
 import (
-<<<<<<< HEAD
 	"context"
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	"sync"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -74,7 +71,6 @@ func (t *baseTool) MCPTool() *mcp.Tool {
 //
 // Returns:
 //   - *configv1.CacheConfig: Always returns nil.
-<<<<<<< HEAD
 //
 // IsStreaming returns true if the tool supports streaming execution.
 //
@@ -116,8 +112,6 @@ func (t *baseTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 //
 // Side Effects:
 //   - None.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (t *baseTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }

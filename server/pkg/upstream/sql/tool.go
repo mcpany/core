@@ -193,7 +193,6 @@ func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Side Effects:
 //   - None.
-<<<<<<< HEAD
 //
 // IsStreaming returns true if the tool supports streaming.
 //
@@ -249,8 +248,6 @@ func (t *Tool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<
 //
 // Side Effects:
 //   - Executes a query on the database.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (t *Tool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError

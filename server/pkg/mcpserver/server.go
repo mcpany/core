@@ -10,10 +10,6 @@ import (
 	"log/slog"
 	"time"
 
-<<<<<<< HEAD
-=======
-	jsoniter "github.com/json-iterator/go"
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	apiv1 "github.com/mcpany/core/proto/api/v1"
 	"github.com/mcpany/core/server/pkg/api/rest"
 	"github.com/mcpany/core/server/pkg/appconsts"
@@ -40,17 +36,6 @@ var (
 	metricToolsCallLatency = []string{"tools", "call", "latency"}
 )
 
-<<<<<<< HEAD
-=======
-// fastJSON is a jsoniter configuration that disables map key sorting for performance.
-// The order of keys in the JSON response does not matter for the LLM.
-var fastJSON = jsoniter.Config{
-	EscapeHTML:             true,
-	SortMapKeys:            false,
-	ValidateJsonRawMessage: true,
-}.Froze()
-
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 // AddReceivingMiddlewareHook is a testing hook that allows inspection of the middleware chain.
 //
 // It is invoked when the Server method is called, allowing tests to verify which middlewares are present.
@@ -578,11 +563,7 @@ func (s *Server) GetPrompt(
 	}
 
 	// Use json-iterator for faster JSON marshaling
-<<<<<<< HEAD
 	argsBytes, err := util.FastMarshal(req.Params.Arguments)
-=======
-	argsBytes, err := fastJSON.Marshal(req.Params.Arguments)
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal prompt arguments: %w", err)
 	}
@@ -993,10 +974,7 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 	}
 
 	var finalResult *mcp.CallToolResult
-<<<<<<< HEAD
 	var text string
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	var jsonBytes []byte
 	var marshalErr error
 	var isStructured bool
@@ -1045,7 +1023,6 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 
 	// 3. Fallback: If no structured result identified, treat as raw data
 	if finalResult == nil {
-<<<<<<< HEAD
 		if len(jsonBytes) == 0 && marshalErr == nil {
 			jsonBytes, marshalErr = util.FastMarshal(result)
 			if marshalErr == nil {
@@ -1054,17 +1031,6 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		}
 
 		if marshalErr != nil {
-=======
-		if jsonBytes == nil {
-			jsonBytes, marshalErr = fastJSON.Marshal(result)
-		}
-
-		var text string
-		// ⚡ Bolt Optimization: Use Zero-copy conversion for large JSON payloads
-		if marshalErr == nil {
-			text = util.BytesToString(jsonBytes)
-		} else {
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 			text = util.ToString(result)
 		}
 
@@ -1080,11 +1046,7 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		var logValue slog.Value
 		// If we have a structured result (either directly or converted), use the summarizer.
 		// If we fell back to raw JSON (isStructured=false), reuse the jsonBytes for redacted logging.
-<<<<<<< HEAD
 		if !isStructured && len(jsonBytes) > 0 && marshalErr == nil {
-=======
-		if !isStructured && jsonBytes != nil && marshalErr == nil {
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 			// ⚡ Bolt Optimization: Reuse marshaled bytes for logging (redacted)
 			// This saves a second marshal operation for large maps.
 			logValue = slog.StringValue(util.BytesToString(util.RedactJSON(jsonBytes)))
@@ -1447,11 +1409,7 @@ func (r LazyLogResult) LogValue() slog.Value {
 		}
 		// Otherwise redact it. We marshal it to JSON bytes to use RedactJSON.
 		// Use json-iterator for speed.
-<<<<<<< HEAD
 		jsonBytes, _ := util.FastMarshal(v)
-=======
-		jsonBytes, _ := fastJSON.Marshal(v)
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 		return slog.StringValue(util.BytesToString(util.RedactJSON(jsonBytes)))
 	default:
 		// Fallback for other types

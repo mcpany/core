@@ -8,12 +8,8 @@ import { test, expect } from '@playwright/test';
 
 test('Tools page loads and inspector opens', async ({ page }) => {
   // Mock tools endpoint
-<<<<<<< HEAD
 
   await page.route((url) => url.pathname.includes("/api/v1/tools"), async (route) => {
-=======
-  await page.route((url) => url.pathname.includes('/api/v1/tools'), async (route) => {
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
     await route.fulfill({
       json: {
         tools: [

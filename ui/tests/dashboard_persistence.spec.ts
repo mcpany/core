@@ -10,11 +10,7 @@ test('dashboard layout persistence', async ({ page, request }) => {
   await page.goto('/');
 
   // Wait for loading to finish
-<<<<<<< HEAD
   await expect(page.locator('.lucide-loader-circle.animate-spin').first()).not.toBeVisible();
-=======
-  await expect(page.locator('.animate-spin')).not.toBeVisible();
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
   // If dashboard is empty, we see "Your dashboard is empty"
   // If defaults are loaded, we might see widgets.
@@ -26,11 +22,7 @@ test('dashboard layout persistence', async ({ page, request }) => {
   });
 
   await page.reload();
-<<<<<<< HEAD
   await expect(page.locator('.lucide-loader-circle.animate-spin').first()).not.toBeVisible();
-=======
-  await expect(page.locator('.animate-spin')).not.toBeVisible();
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
   await expect(page.getByText('Your dashboard is empty')).toBeVisible();
 
   // 2. Add a widget
@@ -50,11 +42,7 @@ test('dashboard layout persistence', async ({ page, request }) => {
 
   // 5. Reload page
   await page.reload();
-<<<<<<< HEAD
   await expect(page.locator('.lucide-loader-circle.animate-spin').first()).not.toBeVisible();
-=======
-  await expect(page.locator('.animate-spin')).not.toBeVisible();
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
   // 6. Verify widget persists
   await expect(page.getByText('Recent Activity').first()).toBeVisible();

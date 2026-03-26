@@ -13,10 +13,7 @@ import { Trace } from "@/types/trace";
 import { apiClient } from "@/lib/client";
 import { Loader2, RefreshCcw, AlertTriangle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-<<<<<<< HEAD
 import { unwrapMcpResult, deepParseJson } from "@/lib/mcp-unwrap";
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
 interface ReplayDiffDialogProps {
     open: boolean;
@@ -69,15 +66,9 @@ export function ReplayDiffDialog({ open, onOpenChange, trace }: ReplayDiffDialog
 
     if (!trace) return null;
 
-<<<<<<< HEAD
     const originalOutput = JSON.stringify(deepParseJson(unwrapMcpResult(trace.rootSpan.output || {})), null, 2);
     const newOutput = replayResult
         ? JSON.stringify(deepParseJson(unwrapMcpResult(replayResult)), null, 2)
-=======
-    const originalOutput = JSON.stringify(trace.rootSpan.output || {}, null, 2);
-    const newOutput = replayResult
-        ? JSON.stringify(replayResult, null, 2)
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
         : error
             ? `// Replay Failed\n${error}`
             : "// Waiting for execution...";

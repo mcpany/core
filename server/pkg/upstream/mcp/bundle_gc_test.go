@@ -7,10 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
-<<<<<<< HEAD
 	"time"
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
 	"github.com/stretchr/testify/assert"
 )
@@ -44,7 +41,6 @@ func TestBundleGC(t *testing.T) {
 	_, err = os.Stat(activeDir)
 	assert.NoError(t, err, "Active directory should remain")
 }
-<<<<<<< HEAD
 
 func TestBundleGC_TriggerGCTime(t *testing.T) {
 	// Setup temp dir for testing
@@ -83,5 +79,3 @@ func TestBundleGC_TriggerGCTime(t *testing.T) {
 	_, err = os.Stat(orphanedDir3)
 	assert.NoError(t, err, "Orphaned directory should NOT be removed by background GC because of interval")
 }
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))

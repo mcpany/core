@@ -1169,26 +1169,11 @@ func simpleTokenizeInt64(n int64) int {
 
 	// Unrolled loop for digit counting
 	switch {
-<<<<<<< HEAD
 	// ⚡ BOLT: Optimization - These branches are mathematically unreachable due to the fast path:
 	// if n > -1000000 && n < 10000000 { return 1 }
 	// This means any number that reaches here must be <= -1000000 or >= 10000000.
 	// After the sign handling `n = -n`, `n` is guaranteed to be >= 1000000.
 	// Thus cases for < 10 through < 1000000 are dead code and safely removed.
-=======
-	case n < 10:
-		l++
-	case n < 100:
-		l += 2
-	case n < 1000:
-		l += 3
-	case n < 10000:
-		l += 4
-	case n < 100000:
-		l += 5
-	case n < 1000000:
-		l += 6
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	case n < 10000000:
 		l += 7
 	case n < 100000000:

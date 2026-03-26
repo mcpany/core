@@ -16,7 +16,6 @@ export type SecretHandlingMode = 'redact' | 'template' | 'unsafe';
 /**
  * Sanitizes a service configuration by redacting or templating potential secrets.
  *
-<<<<<<< HEAD
  * Summary: Redacts or templates secrets embedded in a service configuration object.
  *
  * Parameters:
@@ -31,16 +30,6 @@ export type SecretHandlingMode = 'redact' | 'template' | 'unsafe';
  *
  * Side Effects:
  *   - None.
-=======
- * Summary: Redacts or templates secrets in a service config.
- *
- * @param service - The service configuration to sanitize.
- * @param mode - The secret handling mode.
- * @returns A sanitized copy of the configuration.
- *
- * Side Effects:
- * - None.
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
  */
 export function sanitizeServiceConfig(service: UpstreamServiceConfig, mode: SecretHandlingMode): UpstreamServiceConfig {
     // Deep clone to avoid mutating original

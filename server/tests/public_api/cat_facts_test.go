@@ -20,11 +20,7 @@ import (
 )
 
 func TestUpstreamService_CatFacts(t *testing.T) {
-<<<<<<< HEAD
 
-=======
-	// t.Skip("Skipping flaky cat facts test due to rate limiting issues")
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 

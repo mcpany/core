@@ -46,7 +46,6 @@ With the official launch of Claude Code "Agent Teams," the `TeammateTool` has em
 ## 7. Evolutionary Changelog
 * **2026-05-17:** Initial Document Creation.
 * **2026-05-18:** Added support for **Multi-Agent Quorum (MAQ)** coordination. The adapter now facilitates cross-framework approval tokens, allowing an OpenClaw specialist to participate in a Claude-led quorum for high-risk actions. Integrated **Wait-Graph Deadlock Resolution** to identify and break circular task dependencies on the Blackboard during parallel execution.
-<<<<<<< HEAD
 
 ### Update: 2026-03-24 - Transition to Horizontal Mesh Coordination
 **Context:** Today's research confirms Claude Code's shift from hierarchical subagents to "Agent Teams" where teammates share a global task list and communicate directly.
@@ -54,5 +53,3 @@ With the official launch of Claude Code "Agent Teams," the `TeammateTool` has em
 * Deprecating parent-mediated messaging in favor of direct **LFTC-based** peer communication.
 * Integrating **CRDT-native task lists** to allow teammates to asynchronously claim and update work without global locks.
 **Security Impact:** Enhances swarm resilience and prevents "Coordinator Bottleneck" attacks, while mandating hardware-attested task-claim integrity.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))

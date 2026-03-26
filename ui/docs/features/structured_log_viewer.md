@@ -17,8 +17,4 @@ The **Structured Log Viewer** enhances the logging experience in MCP Any by auto
 
 ## Screenshot
 
-<<<<<<< HEAD
 ![Structured Log Viewer](../screenshots/logs.png)
-=======
-![Structured Log Viewer](../screenshots/structured_log_viewer.png)
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))

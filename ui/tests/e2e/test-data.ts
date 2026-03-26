@@ -4,12 +4,6 @@
  */
 
 import { request, APIRequestContext } from '@playwright/test';
-<<<<<<< HEAD
-=======
-import { ServiceTemplate } from '../../../proto/config/v1/service_template';
-import { UpstreamServiceConfig } from '../../../proto/config/v1/upstream_service';
-import { User } from '../../../proto/config/v1/user';
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
 const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
@@ -106,11 +100,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                 }
             }
         }
-<<<<<<< HEAD
     ];
-=======
-    ].map((service) => UpstreamServiceConfig.toJSON(UpstreamServiceConfig.fromJSON(service)));
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
     const templates = [
         {
@@ -167,11 +157,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                 }
             }
         }
-<<<<<<< HEAD
     ];
-=======
-    ].map((template) => ServiceTemplate.toJSON(ServiceTemplate.fromJSON(template)));
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
     const users = [
         {
@@ -186,7 +172,6 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             roles: ["admin"],
             profile_ids: ["dev", "prod"]
         }
-<<<<<<< HEAD
     ];
 
         const traces = [
@@ -208,10 +193,6 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             trigger: 'user'
         }
     ];
-=======
-    ].map((user) => User.toJSON(User.fromJSON(user)));
-
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
     const seedRequest = {
         upstream_services: services,
         service_templates: templates,
@@ -346,7 +327,6 @@ export const cleanupCollection = async (name?: string, requestContext?: APIReque
         // Ignore cleanup errors (collection may not exist)
     }
 };
-<<<<<<< HEAD
 
 export const seedTraces = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
@@ -373,5 +353,3 @@ export const seedTraces = async (requestContext?: APIRequestContext) => {
         console.log(`Failed to seed trace: ${e}`);
     }
 };
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))

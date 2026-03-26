@@ -7,20 +7,13 @@
 
 import { useState, useEffect } from "react";
 import { DashboardGrid } from "@/components/dashboard/dashboard-grid";
-<<<<<<< HEAD
-=======
-import { Button } from "@/components/ui/button";
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 import { DashboardProvider } from "@/components/dashboard/dashboard-context";
 import { ServiceFilter } from "@/components/dashboard/service-filter";
 import { TimeRangeFilter } from "@/components/dashboard/time-range-filter";
 import { OnboardingHero } from "@/components/dashboard/onboarding-hero";
 import { apiClient } from "@/lib/client";
 import { Loader2 } from "lucide-react";
-<<<<<<< HEAD
 import { DownloadReportButton } from "@/components/dashboard/download-report-button";
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
 /**
  * The main dashboard page component.
@@ -67,11 +60,7 @@ export default function DashboardPage() {
           <div className="flex items-center space-x-2">
             <ServiceFilter />
             <TimeRangeFilter />
-<<<<<<< HEAD
             <DownloadReportButton />
-=======
-            <Button>Download Report</Button>
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
           </div>
         </div>
         <div className="space-y-4">

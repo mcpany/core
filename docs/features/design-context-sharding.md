@@ -50,7 +50,6 @@ As agent swarms grow in complexity, the monolithic transfer of context becomes a
 * Introducing `Checkpoint(sessionID string) (checkpointID string, error)` and `Rollback(checkpointID string) error` to the Shard Manager.
 * The Virtual Context Map now supports "Temporal Snapshots," allowing the gateway to revert the entire sharded state of a swarm to a previous valid checkpoint.
 **Security Impact:** Prevents "Swarm Sanity" loss and context poisoning by rogue sub-specialists.
-<<<<<<< HEAD
 
 ### Update: 2026-06-03 - Atomic Shard Locking & Prefetching
 **Context:** Today's research revealed "Shard-Collision" vulnerabilities in Claude Code v2.2.0 and high latency in CSP streaming.
@@ -67,5 +66,3 @@ As agent swarms grow in complexity, the monolithic transfer of context becomes a
 * Every sharded fragment now includes a cryptographically bound "Gravity Anchor" containing the mission-root intent.
 * The Shard Manager now enforces mission-alignment during fragment reconstruction.
 **Security Impact:** Ensures that parallel teammates remain anchored to the parent's verified goal, preventing sub-task isolation and intent hijacking.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))

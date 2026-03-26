@@ -295,7 +295,6 @@ func TestResolveSecret(t *testing.T) {
 		_, err := util.ResolveSecret(context.Background(), secret)
 		assert.Error(t, err)
 	})
-<<<<<<< HEAD
 
 	t.Run("ResolveSecret_RegexCache", func(t *testing.T) {
 		pt := &configv1.SecretValue{}
@@ -310,8 +309,6 @@ func TestResolveSecret(t *testing.T) {
 		assert.NoError(t, err2)
 		assert.Equal(t, "secret_pt", result2)
 	})
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 }
 
 func TestResolveSecret_Vault(t *testing.T) {

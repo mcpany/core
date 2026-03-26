@@ -9,7 +9,6 @@ import (
 	"os"
 )
 
-<<<<<<< HEAD
 // main executes the json echo test tool.
 //
 // Summary: Executes json echo tool.
@@ -25,8 +24,6 @@ import (
 //
 // Side Effects:
 //   - Reads from stdin, writes to stdout.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func main() {
 	var data map[string]interface{}
 	if err := json.NewDecoder(os.Stdin).Decode(&data); err != nil {

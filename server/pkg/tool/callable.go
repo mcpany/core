@@ -64,7 +64,6 @@ func (t *CallableTool) Execute(ctx context.Context, req *ExecutionRequest) (any,
 func (t *CallableTool) Callable() Callable {
 	return t.callable
 }
-<<<<<<< HEAD
 
 // IsStreaming returns true if the underlying callable supports streaming.
 //
@@ -105,5 +104,3 @@ func (t *CallableTool) StreamExecute(ctx context.Context, req *ExecutionRequest)
 	}()
 	return ch, nil
 }
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))

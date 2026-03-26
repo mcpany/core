@@ -8,10 +8,7 @@ go_library(
     srcs = [
         "api.go",
         "api_alerts.go",
-<<<<<<< HEAD
         "api_alignment.go",
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
         "api_audit.go",
         "api_auth.go",
         "api_credential.go",
@@ -116,10 +113,7 @@ go_test(
         "api_alerts_test.go",
         "api_audit_test.go",
         "api_auth_test.go",
-<<<<<<< HEAD
         "api_collection_apply_test.go",
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
         "api_credential_test.go",
         "api_discovery_test.go",
         "api_handlers_extra_test.go",

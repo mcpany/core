@@ -7,10 +7,6 @@ module(
 )
 
 bazel_dep(name = "rules_go", version = "0.60.0")
-<<<<<<< HEAD
-=======
-bazel_dep(name = "rules_proto", version = "7.1.0")
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 bazel_dep(name = "gazelle", version = "0.47.0")
 bazel_dep(name = "protobuf", version = "34.0.bcr.1")
 bazel_dep(name = "googleapis", version = "0.0.0-20260223-edfe7983")
@@ -31,14 +27,7 @@ go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
 go_sdk.download(version = "1.26.1")
 
 go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
-<<<<<<< HEAD
 go_deps.from_file(go_mod = "//server:go.mod")
-=======
-go_deps.from_file(go_mod = "//:go.mod")
-go_deps.from_file(go_mod = "//server:go.mod")
-go_deps.from_file(go_mod = "//k8s/operator:go.mod")
-go_deps.from_file(go_mod = "//proto:go.mod")
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 go_deps.gazelle_override(
     directives = [
         "gazelle:proto disable_global",
@@ -65,10 +54,7 @@ go_deps.gazelle_override(
     build_file_generation = "off",
     path = "github.com/grpc-ecosystem/grpc-gateway/v2",
 )
-<<<<<<< HEAD
 
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 go_deps.module_override(
     patch_strip = 1,
     patches = [
@@ -127,10 +113,7 @@ use_repo(
     "com_github_lib_pq",
     "com_github_machinebox_graphql",
     "com_github_masterminds_semver_v3",
-<<<<<<< HEAD
     "com_github_mcpany_core",
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
     "com_github_milvus_io_milvus_sdk_go_v2",
     "com_github_modelcontextprotocol_go_sdk",
     "com_github_nats_io_nats_go",
@@ -358,7 +341,6 @@ pip.parse(
     requirements_lock = "//server/tests/integration/examples:requirements_lock.txt",
 )
 use_repo(pip, "cowsay_server_deps", "timeserver_deps")
-<<<<<<< HEAD
 
 http_file = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file")
 
@@ -377,5 +359,3 @@ http_file(
     sha256 = "8ded44b58a0d9425a4178af26cf17693feac3b87bdcfef0a2a0898fcd1afc9f2",
     urls = ["https://github.com/bazelbuild/bazelisk/releases/download/v1.28.1/bazelisk-linux-arm64"],
 )
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))

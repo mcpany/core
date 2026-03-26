@@ -14,7 +14,6 @@ import (
 )
 
 // handleGetUserPreferences retrieves the preferences for the authenticated user.
-<<<<<<< HEAD
 //
 // Summary: Retrieves user preferences.
 //
@@ -30,8 +29,6 @@ import (
 //
 // Side Effects:
 //   - None.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (a *Application) handleGetUserPreferences(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	userID, ok := auth.UserFromContext(ctx)
@@ -65,7 +62,6 @@ func (a *Application) handleGetUserPreferences(w http.ResponseWriter, r *http.Re
 }
 
 // handleUpdateUserPreferences updates the preferences for the authenticated user.
-<<<<<<< HEAD
 //
 // Summary: Updates user preferences.
 //
@@ -81,8 +77,6 @@ func (a *Application) handleGetUserPreferences(w http.ResponseWriter, r *http.Re
 //
 // Side Effects:
 //   - None.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (a *Application) handleUpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	userID, ok := auth.UserFromContext(ctx)

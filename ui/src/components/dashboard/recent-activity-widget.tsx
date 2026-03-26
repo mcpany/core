@@ -10,18 +10,11 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-<<<<<<< HEAD
 import { CheckCircle2, XCircle, Clock, ArrowRight, Activity, Loader2, ChevronDown, ChevronUp, Code2 } from "lucide-react";
 import { apiClient } from "@/lib/client";
 import { cn } from "@/lib/utils";
 import { usePolling } from "@/hooks/use-polling";
 import { RichResultViewer } from "@/components/tools/rich-result-viewer";
-=======
-import { CheckCircle2, XCircle, Clock, ArrowRight, Activity, Loader2 } from "lucide-react";
-import { apiClient } from "@/lib/client";
-import { cn } from "@/lib/utils";
-import { usePolling } from "@/hooks/use-polling";
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
 const formatTime = (timestamp: string) => {
   const date = new Date(timestamp);
@@ -42,7 +35,6 @@ const getDurationColor = (ms: number) => {
   return "text-muted-foreground";
 };
 
-<<<<<<< HEAD
 function safeParsePayload(payload: any) {
     if (!payload) return null;
     try {
@@ -55,8 +47,6 @@ function safeParsePayload(payload: any) {
     }
 }
 
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 /**
  * RecentActivityWidget component.
  * Displays the most recent tool executions.
@@ -66,10 +56,7 @@ export function RecentActivityWidget() {
   const [traces, setTraces] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-<<<<<<< HEAD
   const [expandedTraceId, setExpandedTraceId] = useState<string | null>(null);
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
   const fetchTraces = useCallback(async () => {
     try {
@@ -86,13 +73,10 @@ export function RecentActivityWidget() {
     }
   }, []);
 
-<<<<<<< HEAD
   const toggleExpand = (id: string) => {
       setExpandedTraceId(prev => prev === id ? null : id);
   }
 
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
   // ⚡ BOLT: Smart polling using Page Visibility API.
   // Stops polling when the tab is hidden to save bandwidth and resources.
   // Randomized Selection from Top 5 High-Impact Targets
@@ -104,7 +88,6 @@ export function RecentActivityWidget() {
   }, [fetchTraces]);
 
   return (
-<<<<<<< HEAD
     <Card className="col-span-3 bg-background/80 backdrop-blur-md border-muted/50 shadow-sm overflow-hidden flex flex-col">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 border-b border-muted/50 bg-muted/10">
         <div className="space-y-1">
@@ -133,40 +116,11 @@ export function RecentActivityWidget() {
             </div>
         ) : traces.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-[300px] text-muted-foreground">
-=======
-    <Card className="col-span-3 backdrop-blur-sm bg-background/50">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <div className="space-y-1">
-            <CardTitle className="text-base font-medium flex items-center gap-2">
-                <Activity className="h-4 w-4 text-primary" />
-                Recent Activity
-            </CardTitle>
-            <CardDescription>
-                Real-time monitor of tool executions.
-            </CardDescription>
-        </div>
-        <Link to="/traces" className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors">
-            View All <ArrowRight className="h-3 w-3" />
-        </Link>
-      </CardHeader>
-      <CardContent>
-        {loading && traces.length === 0 ? (
-            <div className="flex items-center justify-center h-[200px] text-muted-foreground">
-                <Loader2 className="h-6 w-6 animate-spin mr-2" /> Loading activity...
-            </div>
-        ) : error && traces.length === 0 ? (
-            <div className="flex items-center justify-center h-[200px] text-destructive">
-                {error}
-            </div>
-        ) : traces.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-[200px] text-muted-foreground">
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
                 <Clock className="h-8 w-8 mb-2 opacity-20" />
                 <p>No recent activity recorded.</p>
                 <p className="text-xs opacity-70 mt-1">Execute a tool to see it here.</p>
             </div>
         ) : (
-<<<<<<< HEAD
             <div className="relative z-10 p-4 space-y-4">
                 {traces.map((trace, index) => {
                     const isExpanded = expandedTraceId === trace.id;
@@ -321,40 +275,6 @@ export function RecentActivityWidget() {
                         </div>
                     );
                 })}
-=======
-            <div className="space-y-4">
-                {traces.map((trace) => (
-                    <div key={trace.id} className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0">
-                        <div className="flex items-center gap-4">
-                            <div className={cn("rounded-full p-2 bg-muted/50",
-                                trace.status === 'success' ? "text-green-500 bg-green-500/10" :
-                                trace.status === 'error' ? "text-red-500 bg-red-500/10" : "text-yellow-500"
-                            )}>
-                                {trace.status === 'success' ? <CheckCircle2 className="h-4 w-4" /> :
-                                 trace.status === 'error' ? <XCircle className="h-4 w-4" /> : <Clock className="h-4 w-4" />}
-                            </div>
-                            <div className="space-y-1">
-                                <div className="text-sm font-medium leading-none flex items-center gap-2">
-                                    {trace.rootSpan.name.replace('POST /', '').replace('GET /', '')}
-                                    {trace.status === 'error' && (
-                                        <Badge variant="destructive" className="text-[10px] h-4 px-1">Failed</Badge>
-                                    )}
-                                </div>
-                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                    <span>{formatTime(trace.timestamp)}</span>
-                                    <span>•</span>
-                                    <span className={getDurationColor(trace.totalDuration)}>{trace.totalDuration.toFixed(0)}ms</span>
-                                </div>
-                            </div>
-                        </div>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0" asChild>
-                            <Link to={`/traces?id=${trace.id}`}>
-                                <ArrowRight className="h-4 w-4" />
-                            </Link>
-                        </Button>
-                    </div>
-                ))}
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
             </div>
         )}
       </CardContent>

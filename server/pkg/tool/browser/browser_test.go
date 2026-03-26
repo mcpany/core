@@ -66,7 +66,6 @@ func TestBrowserProvider(t *testing.T) {
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "url is required")
 }
-<<<<<<< HEAD
 
 // Test with mocked fetcher returning error
 func TestBrowsePage_FetcherError(t *testing.T) {
@@ -101,5 +100,3 @@ func TestPlaywrightFetcher_Failure(t *testing.T) {
 	_, err := f.FetchText(context.Background(), "invalid-url")
 	assert.Error(t, err)
 }
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))

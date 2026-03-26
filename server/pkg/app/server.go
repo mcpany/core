@@ -717,10 +717,7 @@ func (a *Application) Run(opts RunOptions) error {
 		cfg.GetGlobalSettings().GetContextOptimizer(),
 		cfg.GetGlobalSettings().GetDebugger(),
 		cfg.GetGlobalSettings().GetSmartRecovery(),
-<<<<<<< HEAD
 		nil,
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	)
 	if err != nil {
 		workerCancel()
@@ -1990,10 +1987,7 @@ func (a *Application) runServerMode(
 	mux.Handle("/healthz", healthHandler)
 	mux.Handle("/health", healthHandler)
 	mux.Handle("/metrics", authMiddleware(metrics.Handler()))
-<<<<<<< HEAD
 	mux.Handle("/api/v1/alignment/status", authMiddleware(a.handleActiveIntentAlignment()))
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	mux.Handle("/upload", authMiddleware(http.HandlerFunc(a.uploadFile)))
 
 	// OIDC Routes

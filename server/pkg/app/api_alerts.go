@@ -11,7 +11,6 @@ import (
 	"github.com/mcpany/core/server/pkg/alerts"
 )
 
-<<<<<<< HEAD
 // handleAlerts handles listing current active alerts.
 //
 // Summary: Lists alerts.
@@ -27,8 +26,6 @@ import (
 //
 // Side Effects:
 //   - None.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (a *Application) handleAlerts() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -52,7 +49,6 @@ func (a *Application) handleAlerts() http.HandlerFunc {
 	}
 }
 
-<<<<<<< HEAD
 // handleAlertStats handles alert statistics.
 //
 // Summary: Retrieves alert stats.
@@ -68,8 +64,6 @@ func (a *Application) handleAlerts() http.HandlerFunc {
 //
 // Side Effects:
 //   - None.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (a *Application) handleAlertStats() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
@@ -82,7 +76,6 @@ func (a *Application) handleAlertStats() http.HandlerFunc {
 	}
 }
 
-<<<<<<< HEAD
 // handleAlertWebhook handles alert webhooks.
 //
 // Summary: Handles alert webhooks.
@@ -98,8 +91,6 @@ func (a *Application) handleAlertStats() http.HandlerFunc {
 //
 // Side Effects:
 //   - None.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (a *Application) handleAlertWebhook() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -124,7 +115,6 @@ func (a *Application) handleAlertWebhook() http.HandlerFunc {
 	}
 }
 
-<<<<<<< HEAD
 // handleAlertDetail handles alert details.
 //
 // Summary: Handles alert details.
@@ -140,8 +130,6 @@ func (a *Application) handleAlertWebhook() http.HandlerFunc {
 //
 // Side Effects:
 //   - None.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (a *Application) handleAlertDetail() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := strings.TrimPrefix(r.URL.Path, "/alerts/")
@@ -172,13 +160,18 @@ func (a *Application) handleAlertDetail() http.HandlerFunc {
 			}
 			w.Header().Set("Content-Type", "application/json")
 			_ = json.NewEncoder(w).Encode(updated)
+		case http.MethodDelete:
+			if err := a.AlertsManager.DeleteAlert(id); err != nil {
+				http.NotFound(w, r)
+				return
+			}
+			w.WriteHeader(http.StatusNoContent)
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
 	}
 }
 
-<<<<<<< HEAD
 // handleAlertRules handles alert rules.
 //
 // Summary: Handles alert rules.
@@ -194,8 +187,6 @@ func (a *Application) handleAlertDetail() http.HandlerFunc {
 //
 // Side Effects:
 //   - None.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (a *Application) handleAlertRules() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -219,7 +210,6 @@ func (a *Application) handleAlertRules() http.HandlerFunc {
 	}
 }
 
-<<<<<<< HEAD
 // handleAlertRuleDetail handles alert rule details.
 //
 // Summary: Handles alert rule details.
@@ -235,8 +225,6 @@ func (a *Application) handleAlertRules() http.HandlerFunc {
 //
 // Side Effects:
 //   - None.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func (a *Application) handleAlertRuleDetail() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := strings.TrimPrefix(r.URL.Path, "/alerts/rules/")

@@ -45,12 +45,9 @@ The 2026 Armis Cyberwarfare Report highlights a critical collapse in Mean Time t
 
 ## 7. Evolutionary Changelog
 * **2026-06-01:** Initial Document Creation.
-<<<<<<< HEAD
 * **2026-06-02:** Addressing Spectral Side-Channels in Quarantine Triggers.
     * **Context:** Today's market sync revealed "Spectral Reasoning" timing attacks that can leak mission constraints.
     * **Architecture Adjustment:**
         * Implementing "Reasoning-Aware Timing Jitter" for all quarantine revocation signals.
         * Decoupling the "Kill Switch" bitset update from the network notification loop to prevent timing correlation.
     * **Security Impact:** Neutralizes subagent ability to probe quarantine thresholds via ARE header timing analysis.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))

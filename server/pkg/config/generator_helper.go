@@ -5,7 +5,6 @@ package config
 
 import "strings"
 
-<<<<<<< HEAD
 // normalizeHTTPMethod normalizes the HTTP method.
 //
 // Summary: Normalizes the HTTP method.
@@ -21,8 +20,6 @@ import "strings"
 //
 // Side Effects:
 //   - None.
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 func normalizeHTTPMethod(input string) string {
 	upper := strings.ToUpper(strings.TrimSpace(input))
 	switch upper {

@@ -5,10 +5,7 @@ package middleware
 
 import (
 	"context"
-<<<<<<< HEAD
 	"encoding/json"
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	"net/http"
 	"sort"
 	"sync"
@@ -194,11 +191,8 @@ type StandardMiddlewares struct {
 	SmartRecovery    *SmartRecoveryMiddleware
 	RecursiveContext *RecursiveContextManager
 	A2ABridge        *A2ABridgeMiddleware
-<<<<<<< HEAD
 	ESB              *ESBMiddleware
 	CFIA             *CFIAMiddleware
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	Cleanup          func() error
 }
 
@@ -242,10 +236,7 @@ func InitStandardMiddlewares(
 	contextOptimizerConfig *configv1.ContextOptimizerConfig,
 	debuggerConfig *configv1.DebuggerConfig,
 	smartRecoveryConfig *configv1.SmartRecoveryConfig,
-<<<<<<< HEAD
 	cfiaConfig *CFIAConfig,
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 ) (*StandardMiddlewares, error) {
 	// 1. Logging
 	RegisterMCP("logging", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
@@ -462,7 +453,6 @@ func InitStandardMiddlewares(
 		}
 	})
 
-<<<<<<< HEAD
 	esbMiddleware := NewESBMiddleware(nil)
 	RegisterMCP("esb", func(cfg *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
 		if cfg != nil {
@@ -523,8 +513,6 @@ func InitStandardMiddlewares(
 		})
 	}
 
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	return &StandardMiddlewares{
 		Audit:            audit,
 		GlobalRateLimit:  globalRateLimit,
@@ -533,11 +521,8 @@ func InitStandardMiddlewares(
 		SmartRecovery:    smartRecovery,
 		RecursiveContext: recursiveContext,
 		A2ABridge:        a2aBridge,
-<<<<<<< HEAD
 		ESB:              esbMiddleware,
 		CFIA:             cfiaMiddleware,
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 		Cleanup:          audit.Close,
 	}, nil
 }

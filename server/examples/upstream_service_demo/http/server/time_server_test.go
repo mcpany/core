@@ -51,7 +51,6 @@ func TestTimeHandler(t *testing.T) {
 	assert.NoError(t, err)
 	assert.WithinDuration(t, time.Now(), parsedTime, 2*time.Second)
 }
-<<<<<<< HEAD
 
 type badResponseWriter struct {
 	http.ResponseWriter
@@ -76,5 +75,3 @@ func TestTimeHandler_EncodeError(t *testing.T) {
 		t.Errorf("expected status Internal Server Error, got %v", rr.Code)
 	}
 }
-=======
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))

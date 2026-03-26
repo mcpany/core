@@ -5,61 +5,11 @@
 
 import { test, expect } from '@playwright/test';
 
-<<<<<<< HEAD
 test.describe.skip('Playground Complex Schema Support', () => {
   test.skip('should allow configuring and running a tool with complex nested schema', async ({ page }) => {
     // Mock the tools API to return a tool with complex schema
 
     // Mock the execute API
-=======
-test.describe('Playground Complex Schema Support', () => {
-  test('should allow configuring and running a tool with complex nested schema', async ({ page }) => {
-    // Mock the tools API to return a tool with complex schema
-    await page.route('**/api/v1/tools', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify([
-          {
-            name: 'complex_tool',
-            description: 'A tool with complex schema',
-            serviceName: 'test',
-            inputSchema: {
-              type: 'object',
-              properties: {
-                user: {
-                  type: 'object',
-                  required: ['name'],
-                  properties: {
-                    name: { type: 'string' },
-                    age: { type: 'integer' },
-                    active: { type: 'boolean' }
-                  }
-                },
-                tags: {
-                  type: 'array',
-                  items: { type: 'string' }
-                }
-              },
-              required: ['user']
-            }
-          }
-        ])
-      });
-    });
-
-    // Mock the execute API
-    await page.route('**/api/v1/execute', async (route) => {
-        const body = JSON.parse(route.request().postData() || '{}');
-        await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({
-                content: [{ type: "text", text: `Executed ${body.name} with args: ${JSON.stringify(body.arguments)}` }]
-            })
-        });
-    });
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 
     // Navigate to playground
     await page.goto('/playground');

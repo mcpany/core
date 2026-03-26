@@ -112,17 +112,10 @@ func TestUpstreamService_TheMealDB(t *testing.T) {
 	require.NoError(t, err, "Failed to unmarshal JSON response")
 
 	if _, ok := theMealDBResponse["meals"].(string); ok {
-<<<<<<< HEAD
 
 	}
 	if theMealDBResponse["meals"] == nil {
 
-=======
-		// t.Skip("Skipping test, no meals found in response")
-	}
-	if theMealDBResponse["meals"] == nil {
-		// t.Skip("Skipping test, no meals found in response")
->>>>>>> 4f039895e (⚡ Bolt: Render Optimization for System Status Banner (#6544))
 	}
 	meals, ok := theMealDBResponse["meals"].([]interface{})
 	require.True(t, ok, "The meals should be an array")
