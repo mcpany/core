@@ -1,0 +1,3 @@
+#!/bin/bash
+cd server
+$(go env GOPATH)/bin/golangci-lint run --concurrency 1 --timeout 10m ./cmd/... ./pkg/... ./tests/... ./examples/...
