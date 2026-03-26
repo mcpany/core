@@ -29,7 +29,9 @@ export default [
        "@typescript-eslint/no-empty-object-type": "off",
        "@typescript-eslint/no-unused-expressions": "off",
        "@typescript-eslint/no-non-null-asserted-optional-chain": "off",
-       "@typescript-eslint/no-this-alias": "off"
+       "@typescript-eslint/no-this-alias": "off",
+       "@typescript-eslint/no-unsafe-function-type": "off",
+       "@typescript-eslint/no-wrapper-object-types": "off"
     }
   },
   {
