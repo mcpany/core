@@ -43,6 +43,9 @@ issues:
     - vendor
     - node_modules
     - .cache
+    - tests
+    - examples
+    - proto
   exclude-rules:
     - path: "_test.go"
       linters:
