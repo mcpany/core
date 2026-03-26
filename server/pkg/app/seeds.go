@@ -396,15 +396,7 @@ func mkTemplate(id, name, schema, command string) *configv1.UpstreamServiceConfi
 	t.SetConfigurationSchema(schema)
 
 	cmd := &configv1.CommandLineUpstreamService{}
-	parts := strings.Fields(command)
-	if len(parts) > 0 {
-		cmd.SetCommand(parts[0])
-		if len(parts) > 1 {
-			cmd.SetArgs(parts[1:])
-		}
-	} else {
-		cmd.SetCommand(command)
-	}
+	cmd.SetCommand(command)
 	cmd.SetEnv(make(map[string]*configv1.SecretValue))
 
 	t.SetCommandLineService(cmd)
