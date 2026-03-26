@@ -921,3 +921,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Zero-Copy BSH Transport**: Shared-memory based state transfer for sub-millisecond swarm handoffs. (Added: 2026-03-25)
 *   **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited Recursive Intent Delegation. (Added: 2026-03-25)
 *   **[P1] Predictive Resource Locking**: Intent-aware concurrency control for the Shared Blackboard. (Added: 2026-03-25)
+
+#### Upcoming (2026-07-08 Evolution)
+*   **[P0] Action-Chain Sovereignty Monitor (ACSM)**: Evolution of CSAD performing real-time cross-agent sequence analysis to detect "Hivenet" swarm attacks. (Added: 2026-07-08)
+*   **[P0] Shared Task-List (STL) Provider**: Authority for peer-to-peer coordination in horizontal Agent Teams, ensuring hardware-attested task transitions. (Added: 2026-07-08)
+*   **[P0] Execution-Layer Interdiction Gateway (ELIG)**: Mandatory security gate for tool calls enforcing semantic argument validation and JIT trust leases. (Added: 2026-07-08)
+*   **[P1] NemoClaw-Compatible Security Quorums**: Integration with NVIDIA OpenShell policy runtime for hardware-accelerated attestations. (Added: 2026-07-08)

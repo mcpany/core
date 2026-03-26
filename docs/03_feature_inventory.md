@@ -1,5 +1,18 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-08] Updates
+
+### Proposed Additions
+- **Action-Chain Sovereignty Monitor (ACSM)**: (P0) Advanced monitoring service for the Universal Agent Bus that performs real-time sequence analysis of cross-agent actions to detect "Hivenet" swarm attacks.
+- **Shared Task-List (STL) Provider**: (P0) Authority for peer-to-peer teammate coordination in horizontal Agent Teams (Claude, OpenClaw compliance), ensuring consistent task transitions.
+- **Execution-Layer Interdiction Gateway (ELIG)**: (P0) Mandatory security gate for tool calls that enforces semantic argument validation and hardware-bound trust leases at the infrastructure level.
+- **Relational Identity Mapper**: (P1) Identity service that bridges cross-framework agent identities (OpenCode, Gemini, Claude) for consistent lineage tracking across the mesh.
+- **NemoClaw-Compatible Security Quorums**: (P1) Integration with NVIDIA OpenShell policy runtime for hardware-accelerated security attestations.
+
+### Priority Shifts
+- **Collective Swarm Anomaly Detection (CSAD) Hub**: (Evolved to ACSM) Now elevated with the requirement for **Action-Chain Sequence Monitoring**.
+- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Now elevated to support **STL-compliant** task list synchronization for horizontal meshes.
+
 ## Evolution: [2026-07-07] Updates
 
 ### Proposed Additions
@@ -512,7 +525,7 @@
 - **A2UI Secure Component Bridge**: (P0) A hardened rendering interface for declarative A2UI manifests, providing bi-directional, origin-locked state synchronization between agents and the user interface.
 
 ### Priority Shifts
-- **RL Telemetry Provider**: (Promoted to P0) Now essential for providing high-frequency feedback tokens to OpenClaw-RL asynchronous training loops.
+- **RL telemetry Provider**: (Promoted to P0) Now essential for providing high-frequency feedback tokens to OpenClaw-RL asynchronous training loops.
 - **Deterministic Attestation Gateway**: (Re-affirmed P0) Expanded to include DAP as a mandatory boot requirement for all compliant agent environments.
 
 ---
@@ -1670,8 +1683,8 @@
 ## Evolution: [2026-07-02] Updates
 
 ### Proposed Additions
-- **AIR (Autonomous Intent Reconciliation) Hub**: (P0) Authoritative swarm arbitration service utilizing hardware-attested "Intent Quorums" to resolve conflicting subagent instructions.
-- **Multimodal State Entanglement (MSE) Provider**: (P0) Advanced security service that cryptographically "entangles" non-textual reasoning traces (SVG, Audio) with the mission root.
+- **AIR (Autonomous Intent Reconciliation) Hub**: (P0) Authoritative swarm arbitration service utilizing hardware-attested Intent Quorums.
+- **Multimodal State Entanglement (MSE) Provider**: (P0) Advanced security service for cryptographic entanglement of non-textual reasoning traces.
 - **Reasoning Entropy Monitor (REM)**: (P0) Stability middleware performing real-time semantic analysis of agent outputs to detect "Cognitive Stalls" and trigger resolution policies.
 - **CRDT-Native Mailbox Hub**: (P1) High-performance coordination service using Conflict-Free Replicated Data Types to eliminate teammate mailbox locks.
 
@@ -1700,3 +1713,16 @@
 ### Priority Shifts
 - **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
 - **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.
+
+## Evolution: [2026-07-08] Updates
+
+### Proposed Additions
+- **Action-Chain Sovereignty Monitor (ACSM)**: (P0) Advanced monitoring service for the Universal Agent Bus that performs real-time sequence analysis of cross-agent actions to detect "Hivenet" swarm attacks.
+- **Shared Task-List (STL) Provider**: (P0) Authority for peer-to-peer teammate coordination in horizontal Agent Teams (Claude, OpenClaw compliance), ensuring consistent task transitions.
+- **Execution-Layer Interdiction Gateway (ELIG)**: (P0) Mandatory security gate for tool calls that enforces semantic argument validation and hardware-bound trust leases at the infrastructure level.
+- **Relational Identity Mapper**: (P1) Identity service that bridges cross-framework agent identities (OpenCode, Gemini, Claude) for consistent lineage tracking across the mesh.
+- **NemoClaw-Compatible Security Quorums**: (P1) Integration with NVIDIA OpenShell policy runtime for hardware-accelerated security attestations.
+
+### Priority Shifts
+- **Collective Swarm Anomaly Detection (CSAD) Hub**: (Evolved to ACSM) Now elevated with the requirement for **Action-Chain Sequence Monitoring**.
+- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Now elevated to support **STL-compliant** task list synchronization for horizontal meshes.

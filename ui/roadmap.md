@@ -749,3 +749,8 @@
 - [ ] **[P0] Programmatic SDK Monitor**: Real-time visualization of SDK-driven agent interactions and Zero-Trust gate status. (Added: 2026-03-25)
 - [ ] **[P1] Session Sovereignty Dashboard**: UI for monitoring hardware-bound SQLite session state and attestation status. (Added: 2026-03-25)
 - [ ] **[P0] Pre-Flight Manifest Reviewer**: Visual workspace for reviewing and approving cryptographically signed mission-root manifests for non-interactive execution. (Added: 2026-03-25)
+
+#### Upcoming (2026-07-08 Evolution)
+- [ ] **[P0] Action-Chain Sovereignty Monitor**: (2026-07-08) Real-time visualization of cross-agent action sequences and entropy-based anomaly alerts.
+- [ ] **[P0] Teammate Task List Viewer**: (2026-07-08) High-speed, CRDT-native visualization of the Shared Task List for horizontal swarms.
+- [ ] **[P1] Relational Identity Manager**: (2026-07-08) UI for bridging and mapping cross-framework agent identities (OpenCode, Gemini, Claude).
