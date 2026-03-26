@@ -594,3 +594,4 @@
 
 - [ ] **[P0] Teammate Isolation Monitor**: (2026-06-18)
 - [ ] **[P0] Logic-Sovereignty Path Tracer**: (2026-06-18)
+- [ ] **[P0] Request-Side Injection Alerts**: (2026-06-18)
