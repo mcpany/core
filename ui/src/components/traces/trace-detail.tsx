@@ -391,7 +391,7 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                                 <h3 className="text-sm font-medium flex items-center gap-2 text-primary">
                                     <Terminal className="h-4 w-4" /> Response Payload
                                 </h3>
-                                <JsonView data={trace.rootSpan.output} maxHeight={400} />
+                                <RichResultViewer result={trace.rootSpan.output} />
                             </div>
                         </div>
                      </ScrollArea>
