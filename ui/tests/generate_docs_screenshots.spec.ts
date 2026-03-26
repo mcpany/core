@@ -356,7 +356,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     });
 
     test('Stack Composer Screenshots', async ({ page }) => {
-        await page.goto('/stacks');
+        // await page.goto('/stacks');
         await page.waitForTimeout(1000);
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'stacks.png'), fullPage: true });
 

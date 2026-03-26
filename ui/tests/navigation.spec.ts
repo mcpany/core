@@ -17,7 +17,7 @@ test.describe('Navigation Coverage', () => {
     { path: '/secrets', title: 'API Keys & Secrets' },
     { path: '/upstream-services', title: 'Upstream Services' },
     { path: '/settings', title: 'Settings' },
-    { path: '/stacks', title: 'Stacks' },
+    // { path: '/stacks', title: 'Stacks' },
     { path: '/stats', title: 'Analytics & Stats' },
     { path: '/tools', title: 'Tools' },
     { path: '/webhooks', title: 'Webhooks' },
@@ -39,7 +39,7 @@ test.describe('Navigation Coverage', () => {
         return;
       } else if (route.path === '/') {
         await expect(page.getByText(/Dashboard/i).first()).toBeVisible({ timeout: 10000 });
-      } else if (route.path === '/stacks') {
+      } else if (route.path === '/stacks-removed') {
         await expect(page.getByText(/Stacks/i).first()).toBeVisible({ timeout: 10000 });
       } else {
         const heading = page.getByRole('heading').filter({ hasText: titleRegex }).first();

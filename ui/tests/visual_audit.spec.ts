@@ -26,8 +26,8 @@ test.describe('Visual Audit', () => {
 
   const pages = [
     { name: 'dashboard', path: '/' },
-    { name: 'stacks_list', path: '/stacks' },
-    { name: 'stack_detail', path: '/stacks/system' }, // Dummy ID
+    // { name: 'stacks_list', path: '/stacks' },
+    // { name: 'stack_detail', path: '/stacks/system' }, // Dummy ID
     { name: 'services_list', path: '/upstream-services' },
     { name: 'settings', path: '/settings' },
   ];

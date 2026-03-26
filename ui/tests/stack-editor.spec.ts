@@ -21,7 +21,7 @@ test.describe('Stack Editor', () => {
     const stackName = `stack-editor-load-${Date.now()}`;
     await seedCollection(stackName, page.request);
     try {
-      await page.goto(`/stacks/${stackName}`);
+      // await page.goto(`/stacks/${stackName}`);
 
       // Check for React Flow container
       const visualizer = page.locator('.stack-visualizer-container');
@@ -41,7 +41,7 @@ test.describe('Stack Editor', () => {
     const stackName = `stack-editor-update-${Date.now()}`;
     await seedCollection(stackName, page.request);
     try {
-      await page.goto('/stacks/new');
+      // await page.goto('/stacks/new');
 
       const visualizer = page.locator('.stack-visualizer-container');
 

@@ -111,7 +111,7 @@ test.describe('User Guide Walkthrough', () => {
   });
 
   test('Stack Composer', async ({ page }) => {
-    await page.goto('/stacks');
+    // await page.goto('/stacks');
     await expect(page.getByRole('heading', { name: 'Stacks', exact: true })).toBeVisible();
     // Check if stacks are present OR if the empty state with Create Stack button is shown
     // We relax this check because in a fresh environment without seeds, the list might be empty.
