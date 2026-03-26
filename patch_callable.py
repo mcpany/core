@@ -1,0 +1,53 @@
+import re
+
+filename = 'server/pkg/tool/callable.go'
+with open(filename, 'r') as f:
+    content = f.read()
+
+if "IsStreaming() bool" not in content:
+    content = content.replace("func (t *CallableTool) Callable() Callable {\n\treturn t.callable\n}", """func (t *CallableTool) Callable() Callable {
+	return t.callable
+}
+
+// IsStreaming returns true if the underlying callable supports streaming.
+//
+// Summary: Checks if the tool supports streaming execution.
+//
+// Returns:
+//   - bool: True if streaming is supported.
+func (t *CallableTool) IsStreaming() bool {
+	_, ok := t.callable.(StreamingCallable)
+	return ok
+}
+
+// StreamExecute handles the streaming execution of the tool.
+//
+// Summary: Executes the underlying callable in streaming mode.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - req: *ExecutionRequest. The request object containing parameters.
+//
+// Returns:
+//   - <-chan any: A channel that emits streaming results.
+//   - error: An error if the operation fails or streaming is not supported.
+func (t *CallableTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
+	if sc, ok := t.callable.(StreamingCallable); ok {
+		return sc.StreamCall(ctx, req)
+	}
+	// Fallback to non-streaming execution and push to a single-item channel
+	ch := make(chan any, 1)
+	go func() {
+		defer close(ch)
+		res, err := t.Execute(ctx, req)
+		if err != nil {
+			ch <- err
+		} else {
+			ch <- res
+		}
+	}()
+	return ch, nil
+}""")
+
+with open(filename, 'w') as f:
+    f.write(content)
