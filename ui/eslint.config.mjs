@@ -33,7 +33,9 @@ export default [
        "@typescript-eslint/no-unsafe-function-type": "off",
        "@typescript-eslint/no-wrapper-object-types": "off",
        "@typescript-eslint/no-unsafe-declaration-merging": "off",
-       "@typescript-eslint/prefer-namespace-keyword": "off"
+       "@typescript-eslint/prefer-namespace-keyword": "off",
+       "@typescript-eslint/no-unused-expressions": "off",
+       "react-hooks/exhaustive-deps": "off"
     }
   },
   {
