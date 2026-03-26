@@ -76,8 +76,8 @@ if [[ -z "$BUILDIFIER_BIN" || ! -x "$BUILDIFIER_BIN" ]]; then
     exit 1
 fi
 # Collect Bazel BUILD / .bzl / WORKSPACE files, excluding caches and symlinks.
-mapfile -t buildifier_files < <(
-    find . \
+buildifier_files=(
+    $(find . \
         -not \( \
             -path './build/*' \
             -o -path './bazel-*' \
@@ -94,7 +94,7 @@ mapfile -t buildifier_files < <(
             -o -name '*.bzl' \
         \) \
         -type f \
-        2>/dev/null
+        2>/dev/null)
 )
 if [[ ${#buildifier_files[@]} -gt 0 ]]; then
     "$BUILDIFIER_BIN" "${buildifier_files[@]}"
@@ -125,9 +125,8 @@ echo "==> Running golangci-lint..."
 if [[ -z "${GOLANGCI_LINT_BIN:-}" ]]; then
     GOLANGCI_LINT_BIN="$(find_tool golangci-lint)"
 fi
-if [[ -z "$GOLANGCI_LINT_BIN" && -x "$PROJECT_ROOT/build/env/bin/golangci-lint" ]]; then
-    GOLANGCI_LINT_BIN="$PROJECT_ROOT/build/env/bin/golangci-lint"
-fi
+# No longer fall back to build/env/bin/ (local make-managed path) since this
+# is a Bazel-native project. If the binary is not in runfiles, skip gracefully.
 
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
     "$GOLANGCI_LINT_BIN" run --timeout 20m --fix \
