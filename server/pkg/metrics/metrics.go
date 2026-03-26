@@ -244,6 +244,7 @@ func MeasureSinceWithLabels(name []string, start time.Time, labels []Label) {
 // Parameters:
 //   - name ([]string): The name of the metric.
 //   - val (float32): The value to sample.
+//   - labels ([]Label): The labels to apply.
 //
 // Errors:
 //   - None.
