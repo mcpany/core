@@ -54,7 +54,6 @@ go_deps.gazelle_override(
     build_file_generation = "off",
     path = "github.com/grpc-ecosystem/grpc-gateway/v2",
 )
-
 go_deps.module_override(
     patch_strip = 1,
     patches = [
@@ -159,7 +158,6 @@ use_repo(
     "io_opentelemetry_go_otel_sdk",
     "io_opentelemetry_go_otel_sdk_metric",
     "org_golang_google_api",
-    "org_golang_google_genproto_googleapis_api",
     "org_golang_google_grpc",
     "org_golang_google_grpc_cmd_protoc_gen_go_grpc",
     "org_golang_google_protobuf",
