@@ -232,7 +232,6 @@ func createE2EBundle(t *testing.T, dir string) string {
 }
 
 func TestE2E_Bundle_Filesystem(t *testing.T) {
-	t.Skip("Docker-in-Docker issue with containerd overlayfs mounts in CI")
 	// If Docker is not available or disabled, fallback to local execution.
 	useLocal := false
 	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
