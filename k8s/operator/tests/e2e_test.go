@@ -1,5 +1,5 @@
-// Copyright 2026 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 Author(s) of MCP Any.
+// SPDX-License-Identifier: Apache-2.0.
 
 package tests
 
@@ -60,7 +60,7 @@ func TestOperatorE2E(t *testing.T) {
 
 	// 5. Create Kind Cluster
 	t.Logf("Creating Kind cluster %s...", clusterName)
-	// Generate temporary kind config with port mapping
+	// Generate temporary kind config with port mapping.
 	kindConfigContent := fmt.Sprintf(`kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 networking:
@@ -116,7 +116,7 @@ nodes:
 
 	// 6. Install Helm Chart
 	t.Log("Installing Helm chart...")
-	// Helm upgrade --install
+	// Helm upgrade --install.
 	if err := runCommand(t, ctx, rootDir, "helm", "upgrade", "--install", "mcpany", "k8s/helm/mcpany",
 		"--namespace", namespace,
 		"--create-namespace",
@@ -165,14 +165,14 @@ nodes:
 	// 8. Run UI Tests
 	t.Logf("Using host port %d for UI tests (NodePort)", hostPort)
 
-	// Wait for NodePort to be accessible
-	// Since we mapped it in Kind, it should be reachable on localhost:hostPort
+	// Wait for NodePort to be accessible.
+	// Since we mapped it in Kind, it should be reachable on localhost:hostPort.
 	if err := waitForPort(t, ctx, fmt.Sprintf("127.0.0.1:%d", hostPort), 60*time.Second); err != nil {
 		t.Fatalf("NodePort failed to become accessible: %v", err)
 	}
 
-	// Run Playwright tests
-	// We assume 'npx' is available and we are in the root or can find ui dir
+	// Run Playwright tests.
+	// We assume 'npx' is available and we are in the root or can find ui dir.
 	uiDir := filepath.Join(rootDir, "ui")
 	workers := "4"
 	if w := os.Getenv("PLAYWRIGHT_WORKERS"); w != "" {
@@ -246,15 +246,15 @@ func getRootDir() (string, error) {
 		}
 	}
 
-	// Assuming test is run from k8s/operator/tests, go up 3 levels to find root
-	// Or better, find go.mod file
+	// Assuming test is run from k8s/operator/tests, go up 3 levels to find root.
+	// Or better, find go.mod file.
 	dir, err := os.Getwd()
 	if err != nil {
 		return "", err
 	}
-	// Walk up until we find go.work, which should be in the root
+	// Walk up until we find go.work, which should be in the root.
 	for i := 0; i < 10; i++ {
-		// Check for go.work or Makefile which should be in root
+		// Check for go.work or Makefile which should be in root.
 		if isProjectRoot(dir) {
 			return dir, nil
 		}
@@ -311,7 +311,7 @@ func ensureBazelImageLoaded(t *testing.T, loaderRelPath, imageName string) {
 func runCommand(t *testing.T, ctx context.Context, dir string, name string, args ...string) error {
 	cmd := exec.CommandContext(ctx, name, args...)
 	cmd.Dir = dir
-	// Force Docker API version to 1.44 to avoid "client version too old" errors
+	// Force Docker API version to 1.44 to avoid "client version too old" errors.
 	cmd.Env = append(os.Environ(), "DOCKER_API_VERSION=1.44")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr

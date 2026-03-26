@@ -1,5 +1,5 @@
-// Copyright 2026 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 Author(s) of MCP Any.
+// SPDX-License-Identifier: Apache-2.0.
 
 package v1alpha1
 
@@ -12,8 +12,8 @@ import (
 
 // MCPServerSpec defines the desired state of MCPServer.
 type MCPServerSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster.
+	// Important: Run "make" to regenerate code after modifying this file.
 
 	// Image is the container image to run for the MCP server.
 	Image string `json:"image"`
@@ -32,8 +32,8 @@ type MCPServerSpec struct {
 
 // MCPServerStatus defines the observed state of MCPServer.
 type MCPServerStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster.
+	// Important: Run "make" to regenerate code after modifying this file.
 
 	// AvailableReplicas is the number of healthy replicas currently running.
 	AvailableReplicas int32 `json:"availableReplicas"`
