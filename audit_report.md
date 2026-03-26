@@ -1,38 +1,34 @@
 # Truth Reconciliation Audit Report
 
 ## Executive Summary
-A 10-file sampling audit was performed across the `ui/docs` and `server/docs` directories to verify alignment between documentation, the codebase, and the Product Roadmap.
-
-Overall Health: **8/10 files aligned**. Two UI documentation files were found to have "Documentation Drift" where the actual implemented UI had evolved past the documented features (tab names and button labels). These were corrected.
-
-The backend infrastructure and core UI capabilities are correctly implemented and tested according to the roadmap.
+A comprehensive 10-file truth reconciliation audit was performed spanning documentation, roadmap items, and current codebase implementations. The audit confirmed strong alignment across 90% of the surveyed surfaces, with the UI correctly implementing advanced topologies, traces, and system diagnostics as outlined. However, one discrepancy was identified and remediated regarding the "Browser-Side HTTP Connectivity Check" documentation. The system is now 100% aligned with the sampled Product Roadmap.
 
 ## Verification Matrix
 
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `ui/docs/features/prompts.md` | Documentation Drift | Updated Doc | The UI uses "Open in Playground" and redirects without auto-generating the form. Doc updated. |
-| `ui/docs/features/marketplace.md` | Aligned | None | `ShareCollectionDialog` supports Redact/Template/Unsafe exports natively. |
-| `ui/docs/features/network.md` | Aligned | None | `network-graph-client.tsx` implements ReactFlow with Dagre layout perfectly. |
-| `ui/docs/features/server-health-history.md` | Aligned | None | `useServiceHealthHistory` and `HealthTimeline` implemented in `service-health-widget.tsx`. |
-| `ui/docs/features/tool_analytics.md` | Documentation Drift | Updated Doc | Tab is named "Analytics" inside "Tool Runner", and labels are "Avg Latency (50)" & "Error Count (50)". Doc updated. |
-| `server/docs/features/debugger.md` | Aligned | None | `GET /debug/entries` API and `DebugEntry` structure (with `duration`) match docs perfectly. |
-| `server/docs/features/helm.md` | Aligned | None | `k8s/helm/mcpany` contains the valid Helm chart configuration. |
-| `server/docs/features/kafka.md` | Aligned | None | `server/pkg/bus/kafka/kafka.go` correctly implements the Kafka Bus for `message_bus` configs. |
-| `server/docs/features/prompts/README.md` | Aligned | None | `prompts/get` API and `upstream_services.http_service.prompts` are correctly mapped in `prompt/service.go`. |
-| `server/docs/features/skill_manager.md` | Aligned | None | `server/pkg/skill/manager.go` properly validates names (regex 1-64 chars) and prevents path traversal for assets. |
+| `ui/docs/features/tool-diff.md` | Aligned | Verified UI Implementation | `ReplayDiffDialog` and diffing views are present in `ui/src/components/traces/replay-diff-dialog.tsx`. |
+| `ui/docs/features/diagnostics.md` | Aligned | Verified UI Implementation | `SystemHealth` provides diagnostic cards in `ui/src/components/diagnostics/system-health.tsx`. |
+| `ui/docs/features/network.md` | Aligned | Verified UI Implementation | `NetworkGraphClient` correctly uses ReactFlow in `ui/src/components/network/network-graph-client.tsx`. |
+| `ui/docs/features/recursive_context.md` | Aligned | Verified Server/UI Implementation | Recursive Context Protocol is managed via `RecursiveContextManager` in `server/pkg/middleware/recursive_context.go`. |
+| `server/docs/features/sso.md` | Aligned | Verified Server Implementation | SSO capabilities implemented via `server/pkg/middleware/sso.go`. |
+| `server/docs/features/guardrails.md` | Aligned | Verified Server Implementation | Prompt injection guardrails exist via `server/pkg/middleware/guardrails.go`. |
+| `server/docs/features/audit_logging.md` | Aligned | Verified Server Implementation | Diverse audit storage patterns exist in `server/pkg/audit/*.go`. |
+| `ui/docs/features/hitl.md` | Aligned | Verified Server/UI Implementation | HITL dashboards and middleware are present (`hitl-dashboard.tsx`, `hitl.go`). |
+| `ui/docs/features/connect-client-center.md` | Aligned | Verified UI Implementation | `ConnectClientDialog` effectively handles connection strings in `ui/src/components/connect-client-button.tsx`. |
+| `ui/docs/features/browser_connectivity_check.md` | **Diverged** | Engineered Missing Implementation | Added browser `fetch` with `mode: 'no-cors'` to `ui/src/components/diagnostics/connection-diagnostic.tsx`. |
 
 ## Remediation Log
+**Case B: Roadmap Debt (Code is Missing)**
+The documentation `ui/docs/features/browser_connectivity_check.md` clearly states that the Connection Diagnostics interface must use a `fetch` with `mode: 'no-cors'` from the browser to determine client-side vs server-side connectivity issues (especially useful for Docker/VPN boundaries).
 
-*   **Case A (Documentation Drift - Code is Correct):**
-    *   `ui/docs/features/prompts.md`: Modified the instructions to state that users must click "Open in Playground" and that they are redirected to the Playground where they can use the prompt template, removing the incorrect claim that a form is auto-generated.
-    *   `ui/docs/features/tool_analytics.md`: Updated the tab name from "Performance & Analytics" in the "Tool Inspector" to "Analytics" in the "Tool Runner". Corrected metric labels from "Avg Latency" to "Avg Latency (50)" and "Error Count" to "Error Count (50)".
+This logic was missing from the actual component (`ui/src/components/diagnostics/connection-diagnostic.tsx`).
 
-*   **Case B (Roadmap Debt - Code is Missing/Broken):**
-    *   None found in the selected 10 files. All core features described in the sampled docs have been fully engineered and integrated into the codebase with corresponding tests (`manager_test.go`, `debugger_test.go`, etc.).
+**Engineering Fix:**
+- Injected `Browser Connectivity Check` as step 1.5 in the diagnostics workflow when `service.httpService.address` is present.
+- Implemented a `fetch(service.httpService.address, { mode: 'no-cors', method: 'GET' })` call with performance benchmarking.
+- Added strict error handling with a context-aware severity diagnostic result on failure.
+- Updated `ui/src/components/diagnostics/connection-diagnostic.test.tsx` to assert the newly introduced step to conform to TDD standards. `make test` passes successfully.
 
 ## Security Scrub
-This report contains NO Personally Identifiable Information (PII), sensitive secrets, or internal IP addresses.
-
----
-*Audit performed by L7 Principal Software Engineer.*
+This report has been reviewed and contains NO PII, secrets, API keys, or internal Google IP structures.

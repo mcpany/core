@@ -11,6 +11,21 @@ import (
 	"github.com/mcpany/core/server/pkg/alerts"
 )
 
+// handleAlerts handles listing current active alerts.
+//
+// Summary: Lists alerts.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - http.HandlerFunc: The handler function.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (a *Application) handleAlerts() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -34,6 +49,21 @@ func (a *Application) handleAlerts() http.HandlerFunc {
 	}
 }
 
+// handleAlertStats handles alert statistics.
+//
+// Summary: Retrieves alert stats.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - http.HandlerFunc: The handler function.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (a *Application) handleAlertStats() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
@@ -46,6 +76,21 @@ func (a *Application) handleAlertStats() http.HandlerFunc {
 	}
 }
 
+// handleAlertWebhook handles alert webhooks.
+//
+// Summary: Handles alert webhooks.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - http.HandlerFunc: The handler function.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (a *Application) handleAlertWebhook() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -70,6 +115,21 @@ func (a *Application) handleAlertWebhook() http.HandlerFunc {
 	}
 }
 
+// handleAlertDetail handles alert details.
+//
+// Summary: Handles alert details.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - http.HandlerFunc: The handler function.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (a *Application) handleAlertDetail() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := strings.TrimPrefix(r.URL.Path, "/alerts/")
@@ -106,6 +166,21 @@ func (a *Application) handleAlertDetail() http.HandlerFunc {
 	}
 }
 
+// handleAlertRules handles alert rules.
+//
+// Summary: Handles alert rules.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - http.HandlerFunc: The handler function.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (a *Application) handleAlertRules() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -129,6 +204,21 @@ func (a *Application) handleAlertRules() http.HandlerFunc {
 	}
 }
 
+// handleAlertRuleDetail handles alert rule details.
+//
+// Summary: Handles alert rule details.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - http.HandlerFunc: The handler function.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (a *Application) handleAlertRuleDetail() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := strings.TrimPrefix(r.URL.Path, "/alerts/rules/")

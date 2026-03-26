@@ -1,2 +1,1 @@
-{ "extends": ["plugin:@typescript-eslint/recommended"],
-  "ignorePatterns": ["@proto/*", "google/*"] }
+{ "extends": ["plugin:@typescript-eslint/recommended"] }
