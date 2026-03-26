@@ -114,6 +114,10 @@ build:local --spawn_strategy=local
 # Workaround for JVM OOM error in CI during `bazel test //...`
 startup --host_jvm_args=-Xmx4g
 # Reduce local test parallelism to avoid OutOfMemoryError in CI
-test --local_test_jobs=4
+test --local_test_jobs=1
 # Tell Bazel it only has access to a conservative amount of RAM to prevent the runner from being overwhelmed
-build --local_ram_resources=4096
+
+
+
+
+build --jobs=2
