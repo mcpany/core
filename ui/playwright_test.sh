@@ -170,7 +170,8 @@ if [[ ! -f "$vite_cli_js" || ! -f "$playwright_cli_js" ]]; then
   exit 1
 fi
 
-export PATH="$(dirname "$node_bin"):$PATH"
+NODE_DIR="$(dirname "$node_bin")"
+export PATH="${NODE_DIR}:$PATH"
 export NODE_PATH="$ui_runtime/node_modules${NODE_PATH:+:$NODE_PATH}"
 
 # Use `vite preview` (production mode) when a pre-built dist is available.
@@ -185,7 +186,7 @@ else
 fi
 
 if [[ -n "$spec_path" ]]; then
-  escaped_spec="$(printf '%s' "$selected_spec" | sed -e 's/[.[\*^$()+?{}|]/\\&/g')"
+  escaped_spec="$(printf "%s" "$selected_spec" | sed -e "s/[.[*^\$()+?{}|]/\\\\&/g")"
   export PLAYWRIGHT_TEST_MATCH="(^|.*/)${escaped_spec}$"
 fi
 
