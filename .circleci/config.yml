@@ -44,6 +44,8 @@ jobs:
       - run:
           name: Run Lint
           command: |
+            curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.64.6
+            cd proto && go mod tidy && cd ../server && go mod tidy && go work vendor && $(go env GOPATH)/bin/golangci-lint run ./cmd/... ./pkg/... ./tests/... ./examples/... && cd ..
             bazelisk run //:lint
             bazelisk test //ui:lint //ui:typecheck
       - save_cache:
