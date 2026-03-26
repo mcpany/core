@@ -6,7 +6,7 @@ go_library(
     importpath = "github.com/mcpany/core/server/examples/upstream_service_demo/grpc/greeter_server/server",
     visibility = ["//visibility:private"],
     deps = [
-        "//server/examples/upstream_service_demo/grpc/greeter_server/proto",
+        "@com_github_mcpany_core//upstream_service/grpc/greeter_server/proto",
         "@org_golang_google_grpc//:grpc",
         "@org_golang_google_grpc//reflection",
     ],
