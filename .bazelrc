@@ -104,7 +104,7 @@ common:buildbuddy-official --remote_header=x-buildbuddy-api-key=vGFjlQg7X49NwoQH
 build:remote --config=buildbuddy-official
 # Avoid local test host overload for targets that cannot run remotely
 # (e.g. no-remote-exec Playwright/integration tests).
-test:remote --local_test_jobs=8
+test:remote --local_test_jobs=1
 
 # Local config to disable remote execution
 build:local --remote_cache=
