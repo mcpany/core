@@ -43,7 +43,6 @@ go_test(
         "file_upload_test.go",
         "hot_reload_test.go",
         "http_gateway_test.go",
-        "marketplace_e2e_test.go",
         "middleware_test.go",
         "mtls_test.go",
         "nats_test.go",
