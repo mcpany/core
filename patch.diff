@@ -1,35 +1,28 @@
---- ui/src/components/stacks/stack-graph.tsx
-+++ ui/src/components/stacks/stack-graph.tsx
-@@ -186,16 +186,11 @@
-         }));
-
-         const newEdges: Edge[] = [];
--        // ⚡ BOLT: [Render Optimization] Use O(1) map for dependency validation to prevent O(N^2) renders
--        // Randomized Selection from Top 5 High-Impact Targets (Algorithmic)
--        const serviceNames = new Set(services.map(s => s.name));
--        for (let i = 0; i < services.length; i++) {
--            const svc = services[i];
-+        services.forEach((svc) => {
-             if (svc.dependsOn) {
--                for (let j = 0; j < svc.dependsOn.length; j++) {
--                    const dep = svc.dependsOn[j];
--                    // Check if dependency exists using O(1) Set instead of O(N) some()
--                    if (serviceNames.has(dep)) {
-+                svc.dependsOn.forEach((dep) => {
-+                    // Check if dependency exists
-+                    if (services.some(s => s.name === dep)) {
-                         newEdges.push({
-                             id: `${svc.name}-${dep}`,
-                             source: dep, // Dependency is source (must start first)
-@@ -203,9 +198,9 @@
-                             animated: true,
-                         });
-                     }
--                }
-+                });
+--- ui/src/components/dashboard/dashboard-grid.tsx
++++ ui/src/components/dashboard/dashboard-grid.tsx
+@@ -107,11 +107,15 @@
+                 type: string; // Actually 'wide'|'half' etc in some cases, but mapped
+                 hidden?: boolean;
              }
--        }
-+        });
+-            const migrated: WidgetInstance[] = parsed.map((w: LegacyWidget) => ({
+-                instanceId: crypto.randomUUID(),
+-                type: w.id, // In legacy, id was effectively the type
+-                title: WIDGET_DEFINITIONS.find(d => d.type === w.id)?.title || w.title,
+-                size: (["full", "half", "third", "two-thirds"].includes(w.type) ? w.type : "third") as WidgetSize,
+-                hidden: w.hidden ?? false
+-            }));
++            // ⚡ BOLT: [Render Optimization] Use Map for Legacy Widget Migration title lookups
++            // Randomized Selection from Top 5 High-Impact Targets (Algorithmic)
++            const widgetDefMap = new Map(WIDGET_DEFINITIONS.map(def => [def.type, def]));
++            const migrated: WidgetInstance[] = parsed.map((w: LegacyWidget) => {
++                const def = widgetDefMap.get(w.id);
++                return {
++                    instanceId: crypto.randomUUID(),
++                    type: w.id, // In legacy, id was effectively the type
++                    title: def?.title || w.title,
++                    size: (["full", "half", "third", "two-thirds"].includes(w.type) ? w.type : "third") as WidgetSize,
++                    hidden: w.hidden ?? false
++                };
++            });
 
-         const layouted = getLayoutedElements(newNodes, newEdges);
-         setNodes(layouted.nodes);
+             // Filter out any invalid types
