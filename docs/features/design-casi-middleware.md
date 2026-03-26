@@ -1,43 +1,45 @@
-# Design Doc: Context-Aware Shard Isolation (CASI) Middleware
+# Design Doc: Context-Aware Shard Isolation (CASI)
 **Status:** Draft
 **Created:** 2026-06-07
 
 ## 1. Context and Scope
-In horizontal teams (e.g., Claude Code Agent Teams), multiple agents often share a mailbox or blackboard. "Shard Pollution" occurs when reasoning drift in one agent leaks into the shared context, confusing siblings. CASI enforces semantic boundaries between these context shards.
+Parallel agent teams (Claude Code Agent Teams) share state via a common "Mailbox." However, without granular isolation, a specialist agent (e.g., a "Security Auditor") might accidentally leak its private session data into the shared mailbox, where a generalist "Task Runner" could ingest it.
+
+CASI provides semantic boundaries for teammate shards, ensuring that only relevant, authorized fragments are synchronized.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
-    * Enforce semantic isolation between teammate context shards.
-    * Detect and block "Reasoning Drift" leakage.
-    * Provide "Read-Only\" vs \"Read-Write\" shard permissions.
+    * Implement semantic filtering of state fragments crossing teammate boundaries.
+    * Prevent "Shard Pollution" (exfiltration of private env vars or reasoning traces).
+    * Enforce task-bound isolation for mailbox shards.
 * **Non-Goals:**
-    * Implement the underlying KV store (handled by Blackboard).
-    * Manage subagent lifecycle (handled by Reaper).
+    * Encryption of the local filesystem itself.
+    * Real-time monitoring of agent token costs.
 
 ## 3. Critical User Journey (CUJ)
 * **User Persona:** Local LLM Swarm Orchestrator
-* **Primary Goal:** Prevent a "Researcher Agent" from polluting the "Coder Agent's" context with irrelevant web-search noise.
+* **Primary Goal:** Share secure context between 3 agents without exposing local env vars or private SSH keys.
 * **The Happy Path (Tasks):**
-    1. Orchestrator spawns two agents; MCP Any creates two isolated CASI Shards.
-    2. Researcher Agent writes to its Shard.
-    3. Coder Agent attempts to read Researcher's Shard; CASI enforces "Read-Only" or "Filtered" access based on the mission policy.
-    4. CASI monitors writes for "Semantic Drift" and alerts if pollution is detected.
+    1. Teammate A writes a state fragment to its mailbox shard.
+    2. Teammate B requests a sync of the shared mailbox.
+    3. CASI intercepts the sync request.
+    4. CASI scans the fragment for "Sovereign Sensitive" data (keys, PII).
+    5. Teammate B receives only the authorized, sanitized state fragment.
 
 ## 4. Design & Architecture
 * **System Flow:**
-    `Agent -> CASI Middleware -> Blackboard (Sharded Storage)`
+    `Teammate A -> Local Shard -> CASI Filter -> Shared Mailbox -> Teammate B`
 * **APIs / Interfaces:**
-    * `mount_shard(shard_id, policy)`
-    * `sync_shard(shard_id, delta)`
+    - `Middleware.OnShardSync(ctx, fragment)`: Semantic hook for filtering fragments.
 * **Data Storage/State:**
-    Shard boundaries are maintained in memory and backed by the Blackboard's SQLite implementation.
+    Shard policies are stored in the Mesh-Resident Policy Synthesizer.
 
 ## 5. Alternatives Considered
-* **Full Context Isolation:** Rejected because teammates *need* to share some state to coordinate. CASI provides "Smart Sharing."
+* **Binary Access Control**: Rejected because it cannot perform the *semantic* analysis required to detect PII or keys hidden in natural language reasoning.
 
 ## 6. Cross-Cutting Concerns
-* **Security (Zero Trust):** Shard access is governed by the Mission Root intent.
-* **Observability:** Shard mount/unmount and "Pollution\" alerts are logged.
+* **Security (Zero Trust):** CASI enforces "Least Privilege" for state sharing.
+* **Observability:** Filtered/Redacted fragments are flagged in the FAMI (Fragment-Aware Mailbox Isolation) Auditor.
 
 ## 7. Evolutionary Changelog
 * **2026-06-07:** Initial Document Creation.
