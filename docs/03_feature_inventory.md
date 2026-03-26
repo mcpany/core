@@ -1364,5 +1364,3 @@
 ## Evolution: [2026-06-18] Updates
 - **Teammate Sovereignty Enforcer (TSE)**: (P0) Authoritative isolation kernel.
 - **Logic-Sovereignty Validator (LSV)**: (P0) Real-time logic guard.
-- **Request-Side Injection Shield (RSIS)**: (P0) Block CVE-2026-30741.
-- **Lock-Free Coordination Buffers**: (P0) High-performance coordination.

@@ -1047,10 +1047,5 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ## Strategic Evolution: [2026-06-18]
 ### Focus: Teammate Sovereignty & Logic-Path Interdiction
-**Context**: The shift toward parallel teammates and the emergence of "Logic Bombs" demand a move toward **Logic-Sovereignty** and **Pre-Thought Governance**.
-
-**Strategic Pivot**:
-- **Teammate Sovereignty Enforcer (TSE)**: Authoritative isolation kernel for parallel teams.
+- **Teammate Sovereignty Enforcer (TSE)**: Authoritative isolation kernel.
 - **Logic-Sovereignty Validator (LSV)**: Real-time reasoning path deconstruction.
-- **Request-Side Injection Shield (RSIS)**: Block CVE-2026-30741 via request-side scanning.
-- **Lock-Free Coordination Buffers**: High-speed transport for teammate messages.
