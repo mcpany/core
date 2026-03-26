@@ -1,3 +1,4 @@
+<!-- markdownlint-disable -->
 # Design Doc: LFMC (Lock-Free Mesh Coordination)
 
 **Status:** Draft
@@ -12,36 +13,54 @@ to update their state fragments without global synchronization.
 ## 2. Goals & Non-Goals
 
 * **Goals:**
+
   * Enable high-concurrency teammate coordination without global state locks.
+
   * Synchronize teammate task lists using eventual consistency (CRDTs).
+
   * Provide deterministic conflict resolution for overlapping task claims.
+
 * **Non-Goals:**
+
   * Enforcing global transaction ordering (prioritizes availability over
     strict linearizability).
 
 ## 3. Critical User Journey (CUJ)
 
 * **User Persona:** Specialized Subagent Teammate
+
 * **Primary Goal:** Claim a sub-task and update status without waiting for a
   global coordination heartbeat.
+
 * **The Happy Path (Tasks):**
+
   1. Subagent A identifies an available sub-task in the shared mesh.
+
   2. Subagent A issues a "Claim" fragment via the CRDT bus.
+
   3. Subagent B simultaneously attempts to claim the same task.
+
   4. Both claims are propagated; LFMC reconciles them deterministically using
      hardware timestamps.
+
   5. One agent succeeds, the other automatically pivots to the next available
      task.
 
 ## 4. Design & Architecture
 
 * **System Flow:**
+
   * Subagent Claim -> CRDT State Update -> Mesh Propagation -> Deterministic
     Reconciliation -> Local Cache Sync.
+
 * **APIs / Interfaces:**
+
   * `POST /v1/mesh/fragment/claim`: Claim a specific task fragment.
+
   * `GET /v1/mesh/state`: Retrieve the reconciled mesh state.
+
 * **Data Storage/State:**
+
   * State fragments are stored in a distributed, lock-free blackboard.
 
 ## 5. Alternatives Considered
@@ -53,6 +72,7 @@ to update their state fragments without global synchronization.
 
 * **Security (Zero Trust):** All CRDT fragments must be HAIL-attested to
   prevent state-injection by rogue agents.
+
 * **Observability:** Real-time state-graph visualization in the
   Mesh-Resident Lineage Tracker.
 

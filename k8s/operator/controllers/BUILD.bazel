@@ -12,7 +12,7 @@ go_library(
     importpath = "github.com/mcpany/core/k8s/operator/controllers",
     visibility = ["//k8s/operator:__subpackages__"],
     deps = [
-        "@com_github_mcpany_core//operator/api/v1alpha1",
+        "//k8s/operator/api/v1alpha1",
         "@io_k8s_api//apps/v1:apps",
         "@io_k8s_api//core/v1:core",
         "@io_k8s_apimachinery//pkg/api/errors",

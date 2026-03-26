@@ -1,3 +1,4 @@
+<!-- markdownlint-disable -->
 # Market Sync: [2026-06-19]
 
 ## Ecosystem Updates
@@ -14,8 +15,11 @@ execution strategy.
 OpenClaw has moved their Sovereign architecture to GA. Notable features:
 
 * **HAIL (Hardware-Attested Intent Lineage)**: A standardized protocol for
+
 signing reasoning fragments to prove instruction provenance.
+
 * **Spectral Reasoning**: Support for reasoning-aware timing jitter to
+
 neutralize cache-timing side-channel attacks in shared enclaves.
 
 ## Identified Pain Points & Vulnerabilities
@@ -37,5 +41,7 @@ mission root is lost.
 
 The industry is moving toward **Behavioral Identity** (HAIL) and
 **Intent-Bound Isolation** (Sovereign Sharding). MCP Any must pivot to
+
 support **Hardware-Attested Lineage** and **Stylometric Verification**
+
 to counter the next wave of mimicry-based exploits.

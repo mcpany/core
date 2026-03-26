@@ -1,10 +1,12 @@
+<!-- markdownlint-disable -->
 # Market Sync: [2026-06-18]
 
 ## Ecosystem Updates
 
 ### Claude Code: Agent Teams (v2.1.0-beta)
 
-Anthropic has introduced "Agent Teams," a protocol for parallel subagent execution
+Anthropic has introduced "Agent Teams," a protocol for parallel subagent
+execution
 with "Snapshot-and-Merge" state reconciliation. This validates our direction
 with the Universal Agent Bus (UAB) and horizontal mesh coordination.
 

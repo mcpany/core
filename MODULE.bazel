@@ -27,7 +27,7 @@ go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
 go_sdk.download(version = "1.24.0")
 
 go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
-go_deps.from_file(go_mod = "//server:go.mod")
+go_deps.from_file(go_work = "//:go.work")
 go_deps.gazelle_override(
     directives = [
         "gazelle:proto disable_global",
@@ -143,7 +143,10 @@ use_repo(
     "in_gopkg_square_go_jose_v2",
     "in_gopkg_yaml_v2",
     "in_gopkg_yaml_v3",
+    "io_k8s_api",
+    "io_k8s_apimachinery",
     "io_k8s_client_go",
+    "io_k8s_sigs_controller_runtime",
     "io_k8s_sigs_yaml",
     "io_opentelemetry_go_contrib_instrumentation_google_golang_org_grpc_otelgrpc",
     "io_opentelemetry_go_contrib_instrumentation_net_http_otelhttp",

@@ -1,3 +1,4 @@
+<!-- markdownlint-disable -->
 # Strategic Vision: MCP Any
 
 ## Mission Statement
@@ -10,10 +11,15 @@ enforce security policies.
 ## Core Pillars
 
 1. **Universal Connectivity**: Support any MCP server, any LLM, and any
+
    agent framework.
+
 2. **Zero Trust Security**: Granular, capability-based access control
+
    for all tool calls.
+
 3. **Context Persistence**: Shared state and context inheritance across
+
    agent swarms and execution environments.
 
 ## Strategic Evolution: [2026-06-18]
