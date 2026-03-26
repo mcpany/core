@@ -115,12 +115,9 @@ export function ContextTreemap() {
         // Group by service
         const servicesMap: Record<string, TreemapNode> = {};
 
-        // ⚡ BOLT: [Render Optimization] Use traditional for-loop to prevent callback allocation overhead
-        // Randomized Selection from Top 5 High-Impact Targets (Algorithmic)
-        for (let i = 0; i < tools.length; i++) {
-            const tool = tools[i];
+        tools.forEach((tool) => {
             const toolId = `${tool.serviceId}.${tool.name}`;
-            if (disabledToolIds.has(toolId)) continue; // Skip disabled tools in simulation
+            if (disabledToolIds.has(toolId)) return; // Skip disabled tools in simulation
 
             if (!servicesMap[tool.serviceId]) {
                 servicesMap[tool.serviceId] = {
@@ -137,7 +134,7 @@ export function ContextTreemap() {
                 serviceId: tool.serviceId
             });
             servicesMap[tool.serviceId].size += cost;
-        }
+        });
 
         // Convert map to array
         return Object.values(servicesMap).map((node, index) => ({
