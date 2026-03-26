@@ -87,7 +87,7 @@ export function deepParseJson(obj: any): any {
                     const innerParsed = JSON.parse(parsed);
                     current = parsed;
                     parsed = innerParsed;
-                } catch {
+                } catch (_e) {
                     break;
                 }
             }
