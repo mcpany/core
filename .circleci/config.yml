@@ -1,20 +1,16 @@
 # Copyright 2026 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
-
 # CircleCI Configuration
 version: 2.1
-
 executors:
   default-executor:
     docker:
       - image: cimg/go:1.24
     resource_class: medium
-
   bazel-executor:
     docker:
       - image: cimg/go:1.24
     resource_class: medium
-
 commands:
   check-skip:
     description: "Check if CI should skip based on changed files"
@@ -30,7 +26,6 @@ commands:
             # However, the user asked for similar logic.
             # For now, let's just run it. If strict parity is needed, we'd add complex logic.
             echo "Running lint on all commits"
-
 jobs:
   lint:
     executor: bazel-executor
@@ -70,14 +65,9 @@ jobs:
             . venv/bin/activate
             # Ensure PATH includes tool install dir
             export PATH=$PWD/build/env/bin:$PATH
-
             # Use go proxy
             export GOPROXY=https://proxy.golang.org,direct
-
-            curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.56.2
-            export GOLANGCI_LINT_BIN=$(go env GOPATH)/bin/golangci-lint
             bazel run //:lint
-
             # Explicitly run bazel tests required for linting to pass CI. Avoid --disk_cache OOMs
             # Limit parallelism to avoid Out-Of-Memory errors on restricted runner instances
             # In CircleCI specifically drop ram_resources argument to avoid unknown arg failures
@@ -88,7 +78,6 @@ jobs:
             - "build/env/bin"
             - "build/.cache"
             - "venv"
-
 workflows:
   version: 2
   ci:
