@@ -1,4 +1,4 @@
-<!-- markdownlint-disable-file -->
+<!-- markdownlint-disable -->
 # Market Sync: 2026-06-14
 
 ## 1. Identity-Decay Attacks (IDA)
