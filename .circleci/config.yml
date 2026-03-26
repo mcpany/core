@@ -44,6 +44,7 @@ jobs:
           command: |
             curl -fsSL https://deb.nodesource.com/setup_23.x | sudo -E bash -
             sudo apt-get install -y nodejs
+            sudo npm install -g pnpm
       - restore_cache:
           keys:
             - v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
@@ -58,6 +59,7 @@ jobs:
             # Ensure PATH includes tool install dir
             export PATH=$PWD/build/env/bin:$PATH
             make lint
+            cd ui && pnpm install && pnpm run lint
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
