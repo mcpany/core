@@ -101,7 +101,7 @@ common:buildbuddy-official --remote_local_fallback
 common:buildbuddy-official --remote_header=x-buildbuddy-api-key=vGFjlQg7X49NwoQHAfRW
 
 # Set buildbuddy as the default configuration for all builds
-build:remote --config=buildbuddy-official
+build:remote --config=buildbuddy-official --local_ram_resources=HOST_RAM*0.5
 # Avoid local test host overload for targets that cannot run remotely
 # (e.g. no-remote-exec Playwright/integration tests).
 test:remote --local_test_jobs=8
