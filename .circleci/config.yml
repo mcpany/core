@@ -58,6 +58,7 @@ jobs:
             # Ensure PATH includes tool install dir
             export PATH=$PWD/build/env/bin:$PATH
             make lint
+            pre-commit run --all-files -c server/.pre-commit-config.yaml
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
