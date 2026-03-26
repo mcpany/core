@@ -89,7 +89,6 @@ go_library(
         "@com_github_pmezard_go_difflib//difflib",
         "@com_github_prometheus_client_golang//prometheus",
         "@com_github_spf13_afero//:afero",
-        "@in_gopkg_yaml_v3//:yaml_v3",
         "@io_k8s_sigs_yaml//:yaml",
         "@io_opentelemetry_go_contrib_instrumentation_google_golang_org_grpc_otelgrpc//:otelgrpc",
         "@io_opentelemetry_go_contrib_instrumentation_net_http_otelhttp//:otelhttp",
