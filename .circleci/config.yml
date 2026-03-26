@@ -17,13 +17,6 @@ commands:
       - run:
           name: Early Return if Docs Only
           command: |
-            # If this is a PR, we can check changes against main
-            # But CircleCI shallow clones can be tricky.
-            # Simple approach: If all changed files match docs, exit 0 (success) immediately?
-            # Actually, CircleCI doesn't have an easy "skip remaining steps" without failing or using conditional steps for EVERYTHING.
-            # We will rely on the fact that 'make lint' itself might be fast or we just run it.
-            # However, the user asked for similar logic.
-            # For now, let's just run it. If strict parity is needed, we'd add complex logic.
             echo "Running lint on all commits"
 
 jobs:
@@ -49,9 +42,6 @@ jobs:
             - v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
             - v1-lint-
       - run:
-          name: Prepare Environment
-          command: make prepare
-      - run:
           name: Run Lint
           command: |
             . venv/bin/activate
@@ -61,6 +51,9 @@ jobs:
             curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.64.5
             export PATH=$PATH:$(go env GOPATH)/bin
             cd server
+            # Drop replace directive in circleci so it fetches the committed proto from branch
+            go mod edit -dropreplace github.com/mcpany/core/proto
+            go mod edit -replace github.com/mcpany/core/proto=../proto
             go mod tidy
             golangci-lint run
       - save_cache:
