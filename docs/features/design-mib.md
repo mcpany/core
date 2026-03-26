@@ -42,3 +42,10 @@ The discovery of "Multi-modal Trace Injection" (Context Smuggling via SVG, CSS, 
 
 ## 7. Evolutionary Changelog
 * **2026-05-21:** Initial Document Creation (Upgraded from Semantic Integrity Bridge).
+
+### Update: 2026-06-30 - Mandating SVG-Layer Semantic Shielding
+**Context:** Discovery of SVG-Layer Semantic Poisoning exploits where malicious instructions are hidden in zero-width or CSS-hidden layers.
+**Architecture Adjustment:**
+* Integrating **SLSS (SVG-Layer Semantic Shielding)** as a mandatory middleware for all SVG-type fragments.
+* Introducing **Multi-Modal Attention Sanitization** to block non-visible semantic fragments from influencing agent reasoning paths.
+**Security Impact:** Prevents "Invisible Instruction Injection" and ensures that structural reasoning is anchored only to visible, rendered content.

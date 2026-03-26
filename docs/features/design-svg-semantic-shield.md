@@ -1,46 +1,51 @@
-# Design Doc: SVG-Layer Semantic Shield (SLSS)
+# Design Doc: SVG-Layer Semantic Shielding (SLSS)
 **Status:** Draft
 **Created:** 2026-06-30
 
 ## 1. Context and Scope
-Multi-modal AI agents often ingest SVG XML structures to reason about visual layouts and diagrams. The discovery of "SVG-Layer Semantic Poisoning" reveals that attackers can embed malicious text instructions within invisible SVG layers (e.g., `<text>` nodes with `opacity: 0`, `display: none`, or zero-width paths).
+Multi-modal reasoning engines increasingly ingest SVG (Scalable Vector Graphics) structures as semantic context rather than flat pixels. This exposure has introduced a zero-day exploit pattern where malicious instructions are embedded in invisible SVG layers (e.g., zero-width paths, CSS-hidden groups, or nested `<metadata>` tags). These "Invisible Instructions" bypass traditional text sanitizers and pixel-based vision models but are semantically processed by the LLM's structural reasoning core.
 
-MCP Any needs to provide a sanitization layer that deconstructs SVG DOM/CSS structures and strips non-visible semantic fragments before they reach the agent's reasoning engine.
+SVG-Layer Semantic Shielding (SLSS) is a mandatory middleware for the Multi-modal Integrity Bridge (MIB) that deconstructs SVG DOM/CSS trees and sanitizes hidden semantic fragments before they are propagated to the reasoning engine.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
-    * Deconstruct SVG XML and identify hidden text-bearing nodes.
-    * Strip any semantic fragments that are not visible based on standard CSS rendering rules.
-    * Provide a hardware-attested sanitization receipt for the multi-modal trace.
+    * Deconstruct SVG XML structures to identify non-rendering semantic elements.
+    * Strip paths with zero width/height, `visibility: hidden`, `display: none`, or zero opacity.
+    * Sanitize `<title>`, `<desc>`, and `<metadata>` tags against imperative instruction patterns.
+    * Provide a hardware-attested "Sanitization Receipt" for every multi-modal ingest.
 * **Non-Goals:**
-    * Performing full OCR or pixel-level analysis (handled by model-side vision).
-    * Modifying visible SVG paths (utility preservation).
+    * Performing flat pixel-level OCR (handled by separate vision layers).
+    * Re-rendering SVGs for human viewing.
+    * Validating the artistic quality or correctness of the SVG.
 
 ## 3. Critical User Journey (CUJ)
-* **User Persona:** Multi-modal Swarm Developer
-* **Primary Goal:** Sanitize untrusted SVGs from a repository before feeding them to a specialist agent.
+* **User Persona:** Security-Conscious Swarm Orchestrator
+* **Primary Goal:** Prevent a malicious SVG tool output from hijacking a subagent's reasoning path.
 * **The Happy Path (Tasks):**
-    1. Agent receives an untrusted SVG file from a tool call.
-    2. SVG is passed through the SLSS Middleware.
-    3. SLSS deconstructs the DOM and evaluates visibility (CSS/attributes).
-    4. Hidden nodes containing imperative instructions are purged.
-    5. A "Sanitization Receipt" is appended to the context.
+    1. A specialized SVG-generation tool returns a payload to the subagent.
+    2. The payload is intercepted by the MIB.
+    3. The SLSS middleware parses the SVG structure and identifies a hidden `<text>` element within a zero-opacity group.
+    4. The SLSS strips the hidden element and sanitizes the remaining metadata.
+    5. The sanitized SVG and its Sanitization Receipt are delivered to the subagent.
+    6. The subagent reasons over the visible structure without being influenced by the "Invisible Instructions."
 
 ## 4. Design & Architecture
 * **System Flow:**
-    `Untrusted SVG` -> `DOM Parser (WASM)` -> `Visibility Evaluator` -> `Semantic Stripper` -> `Sanitized SVG`
+    `[Tool Output] -> [MIB Gateway] -> [SLSS Parser (WASM)] -> [Sanitization Logic] -> [Sanitized Payload] -> [Agent]`
 * **APIs / Interfaces:**
-    * `POST /v1/sanitize/svg`: Endpoint for structural deconstruction.
-    * Response includes `sanitized_svg` and `attestation_token`.
-* **Data Storage/State:** State-free; processing happens in-memory within an ephemeral WASM sandbox.
+    * `interceptor/slss`: Internal interface for structural deconstruction.
+    * `x-mcpany-slss-status`: Header indicating sanitization results and fragment counts.
+* **Data Storage/State:**
+    * Transient processing in isolated WASM memory.
+    * Sanitization Receipts stored in the Audit Log.
 
 ## 5. Alternatives Considered
-* **Rasterization:** Converting SVGs to PNGs would mitigate structural injection but would destroy the agent's ability to reason about precise SVG metadata/identifiers.
-* **Schema Validation:** Rejected as it cannot distinguish between valid structural nodes and those used for instruction injection.
+* **Rasterization-Only**: Convert all SVGs to PNGs before ingestion. Rejected because structural reasoning over vector relationships is often required for valid agent tasks (e.g., "Fix this UI layout").
+* **Regex Scrubbing**: Use regex to strip hidden tags. Rejected due to the complexity of SVG/CSS inheritance which makes simple regex bypassable.
 
 ## 6. Cross-Cutting Concerns
-* **Security (Zero Trust):** The parser must run in a restricted WASM environment to prevent "Billion Laughs" style XML attacks.
-* **Observability:** Log the count and content of "Hidden Instruction Fragments" identified during sanitization.
+* **Security (Zero Trust):** The SLSS parser must run in a restricted WASM sandbox to prevent RCE from malformed XML.
+* **Observability:** Logs will include counts of stripped fragments and high-entropy metadata detections.
 
 ## 7. Evolutionary Changelog
 * **2026-06-30:** Initial Document Creation.
