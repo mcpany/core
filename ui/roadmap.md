@@ -593,5 +593,3 @@
 - [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
 
 - [ ] **[P0] Teammate Isolation Monitor**: (2026-06-18)
-- [ ] **[P0] Logic-Sovereignty Path Tracer**: (2026-06-18)
-- [ ] **[P0] Request-Side Injection Alerts**: (2026-06-18)
