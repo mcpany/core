@@ -23,7 +23,7 @@ export function unwrapMcpResult(result: any): any {
     if (content && typeof content === 'object' && !Array.isArray(content)) {
          if (content.stdout && typeof content.stdout === 'string') {
              try {
-                 const inner = JSON.parse(content.stdout);
+                 const inner = deepParseJson(content.stdout);
                  if (Array.isArray(inner) || (typeof inner === 'object' && inner !== null)) {
                      content = inner;
                  }
@@ -50,7 +50,7 @@ export function unwrapMcpResult(result: any): any {
             // Only try to unwrap further if there's exactly one text block and it's JSON
             if (content.length === 1 && content[0].type === 'text' && typeof content[0].text === 'string') {
                 try {
-                    const parsed = JSON.parse(content[0].text);
+                    const parsed = deepParseJson(content[0].text);
                     if (typeof parsed === 'object' && parsed !== null) {
                         return parsed;
                     }
