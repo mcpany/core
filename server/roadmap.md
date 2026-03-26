@@ -1205,7 +1205,7 @@ These features represent the next logical steps for the product, focusing on Ent
 
 - **Synthetic Policy Synthesizer**: (P1) Experimental mesh-local policy generation service backed by hardware attestation.
 
-### Upcoming: [2026-06-05] - Part 2 - Part 2
+### Upcoming: [2026-06-05] - Part 2 - Part 2 - Part 2
 
 - **Intent-Splicing Detector (ISD)**: (P0) Structural validation middleware for the Semantic Integrity Bridge to prevent malicious instruction splicing in inter-agent streams.
 
@@ -1215,7 +1215,7 @@ These features represent the next logical steps for the product, focusing on Ent
 
 - **Synthetic Policy Synthesizer**: (P1) Experimental mesh-local policy generation service backed by hardware attestation.
 
-### Upcoming: [2026-06-05] - Part 2
+### Upcoming: [2026-06-05] - Part 2 - Part 2
 
 - **Intent-Splicing Detector (ISD)**: (P0) Structural validation middleware for the Semantic Integrity Bridge to prevent malicious instruction splicing in inter-agent streams.
 

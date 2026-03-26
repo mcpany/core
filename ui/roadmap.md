@@ -988,7 +988,7 @@
 
 - **Synthetic Policy Workspace**: (P1) Interactive environment for reviewing and approving mesh-synthesized security policies.
 
-### Upcoming: [2026-06-05] - Part 2 - Part 2
+### Upcoming: [2026-06-05] - Part 2 - Part 2 - Part 2
 
 - **Intent-Splicing Audit Log**: (P0) Forensic UI for reviewing deconstructed inter-agent messages and splicing attempts.
 
@@ -998,7 +998,7 @@
 
 - **Synthetic Policy Workspace**: (P1) Interactive environment for reviewing and approving mesh-synthesized security policies.
 
-### Upcoming: [2026-06-05] - Part 2
+### Upcoming: [2026-06-05] - Part 2 - Part 2
 
 - **Intent-Splicing Audit Log**: (P0) Forensic UI for reviewing deconstructed inter-agent messages and splicing attempts.
 
