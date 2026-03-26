@@ -1,25 +1,58 @@
-# Truth Reconciliation Audit Report
+commit 034ba7b541aed499b065db5d8b4bc2c9dc8234bc
+Author: ql-owo-lp <678729+ql-owo-lp@users.noreply.github.com>
+Date:   Thu Mar 26 02:03:04 2026 +0000
 
-## Executive Summary
-This audit evaluated 10 distinct features across the documentation, codebase, and roadmap. The overall health is strong, with 9 out of 10 sampled features functioning perfectly as documented. However, one feature (Universal Agent Bus Interface) suffered from "Roadmap Debt" where the UI documentation claimed an interface existed, but the corresponding React code was missing. This has been remediated.
+    fix: Truth Reconciliation Audit and Test Fixes
 
-## Verification Matrix
+diff --git a/REPORT.md b/REPORT.md
+index 55cf9f7fd..2326d9d5c 100644
+--- a/REPORT.md
++++ b/REPORT.md
+@@ -1,33 +1,25 @@
+ # Truth Reconciliation Audit Report
 
-| Document Name | Status | Action Taken | Evidence |
-| --- | --- | --- | --- |
-| `ui/docs/features/dashboard.md` | Verified | None | `ui/src/components/dashboard` |
-| `ui/docs/features/services.md` | Verified | None | `ui/src/components/services` |
-| `ui/docs/features/playground.md` | Verified | None | `ui/src/components/playground` |
-| `ui/docs/features/stack-composer.md` | Verified | None | `ui/src/components/stacks` |
-| `ui/docs/features/universal_agent_bus.md` | Discrepancy | Engineered UI | `ui/src/app/universal-agent-bus/page.tsx` |
-| `server/docs/features/sso.md` | Verified | None | `server/pkg/middleware/sso.go` |
-| `server/docs/features/sql_upstream.md` | Verified | None | `server/pkg/upstream/sql/tool.go` |
-| `server/docs/features/theme_builder.md` | Verified | None | `ui/src/components/theme-provider.tsx` |
-| `server/docs/features/kafka.md` | Verified | None | `server/pkg/bus/kafka/kafka.go` |
-| `server/docs/features/admin_api.md` | Verified | None | `server/pkg/admin/server.go` |
+ ## Executive Summary
+-
+-A comprehensive "Truth Reconciliation Audit" was performed on 10 distinct features (5 UI, 5 Server) against the Project Roadmap and codebase. The audit verified that the documentation accurately reflects the implemented features and aligns with the strategic roadmap. All sampled features were found to be correctly implemented and documented.
+-
+-The 10 sampled features include the Intelligent Stack Composer, Alerts & Incidents, Tool Output Diffing, Connect Client Center, Real-time Inspector, WASM Plugin System, mcpctl CLI, Automated Documentation Generation, Health Checks, and Schema Validation.
+-
+-One discrepancy was found in the environment setup for the `verify_inspector.py` test suite for the UI Real-time Inspector, where the UI was not properly running, causing the test expectation to fail. This was remediated by properly bootstrapping the frontend.
++This audit evaluated 10 distinct features across the documentation, codebase, and roadmap. The overall health is strong, with 9 out of 10 sampled features functioning perfectly as documented. However, one feature (Universal Agent Bus Interface) suffered from "Roadmap Debt" where the UI documentation claimed an interface existed, but the corresponding React code was missing. This has been remediated.
 
-## Remediation Log
-- **Universal Agent Bus Interface**: Discovered that `ui/docs/features/universal_agent_bus.md` described specific UI interfaces like Recursive Context Dashboard and Multi-Agent Session Timeline, but `ui/src/app/universal-agent-bus` were missing/unlinked. Implemented `UniversalAgentBusPage` React components with corresponding unit tests to fulfill the documented product requirement, and hooked it up to the `ui/src/App.tsx` and `app-sidebar.tsx`.
+ ## Verification Matrix
 
-## Security Scrub
-- The report has been sanitized and contains NO PII, secrets, or internal IP addresses.
+ | Document Name | Status | Action Taken | Evidence |
+-| :--- | :--- | :--- | :--- |
+-| `ui/docs/features/stack-composer.md` | **Verified** | None | Code exists in `ui/src/app/stacks/[stackId]/page.tsx` and `ui/src/components/stacks/stack-editor.tsx`. 3-pane layout confirmed. |
+-| `ui/docs/features/alerts.md` | **Verified** | None | Code exists in `ui/src/app/alerts/page.tsx` and `server/pkg/alerts/manager.go`. |
+-| `ui/docs/features/tool-diff.md` | **Verified** | None | Code exists in `ui/src/components/playground/pro/chat-message.tsx`. |
+-| `ui/docs/features/connect-client-center.md` | **Verified** | None | Code exists in `ui/src/components/connect-client-button.tsx`. |
+-| `ui/docs/features/real-time-inspector.md` | **Verified** | **Test Fix** | Code exists in `ui/src/app/inspector/page.tsx`. Test `verify_inspector.py` was failing due to missing dev server; fixed test setup. |
+-| `server/docs/features/wasm.md` | **Verified** | None | Code exists in `server/pkg/wasm/runtime.go`. Experimental/mock stage confirmed. |
+-| `server/docs/features/mcpctl.md` | **Verified** | None | Code exists in `server/cmd/mcpctl/main.go`. |
+-| `server/docs/features/documentation_generation.md` | **Verified** | None | Code exists in `server/cmd/server/main.go` (as `mcpany config doc`). |
+-| `server/docs/features/health-checks.md` | **Verified** | None | Code exists in `server/pkg/health/checker.go`. |
+-| `server/docs/features/schema-validation.md` | **Verified** | None | Code exists in `server/pkg/config/schema_validation.go`. |
++| --- | --- | --- | --- |
++| `ui/docs/features/dashboard.md` | Verified | None | `ui/src/components/dashboard` |
++| `ui/docs/features/services.md` | Verified | None | `ui/src/components/services` |
++| `ui/docs/features/playground.md` | Verified | None | `ui/src/components/playground` |
++| `ui/docs/features/stack-composer.md` | Verified | None | `ui/src/components/stacks` |
++| `ui/docs/features/universal_agent_bus.md` | Discrepancy | Engineered UI | `ui/src/app/universal-agent-bus/page.tsx` |
++| `server/docs/features/sso.md` | Verified | None | `server/pkg/middleware/sso.go` |
++| `server/docs/features/sql_upstream.md` | Verified | None | `server/pkg/upstream/sql/tool.go` |
++| `server/docs/features/theme_builder.md` | Verified | None | `ui/src/components/theme-provider.tsx` |
++| `server/docs/features/kafka.md` | Verified | None | `server/pkg/bus/kafka/kafka.go` |
++| `server/docs/features/admin_api.md` | Verified | None | `server/pkg/admin/server.go` |
+
+ ## Remediation Log
+-
+-- **Test Fix:** `verify_inspector.py`: The test script was failing with a `net::ERR_CONNECTION_REFUSED` error because the frontend application server was not running. Ran `npm run dev` to bootstrap the application on port 9002, allowing the test to verify the UI component correctly.
+-- **Test Fix:** `mcpctl` Tests: Addressed failing unit tests in `TestValidateCmd` that were failing due to missing `viper.Reset()` calls leading to nil pointer dereferences on unmarshaling. Fixed validation error test strings to match expected output.
++- **Universal Agent Bus Interface**: Discovered that `ui/docs/features/universal_agent_bus.md` described specific UI interfaces like Recursive Context Dashboard and Multi-Agent Session Timeline, but `ui/src/app/universal-agent-bus` were missing/unlinked. Implemented `UniversalAgentBusPage` React components with corresponding unit tests to fulfill the documented product requirement, and hooked it up to the `ui/src/App.tsx` and `app-sidebar.tsx`.
+
+ ## Security Scrub
+-
+-This report contains no PII, secrets, or internal IPs. All verification was performed against public or local codebase artifacts.
++- The report has been sanitized and contains NO PII, secrets, or internal IP addresses.
