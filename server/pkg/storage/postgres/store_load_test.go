@@ -1,10 +1,13 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package postgres
 
 import (
 	"context"
-	"testing"
 	"database/sql"
 	"errors"
+	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	configv1 "github.com/mcpany/core/proto/config/v1"
