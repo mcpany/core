@@ -45,7 +45,7 @@ type ToolReconciler struct {
 func (r *ToolReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
 
-	// TODO(user): your logic here
+	// Logic for tool reconciliation goes here.
 
 	return ctrl.Result{}, nil
 }
