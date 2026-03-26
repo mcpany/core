@@ -16,21 +16,9 @@ TYPE_PATTERN = re.compile(r'^type\s+([A-Z]\w*)\s+')
 # Exported var/const: var Name ... or const Name ...
 VAR_CONST_PATTERN = re.compile(r'^(var|const)\s+([A-Z]\w*)\s+')
 
-def has_summary(doc_lines):
+def has_section(doc_lines, section_name):
     for line in doc_lines:
-        if "Summary:" in line:
-            return True
-    return False
-
-def has_parameters(doc_lines):
-    for line in doc_lines:
-        if "Parameters:" in line:
-            return True
-    return False
-
-def has_returns(doc_lines):
-    for line in doc_lines:
-        if "Returns:" in line:
+        if f"{section_name}:" in line:
             return True
     return False
 
@@ -90,22 +78,24 @@ def check_file(filepath):
             if not doc_lines:
                 reasons.append("Missing documentation")
             else:
-                if not has_summary(doc_lines):
+                if not has_section(doc_lines, "Summary"):
                     reasons.append("Missing 'Summary:'")
 
                 if kind in ("func", "method"):
-                    # Check if parameters exist (non-empty string)
-                    if params_str and params_str.strip():
-                        if not has_parameters(doc_lines):
-                            reasons.append("Missing 'Parameters:'")
+                    if not has_section(doc_lines, "Parameters"):
+                        reasons.append("Missing 'Parameters:'")
 
-                    # Check if returns exist
-                    # returns_str might be "error" or "(int, error)" or ""
-                    # We check if it contains something other than whitespace and the opening brace
+                    # Returns is mandatory if there is a return type
                     clean_returns = returns_str.strip()
                     if clean_returns and clean_returns != "{":
-                         if not has_returns(doc_lines):
+                         if not has_section(doc_lines, "Returns"):
                             reasons.append("Missing 'Returns:'")
+
+                    if not has_section(doc_lines, "Errors"):
+                        reasons.append("Missing 'Errors:'")
+
+                    if not has_section(doc_lines, "Side Effects"):
+                        reasons.append("Missing 'Side Effects:'")
 
             if reasons:
                 missing.append((i + 1, symbol, ", ".join(reasons)))
