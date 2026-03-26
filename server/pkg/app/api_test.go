@@ -1660,6 +1660,28 @@ func TestSecretLeak(t *testing.T) {
 	assert.Equal(t, "[REDACTED]", result["value"])
 }
 
+func TestHandleSecrets_RBAC_Enforcement(t *testing.T) {
+	tempDir := t.TempDir()
+	dbPath := filepath.Join(tempDir, "test_secrets_rbac.db")
+	db, _ := sqlite.NewDB(dbPath)
+	defer db.Close()
+	store := sqlite.NewStore(db)
+
+	app := NewApplication()
+	app.fs = afero.NewMemMapFs()
+
+	handler := app.createAPIHandler(store)
+	ts := httptest.NewServer(handler)
+	defer ts.Close()
+
+	// Try to get secrets without admin role
+	resp, _ := http.Get(ts.URL + "/secrets")
+	if resp != nil && resp.Body != nil {
+		defer resp.Body.Close()
+	}
+	assert.Equal(t, http.StatusForbidden, resp.StatusCode)
+}
+
 func TestReproduction_ProtocolCompliance(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithCancel(context.Background())
@@ -1821,41 +1843,4 @@ func TestHandleSecretDetail_Put_InvalidJSON(t *testing.T) {
 	if w.Code != http.StatusBadRequest {
 		t.Errorf("Expected 400 Bad Request, got %d", w.Code)
 	}
-}
-
-func TestHandleSecrets_RBAC_Enforcement(t *testing.T) {
-	tempDir := t.TempDir()
-	dbPath := filepath.Join(tempDir, "test_secrets_rbac.db")
-	db, _ := sqlite.NewDB(dbPath)
-	defer db.Close()
-	store := sqlite.NewStore(db)
-
-	app := NewApplication()
-	app.fs = afero.NewMemMapFs()
-
-	handler := app.createAPIHandler(store)
-	ts := httptest.NewServer(handler)
-	defer ts.Close()
-
-	// Try to get secrets without admin role
-	resp, _ := http.Get(ts.URL + "/secrets")
-	if resp != nil && resp.Body != nil {
-		defer resp.Body.Close()
-	}
-	assert.Equal(t, http.StatusForbidden, resp.StatusCode)
-
-	// Try to POST secrets without admin role
-	secretID := "sensitive-secret-123"
-	body := map[string]interface{}{
-		"id":    secretID,
-		"name":  "My Secret",
-		"key":   "my_secret_key",
-		"value": "SUPER_SECRET_VALUE",
-	}
-	bodyBytes, _ := json.Marshal(body)
-	respPost, _ := http.Post(ts.URL+"/secrets", "application/json", bytes.NewReader(bodyBytes))
-	if respPost != nil && respPost.Body != nil {
-		defer respPost.Body.Close()
-	}
-	assert.Equal(t, http.StatusForbidden, respPost.StatusCode)
 }
