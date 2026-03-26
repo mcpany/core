@@ -25,7 +25,8 @@ const (
 
 // SplunkAuditStore sends audit logs to Splunk HTTP Event Collector.
 // Summary: Asynchronous audit store that forwards log entries to Splunk via its HTTP Event Collector (HEC).
-type SplunkAuditStore struct {
+// SplunkAuditStore sends audit logs to Splunk HTTP Event Collector.
+// Summary: Asynchronous audit store that forwards log entries to Splunk via its HTTP Event Collector (HEC).
 	config *configv1.SplunkConfig
 	client *http.Client
 	queue  chan Entry
@@ -46,7 +47,19 @@ type SplunkAuditStore struct {
 //
 // Side Effects:
 //   - None.
-func NewSplunkAuditStore(config *configv1.SplunkConfig) *SplunkAuditStore {
+// NewSplunkAuditStore creates a new SplunkAuditStore.
+// Summary: Initializes a new SplunkAuditStore with the provided HEC configuration and starts background workers for processing.
+// Parameters:
+//   - config (*configv1.SplunkConfig): The Splunk HEC and indexing configuration.
+//
+// Returns:
+//   - *SplunkAuditStore: The newly created and active Splunk audit store.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	if config == nil {
 		config = &configv1.SplunkConfig{}
 	}
@@ -119,7 +132,20 @@ func (e *SplunkAuditStore) worker() {
 //
 // Side Effects:
 //   - None.
-func (e *SplunkAuditStore) Write(_ context.Context, entry Entry) error {
+// Write implements the Store interface.
+// Summary: Enqueues an audit entry for asynchronous transmission to Splunk.
+// Parameters:
+//   - ctx (context.Context): The context for the request (unused).
+//   - entry (Entry): The audit log entry to be recorded.
+//
+// Returns:
+//   - error: An error if the internal buffer is full.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	select {
 	case e.queue <- entry:
 		return nil
@@ -189,7 +215,21 @@ func (e *SplunkAuditStore) sendBatch(batch []Entry) {
 //
 // Side Effects:
 //   - None.
-func (e *SplunkAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
+// Read implements the Store interface.
+// Summary: Not implemented for SplunkAuditStore.
+// Parameters:
+//   - ctx (context.Context): The context for the request (unused).
+//   - filter (Filter): Criteria for filtering audit logs (unused).
+//
+// Returns:
+//   - []Entry: Always returns nil.
+//   - error: Always returns a "not implemented" error.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	return nil, fmt.Errorf("read not implemented for splunk audit store")
 }
 
@@ -203,7 +243,18 @@ func (e *SplunkAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 //
 // Side Effects:
 //   - None.
-func (e *SplunkAuditStore) Close() error {
+// Close closes the queue and waits for workers to finish.
+// Summary: Gracefully shuts down the Splunk audit store, flushing any pending events before exiting.
+// Returns:
+//   - error: Always returns nil.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+// Parameters:
+//   - None.
 	if e.done != nil {
 		close(e.done)
 	}

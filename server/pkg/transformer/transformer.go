@@ -18,7 +18,10 @@ import (
 // structured string using a Go template. It supports multiple output formats
 // specified by the template, such as JSON, XML, or plain text.
 // Summary: Data transformation engine using Go templates with caching and pooling optimization.
-type Transformer struct {
+// Transformer provides functionality to transform a map of data into a
+// structured string using a Go template. It supports multiple output formats
+// specified by the template, such as JSON, XML, or plain text.
+// Summary: Data transformation engine using Go templates with caching and pooling optimization.
 	cache sync.Map
 	pool  sync.Pool
 }
@@ -33,7 +36,18 @@ type Transformer struct {
 //
 // Errors:
 //   - None.
-func NewTransformer() *Transformer {
+// NewTransformer creates and returns a new instance of Transformer.
+// Summary: Initializes a new Transformer.
+// Returns:
+//   - *Transformer: The initialized transformer.
+//
+// Side Effects:
+//   - Initializes a sync.Pool for bytes.Buffer.
+//
+// Errors:
+//   - None.
+// Parameters:
+//   - None.
 	return &Transformer{
 		pool: sync.Pool{
 			New: func() any {
@@ -61,7 +75,24 @@ func NewTransformer() *Transformer {
 // Side Effects:
 //   - Caches parsed templates.
 //   - Uses a buffer pool to reduce allocations.
-func (t *Transformer) Transform(templateStr string, data any) ([]byte, error) {
+// Transform takes a map of data and a Go template string and returns a byte
+// slice containing the transformed output.
+// Summary: Executes a Go template against provided data.
+// Parameters:
+//   - templateStr: string. The Go template to execute.
+//   - data: any. The input data context for the template.
+//
+// Returns:
+//   - []byte: The transformed output.
+//   - error: An error if template parsing or execution fails.
+//
+// Errors:
+//   - Returns error if template syntax is invalid.
+//   - Returns error if template execution fails.
+//
+// Side Effects:
+//   - Caches parsed templates.
+//   - Uses a buffer pool to reduce allocations.
 	var tmpl *template.Template
 	var err error
 

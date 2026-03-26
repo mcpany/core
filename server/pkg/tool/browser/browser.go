@@ -17,7 +17,10 @@ import (
 // It is an interface so tests can inject a lightweight implementation without
 // requiring a real browser installation.
 // Summary: Represents a PageFetcher.
-type PageFetcher interface {
+// PageFetcher fetches the visible text content of a URL.
+// It is an interface so tests can inject a lightweight implementation without
+// requiring a real browser installation.
+// Summary: Represents a PageFetcher.
 	// FetchText retrieves the text content of a URL.
 	// Summary: Retrieves the text content of a URL.
 	// Parameters:
@@ -35,7 +38,8 @@ type PageFetcher interface {
 
 // Provider implements a basic browser automation tool.
 // Summary: Tool provider for browsing web pages.
-type Provider struct {
+// Provider implements a basic browser automation tool.
+// Summary: Tool provider for browsing web pages.
 	fetcher PageFetcher // nil → default playwrightFetcher
 }
 
@@ -49,7 +53,18 @@ type Provider struct {
 //
 // Side Effects:
 //   - None.
-func NewProvider() *Provider {
+// NewProvider creates a new Provider.
+// Summary: Initializes a new browser provider.
+// Returns:
+//   - *Provider: The initialized provider.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+// Parameters:
+//   - None.
 	return &Provider{}
 }
 
@@ -69,7 +84,22 @@ func NewProvider() *Provider {
 //
 // Side Effects:
 //   - None.
-func (b *Provider) BrowsePage(ctx context.Context, url string) (string, error) {
+// BrowsePage fetches the text content of the given URL.
+// Summary: Fetches the content of a web page.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - url: string. The URL to visit.
+//
+// Returns:
+//   - string: The text content of the page.
+//   - error: An error if the URL is empty or the browser fails.
+//
+// Errors:
+//   - Returns "url is required" if url is empty.
+//   - Returns "failed to start playwright" or "failed to launch browser" if the browser fails to start.
+//
+// Side Effects:
+//   - None.
 	if url == "" {
 		return "", fmt.Errorf("url is required")
 	}
@@ -94,7 +124,18 @@ func (b *Provider) BrowsePage(ctx context.Context, url string) (string, error) {
 //
 // Side Effects:
 //   - None.
-func (b *Provider) ToolDefinition() map[string]interface{} {
+// ToolDefinition returns the MCP tool definition.
+// Summary: Defines the metadata for the browse_page tool.
+// Returns:
+//   - map[string]interface{}: The JSON schema definition of the tool.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+// Parameters:
+//   - None.
 	return map[string]interface{}{
 		"name":        "browse_page",
 		"description": "Visit a webpage and return its content",
@@ -129,7 +170,21 @@ type playwrightFetcher struct{}
 //
 // Side Effects:
 //   - None.
-func (f *playwrightFetcher) FetchText(_ context.Context, url string) (string, error) {
+// FetchText fetches the text content of a URL using playwright.
+// Summary: Fetches the text content of a URL using playwright.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - url: string. The URL to visit.
+//
+// Returns:
+//   - string: The text content of the page.
+//   - error: An error if the fetch fails.
+//
+// Errors:
+//   - Returns error if any.
+//
+// Side Effects:
+//   - None.
 	pw, err := playwright.Run()
 	if err != nil {
 		return "", fmt.Errorf("could not start playwright: %w", err)

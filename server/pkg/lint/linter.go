@@ -16,7 +16,8 @@ import (
 
 // Severity indicates the importance of a linting result.
 // Summary: Represents the severity level of a linting result (Error, Warning, Info).
-type Severity int
+// Severity indicates the importance of a linting result.
+// Summary: Represents the severity level of a linting result (Error, Warning, Info).
 
 const (
 	// Error indicates a critical issue that must be fixed for the system to function correctly or securely.
@@ -40,7 +41,18 @@ const (
 //
 // Side Effects:
 //   - None.
-func (s Severity) String() string {
+// String returns the string representation of the severity.
+// Summary: Converts the Severity value into its human-readable string representation.
+// Returns:
+//   - string: The string representation of the severity (e.g., "ERROR", "WARNING").
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+// Parameters:
+//   - None.
 	switch s {
 	case Error:
 		return "ERROR"
@@ -55,7 +67,8 @@ func (s Severity) String() string {
 
 // Result represents a single linting finding.
 // Summary: Encapsulates a single linting finding including its severity, location, and descriptive message.
-type Result struct {
+// Result represents a single linting finding.
+// Summary: Encapsulates a single linting finding including its severity, location, and descriptive message.
 	// Severity indicates how critical the finding is (Error, Warning, Info).
 	Severity Severity
 	// ServiceName is the name of the service associated with the finding, if any.
@@ -76,7 +89,18 @@ type Result struct {
 //
 // Side Effects:
 //   - None.
-func (r Result) String() string {
+// String returns the string representation of the result.
+// Summary: Formats the linting result into a single descriptive string.
+// Returns:
+//   - string: A formatted string containing severity, service name, path, and message.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+// Parameters:
+//   - None.
 	pathStr := ""
 	if r.Path != "" {
 		pathStr = fmt.Sprintf(" at %s", r.Path)
@@ -90,7 +114,8 @@ func (r Result) String() string {
 
 // Linter performs static analysis on the configuration.
 // Summary: A engine for performing static analysis on the server configuration.
-type Linter struct {
+// Linter performs static analysis on the configuration.
+// Summary: A engine for performing static analysis on the server configuration.
 	cfg *configv1.McpAnyServerConfig
 }
 
@@ -107,7 +132,19 @@ type Linter struct {
 //
 // Side Effects:
 //   - None.
-func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
+// NewLinter creates a new Linter instance.
+// Summary: Initializes a new Linter instance with the provided server configuration.
+// Parameters:
+//   - cfg (*configv1.McpAnyServerConfig): The server configuration to be analyzed.
+//
+// Returns:
+//   - *Linter: A newly initialized Linter instance.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	return &Linter{cfg: cfg}
 }
 
@@ -125,7 +162,20 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 //
 // Side Effects:
 //   - None.
-func (l *Linter) Run(ctx context.Context) ([]Result, error) {
+// Run executes all linting checks on the server configuration.
+// Summary: Executes the full suite of linting checks, including validation, security, and best practice rules.
+// Parameters:
+//   - ctx (context.Context): The context for the linting operation.
+//
+// Returns:
+//   - []Result: A slice containing all detected linting results.
+//   - error: An error if a fatal issue occurs during the linting process.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	// Pre-allocate to avoid performance warnings, though initial size is a guess.
 	results := make([]Result, 0, 10)
 

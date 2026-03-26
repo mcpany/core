@@ -15,14 +15,16 @@ import (
 
 // Config holds the configuration for the worker.
 // Summary: Configuration for worker pool.
-type Config struct {
+// Config holds the configuration for the worker.
+// Summary: Configuration for worker pool.
 	MaxWorkers   int
 	MaxQueueSize int
 }
 
 // Worker is responsible for processing jobs from the bus.
 // Summary: Processes background jobs.
-type Worker struct {
+// Worker is responsible for processing jobs from the bus.
+// Summary: Processes background jobs.
 	busProvider *bus.Provider
 	pond        pond.Pool
 	stopFuncs   []func()
@@ -44,7 +46,20 @@ type Worker struct {
 //
 // Side Effects:
 //   - None.
-func New(busProvider *bus.Provider, cfg *Config) *Worker {
+// New creates a new Worker.
+// Summary: Initializes a new Worker.
+// Parameters:
+//   - busProvider: *bus.Provider. The bus provider.
+//   - cfg: *Config. The worker configuration.
+//
+// Returns:
+//   - *Worker: The initialized worker.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	return &Worker{
 		busProvider: busProvider,
 		pond: pond.NewPool(
@@ -64,7 +79,18 @@ func New(busProvider *bus.Provider, cfg *Config) *Worker {
 //
 // Side Effects:
 //   - None.
-func (w *Worker) Start(ctx context.Context) {
+// Start starts the worker and its background tasks.
+// Summary: Starts the worker processing loop.
+// Parameters:
+//   - ctx: context.Context. The context for the worker.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+// Returns:
+//   - None.
 	w.wg.Add(1)
 	go w.startToolExecutionWorker(ctx)
 }
@@ -88,7 +114,25 @@ func (w *Worker) Start(ctx context.Context) {
 // Errors:
 // Side Effects:
 //   - None.
-func (w *Worker) Stop() {
+// Stop stops the worker and cleans up resources. Summary: Stops the worker. Side Effects: - Waits for pending jobs. - Unsubscribes from the bus.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
+//
+// Summary: Executes Stop operation.
+// Parameters:
+// Returns:
+// Errors:
+// Side Effects:
+//   - None.
 	w.wg.Wait() // Wait for the subscription to be set up
 	w.mu.Lock()
 	defer w.mu.Unlock()

@@ -16,7 +16,8 @@ import (
 
 // PostgresAuditStore writes audit logs to a PostgreSQL database.
 // Summary: Audit store implementation that persists log entries in a PostgreSQL database with cryptographic hash chaining.
-type PostgresAuditStore struct {
+// PostgresAuditStore writes audit logs to a PostgreSQL database.
+// Summary: Audit store implementation that persists log entries in a PostgreSQL database with cryptographic hash chaining.
 	db *sql.DB
 	mu sync.Mutex
 }
@@ -35,7 +36,20 @@ type PostgresAuditStore struct {
 //
 // Side Effects:
 //   - None.
-func NewPostgresAuditStore(dsn string) (*PostgresAuditStore, error) {
+// NewPostgresAuditStore creates a new PostgresAuditStore.
+// Summary: Initializes a new PostgresAuditStore with the provided DSN and creates the schema if it does not exist.
+// Parameters:
+//   - dsn (string): The PostgreSQL connection string (DSN).
+//
+// Returns:
+//   - *PostgresAuditStore: The initialized audit store.
+//   - error: An error if the database connection or schema initialization fails.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	if dsn == "" {
 		return nil, fmt.Errorf("postgres dsn is required")
 	}
@@ -94,7 +108,20 @@ func NewPostgresAuditStore(dsn string) (*PostgresAuditStore, error) {
 //
 // Side Effects:
 //   - None.
-func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
+// Write writes an audit entry to the database.
+// Summary: Persists a single audit entry with cryptographic hash chaining, ensuring strict sequential consistency via table locking.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - entry (Entry): The audit log entry to be persisted.
+//
+// Returns:
+//   - error: An error if the transaction fails, hash calculation fails, or database write fails.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	// Marshal complex types
 	argsJSON := "{}"
 	if len(entry.Arguments) > 0 {
@@ -174,7 +201,21 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 //
 // Side Effects:
 //   - None.
-func (s *PostgresAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
+// Read reads audit entries from the database based on the filter.
+// Summary: Not implemented for PostgresAuditStore.
+// Parameters:
+//   - ctx (context.Context): The context for the request (unused).
+//   - filter (Filter): Criteria for filtering audit logs (unused).
+//
+// Returns:
+//   - []Entry: Always returns nil.
+//   - error: Always returns a "not implemented" error.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	return nil, fmt.Errorf("read not implemented for postgres audit store")
 }
 
@@ -192,7 +233,20 @@ func (s *PostgresAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) 
 //
 // Side Effects:
 //   - None.
-func (s *PostgresAuditStore) Verify() (bool, error) {
+// Verify checks the integrity of the audit logs.
+// Summary: Validates the cryptographic hash chain of all entries in the audit_logs table.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - bool: True if the entire audit log chain is valid.
+//   - error: An error if a hash mismatch is detected or a database query fails.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -261,7 +315,18 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 //
 // Side Effects:
 //   - None.
-func (s *PostgresAuditStore) Close() error {
+// Close closes the database connection.
+// Summary: Gracefully closes the connection to the PostgreSQL database.
+// Returns:
+//   - error: An error if the database connection fails to close.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+// Parameters:
+//   - None.
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return s.db.Close()

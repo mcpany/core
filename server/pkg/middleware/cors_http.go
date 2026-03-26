@@ -13,7 +13,9 @@ import (
 // HTTPCORSMiddleware handles CORS for HTTP endpoints.
 // It is thread-safe and supports dynamic updates.
 // Summary: Represents a HTTPCORSMiddleware.
-type HTTPCORSMiddleware struct {
+// HTTPCORSMiddleware handles CORS for HTTP endpoints.
+// It is thread-safe and supports dynamic updates.
+// Summary: Represents a HTTPCORSMiddleware.
 	mu              sync.RWMutex
 	allowedOrigins  map[string]struct{}
 	wildcardAllowed bool
@@ -34,7 +36,21 @@ type HTTPCORSMiddleware struct {
 //
 // Side Effects:
 //   - None.
-func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
+// NewHTTPCORSMiddleware creates a new HTTPCORSMiddleware.
+// Summary: Initializes HTTP CORS middleware.
+// If allowedOrigins is empty, it defaults to allowing nothing (or behaving like standard Same-Origin).
+// To allow all, pass []string{"*"}.
+// Parameters:
+//   - allowedOrigins ([]string): The allowed origins.
+//
+// Returns:
+//   - (*HTTPCORSMiddleware): The initialized middleware.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	m := &HTTPCORSMiddleware{}
 	m.updateInternal(allowedOrigins)
 	return m
@@ -50,7 +66,18 @@ func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
 //
 // Side Effects:
 //   - None.
-func (m *HTTPCORSMiddleware) Update(allowedOrigins []string) {
+// Update updates the allowed origins.
+// Summary: Updates the allowed origins dynamically.
+// Parameters:
+//   - allowedOrigins ([]string): The new list of allowed origins.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+// Returns:
+//   - None.
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.updateInternal(allowedOrigins)
@@ -84,7 +111,19 @@ func (m *HTTPCORSMiddleware) updateInternal(origins []string) {
 //
 // Side Effects:
 //   - None.
-func (m *HTTPCORSMiddleware) Handler(next http.Handler) http.Handler {
+// Handler wraps an http.Handler with CORS logic.
+// Summary: Middleware to handle CORS headers.
+// Parameters:
+//   - next (http.Handler): The next handler in the chain.
+//
+// Returns:
+//   - (http.Handler): The wrapped handler.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")
 		if origin == "" {

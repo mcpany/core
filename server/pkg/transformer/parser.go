@@ -30,7 +30,11 @@ var (
 // map to define the extraction rules for each format, such as JSONPath for
 // JSON, XPath for XML, and regex for plain text.
 // Summary: Generic parser for extracting data from JSON, XML, Text, or using JQ.
-type TextParser struct {
+// TextParser provides functionality to parse various text formats (JSON, XML,
+// plain text) and extract data into a structured map. It uses a configuration
+// map to define the extraction rules for each format, such as JSONPath for
+// JSON, XPath for XML, and regex for plain text.
+// Summary: Generic parser for extracting data from JSON, XML, Text, or using JQ.
 	transformer *Transformer
 }
 
@@ -49,7 +53,18 @@ var (
 //
 // Errors:
 //   - None.
-func NewTextParser() *TextParser {
+// NewTextParser returns a shared instance of TextParser.
+// Summary: Returns a singleton instance of TextParser.
+// Returns:
+//   - *TextParser: The singleton instance.
+//
+// Side Effects:
+//   - Initializes the singleton on first call.
+//
+// Errors:
+//   - None.
+// Parameters:
+//   - None.
 	defaultTextParserOnce.Do(func() {
 		defaultTextParser = &TextParser{
 			transformer: NewTransformer(),
@@ -74,7 +89,22 @@ func NewTextParser() *TextParser {
 //
 // Side Effects:
 //   - None.
-func (p *TextParser) Transform(templateStr string, data any) ([]byte, error) {
+// Transform takes a map of data and a Go template string and returns a byte
+// slice containing the transformed output.
+// Summary: Delegates to the internal Transformer to render templates.
+// Parameters:
+//   - templateStr: string. The Go template.
+//   - data: any. The context data.
+//
+// Returns:
+//   - []byte: The rendered output.
+//   - error: An error if transformation fails.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	return p.transformer.Transform(templateStr, data)
 }
 
@@ -98,7 +128,26 @@ func (p *TextParser) Transform(templateStr string, data any) ([]byte, error) {
 //
 // Side Effects:
 //   - None.
-func (p *TextParser) Parse(inputType string, input []byte, config map[string]string, jqQuery string) (any, error) {
+// Parse extracts data from an input byte slice based on the specified input
+// type and configuration.
+// Summary: Parses input data according to rules defined in config or query.
+// Parameters:
+//   - inputType: string. One of "json", "xml", "text", "jq".
+//   - input: []byte. The raw input data.
+//   - config: map[string]string. Extraction rules (key -> path/regex). Used for json, xml, text.
+//   - jqQuery: string. The JQ query string. Used for jq type.
+//
+// Returns:
+//   - any: The extracted data (usually map[string]any or any for jq).
+//   - error: An error if parsing fails or input type is unsupported.
+//
+// Errors:
+//   - Returns error if input format is invalid.
+//   - Returns error if extraction rules fail.
+//   - Returns "unsupported input type" for unknown types.
+//
+// Side Effects:
+//   - None.
 	switch strings.ToLower(inputType) {
 	case "json":
 		return p.parseJSON(input, config)

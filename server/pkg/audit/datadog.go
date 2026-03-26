@@ -26,7 +26,8 @@ const (
 
 // DatadogAuditStore sends audit logs to Datadog.
 // Summary: Asynchronous audit store that forwards log entries to Datadog's Log Ingestion API.
-type DatadogAuditStore struct {
+// DatadogAuditStore sends audit logs to Datadog.
+// Summary: Asynchronous audit store that forwards log entries to Datadog's Log Ingestion API.
 	config *configv1.DatadogConfig
 	client *http.Client
 	url    string
@@ -48,7 +49,19 @@ type DatadogAuditStore struct {
 //
 // Side Effects:
 //   - None.
-func NewDatadogAuditStore(config *configv1.DatadogConfig) *DatadogAuditStore {
+// NewDatadogAuditStore creates a new DatadogAuditStore.
+// Summary: Initializes a new DatadogAuditStore with the provided configuration and starts background processing workers.
+// Parameters:
+//   - config (*configv1.DatadogConfig): The Datadog API and site configuration.
+//
+// Returns:
+//   - *DatadogAuditStore: The newly created and active Datadog audit store.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	if config == nil {
 		config = &configv1.DatadogConfig{}
 	}
@@ -128,7 +141,20 @@ func (e *DatadogAuditStore) worker() {
 //
 // Side Effects:
 //   - None.
-func (e *DatadogAuditStore) Write(_ context.Context, entry Entry) error {
+// Write implements the Store interface.
+// Summary: Enqueues an audit entry for asynchronous transmission to Datadog.
+// Parameters:
+//   - ctx (context.Context): The context for the request (unused).
+//   - entry (Entry): The audit entry to be logged.
+//
+// Returns:
+//   - error: An error if the internal buffer is full.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	select {
 	case e.queue <- entry:
 		return nil
@@ -197,7 +223,21 @@ func (e *DatadogAuditStore) sendBatch(batch []Entry) {
 //
 // Side Effects:
 //   - None.
-func (e *DatadogAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
+// Read implements the Store interface.
+// Summary: Not implemented for DatadogAuditStore.
+// Parameters:
+//   - ctx (context.Context): The context for the request (unused).
+//   - filter (Filter): Criteria for filtering audit logs (unused).
+//
+// Returns:
+//   - []Entry: Always returns nil.
+//   - error: Always returns a "not implemented" error.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	return nil, fmt.Errorf("read not implemented for datadog audit store")
 }
 
@@ -211,7 +251,18 @@ func (e *DatadogAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 //
 // Side Effects:
 //   - None.
-func (e *DatadogAuditStore) Close() error {
+// Close closes the queue and waits for workers to finish.
+// Summary: Gracefully shuts down the Datadog audit store, flushing any pending batches before exiting.
+// Returns:
+//   - error: Always returns nil.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+// Parameters:
+//   - None.
 	if e.done != nil {
 		close(e.done)
 	}

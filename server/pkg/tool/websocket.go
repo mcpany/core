@@ -25,7 +25,10 @@ import (
 // connection. It handles sending and receiving messages over a persistent
 // WebSocket connection managed by a connection pool.
 // Summary: A tool implementation for WebSocket services.
-type WebsocketTool struct {
+// WebsocketTool implements the Tool interface for a tool exposed via a WebSocket
+// connection. It handles sending and receiving messages over a persistent
+// WebSocket connection managed by a connection pool.
+// Summary: A tool implementation for WebSocket services.
 	tool              *v1.Tool
 	mcpTool           *mcp.Tool
 	mcpToolOnce       sync.Once
@@ -55,7 +58,23 @@ type WebsocketTool struct {
 //
 // Side Effects:
 //   - None.
-func NewWebsocketTool(
+// NewWebsocketTool creates a new WebsocketTool.
+// Summary: Initializes a new WebsocketTool.
+// Parameters:
+//   - tool: *v1.Tool. The protobuf definition of the tool.
+//   - poolManager: *pool.Manager. The manager for WebSocket connections.
+//   - serviceID: string. The ID of the WebSocket service.
+//   - authenticator: auth.UpstreamAuthenticator. The authenticator for the connection.
+//   - callDefinition: *configv1.WebsocketCallDefinition. Configuration for the WebSocket call.
+//
+// Returns:
+//   - *WebsocketTool: A new instance of WebsocketTool.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	tool *v1.Tool,
 	poolManager *pool.Manager,
 	serviceID string,
@@ -84,7 +103,18 @@ func NewWebsocketTool(
 //
 // Side Effects:
 //   - None.
-func (t *WebsocketTool) Tool() *v1.Tool {
+// Tool returns the protobuf definition of the WebSocket tool.
+// Summary: Retrieves the underlying tool definition.
+// Returns:
+//   - *v1.Tool: The tool definition.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+// Parameters:
+//   - None.
 	return t.tool
 }
 
@@ -98,7 +128,18 @@ func (t *WebsocketTool) Tool() *v1.Tool {
 //
 // Side Effects:
 //   - None.
-func (t *WebsocketTool) MCPTool() *mcp.Tool {
+// MCPTool returns the MCP tool definition.
+// Summary: Retrieves the MCP-compatible tool definition.
+// Returns:
+//   - *mcp.Tool: The MCP tool definition.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+// Parameters:
+//   - None.
 	t.mcpToolOnce.Do(func() {
 		var err error
 		t.mcpTool, err = ConvertProtoToMCPTool(t.tool)
@@ -119,7 +160,18 @@ func (t *WebsocketTool) MCPTool() *mcp.Tool {
 //
 // Side Effects:
 //   - None.
-func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
+// GetCacheConfig returns the cache configuration for the WebSocket tool.
+// Summary: Retrieves the cache configuration.
+// Returns:
+//   - *configv1.CacheConfig: The cache configuration.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+// Parameters:
+//   - None.
 	return t.cache
 }
 
@@ -140,7 +192,23 @@ func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Side Effects:
 //   - None.
-func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+// Execute handles the execution of the WebSocket tool.
+// Summary: Executes the tool over WebSocket.
+// It retrieves a connection from the pool, sends the tool inputs as a message,
+// and waits for a single response message, which it then processes and returns.
+// Parameters:
+//   - ctx: context.Context. The execution context.
+//   - req: *ExecutionRequest. The request containing input arguments.
+//
+// Returns:
+//   - any: The execution result.
+//   - error: An error if execution fails.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	wsPool, ok := pool.Get[*client.WebsocketClientWrapper](t.poolManager, t.serviceID)
 	if !ok {
 		return nil, fmt.Errorf("no websocket pool found for service: %s", t.serviceID)

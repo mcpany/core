@@ -12,7 +12,17 @@ import (
 
 // StartMockServer starts a new mock server with the provided handler.
 // The caller is responsible for calling Close() on the returned server.
-func StartMockServer(t *testing.T, handler http.Handler) *httptest.Server {
+// StartMockServer starts a new mock server with the provided handler.
+// Summary: StartMockServer
+// The caller is responsible for calling Close() on the returned server.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Helper()
 	server := httptest.NewServer(handler)
 	t.Logf("Started mock server at %s", server.URL)
@@ -21,7 +31,17 @@ func StartMockServer(t *testing.T, handler http.Handler) *httptest.Server {
 
 // DefaultMockHandler provides a simple way to define responses for specific paths.
 // It maps path -> response body (string or bytes).
-func DefaultMockHandler(t *testing.T, responses map[string]string) http.Handler {
+// DefaultMockHandler provides a simple way to define responses for specific paths.
+// Summary: DefaultMockHandler
+// It maps path -> response body (string or bytes).
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		bodyBytes, _ := io.ReadAll(r.Body)
 		t.Logf("Mock server received request: %s %s Body: %s", r.Method, r.URL.RequestURI(), string(bodyBytes))
@@ -48,6 +68,15 @@ func DefaultMockHandler(t *testing.T, responses map[string]string) http.Handler 
 }
 
 // CreateMockServerWithResponses is a convenience function to start a server with static responses.
-func CreateMockServerWithResponses(t *testing.T, responses map[string]string) *httptest.Server {
+// CreateMockServerWithResponses is a convenience function to start a server with static responses.
+// Summary: CreateMockServerWithResponses
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return StartMockServer(t, DefaultMockHandler(t, responses))
 }

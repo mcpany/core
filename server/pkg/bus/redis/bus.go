@@ -83,7 +83,22 @@ func NewWithClient[T any](client *redis.Client) *Bus[T] {
 // Errors:
 // Side Effects:
 //   - None.
-func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
+// Publish publishes a message to a Redis channel.
+// The message is marshaled to JSON before being published.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - topic: string. The topic (channel) to publish to.
+//   - msg: T. The message payload.
+//
+// Returns:
+//   - error: An error if marshaling or publishing fails.
+//
+// Summary: Executes Publish operation.
+// Parameters:
+// Returns:
+// Errors:
+// Side Effects:
+//   - None.
 	payload, err := json.Marshal(msg)
 	if err != nil {
 		return err
@@ -108,7 +123,23 @@ func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 // Errors:
 // Side Effects:
 //   - None.
-func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
+// Subscribe subscribes to a Redis channel.
+// It starts a goroutine that continuously receives messages from the channel
+// and invokes the provided handler.
+// Parameters:
+//   - ctx: context.Context. The context for the subscription.
+//   - topic: string. The topic (channel) to subscribe to.
+//   - handler: func(T). The callback function invoked for each message.
+//
+// Returns:
+//   - func(): A function that unsubscribes the handler when called.
+//
+// Summary: Executes Subscribe operation.
+// Parameters:
+// Returns:
+// Errors:
+// Side Effects:
+//   - None.
 	if handler == nil {
 		logging.GetLogger().Error("redis bus: handler cannot be nil")
 		return func() {}
@@ -173,7 +204,22 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 // Errors:
 // Side Effects:
 //   - None.
-func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
+// SubscribeOnce subscribes to a topic for a single message.
+// It ensures that the handler is called only once for the next message received.
+// Parameters:
+//   - ctx: context.Context. The context for the subscription.
+//   - topic: string. The topic (channel) to subscribe to.
+//   - handler: func(T). The callback function invoked for the single message.
+//
+// Returns:
+//   - func(): A function that unsubscribes the handler if called before the message is received.
+//
+// Summary: Executes SubscribeOnce operation.
+// Parameters:
+// Returns:
+// Errors:
+// Side Effects:
+//   - None.
 	if handler == nil {
 		logging.GetLogger().Error("redis bus: handler cannot be nil")
 		return func() {}
@@ -214,6 +260,17 @@ func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T
 //
 // Side Effects:
 //   - None.
-func (b *Bus[T]) Close() error {
+// Close closes the Redis client connection.
+// Summary: Closes the Redis connection.
+// Returns:
+//   - error: An error if closing fails.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+// Parameters:
+//   - None.
 	return b.client.Close()
 }

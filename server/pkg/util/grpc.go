@@ -11,7 +11,8 @@ import (
 
 // WrappedServerStream is a wrapper around grpc.ServerStream that allows modifying the context.
 // Summary: A wrapper for grpc.ServerStream that overrides the context.
-type WrappedServerStream struct {
+// WrappedServerStream is a wrapper around grpc.ServerStream that allows modifying the context.
+// Summary: A wrapper for grpc.ServerStream that overrides the context.
 	grpc.ServerStream
 	Ctx context.Context
 }
@@ -26,6 +27,17 @@ type WrappedServerStream struct {
 //
 // Side Effects:
 //   - None.
-func (w *WrappedServerStream) Context() context.Context {
+// Context returns the modified context.
+// Summary: Returns the context associated with the stream.
+// Returns:
+//   - context.Context: The modified context.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+// Parameters:
+//   - None.
 	return w.Ctx
 }

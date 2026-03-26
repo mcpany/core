@@ -15,7 +15,8 @@ import (
 
 // CSRFMiddleware protects against Cross-Site Request Forgery attacks.
 // Summary: Middleware that blocks unauthorized cross-origin requests.
-type CSRFMiddleware struct {
+// CSRFMiddleware protects against Cross-Site Request Forgery attacks.
+// Summary: Middleware that blocks unauthorized cross-origin requests.
 	allowedOrigins map[string]bool
 	mu             sync.RWMutex
 }
@@ -33,7 +34,19 @@ type CSRFMiddleware struct {
 //
 // Errors:
 //   - None.
-func NewCSRFMiddleware(allowedOrigins []string) *CSRFMiddleware {
+// NewCSRFMiddleware creates a new CSRFMiddleware.
+// Summary: Initializes a new CSRFMiddleware with a list of allowed origins.
+// Parameters:
+//   - allowedOrigins: []string. A list of origin strings (e.g., "https://example.com") allowed to make requests.
+//
+// Returns:
+//   - *CSRFMiddleware: The initialized middleware.
+//
+// Side Effects:
+//   - Populates the internal allowed origins map.
+//
+// Errors:
+//   - None.
 	m := &CSRFMiddleware{
 		allowedOrigins: make(map[string]bool),
 	}
@@ -51,7 +64,18 @@ func NewCSRFMiddleware(allowedOrigins []string) *CSRFMiddleware {
 //
 // Errors:
 //   - None.
-func (m *CSRFMiddleware) Update(origins []string) {
+// Update updates the allowed origins.
+// Summary: Updates the list of allowed origins at runtime.
+// Parameters:
+//   - origins: []string. The new list of allowed origins.
+//
+// Side Effects:
+//   - Replaces the existing allowed origins map in a thread-safe manner.
+//
+// Errors:
+//   - None.
+// Returns:
+//   - None.
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.allowedOrigins = make(map[string]bool)
@@ -75,7 +99,21 @@ func (m *CSRFMiddleware) Update(origins []string) {
 //
 // Errors:
 //   - None.
-func (m *CSRFMiddleware) Handler(next http.Handler) http.Handler {
+// Handler returns the HTTP handler.
+// Summary: Returns an HTTP handler that enforces CSRF protection checks.
+// Parameters:
+//   - next: http.Handler. The next handler in the chain.
+//
+// Returns:
+//   - http.Handler: The wrapped handler.
+//
+// Side Effects:
+//   - Inspects Method, Headers, Origin, and Referer of incoming requests.
+//   - Blocks requests with 403 Forbidden if validation fails.
+//   - Logs warnings for blocked requests.
+//
+// Errors:
+//   - None.
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// 1. Safe Methods are always allowed
 		if r.Method == http.MethodGet ||

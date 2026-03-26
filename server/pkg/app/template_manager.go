@@ -17,7 +17,8 @@ import (
 
 // TemplateManager manages the persistence and lifecycle of service templates.
 // Summary: Represents a TemplateManager.
-type TemplateManager struct {
+// TemplateManager manages the persistence and lifecycle of service templates.
+// Summary: Represents a TemplateManager.
 	mu        sync.RWMutex
 	templates []*configv1.UpstreamServiceConfig
 	filePath  string
@@ -36,7 +37,19 @@ type TemplateManager struct {
 //
 // Side Effects:
 //   - None.
-func NewTemplateManager(dataDir string) *TemplateManager {
+// NewTemplateManager creates a new instance of TemplateManager.
+// Summary: Initializes a new TemplateManager.
+// Parameters:
+//   - dataDir: string. The directory where template data is persisted.
+//
+// Returns:
+//   - *TemplateManager: The initialized manager.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	tm := &TemplateManager{
 		filePath: filepath.Join(dataDir, "templates.json"),
 	}
@@ -141,7 +154,18 @@ func (tm *TemplateManager) save() error {
 //
 // Side Effects:
 //   - None.
-func (tm *TemplateManager) ListTemplates() []*configv1.UpstreamServiceConfig {
+// ListTemplates returns a list of all stored templates.
+// Summary: Retrieves all managed templates.
+// Returns:
+//   - []*configv1.UpstreamServiceConfig: A list of templates.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+// Parameters:
+//   - None.
 	tm.mu.RLock()
 	defer tm.mu.RUnlock()
 	// Return a copy?
@@ -165,7 +189,19 @@ func (tm *TemplateManager) ListTemplates() []*configv1.UpstreamServiceConfig {
 //
 // Side Effects:
 //   - None.
-func (tm *TemplateManager) SaveTemplate(template *configv1.UpstreamServiceConfig) error {
+// SaveTemplate saves or updates a template.
+// Summary: Persists a template.
+// Parameters:
+//   - template: *configv1.UpstreamServiceConfig. The template to save.
+//
+// Returns:
+//   - error: An error if persistence fails.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	tm.mu.Lock()
 	found := false
 	for i, t := range tm.templates {
@@ -203,7 +239,19 @@ func (tm *TemplateManager) SaveTemplate(template *configv1.UpstreamServiceConfig
 //
 // Side Effects:
 //   - None.
-func (tm *TemplateManager) DeleteTemplate(idOrName string) error {
+// DeleteTemplate deletes a template by its ID or Name.
+// Summary: Removes a template.
+// Parameters:
+//   - idOrName: string. The ID or Name of the template to delete.
+//
+// Returns:
+//   - error: An error if deletion or persistence fails.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	tm.mu.Lock()
 	newTemplates := make([]*configv1.UpstreamServiceConfig, 0, len(tm.templates))
 	for _, t := range tm.templates {

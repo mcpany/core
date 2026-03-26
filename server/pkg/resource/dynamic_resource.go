@@ -17,7 +17,9 @@ import (
 // DynamicResource implements the Resource interface for resources that are
 // fetched dynamically by executing a tool.
 // Summary: Represents a DynamicResource.
-type DynamicResource struct {
+// DynamicResource implements the Resource interface for resources that are
+// fetched dynamically by executing a tool.
+// Summary: Represents a DynamicResource.
 	resource *mcp.Resource
 	tool     tool.Tool
 }
@@ -37,7 +39,21 @@ type DynamicResource struct {
 //
 // Side Effects:
 //   - None.
-func NewDynamicResource(def *configv1.ResourceDefinition, t tool.Tool) (*DynamicResource, error) {
+// NewDynamicResource creates a new instance of DynamicResource.
+// Summary: Initializes a dynamic resource backed by a tool.
+// Parameters:
+//   - def: *configv1.ResourceDefinition. The resource definition.
+//   - t: tool.Tool. The tool used to fetch the resource content.
+//
+// Returns:
+//   - *DynamicResource: The initialized dynamic resource.
+//   - error: An error if validation fails.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	if def == nil {
 		return nil, fmt.Errorf("resource definition is nil")
 	}
@@ -67,7 +83,18 @@ func NewDynamicResource(def *configv1.ResourceDefinition, t tool.Tool) (*Dynamic
 //
 // Side Effects:
 //   - None.
-func (r *DynamicResource) Resource() *mcp.Resource {
+// Resource returns the MCP representation of the resource.
+// Summary: Retrieves the MCP resource metadata.
+// Returns:
+//   - *mcp.Resource: The MCP resource definition.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+// Parameters:
+//   - None.
 	return r.resource
 }
 
@@ -81,7 +108,18 @@ func (r *DynamicResource) Resource() *mcp.Resource {
 //
 // Side Effects:
 //   - None.
-func (r *DynamicResource) Service() string {
+// Service returns the ID of the service that provides this resource.
+// Summary: Retrieves the service ID.
+// Returns:
+//   - string: The service ID.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+// Parameters:
+//   - None.
 	return r.tool.Tool().GetServiceId()
 }
 
@@ -99,7 +137,20 @@ func (r *DynamicResource) Service() string {
 //
 // Errors:
 //   - None.
-func (r *DynamicResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
+// Read executes the associated tool to fetch the resource content.
+// Summary: Fetches the resource content by executing the tool.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//
+// Returns:
+//   - *mcp.ReadResourceResult: The resource content.
+//   - error: An error if the tool execution fails.
+//
+// Side Effects:
+//   - Executes the underlying tool, which may have its own side effects.
+//
+// Errors:
+//   - None.
 	// For now, we'll just execute the tool with no inputs.
 	// In the future, we may need to pass inputs to the tool.
 	result, err := r.tool.Execute(ctx, &tool.ExecutionRequest{})
@@ -164,6 +215,18 @@ func (r *DynamicResource) Read(ctx context.Context) (*mcp.ReadResourceResult, er
 //
 // Side Effects:
 //   - None.
-func (r *DynamicResource) Subscribe(_ context.Context) error {
+// Subscribe is not yet implemented for dynamic resources.
+// Summary: Subscribes to resource updates (Not Implemented).
+// Parameters:
+//   - _: context.Context. Unused.
+//
+// Returns:
+//   - error: Always returns an error indicating not implemented.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	return fmt.Errorf("subscribing to dynamic resources is not yet implemented")
 }

@@ -19,7 +19,8 @@ import (
 
 // SQLiteAuditStore writes audit logs to a SQLite database.
 // Summary: Audit store implementation that persists log entries in a local SQLite database with cryptographic hash chaining.
-type SQLiteAuditStore struct {
+// SQLiteAuditStore writes audit logs to a SQLite database.
+// Summary: Audit store implementation that persists log entries in a local SQLite database with cryptographic hash chaining.
 	db *sql.DB
 	mu sync.Mutex
 }
@@ -38,7 +39,20 @@ type SQLiteAuditStore struct {
 //
 // Side Effects:
 //   - None.
-func NewSQLiteAuditStore(path string) (*SQLiteAuditStore, error) {
+// NewSQLiteAuditStore creates a new SQLiteAuditStore.
+// Summary: Initializes a new SQLiteAuditStore at the specified path, creating the database and schema if they do not exist.
+// Parameters:
+//   - path (string): The file system path to the SQLite database file.
+//
+// Returns:
+//   - *SQLiteAuditStore: The initialized audit store.
+//   - error: An error if the path is not allowed or the database initialization fails.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	if path == "" {
 		return nil, fmt.Errorf("sqlite path is required")
 	}
@@ -164,7 +178,20 @@ func ensureColumn(db *sql.DB, colName string) error {
 //
 // Side Effects:
 //   - None.
-func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
+// Write writes an audit entry to the database.
+// Summary: Persists a single audit entry into the SQLite database, calculating a cryptographic hash based on the previous entry.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - entry (Entry): The audit log entry to be written.
+//
+// Returns:
+//   - error: An error if the write operation or hash calculation fails.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -236,7 +263,21 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 //
 // Side Effects:
 //   - None.
-func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, error) {
+// Read reads audit entries from the database based on the filter.
+// Summary: Queries the SQLite database for audit log entries that match the provided filter criteria.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - filter (Filter): The search criteria for querying audit logs.
+//
+// Returns:
+//   - []Entry: A list of audit entries matching the filter.
+//   - error: An error if the database query fails.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -319,7 +360,20 @@ func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, er
 //
 // Side Effects:
 //   - None.
-func (s *SQLiteAuditStore) Verify() (bool, error) {
+// Verify checks the integrity of the audit logs.
+// Summary: Validates the cryptographic integrity of the audit log by recalculating and checking the hash chain.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - bool: True if the entire audit log chain is valid.
+//   - error: An error if a hash mismatch is detected or a database error occurs.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -376,7 +430,18 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 //
 // Side Effects:
 //   - None.
-func (s *SQLiteAuditStore) Close() error {
+// Close closes the database connection.
+// Summary: Gracefully closes the connection to the SQLite database.
+// Returns:
+//   - error: An error if the database connection fails to close.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+// Parameters:
+//   - None.
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return s.db.Close()
