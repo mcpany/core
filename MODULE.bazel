@@ -24,7 +24,7 @@ bazel_dep(name = "toolchains_buildbuddy", version = "0.0.4")
 bazel_dep(name = "rules_python", version = "1.3.0")
 
 go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
-go_sdk.download(version = "1.26.1")
+go_sdk.download(version = "1.24.0")
 
 go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
 go_deps.from_file(go_mod = "//server:go.mod")
