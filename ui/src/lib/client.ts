@@ -493,10 +493,18 @@ export const apiClient = {
      * Side Effects: Makes a PUT request to /api/v1/services/:name.
      */
     setServiceStatus: async (name: string, disable: boolean) => {
+        // The backend PUT /api/v1/services/:name endpoint expects a full UpstreamServiceConfig object.
+        // We first fetch the existing service, mutate the `disable` flag, and then PUT it back.
+        const currentServiceRes = await fetchWithAuth(`/api/v1/services/${name}`);
+        if (!currentServiceRes.ok) throw new Error('Failed to fetch service for status update');
+        const currentService = await currentServiceRes.json();
+
+        currentService.disable = disable;
+
         const response = await fetchWithAuth(`/api/v1/services/${name}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ disable })
+            body: JSON.stringify(currentService)
         });
         if (!response.ok) throw new Error('Failed to update service status');
         return response.json();

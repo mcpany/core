@@ -17,9 +17,11 @@ export default function PlaygroundPage() {
       <h1 className="sr-only">Console</h1>
       <Suspense
         fallback={
-          <div className="flex items-center justify-center h-full">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-            <span className="ml-2 text-muted-foreground">Loading playground...</span>
+        <div className="flex flex-1 items-center justify-center h-full w-full">
+            <div className="flex flex-col items-center gap-4 text-muted-foreground">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <p className="text-sm font-medium tracking-wide">Loading playground...</p>
+            </div>
           </div>
         }
       >

@@ -9,7 +9,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { User, Plus, Trash, Edit } from "lucide-react";
+import { User, Plus, Trash, Edit, Loader2 } from "lucide-react";
 import { apiClient } from "@/lib/client";
 import { toast } from "sonner";
 import { ProfileEditor, Profile } from "@/components/profiles/profile-editor";
@@ -128,7 +128,12 @@ export default function ProfilesPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {isLoading && <div className="col-span-3 text-center p-4">Loading profiles...</div>}
+          {isLoading && (
+              <div className="col-span-3 flex flex-col items-center justify-center p-12 text-muted-foreground gap-4">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  <p className="text-sm font-medium tracking-wide">Loading profiles...</p>
+              </div>
+          )}
           {!isLoading && profiles.length === 0 && <div className="col-span-3 text-center p-4 text-muted-foreground">No profiles found. Create one to get started.</div>}
           {profiles.map(profile => (
               <Card key={profile.id} className="backdrop-blur-sm bg-background/50 hover:shadow-md transition-all cursor-pointer group" onClick={() => openEdit(profile)}>

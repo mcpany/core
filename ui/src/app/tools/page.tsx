@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { List, LayoutList, Layers } from "lucide-react";
+import { List, LayoutList, Layers, Loader2 } from "lucide-react";
 import { ToolDefinition } from "@proto/config/v1/tool";
 import { ToolInspector } from "@/components/tools/tool-inspector";
 import { SmartToolSearch } from "@/components/tools/smart-tool-search";
@@ -219,8 +219,11 @@ export default function ToolsPage() {
 
   if (!isLoaded) {
     return (
-      <div className="flex-1 p-8 animate-pulse text-muted-foreground">
-        Loading tools...
+      <div className="flex flex-1 items-center justify-center h-screen w-full">
+        <div className="flex flex-col items-center gap-4 text-muted-foreground">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="text-sm font-medium tracking-wide">Loading tools...</p>
+        </div>
       </div>
     );
   }

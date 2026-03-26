@@ -59,9 +59,12 @@ export default function TracesPage() {
 
   if (loading) {
       return (
-          <div className="h-full flex items-center justify-center text-muted-foreground gap-2">
-              <Loader2 className="h-6 w-6 animate-spin" /> Loading traces...
-          </div>
+        <div className="flex flex-1 items-center justify-center h-full w-full">
+            <div className="flex flex-col items-center gap-4 text-muted-foreground">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <p className="text-sm font-medium tracking-wide">Loading traces...</p>
+            </div>
+        </div>
       )
   }
 
