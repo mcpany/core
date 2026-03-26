@@ -151,6 +151,57 @@ describe("DashboardGrid", () => {
     // Or maybe the initial empty state [] triggered the first run, flipping it to false.
     // Then migration `setWidgets` triggered second run.
 
+    // Let's verify if `updated[0].instanceId` is actually present in the `console.log` output.
+    // The output showed: `Updated layout: [ { id: 'metrics', title: 'Metrics Overview', type: 'wide' } ]`
+    // It's missing `instanceId`. So it's indeed the old data.
+    // This means the migration didn't save to localStorage?
+    // OR `saveWidgets` is not calling `setItem`?
+    // `saveWidgets` ONLY calls `setWidgets`.
+    // The `useEffect` calls `setItem`.
+
+    // If migration calls `setWidgets`, `widgets` changes.
+    // Effect runs.
+
+    // Wait, the migration logic parses `saved` from localStorage.
+    // Then calls `setWidgets`.
+    // The `useEffect` for saving depends on `widgets`.
+    // If migration happens, `widgets` is updated.
+    // Effect fires.
+
+    // Is it possible `isFirstRun` logic is flawed?
+    // If migration sets widgets immediately on mount?
+    // `useEffect` runs AFTER render.
+    // 1. Render with default widgets (or empty?). Code: `const [widgets, setWidgets] = useState([]);`
+    // 2. Effect (Mount) runs:
+    //    - Reads localStorage.
+    //    - Migrates.
+    //    - Calls `setWidgets(migrated)`.
+    // 3. Render with `migrated`.
+    // 4. Effect (Save) runs for `migrated`.
+    //    - `isFirstRun` is true. Sets to false. Returns.
+    //    - NOTHING SAVED.
+
+    // AHA!
+    // The migration causes the "first" real update we want to save.
+    // But `isFirstRun` treats the first effect execution as "initial mount" and ignores it.
+    // But since `widgets` started empty, and then got set to migrated, that transition IS the one we want to save?
+    // Actually, usually `isFirstRun` is to avoid saving the *initial state* (empty or default) back to storage if nothing changed.
+    // But here, migration CHANGED the state from "empty" (or default) to "migrated".
+    // We WANT to save this.
+
+    // If `widgets` was initialized with lazy initializer, we wouldn't have this issue?
+    // But here `useState([])` then `useEffect` loads.
+
+    // Fix: check if `widgets` is populated?
+    // Or manually save in migration block?
+    // "saveWidgets" function calls `setWidgets` AND `localStorage` in the OLD code.
+    // In NEW code, `saveWidgets` only `setWidgets`.
+
+    // If I change `isFirstRun` logic?
+    // If I remove `isFirstRun` check, it will save [] on mount (clearing storage!). That's bad.
+    // We need to know if `widgets` has been loaded yet.
+
+    // Maybe add `isLoaded` state?
     // Wait for the async effect to run and the debounce to fire
     await waitFor(() => {
         const check = JSON.parse(localStorage.getItem("dashboard-layout") || "[]");

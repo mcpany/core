@@ -186,7 +186,6 @@ export function DashboardGrid() {
                 localStorage.setItem("dashboard-layout", JSON.stringify(widgets));
             } catch (err) {
                 console.error("Failed to save layout", err);
-                localStorage.setItem("dashboard-layout", JSON.stringify(widgets));
             }
         }, 1000); // Increased debounce to 1s for network
 

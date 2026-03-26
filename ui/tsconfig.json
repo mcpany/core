@@ -18,8 +18,7 @@
       "@/*": ["./src/*"],
       "github.com/mcpany/core/*": ["../*"],
       "@proto/*": [
-        "../proto/*",
-        "../bazel-bin/proto/*"
+        "../proto/*"
       ],
       "@bufbuild/protobuf/wire": ["./node_modules/@bufbuild/protobuf/dist/esm/wire/index.js"],
       "@improbable-eng/grpc-web": ["./node_modules/@improbable-eng/grpc-web"],

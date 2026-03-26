@@ -72,35 +72,34 @@ find_tool() {
 echo "==> Running Buildifier..."
 BUILDIFIER_BIN="$(find_tool buildifier)"
 if [[ -z "$BUILDIFIER_BIN" || ! -x "$BUILDIFIER_BIN" ]]; then
-    echo "    Warning: buildifier not found (skipping Buildifier linting)."
-    echo "    It should be provided as a Bazel data dep." >&2
-else
-    # Collect Bazel BUILD / .bzl / WORKSPACE files, excluding caches and symlinks.
-    buildifier_files=(
-        $(find . \
-            -not \( \
-                -path './build/*' \
-                -o -path './bazel-*' \
-                -o -path './node_modules/*' \
-                -o -path './.git/*' \
-                -o -path './ui/node_modules/*' \
-                -o -path './server/node_modules/*' \
-            \) \
-            \( \
-                -name 'BUILD' \
-                -o -name 'BUILD.bazel' \
-                -o -name 'WORKSPACE' \
-                -o -name 'WORKSPACE.bazel' \
-                -o -name '*.bzl' \
-            \) \
-            -type f \
-            2>/dev/null)
-    )
-    if [[ ${#buildifier_files[@]} -gt 0 ]]; then
-        "$BUILDIFIER_BIN" "${buildifier_files[@]}"
-    fi
-    echo "    Buildifier OK."
+    echo "ERROR: buildifier not found. It should be provided as a Bazel data dep." >&2
+    exit 1
 fi
+# Collect Bazel BUILD / .bzl / WORKSPACE files, excluding caches and symlinks.
+buildifier_files=(
+    $(find . \
+        -not \( \
+            -path './build/*' \
+            -o -path './bazel-*' \
+            -o -path './node_modules/*' \
+            -o -path './.git/*' \
+            -o -path './ui/node_modules/*' \
+            -o -path './server/node_modules/*' \
+        \) \
+        \( \
+            -name 'BUILD' \
+            -o -name 'BUILD.bazel' \
+            -o -name 'WORKSPACE' \
+            -o -name 'WORKSPACE.bazel' \
+            -o -name '*.bzl' \
+        \) \
+        -type f \
+        2>/dev/null)
+)
+if [[ ${#buildifier_files[@]} -gt 0 ]]; then
+    "$BUILDIFIER_BIN" "${buildifier_files[@]}"
+fi
+echo "    Buildifier OK."
 
 # ---------------------------------------------------------------------------
 # 2. Gazelle – keeps Go BUILD targets in sync with Go source files.

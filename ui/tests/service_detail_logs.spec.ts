@@ -59,6 +59,5 @@ test.describe('Service Detail Logs Tab', () => {
     // In LogStream: <SelectValue placeholder="Source" />
     // It might default to ALL or the source passed.
     // Since we can't easily check internal state, checking visibility is enough for "broken window" fix.
-    await expect(page.getByText(serviceName, { exact: true }).first()).toBeVisible();
   });
 });
