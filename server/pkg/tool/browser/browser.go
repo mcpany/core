@@ -17,6 +17,7 @@ import (
 // It is an interface so tests can inject a lightweight implementation without
 // requiring a real browser installation.
 type PageFetcher interface {
+	// FetchText fetches the text content of a URL
 	FetchText(ctx context.Context, url string) (string, error)
 }
 
@@ -93,6 +94,7 @@ func (b *Provider) ToolDefinition() map[string]interface{} {
 // playwrightFetcher is the production PageFetcher that uses playwright-go.
 type playwrightFetcher struct{}
 
+// FetchText fetches the text content of a URL.
 func (f *playwrightFetcher) FetchText(_ context.Context, url string) (string, error) {
 	pw, err := playwright.Run()
 	if err != nil {
