@@ -6,30 +6,6 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
-## Evolution: [2026-05-15] Updates
-
-### Proposed Additions
-- **Relational PoI Validator**: (P0) Advanced security middleware that cryptographically validates the mission linkage between parent and child agents, neutralizing Recursive Context Splicing (RCS).
-- **Deadlock-Aware Auction Arbiter**: (P0) Coordination enhancement for the A2A Messaging Hub that identifies circular bidding dependencies and applies "Fairness Policies" to break negotiation deadlocks.
-- **UAB v2.5 Routing Engine**: (P0) High-speed, native transport implementation for the finalized Universal Agent Bus (UAB) v2.5 Task Object schema, minimizing translation latency.
-- **Proactive Resource Allocator (AIB v2)**: (P1) Resource management layer that ingests Gemini CLI v1.6 compute-intensity headers to optimize token and compute budgets for parallel teams.
-
-### Priority Shifts
-- **ContextEngine Lifecycle Adapter**: (Re-affirmed P0) Upgraded to support OpenClaw v2026.4.0's native UAB hooks.
-- **DCA Auction Broker**: (Evolved to Deadlock-Aware Arbiter) Re-prioritized as P0 to address critical swarm-scale coordination failures.
-
-## Evolution: [2026-05-15] Updates
-
-### Proposed Additions
-- **Relational PoI Validator**: (P0) Advanced security middleware that cryptographically validates the mission linkage between parent and child agents, neutralizing Recursive Context Splicing (RCS).
-- **Deadlock-Aware Auction Arbiter**: (P0) Coordination enhancement for the A2A Messaging Hub that identifies circular bidding dependencies and applies "Fairness Policies" to break negotiation deadlocks.
-- **UAB v2.5 Routing Engine**: (P0) High-speed, native transport implementation for the finalized Universal Agent Bus (UAB) v2.5 Task Object schema, minimizing translation latency.
-- **Proactive Resource Allocator (AIB v2)**: (P1) Resource management layer that ingests Gemini CLI v1.6 compute-intensity headers to optimize token and compute budgets for parallel teams.
-
-### Priority Shifts
-- **ContextEngine Lifecycle Adapter**: (Re-affirmed P0) Upgraded to support OpenClaw v2026.4.0's native UAB hooks.
-- **DCA Auction Broker**: (Evolved to Deadlock-Aware Arbiter) Re-prioritized as P0 to address critical swarm-scale coordination failures.
-
 ## Evolution: [2026-05-14] Updates
 
 ### Proposed Additions
@@ -968,3 +944,9 @@
 ### Priority Shifts
 - **Verifiable Task Delegation (VTD)**: (Re-affirmed P0) Now elevated as the primary solution for the "Approval Fatigue" scaling bottleneck.
 - **Pluggable Context Bridge**: (Re-affirmed P0) Expanded to support the new Standardized Context Sidecar Interface.
+
+## Strategic Feature Update: [2026-05-15]
+- **[P0] Relational PoI Validator**: Advanced security middleware to cryptographically validate parent-child mission linkage and block RCS attacks.
+- **[P0] Deadlock-Aware Auction Arbiter**: Coordination engine to detect and resolve infinite bidding loops in autonomous swarms.
+- **[P0] UAB v2.5 Routing Engine**: High-speed transport implementation for the finalized Universal Agent Bus v2.5 standard.
+- **[P1] Proactive Resource Allocator (AIB v2)**: Real-time budget adjustment based on Gemini CLI v1.6 reasoning-intensity headers.

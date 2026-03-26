@@ -1,45 +1,45 @@
 # Design Doc: Relational PoI Validator
-**Status:** Draft | In Review | Approved
+**Status:** Draft
 **Created:** 2026-05-15
 
 ## 1. Context and Scope
-The emergence of "Recursive Context Splicing" (RCS) vulnerabilities in 2026 has exposed a critical flaw in agentic delegation: current validation only checks individual mission intents, not the relationship between parent and child missions. Relational Proof-of-Intent (PoI) is needed to cryptographically validate the linkage between missions, ensuring subagents cannot be coerced into unauthorized sub-goals.
+With the rise of OpenClaw's Universal Agent Bus (UAB) and its "Mission-Root" anchoring, agents are beginning to share complex, nested mission contexts. However, a major security gap exists: Recursive Context Splicing (RCS). Malicious subagents can "splice" their own forged mission-roots into a legitimate context stream, tricking other agents into performing unauthorized tool calls under the guise of the parent mission. MCP Any must provide a validation layer that cryptographically verifies the parent-child relationship of every intent point-of-interest (PoI) before allowing downstream execution.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
-    * Cryptographically validate the relational linkage between parent and child missions.
-    * Detect and block "Recursive Context Splicing" (RCS) attacks during Binary State Handoff (BSH).
-    * Enforce mission-root alignment for all delegated tasks.
+    * Validate the cryptographic "Mission-Root" lineage for all incoming UAB requests.
+    * Automatically block any task fragment that lacks a verifiable path to an authorized parent intent.
+    * Provide a real-time audit log of lineage validation successes and failures.
 * **Non-Goals:**
-    * Replacing existing per-mission PoI validation.
-    * Managing the underlying transport layer (UAB/BSH).
+    * This system will NOT perform semantic analysis of the mission itself (handled by the Intent Arbiter).
+    * It will NOT manage the long-term storage of mission logs, only real-time validation state.
 
 ## 3. Critical User Journey (CUJ)
-* **User Persona:** Security-Conscious Swarm Architect
-* **Primary Goal:** Prevent a malicious subagent from "splicing" an unauthorized secret-exfiltration goal into a legitimate code-review mission.
+* **User Persona:** Autonomous Swarm Orchestrator
+* **Primary Goal:** Prevent a rogue subagent from tricking the swarm into executing a high-risk tool (e.g., `rm -rf /`) by forging a mission-root.
 * **The Happy Path (Tasks):**
-    1. Parent agent proposes a task to a child agent via UACO.
-    2. The proposal includes a Relational PoI token signed by the parent's mission root.
-    3. MCP Any's Relational PoI Validator intercepts the proposal.
-    4. The validator verifies the signature and the relational metadata against the root mission intent.
-    5. If aligned, the task is allowed; if an RCS attempt is detected (e.g., mismatched parentage), the delegation is blocked.
+    1. Parent agent initiates a mission with a signed Root Token.
+    2. Subagent A receives the mission and requests a "Mission Extension" token for a specific sub-task.
+    3. MCP Any's Relational PoI Validator receives the extension request.
+    4. Validator verifies the signature of the parent token and the validity of the extension.
+    5. Validator signs the sub-task intent and allows it to proceed to the UAB.
 
 ## 4. Design & Architecture
 * **System Flow:**
-    `[Parent Agent] -> [UACO Proposal w/ Relational Token] -> [Relational PoI Validator] -> [Child Agent]`
+    `Agent Request` -> `MCP Any Gateway` -> `Relational PoI Validator` -> `UAB Routing Engine`
 * **APIs / Interfaces:**
-    * `Validator.verifyRelationalLinkage()`: Core method for validating mission tokens.
-    * `TokenGenerator.createRelationalToken()`: Utility for parents to sign child delegations.
+    * `POST /v1/validate-lineage`: Accepts a list of intent tokens and returns a boolean validity score.
+    * `GET /v1/lineage-audit`: Returns a list of recent validation events.
 * **Data Storage/State:**
-    * Transient storage of mission-tree metadata in the Shared KV Store.
+    * Ephemeral in-memory cache (Redis) for active mission-root public keys.
 
 ## 5. Alternatives Considered
-* **Flattened Mission IDs:** Rejected as it loses the relational hierarchy needed for RCS defense.
-* **Manual HITL for all Delegations:** Rejected due to machine-speed coordination requirements.
+* **Centralized Mission Registry:** Rejected because it creates a single point of failure and violates the decentralized nature of the UAB.
+* **No Validation (Trust-on-First-Use):** Rejected as it is highly vulnerable to RCS attacks.
 
 ## 6. Cross-Cutting Concerns
-* **Security (Zero Trust):** Token validation must use hardware-bound keys (TPM) to prevent signature forgery.
-* **Observability:** Relational validation failures are logged in the "Context Chain Inspector."
+* **Security (Zero Trust):** Uses hardware-attested budget and identity signals to prevent token forgery.
+* **Observability:** Prometheus metrics for validation latency and RCS attempt rates.
 
 ## 7. Evolutionary Changelog
 * **2026-05-15:** Initial Document Creation.
