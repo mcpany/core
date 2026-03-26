@@ -501,3 +501,7 @@
 - [ ] **[P0] Mesh Command Sovereignty Dashboard**: Visual "Chain of Mesh-Command" tracer for inter-teammate mailbox validation. (Added: 2026-05-29)
 - [ ] **[P0] Teammate Handshake Monitor**: Real-time status indicator for ATH identity exchange in horizontal swarms. (Added: 2026-05-29)
 - [ ] **[P0] Context Fragment Auditor**: UI for inspecting and approving sharded mailbox fragments flagged by the mesh-bound isolation engine. (Added: 2026-05-29)
+
+#### Upcoming (2026-07-08 Evolution)
+- [ ] **Attention Heatmap (SRM Integration)**: UI visualization of attention density and jitter distribution. (Added: 2026-07-08)
+- [ ] **Sovereign Context Dashboard**: Real-time monitoring of CSP v1.1 reasoning leases. (Added: 2026-07-08)

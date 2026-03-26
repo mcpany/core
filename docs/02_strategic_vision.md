@@ -878,3 +878,9 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Sharded Mailbox Sovereignty (SMS)**: To neutralize "Mailbox Lock" bottlenecks, we are upgrading the T2T Encryption Bridge to support SMS. This service will host granular, task-bound mailbox shards that allow parallel teammates to synchronize state without global coordination locks, anchored to mission-root intents.
 - **Autonomous Task Reaper (ATR)**: Supporting the stability of horizontal meshes, MCP Any will implement the ATR. This service will monitor teammate liveness and reasoning monologues to proactively reclaim and re-auction "Ghost" tasks that remain locked in the mailbox after a teammate terminates.
 - **Hardware-Attested Identity Rotation (HAIR)**: To counter "Teammate Impersonation" in sharded meshes, we are mandating HAIR. Every inter-teammate request will be signed with a hardware-attested, session-bound identity token that rotates periodically, ensuring that a compromised subagent cannot "squat" on a mailbox shard.
+
+---
+
+## Strategic Evolution: [2026-07-08]
+### Pivot: Spectral Side-Channel Immunity
+Today's research into Spectral Reasoning vulnerabilities necessitates a shift in our Universal Agent Bus. MCP Any will no longer just facilitate context; it will **mask** it. We are introducing the **Spectral Reasoning Mitigator (SRM)** as a core infrastructure layer. This will decouple the *timing* of subagent reasoning from the *visibility* of state. By implementing "Reasoning Jitter" and "Temporal Attention Masking," we ensure that an observer cannot infer the internal state of a mission-root by observing the response latencies of its subagents.

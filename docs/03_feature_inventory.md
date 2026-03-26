@@ -1171,3 +1171,14 @@
 ### Priority Shifts
 - **Differential Context Guarding (DCG) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Mesh-Bound Sovereignty**.
 - **SMI Relay Provider**: (Re-affirmed P0) Evolving to act as the authoritative backend for the **Atomic Teammate Handshake (ATH)**.
+
+## Evolution: [2026-07-08] Updates
+
+### Proposed Additions
+- **Spectral Reasoning Mitigator (SRM)**: (P0) Core infrastructure layer that decouples reasoning latency from state access via Reasoning Jitter and Temporal Attention Masking.
+- **Handshake Portal Gateway**: (P0) High-speed cryptographic bridge for JIT inter-agent tool discovery, replacing static capability tokens.
+- **Recursive Attention Masking**: (P1) Advanced cognitive security extension for the HAAL middleware that automatically masks non-mission reasoning noise in deep swarms.
+
+### Priority Shifts
+- **Active Attention Enforcer (AAE)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Recursive Attention Masking** integration.
+- **Zero-Copy Memory Broker (ZCMB)**: (Re-affirmed P0) Designated as the primary integration point for the **SRM** temporal isolation.
