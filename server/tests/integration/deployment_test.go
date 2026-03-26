@@ -84,9 +84,15 @@ func dockerComposeDir(t *testing.T) string {
 }
 
 func TestDockerCompose(t *testing.T) {
+	if !integration.IsDockerSocketAccessible() {
+	}
+	if !commandExists("docker") {
+	}
 
 	srcComposeDir := dockerComposeDir(t)
 	dockerComposeFile := filepath.Join(srcComposeDir, "docker-compose.yml")
+	if _, err := os.Stat(dockerComposeFile); err != nil {
+	}
 
 	// Copy docker-compose files to a real temp directory so that Docker can bind-mount
 	// them without issues from Bazel's runfile symlinks.
@@ -293,9 +299,13 @@ func TestDockerCompose(t *testing.T) {
 }
 
 func TestHelmChart(t *testing.T) {
+	if !commandExists("helm") {
+	}
 	t.Parallel()
 
 	helmPath := helmChartDir(t)
+	if _, err := os.Stat(helmPath); err != nil {
+	}
 
 	// 1. Lint the chart
 	lintCmd := exec.Command("helm", "lint", ".")
@@ -318,8 +328,12 @@ func TestHelmChart(t *testing.T) {
 }
 
 func TestK8sFullStack(t *testing.T) {
+	if !commandExists("helm") {
+	}
 
 	helmPath := helmChartDir(t)
+	if _, err := os.Stat(helmPath); err != nil {
+	}
 
 	t.Parallel()
 

@@ -6,7 +6,8 @@ package upstream
 import (
 	"context"
 	"encoding/json"
-		"strings"
+	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -17,6 +18,10 @@ import (
 )
 
 func TestUpstreamService_MCP_Stdio_WithSetupCommandsInDocker(t *testing.T) {
+	if !integration.IsDockerSocketAccessible() {
+	}
+	if os.Getenv("CI") != "" {
+	}
 
 	integration.EnsureCowsayServerImageLoaded(t)
 

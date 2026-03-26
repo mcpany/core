@@ -768,7 +768,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         await page.waitForTimeout(1000);
 
         // Open Actions Dropdown
-        // We target the first card's actions button
+        // We target the first card's actions button if available, or skip if no services rendered
         const actionButton = page.getByRole('button', { name: 'Open menu' }).first();
         if (await actionButton.isVisible()) {
             await actionButton.click();
