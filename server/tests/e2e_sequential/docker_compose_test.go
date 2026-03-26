@@ -670,7 +670,7 @@ upstream_services:
 
 	simulateGeminiCLI(t, baseURL)
 
-    // We omit verifyToolMetricDirect since it might not be strictly needed or was causing issues.
+	// We omit verifyToolMetricDirect since it might not be strictly needed or was causing issues.
 }
 
 // runLocalSeededAlternative provides a Database Seeder pattern alternative when Docker is unavailable
