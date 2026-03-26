@@ -31,7 +31,9 @@ export default [
        "@typescript-eslint/no-non-null-asserted-optional-chain": "off",
        "@typescript-eslint/no-this-alias": "off",
        "@typescript-eslint/no-unsafe-function-type": "off",
-       "@typescript-eslint/no-wrapper-object-types": "off"
+       "@typescript-eslint/no-wrapper-object-types": "off",
+       "@typescript-eslint/no-unsafe-declaration-merging": "off",
+       "@typescript-eslint/prefer-namespace-keyword": "off"
     }
   },
   {
