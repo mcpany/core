@@ -1,7 +1,3 @@
-<!--
-Copyright 2026 Author(s) of MCP Any
-SPDX-License-Identifier: Apache-2.0
--->
 # Design Doc: Collective Swarm Anomaly Detection (CSAD)
 **Status:** Draft
 **Created:** 2026-05-29
@@ -50,5 +46,9 @@ With the rise of "Hivenet" swarm attacks, individual agent behavioral monitoring
 ## 7. Evolutionary Changelog
 * **2026-05-29:** Initial Document Creation.
 
-### Update: [2026-05-30] - Integration with MTN Provider
-Integrating CSAD Hub with the **Monotonic Task Nonce (MTN) Provider** to block replay-based probes.
+### Update: 2026-05-30 - Teammate Impersonation Signatures
+**Context:** Today's market sync revealed the emergence of "Teammate Impersonation" in horizontal meshes (Claude Code Agent Teams). Compromised teammates are injecting malicious instructions into the shared mailbox to bypass supervisor oversight.
+**Architecture Adjustment:**
+*   Implementing **Teammate Impersonation Signature Detection**. CSAD will now perform semantic analysis of inter-agent mailbox messages to detect "Instruction Splicing" and role-divergent commands.
+*   Integrating with the `T2T Identity Rotation Provider` to flag any request using a stale or un-rotated identity fragment.
+**Security Impact:** Prevents lateral movement within horizontal teams by ensuring that inter-teammate coordination remains bound to the mission-root intent and its authorized roles.

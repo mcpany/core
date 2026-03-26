@@ -1,7 +1,3 @@
-<!--
-Copyright 2026 Author(s) of MCP Any
-SPDX-License-Identifier: Apache-2.0
--->
 # Server Roadmap
 
 ## 1. Top Priorities: The Universal Agent Bus (New Strategic Focus)
@@ -133,6 +129,11 @@ SPDX-License-Identifier: Apache-2.0
 *   **[P0] Zero-Copy BSH Transport**: Shared-memory based state transfer for sub-millisecond swarm handoffs. (Added: 2026-03-25)
 *   **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited Recursive Intent Delegation. (Added: 2026-03-25)
 *   **[P1] Predictive Resource Locking**: Intent-aware concurrency control for the Shared Blackboard. (Added: 2026-03-25)
+
+#### Upcoming (2026-05-30 Evolution)
+*   **[P0] Cognitive Integrity Arbiter (CIA)**: Implement HART v1.0 compliant hardware-attested reasoning trace validation. (Added: 2026-05-30)
+*   **[P0] Reasoning-Bound Context Sharding (RBCS) Hub**: Core service for cryptographically pinning context shards to HART fragments. (Added: 2026-05-30)
+*   **[P0] MTN Provider**: High-performance monotonic task nonce issuer for re-execution protection. (Added: 2026-05-30)
 
 ## 2. Top 10 Recommended Features
 
@@ -648,7 +649,3 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Cross-Mesh Command Sovereignty (CMCS) Provider**: Hardware-attested "Mesh Tokens" for inter-teammate mailbox validation in horizontal swarms. (Added: 2026-05-29)
 *   **[P0] Atomic Teammate Handshake (ATH) Gateway**: Mandatory identity exchange before teammate task delegation in horizontal teams. (Added: 2026-05-29)
 *   **[P0] Mesh-Bound Context Sovereignty Bridge**: Semantic fragment analysis across teammate boundaries for horizontal team stability. (Added: 2026-05-29)
-
-#### Upcoming (2026-05-30 Evolution)
-*   **[P0] Cognitive Integrity Arbiter (CIA)** (Added: 2026-05-30)
-*   **[P0] RBCS Context Hub** (Added: 2026-05-30)

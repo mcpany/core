@@ -1,7 +1,3 @@
-<!--
-Copyright 2026 Author(s) of MCP Any
-SPDX-License-Identifier: Apache-2.0
--->
 # UI Roadmap
 
 ## Status: Active Development
@@ -163,6 +159,9 @@ SPDX-License-Identifier: Apache-2.0
 - [ ] **[P0] Zero-Copy Transport Monitor**: (2026-03-25) Real-time performance metrics for memory-mapped BSH buffers.
 - [ ] **[P0] RID Lineage Inspector**: (2026-03-25) Security UI for visualizing UACO v1.8 recursive delegation depths and mutation boundaries.
 - [ ] **[P1] Predictive Locking Visualizer**: (2026-03-25) Gantt-style view of projected Blackboard resource locks based on agent intents.
+- [ ] **[P0] Cognitive Path Integrity Viewer**: (2026-05-30) Visualizer for HART-compliant hardware-attested reasoning traces.
+- [ ] **[P0] Context Shard Lineage Monitor**: (2026-05-30) Interactive dashboard for auditing reasoning-bound context shards (RBCS).
+- [ ] **[P0] MTN Status Widget**: (2026-05-30) Real-time monitor for Monotonic Task Nonce validation and re-execution alerts.
 - [ ] **[P0] Context Hook Interop Viewer**: (2026-03-26) Visualize how MCP Any state maps to external framework lifecycle hooks (e.g., OpenClaw).
 - [ ] **[P0] RID Delegation Graph**: (2026-03-26) Interactive visualization of UACO v1.8 intent lineages, showing depth limits and mutation boundaries.
 - [ ] **[P0] WASM Sanitization Dashboard**: (2026-03-26) Monitor and configure active WASM-BSH sanitization rules and rejected buffers.
@@ -488,7 +487,3 @@ SPDX-License-Identifier: Apache-2.0
 - [ ] **[P0] Mesh Command Sovereignty Dashboard**: Visual "Chain of Mesh-Command" tracer for inter-teammate mailbox validation. (Added: 2026-05-29)
 - [ ] **[P0] Teammate Handshake Monitor**: Real-time status indicator for ATH identity exchange in horizontal swarms. (Added: 2026-05-29)
 - [ ] **[P0] Context Fragment Auditor**: UI for inspecting and approving sharded mailbox fragments flagged by the mesh-bound isolation engine. (Added: 2026-05-29)
-
-#### Upcoming (2026-05-30 Evolution)
-- [ ] **[P0] Cognitive Integrity Monitor** (Added: 2026-05-30)
-- [ ] **[P0] RBCS Shard Inspector** (Added: 2026-05-30)
