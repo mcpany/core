@@ -501,8 +501,3 @@
 - [ ] **[P0] Mesh Command Sovereignty Dashboard**: Visual "Chain of Mesh-Command" tracer for inter-teammate mailbox validation. (Added: 2026-05-29)
 - [ ] **[P0] Teammate Handshake Monitor**: Real-time status indicator for ATH identity exchange in horizontal swarms. (Added: 2026-05-29)
 - [ ] **[P0] Context Fragment Auditor**: UI for inspecting and approving sharded mailbox fragments flagged by the mesh-bound isolation engine. (Added: 2026-05-29)
-
-#### Upcoming (2026-03-24 Evolution - Submission Redux)
-- [ ] **[P0] Intent Quorum Visualizer**: (2026-03-24) Real-time visualization of AIR resolution events and quorum voting. (Added: 2026-03-24)
-- [ ] **[P0] Multimodal Trace Auditor**: (2026-03-24) Debugger for visualizing "Entangled" non-textual reasoning traces. (Added: 2026-03-24)
-- [ ] **[P1] Reasoning Entropy Monitor**: (2026-03-24) Real-time heatmap showing swarm convergence and "Cognitive Stall" alerts. (Added: 2026-03-24)

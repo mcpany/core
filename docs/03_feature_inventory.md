@@ -1171,15 +1171,3 @@
 ### Priority Shifts
 - **Differential Context Guarding (DCG) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Mesh-Bound Sovereignty**.
 - **SMI Relay Provider**: (Re-affirmed P0) Evolving to act as the authoritative backend for the **Atomic Teammate Handshake (ATH)**.
-
-## Evolution: [2026-03-24] Updates
-
-### Proposed Additions
-- **Autonomous Intent Reconciliation (AIR) Hub**: (P0) Authoritative coordination layer for the Blackboard that resolves teammate conflicts via hardware-attested quorums.
-- **Multimodal Trace Entanglement Provider**: (P0) Security middleware that cryptographically binds non-textual reasoning traces to the mission root.
-- **Cognitive Stall Arbitrator**: (P0) Stability middleware that monitors semantic entropy to detect and break infinite refinement loops.
-- **CRDT-Native Mailbox Hub**: (P1) High-performance coordination service using Conflict-Free Replicated Data Types to resolve lock exhaustion in horizontal swarms.
-
-### Priority Shifts
-- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Now designated as the primary backend for the new AIR Hub.
-- **Teammate-to-Teammate Encryption Bridge**: (Re-affirmed P0) Elevated with the requirement for lock-free CRDT-native task list synchronization.
