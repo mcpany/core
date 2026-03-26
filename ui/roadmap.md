@@ -749,3 +749,9 @@
 - [ ] **[P0] Programmatic SDK Monitor**: Real-time visualization of SDK-driven agent interactions and Zero-Trust gate status. (Added: 2026-03-25)
 - [ ] **[P1] Session Sovereignty Dashboard**: UI for monitoring hardware-bound SQLite session state and attestation status. (Added: 2026-03-25)
 - [ ] **[P0] Pre-Flight Manifest Reviewer**: Visual workspace for reviewing and approving cryptographically signed mission-root manifests for non-interactive execution. (Added: 2026-03-25)
+
+#### Upcoming (2026-07-08 Evolution)
+- [ ] **[P0] Context Harmonization Workspace**: (Added: 2026-07-08) Interactive dashboard for resolving semantic dissonance between framework-specific summaries.
+- [ ] **[P0] Cognitive Mirroring Visualizer**: (Added: 2026-07-08) Real-time tracer comparing shadow reasoning traces against subagent outputs.
+- [ ] **[P0] Sandbox Live-Patching Console**: (Added: 2026-07-08) UI for reviewing and approving dynamic boundary expansion requests.
+- [ ] **[P1] Reasoning Path Provenance Explorer**: (Added: 2026-07-08) Visualizer for verifying cryptographic watermarks and the "Provenance of Thought".
