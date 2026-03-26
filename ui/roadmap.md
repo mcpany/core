@@ -593,6 +593,6 @@
 - [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
 
 ### Upcoming: [2026-06-18]
-- [ ] **[P0] Reason-Graph Integrity Monitor**: (Added: 2026-06-18) Real-time visualization of structural graph validation and RGC alerts.
-- [ ] **[P0] Mesh-Resident Policy Console**: (Added: 2026-06-18) UI for reviewing and attesting to synthesized mesh policies (MRPS).
-- [ ] **[P1] Entropy-Aware Attention Dashboard**: (Added: 2026-06-18) Visualization of DAG-gated fragments and spectral jitter levels.
+- [ ] **[P0] Reason-Graph Visualizer**: Real-time visualization of inter-agent reasoning traces and deadlock alerts. (Added: 2026-06-18)
+- [ ] **[P0] MRPS Policy Center**: UI for reviewing and attesting to mesh-synthesized security policies. (Added: 2026-06-18)
+- [ ] **[P1] Attention Entropy Monitor**: Dashboard for tracking reasoning entropy and AAG gating events. (Added: 2026-06-18)

@@ -1,59 +1,55 @@
 # Design Doc: Reason-Graph Integrity (RGI) Provider
 **Status:** Draft
-**Created:** [2026-06-18]
+**Created:** 2026-06-18
 
 ## 1. Context and Scope
-As agent swarms become more complex and autonomous, they rely on hierarchical reasoning paths to solve multi-step problems. Today's market sync revealed the "Reason-Graph Collision" (RGC) exploit, where a malicious subagent can inject reasoning nodes that create structural cycles or cognitive deadlocks in the parent's reasoning process.
+Autonomous agent swarms are increasingly vulnerable to "Reason-Graph Collision" (RGC) exploits. In these attacks, malicious subagents inject circular or conflicting reasoning nodes into a shared mesh, triggering cognitive deadlocks and intent eviction. The "Universal Agent Bus" must evolve beyond simple context isolation to protect the structural integrity of the reasoning path itself.
 
-The Reason-Graph Integrity (RGI) Provider is a core security service that performs hardware-attested structural analysis of an agent's reason-graph. It ensures that all reasoning paths remain acyclic and consistent with the hardware-attested Mission-Root anchors, neutralizing structural cognitive attacks.
+The Reason-Graph Integrity (RGI) Provider acts as the authoritative validator for all inter-agent reasoning traces, ensuring that the swarm's cognitive path remains acyclic and mission-anchored.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
-    * Perform real-time structural analysis of agent reason-graphs.
-    * Detect and block reasoning nodes that create cycles (deadlocks).
-    * Validate reasoning-path lineage against Mission-Root intent anchors.
-    * Provide hardware-attested (TPM) signatures for verified reason-graph segments.
+    * Implement hardware-attested structural analysis for reasoning graphs.
+    * Detect and block circular reasoning (RGC) in sub-millisecond real-time.
+    * Mandate hardware-locked lineage for every reasoning node in the graph.
 * **Non-Goals:**
-    * Validating the semantic truth of an agent's reasoning (handled by AID Hub).
-    * Managing token budgets (handled by RBF).
-    * Providing long-term memory (handled by Blackboard).
+    * Validating the truthfulness of the reasoning (handled by VRP).
+    * Enforcing network-layer encryption (handled by T2T Bridge).
 
 ## 3. Critical User Journey (CUJ)
-* **User Persona:** Local LLM Swarm Orchestrator
-* **Primary Goal:** Prevent a specialized subagent from stalling the mission via structural reasoning collisions.
+* **User Persona:** Swarm Security Architect
+* **Primary Goal:** Prevent an OpenClaw specialist from stalling the mission-root via circular reasoning injection.
 * **The Happy Path (Tasks):**
-    1. Parent Agent spawns a specialist subagent to perform code analysis.
-    2. Subagent attempts to inject a reasoning loop that claims task A depends on B, and B depends on A.
-    3. RGI Provider intercepts the graph update and performs cycle detection.
-    4. RGI identifies the structural collision and rejects the reasoning node.
-    5. RGI alerts the Parent Agent and prunes the compromised subagent's path.
-    6. Mission continues using the verified, acyclic reasoning path.
+    1. Parent agent delegates a task to an OpenClaw specialist.
+    2. Specialist proposes a reasoning trace back to the mesh.
+    3. RGI Provider intercepts the trace and performs structural cycle detection.
+    4. RGI Provider verifies the hardware-locked lineage of each proposed node.
+    5. Trace is approved and committed to the shared reason-graph.
 
 ## 4. Design & Architecture
 * **System Flow:**
     ```mermaid
     graph TD
-        A[Subagent Reasoning Node] --> B[RGI Provider]
-        B --> C[Structural Parser]
-        C --> D[Cycle Detection Engine]
-        D --> E{Collision Detected?}
-        E -- Yes --> F[Block Node & Alert Parent]
-        E -- No --> G[Attest & Append to Reason-Graph]
-        H[Mission-Root Anchor] --> C
+        A[Subagent Proposal] --> B[RGI Middleware]
+        B --> C[Cycle Detection Engine]
+        C --> D[Lineage Authenticator]
+        D --> E{Integrity Check}
+        E -- Pass --> F[Reason-Graph Commit]
+        E -- Fail --> G[Isolate Subagent]
     ```
 * **APIs / Interfaces:**
-    * `rgi.ValidatePath(node, graph) -> Result`: Validates a new reasoning node against the current graph.
-    * `rgi.GetAttestedGraph(sessionID) -> SignedGraph`: Returns a hardware-signed snapshot of the reason-graph.
+    * `rgi.ValidateTrace(trace_id, nodes[])`: Analyzes structural integrity of a reasoning fragment.
+    * `rgi.CheckLineage(node_id)`: Verifies hardware attestation of a reasoning node.
 * **Data Storage/State:**
-    * **Active Reason-Graph:** An in-memory Directed Acyclic Graph (DAG) representing the current mission's reasoning lineage.
+    * Reasoning traces are stored in a hardware-isolated, acyclic state-graph on the Blackboard.
 
 ## 5. Alternatives Considered
-* **Time-based Deadlock Detection:** Rejected because it only reacts after the stall occurs. RGI provides proactive structural prevention.
-* **Semantic Verification Only:** Rejected because structural exploits can be semantically plausible but architecturally fatal.
+* **Time-based Deadlock Detection:** Rejected because RGC can mimic active reasoning while being semantically stagnant.
+* **Manual Review:** Rejected due to machine-speed coordination requirements.
 
 ## 6. Cross-Cutting Concerns
-* **Security (Zero Trust):** RGI utilizes hardware-bound (TPM) primitives for all graph attestation.
-* **Observability:** Graph collisions are logged to the "Reason-Graph Integrity Monitor" for forensic analysis.
+* **Security (Zero Trust):** RGI is anchored to TPM-bound session identities.
+* **Observability:** Graph violations are logged as P0 security events in the Audit Log.
 
 ## 7. Evolutionary Changelog
-* **[2026-06-18]:** Initial Document Creation. Addressing Reason-Graph Collision (RGC) vulnerabilities.
+* **2026-06-18:** Initial Document Creation.
