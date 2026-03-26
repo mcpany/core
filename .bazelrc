@@ -112,4 +112,4 @@ build:local --remote_executor=
 build:local --spawn_strategy=local
 
 # Workaround for JVM OOM error in CI during `bazel test //...`
-build --host_jvm_args=-Xmx2048m
+startup --host_jvm_args=-Xmx2048m
