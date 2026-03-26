@@ -1,2 +1,2 @@
-# Design Doc: TSE
+# Design: Teammate Sovereignty Enforcer
 Status: Draft
