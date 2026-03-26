@@ -7,7 +7,6 @@
 ## 1. Context and Scope
 
 Recent "Clinejection" and "FuncPoison" exploits have demonstrated that the agentic supply chain—specifically tool definitions and structural metadata—is the new primary attack vector. Attackers are injecting malicious instructions into tool descriptions that models treat as high-trust system guidance.
-
 The SCPA is required to ensure that every tool and capability exposed via the Universal Agent Bus has a verifiable, hardware-attested provenance chain, neutralizing metadata-based reasoning hijacking.
 
 ## 2. Goals & Non-Goals
