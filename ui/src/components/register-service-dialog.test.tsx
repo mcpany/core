@@ -115,16 +115,4 @@ describe('RegisterServiceDialog', () => {
     });
   });
 
-
-
-
-
-
-
-
-
-
-
-
-
 });

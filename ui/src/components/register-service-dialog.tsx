@@ -195,7 +195,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                       const envKey = field.key.split(".").pop();
                       if (envKey) {
                           if (!config.commandLineService.env) config.commandLineService.env = {};
-                          config.commandLineService.env[envKey] = value as unknown as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+                          config.commandLineService.env[envKey] = value as unknown as any;
                       }
                   } else if (field.key === "httpService.address" && config.httpService) {
                       config.httpService.address = value;
@@ -210,7 +210,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                    config.openapiService ? "openapi" : "other";
 
       form.setValue("name", config.name || "");
-      form.setValue("type", type as "http" | "command_line" | "openapi" | "other" as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+      form.setValue("type", type as "http" | "command_line" | "openapi" | "other" as any);
 
       if (config.httpService?.address) form.setValue("address", config.httpService.address);
       if (config.grpcService?.address) form.setValue("address", config.grpcService.address);
