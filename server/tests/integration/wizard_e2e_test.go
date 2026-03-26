@@ -15,13 +15,13 @@ import (
 )
 
 func TestMarketplaceWizardE2E(t *testing.T) {
-	// Setup test environment (server + playwright)
-	env := setupTestEnv(t)
-	defer env.Teardown()
+	// 1. Start Server
+	serverInfo := StartMCPANYServer(t, "WizardE2ETest")
+	defer serverInfo.CleanupFunc()
 
 	ctx := context.Background()
 
-	// 1. Seed the database with a manual template to start the wizard
+	// Seed the database with a manual template to start the wizard
 	seedData := app.SeedRequest{
 		TemplatesRaw: []json.RawMessage{
 			[]byte(`{
@@ -37,7 +37,7 @@ func TestMarketplaceWizardE2E(t *testing.T) {
 			}`),
 		},
 	}
-	err := env.App.SeedDataPublic(ctx, seedData)
+	err := serverInfo.App.SeedDataPublic(ctx, seedData)
 	require.NoError(t, err)
 
 	// 2. Start Playwright
@@ -58,7 +58,9 @@ func TestMarketplaceWizardE2E(t *testing.T) {
 	require.NoError(t, err)
 
 	// 3. Navigate to Marketplace
-	_, err = page.Goto(env.ServerURL + "/marketplace")
+	// Wait for the UI server to be up? In integration tests, the UI is served by the backend
+	// via a static filesystem.
+	_, err = page.Goto(serverInfo.HTTPAddress + "/marketplace")
 	require.NoError(t, err)
 
 	// Wait for network idle or specific element
@@ -109,7 +111,7 @@ func TestMarketplaceWizardE2E(t *testing.T) {
 	time.Sleep(500 * time.Millisecond)
 
 	// 5. Verify Backend State Change
-	services, err := env.App.Storage.ListServices(ctx)
+	services, err := serverInfo.App.Storage.ListServices(ctx)
 	require.NoError(t, err)
 
 	var foundService *configv1.UpstreamServiceConfig
