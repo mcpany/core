@@ -21,15 +21,13 @@ export default [
       "@typescript-eslint": tsPlugin,
     },
     rules: {
-       "import/no-unresolved": "off",
-       "@typescript-eslint/ban-ts-comment": "off",
        ...tsPlugin.configs.recommended.rules,
        "no-undef": "off",
-       "@typescript-eslint/no-unused-vars": "off",
-       "@typescript-eslint/no-explicit-any": "off"
+       "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_", "caughtErrorsIgnorePattern": "^_" }],
+       "@typescript-eslint/no-explicit-any": "warn"
     }
   },
   {
-    ignores: ["dist/**", "node_modules/**", "eslint.config.mjs", "@proto/**", "google/**"]
+    ignores: ["dist/**", "node_modules/**", "eslint.config.mjs"]
   }
 ];
