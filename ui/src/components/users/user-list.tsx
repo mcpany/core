@@ -5,10 +5,9 @@
 
 
 
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { User } from "@proto/config/v1/user";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { TableVirtuoso } from "react-virtuoso";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -58,9 +57,6 @@ export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) 
     const [searchQuery, setSearchQuery] = useState("");
     const { toast } = useToast();
 
-
-    // ⚡ BOLT: Implemented virtualization for user list using react-virtuoso.
-    // Randomized Selection from Top 5 High-Impact Targets (React/View)
     const filteredUsers = useMemo(() => {
         if (!searchQuery) return users;
         const query = searchQuery.toLowerCase();
@@ -111,24 +107,26 @@ export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) 
                 </div>
             </div>
 
-            <div className="rounded-md border bg-background h-[calc(100vh-250px)]">
-                <TableVirtuoso
-                    data={filteredUsers}
-                    components={{
-                        Table: (props) => <Table {...props} />,
-                        TableBody: React.forwardRef<HTMLTableSectionElement>((props, ref) => <TableBody {...props} ref={ref} />),
-                        TableRow: (props) => <TableRow {...props} />,
-                    }}
-                    fixedHeaderContent={() => (
-                        <TableRow className="bg-muted/50">
+            <div className="rounded-md border bg-background">
+                <Table>
+                    <TableHeader>
+                        <TableRow>
                             <TableHead className="w-[250px]">User</TableHead>
                             <TableHead>Roles</TableHead>
                             <TableHead>Authentication</TableHead>
                             <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
-                    )}
-                    itemContent={(index, user) => (
-                                <TableRow data-testid={`user-row-${user.id}`}>
+                    </TableHeader>
+                    <TableBody>
+                        {filteredUsers.length === 0 ? (
+                            <TableRow>
+                                <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
+                                    No users found.
+                                </TableCell>
+                            </TableRow>
+                        ) : (
+                            filteredUsers.map((user) => (
+                                <TableRow key={user.id} data-testid={`user-row-${user.id}`}>
                                     <TableCell>
                                         <div className="flex items-center gap-3">
                                             <Avatar className="h-9 w-9 border">
@@ -207,8 +205,10 @@ export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) 
                                         </DropdownMenu>
                                     </TableCell>
                                 </TableRow>
-                            )}
-                />
+                            ))
+                        )}
+                    </TableBody>
+                </Table>
             </div>
             <div className="text-xs text-muted-foreground text-center">
                 Showing {filteredUsers.length} of {users.length} users

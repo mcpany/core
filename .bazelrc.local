@@ -1,3 +1,0 @@
-startup --host_jvm_args=-Xmx6g
-test --local_test_jobs=1
-build --jobs=1
