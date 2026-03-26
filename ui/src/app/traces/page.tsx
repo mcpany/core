@@ -5,13 +5,12 @@
 
 
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { TraceList } from "@/components/traces/trace-list";
 import { TraceDetail } from "@/components/traces/trace-detail";
 import type { Trace } from "@/types/trace";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { Loader2 } from "lucide-react";
-import { usePolling } from "@/hooks/use-polling";
 
 /**
  * TracesPage component.
@@ -25,7 +24,7 @@ export default function TracesPage() {
   const [isLive, setIsLive] = useState(false);
 
   // Separate load function for reuse
-  const loadTraces = useCallback(async (isFirstLoad = false) => {
+  const loadTraces = async (isFirstLoad = false) => {
       try {
         const res = await fetch('/api/v1/traces');
         const data = await res.json();
@@ -35,25 +34,29 @@ export default function TracesPage() {
         // In a real app we might want to merge.
         setTraces(data);
 
-        if (isFirstLoad && data.length > 0) {
-            // We only set selectedId if it's the *very first* load and nothing is selected
-            // Use functional state update to avoid depending on selectedId in the useCallback
-            setSelectedId(prev => prev === null ? data[0].id : prev);
+        if (isFirstLoad && data.length > 0 && !selectedId) {
+            setSelectedId(data[0].id);
         }
       } catch (err) {
         console.error("Failed to load traces", err);
       } finally {
         if (isFirstLoad) setLoading(false);
       }
-  }, []); // No dependencies needed anymore
+  };
 
   useEffect(() => {
     loadTraces(true);
-  }, [loadTraces]);
+  }, []);
 
-  // ⚡ BOLT: [Render Optimization] Use custom usePolling hook for consistent lifecycle management and memory leak prevention.
-  // Randomized Selection from Top 5 High-Impact Targets (Network Category)
-  usePolling(() => loadTraces(false), isLive ? 3000 : null);
+  useEffect(() => {
+      let interval: NodeJS.Timeout;
+      if (isLive) {
+          interval = setInterval(() => {
+              loadTraces(false);
+          }, 3000);
+      }
+      return () => clearInterval(interval);
+  }, [isLive]);
 
   const selectedTrace = traces.find(t => t.id === selectedId) || null;
 
