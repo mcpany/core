@@ -115,7 +115,7 @@ func TestManager_Execute_WithTimeout(t *testing.T) {
 			select {
 			case <-ctx.Done():
 				return ctx.Err()
-			case <-time.After(100 * time.Millisecond):
+			case <-time.After(200 * time.Millisecond):
 				return nil
 			}
 		})

@@ -5,6 +5,9 @@ package serviceregistry
 
 import (
 	"context"
+	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"encoding/json"
 	"errors"
 	"sync"
@@ -153,6 +156,16 @@ func TestServiceRegistry_RegisterAndGetService(t *testing.T) {
 	_, ok = registry.GetServiceConfig("non-existent")
 	assert.False(t, ok)
 
+	oidcServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/.well-known/openid-configuration" {
+			w.Header().Set("Content-Type", "application/json")
+			fmt.Fprintf(w, `{"issuer":"%s","token_endpoint":"%s/token"}`, "http://"+r.Host, "http://"+r.Host)
+			return
+		}
+		w.WriteHeader(http.StatusNotFound)
+	}))
+	defer oidcServer.Close()
+
 	t.Run("with OAuth2 authenticator", func(t *testing.T) {
 		serviceConfig := configv1.UpstreamServiceConfig_builder{
 			Name: proto.String("oauth2-service"),
@@ -161,7 +174,7 @@ func TestServiceRegistry_RegisterAndGetService(t *testing.T) {
 			}.Build(),
 			Authentication: configv1.Authentication_builder{
 				Oauth2: configv1.OAuth2Auth_builder{
-					IssuerUrl: proto.String("https://accounts.google.com"),
+					IssuerUrl: proto.String(oidcServer.URL),
 					Audience:  proto.String("test-audience"),
 				}.Build(),
 			}.Build(),
