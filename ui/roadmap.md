@@ -201,6 +201,11 @@
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
 
+#### Upcoming (2026-07-07 Evolution)
+- [ ] **[P0] Cache Integrity Auditor**: (2026-07-07) Visual workspace for verifying cryptographic signatures of CI/CD build caches.
+- [ ] **[P1] Automated Remediation Tracer**: (2026-07-07) Verifiable audit trail viewer for AI-powered fix suggestions and SSDF compliance.
+- [ ] **[P0] Action-Chain Sovereignty Monitor**: (2026-07-07) Real-time visualization of automated workflow sequences and interdiction events.
+
 #### Upcoming (2026-03-20 Evolution)
 - [ ] **[P0] Mission Manifest Editor**: (2026-03-20) UI for defining and TPM-signing Hardware-Attested Mission Manifests (HAMM).
 - [ ] **[P0] Mailbox Shard Monitor**: (2026-03-20) Real-time visualization of task-bound mailbox shards and coordination throughput.
@@ -641,6 +646,12 @@
 - [ ] **[P0] Sharded Mailbox Hub Monitor**: (2026-06-24) Real-time visualization of lock-free teammate synchronization and CRDT conflict resolution.
 - [ ] **[P1] ZKD Discovery Portal**: (2026-06-24) Authorization workspace for reviewing and masking agent capability cards during the discovery phase.
 
+#### Upcoming (2026-03-26 Evolution)
+- [ ] **[P0] Action-Chain Sovereignty Monitor**: Real-time visualization of automated workflow sequences and interdiction events. (Added: 2026-03-26)
+- [ ] **[P0] Cache Integrity Auditor**: Visual workspace for verifying cryptographic signatures of CI/CD build caches. (Added: 2026-03-26)
+- [ ] **[P0] Metadata Sanitization Log**: Security dashboard for reviewing redacted coordination messages and metadata probes. (Added: 2026-03-26)
+- [ ] **[P1] Post-Quantum Status Widget**: Monitor for quantum-resistant handshake status and mesh integrity. (Added: 2026-03-26)
+
 #### Upcoming (2026-06-25 Evolution)
 - [ ] **[P0] Attention Heatmap Visualizer**: Real-time dashboard for monitoring reasoning-density and ADF-gated noise. (Added: 2026-06-25)
 - [ ] **[P0] HLES Status Monitor**: Security widget for visualizing hardware-locked identity buffer status and environment isolation. (Added: 2026-06-25)
@@ -703,6 +714,18 @@
 - [ ] **[P0] Teammate Task List Viewer**: High-speed, CRDT-native visualization of the shared task list for horizontal swarms. (Added: 2026-03-24)
 - [ ] **[P0] ALSV Block List Explorer**: UI for reviewing and approving command arguments flagged by the semantic validator. (Added: 2026-03-24)
 
+#### Upcoming (2026-07-06 Evolution)
+- [ ] **[P0] Summarization Quorum Hub**: (2026-07-06) UI for monitoring multi-agent attestation on context compaction events.
+- [ ] **[P1] Speculative Reasoning Monitor**: (2026-07-06) Visual tracker for optimistic summarization commits and automated rollbacks.
+- [ ] **[P1] Intent-Aware Jitter Config**: (2026-07-06) Interactive interface for scaling risk-aware jitter profiles based on agent intent.
+- [ ] **[P0] Enclave Metadata Dashboard**: (2026-07-06) Real-time visualization of hardware-attested shard metadata and EMA status.
+
+#### Upcoming (2026-07-05 Evolution)
+- [ ] **[P0] Physical Shard Inspector**: (2026-07-05) Visualize cryptographic pinning of shards to hardware Enclave IDs and PSS status.
+- [ ] **[P0] Multi-Modal Stylometric Monitor**: (2026-07-05) Real-time visualization of behavioral consistency across SVG and Audio reasoning traces.
+- [ ] **[P0] Summarization Quorum Hub**: (2026-07-05) Workspace for monitoring multi-agent consensus on all context compaction events.
+- [ ] **[P1] Adaptive Jitter Control**: (2026-07-05) UI for configuring risk-aware jitter profiles and monitoring coordination latency.
+
 #### Upcoming (2026-07-04 Evolution)
 - [ ] **[P0] Behavioral Firewall Dashboard**: (2026-07-04) Visualize stylometric confidence scores and paraphrasing sandbox status.
 - [ ] **[P0] Enclave Isolation Monitor**: (2026-07-04) Real-time visualization of DME-locked memory regions and physical isolation fault alerts.
@@ -710,12 +733,25 @@
 - [ ] **[P1] Context Compaction Quorum Viewer**: (2026-07-04) Visual tracker for summarizer agent consensus and compaction savings.
 
 #### Upcoming (2026-03-25 Evolution)
+- [ ] **[P0] Relational Intent Tracer**: visual debugger for verifying the cryptographic lineage of tool-bound intents back to the mission root. (Added: 2026-03-25)
+- [ ] **[P0] Memfd Shard Inspector**: real-time visualization of shared memory mappings and byte-level sanitization status. (Added: 2026-03-25)
+- [ ] **[P1] Optimistic Attestation Widget**: dashboard indicator for speculatively loaded tool contexts and background verification progress. (Added: 2026-03-25)
 - [ ] **[P0] WASM-BSH Sanitizer Dashboard**: (2026-03-25) UI for managing OpenClaw v2.5 WASM sanitization rules and viewing rejected binary context fragments.
 - [ ] **[P0] Zero-Copy Transport Monitor**: (2026-03-25) Real-time performance metrics for `memfd_create` memory-mapped BSH buffers.
 - [ ] **[P0] RID Lineage Inspector**: (2026-03-25) Security UI for visualizing UACO v1.8 recursive delegation depths and "Intent Ghosting" defense boundaries.
 - [ ] **[P1] Predictive Locking Visualizer**: Gantt-style view of projected Blackboard resource locks based on agent intents. (Added: 2026-03-25)
 
-### Upcoming: [2026-06-07]
-- **[P0] RMA Lineage Visualizer**: Visual "Sovereignty Chain" debugger for tracking hierarchical mission receipts and intent lineage.
-- **[P0] CASI Shard Inspector**: Real-time monitor for teammate context shards, highlighting semantic boundaries and pollution alerts.
-- **[P1] CFIB Auction House**: UI for monitoring cross-framework task bidding and capability scores.
+#### Upcoming (2026-03-25 Iteration 2)
+- [ ] **[P0] Relational Intent Tracer**: Visual debugger for verifying the cryptographic lineage of tool-bound intents back to the mission root. (Added: 2026-03-25)
+- [ ] **[P0] Memfd Shard Inspector**: Real-time visualization of shared memory mappings and byte-level sanitization status. (Added: 2026-03-25)
+- [ ] **[P1] Optimistic Attestation Widget**: Dashboard indicator for speculatively loaded tool contexts and background verification progress. (Added: 2026-03-25)
+
+#### Upcoming (2026-03-25 Iteration 4)
+- [ ] **[P0] Lineage-Bound Scoping Viewer**: Visual debugger for tracking subagent capability restrictions across the intent chain. (Added: 2026-03-25)
+- [ ] **[P0] Zero-Copy BSH Heatmap**: Real-time performance visualization of `memfd` segments and WASM sanitization latency. (Added: 2026-03-25)
+- [ ] **[P0] Hardware Depth-Counter Widget**: Status indicator for TPM-bound monotonic delegation limits. (Added: 2026-03-25)
+
+#### Upcoming (2026-03-25 Iteration 5)
+- [ ] **[P0] Programmatic SDK Monitor**: Real-time visualization of SDK-driven agent interactions and Zero-Trust gate status. (Added: 2026-03-25)
+- [ ] **[P1] Session Sovereignty Dashboard**: UI for monitoring hardware-bound SQLite session state and attestation status. (Added: 2026-03-25)
+- [ ] **[P0] Pre-Flight Manifest Reviewer**: Visual workspace for reviewing and approving cryptographically signed mission-root manifests for non-interactive execution. (Added: 2026-03-25)
