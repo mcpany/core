@@ -1,18 +1,19 @@
 # Market Sync: 2026-06-18
 
-## 1. Ecosystem Shift: Mesh-Resident Governance Oracles (MRGO)
-A new architectural pattern has emerged in the OpenClaw and CrewAI ecosystems. Instead of relying on a central "Mission Root" for policy arbitration, agents are now initiating localized governance clusters.
-* **Key Finding:** Governance is moving from a static policy file to a mesh-resident oracle where multiple teammates must sign off on high-privilege tool calls.
-* **Pain Point:** Standardized attestation for these mesh-signed tokens is currently non-existent.
+## Ecosystem Shifts
 
-## 2. Protocol Updates: PAD-v2 Discovery
-Gemini CLI has introduced **Protocol-Agnostic Discovery (PAD-v2)**. This allows subagents to discover capabilities without knowing if the underlying provider is using Stdio, HTTP, or a custom WebRTC bridge.
-* **Impact for MCP Any:** We must transition our Discovery Bus to support PAD-v2 headers to remain compatible with upcoming Gemini-native subagents.
+### 1. OpenClaw: Mesh-Resident Governance Oracles (MRGO)
+OpenClaw has shifted toward decentralized policy arbitration. Instead of a central orchestrator, governance is now distributed across "Resident Oracles" within the agent mesh. This minimizes latency but introduces complexities in consensus.
 
-## 3. Security Vulnerability: CVE-2026-82001 (Mesh-Split)
-A critical vulnerability was documented in distributed swarm architectures where a "Mesh-Split" (network partition) allows subagents to bypass state-locks by claiming a new root-of-trust in the isolated partition.
-* **Countermeasure:** Recursive Attestation and "Split-Brain" intent interdiction.
+### 2. Gemini CLI: Protocol-Agnostic Discovery (PAD-v2)
+The latest Gemini CLI (v2.4+) implements PAD-v2, allowing agents to discover tools across gRPC, WebSocket, and Stdio protocols using a unified metadata schema. MCP Any must adapt its discovery logic to be PAD-v2 compliant.
 
-## 4. Autonomous Agent Pain Points (Reddit/GitHub Audit)
-* **Context Bleed:** Agents in swarms are still accidentally sharing "thought fragments" that contain sensitive environment variables.
-* **Attestation Latency:** Hardware-backed signing (TPM) is causing significant delays in high-frequency tool loops.
+### 3. Claude Code: Tool Use Attestation
+Claude Code now requires cryptographic attestation for sensitive tool executions (e.g., file system writes outside of `/app`). This prevents "token-theft" style attacks where a subagent misuses a parent agent's privileges.
+
+## Autonomous Agent Pain Points
+- **Mesh-Split Vulnerability (CVE-2026-82001):** A critical vulnerability where a partitioned swarm can make conflicting state changes that cannot be reconciled upon reconnection.
+- **Context Inheritance Overhead:** Large swarms spend up to 40% of their compute on serializing/deserializing shared context.
+
+## Security Trends
+- **Recursive Attestation:** Verification not just of the agent, but of the entire chain of trust down to the hardware (TPM/TEE).

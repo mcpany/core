@@ -6,6 +6,18 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-06-18] Updates
+
+### Proposed Additions
+- **MRGO Adapter**: (P0) Authoritative host for decentralized policy oracles that allow local, hardware-attested policy arbitration, neutralizing central bottlenecks.
+- **Consensus Partition Interdictor (CPI)**: (P0) Stability middleware that enforces "Majority-Or-Freeze" policies during network partitions to neutralize CVE-2026-82001.
+- **Recursive Attestation Orchestrator**: (P1) Security service that generates composite trust tokens binding agent, subagent, and hardware identities for persistent mesh trust.
+- **PAD-v2 Discovery Validator**: (P0) Upgrade for the Discovery Bus to index and serve tool metadata across heterogeneous protocols using PAD-v2 attested schemas.
+
+### Priority Shifts
+- **PNTD Discovery Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **PAD-v2** compliance.
+- **Consensus Tool Validation Hub**: (Re-affirmed P0) Evolving to support **MRGO-compliant** decentralized arbitration.
+
 ## Evolution: [2026-06-16] Updates
 
 ### Proposed Additions
@@ -1360,9 +1372,3 @@
 ### Priority Shifts
 - **Entangled State Broker (ESB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **TSJ Injection** for all cross-mission synchronization.
 - **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support the new **Multi-Modal Behavioral Anchoring** requirement.
-
-### Additions: 2026-06-18
-- **MRGO Adapter (P0):** Decentralized policy arbitration using TPM-signed teammate tokens.
-- **Consensus Partition Interdictor (CPI) (P0):** Real-time monitoring for CVE-2026-82001 (Mesh-Split) vulnerabilities.
-- **Recursive Attestation Orchestrator (P1):** Standards-compliant lineage tracking for Gemini PAD-v2.
-- **PAD-v2 Validator (P1):** Protocol-agnostic tool discovery middleware.

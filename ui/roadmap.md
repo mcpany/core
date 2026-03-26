@@ -592,6 +592,8 @@
 - [ ] **[P1] Speculative Garbage Collection Log**: (2026-06-17) Real-time tracker for R-GC purged context fragments and reasoning entropy scores.
 - [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
 
-### Upcoming: 2026-06-18
-- [ ] Mesh Governance Visualization: Real-time display of quorum formation.
-- [ ] Partition Alert System: Visual indicators for detected Mesh-Split events.
+### Upcoming: [2026-06-18]
+- [ ] **[P0] MRGO Status Monitor**: Real-time visualization of local policy decisions and hardware signature verification latency. (Added: 2026-06-18)
+- [ ] **[P0] Mesh-Split Alert Center**: Visualization of network partition events and CPI "Majority-Or-Freeze" enforcement. (Added: 2026-06-18)
+- [ ] **[P1] Composite Trust Viewer**: Forensic UI for inspecting recursive attestation tokens binding agent and hardware identities. (Added: 2026-06-18)
+- [ ] **[P0] PAD-v2 Capability Browser**: Unified search and discovery for tool metadata across gRPC/WS/Stdio protocols. (Added: 2026-06-18)

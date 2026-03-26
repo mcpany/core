@@ -1,4 +1,4 @@
-module github.com/mcpany/core/k8s/operator
+module github.com/mcpany/core/operator
 
 go 1.26.1
 

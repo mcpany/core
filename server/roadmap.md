@@ -754,7 +754,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Reasoning-Aware Garbage Collection (R-GC)**: (P1) Stability middleware for the Speculative Branching Guard to purge low-utility fragments (Added: 2026-06-17).
 - **Temporal Shard Jitter (TSJ) Injection**: (P0) Security extension for the ESB to neutralize cache-timing side-channels (CVE-2026-62001) (Added: 2026-06-17).
 
-### Upcoming: 2026-06-18
-- [ ] Implement MRGO Adapter for decentralized mesh governance.
-- [ ] Integrate Consensus Partition Interdictor (CPI) for mesh-split mitigation.
-- [ ] Transition Discovery Bus to PAD-v2 compatibility.
+### Upcoming: [2026-06-18]
+- **[P0] MRGO Adapter**: Authoritative host for decentralized policy oracles providing local hardware-attested arbitration. (Added: 2026-06-18)
+- **[P0] Consensus Partition Interdictor (CPI)**: Stability middleware for enforcing "Majority-Or-Freeze" policies during network partitions (CVE-2026-82001). (Added: 2026-06-18)
+- **[P1] Recursive Attestation Orchestrator**: Generation of composite trust tokens binding agent and hardware identities across meshes. (Added: 2026-06-18)
+- **[P0] PAD-v2 Discovery Validator**: Unified metadata indexing for heterogeneous protocols (gRPC/WS/Stdio) based on PAD-v2. (Added: 2026-06-18)
