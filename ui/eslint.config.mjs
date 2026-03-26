@@ -37,7 +37,9 @@ export default [
        "@typescript-eslint/no-unused-expressions": "off",
        "react-hooks/exhaustive-deps": "off",
        "@typescript-eslint/prefer-as-const": "off",
-       "@typescript-eslint/triple-slash-reference": "off"
+       "@typescript-eslint/triple-slash-reference": "off",
+       "@typescript-eslint/no-unused-modules": "off",
+       "@typescript-eslint/no-var-requires": "off"
     }
   },
   {
