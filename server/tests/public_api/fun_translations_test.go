@@ -20,6 +20,7 @@ import (
 )
 
 func TestUpstreamService_FunTranslations(t *testing.T) {
+	// t.SkipNow() // Removed skip
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
