@@ -35,7 +35,9 @@ export default [
        "@typescript-eslint/no-unsafe-declaration-merging": "off",
        "@typescript-eslint/prefer-namespace-keyword": "off",
        "@typescript-eslint/no-unused-expressions": "off",
-       "react-hooks/exhaustive-deps": "off"
+       "react-hooks/exhaustive-deps": "off",
+       "@typescript-eslint/prefer-as-const": "off",
+       "@typescript-eslint/triple-slash-reference": "off"
     }
   },
   {
