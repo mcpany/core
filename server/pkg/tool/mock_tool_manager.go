@@ -6,7 +6,7 @@ package tool
 import (
 	"context"
 
-	"github.com/mcpany/core/proto/config/v1"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/mock"
 )
@@ -87,7 +87,7 @@ func (m *MockToolManager) ListServices() []*ServiceInfo {
 }
 
 // SetProfiles is a mock method.
-func (m *MockToolManager) SetProfiles(enabled []string, defs []*config.ProfileDefinition) {
+func (m *MockToolManager) SetProfiles(enabled []string, defs []*configv1.ProfileDefinition) {
 	m.Called(enabled, defs)
 }
 
