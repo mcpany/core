@@ -14,6 +14,8 @@ import (
 )
 
 // Tokenizer defines the interface for counting tokens in a given text.
+//
+// Summary: Represents a Tokenizer.
 type Tokenizer interface {
 	// CountTokens estimates or calculates the number of tokens in the input text.
 	//
@@ -26,6 +28,8 @@ type Tokenizer interface {
 
 // SimpleTokenizer implements a character-based heuristic.
 // Logic: ~4 characters per token.
+//
+// Summary: Represents a SimpleTokenizer.
 type SimpleTokenizer struct{}
 
 // NewSimpleTokenizer creates a new SimpleTokenizer. Returns the result.
@@ -41,6 +45,20 @@ type SimpleTokenizer struct{}
 //
 // Side Effects:
 //   - None
+//
+// Summary: Initializes NewSimpleTokenizer operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func NewSimpleTokenizer() *SimpleTokenizer {
 	return &SimpleTokenizer{}
 }
@@ -59,6 +77,20 @@ func NewSimpleTokenizer() *SimpleTokenizer {
 //
 // Side Effects:
 //   - None
+//
+// Summary: Executes CountTokens operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (t *SimpleTokenizer) CountTokens(text string) (int, error) {
 	if len(text) == 0 {
 		return 0, nil
@@ -72,6 +104,8 @@ func (t *SimpleTokenizer) CountTokens(text string) (int, error) {
 
 // WordTokenizer implements a word-based heuristic.
 // Logic: Count words (split by space) and multiply by a factor (e.g. 1.3) to account for subwords/punctuation.
+//
+// Summary: Represents a WordTokenizer.
 type WordTokenizer struct {
 	Factor float64
 }
@@ -89,6 +123,20 @@ type WordTokenizer struct {
 //
 // Side Effects:
 //   - None
+//
+// Summary: Initializes NewWordTokenizer operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func NewWordTokenizer() *WordTokenizer {
 	return &WordTokenizer{Factor: 1.3}
 }
@@ -107,6 +155,20 @@ func NewWordTokenizer() *WordTokenizer {
 //
 // Side Effects:
 //   - None
+//
+// Summary: Executes CountTokens operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (t *WordTokenizer) CountTokens(text string) (int, error) {
 	if len(text) == 0 {
 		return 0, nil
@@ -198,6 +260,20 @@ func countWords(text string) int {
 //
 // Side Effects:
 //   - None
+//
+// Summary: Executes CountTokensInValue operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 	// OPTIMIZATION: Handle common primitive types and simple collections
 	// without allocating the 'visited' map. This significantly improves performance
@@ -240,6 +316,20 @@ type rawWordCounter struct{}
 // Returns:
 //   - int: The word count.
 //   - error: Always nil.
+//
+// Summary: Executes CountTokens operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (r *rawWordCounter) CountTokens(text string) (int, error) {
 	return countWords(text), nil
 }
@@ -944,7 +1034,6 @@ func countMapStringInterface[T recursiveTokenizer](t T, m map[string]interface{}
 	return count, nil
 }
 
-
 func countSliceInterfaceSimple(st *SimpleTokenizer, s []interface{}, visited map[uintptr]bool) (int, error) {
 	// Cycle detection
 	// OPTIMIZATION: Check if slice is empty first
@@ -1060,7 +1149,6 @@ func countSliceInterfaceRaw(r *rawWordCounter, s []interface{}, visited map[uint
 	return count, nil
 }
 
-
 func simpleTokenizeInt64(n int64) int {
 	// Optimization: Fast path for common integers.
 	// Integers with < 8 chars (including sign) always result in 1 token (length/4 < 2).
@@ -1071,7 +1159,7 @@ func simpleTokenizeInt64(n int64) int {
 	// Calculate length using if-chain for performance (approx 4x faster than loop).
 	l := 0
 	if n < 0 {
-		l = 1 // count the sign
+		l = 1                          // count the sign
 		if n == -9223372036854775808 { // MinInt64
 			l += 19
 			return (l / 4) // 20 / 4 = 5
@@ -1081,18 +1169,11 @@ func simpleTokenizeInt64(n int64) int {
 
 	// Unrolled loop for digit counting
 	switch {
-	case n < 10:
-		l++
-	case n < 100:
-		l += 2
-	case n < 1000:
-		l += 3
-	case n < 10000:
-		l += 4
-	case n < 100000:
-		l += 5
-	case n < 1000000:
-		l += 6
+	// ⚡ BOLT: Optimization - These branches are mathematically unreachable due to the fast path:
+	// if n > -1000000 && n < 10000000 { return 1 }
+	// This means any number that reaches here must be <= -1000000 or >= 10000000.
+	// After the sign handling `n = -n`, `n` is guaranteed to be >= 1000000.
+	// Thus cases for < 10 through < 1000000 are dead code and safely removed.
 	case n < 10000000:
 		l += 7
 	case n < 100000000:

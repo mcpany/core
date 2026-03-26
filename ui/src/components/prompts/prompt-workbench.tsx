@@ -34,7 +34,6 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Switch } from "@/components/ui/switch";
 import { PromptEditor } from "./prompt-editor";
-import { RichResultViewer } from "@/components/tools/rich-result-viewer";
 
 interface PromptWorkbenchProps {
   initialPrompts?: PromptDefinition[];
@@ -430,8 +429,8 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
                                                         )} />
                                                         {msg.role}
                                                      </div>
-                                                     <div className="bg-background border rounded-md p-3 text-sm">
-                                                        <RichResultViewer result={msg.content?.type === 'text' ? msg.content.text : msg.content} />
+                                                     <div className="bg-background border rounded-md p-3 text-sm whitespace-pre-wrap font-mono">
+                                                        {msg.content?.type === 'text' ? msg.content.text : typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)}
                                                      </div>
                                                 </div>
                                             ))}

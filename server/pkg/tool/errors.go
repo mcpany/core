@@ -6,4 +6,6 @@ package tool
 import "errors"
 
 // ErrToolNotFound is returned when a requested tool cannot be found.
+//
+// Summary: Represents a ErrToolNotFound.
 var ErrToolNotFound = errors.New("unknown tool")
