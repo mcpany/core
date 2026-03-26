@@ -32,10 +32,13 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install Python dependencies
+          name: Install Python dependencies and pre-commit requirements
           command: |
              sudo apt-get update
-             sudo apt-get install -y python3-pip python3-venv
+             sudo apt-get install -y python3-pip python3-venv shellcheck
+             curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+             chmod 700 get_helm.sh
+             sudo ./get_helm.sh
              python3 -m venv venv
              . venv/bin/activate
              pip install pre-commit
