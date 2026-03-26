@@ -8,7 +8,7 @@ Swarms frequently experience "Context Shadowing," where subagents override root
 mission constraints. This feature introduces an authoritative hierarchy that
 ensures mission alignment and prevents unauthorized overrides.
 
-## 2. Goals and Non-Goals
+## 2. Goals & Non-Goals
 
 - **Goals:**
   - Enforce intent priority based on command lineage.
@@ -26,7 +26,7 @@ ensures mission alignment and prevents unauthorized overrides.
   2. Subagent attempts to override the instruction in its local context.
   3. IHE middleware detects the shadowing attempt and blocks the tool call.
 
-## 4. Design and Architecture
+## 4. Design & Architecture
 
 - **System Flow:** Middleware intercepts tool calls and validates state
   fragments against the Intent Hierarchy store.
