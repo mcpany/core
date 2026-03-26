@@ -66,7 +66,7 @@ func TestHandleDashboardMetrics_EdgeCases(t *testing.T) {
 
 		// Simulate error from GetAllServices
 		// Note: We must cast nil to the slice type to avoid panic in the mock's type assertion
-		mockRegistry.On("GetAllServices").Return([]*configv1.UpstreamServiceConfig(nil), assert.AnError)
+		mockRegistry.Mock.On("GetAllServices").Return([]*configv1.UpstreamServiceConfig(nil), assert.AnError)
 
 		// ToolManager returns nil tools
 		mockTM.EXPECT().ListTools().Return(nil)
@@ -159,7 +159,7 @@ func TestHandleDashboardMetrics_EdgeCases(t *testing.T) {
 			ResourceManager: mockRM,
 		}
 
-		mockRegistry.On("GetAllServices").Return([]*configv1.UpstreamServiceConfig(nil), nil)
+		mockRegistry.Mock.On("GetAllServices").Return([]*configv1.UpstreamServiceConfig(nil), nil)
 		mockTM.EXPECT().ListTools().Return(nil)
 		mockPM.EXPECT().ListPrompts().Return(nil)
 		mockRM.EXPECT().ListResources().Return(nil)

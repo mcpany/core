@@ -28,7 +28,7 @@ type MockToolManager struct {
 }
 
 func (m *MockToolManager) GetTool(name string) (tool.Tool, bool) {
-	args := m.Called(name)
+	args := m.Mock.Called(name)
 	if t := args.Get(0); t != nil {
 		return t.(tool.Tool), args.Bool(1)
 	}
@@ -36,35 +36,35 @@ func (m *MockToolManager) GetTool(name string) (tool.Tool, bool) {
 }
 
 func (m *MockToolManager) ListTools() []tool.Tool {
-	args := m.Called()
+	args := m.Mock.Called()
 	return args.Get(0).([]tool.Tool)
 }
 
 func (m *MockToolManager) ListMCPTools() []*mcp.Tool {
-	args := m.Called()
+	args := m.Mock.Called()
 	return args.Get(0).([]*mcp.Tool)
 }
 
 func (m *MockToolManager) ClearToolsForService(serviceID string) {
-	m.Called(serviceID)
+	m.Mock.Called(serviceID)
 }
 
 func (m *MockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-	args := m.Called(ctx, req)
+	args := m.Mock.Called(ctx, req)
 	return args.Get(0), args.Error(1)
 }
 
 func (m *MockToolManager) AddTool(t tool.Tool) error {
-	args := m.Called(t)
+	args := m.Mock.Called(t)
 	return args.Error(0)
 }
 
 func (m *MockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
-	m.Called(serviceID, info)
+	m.Mock.Called(serviceID, info)
 }
 
 func (m *MockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
-	args := m.Called(serviceID)
+	args := m.Mock.Called(serviceID)
 	if info := args.Get(0); info != nil {
 		return info.(*tool.ServiceInfo), args.Bool(1)
 	}
@@ -72,21 +72,21 @@ func (m *MockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 }
 
 func (m *MockToolManager) SetProfiles(enabled []string, defs []*configv1.ProfileDefinition) {
-	m.Called(enabled, defs)
+	m.Mock.Called(enabled, defs)
 }
 
 func (m *MockToolManager) IsServiceAllowed(serviceID, profileID string) bool {
-	args := m.Called(serviceID, profileID)
+	args := m.Mock.Called(serviceID, profileID)
 	return args.Bool(0)
 }
 
 func (m *MockToolManager) ToolMatchesProfile(t tool.Tool, profileID string) bool {
-	args := m.Called(t, profileID)
+	args := m.Mock.Called(t, profileID)
 	return args.Bool(0)
 }
 
 func (m *MockToolManager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
-	args := m.Called(profileID)
+	args := m.Mock.Called(profileID)
 	return args.Get(0).(map[string]bool), args.Bool(1)
 }
 
@@ -95,15 +95,15 @@ func (m *MockToolManager) GetToolCountForService(serviceID string) int {
 }
 
 func (m *MockToolManager) AddMiddleware(middleware tool.ExecutionMiddleware) {
-	m.Called(middleware)
+	m.Mock.Called(middleware)
 }
 
 func (m *MockToolManager) SetMCPServer(server tool.MCPServerProvider) {
-	m.Called(server)
+	m.Mock.Called(server)
 }
 
 func (m *MockToolManager) ListServices() []*tool.ServiceInfo {
-	args := m.Called()
+	args := m.Mock.Called()
 	return args.Get(0).([]*tool.ServiceInfo)
 }
 
@@ -124,12 +124,12 @@ func TestHandleTopology(t *testing.T) {
 		s2.SetName("service-2")
 		s2.SetDisable(true)
 		services := []*configv1.UpstreamServiceConfig{s1, s2}
-		mockRegistry.On("GetAllServices").Return(services, nil).Once()
+		mockRegistry.Mock.On("GetAllServices").Return(services, nil).Once()
 
 		tools := []tool.Tool{
 			&TestMockTool{toolDef: mcp_router_v1.Tool_builder{Name: proto.String("tool-1"), ServiceId: proto.String("service-1")}.Build()},
 		}
-		mockTM.On("ListTools").Return(tools).Once()
+		mockTM.Mock.On("ListTools").Return(tools).Once()
 
 		req := httptest.NewRequest(http.MethodGet, "/topology", nil)
 		w := httptest.NewRecorder()
@@ -182,8 +182,8 @@ func TestHandleTopology(t *testing.T) {
 	t.Run("NotModified", func(t *testing.T) {
 		// Setup mock data again for this run
 		services := []*configv1.UpstreamServiceConfig{}
-		mockRegistry.On("GetAllServices").Return(services, nil).Once()
-		mockTM.On("ListTools").Return([]tool.Tool{}).Once()
+		mockRegistry.Mock.On("GetAllServices").Return(services, nil).Once()
+		mockTM.Mock.On("ListTools").Return([]tool.Tool{}).Once()
 
 		// 1. First request to get ETag
 		req1 := httptest.NewRequest(http.MethodGet, "/topology", nil)
@@ -194,8 +194,8 @@ func TestHandleTopology(t *testing.T) {
 		assert.NotEmpty(t, etag, "ETag header should be set")
 
 		// 2. Second request with If-None-Match
-		mockRegistry.On("GetAllServices").Return(services, nil).Once()
-		mockTM.On("ListTools").Return([]tool.Tool{}).Once()
+		mockRegistry.Mock.On("GetAllServices").Return(services, nil).Once()
+		mockTM.Mock.On("ListTools").Return([]tool.Tool{}).Once()
 
 		req2 := httptest.NewRequest(http.MethodGet, "/topology", nil)
 		req2.Header.Set("If-None-Match", etag)

@@ -1,30 +1,23 @@
-import { seedGlobalState } from "./test-data";
 /**
  * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { test, expect } from "@playwright/test";
+import { test, expect } from '@playwright/test';
 
-test.describe("Marketplace Tests", () => {
-  test.beforeEach(async ({ request }) => {
-    await seedGlobalState(request);
-  });
-
-  test("Share Config flow should work", async ({ page }) => {
-    await page.goto("/marketplace");
+test.describe('Marketplace Tests', () => {
+  test('Share Config flow should work', async ({ page }) => {
+    await page.goto('/marketplace');
 
     // Verify Share Button exists
-    const shareButton = page.getByRole("button", { name: "Share Your Config" });
+    const shareButton = page.getByRole('button', { name: 'Share Your Config' });
     await expect(shareButton).toBeVisible();
 
     // Click it
     await shareButton.click();
 
     // Verify Dialog Open
-    const dialog = page.getByRole("dialog", {
-      name: "Share Service Collection",
-    });
+    const dialog = page.getByRole('dialog', { name: 'Share Service Collection' });
     await expect(dialog).toBeVisible();
 
     // Verify "Generate Configuration" exists and is initially disabled if no services (or enabled if default selected)
@@ -36,46 +29,39 @@ test.describe("Marketplace Tests", () => {
 
     // Select a service (checkbox)
     // We assume there's at least one service row
-    const firstCheckbox = page.locator(
-      'table tbody tr:first-child [role="checkbox"]',
-    );
-    if ((await firstCheckbox.count()) > 0) {
-      await firstCheckbox.click();
+    const firstCheckbox = page.locator('table tbody tr:first-child [role="checkbox"]');
+    if (await firstCheckbox.count() > 0) {
+        await firstCheckbox.click();
 
-      // Click Generate
-      const generateBtn = page.getByRole("button", {
-        name: "Generate Configuration",
-      });
-      await expect(generateBtn).toBeEnabled();
-      await generateBtn.click();
+        // Click Generate
+        const generateBtn = page.getByRole('button', { name: 'Generate Configuration' });
+        await expect(generateBtn).toBeEnabled();
+        await generateBtn.click();
 
-      // Verify Textarea with config appears
-      const textarea = page.locator("textarea");
-      await expect(textarea).toBeVisible();
+        // Verify Textarea with config appears
+        const textarea = page.locator('textarea');
+        await expect(textarea).toBeVisible();
 
-      // Verify it contains some yaml content
-      const value = await textarea.inputValue();
-      expect(value).toContain("name: My Shared Collection");
+        // Verify it contains some yaml content
+        const value = await textarea.inputValue();
+        expect(value).toContain('name: My Shared Collection');
 
-      // Verify Copy button
-      const copyBtn = page
-        .getByRole("button")
-        .filter({ has: page.locator("svg.lucide-copy") });
-      await expect(copyBtn).toBeVisible();
+        // Verify Copy button
+        const copyBtn = page.getByRole('button').filter({ has: page.locator('svg.lucide-copy') });
+        await expect(copyBtn).toBeVisible();
     } else {
-      console.log("No services found to test sharing");
+        console.log('No services found to test sharing');
     }
   });
 
-  test("should open create config wizard", async ({ page }) => {
-    await page.goto("/marketplace");
-    await page.getByRole("button", { name: "Create Config" }).click();
+
+  test('should open create config wizard', async ({ page }) => {
+    await page.goto('/marketplace');
+    await page.getByRole('button', { name: 'Create Config' }).click();
     // Assuming the wizard has a dialog role or specific heading
-    await expect(page.getByRole("dialog")).toBeVisible();
+    await expect(page.getByRole('dialog')).toBeVisible();
     // Verify some content in the wizard
-    await expect(page.getByText("Service Name"))
-      .toBeVisible({ timeout: 5000 })
-      .catch(() => null);
+    await expect(page.getByText('Service Name')).toBeVisible({ timeout: 5000 }).catch(() => null);
     // Or just check dialog visibility which is safer without strict header knowledge
   });
 });

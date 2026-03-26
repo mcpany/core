@@ -253,7 +253,7 @@ func TestHandleDashboardMetrics(t *testing.T) {
 	mockTM := tool.NewMockManagerInterface(ctrl)
 
 	// Mock Managers for Counts
-	mockRegistry.On("GetAllServices").Return(func() []*configv1.UpstreamServiceConfig {
+	mockRegistry.Mock.On("GetAllServices").Return(func() []*configv1.UpstreamServiceConfig {
 		s := &configv1.UpstreamServiceConfig{}
 		s.SetName("s1")
 		return []*configv1.UpstreamServiceConfig{s}

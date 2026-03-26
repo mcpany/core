@@ -341,7 +341,7 @@ func TestInitializeDatabase_NotStorage(t *testing.T) {
 	simpleMock := new(MockSimpleStore)
 	app := &Application{}
 
-	simpleMock.On("Load", mock.Anything).Return(&configv1.McpAnyServerConfig{}, nil)
+	simpleMock.Mock.On("Load", mock.Anything).Return(&configv1.McpAnyServerConfig{}, nil)
 
 	err := app.initializeDatabase(context.Background(), simpleMock, nil)
 	assert.NoError(t, err)
@@ -372,7 +372,7 @@ func TestInitializeDatabase_Errors(t *testing.T) {
 		mockSimpleStore := new(MockSimpleStore)
 		app := &Application{}
 
-		mockSimpleStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), errors.New("load error"))
+		mockSimpleStore.Mock.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), errors.New("load error"))
 
 		err := app.initializeDatabase(context.Background(), mockSimpleStore, nil)
 		assert.Error(t, err)
