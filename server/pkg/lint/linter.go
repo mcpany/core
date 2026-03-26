@@ -51,7 +51,7 @@ const (
 // Summary: Returns the string name of the severity level.
 //
 // Parameters:
-//   - None.
+//   - s (Severity): The severity level to convert.
 //
 // Returns:
 //   - string: The name of the severity (e.g., "ERROR").
@@ -105,7 +105,7 @@ type Result struct {
 // Summary: Formats the result into a readable string.
 //
 // Parameters:
-//   - None.
+//   - r (Result): The result instance to format.
 //
 // Returns:
 //   - string: A formatted summary of the finding.
@@ -284,7 +284,8 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 		case configv1.UpstreamServiceConfig_McpService_case:
 			mcp := s.GetMcpService()
 			switch mcp.WhichConnectionType() {
-			case configv1.McpUpstreamService_StdioConnection_case:
+			case configv1.
+				McpUpstreamService_StdioConnection_case:
 				stdio := mcp.GetStdioConnection()
 				for k, v := range stdio.GetEnv() {
 					p := fmt.Sprintf(
@@ -292,7 +293,8 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 							"stdio.env[%s]", k)
 					checkSecret(v, p, sName)
 				}
-			case configv1.McpUpstreamService_BundleConnection_case:
+			case configv1.
+				McpUpstreamService_BundleConnection_case:
 				bundle := mcp.GetBundleConnection()
 				for k, v := range bundle.GetEnv() {
 					p := fmt.Sprintf(
@@ -419,7 +421,8 @@ func (l *Linter) checkInsecureHTTP() []Result {
 		case configv1.UpstreamServiceConfig_HttpService_case:
 			checkInsecure(s.GetHttpService().GetAddress(),
 				"http_service.address")
-		case configv1.UpstreamServiceConfig_OpenapiService_case:
+		case configv1.
+			UpstreamServiceConfig_OpenapiService_case:
 			openapi := s.GetOpenapiService()
 			checkInsecure(openapi.GetAddress(),
 				"openapi_service.address")
