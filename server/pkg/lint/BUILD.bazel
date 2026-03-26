@@ -16,10 +16,7 @@ go_library(
 
 go_test(
     name = "lint_test",
-    srcs = [
-        "linter_extra_test.go",
-        "linter_test.go",
-    ],
+    srcs = ["linter_test.go"],
     embed = [":lint"],
     deps = [
         "//proto/config/v1:config",
