@@ -3,9 +3,15 @@
 **Created:** 2026-06-18
 
 ## 1. Context and Scope
-Autonomous agent swarms are increasingly vulnerable to "Reason-Graph Collision" (RGC) exploits. In these attacks, malicious subagents inject circular or conflicting reasoning nodes into a shared mesh, triggering cognitive deadlocks and intent eviction. The "Universal Agent Bus" must evolve beyond simple context isolation to protect the structural integrity of the reasoning path itself.
+Autonomous agent swarms are increasingly vulnerable to "Reason-Graph Collision" (RGC) exploits.
+In these attacks, malicious subagents inject circular or conflicting reasoning nodes into a
+shared mesh, triggering cognitive deadlocks and intent eviction. The "Universal Agent Bus"
+must evolve beyond simple context isolation to protect the structural integrity of the
+reasoning path itself.
 
-The Reason-Graph Integrity (RGI) Provider acts as the authoritative validator for all inter-agent reasoning traces, ensuring that the swarm's cognitive path remains acyclic and mission-anchored.
+The Reason-Graph Integrity (RGI) Provider acts as the authoritative validator for all
+inter-agent reasoning traces, ensuring that the swarm's cognitive path remains acyclic and
+mission-anchored.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
@@ -18,7 +24,8 @@ The Reason-Graph Integrity (RGI) Provider acts as the authoritative validator fo
 
 ## 3. Critical User Journey (CUJ)
 * **User Persona:** Swarm Security Architect
-* **Primary Goal:** Prevent an OpenClaw specialist from stalling the mission-root via circular reasoning injection.
+* **Primary Goal:** Prevent an OpenClaw specialist from stalling the mission-root via circular
+  reasoning injection.
 * **The Happy Path (Tasks):**
     1. Parent agent delegates a task to an OpenClaw specialist.
     2. Specialist proposes a reasoning trace back to the mesh.
@@ -44,7 +51,8 @@ The Reason-Graph Integrity (RGI) Provider acts as the authoritative validator fo
     * Reasoning traces are stored in a hardware-isolated, acyclic state-graph on the Blackboard.
 
 ## 5. Alternatives Considered
-* **Time-based Deadlock Detection:** Rejected because RGC can mimic active reasoning while being semantically stagnant.
+* **Time-based Deadlock Detection:** Rejected because RGC can mimic active reasoning while
+  being semantically stagnant.
 * **Manual Review:** Rejected due to machine-speed coordination requirements.
 
 ## 6. Cross-Cutting Concerns
