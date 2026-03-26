@@ -50,6 +50,11 @@ issues:
     - ui
     - hack
     - scripts
+    - \.cache
+    - bazel-bin
+    - bazel-out
+    - bazel-testlogs
+    - bazel-mcpany
   exclude-rules:
     - path: "_test.go"
       linters:
