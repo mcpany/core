@@ -13,9 +13,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/alexliesenfeld/health"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/alexliesenfeld/health"
 	"github.com/mcpany/core/server/pkg/auth"
 	mcphealth "github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"
@@ -33,8 +33,6 @@ import (
 // Upstream implements the upstream.Upstream interface for services that
 // are exposed via a WebSocket connection. It manages a connection pool and
 // registers tools based on the service configuration.
-//
-// Summary: Represents a Upstream.
 type Upstream struct {
 	poolManager *pool.Manager
 	serviceID   string
@@ -52,20 +50,6 @@ type Upstream struct {
 //
 // Errors:
 //   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes CheckHealth operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -92,20 +76,6 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 //
 // Returns:
 //   - error: An error if the shutdown operation fails, or nil on success.
-//
-// Summary: Executes Shutdown operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -127,20 +97,6 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Returns:
 //   - upstream.Upstream: A new Upstream instance for WebSocket services.
-//
-// Summary: Initializes NewUpstream operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager: poolManager,
@@ -164,20 +120,6 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 //   - []*configv1.ToolDefinition: A list of discovered tool definitions.
 //   - []*configv1.ResourceDefinition: A list of discovered resource definitions.
 //   - error: An error if registration fails.
-//
-// Summary: Executes Register operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

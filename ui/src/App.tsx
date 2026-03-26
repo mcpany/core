@@ -52,7 +52,6 @@ const UpstreamServicesPage = lazy(() => import("./app/upstream-services/page"));
 const UsersPage = lazy(() => import("./app/users/page"));
 const VisualizerPage = lazy(() => import("./app/visualizer/page"));
 const WebhooksPage = lazy(() => import("./app/webhooks/page"));
-const UniversalAgentBusPage = lazy(() => import("./app/universal-agent-bus/page"));
 
 const PageFallback = () => (
   <div className="flex items-center justify-center h-full min-h-[200px]">
@@ -117,7 +116,6 @@ export default function App() {
           <Route path="/users" element={<UsersPage />} />
           <Route path="/visualizer" element={<VisualizerPage />} />
           <Route path="/webhooks" element={<WebhooksPage />} />
-          <Route path="/universal-agent-bus" element={<UniversalAgentBusPage />} />
 
           {/* Legacy redirect */}
           <Route path="/topology" element={<Navigate to="/network" replace />} />

@@ -301,6 +301,7 @@ type Application struct {
 	// statsCache for dashboard
 	statsCacheMu sync.RWMutex
 	statsCache   map[string]statsCacheEntry
+
 }
 
 type statsCacheEntry struct {
@@ -329,8 +330,8 @@ func NewApplication() *Application {
 		configFiles:     make(map[string]string),
 		startupCh:       make(chan struct{}),
 		startTime:       time.Now(),
-		MetricsGatherer: prometheus.DefaultGatherer,
-		statsCache:      make(map[string]statsCacheEntry),
+		MetricsGatherer:   prometheus.DefaultGatherer,
+		statsCache:        make(map[string]statsCacheEntry),
 	}
 }
 
@@ -717,7 +718,6 @@ func (a *Application) Run(opts RunOptions) error {
 		cfg.GetGlobalSettings().GetContextOptimizer(),
 		cfg.GetGlobalSettings().GetDebugger(),
 		cfg.GetGlobalSettings().GetSmartRecovery(),
-		nil,
 	)
 	if err != nil {
 		workerCancel()
@@ -1057,9 +1057,8 @@ func (a *Application) updateGlobalSettings(cfg *config_v1.McpAnyServerConfig) {
 	}
 }
 
-// reconcileServices reconciles the service registry with the new configuration.
-//
 //nolint:gocyclo // complexity is fine here
+// reconcileServices reconciles the service registry with the new configuration.
 func (a *Application) reconcileServices(ctx context.Context, cfg *config_v1.McpAnyServerConfig) {
 	log := logging.GetLogger()
 	// Get current active services
@@ -1987,7 +1986,6 @@ func (a *Application) runServerMode(
 	mux.Handle("/healthz", healthHandler)
 	mux.Handle("/health", healthHandler)
 	mux.Handle("/metrics", authMiddleware(metrics.Handler()))
-	mux.Handle("/api/v1/alignment/status", authMiddleware(a.handleActiveIntentAlignment()))
 	mux.Handle("/upload", authMiddleware(http.HandlerFunc(a.uploadFile)))
 
 	// OIDC Routes
@@ -2167,10 +2165,10 @@ func (a *Application) runServerMode(
 		if standardMiddlewares.Debugger != nil {
 			finalHandler = standardMiddlewares.Debugger.Handler(finalHandler)
 		}
-		// Recursive Context
-		if standardMiddlewares.RecursiveContext != nil {
-			finalHandler = standardMiddlewares.RecursiveContext.HandleContext(finalHandler)
-		}
+			// Recursive Context
+			if standardMiddlewares.RecursiveContext != nil {
+				finalHandler = standardMiddlewares.RecursiveContext.HandleContext(finalHandler)
+			}
 	}
 
 	// Middleware order: SecurityHeaders -> CORS -> CSRF -> JSONRPCCompliance -> Recovery -> IPAllowList -> RateLimit -> (Debugger -> Optimizer -> Mux)

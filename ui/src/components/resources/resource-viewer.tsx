@@ -8,6 +8,7 @@
 import { Eye, Loader2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ResourceContent } from "@/lib/client";
+import { RichResultViewer } from "@/components/tools/rich-result-viewer";
 
 import ReactSyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light';
 import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
@@ -81,11 +82,24 @@ export function ResourceViewer({ content, loading }: ResourceViewerProps) {
         );
     }
 
-    if (mimeType.includes("json") || mimeType.includes("yaml") || mimeType.includes("xml")) {
+    if (mimeType.includes("json")) {
+        try {
+            const parsed = JSON.parse(text || "");
+            return (
+                <div className="h-full p-4 overflow-auto">
+                    <RichResultViewer result={parsed} />
+                </div>
+            );
+        } catch (e) {
+            // Fallback to text if JSON parsing fails
+        }
+    }
+
+    if (mimeType.includes("yaml") || mimeType.includes("xml")) {
         return (
             <ScrollArea className="h-full">
                 <ReactSyntaxHighlighter
-                    language={mimeType.includes("json") ? "json" : "yaml"}
+                    language={mimeType.includes("yaml") ? "yaml" : "xml"}
                     style={vs2015}
                     customStyle={{ margin: 0, borderRadius: 0, height: "100%", fontSize: '0.875rem' }}
                     showLineNumbers={true}
