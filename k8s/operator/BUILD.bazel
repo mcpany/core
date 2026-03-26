@@ -1,0 +1,6 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+# Exposes the operator Dockerfile as a Bazel target.
+# The hermetic OCI image is built via //k8s/operator/cmd:operator_tarball.
+exports_files(["Dockerfile"])

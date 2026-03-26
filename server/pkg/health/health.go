@@ -52,6 +52,20 @@ var (
 //
 // Side Effects:
 //   - Updates a global variable protected by a mutex.
+//
+// Summary: Updates SetGlobalAlertConfig operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func SetGlobalAlertConfig(cfg *configv1.AlertConfig) {
 	globalAlertConfigMu.Lock()
 	defer globalAlertConfigMu.Unlock()
@@ -59,6 +73,8 @@ func SetGlobalAlertConfig(cfg *configv1.AlertConfig) {
 }
 
 // HTTPServiceWithHealthCheck is an interface for services that have an address and an HTTP health check.
+//
+// Summary: Represents a HTTPServiceWithHealthCheck.
 type HTTPServiceWithHealthCheck interface {
 	// GetAddress returns the address of the service.
 	//
@@ -85,6 +101,20 @@ type HTTPServiceWithHealthCheck interface {
 //
 // Side Effects:
 //   - Registers metrics for the health check.
+//
+// Summary: Initializes NewChecker operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 	if uc == nil {
 		return nil

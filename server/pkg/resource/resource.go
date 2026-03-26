@@ -12,6 +12,8 @@ import (
 )
 
 // ErrResourceNotFound is returned when a requested resource cannot be found.
+//
+// Summary: Represents a ErrResourceNotFound.
 var ErrResourceNotFound = errors.New("resource not found")
 
 // Resource defines the interface for a resource that can be managed by the Manager.
@@ -163,7 +165,8 @@ func (rm *Manager) GetResource(uri string) (Resource, bool) {
 //   - resource: Resource. The resource to add.
 //
 // Returns:
-//   None.
+//
+//	None.
 //
 // Side Effects:
 //   - Updates the internal resource storage.
@@ -190,7 +193,8 @@ func (rm *Manager) AddResource(resource Resource) {
 //   - uri: string. The URI of the resource.
 //
 // Returns:
-//   None.
+//
+//	None.
 //
 // Side Effects:
 //   - Updates the internal resource storage.
@@ -266,7 +270,8 @@ func (rm *Manager) ListResources() []Resource {
 //   - f: func(). The callback function.
 //
 // Returns:
-//   None.
+//
+//	None.
 func (rm *Manager) OnListChanged(f func()) {
 	rm.mu.Lock()
 	defer rm.mu.Unlock()
@@ -299,7 +304,8 @@ func (rm *Manager) Subscribe(ctx context.Context, uri string) error {
 //   - serviceID: string. The service ID.
 //
 // Returns:
-//   None.
+//
+//	None.
 //
 // Side Effects:
 //   - Removes matching resources from storage.
