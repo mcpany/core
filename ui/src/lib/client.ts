@@ -8,137 +8,102 @@
  * Provides methods for managing services, tools, resources, prompts, and secrets.
  */
 
-import {
-  GrpcWebImpl,
-  RegistrationServiceClientImpl,
-} from "@proto/api/v1/registration";
-import {
-  UpstreamServiceConfig as BaseUpstreamServiceConfig,
-  HttpUpstreamService,
-  ServiceProvenance,
-} from "@proto/config/v1/upstream_service";
-import { ProfileDefinition } from "@proto/config/v1/config";
-import { ToolDefinition } from "@proto/config/v1/tool";
-import { ResourceDefinition } from "@proto/config/v1/resource";
-import { PromptDefinition } from "@proto/config/v1/prompt";
-import { Credential, Authentication } from "@proto/config/v1/auth";
+import { GrpcWebImpl, RegistrationServiceClientImpl } from '@proto/api/v1/registration';
+import { UpstreamServiceConfig as BaseUpstreamServiceConfig, HttpUpstreamService, ServiceProvenance } from '@proto/config/v1/upstream_service';
+import { ProfileDefinition } from '@proto/config/v1/config';
+import { ToolDefinition } from '@proto/config/v1/tool';
+import { ResourceDefinition } from '@proto/config/v1/resource';
+import { PromptDefinition } from '@proto/config/v1/prompt';
+import { Credential, Authentication } from '@proto/config/v1/auth';
 
-import { BrowserHeaders } from "browser-headers";
+import { BrowserHeaders } from 'browser-headers';
 
 /**
  * Extended UpstreamServiceConfig to include runtime error information.
  */
-export interface UpstreamServiceConfig extends Omit<
-  BaseUpstreamServiceConfig,
-  "lastError" | "toolCount"
-> {
-  /**
-   * The last error message encountered by the service, if any.
-   */
-  lastError?: string;
-  /**
-   * The number of tools registered for this service.
-   */
-  toolCount?: number;
-  /**
-   * Optional description for the service (used in UI templates).
-   */
-  description?: string;
-  /**
-   * Optional template ID if this config was loaded from a template.
-   */
-  templateId?: string;
+export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, 'lastError' | 'toolCount'> {
+    /**
+     * The last error message encountered by the service, if any.
+     */
+    lastError?: string;
+    /**
+     * The number of tools registered for this service.
+     */
+    toolCount?: number;
+    /**
+     * Optional description for the service (used in UI templates).
+     */
+    description?: string;
+    /**
+     * Optional template ID if this config was loaded from a template.
+     */
+    templateId?: string;
 }
 
 // Re-export generated types
-export type {
-  ToolDefinition,
-  ResourceDefinition,
-  PromptDefinition,
-  Credential,
-  Authentication,
-  ProfileDefinition,
-  ServiceProvenance,
-};
-export type {
-  ListServicesResponse,
-  GetServiceResponse,
-  GetServiceStatusResponse,
-  ValidateServiceResponse,
-} from "@proto/api/v1/registration";
+export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition, ServiceProvenance };
+export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '../../../proto/api/v1/registration';
 
 /**
  * ServiceTemplate defines a template for an upstream service.
  */
 export interface ServiceTemplate {
-  id: string;
-  name: string;
-  description: string;
-  icon: string;
-  tags: string[];
-  authType?: string; // Optional helper for UI
-  serviceConfig: UpstreamServiceConfig;
+    id: string;
+    name: string;
+    description: string;
+    icon: string;
+    tags: string[];
+    authType?: string; // Optional helper for UI
+    serviceConfig: UpstreamServiceConfig;
 }
 
 // Helper to map snake_case config to camelCase UpstreamServiceConfig
 const mapUpstreamServiceConfig = (s: any): UpstreamServiceConfig => ({
-  ...s,
-  provenance: s.provenance
-    ? {
+    ...s,
+    provenance: s.provenance ? {
         verified: s.provenance.verified,
         signerIdentity: s.provenance.signer_identity,
         attestationTime: s.provenance.attestation_time,
-        signatureAlgorithm: s.provenance.signature_algorithm,
-      }
-    : undefined,
-  connectionPool: s.connection_pool,
-  httpService: s.http_service
-    ? HttpUpstreamService.fromJSON(s.http_service)
-    : undefined,
-  grpcService: s.grpc_service,
-  commandLineService: s.command_line_service,
-  mcpService: s.mcp_service,
-  upstreamAuth: s.upstream_auth,
-  preCallHooks: s.pre_call_hooks,
-  postCallHooks: s.post_call_hooks,
-  lastError: s.last_error,
-  toolCount: s.tool_count,
-  toolExportPolicy: s.tool_export_policy,
-  promptExportPolicy: s.prompt_export_policy,
-  resourceExportPolicy: s.resource_export_policy,
-  resilience: s.resilience
-    ? {
-        circuitBreaker: s.resilience.circuit_breaker
-          ? {
-              failureRateThreshold:
-                s.resilience.circuit_breaker.failure_rate_threshold,
-              consecutiveFailures:
-                s.resilience.circuit_breaker.consecutive_failures,
-              openDuration: s.resilience.circuit_breaker.open_duration,
-              halfOpenRequests: s.resilience.circuit_breaker.half_open_requests,
-            }
-          : undefined,
-        retryPolicy: s.resilience.retry_policy
-          ? {
-              numberOfRetries: s.resilience.retry_policy.number_of_retries,
-              baseBackoff: s.resilience.retry_policy.base_backoff,
-              maxBackoff: s.resilience.retry_policy.max_backoff,
-              maxElapsedTime: s.resilience.retry_policy.max_elapsed_time,
-            }
-          : undefined,
-        timeout: s.resilience.timeout,
-      }
-    : undefined,
-  callPolicies: s.call_policies?.map((p: any) => ({
-    defaultAction: p.default_action,
-    rules: p.rules?.map((r: any) => ({
-      action: r.action,
-      nameRegex: r.name_regex,
-      argumentRegex: r.argument_regex,
-      urlRegex: r.url_regex,
-      callIdRegex: r.call_id_regex,
+        signatureAlgorithm: s.provenance.signature_algorithm
+    } : undefined,
+    connectionPool: s.connection_pool,
+    httpService: s.http_service ? HttpUpstreamService.fromJSON(s.http_service) : undefined,
+    grpcService: s.grpc_service,
+    commandLineService: s.command_line_service,
+    mcpService: s.mcp_service,
+    upstreamAuth: s.upstream_auth,
+    preCallHooks: s.pre_call_hooks,
+    postCallHooks: s.post_call_hooks,
+    lastError: s.last_error,
+    toolCount: s.tool_count,
+    toolExportPolicy: s.tool_export_policy,
+    promptExportPolicy: s.prompt_export_policy,
+    resourceExportPolicy: s.resource_export_policy,
+    resilience: s.resilience ? {
+        circuitBreaker: s.resilience.circuit_breaker ? {
+            failureRateThreshold: s.resilience.circuit_breaker.failure_rate_threshold,
+            consecutiveFailures: s.resilience.circuit_breaker.consecutive_failures,
+            openDuration: s.resilience.circuit_breaker.open_duration,
+            halfOpenRequests: s.resilience.circuit_breaker.half_open_requests
+        } : undefined,
+        retryPolicy: s.resilience.retry_policy ? {
+            numberOfRetries: s.resilience.retry_policy.number_of_retries,
+            baseBackoff: s.resilience.retry_policy.base_backoff,
+            maxBackoff: s.resilience.retry_policy.max_backoff,
+            maxElapsedTime: s.resilience.retry_policy.max_elapsed_time
+        } : undefined,
+        timeout: s.resilience.timeout
+    } : undefined,
+    callPolicies: s.call_policies?.map((p: any) => ({
+        defaultAction: p.default_action,
+        rules: p.rules?.map((r: any) => ({
+            action: r.action,
+            nameRegex: r.name_regex,
+            argumentRegex: r.argument_regex,
+            urlRegex: r.url_regex,
+            callIdRegex: r.call_id_regex
+        }))
     })),
-  })),
 });
 
 // Initialize gRPC Web Client
@@ -150,10 +115,10 @@ const mapUpstreamServiceConfig = (s: any): UpstreamServiceConfig => ({
 // GrpcWebImpl implementation uses `this.host`. If empty?
 // Let's assume we point to the current origin.
 const getBaseUrl = () => {
-  if (typeof window !== "undefined") {
-    return window.location.origin;
-  }
-  return process.env.BACKEND_URL || "http://mcpany:50050"; // Default for SSR in K8s
+    if (typeof window !== 'undefined') {
+        return window.location.origin;
+    }
+    return process.env.BACKEND_URL || 'http://mcpany:50050'; // Default for SSR in K8s
 };
 
 const rpc = new GrpcWebImpl(getBaseUrl(), {
@@ -162,21 +127,21 @@ const rpc = new GrpcWebImpl(getBaseUrl(), {
 const registrationClient = new RegistrationServiceClientImpl(rpc);
 
 const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
-  const headers = new Headers(init?.headers);
-  // Inject Authorization header from localStorage if available
-  if (typeof window !== "undefined") {
-    const token = localStorage.getItem("mcp_auth_token");
-    if (token) {
-      headers.set("Authorization", `Basic ${token}`);
+    const headers = new Headers(init?.headers);
+    // Inject Authorization header from localStorage if available
+    if (typeof window !== 'undefined') {
+        const token = localStorage.getItem('mcp_auth_token');
+        if (token) {
+            headers.set('Authorization', `Basic ${token}`);
+        }
+    } else {
+        // Server-side: Inject API Key from env
+        const apiKey = process.env.MCPANY_API_KEY;
+        if (apiKey) {
+            headers.set('X-API-Key', apiKey);
+        }
     }
-  } else {
-    // Server-side: Inject API Key from env
-    const apiKey = process.env.MCPANY_API_KEY;
-    if (apiKey) {
-      headers.set("X-API-Key", apiKey);
-    }
-  }
-  return fetch(input, { ...init, headers });
+    return fetch(input, { ...init, headers });
 };
 
 // ⚡ BOLT: Request deduplication map to prevent thundering herd on concurrent mounts.
@@ -184,151 +149,148 @@ const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
 const pendingRequests = new Map<string, Promise<any>>();
 
 const dedupeRequests = <T>(key: string, fn: () => Promise<T>): Promise<T> => {
-  if (pendingRequests.has(key)) {
-    return pendingRequests.get(key) as Promise<T>;
-  }
-  const promise = fn().finally(() => {
-    pendingRequests.delete(key);
-  });
-  pendingRequests.set(key, promise);
-  return promise;
+    if (pendingRequests.has(key)) {
+        return pendingRequests.get(key) as Promise<T>;
+    }
+    const promise = fn().finally(() => {
+        pendingRequests.delete(key);
+    });
+    pendingRequests.set(key, promise);
+    return promise;
 };
 
 /**
  * Definition of a secret stored in the system.
  */
 export interface SecretDefinition {
-  /** Unique identifier for the secret. */
-  id: string;
-  /** Human-readable name of the secret. */
-  name: string;
-  /** The key or name used to reference the secret in configurations. */
-  key: string;
-  /** The secret value (masked in responses). */
-  value: string;
-  /** The provider of the secret (e.g., openai, anthropic). */
-  provider?: "openai" | "anthropic" | "aws" | "gcp" | "custom";
-  /** Timestamp of the last usage. */
-  lastUsed?: string;
-  /** Timestamp of creation. */
-  createdAt: string;
+    /** Unique identifier for the secret. */
+    id: string;
+    /** Human-readable name of the secret. */
+    name: string;
+    /** The key or name used to reference the secret in configurations. */
+    key: string;
+    /** The secret value (masked in responses). */
+    value: string;
+    /** The provider of the secret (e.g., openai, anthropic). */
+    provider?: 'openai' | 'anthropic' | 'aws' | 'gcp' | 'custom';
+    /** Timestamp of the last usage. */
+    lastUsed?: string;
+    /** Timestamp of creation. */
+    createdAt: string;
 }
 
 /**
  * Content of a resource.
  */
 export interface ResourceContent {
-  /** The URI of the resource. */
-  uri: string;
-  /** The MIME type of the content. */
-  mimeType: string;
-  /** Text content, if applicable. */
-  text?: string;
-  /** Binary content as a base64 encoded string, if applicable. */
-  blob?: string;
+    /** The URI of the resource. */
+    uri: string;
+    /** The MIME type of the content. */
+    mimeType: string;
+    /** Text content, if applicable. */
+    text?: string;
+    /** Binary content as a base64 encoded string, if applicable. */
+    blob?: string;
 }
 
 /**
  * Response for reading a resource.
  */
 export interface ReadResourceResponse {
-  /** List of resource contents. */
-  contents: ResourceContent[];
+    /** List of resource contents. */
+    contents: ResourceContent[];
 }
 
 interface RawValidateServiceResponse {
-  valid?: boolean;
-  message?: string;
-  error?: string;
-  discovered_tools?: ToolDefinition[];
-  discovered_resources?: ResourceDefinition[];
+    valid?: boolean;
+    message?: string;
+    error?: string;
+    discovered_tools?: ToolDefinition[];
+    discovered_resources?: ResourceDefinition[];
 }
 
 /**
  * Result of a single system health check.
  */
 export interface CheckResult {
-  /** The status of the check (e.g., "ok", "degraded", "error"). */
-  status: string;
-  /** Optional message describing the status or error. */
-  message?: string;
-  /** Optional latency measurement. */
-  latency?: string;
-  /** Optional diff showing configuration changes on error. */
-  diff?: string;
+    /** The status of the check (e.g., "ok", "degraded", "error"). */
+    status: string;
+    /** Optional message describing the status or error. */
+    message?: string;
+    /** Optional latency measurement. */
+    latency?: string;
+    /** Optional diff showing configuration changes on error. */
+    diff?: string;
 }
 
 /**
  * Full doctor report containing system health status.
  */
 export interface DoctorReport {
-  /** Overall system status. */
-  status: string;
-  /** Timestamp of the report. */
-  timestamp: string;
-  /** Map of check names to their results. */
-  checks: Record<string, CheckResult>;
+    /** Overall system status. */
+    status: string;
+    /** Timestamp of the report. */
+    timestamp: string;
+    /** Map of check names to their results. */
+    checks: Record<string, CheckResult>;
 }
 
 /**
  * Tool failure statistics.
  */
 export interface ToolFailureStats {
-  name: string;
-  serviceId: string;
-  failureRate: number;
-  totalCalls: number;
+    name: string;
+    serviceId: string;
+    failureRate: number;
+    totalCalls: number;
 }
 
 /**
  * Tool usage analytics.
  */
 export interface ToolAnalytics {
-  name: string;
-  serviceId: string;
-  totalCalls: number;
-  successRate: number;
+    name: string;
+    serviceId: string;
+    totalCalls: number;
+    successRate: number;
 }
+
 
 /**
  * Metric definition for dashboard.
  */
 export interface Metric {
-  label: string;
-  value: string;
-  change?: string;
-  trend?: "up" | "down" | "neutral";
-  icon: string;
-  subLabel?: string;
+    label: string;
+    value: string;
+    change?: string;
+    trend?: "up" | "down" | "neutral";
+    icon: string;
+    subLabel?: string;
 }
+
 
 /**
  * Represents the current status and health of the system.
  */
 export interface SystemStatus {
-  /** The number of seconds the server has been running. */
-  uptime_seconds: number;
-  /** The number of currently active HTTP connections. */
-  active_connections: number;
-  /** The port number where the HTTP server is listening. */
-  bound_http_port: number;
-  /** The port number where the gRPC server is listening. */
-  bound_grpc_port: number;
-  /** The current version of the server. */
-  version: string;
-  /** A list of active security warnings, if any. */
-  security_warnings: string[];
+    /** The number of seconds the server has been running. */
+    uptime_seconds: number;
+    /** The number of currently active HTTP connections. */
+    active_connections: number;
+    /** The port number where the HTTP server is listening. */
+    bound_http_port: number;
+    /** The port number where the gRPC server is listening. */
+    bound_grpc_port: number;
+    /** The current version of the server. */
+    version: string;
+    /** A list of active security warnings, if any. */
+    security_warnings: string[];
 }
 
 /**
  * ServiceStatus represents the possible health states of a service.
  */
-export type ServiceStatus =
-  | "healthy"
-  | "degraded"
-  | "unhealthy"
-  | "inactive"
-  | "unknown";
+export type ServiceStatus = "healthy" | "degraded" | "unhealthy" | "inactive" | "unknown";
 
 /**
  * ServiceHealth describes the current health information of a service.
@@ -366,2255 +328,2203 @@ export interface ServiceHealthResponse {
   history: Record<string, HealthHistoryPoint[]>;
 }
 
+
 const getMetadata = () => {
-  // Metadata for gRPC calls.
-  // Since gRPC-Web calls might bypass Next.js middleware if they go directly to Envoy/Backend,
-  // we need to be careful.
-  // However, if we proxy gRPC via Next.js (not yet fully standard for gRPC-Web), we could use middleware.
-  // For now, if we don't have the key in NEXT_PUBLIC, we can't send it from client.
-  // The gRPC calls should ideally be proxied or use a session token.
-  // Given the current refactor to remove NEXT_PUBLIC_ key, direct gRPC calls from client will fail auth
-  // if they require the static key.
-  // We should rely on the Next.js API routes (REST) which use middleware, OR assume the gRPC endpoint
-  // is also behind the Next.js proxy (rewrites).
-  // ui/next.config.ts has a rewrite for `/mcpany.api.v1.RegistrationService/:path*`.
-  // If we use that, the middleware WILL run and inject the header!
-  return undefined;
+    // Metadata for gRPC calls.
+    // Since gRPC-Web calls might bypass Next.js middleware if they go directly to Envoy/Backend,
+    // we need to be careful.
+    // However, if we proxy gRPC via Next.js (not yet fully standard for gRPC-Web), we could use middleware.
+    // For now, if we don't have the key in NEXT_PUBLIC, we can't send it from client.
+    // The gRPC calls should ideally be proxied or use a session token.
+    // Given the current refactor to remove NEXT_PUBLIC_ key, direct gRPC calls from client will fail auth
+    // if they require the static key.
+    // We should rely on the Next.js API routes (REST) which use middleware, OR assume the gRPC endpoint
+    // is also behind the Next.js proxy (rewrites).
+    // ui/next.config.ts has a rewrite for `/mcpany.api.v1.RegistrationService/:path*`.
+    // If we use that, the middleware WILL run and inject the header!
+    return undefined;
 };
 
 /**
  * API Client for interacting with the MCP Any server.
  */
 export const apiClient = {
-  // Services (Migrated to gRPC)
+    // Services (Migrated to gRPC)
 
-  /**
-   * Lists all registered upstream services.
-   *
-   * Summary: Fetches the list of all configured upstream services from the backend.
-   *
-   * @returns A promise that resolves to a list of services.
-   * @throws {Error} If the network request fails or the response is not OK.
-   *
-   * Side Effects: Makes a GET request to /api/v1/services.
-   */
-  listServices: async () => {
-    return dedupeRequests("listServices", async () => {
-      // Fallback to REST for E2E reliability until gRPC-Web is stable
-      const res = await fetchWithAuth("/api/v1/services");
-      if (!res.ok) throw new Error("Failed to fetch services");
-      const data = await res.json();
-      const list = Array.isArray(data) ? data : data.services || [];
-      // Map snake_case to camelCase for UI compatibility
-      return list.map(mapUpstreamServiceConfig);
-    });
-  },
+    /**
+     * Lists all registered upstream services.
+     *
+     * Summary: Fetches the list of all configured upstream services from the backend.
+     *
+     * @returns A promise that resolves to a list of services.
+     * @throws {Error} If the network request fails or the response is not OK.
+     *
+     * Side Effects: Makes a GET request to /api/v1/services.
+     */
+    listServices: async () => {
+        return dedupeRequests('listServices', async () => {
+            // Fallback to REST for E2E reliability until gRPC-Web is stable
+            const res = await fetchWithAuth('/api/v1/services');
+            if (!res.ok) throw new Error('Failed to fetch services');
+            const data = await res.json();
+            const list = Array.isArray(data) ? data : (data.services || []);
+            // Map snake_case to camelCase for UI compatibility
+            return list.map(mapUpstreamServiceConfig);
+        });
+    },
 
-  /**
-   * Lists services from the dynamic catalog.
-   *
-   * Summary: Fetches available services from the catalog.
-   *
-   * @returns A promise that resolves to a list of catalog services.
-   * @throws {Error} If the network request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/catalog/services.
-   */
-  listCatalog: async () => {
-    const res = await fetchWithAuth("/api/v1/catalog/services");
-    if (!res.ok) throw new Error("Failed to fetch catalog");
-    const data = await res.json();
-    const list = Array.isArray(data) ? data : data.services || [];
-
-    return list.map((s: any) => ({
-      ...s,
-      connectionPool: s.connection_pool,
-      httpService: s.http_service
-        ? HttpUpstreamService.fromJSON(s.http_service)
-        : undefined,
-      grpcService: s.grpc_service,
-      commandLineService: s.command_line_service,
-      mcpService: s.mcp_service,
-      upstreamAuth: s.upstream_auth,
-      preCallHooks: s.pre_call_hooks,
-      postCallHooks: s.post_call_hooks,
-      lastError: s.last_error,
-      toolCount: s.tool_count,
-      toolExportPolicy: s.tool_export_policy,
-      promptExportPolicy: s.prompt_export_policy,
-      resourceExportPolicy: s.resource_export_policy,
-    }));
-  },
-
-  /**
-   * Gets a single service by its ID.
-   *
-   * Summary: Retrieves the configuration details for a specific upstream service.
-   *
-   * @param id - The ID of the service to retrieve.
-   * @returns A promise that resolves to the service configuration.
-   * @throws {Error} If the service is not found or the request fails.
-   *
-   * Side Effects: Makes a gRPC call or GET request to /api/v1/services/:id.
-   */
-  getService: async (id: string) => {
-    try {
-      // Try gRPC-Web first
-      const response = await registrationClient.GetService(
-        { serviceName: id },
-        getMetadata(),
-      );
-      return response;
-    } catch (e) {
-      // Fallback to REST if gRPC fails (e.g. in E2E tests passing through Next.js proxy or mock)
-      // Check if we are in a test env or just try fetch
-      const res = await fetchWithAuth(`/api/v1/services/${id}`);
-      if (res.ok) {
+    /**
+     * Lists services from the dynamic catalog.
+     *
+     * Summary: Fetches available services from the catalog.
+     *
+     * @returns A promise that resolves to a list of catalog services.
+     * @throws {Error} If the network request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/catalog/services.
+     */
+    listCatalog: async () => {
+        const res = await fetchWithAuth('/api/v1/catalog/services');
+        if (!res.ok) throw new Error('Failed to fetch catalog');
         const data = await res.json();
-        // REST returns { service: ... }, gRPC returns { service: ... }
-        // Map snake_case to camelCase for ServiceDetail
-        if (data.service) {
-          const s = data.service;
-          data.service = {
+        const list = Array.isArray(data) ? data : (data.services || []);
+
+        return list.map((s: any) => ({
             ...s,
             connectionPool: s.connection_pool,
-            httpService: s.http_service
-              ? HttpUpstreamService.fromJSON(s.http_service)
-              : undefined,
+            httpService: s.http_service ? HttpUpstreamService.fromJSON(s.http_service) : undefined,
             grpcService: s.grpc_service,
             commandLineService: s.command_line_service,
             mcpService: s.mcp_service,
             upstreamAuth: s.upstream_auth,
             preCallHooks: s.pre_call_hooks,
             postCallHooks: s.post_call_hooks,
+            lastError: s.last_error,
+            toolCount: s.tool_count,
             toolExportPolicy: s.tool_export_policy,
             promptExportPolicy: s.prompt_export_policy,
             resourceExportPolicy: s.resource_export_policy,
-            callPolicies: s.call_policies?.map((p: any) => ({
-              defaultAction: p.default_action,
-              rules: p.rules?.map((r: any) => ({
-                action: r.action,
-                nameRegex: r.name_regex,
-                argumentRegex: r.argument_regex,
-                urlRegex: r.url_regex,
-                callIdRegex: r.call_id_regex,
-              })),
-            })),
-          };
+        }));
+    },
+
+    /**
+     * Gets a single service by its ID.
+     *
+     * Summary: Retrieves the configuration details for a specific upstream service.
+     *
+     * @param id - The ID of the service to retrieve.
+     * @returns A promise that resolves to the service configuration.
+     * @throws {Error} If the service is not found or the request fails.
+     *
+     * Side Effects: Makes a gRPC call or GET request to /api/v1/services/:id.
+     */
+    getService: async (id: string) => {
+         try {
+             // Try gRPC-Web first
+             const response = await registrationClient.GetService({ serviceName: id }, getMetadata());
+             return response;
+         } catch (e) {
+             // Fallback to REST if gRPC fails (e.g. in E2E tests passing through Next.js proxy or mock)
+             // Check if we are in a test env or just try fetch
+             const res = await fetchWithAuth(`/api/v1/services/${id}`);
+             if (res.ok) {
+                 const data = await res.json();
+                 // REST returns { service: ... }, gRPC returns { service: ... }
+                 // Map snake_case to camelCase for ServiceDetail
+                 if (data.service) {
+                     const s = data.service;
+                     data.service = {
+                         ...s,
+                         connectionPool: s.connection_pool,
+                         httpService: s.http_service ? HttpUpstreamService.fromJSON(s.http_service) : undefined,
+                         grpcService: s.grpc_service,
+                         commandLineService: s.command_line_service,
+                         mcpService: s.mcp_service,
+                         upstreamAuth: s.upstream_auth,
+                         preCallHooks: s.pre_call_hooks,
+                         postCallHooks: s.post_call_hooks,
+                         toolExportPolicy: s.tool_export_policy,
+                         promptExportPolicy: s.prompt_export_policy,
+                         resourceExportPolicy: s.resource_export_policy,
+                         callPolicies: s.call_policies?.map((p: any) => ({
+                            defaultAction: p.default_action,
+                            rules: p.rules?.map((r: any) => ({
+                                action: r.action,
+                                nameRegex: r.name_regex,
+                                argumentRegex: r.argument_regex,
+                                urlRegex: r.url_regex,
+                                callIdRegex: r.call_id_regex
+                            }))
+                        })),
+                     };
+                 }
+                 return data;
+             }
+             throw e;
+         }
+    },
+
+    /**
+     * Sets the status (enabled/disabled) of a service.
+     *
+     * Summary: Updates the enabled status of a service.
+     *
+     * @param name - The name of the service.
+     * @param disable - True to disable the service, false to enable it.
+     * @returns A promise that resolves to the updated service status.
+     * @throws {Error} If the update fails.
+     *
+     * Side Effects: Makes a PUT request to /api/v1/services/:name.
+     */
+    setServiceStatus: async (name: string, disable: boolean) => {
+        const response = await fetchWithAuth(`/api/v1/services/${name}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ disable })
+        });
+        if (!response.ok) throw new Error('Failed to update service status');
+        return response.json();
+    },
+
+    /**
+     * Gets the status of a service.
+     *
+     * Summary: Retrieves the runtime status of a service.
+     *
+     * @param name - The name of the service.
+     * @returns A promise that resolves to the service status.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/services/:name/status.
+     */
+    getServiceStatus: async (name: string) => {
+        const res = await fetchWithAuth(`/api/v1/services/${name}/status`);
+        if (!res.ok) throw new Error('Failed to fetch service status');
+        return res.json();
+    },
+
+    /**
+     * Restarts a service.
+     *
+     * Summary: Triggers a restart of a service.
+     *
+     * @param name - The name of the service to restart.
+     * @returns A promise that resolves when the service is restarted.
+     * @throws {Error} If the restart fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/services/:name/restart.
+     */
+    restartService: async (name: string) => {
+        const response = await fetchWithAuth(`/api/v1/services/${name}/restart`, {
+            method: 'POST'
+        });
+        if (!response.ok) throw new Error('Failed to restart service');
+        return {};
+    },
+
+    /**
+     * Registers a new upstream service.
+     *
+     * Summary: Registers a new upstream service with the provided configuration.
+     *
+     * @param config - The configuration of the service to register.
+     * @returns A promise that resolves to the registered service configuration.
+     * @throws {Error} If the registration fails (e.g., validation error, duplicate ID).
+     *
+     * Side Effects: Makes a POST request to /api/v1/services.
+     */
+    registerService: async (config: UpstreamServiceConfig) => {
+        // Map camelCase (UI) to snake_case (Server REST)
+        const payload: any = {
+            id: config.id,
+            name: config.name,
+            version: config.version,
+            disable: config.disable,
+            priority: config.priority,
+            load_balancing_strategy: config.loadBalancingStrategy,
+            tags: config.tags,
+        };
+
+        if (config.httpService) {
+            payload.http_service = HttpUpstreamService.toJSON(config.httpService);
         }
-        return data;
-      }
-      throw e;
-    }
-  },
+        if (config.grpcService) {
+            payload.grpc_service = { address: config.grpcService.address };
+        }
+        if (config.commandLineService) {
+            payload.command_line_service = {
+                command: config.commandLineService.command,
+                working_directory: config.commandLineService.workingDirectory,
+                environment: config.commandLineService.env,
+                env: config.commandLineService.env
+            };
+        }
+        if (config.mcpService) {
+            payload.mcp_service = { ...config.mcpService };
+        }
+        if (config.openapiService) {
+            payload.openapi_service = {
+                address: config.openapiService.address,
+                spec_url: config.openapiService.specUrl,
+                spec_content: config.openapiService.specContent,
+                tools: config.openapiService.tools,
+                resources: config.openapiService.resources,
+                prompts: config.openapiService.prompts,
+                calls: config.openapiService.calls,
+                health_check: config.openapiService.healthCheck,
+                tls_config: config.openapiService.tlsConfig
+            };
+        }
+        if (config.preCallHooks) {
+            payload.pre_call_hooks = config.preCallHooks;
+        }
+        if (config.postCallHooks) {
+            payload.post_call_hooks = config.postCallHooks;
+        }
+        if (config.callPolicies) {
+            payload.call_policies = config.callPolicies.map((p: any) => ({
+                default_action: p.defaultAction,
+                rules: p.rules?.map((r: any) => ({
+                    action: r.action,
+                    name_regex: r.nameRegex,
+                    argument_regex: r.argumentRegex,
+                    url_regex: r.urlRegex,
+                    call_id_regex: r.callIdRegex
+                }))
+            }));
+        }
+        if (config.toolExportPolicy) {
+            payload.tool_export_policy = config.toolExportPolicy;
+        }
+        if (config.promptExportPolicy) {
+            payload.prompt_export_policy = config.promptExportPolicy;
+        }
+        if (config.resourceExportPolicy) {
+            payload.resource_export_policy = config.resourceExportPolicy;
+        }
+        if (config.resilience) {
+            payload.resilience = {
+                circuit_breaker: config.resilience.circuitBreaker ? {
+                    failure_rate_threshold: config.resilience.circuitBreaker.failureRateThreshold,
+                    consecutive_failures: config.resilience.circuitBreaker.consecutiveFailures,
+                    open_duration: config.resilience.circuitBreaker.openDuration,
+                    half_open_requests: config.resilience.circuitBreaker.halfOpenRequests
+                } : undefined,
+                retry_policy: config.resilience.retryPolicy ? {
+                    number_of_retries: config.resilience.retryPolicy.numberOfRetries,
+                    base_backoff: config.resilience.retryPolicy.baseBackoff,
+                    max_backoff: config.resilience.retryPolicy.maxBackoff,
+                    max_elapsed_time: config.resilience.retryPolicy.maxElapsedTime
+                } : undefined,
+                timeout: config.resilience.timeout
+            };
+        }
 
-  /**
-   * Sets the status (enabled/disabled) of a service.
-   *
-   * Summary: Updates the enabled status of a service.
-   *
-   * @param name - The name of the service.
-   * @param disable - True to disable the service, false to enable it.
-   * @returns A promise that resolves to the updated service status.
-   * @throws {Error} If the update fails.
-   *
-   * Side Effects: Makes a PUT request to /api/v1/services/:name.
-   */
-  setServiceStatus: async (name: string, disable: boolean) => {
-    const response = await fetchWithAuth(`/api/v1/services/${name}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ disable }),
-    });
-    if (!response.ok) throw new Error("Failed to update service status");
-    return response.json();
-  },
+        const response = await fetchWithAuth('/api/v1/services', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
 
-  /**
-   * Gets the status of a service.
-   *
-   * Summary: Retrieves the runtime status of a service.
-   *
-   * @param name - The name of the service.
-   * @returns A promise that resolves to the service status.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/services/:name/status.
-   */
-  getServiceStatus: async (name: string) => {
-    const res = await fetchWithAuth(`/api/v1/services/${name}/status`);
-    if (!res.ok) throw new Error("Failed to fetch service status");
-    return res.json();
-  },
+        if (!response.ok) {
+             const txt = await response.text();
+             throw new Error(`Failed to register service: ${response.status} ${txt}`);
+        }
+        return response.json();
+    },
 
-  /**
-   * Restarts a service.
-   *
-   * Summary: Triggers a restart of a service.
-   *
-   * @param name - The name of the service to restart.
-   * @returns A promise that resolves when the service is restarted.
-   * @throws {Error} If the restart fails.
-   *
-   * Side Effects: Makes a POST request to /api/v1/services/:name/restart.
-   */
-  restartService: async (name: string) => {
-    const response = await fetchWithAuth(`/api/v1/services/${name}/restart`, {
-      method: "POST",
-    });
-    if (!response.ok) throw new Error("Failed to restart service");
-    return {};
-  },
+    /**
+     * Updates an existing upstream service.
+     *
+     * Summary: Updates the configuration of an existing service.
+     *
+     * @param config - The updated configuration of the service.
+     * @returns A promise that resolves to the updated service configuration.
+     * @throws {Error} If the update fails.
+     *
+     * Side Effects: Makes a PUT request to /api/v1/services/:name.
+     */
+    updateService: async (config: UpstreamServiceConfig) => {
+        // Same mapping as register
+        const payload: any = {
+             id: config.id,
+            name: config.name,
+            version: config.version,
+            disable: config.disable,
+            priority: config.priority,
+            load_balancing_strategy: config.loadBalancingStrategy,
+            tags: config.tags,
+        };
+        // Reuse mapping logic or duplicate for now safely
+         if (config.httpService) {
+            payload.http_service = HttpUpstreamService.toJSON(config.httpService);
+        }
+        if (config.grpcService) {
+            payload.grpc_service = { address: config.grpcService.address };
+        }
+        if (config.commandLineService) {
+            payload.command_line_service = {
+                command: config.commandLineService.command,
+                working_directory: config.commandLineService.workingDirectory,
+            };
+        }
+        if (config.mcpService) {
+            payload.mcp_service = { ...config.mcpService };
+        }
+        if (config.openapiService) {
+            payload.openapi_service = {
+                address: config.openapiService.address,
+                spec_url: config.openapiService.specUrl,
+                spec_content: config.openapiService.specContent,
+                tools: config.openapiService.tools,
+                resources: config.openapiService.resources,
+                prompts: config.openapiService.prompts,
+                calls: config.openapiService.calls,
+                health_check: config.openapiService.healthCheck,
+                tls_config: config.openapiService.tlsConfig
+            };
+        }
+        if (config.preCallHooks) {
+            payload.pre_call_hooks = config.preCallHooks;
+        }
+        if (config.postCallHooks) {
+            payload.post_call_hooks = config.postCallHooks;
+        }
+        if (config.callPolicies) {
+            payload.call_policies = config.callPolicies.map((p: any) => ({
+                default_action: p.defaultAction,
+                rules: p.rules?.map((r: any) => ({
+                    action: r.action,
+                    name_regex: r.nameRegex,
+                    argument_regex: r.argumentRegex,
+                    url_regex: r.urlRegex,
+                    call_id_regex: r.callIdRegex
+                }))
+            }));
+        }
+        if (config.toolExportPolicy) {
+            payload.tool_export_policy = config.toolExportPolicy;
+        }
+        if (config.promptExportPolicy) {
+            payload.prompt_export_policy = config.promptExportPolicy;
+        }
+        if (config.resourceExportPolicy) {
+            payload.resource_export_policy = config.resourceExportPolicy;
+        }
+        if (config.resilience) {
+            payload.resilience = {
+                circuit_breaker: config.resilience.circuitBreaker ? {
+                    failure_rate_threshold: config.resilience.circuitBreaker.failureRateThreshold,
+                    consecutive_failures: config.resilience.circuitBreaker.consecutiveFailures,
+                    open_duration: config.resilience.circuitBreaker.openDuration,
+                    half_open_requests: config.resilience.circuitBreaker.halfOpenRequests
+                } : undefined,
+                retry_policy: config.resilience.retryPolicy ? {
+                    number_of_retries: config.resilience.retryPolicy.numberOfRetries,
+                    base_backoff: config.resilience.retryPolicy.baseBackoff,
+                    max_backoff: config.resilience.retryPolicy.maxBackoff,
+                    max_elapsed_time: config.resilience.retryPolicy.maxElapsedTime
+                } : undefined,
+                timeout: config.resilience.timeout
+            };
+        }
 
-  /**
-   * Registers a new upstream service.
-   *
-   * Summary: Registers a new upstream service with the provided configuration.
-   *
-   * @param config - The configuration of the service to register.
-   * @returns A promise that resolves to the registered service configuration.
-   * @throws {Error} If the registration fails (e.g., validation error, duplicate ID).
-   *
-   * Side Effects: Makes a POST request to /api/v1/services.
-   */
-  registerService: async (config: UpstreamServiceConfig) => {
-    // Map camelCase (UI) to snake_case (Server REST)
-    const payload: any = {
-      id: config.id,
-      name: config.name,
-      version: config.version,
-      disable: config.disable,
-      priority: config.priority,
-      load_balancing_strategy: config.loadBalancingStrategy,
-      tags: config.tags,
-    };
+        const response = await fetchWithAuth(`/api/v1/services/${config.name}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
 
-    if (config.httpService) {
-      payload.http_service = HttpUpstreamService.toJSON(config.httpService);
-    }
-    if (config.grpcService) {
-      payload.grpc_service = { address: config.grpcService.address };
-    }
-    if (config.commandLineService) {
-      payload.command_line_service = {
-        command: config.commandLineService.command,
-        working_directory: config.commandLineService.workingDirectory,
-        environment: config.commandLineService.env,
-        env: config.commandLineService.env,
-      };
-    }
-    if (config.mcpService) {
-      payload.mcp_service = { ...config.mcpService };
-    }
-    if (config.openapiService) {
-      payload.openapi_service = {
-        address: config.openapiService.address,
-        spec_url: config.openapiService.specUrl,
-        spec_content: config.openapiService.specContent,
-        tools: config.openapiService.tools,
-        resources: config.openapiService.resources,
-        prompts: config.openapiService.prompts,
-        calls: config.openapiService.calls,
-        health_check: config.openapiService.healthCheck,
-        tls_config: config.openapiService.tlsConfig,
-      };
-    }
-    if (config.preCallHooks) {
-      payload.pre_call_hooks = config.preCallHooks;
-    }
-    if (config.postCallHooks) {
-      payload.post_call_hooks = config.postCallHooks;
-    }
-    if (config.callPolicies) {
-      payload.call_policies = config.callPolicies.map((p: any) => ({
-        default_action: p.defaultAction,
-        rules: p.rules?.map((r: any) => ({
-          action: r.action,
-          name_regex: r.nameRegex,
-          argument_regex: r.argumentRegex,
-          url_regex: r.urlRegex,
-          call_id_regex: r.callIdRegex,
-        })),
-      }));
-    }
-    if (config.toolExportPolicy) {
-      payload.tool_export_policy = config.toolExportPolicy;
-    }
-    if (config.promptExportPolicy) {
-      payload.prompt_export_policy = config.promptExportPolicy;
-    }
-    if (config.resourceExportPolicy) {
-      payload.resource_export_policy = config.resourceExportPolicy;
-    }
-    if (config.resilience) {
-      payload.resilience = {
-        circuit_breaker: config.resilience.circuitBreaker
-          ? {
-              failure_rate_threshold:
-                config.resilience.circuitBreaker.failureRateThreshold,
-              consecutive_failures:
-                config.resilience.circuitBreaker.consecutiveFailures,
-              open_duration: config.resilience.circuitBreaker.openDuration,
-              half_open_requests:
-                config.resilience.circuitBreaker.halfOpenRequests,
-            }
-          : undefined,
-        retry_policy: config.resilience.retryPolicy
-          ? {
-              number_of_retries: config.resilience.retryPolicy.numberOfRetries,
-              base_backoff: config.resilience.retryPolicy.baseBackoff,
-              max_backoff: config.resilience.retryPolicy.maxBackoff,
-              max_elapsed_time: config.resilience.retryPolicy.maxElapsedTime,
-            }
-          : undefined,
-        timeout: config.resilience.timeout,
-      };
-    }
+         if (!response.ok) {
+             const txt = await response.text();
+             throw new Error(`Failed to update service: ${response.status} ${txt}`);
+        }
+        return response.json();
+    },
 
-    const response = await fetchWithAuth("/api/v1/services", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    /**
+     * Unregisters (deletes) an upstream service.
+     *
+     * Summary: Deletes a service registration.
+     *
+     * @param id - The ID of the service to unregister.
+     * @returns A promise that resolves when the service is unregistered.
+     * @throws {Error} If the unregistration fails.
+     *
+     * Side Effects: Makes a DELETE request to /api/v1/services/:id.
+     */
+    unregisterService: async (id: string) => {
+         const response = await fetchWithAuth(`/api/v1/services/${id}`, {
+            method: 'DELETE'
+         });
+         if (!response.ok) throw new Error('Failed to unregister service');
+         return {};
+    },
 
-    if (!response.ok) {
-      const txt = await response.text();
-      throw new Error(`Failed to register service: ${response.status} ${txt}`);
-    }
-    return response.json();
-  },
+    /**
+     * Validates a service configuration.
+     *
+     * Summary: Checks the validity of a service configuration.
+     *
+     * @param config - The service configuration to validate.
+     * @returns A promise that resolves to the validation result.
+     * @throws {Error} If the validation request fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/services/validate.
+     */
+    validateService: async (config: UpstreamServiceConfig) => {
+        // Map camelCase (UI) to snake_case (Server REST)
+        const payload: any = {
+            id: config.id,
+            name: config.name,
+            version: config.version,
+            disable: config.disable,
+            priority: config.priority,
+            load_balancing_strategy: config.loadBalancingStrategy,
+            tags: config.tags,
+        };
 
-  /**
-   * Updates an existing upstream service.
-   *
-   * Summary: Updates the configuration of an existing service.
-   *
-   * @param config - The updated configuration of the service.
-   * @returns A promise that resolves to the updated service configuration.
-   * @throws {Error} If the update fails.
-   *
-   * Side Effects: Makes a PUT request to /api/v1/services/:name.
-   */
-  updateService: async (config: UpstreamServiceConfig) => {
-    // Same mapping as register
-    const payload: any = {
-      id: config.id,
-      name: config.name,
-      version: config.version,
-      disable: config.disable,
-      priority: config.priority,
-      load_balancing_strategy: config.loadBalancingStrategy,
-      tags: config.tags,
-    };
-    // Reuse mapping logic or duplicate for now safely
-    if (config.httpService) {
-      payload.http_service = HttpUpstreamService.toJSON(config.httpService);
-    }
-    if (config.grpcService) {
-      payload.grpc_service = { address: config.grpcService.address };
-    }
-    if (config.commandLineService) {
-      payload.command_line_service = {
-        command: config.commandLineService.command,
-        working_directory: config.commandLineService.workingDirectory,
-      };
-    }
-    if (config.mcpService) {
-      payload.mcp_service = { ...config.mcpService };
-    }
-    if (config.openapiService) {
-      payload.openapi_service = {
-        address: config.openapiService.address,
-        spec_url: config.openapiService.specUrl,
-        spec_content: config.openapiService.specContent,
-        tools: config.openapiService.tools,
-        resources: config.openapiService.resources,
-        prompts: config.openapiService.prompts,
-        calls: config.openapiService.calls,
-        health_check: config.openapiService.healthCheck,
-        tls_config: config.openapiService.tlsConfig,
-      };
-    }
-    if (config.preCallHooks) {
-      payload.pre_call_hooks = config.preCallHooks;
-    }
-    if (config.postCallHooks) {
-      payload.post_call_hooks = config.postCallHooks;
-    }
-    if (config.callPolicies) {
-      payload.call_policies = config.callPolicies.map((p: any) => ({
-        default_action: p.defaultAction,
-        rules: p.rules?.map((r: any) => ({
-          action: r.action,
-          name_regex: r.nameRegex,
-          argument_regex: r.argumentRegex,
-          url_regex: r.urlRegex,
-          call_id_regex: r.callIdRegex,
-        })),
-      }));
-    }
-    if (config.toolExportPolicy) {
-      payload.tool_export_policy = config.toolExportPolicy;
-    }
-    if (config.promptExportPolicy) {
-      payload.prompt_export_policy = config.promptExportPolicy;
-    }
-    if (config.resourceExportPolicy) {
-      payload.resource_export_policy = config.resourceExportPolicy;
-    }
-    if (config.resilience) {
-      payload.resilience = {
-        circuit_breaker: config.resilience.circuitBreaker
-          ? {
-              failure_rate_threshold:
-                config.resilience.circuitBreaker.failureRateThreshold,
-              consecutive_failures:
-                config.resilience.circuitBreaker.consecutiveFailures,
-              open_duration: config.resilience.circuitBreaker.openDuration,
-              half_open_requests:
-                config.resilience.circuitBreaker.halfOpenRequests,
-            }
-          : undefined,
-        retry_policy: config.resilience.retryPolicy
-          ? {
-              number_of_retries: config.resilience.retryPolicy.numberOfRetries,
-              base_backoff: config.resilience.retryPolicy.baseBackoff,
-              max_backoff: config.resilience.retryPolicy.maxBackoff,
-              max_elapsed_time: config.resilience.retryPolicy.maxElapsedTime,
-            }
-          : undefined,
-        timeout: config.resilience.timeout,
-      };
-    }
+        if (config.httpService) {
+            payload.http_service = HttpUpstreamService.toJSON(config.httpService);
+        }
+        if (config.grpcService) {
+            payload.grpc_service = { address: config.grpcService.address };
+        }
+        if (config.commandLineService) {
+            payload.command_line_service = {
+                command: config.commandLineService.command,
+                working_directory: config.commandLineService.workingDirectory,
+                env: config.commandLineService.env,
+                container_environment: config.commandLineService.containerEnvironment, // Include this if needed
+            };
+        }
+        if (config.mcpService) {
+            payload.mcp_service = { ...config.mcpService };
+        }
+        if (config.openapiService) {
+            payload.openapi_service = {
+                address: config.openapiService.address,
+                spec_url: config.openapiService.specUrl,
+                spec_content: config.openapiService.specContent,
+                tools: config.openapiService.tools,
+                resources: config.openapiService.resources,
+                prompts: config.openapiService.prompts,
+                calls: config.openapiService.calls,
+                health_check: config.openapiService.healthCheck,
+                tls_config: config.openapiService.tlsConfig
+            };
+        }
+        if (config.preCallHooks) {
+            payload.pre_call_hooks = config.preCallHooks;
+        }
+        if (config.postCallHooks) {
+            payload.post_call_hooks = config.postCallHooks;
+        }
+        if (config.callPolicies) {
+            payload.call_policies = config.callPolicies.map((p: any) => ({
+                default_action: p.defaultAction,
+                rules: p.rules?.map((r: any) => ({
+                    action: r.action,
+                    name_regex: r.nameRegex,
+                    argument_regex: r.argumentRegex,
+                    url_regex: r.urlRegex,
+                    call_id_regex: r.callIdRegex
+                }))
+            }));
+        }
+        if (config.toolExportPolicy) {
+            payload.tool_export_policy = config.toolExportPolicy;
+        }
+        if (config.promptExportPolicy) {
+            payload.prompt_export_policy = config.promptExportPolicy;
+        }
+        if (config.resourceExportPolicy) {
+            payload.resource_export_policy = config.resourceExportPolicy;
+        }
 
-    const response = await fetchWithAuth(`/api/v1/services/${config.name}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+        const response = await fetchWithAuth('/api/v1/services/validate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
 
-    if (!response.ok) {
-      const txt = await response.text();
-      throw new Error(`Failed to update service: ${response.status} ${txt}`);
-    }
-    return response.json();
-  },
-
-  /**
-   * Unregisters (deletes) an upstream service.
-   *
-   * Summary: Deletes a service registration.
-   *
-   * @param id - The ID of the service to unregister.
-   * @returns A promise that resolves when the service is unregistered.
-   * @throws {Error} If the unregistration fails.
-   *
-   * Side Effects: Makes a DELETE request to /api/v1/services/:id.
-   */
-  unregisterService: async (id: string) => {
-    const response = await fetchWithAuth(`/api/v1/services/${id}`, {
-      method: "DELETE",
-    });
-    if (!response.ok) throw new Error("Failed to unregister service");
-    return {};
-  },
-
-  /**
-   * Validates a service configuration.
-   *
-   * Summary: Checks the validity of a service configuration.
-   *
-   * @param config - The service configuration to validate.
-   * @returns A promise that resolves to the validation result.
-   * @throws {Error} If the validation request fails.
-   *
-   * Side Effects: Makes a POST request to /api/v1/services/validate.
-   */
-  validateService: async (config: UpstreamServiceConfig) => {
-    // Map camelCase (UI) to snake_case (Server REST)
-    const payload: any = {
-      id: config.id,
-      name: config.name,
-      version: config.version,
-      disable: config.disable,
-      priority: config.priority,
-      load_balancing_strategy: config.loadBalancingStrategy,
-      tags: config.tags,
-    };
-
-    if (config.httpService) {
-      payload.http_service = HttpUpstreamService.toJSON(config.httpService);
-    }
-    if (config.grpcService) {
-      payload.grpc_service = { address: config.grpcService.address };
-    }
-    if (config.commandLineService) {
-      payload.command_line_service = {
-        command: config.commandLineService.command,
-        working_directory: config.commandLineService.workingDirectory,
-        env: config.commandLineService.env,
-        container_environment: config.commandLineService.containerEnvironment, // Include this if needed
-      };
-    }
-    if (config.mcpService) {
-      payload.mcp_service = { ...config.mcpService };
-    }
-    if (config.openapiService) {
-      payload.openapi_service = {
-        address: config.openapiService.address,
-        spec_url: config.openapiService.specUrl,
-        spec_content: config.openapiService.specContent,
-        tools: config.openapiService.tools,
-        resources: config.openapiService.resources,
-        prompts: config.openapiService.prompts,
-        calls: config.openapiService.calls,
-        health_check: config.openapiService.healthCheck,
-        tls_config: config.openapiService.tlsConfig,
-      };
-    }
-    if (config.preCallHooks) {
-      payload.pre_call_hooks = config.preCallHooks;
-    }
-    if (config.postCallHooks) {
-      payload.post_call_hooks = config.postCallHooks;
-    }
-    if (config.callPolicies) {
-      payload.call_policies = config.callPolicies.map((p: any) => ({
-        default_action: p.defaultAction,
-        rules: p.rules?.map((r: any) => ({
-          action: r.action,
-          name_regex: r.nameRegex,
-          argument_regex: r.argumentRegex,
-          url_regex: r.urlRegex,
-          call_id_regex: r.callIdRegex,
-        })),
-      }));
-    }
-    if (config.toolExportPolicy) {
-      payload.tool_export_policy = config.toolExportPolicy;
-    }
-    if (config.promptExportPolicy) {
-      payload.prompt_export_policy = config.promptExportPolicy;
-    }
-    if (config.resourceExportPolicy) {
-      payload.resource_export_policy = config.resourceExportPolicy;
-    }
-
-    const response = await fetchWithAuth("/api/v1/services/validate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    const text = await response.text();
-    let data: any;
-    try {
-      data = JSON.parse(text);
-    } catch (e) {
-      // Not JSON
-    }
-
-    if (!response.ok) {
-      // Even if not ok (400), it might contain validation details in JSON
-      if (data && data.error) {
-        return data; // Return the error object (valid: false, error: ...)
-      }
-      throw new Error(`Failed to validate service: ${response.status} ${text}`);
-    }
-
-    if (data) {
-      // Map snake_case to camelCase
-      const raw = data as RawValidateServiceResponse;
-      if (raw.discovered_tools)
-        (data as any).discoveredTools = raw.discovered_tools;
-      if (raw.discovered_resources)
-        (data as any).discoveredResources = raw.discovered_resources;
-    }
-
-    return data;
-  },
-
-  // Tools (Legacy Fetch - Not yet migrated to Admin/Registration Service completely or keeping as is)
-  // admin.proto has ListTools but we are focusing on RegistrationService first.
-  // So keep using fetch for Tools/Secrets/etc for now.
-
-  /**
-   * Lists all available tools.
-   *
-   * Summary: Lists available tools.
-   *
-   * @returns A promise that resolves to a list of tools.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/tools.
-   */
-  listTools: async () => {
-    const res = await fetchWithAuth("/api/v1/tools");
-    if (!res.ok) throw new Error("Failed to fetch tools");
-    const data = await res.json();
-    const list = Array.isArray(data) ? data : data.tools || [];
-    return {
-      tools: list.map((t: any) => ({
-        ...t,
-        serviceId: t.serviceId || t.service_id,
-        inputSchema: t.inputSchema || t.input_schema,
-        outputSchema: t.outputSchema || t.output_schema,
-      })),
-    };
-  },
-
-  /**
-   * Executes a tool with the provided arguments.
-   *
-   * Summary: Executes a tool.
-   *
-   * @param request - The execution request (tool name, arguments, etc.).
-   * @param dryRun - If true, performs a dry run without side effects.
-   * @returns A promise that resolves to the execution result.
-   * @throws {Error} If the execution fails.
-   *
-   * Side Effects: Makes a POST request to /api/v1/execute.
-   */
-  executeTool: async (request: any, dryRun?: boolean) => {
-    try {
-      const payload = { ...request };
-      if (dryRun) {
-        payload.dryRun = true;
-      }
-      const res = await fetchWithAuth("/api/v1/execute", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) {
-        const text = await res.text();
-        let errorMsg = null;
+        const text = await response.text();
+        let data: any;
         try {
-          const json = JSON.parse(text);
-          if (json.error)
-            errorMsg =
-              typeof json.error === "string"
-                ? json.error
-                : JSON.stringify(json.error);
+            data = JSON.parse(text);
         } catch (e) {
-          // ignore
+            // Not JSON
         }
-        if (errorMsg) throw new Error(errorMsg);
-        throw new Error(`Failed to execute tool: ${text || res.statusText}`);
-      }
-      return res.json();
-    } catch (e) {
-      console.warn("DEBUG: fetch failed:", e);
-      throw e;
-    }
-  },
 
-  /**
-   * Sets the status (enabled/disabled) of a tool.
-   *
-   * Summary: Updates tool status.
-   *
-   * @param name - The name of the tool.
-   * @param disabled - True to disable the tool, false to enable it.
-   * @returns A promise that resolves to the updated tool status.
-   *
-   * Side Effects: Makes a PUT request to /api/v1/tools.
-   */
-  setToolStatus: async (name: string, disabled: boolean) => {
-    const res = await fetchWithAuth("/api/v1/tools", {
-      method: "PUT",
-      body: JSON.stringify({ name, disable: disabled }),
-    });
-    return res.json();
-  },
+        if (!response.ok) {
+            // Even if not ok (400), it might contain validation details in JSON
+            if (data && data.error) {
+                 return data; // Return the error object (valid: false, error: ...)
+            }
+            throw new Error(`Failed to validate service: ${response.status} ${text}`);
+        }
 
-  // Resources
+        if (data) {
+            // Map snake_case to camelCase
+            const raw = data as RawValidateServiceResponse;
+            if (raw.discovered_tools) (data as any).discoveredTools = raw.discovered_tools;
+            if (raw.discovered_resources) (data as any).discoveredResources = raw.discovered_resources;
+        }
 
-  /**
-   * Lists all available resources.
-   *
-   * Summary: Lists available resources.
-   *
-   * @returns A promise that resolves to a list of resources.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/resources.
-   */
-  listResources: async () => {
-    const res = await fetchWithAuth("/api/v1/resources");
-    if (!res.ok) throw new Error("Failed to list resources");
-    return res.json();
-  },
+        return data;
+    },
 
-  /**
-   * Reads the content of a resource.
-   *
-   * Summary: Reads a resource.
-   *
-   * @param uri - The URI of the resource to read.
-   * @returns A promise that resolves to the resource content.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/resources/read.
-   */
-  readResource: async (uri: string): Promise<ReadResourceResponse> => {
-    const res = await fetchWithAuth(
-      `/api/v1/resources/read?uri=${encodeURIComponent(uri)}`,
-    );
-    if (!res.ok) throw new Error("Failed to read resource");
-    return res.json();
-  },
+    // Tools (Legacy Fetch - Not yet migrated to Admin/Registration Service completely or keeping as is)
+    // admin.proto has ListTools but we are focusing on RegistrationService first.
+    // So keep using fetch for Tools/Secrets/etc for now.
 
-  /**
-   * Sets the status (enabled/disabled) of a resource.
-   *
-   * Summary: Updates resource status.
-   *
-   * @param uri - The URI of the resource.
-   * @param disabled - True to disable the resource, false to enable it.
-   * @returns A promise that resolves to the updated resource status.
-   *
-   * Side Effects: Makes a PUT request to /api/v1/resources.
-   */
-  setResourceStatus: async (uri: string, disabled: boolean) => {
-    const res = await fetchWithAuth("/api/v1/resources", {
-      method: "PUT",
-      body: JSON.stringify({ uri, disable: disabled }),
-    });
-    return res.json();
-  },
+    /**
+     * Lists all available tools.
+     *
+     * Summary: Lists available tools.
+     *
+     * @returns A promise that resolves to a list of tools.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/tools.
+     */
+    listTools: async () => {
+        const res = await fetchWithAuth('/api/v1/tools');
+        if (!res.ok) throw new Error('Failed to fetch tools');
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : (data.tools || []);
+        return {
+            tools: list.map((t: any) => ({
+                ...t,
+                serviceId: t.serviceId || t.service_id,
+                inputSchema: t.inputSchema || t.input_schema,
+                outputSchema: t.outputSchema || t.output_schema,
+            }))
+        };
+    },
 
-  // Prompts
+    /**
+     * Executes a tool with the provided arguments.
+     *
+     * Summary: Executes a tool.
+     *
+     * @param request - The execution request (tool name, arguments, etc.).
+     * @param dryRun - If true, performs a dry run without side effects.
+     * @returns A promise that resolves to the execution result.
+     * @throws {Error} If the execution fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/execute.
+     */
+    executeTool: async (request: any, dryRun?: boolean) => {
+        try {
+            const payload = { ...request };
+            if (dryRun) {
+                payload.dryRun = true;
+            }
+            const res = await fetchWithAuth('/api/v1/execute', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (!res.ok) {
+                const text = await res.text();
+                let errorMsg = null;
+                try {
+                    const json = JSON.parse(text);
+                    if (json.error) errorMsg = typeof json.error === 'string' ? json.error : JSON.stringify(json.error);
+                } catch (e) {
+                    // ignore
+                }
+                if (errorMsg) throw new Error(errorMsg);
+                throw new Error(`Failed to execute tool: ${text || res.statusText}`);
+            }
+            return res.json();
+        } catch (e) {
+            console.warn("DEBUG: fetch failed:", e);
+            throw e;
+        }
+    },
 
-  /**
-   * Lists all available prompts.
-   *
-   * Summary: Lists available prompts.
-   *
-   * @returns A promise that resolves to a list of prompts.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/prompts.
-   */
-  listPrompts: async () => {
-    const res = await fetchWithAuth("/api/v1/prompts");
-    if (!res.ok) throw new Error(`Failed to fetch prompts: ${res.status}`);
-    return res.json();
-  },
+    /**
+     * Sets the status (enabled/disabled) of a tool.
+     *
+     * Summary: Updates tool status.
+     *
+     * @param name - The name of the tool.
+     * @param disabled - True to disable the tool, false to enable it.
+     * @returns A promise that resolves to the updated tool status.
+     *
+     * Side Effects: Makes a PUT request to /api/v1/tools.
+     */
+    setToolStatus: async (name: string, disabled: boolean) => {
+        const res = await fetchWithAuth('/api/v1/tools', {
+            method: 'PUT',
+            body: JSON.stringify({ name, disable: disabled })
+        });
+        return res.json();
+    },
 
-  /**
-   * Sets the status (enabled/disabled) of a prompt.
-   *
-   * Summary: Updates prompt status.
-   *
-   * @param name - The name of the prompt.
-   * @param enabled - True to enable the prompt, false to disable it.
-   * @returns A promise that resolves to the updated prompt status.
-   *
-   * Side Effects: Makes a POST request to /api/v1/prompts.
-   */
-  setPromptStatus: async (name: string, enabled: boolean) => {
-    const res = await fetchWithAuth("/api/v1/prompts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, enabled }),
-    });
-    return res.json();
-  },
+    // Resources
 
-  /**
-   * Executes a prompt with the given arguments.
-   *
-   * Summary: Executes a prompt.
-   *
-   * @param name - The name of the prompt.
-   * @param args - The arguments for the prompt.
-   * @returns A promise that resolves to the prompt execution result.
-   * @throws {Error} If execution fails.
-   *
-   * Side Effects: Makes a POST request to /api/v1/prompts/execute.
-   */
-  executePrompt: async (name: string, args: Record<string, string>) => {
-    const res = await fetchWithAuth("/api/v1/prompts/execute", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, arguments: args }),
-    });
-    if (!res.ok) throw new Error("Failed to execute prompt");
-    return res.json();
-  },
+    /**
+     * Lists all available resources.
+     *
+     * Summary: Lists available resources.
+     *
+     * @returns A promise that resolves to a list of resources.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/resources.
+     */
+    listResources: async () => {
+        const res = await fetchWithAuth('/api/v1/resources');
+        if (!res.ok) throw new Error('Failed to list resources');
+        return res.json();
+    },
 
-  // Wizard Helpers
+    /**
+     * Reads the content of a resource.
+     *
+     * Summary: Reads a resource.
+     *
+     * @param uri - The URI of the resource to read.
+     * @returns A promise that resolves to the resource content.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/resources/read.
+     */
+    readResource: async (uri: string): Promise<ReadResourceResponse> => {
+        const res = await fetchWithAuth(`/api/v1/resources/read?uri=${encodeURIComponent(uri)}`);
+        if (!res.ok) throw new Error('Failed to read resource');
+        return res.json();
+    },
 
-  /**
-   * Returns a list of available service templates for the wizard.
-   *
-   * Summary: Lists service templates.
-   *
-   * Fetches from the backend /api/v1/templates endpoint.
-   *
-   * @returns A promise that resolves to a list of service templates.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/templates.
-   */
-  getServiceTemplates: async () => {
-    const res = await fetchWithAuth("/api/v1/templates");
-    if (!res.ok) throw new Error("Failed to fetch templates");
-    const data = await res.json();
-    const list = Array.isArray(data) ? data : [];
+    /**
+     * Sets the status (enabled/disabled) of a resource.
+     *
+     * Summary: Updates resource status.
+     *
+     * @param uri - The URI of the resource.
+     * @param disabled - True to disable the resource, false to enable it.
+     * @returns A promise that resolves to the updated resource status.
+     *
+     * Side Effects: Makes a PUT request to /api/v1/resources.
+     */
+    setResourceStatus: async (uri: string, disabled: boolean) => {
+        const res = await fetchWithAuth('/api/v1/resources', {
+            method: 'PUT',
+            body: JSON.stringify({ uri, disable: disabled })
+        });
+        return res.json();
+    },
 
-    return list.map((t: any) => {
-      const sc = t.service_config || {};
-      const auth = sc.upstream_auth;
-      let authType = "none";
-      if (auth?.oauth2) authType = "oauth2";
-      else if (auth?.api_key) authType = "apiKey";
-      else if (auth?.bearer_token) authType = "token";
-      else if (auth?.basic_auth) authType = "basic";
+    // Prompts
 
-      return {
-        id: t.id,
-        name: t.name,
-        description: t.description,
-        icon: t.icon,
-        tags: t.tags || [],
-        authType: authType,
-        serviceConfig: {
-          ...sc,
-          // Map snake_case to camelCase for UI consumption
-          connectionPool: sc.connection_pool,
-          httpService: sc.http_service
-            ? HttpUpstreamService.fromJSON(sc.http_service)
-            : undefined,
-          grpcService: sc.grpc_service,
-          commandLineService: sc.command_line_service,
-          mcpService: sc.mcp_service,
-          upstreamAuth: sc.upstream_auth,
-          preCallHooks: sc.pre_call_hooks,
-          postCallHooks: sc.post_call_hooks,
-          toolExportPolicy: sc.tool_export_policy,
-          promptExportPolicy: sc.prompt_export_policy,
-          resourceExportPolicy: sc.resource_export_policy,
-          callPolicies: sc.call_policies?.map((p: any) => ({
-            defaultAction: p.default_action,
-            rules: p.rules?.map((r: any) => ({
-              action: r.action,
-              nameRegex: r.name_regex,
-              argumentRegex: r.argument_regex,
-              urlRegex: r.url_regex,
-              callIdRegex: r.call_id_regex,
-            })),
-          })),
-          // Specific mapping for openapi_service
-          openapiService: sc.openapi_service
-            ? {
-                address: sc.openapi_service.address,
-                specUrl: sc.openapi_service.spec_url,
-                specContent: sc.openapi_service.spec_content,
-                tools: sc.openapi_service.tools,
-                resources: sc.openapi_service.resources,
-                prompts: sc.openapi_service.prompts,
-                calls: sc.openapi_service.calls,
-                healthCheck: sc.openapi_service.health_check,
-                tlsConfig: sc.openapi_service.tls_config,
-              }
-            : undefined,
-        },
-      };
-    });
-  },
+    /**
+     * Lists all available prompts.
+     *
+     * Summary: Lists available prompts.
+     *
+     * @returns A promise that resolves to a list of prompts.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/prompts.
+     */
+    listPrompts: async () => {
+        const res = await fetchWithAuth('/api/v1/prompts');
+        if (!res.ok) throw new Error(`Failed to fetch prompts: ${res.status}`);
+        return res.json();
+    },
 
-  /**
-   * Initiates an OAuth flow for a specific service.
-   *
-   * Summary: Starts OAuth flow.
-   *
-   * @param serviceId - The ID of the service (e.g. "google_calendar").
-   * @param credentialId - The ID of the credential to bind (usually same as service name for now).
-   * @param redirectUrl - The URL to redirect back to after auth.
-   * @returns The authorization URL to redirect the user to.
-   * @throws {Error} If initialization fails.
-   *
-   * Side Effects: Makes a POST request to /api/v1/auth/oauth/initiate.
-   */
-  initiateOAuth: async (
-    serviceId: string,
-    redirectUrl: string,
-    credentialId = "",
-  ) => {
-    const res = await fetchWithAuth("/api/v1/auth/oauth/initiate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        service_id: serviceId,
-        credential_id: credentialId,
-        redirect_url: redirectUrl,
-      }),
-    });
-    if (!res.ok) {
-      const txt = await res.text();
-      throw new Error(`Failed to initiate OAuth: ${txt}`);
-    }
-    return res.json(); // { authorization_url: "...", state: "..." }
-  },
+    /**
+     * Sets the status (enabled/disabled) of a prompt.
+     *
+     * Summary: Updates prompt status.
+     *
+     * @param name - The name of the prompt.
+     * @param enabled - True to enable the prompt, false to disable it.
+     * @returns A promise that resolves to the updated prompt status.
+     *
+     * Side Effects: Makes a POST request to /api/v1/prompts.
+     */
+    setPromptStatus: async (name: string, enabled: boolean) => {
+        const res = await fetchWithAuth('/api/v1/prompts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, enabled })
+        });
+        return res.json();
+    },
 
-  /**
-   * Lists all authentication credentials.
-   *
-   * Summary: Lists credentials.
-   *
-   * @returns A promise that resolves to the list of credentials.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/credentials.
-   */
-  listCredentials: async (): Promise<Credential[]> => {
-    const res = await fetchWithAuth("/api/v1/credentials");
-    if (!res.ok) throw new Error("Failed to fetch credentials");
-    const data = await res.json();
-    return Array.isArray(data) ? data : data.credentials || [];
-  },
+    /**
+     * Executes a prompt with the given arguments.
+     *
+     * Summary: Executes a prompt.
+     *
+     * @param name - The name of the prompt.
+     * @param args - The arguments for the prompt.
+     * @returns A promise that resolves to the prompt execution result.
+     * @throws {Error} If execution fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/prompts/execute.
+     */
+    executePrompt: async (name: string, args: Record<string, string>) => {
+        const res = await fetchWithAuth('/api/v1/prompts/execute', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, arguments: args })
+        });
+        if (!res.ok) throw new Error('Failed to execute prompt');
+        return res.json();
+    },
 
-  /**
-   * Creates a new authentication credential.
-   *
-   * Summary: Creates a credential.
-   *
-   * @param credential - The credential to create.
-   * @returns A promise that resolves to the created credential.
-   * @throws {Error} If creation fails.
-   *
-   * Side Effects: Makes a POST request to /api/v1/credentials.
-   */
-  createCredential: async (credential: any): Promise<Credential> => {
-    const res = await fetchWithAuth("/api/v1/credentials", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(credential),
-    });
-    if (!res.ok) {
-      const txt = await res.text();
-      throw new Error(`Failed to create credential: ${txt}`);
-    }
-    return res.json();
-  },
+    // Wizard Helpers
 
-  /**
-   * Updates an existing authentication credential.
-   *
-   * Summary: Updates a credential.
-   *
-   * @param credential - The updated credential.
-   * @returns A promise that resolves to the updated credential.
-   * @throws {Error} If update fails.
-   *
-   * Side Effects: Makes a PUT request to /api/v1/credentials/:id.
-   */
-  updateCredential: async (credential: any): Promise<Credential> => {
-    const res = await fetchWithAuth(`/api/v1/credentials/${credential.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(credential),
-    });
-    if (!res.ok) {
-      const txt = await res.text();
-      throw new Error(`Failed to update credential: ${txt}`);
-    }
-    return res.json();
-  },
+    /**
+     * Returns a list of available service templates for the wizard.
+     *
+     * Summary: Lists service templates.
+     *
+     * Fetches from the backend /api/v1/templates endpoint.
+     *
+     * @returns A promise that resolves to a list of service templates.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/templates.
+     */
+    getServiceTemplates: async () => {
+        const res = await fetchWithAuth('/api/v1/templates');
+        if (!res.ok) throw new Error('Failed to fetch templates');
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : [];
 
-  /**
-   * Deletes an authentication credential.
-   *
-   * Summary: Deletes a credential.
-   *
-   * @param id - The ID of the credential to delete.
-   * @returns A promise that resolves when the credential is deleted.
-   * @throws {Error} If deletion fails.
-   *
-   * Side Effects: Makes a DELETE request to /api/v1/credentials/:id.
-   */
-  deleteCredential: async (id: string): Promise<void> => {
-    const res = await fetchWithAuth(`/api/v1/credentials/${id}`, {
-      method: "DELETE",
-    });
-    if (!res.ok) throw new Error("Failed to delete credential");
-  },
+        return list.map((t: any) => {
+            const sc = t.service_config || {};
+            const auth = sc.upstream_auth;
+            let authType = 'none';
+            if (auth?.oauth2) authType = 'oauth2';
+            else if (auth?.api_key) authType = 'apiKey';
+            else if (auth?.bearer_token) authType = 'token';
+            else if (auth?.basic_auth) authType = 'basic';
 
-  /**
-   * Tests an authentication configuration.
-   *
-   * Summary: Tests authentication configuration.
-   *
-   * @param request - The test request (auth config, target URL, etc.).
-   * @returns A promise that resolves to the test result.
-   * @throws {Error} If the test fails.
-   *
-   * Side Effects: Makes a POST request to /api/v1/debug/auth-test.
-   */
-  testAuth: async (request: any): Promise<any> => {
-    const res = await fetchWithAuth("/api/v1/debug/auth-test", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(request),
-    });
-    if (!res.ok) {
-      const txt = await res.text();
-      throw new Error(`Failed to test auth: ${txt}`);
-    }
-    return res.json();
-  },
+            return {
+                id: t.id,
+                name: t.name,
+                description: t.description,
+                icon: t.icon,
+                tags: t.tags || [],
+                authType: authType,
+                serviceConfig: {
+                    ...sc,
+                    // Map snake_case to camelCase for UI consumption
+                    connectionPool: sc.connection_pool,
+                    httpService: sc.http_service ? HttpUpstreamService.fromJSON(sc.http_service) : undefined,
+                    grpcService: sc.grpc_service,
+                    commandLineService: sc.command_line_service,
+                    mcpService: sc.mcp_service,
+                    upstreamAuth: sc.upstream_auth,
+                    preCallHooks: sc.pre_call_hooks,
+                    postCallHooks: sc.post_call_hooks,
+                    toolExportPolicy: sc.tool_export_policy,
+                    promptExportPolicy: sc.prompt_export_policy,
+                    resourceExportPolicy: sc.resource_export_policy,
+                    callPolicies: sc.call_policies?.map((p: any) => ({
+                        defaultAction: p.default_action,
+                        rules: p.rules?.map((r: any) => ({
+                            action: r.action,
+                            nameRegex: r.name_regex,
+                            argumentRegex: r.argument_regex,
+                            urlRegex: r.url_regex,
+                            callIdRegex: r.call_id_regex
+                        }))
+                    })),
+                    // Specific mapping for openapi_service
+                    openapiService: sc.openapi_service ? {
+                        address: sc.openapi_service.address,
+                        specUrl: sc.openapi_service.spec_url,
+                        specContent: sc.openapi_service.spec_content,
+                        tools: sc.openapi_service.tools,
+                        resources: sc.openapi_service.resources,
+                        prompts: sc.openapi_service.prompts,
+                        calls: sc.openapi_service.calls,
+                        healthCheck: sc.openapi_service.health_check,
+                        tlsConfig: sc.openapi_service.tls_config
+                    } : undefined
+                }
+            };
+        });
+    },
 
-  /**
-   * Exchanges an OAuth code for a token.
-   *
-   * Summary: Exchanges OAuth code for token.
-   *
-   * @param code - The OAuth code.
-   * @param state - The OAuth state.
-   * @param redirectUri - The redirect URI.
-   * @returns A promise that resolves to the token data.
-   * @throws {Error} If exchange fails.
-   *
-   * Side Effects: Makes a POST request to /api/v1/oauth/exchange.
-   */
-  exchangeOAuthCode: async (
-    code: string,
-    state: string,
-    redirectUri: string,
-  ): Promise<any> => {
-    const res = await fetchWithAuth("/api/v1/oauth/exchange", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code, state, redirect_uri: redirectUri }),
-    });
-    if (!res.ok) {
-      const txt = await res.text();
-      throw new Error(`Failed to exchange OAuth code: ${txt}`);
-    }
-    return res.json();
-  },
+    /**
+     * Initiates an OAuth flow for a specific service.
+     *
+     * Summary: Starts OAuth flow.
+     *
+     * @param serviceId - The ID of the service (e.g. "google_calendar").
+     * @param credentialId - The ID of the credential to bind (usually same as service name for now).
+     * @param redirectUrl - The URL to redirect back to after auth.
+     * @returns The authorization URL to redirect the user to.
+     * @throws {Error} If initialization fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/auth/oauth/initiate.
+     */
+    initiateOAuth: async (serviceId: string, redirectUrl: string, credentialId = "") => {
+        const res = await fetchWithAuth('/api/v1/auth/oauth/initiate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                service_id: serviceId,
+                credential_id: credentialId,
+                redirect_url: redirectUrl
+            })
+        });
+        if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(`Failed to initiate OAuth: ${txt}`);
+        }
+        return res.json(); // { authorization_url: "...", state: "..." }
+    },
 
-  /**
-   * Handles the OAuth callback by exchanging the code for a token and associating it.
-   *
-   * Summary: Handles OAuth callback.
-   *
-   * @param serviceId - The service ID being authenticated.
-   * @param code - The authorization code from the provider.
-   * @param redirectUrl - The redirect URL used in the flow.
-   * @param credentialId - Optional specific credential ID to update.
-   * @returns A promise that resolves to the result of the callback handler.
-   * @throws {Error} If callback handling fails.
-   *
-   * Side Effects: Makes a POST request to /api/v1/auth/oauth/callback.
-   */
-  handleOAuthCallback: async (
-    serviceId: string | null,
-    code: string,
-    redirectUrl: string,
-    credentialId?: string,
-  ) => {
-    const res = await fetchWithAuth("/api/v1/auth/oauth/callback", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        service_id: serviceId,
-        code: code,
-        redirect_url: redirectUrl,
-        credential_id: credentialId,
-      }),
-    });
-    if (!res.ok) {
-      const txt = await res.text();
-      throw new Error(`Failed to handle OAuth callback: ${txt}`);
-    }
-    return res.json();
-  },
+    /**
+     * Lists all authentication credentials.
+     *
+     * Summary: Lists credentials.
+     *
+     * @returns A promise that resolves to the list of credentials.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/credentials.
+     */
+    listCredentials: async (): Promise<Credential[]> => {
+        const res = await fetchWithAuth('/api/v1/credentials');
+        if (!res.ok) throw new Error('Failed to fetch credentials');
+        const data = await res.json();
+        return Array.isArray(data) ? data : (data.credentials || []);
+    },
 
-  /**
-   * Lists all users.
-   *
-   * Summary: Lists users.
-   *
-   * @returns A promise that resolves to the list of users.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/users.
-   */
-  listUsers: async (): Promise<any> => {
-    const res = await fetchWithAuth("/api/v1/users");
-    if (!res.ok) throw new Error("Failed to fetch users");
-    return res.json();
-  },
+    /**
+     * Creates a new authentication credential.
+     *
+     * Summary: Creates a credential.
+     *
+     * @param credential - The credential to create.
+     * @returns A promise that resolves to the created credential.
+     * @throws {Error} If creation fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/credentials.
+     */
+    createCredential: async (credential: any): Promise<Credential> => {
+        const res = await fetchWithAuth('/api/v1/credentials', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(credential)
+        });
+        if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(`Failed to create credential: ${txt}`);
+        }
+        return res.json();
+    },
 
-  /**
-   * Gets the current authenticated user.
-   *
-   * Summary: Retrieves current user.
-   *
-   * @returns A promise that resolves to the current user.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/users/me.
-   */
-  getCurrentUser: async (): Promise<any> => {
-    const res = await fetchWithAuth("/api/v1/users/me");
-    if (!res.ok) {
-      if (res.status === 401 || res.status === 403) {
-        // Return null if not authenticated
-        return null;
-      }
-      throw new Error(`Failed to fetch current user: ${res.status}`);
-    }
-    return res.json();
-  },
+    /**
+     * Updates an existing authentication credential.
+     *
+     * Summary: Updates a credential.
+     *
+     * @param credential - The updated credential.
+     * @returns A promise that resolves to the updated credential.
+     * @throws {Error} If update fails.
+     *
+     * Side Effects: Makes a PUT request to /api/v1/credentials/:id.
+     */
+    updateCredential: async (credential: any): Promise<Credential> => {
+        const res = await fetchWithAuth(`/api/v1/credentials/${credential.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(credential)
+        });
+        if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(`Failed to update credential: ${txt}`);
+        }
+        return res.json();
+    },
 
-  /**
-   * Creates a new user.
-   *
-   * Summary: Creates a user.
-   *
-   * @param user - The user data to create.
-   * @returns A promise that resolves to the created user.
-   * @throws {Error} If creation fails.
-   *
-   * Side Effects: Makes a POST request to /api/v1/users.
-   */
-  createUser: async (user: any): Promise<any> => {
-    const res = await fetchWithAuth("/api/v1/users", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(user),
-    });
-    if (!res.ok) {
-      const txt = await res.text();
-      throw new Error(`Failed to create user: ${txt}`);
-    }
-    return res.json();
-  },
+    /**
+     * Deletes an authentication credential.
+     *
+     * Summary: Deletes a credential.
+     *
+     * @param id - The ID of the credential to delete.
+     * @returns A promise that resolves when the credential is deleted.
+     * @throws {Error} If deletion fails.
+     *
+     * Side Effects: Makes a DELETE request to /api/v1/credentials/:id.
+     */
+    deleteCredential: async (id: string): Promise<void> => {
+        const res = await fetchWithAuth(`/api/v1/credentials/${id}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete credential');
+    },
 
-  /**
-   * Updates an existing user.
-   *
-   * Summary: Updates a user.
-   *
-   * @param user - The updated user data.
-   * @returns A promise that resolves to the updated user.
-   * @throws {Error} If update fails.
-   *
-   * Side Effects: Makes a PUT request to /api/v1/users/:id.
-   */
-  updateUser: async (user: any): Promise<any> => {
-    const res = await fetchWithAuth(`/api/v1/users/${user.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(user),
-    });
-    if (!res.ok) {
-      const txt = await res.text();
-      throw new Error(`Failed to update user: ${txt}`);
-    }
-    return res.json();
-  },
+    /**
+     * Tests an authentication configuration.
+     *
+     * Summary: Tests authentication configuration.
+     *
+     * @param request - The test request (auth config, target URL, etc.).
+     * @returns A promise that resolves to the test result.
+     * @throws {Error} If the test fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/debug/auth-test.
+     */
+    testAuth: async (request: any): Promise<any> => {
+        const res = await fetchWithAuth('/api/v1/debug/auth-test', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(request)
+        });
+        if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(`Failed to test auth: ${txt}`);
+        }
+        return res.json();
+    },
 
-  /**
-   * Deletes a user.
-   *
-   * Summary: Deletes a user.
-   *
-   * @param id - The ID of the user to delete.
-   * @returns A promise that resolves when the user is deleted.
-   * @throws {Error} If deletion fails.
-   *
-   * Side Effects: Makes a DELETE request to /api/v1/users/:id.
-   */
-  deleteUser: async (id: string): Promise<void> => {
-    const res = await fetchWithAuth(`/api/v1/users/${id}`, {
-      method: "DELETE",
-    });
-    if (!res.ok) throw new Error("Failed to delete user");
-  },
+    /**
+     * Exchanges an OAuth code for a token.
+     *
+     * Summary: Exchanges OAuth code for token.
+     *
+     * @param code - The OAuth code.
+     * @param state - The OAuth state.
+     * @param redirectUri - The redirect URI.
+     * @returns A promise that resolves to the token data.
+     * @throws {Error} If exchange fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/oauth/exchange.
+     */
+    exchangeOAuthCode: async (code: string, state: string, redirectUri: string): Promise<any> => {
+        const res = await fetchWithAuth('/api/v1/oauth/exchange', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code, state, redirect_uri: redirectUri })
+        });
+        if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(`Failed to exchange OAuth code: ${txt}`);
+        }
+        return res.json();
+    },
 
-  /**
-   * Lists all skills.
-   *
-   * Summary: Lists skills.
-   *
-   * @returns A promise that resolves to the list of skills.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/skills.
-   */
-  listSkills: async (): Promise<any[]> => {
-    const res = await fetchWithAuth("/api/v1/skills");
-    if (!res.ok) throw new Error("Failed to fetch skills");
-    const data = await res.json();
-    return data.skills || [];
-  },
+    /**
+     * Handles the OAuth callback by exchanging the code for a token and associating it.
+     *
+     * Summary: Handles OAuth callback.
+     *
+     * @param serviceId - The service ID being authenticated.
+     * @param code - The authorization code from the provider.
+     * @param redirectUrl - The redirect URL used in the flow.
+     * @param credentialId - Optional specific credential ID to update.
+     * @returns A promise that resolves to the result of the callback handler.
+     * @throws {Error} If callback handling fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/auth/oauth/callback.
+     */
+    handleOAuthCallback: async (serviceId: string | null, code: string, redirectUrl: string, credentialId?: string) => {
+        const res = await fetchWithAuth('/api/v1/auth/oauth/callback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                service_id: serviceId,
+                code: code,
+                redirect_url: redirectUrl,
+                credential_id: credentialId
+            })
+        });
+        if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(`Failed to handle OAuth callback: ${txt}`);
+        }
+        return res.json();
+    },
 
-  /**
-   * Gets a skill by name.
-   *
-   * Summary: Retrieves a skill.
-   *
-   * @param name - The name of the skill.
-   * @returns A promise that resolves to the skill.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/skills/:name.
-   */
-  getSkill: async (name: string): Promise<any> => {
-    const res = await fetchWithAuth(`/api/v1/skills/${name}`);
-    if (!res.ok) throw new Error("Failed to fetch skill");
-    const data = await res.json();
-    return data.skill;
-  },
+    /**
+     * Lists all users.
+     *
+     * Summary: Lists users.
+     *
+     * @returns A promise that resolves to the list of users.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/users.
+     */
+    listUsers: async (): Promise<any> => {
+        const res = await fetchWithAuth('/api/v1/users');
+        if (!res.ok) throw new Error('Failed to fetch users');
+        return res.json();
+    },
 
-  /**
-   * Creates a new skill.
-   *
-   * Summary: Creates a skill.
-   *
-   * @param skill - The skill data to create.
-   * @returns A promise that resolves to the created skill.
-   * @throws {Error} If creation fails.
-   *
-   * Side Effects: Makes a POST request to /api/v1/skills.
-   */
-  createSkill: async (skill: any): Promise<any> => {
-    const res = await fetchWithAuth("/api/v1/skills", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(skill),
-    });
-    if (!res.ok) {
-      const txt = await res.text();
-      throw new Error(`Failed to create skill: ${txt}`);
-    }
-    const data = await res.json();
-    return data.skill;
-  },
+    /**
+     * Gets the current authenticated user.
+     *
+     * Summary: Retrieves current user.
+     *
+     * @returns A promise that resolves to the current user.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/users/me.
+     */
+    getCurrentUser: async (): Promise<any> => {
+        const res = await fetchWithAuth('/api/v1/users/me');
+        if (!res.ok) {
+            if (res.status === 401 || res.status === 403) {
+                // Return null if not authenticated
+                return null;
+            }
+            throw new Error(`Failed to fetch current user: ${res.status}`);
+        }
+        return res.json();
+    },
 
-  /**
-   * Updates an existing skill.
-   *
-   * Summary: Updates a skill.
-   *
-   * @param originalName - The original name of the skill.
-   * @param skill - The updated skill data.
-   * @returns A promise that resolves to the updated skill.
-   * @throws {Error} If update fails.
-   *
-   * Side Effects: Makes a PUT request to /api/v1/skills/:originalName.
-   */
-  updateSkill: async (originalName: string, skill: any): Promise<any> => {
-    const res = await fetchWithAuth(`/api/v1/skills/${originalName}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(skill),
-    });
-    if (!res.ok) {
-      const txt = await res.text();
-      throw new Error(`Failed to update skill: ${txt}`);
-    }
-    const data = await res.json();
-    return data.skill;
-  },
+    /**
+     * Creates a new user.
+     *
+     * Summary: Creates a user.
+     *
+     * @param user - The user data to create.
+     * @returns A promise that resolves to the created user.
+     * @throws {Error} If creation fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/users.
+     */
+    createUser: async (user: any): Promise<any> => {
+        const res = await fetchWithAuth('/api/v1/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(user)
+        });
+        if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(`Failed to create user: ${txt}`);
+        }
+        return res.json();
+    },
 
-  /**
-   * Deletes a skill.
-   *
-   * Summary: Deletes a skill.
-   *
-   * @param name - The name of the skill to delete.
-   * @returns A promise that resolves when the skill is deleted.
-   * @throws {Error} If deletion fails.
-   *
-   * Side Effects: Makes a DELETE request to /api/v1/skills/:name.
-   */
-  deleteSkill: async (name: string): Promise<void> => {
-    const res = await fetchWithAuth(`/api/v1/skills/${name}`, {
-      method: "DELETE",
-    });
-    if (!res.ok) throw new Error("Failed to delete skill");
-  },
+    /**
+     * Updates an existing user.
+     *
+     * Summary: Updates a user.
+     *
+     * @param user - The updated user data.
+     * @returns A promise that resolves to the updated user.
+     * @throws {Error} If update fails.
+     *
+     * Side Effects: Makes a PUT request to /api/v1/users/:id.
+     */
+    updateUser: async (user: any): Promise<any> => {
+        const res = await fetchWithAuth(`/api/v1/users/${user.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(user)
+        });
+        if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(`Failed to update user: ${txt}`);
+        }
+        return res.json();
+    },
 
-  // Profiles
+    /**
+     * Deletes a user.
+     *
+     * Summary: Deletes a user.
+     *
+     * @param id - The ID of the user to delete.
+     * @returns A promise that resolves when the user is deleted.
+     * @throws {Error} If deletion fails.
+     *
+     * Side Effects: Makes a DELETE request to /api/v1/users/:id.
+     */
+    deleteUser: async (id: string): Promise<void> => {
+        const res = await fetchWithAuth(`/api/v1/users/${id}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete user');
+    },
 
-  /**
-   * Creates a new profile.
-   *
-   * Summary: Creates a profile.
-   *
-   * @param profileData - The profile configuration.
-   * @returns A promise that resolves to the created profile.
-   * @throws {Error} If creation fails.
-   *
-   * Side Effects: Makes a POST request to /api/v1/profiles.
-   */
-  createProfile: async (profileData: any) => {
-    const res = await fetchWithAuth("/api/v1/profiles", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(profileData),
-    });
-    if (!res.ok) throw new Error("Failed to create profile");
-    return res.json();
-  },
+    /**
+     * Lists all skills.
+     *
+     * Summary: Lists skills.
+     *
+     * @returns A promise that resolves to the list of skills.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/skills.
+     */
+    listSkills: async (): Promise<any[]> => {
+        const res = await fetchWithAuth('/api/v1/skills');
+        if (!res.ok) throw new Error('Failed to fetch skills');
+        const data = await res.json();
+        return data.skills || [];
+    },
 
-  /**
-   * Updates an existing profile.
-   *
-   * Summary: Updates a profile.
-   *
-   * @param profileData - The profile configuration.
-   * @returns A promise that resolves to the updated profile.
-   * @throws {Error} If update fails.
-   *
-   * Side Effects: Makes a PUT request to /api/v1/profiles/:name.
-   */
-  updateProfile: async (profileData: any) => {
-    const res = await fetchWithAuth(`/api/v1/profiles/${profileData.name}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(profileData),
-    });
-    if (!res.ok) throw new Error("Failed to update profile");
-    return res.json();
-  },
+    /**
+     * Gets a skill by name.
+     *
+     * Summary: Retrieves a skill.
+     *
+     * @param name - The name of the skill.
+     * @returns A promise that resolves to the skill.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/skills/:name.
+     */
+    getSkill: async (name: string): Promise<any> => {
+        const res = await fetchWithAuth(`/api/v1/skills/${name}`);
+        if (!res.ok) throw new Error('Failed to fetch skill');
+        const data = await res.json();
+        return data.skill;
+    },
 
-  /**
-   * Deletes a profile.
-   *
-   * Summary: Deletes a profile.
-   *
-   * @param name - The name of the profile to delete.
-   * @returns A promise that resolves when the profile is deleted.
-   * @throws {Error} If deletion fails.
-   *
-   * Side Effects: Makes a DELETE request to /api/v1/profiles/:name.
-   */
-  deleteProfile: async (name: string) => {
-    const res = await fetchWithAuth(`/api/v1/profiles/${name}`, {
-      method: "DELETE",
-    });
-    if (!res.ok) throw new Error("Failed to delete profile");
-    return {};
-  },
+    /**
+     * Creates a new skill.
+     *
+     * Summary: Creates a skill.
+     *
+     * @param skill - The skill data to create.
+     * @returns A promise that resolves to the created skill.
+     * @throws {Error} If creation fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/skills.
+     */
+    createSkill: async (skill: any): Promise<any> => {
+        const res = await fetchWithAuth('/api/v1/skills', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(skill)
+        });
+        if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(`Failed to create skill: ${txt}`);
+        }
+        const data = await res.json();
+        return data.skill;
+    },
 
-  /**
-   * Lists all profiles.
-   *
-   * Summary: Lists profiles.
-   *
-   * @returns A promise that resolves to a list of profiles.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/profiles.
-   */
-  listProfiles: async () => {
-    const res = await fetchWithAuth("/api/v1/profiles");
-    if (!res.ok) throw new Error("Failed to list profiles");
-    const data = await res.json();
-    return data.profiles || [];
-  },
+    /**
+     * Updates an existing skill.
+     *
+     * Summary: Updates a skill.
+     *
+     * @param originalName - The original name of the skill.
+     * @param skill - The updated skill data.
+     * @returns A promise that resolves to the updated skill.
+     * @throws {Error} If update fails.
+     *
+     * Side Effects: Makes a PUT request to /api/v1/skills/:originalName.
+     */
+    updateSkill: async (originalName: string, skill: any): Promise<any> => {
+        const res = await fetchWithAuth(`/api/v1/skills/${originalName}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(skill)
+        });
+        if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(`Failed to update skill: ${txt}`);
+        }
+        const data = await res.json();
+        return data.skill;
+    },
 
-  // Secrets
+    /**
+     * Deletes a skill.
+     *
+     * Summary: Deletes a skill.
+     *
+     * @param name - The name of the skill to delete.
+     * @returns A promise that resolves when the skill is deleted.
+     * @throws {Error} If deletion fails.
+     *
+     * Side Effects: Makes a DELETE request to /api/v1/skills/:name.
+     */
+    deleteSkill: async (name: string): Promise<void> => {
+        const res = await fetchWithAuth(`/api/v1/skills/${name}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete skill');
+    },
 
-  /**
-   * Lists all stored secrets.
-   *
-   * Summary: Lists secrets.
-   *
-   * @returns A promise that resolves to a list of secrets.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/secrets.
-   */
-  listSecrets: async () => {
-    const res = await fetchWithAuth("/api/v1/secrets");
-    if (!res.ok) throw new Error("Failed to fetch secrets");
-    const data = await res.json();
-    return Array.isArray(data) ? data : data.secrets || [];
-  },
+    // Profiles
 
-  /**
-   * Reveals a secret value.
-   *
-   * Summary: Reveals a secret.
-   *
-   * @param id - The ID of the secret to reveal.
-   * @returns A promise that resolves to the secret value.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a POST request to /api/v1/secrets/:id/reveal.
-   */
-  revealSecret: async (id: string): Promise<{ value: string }> => {
-    const res = await fetchWithAuth(`/api/v1/secrets/${id}/reveal`, {
-      method: "POST",
-    });
-    if (!res.ok) throw new Error("Failed to reveal secret");
-    return res.json();
-  },
+    /**
+     * Creates a new profile.
+     *
+     * Summary: Creates a profile.
+     *
+     * @param profileData - The profile configuration.
+     * @returns A promise that resolves to the created profile.
+     * @throws {Error} If creation fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/profiles.
+     */
+    createProfile: async (profileData: any) => {
+        const res = await fetchWithAuth('/api/v1/profiles', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(profileData)
+        });
+        if (!res.ok) throw new Error('Failed to create profile');
+        return res.json();
+    },
 
-  /**
-   * Saves a secret.
-   *
-   * Summary: Saves a secret.
-   *
-   * @param secret - The secret definition to save.
-   * @returns A promise that resolves to the saved secret.
-   * @throws {Error} If saving fails.
-   *
-   * Side Effects: Makes a POST request to /api/v1/secrets.
-   */
-  saveSecret: async (secret: SecretDefinition) => {
-    const res = await fetchWithAuth("/api/v1/secrets", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(secret),
-    });
-    if (!res.ok) throw new Error("Failed to save secret");
-    return res.json();
-  },
+    /**
+     * Updates an existing profile.
+     *
+     * Summary: Updates a profile.
+     *
+     * @param profileData - The profile configuration.
+     * @returns A promise that resolves to the updated profile.
+     * @throws {Error} If update fails.
+     *
+     * Side Effects: Makes a PUT request to /api/v1/profiles/:name.
+     */
+    updateProfile: async (profileData: any) => {
+        const res = await fetchWithAuth(`/api/v1/profiles/${profileData.name}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(profileData)
+        });
+        if (!res.ok) throw new Error('Failed to update profile');
+        return res.json();
+    },
 
-  /**
-   * Deletes a secret.
-   *
-   * Summary: Deletes a secret.
-   *
-   * @param id - The ID of the secret to delete.
-   * @returns A promise that resolves when the secret is deleted.
-   * @throws {Error} If deletion fails.
-   *
-   * Side Effects: Makes a DELETE request to /api/v1/secrets/:id.
-   */
-  deleteSecret: async (id: string) => {
-    const res = await fetchWithAuth(`/api/v1/secrets/${id}`, {
-      method: "DELETE",
-    });
-    if (!res.ok) throw new Error("Failed to delete secret");
-    return {};
-  },
+    /**
+    * Deletes a profile.
+    *
+    * Summary: Deletes a profile.
+    *
+    * @param name - The name of the profile to delete.
+    * @returns A promise that resolves when the profile is deleted.
+    * @throws {Error} If deletion fails.
+    *
+    * Side Effects: Makes a DELETE request to /api/v1/profiles/:name.
+    */
+    deleteProfile: async (name: string) => {
+        const res = await fetchWithAuth(`/api/v1/profiles/${name}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete profile');
+        return {};
+    },
 
-  // Global Settings
+    /**
+     * Lists all profiles.
+     *
+     * Summary: Lists profiles.
+     *
+     * @returns A promise that resolves to a list of profiles.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/profiles.
+     */
+    listProfiles: async () => {
+        const res = await fetchWithAuth('/api/v1/profiles');
+        if (!res.ok) throw new Error('Failed to list profiles');
+        const data = await res.json();
+        return data.profiles || [];
+    },
 
-  /**
-   * Gets the global server settings.
-   *
-   * Summary: Retrieves the global configuration settings for the server.
-   *
-   * @returns A promise that resolves to the global settings.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/settings.
-   */
-  getGlobalSettings: async () => {
-    const res = await fetchWithAuth("/api/v1/settings");
-    if (!res.ok) throw new Error("Failed to fetch global settings");
-    return res.json();
-  },
 
-  /**
-   * Saves the global server settings.
-   *
-   * Summary: Saves global settings.
-   *
-   * @param settings - The settings to save.
-   * @returns A promise that resolves when the settings are saved.
-   * @throws {Error} If saving fails.
-   *
-   * Side Effects: Makes a POST request to /api/v1/settings.
-   */
-  saveGlobalSettings: async (settings: any) => {
-    const res = await fetchWithAuth("/api/v1/settings", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(settings),
-    });
-    if (!res.ok) throw new Error("Failed to save global settings");
-  },
 
-  /**
-   * Gets the dashboard traffic history.
-   *
-   * Summary: Retrieves traffic history.
-   *
-   * @param serviceId - Optional service ID to filter by.
-   * @param timeRange - Optional time range to filter by (e.g. "1h", "24h").
-   * @returns A promise that resolves to the traffic history points.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/dashboard/traffic.
-   */
-  getDashboardTraffic: async (serviceId?: string, timeRange?: string) => {
-    let url = "/api/v1/dashboard/traffic";
-    const params = new URLSearchParams();
-    if (serviceId) params.append("serviceId", serviceId);
-    if (timeRange) params.append("timeRange", timeRange);
 
-    if (params.toString()) url += `?${params.toString()}`;
+    // Secrets
 
-    const res = await fetchWithAuth(url);
-    if (!res.ok) throw new Error("Failed to fetch dashboard traffic");
-    return res.json();
-  },
+    /**
+     * Lists all stored secrets.
+     *
+     * Summary: Lists secrets.
+     *
+     * @returns A promise that resolves to a list of secrets.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/secrets.
+     */
+    listSecrets: async () => {
+        const res = await fetchWithAuth('/api/v1/secrets');
+        if (!res.ok) throw new Error('Failed to fetch secrets');
+        const data = await res.json();
+        return Array.isArray(data) ? data : (data.secrets || []);
+    },
 
-  /**
-   * Gets the top used tools.
-   *
-   * Summary: Retrieves top tools.
-   *
-   * @param serviceId - Optional service ID to filter by.
-   * @returns A promise that resolves to the top tools stats.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/dashboard/top-tools.
-   */
-  getTopTools: async (serviceId?: string) => {
-    let url = "/api/v1/dashboard/top-tools";
-    if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
-    const res = await fetchWithAuth(url);
-    // If 404/500, return empty to avoid crashing UI
-    if (!res.ok) return [];
-    const data = await res.json();
-    return data || [];
-  },
+    /**
+     * Reveals a secret value.
+     *
+     * Summary: Reveals a secret.
+     *
+     * @param id - The ID of the secret to reveal.
+     * @returns A promise that resolves to the secret value.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/secrets/:id/reveal.
+     */
+    revealSecret: async (id: string): Promise<{ value: string }> => {
+        const res = await fetchWithAuth(`/api/v1/secrets/${id}/reveal`, {
+            method: 'POST'
+        });
+        if (!res.ok) throw new Error('Failed to reveal secret');
+        return res.json();
+    },
 
-  // Alerts
+    /**
+     * Saves a secret.
+     *
+     * Summary: Saves a secret.
+     *
+     * @param secret - The secret definition to save.
+     * @returns A promise that resolves to the saved secret.
+     * @throws {Error} If saving fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/secrets.
+     */
+    saveSecret: async (secret: SecretDefinition) => {
+        const res = await fetchWithAuth('/api/v1/secrets', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(secret)
+        });
+        if (!res.ok) throw new Error('Failed to save secret');
+        return res.json();
+    },
 
-  /**
-   * Gets alert statistics.
-   *
-   * Summary: Retrieves alert statistics.
-   *
-   * @returns A promise that resolves to the alert statistics.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/alerts/stats.
-   */
-  getAlertStats: async (): Promise<{
-    activeCritical: number;
-    activeWarning: number;
-    mttr: string;
-    totalToday: number;
-  }> => {
-    const res = await fetchWithAuth("/api/v1/alerts/stats");
-    if (!res.ok) throw new Error("Failed to fetch alert stats");
-    return res.json();
-  },
+    /**
+     * Deletes a secret.
+     *
+     * Summary: Deletes a secret.
+     *
+     * @param id - The ID of the secret to delete.
+     * @returns A promise that resolves when the secret is deleted.
+     * @throws {Error} If deletion fails.
+     *
+     * Side Effects: Makes a DELETE request to /api/v1/secrets/:id.
+     */
+    deleteSecret: async (id: string) => {
+        const res = await fetchWithAuth(`/api/v1/secrets/${id}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete secret');
+        return {};
+    },
 
-  /**
-   * Lists all alerts.
-   *
-   * Summary: Lists alerts.
-   *
-   * @returns A promise that resolves to a list of alerts.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/alerts.
-   */
-  listAlerts: async () => {
-    const res = await fetchWithAuth("/api/v1/alerts");
-    if (!res.ok) throw new Error("Failed to fetch alerts");
-    return res.json();
-  },
+    // Global Settings
 
-  /**
-   * Lists all alert rules.
-   *
-   * Summary: Lists alert rules.
-   *
-   * @returns A promise that resolves to a list of alert rules.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/alerts/rules.
-   */
-  listAlertRules: async () => {
-    const res = await fetchWithAuth("/api/v1/alerts/rules");
-    if (!res.ok) throw new Error("Failed to fetch alert rules");
-    return res.json();
-  },
+    /**
+     * Gets the global server settings.
+     *
+     * Summary: Retrieves the global configuration settings for the server.
+     *
+     * @returns A promise that resolves to the global settings.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/settings.
+     */
+    getGlobalSettings: async () => {
+        const res = await fetchWithAuth('/api/v1/settings');
+        if (!res.ok) throw new Error('Failed to fetch global settings');
+        return res.json();
+    },
 
-  /**
-   * Creates a new alert rule.
-   *
-   * Summary: Creates an alert rule.
-   *
-   * @param rule - The rule to create.
-   * @returns A promise that resolves to the created rule.
-   * @throws {Error} If creation fails.
-   *
-   * Side Effects: Makes a POST request to /api/v1/alerts/rules.
-   */
-  createAlertRule: async (rule: any) => {
-    const res = await fetchWithAuth("/api/v1/alerts/rules", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(rule),
-    });
-    if (!res.ok) throw new Error("Failed to create alert rule");
-    return res.json();
-  },
+    /**
+     * Saves the global server settings.
+     *
+     * Summary: Saves global settings.
+     *
+     * @param settings - The settings to save.
+     * @returns A promise that resolves when the settings are saved.
+     * @throws {Error} If saving fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/settings.
+     */
+    saveGlobalSettings: async (settings: any) => {
+        const res = await fetchWithAuth('/api/v1/settings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(settings)
+        });
+        if (!res.ok) throw new Error('Failed to save global settings');
+    },
 
-  /**
-   * Gets an alert rule by ID.
-   *
-   * Summary: Retrieves an alert rule.
-   *
-   * @param id - The ID of the rule.
-   * @returns A promise that resolves to the rule.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/alerts/rules/:id.
-   */
-  getAlertRule: async (id: string) => {
-    const res = await fetchWithAuth(`/api/v1/alerts/rules/${id}`);
-    if (!res.ok) throw new Error("Failed to get alert rule");
-    return res.json();
-  },
+    /**
+     * Gets the dashboard traffic history.
+     *
+     * Summary: Retrieves traffic history.
+     *
+     * @param serviceId - Optional service ID to filter by.
+     * @param timeRange - Optional time range to filter by (e.g. "1h", "24h").
+     * @returns A promise that resolves to the traffic history points.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/dashboard/traffic.
+     */
+    getDashboardTraffic: async (serviceId?: string, timeRange?: string) => {
+        let url = '/api/v1/dashboard/traffic';
+        const params = new URLSearchParams();
+        if (serviceId) params.append('serviceId', serviceId);
+        if (timeRange) params.append('timeRange', timeRange);
 
-  /**
-   * Updates an alert rule.
-   *
-   * Summary: Updates an alert rule.
-   *
-   * @param rule - The rule to update.
-   * @returns A promise that resolves to the updated rule.
-   * @throws {Error} If update fails.
-   *
-   * Side Effects: Makes a PUT request to /api/v1/alerts/rules/:id.
-   */
-  updateAlertRule: async (rule: any) => {
-    const res = await fetchWithAuth(`/api/v1/alerts/rules/${rule.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(rule),
-    });
-    if (!res.ok) throw new Error("Failed to update alert rule");
-    return res.json();
-  },
+        if (params.toString()) url += `?${params.toString()}`;
 
-  /**
-   * Deletes an alert rule.
-   *
-   * Summary: Deletes an alert rule.
-   *
-   * @param id - The ID of the rule to delete.
-   * @returns A promise that resolves when the rule is deleted.
-   * @throws {Error} If deletion fails.
-   *
-   * Side Effects: Makes a DELETE request to /api/v1/alerts/rules/:id.
-   */
-  deleteAlertRule: async (id: string) => {
-    const res = await fetchWithAuth(`/api/v1/alerts/rules/${id}`, {
-      method: "DELETE",
-    });
-    if (!res.ok) throw new Error("Failed to delete alert rule");
-    return {};
-  },
+        const res = await fetchWithAuth(url);
+        if (!res.ok) throw new Error('Failed to fetch dashboard traffic');
+        return res.json();
+    },
 
-  /**
-   * Gets the tools with highest failure rates.
-   *
-   * Summary: Retrieves tool failures.
-   *
-   * @param serviceId - Optional service ID to filter by.
-   * @returns A promise that resolves to the tool failure stats.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/dashboard/tool-failures.
-   */
-  getToolFailures: async (serviceId?: string): Promise<ToolFailureStats[]> => {
-    let url = "/api/v1/dashboard/tool-failures";
-    if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
-    const res = await fetchWithAuth(url);
-    if (!res.ok) return [];
-    const data = await res.json();
-    return data || [];
-  },
-
-  /**
-   * Gets the tool usage analytics.
-   *
-   * Summary: Retrieves tool usage.
-   *
-   * @param serviceId - Optional service ID to filter by.
-   * @returns A promise that resolves to the tool usage stats.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/dashboard/tool-usage.
-   */
-  getToolUsage: async (serviceId?: string): Promise<ToolAnalytics[]> => {
-    let url = "/api/v1/dashboard/tool-usage";
-    if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
-    const res = await fetchWithAuth(url);
-    if (!res.ok) return [];
-    const data = await res.json();
-    return data || [];
-  },
-
-  /**
-   * Gets the system status.
-   *
-   * Summary: Retrieves system status.
-   *
-   * @returns A promise that resolves to the system status.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/system/status.
-   */
-  getSystemStatus: async (): Promise<SystemStatus> => {
-    return dedupeRequests("getSystemStatus", async () => {
-      const res = await fetchWithAuth("/api/v1/system/status");
-      if (!res.ok) throw new Error("Failed to fetch system status");
-      return res.json();
-    });
-  },
-
-  /**
-   * Gets the doctor health report.
-   *
-   * Summary: Retrieves doctor report.
-   *
-   * @returns A promise that resolves to the doctor report.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/doctor.
-   */
-  getDoctorStatus: async (): Promise<DoctorReport> => {
-    const res = await fetchWithAuth("/api/v1/doctor");
-    if (!res.ok) throw new Error("Failed to fetch doctor status");
-    return res.json();
-  },
-
-  /**
-   * Gets the dashboard health status and history.
-   *
-   * Summary: Retrieves dashboard health.
-   *
-   * @returns A promise that resolves to the health response.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/dashboard/health.
-   */
-  getDashboardHealth: async (): Promise<ServiceHealthResponse> => {
-    // Use the Next.js API route (BFF) which aggregates/proxies to the backend
-    const res = await fetchWithAuth("/api/v1/dashboard/health");
-    if (!res.ok) throw new Error("Failed to fetch dashboard health");
-    return res.json();
-  },
-
-  /**
-   * Gets the dashboard metrics.
-   *
-   * Summary: Retrieves dashboard metrics.
-   *
-   * @param serviceId - Optional service ID to filter by.
-   * @returns A promise that resolves to the metrics list.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/dashboard/metrics.
-   */
-  getDashboardMetrics: async (serviceId?: string): Promise<Metric[]> => {
-    return dedupeRequests(
-      `getDashboardMetrics:${serviceId || ""}`,
-      async () => {
-        let url = "/api/v1/dashboard/metrics";
+    /**
+     * Gets the top used tools.
+     *
+     * Summary: Retrieves top tools.
+     *
+     * @param serviceId - Optional service ID to filter by.
+     * @returns A promise that resolves to the top tools stats.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/dashboard/top-tools.
+     */
+    getTopTools: async (serviceId?: string) => {
+        let url = '/api/v1/dashboard/top-tools';
         if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
         const res = await fetchWithAuth(url);
-        if (!res.ok)
-          throw new Error(
-            "Failed to fetch dashboard metrics. Is the server running and authenticated?",
-          );
+        // If 404/500, return empty to avoid crashing UI
+        if (!res.ok) return [];
+        const data = await res.json();
+        return data || [];
+    },
+
+    // Alerts
+
+    /**
+     * Gets alert statistics.
+     *
+     * Summary: Retrieves alert statistics.
+     *
+     * @returns A promise that resolves to the alert statistics.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/alerts/stats.
+     */
+    getAlertStats: async (): Promise<{ activeCritical: number, activeWarning: number, mttr: string, totalToday: number }> => {
+        const res = await fetchWithAuth('/api/v1/alerts/stats');
+        if (!res.ok) throw new Error('Failed to fetch alert stats');
         return res.json();
-      },
-    );
-  },
+    },
 
-  /**
-   * Gets the latest execution traces.
-   *
-   * Summary: Retrieves execution traces.
-   *
-   * @param options - Optional parameters.
-   * @returns A promise that resolves to the traces list.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/traces.
-   */
-  getTraces: async (options?: { limit?: number }): Promise<any[]> => {
-    let url = "/api/v1/traces";
-    if (options?.limit) {
-      url += `?limit=${options.limit}`;
+    /**
+     * Lists all alerts.
+     *
+     * Summary: Lists alerts.
+     *
+     * @returns A promise that resolves to a list of alerts.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/alerts.
+     */
+    listAlerts: async () => {
+        const res = await fetchWithAuth('/api/v1/alerts');
+        if (!res.ok) throw new Error('Failed to fetch alerts');
+        return res.json();
+    },
+
+    /**
+     * Lists all alert rules.
+     *
+     * Summary: Lists alert rules.
+     *
+     * @returns A promise that resolves to a list of alert rules.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/alerts/rules.
+     */
+    listAlertRules: async () => {
+        const res = await fetchWithAuth('/api/v1/alerts/rules');
+        if (!res.ok) throw new Error('Failed to fetch alert rules');
+        return res.json();
+    },
+
+    /**
+     * Creates a new alert rule.
+     *
+     * Summary: Creates an alert rule.
+     *
+     * @param rule - The rule to create.
+     * @returns A promise that resolves to the created rule.
+     * @throws {Error} If creation fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/alerts/rules.
+     */
+    createAlertRule: async (rule: any) => {
+        const res = await fetchWithAuth('/api/v1/alerts/rules', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(rule)
+        });
+        if (!res.ok) throw new Error('Failed to create alert rule');
+        return res.json();
+    },
+
+    /**
+     * Gets an alert rule by ID.
+     *
+     * Summary: Retrieves an alert rule.
+     *
+     * @param id - The ID of the rule.
+     * @returns A promise that resolves to the rule.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/alerts/rules/:id.
+     */
+    getAlertRule: async (id: string) => {
+        const res = await fetchWithAuth(`/api/v1/alerts/rules/${id}`);
+        if (!res.ok) throw new Error('Failed to get alert rule');
+        return res.json();
+    },
+
+    /**
+     * Updates an alert rule.
+     *
+     * Summary: Updates an alert rule.
+     *
+     * @param rule - The rule to update.
+     * @returns A promise that resolves to the updated rule.
+     * @throws {Error} If update fails.
+     *
+     * Side Effects: Makes a PUT request to /api/v1/alerts/rules/:id.
+     */
+    updateAlertRule: async (rule: any) => {
+        const res = await fetchWithAuth(`/api/v1/alerts/rules/${rule.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(rule)
+        });
+        if (!res.ok) throw new Error('Failed to update alert rule');
+        return res.json();
+    },
+
+    /**
+     * Deletes an alert rule.
+     *
+     * Summary: Deletes an alert rule.
+     *
+     * @param id - The ID of the rule to delete.
+     * @returns A promise that resolves when the rule is deleted.
+     * @throws {Error} If deletion fails.
+     *
+     * Side Effects: Makes a DELETE request to /api/v1/alerts/rules/:id.
+     */
+    deleteAlertRule: async (id: string) => {
+        const res = await fetchWithAuth(`/api/v1/alerts/rules/${id}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete alert rule');
+        return {};
+    },
+
+    /**
+     * Gets the tools with highest failure rates.
+     *
+     * Summary: Retrieves tool failures.
+     *
+     * @param serviceId - Optional service ID to filter by.
+     * @returns A promise that resolves to the tool failure stats.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/dashboard/tool-failures.
+     */
+    getToolFailures: async (serviceId?: string): Promise<ToolFailureStats[]> => {
+        let url = '/api/v1/dashboard/tool-failures';
+        if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
+        const res = await fetchWithAuth(url);
+        if (!res.ok) return [];
+        const data = await res.json();
+        return data || [];
+    },
+
+    /**
+     * Gets the tool usage analytics.
+     *
+     * Summary: Retrieves tool usage.
+     *
+     * @param serviceId - Optional service ID to filter by.
+     * @returns A promise that resolves to the tool usage stats.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/dashboard/tool-usage.
+     */
+    getToolUsage: async (serviceId?: string): Promise<ToolAnalytics[]> => {
+        let url = '/api/v1/dashboard/tool-usage';
+        if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
+        const res = await fetchWithAuth(url);
+        if (!res.ok) return [];
+        const data = await res.json();
+        return data || [];
+    },
+
+
+    /**
+     * Gets the system status.
+     *
+     * Summary: Retrieves system status.
+     *
+     * @returns A promise that resolves to the system status.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/system/status.
+     */
+    getSystemStatus: async (): Promise<SystemStatus> => {
+        return dedupeRequests('getSystemStatus', async () => {
+            const res = await fetchWithAuth('/api/v1/system/status');
+            if (!res.ok) throw new Error('Failed to fetch system status');
+            return res.json();
+        });
+    },
+
+    /**
+     * Gets the doctor health report.
+     *
+     * Summary: Retrieves doctor report.
+     *
+     * @returns A promise that resolves to the doctor report.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/doctor.
+     */
+    getDoctorStatus: async (): Promise<DoctorReport> => {
+        const res = await fetchWithAuth('/api/v1/doctor');
+        if (!res.ok) throw new Error('Failed to fetch doctor status');
+        return res.json();
+    },
+
+    /**
+     * Gets the dashboard health status and history.
+     *
+     * Summary: Retrieves dashboard health.
+     *
+     * @returns A promise that resolves to the health response.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/dashboard/health.
+     */
+    getDashboardHealth: async (): Promise<ServiceHealthResponse> => {
+        // Use the Next.js API route (BFF) which aggregates/proxies to the backend
+        const res = await fetchWithAuth('/api/v1/dashboard/health');
+        if (!res.ok) throw new Error('Failed to fetch dashboard health');
+        return res.json();
+    },
+
+    /**
+     * Gets the dashboard metrics.
+     *
+     * Summary: Retrieves dashboard metrics.
+     *
+     * @param serviceId - Optional service ID to filter by.
+     * @returns A promise that resolves to the metrics list.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/dashboard/metrics.
+     */
+    getDashboardMetrics: async (serviceId?: string): Promise<Metric[]> => {
+        return dedupeRequests(`getDashboardMetrics:${serviceId || ''}`, async () => {
+            let url = '/api/v1/dashboard/metrics';
+            if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
+            const res = await fetchWithAuth(url);
+            if (!res.ok) throw new Error('Failed to fetch dashboard metrics. Is the server running and authenticated?');
+            return res.json();
+        });
+    },
+
+    /**
+     * Gets the latest execution traces.
+     *
+     * Summary: Retrieves execution traces.
+     *
+     * @param options - Optional parameters.
+     * @returns A promise that resolves to the traces list.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/traces.
+     */
+    getTraces: async (options?: { limit?: number }): Promise<any[]> => {
+        let url = '/api/v1/traces';
+        if (options?.limit) {
+            url += `?limit=${options.limit}`;
+        }
+        const res = await fetchWithAuth(url);
+        if (!res.ok) throw new Error('Failed to fetch traces');
+        return res.json();
+    },
+
+    /**
+     * Gets the network topology graph.
+     *
+     * Summary: Retrieves network topology.
+     *
+     * @returns A promise that resolves to the graph.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/topology.
+     */
+    getTopology: async () => {
+        return dedupeRequests('getTopology', async () => {
+            const res = await fetchWithAuth('/api/v1/topology');
+            if (!res.ok) throw new Error('Failed to fetch topology');
+            return res.json();
+        });
+    },
+
+    /**
+     * Seeds the dashboard traffic history (Debug/Test only).
+     *
+     * Summary: Seeds traffic data.
+     *
+     * @param points - The traffic points to seed.
+     * @throws {Error} If seeding fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/debug/seed_traffic.
+     */
+    seedTrafficData: async (points: any[]) => {
+        const res = await fetchWithAuth('/api/v1/debug/seed_traffic', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(points)
+        });
+        if (!res.ok) throw new Error('Failed to seed traffic data');
+    },
+
+    /**
+     * Seeds a debug trace.
+     *
+     * Summary: Seeds a trace.
+     *
+     * @param trace - The trace object to seed.
+     * @returns A promise that resolves to the seeded trace.
+     * @throws {Error} If seeding fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/debug/traces.
+     */
+    seedTrace: async (trace?: any) => {
+        const res = await fetchWithAuth('/api/v1/debug/traces', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(trace || {})
+        });
+        if (!res.ok) throw new Error('Failed to seed trace');
+        return res.json();
+    },
+
+    /**
+     * Updates an alert status.
+     *
+     * Summary: Updates alert status.
+     *
+     * @param id - The ID of the alert.
+     * @param status - The new status.
+     * @returns A promise that resolves to the updated alert.
+     * @throws {Error} If update fails.
+     *
+     * Side Effects: Makes a PATCH request to /api/v1/alerts/:id.
+     */
+    updateAlertStatus: async (id: string, status: string) => {
+        const res = await fetchWithAuth(`/api/v1/alerts/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status })
+        });
+        if (!res.ok) throw new Error('Failed to update alert status');
+        return res.json();
+    },
+
+    /**
+     * Gets the configured global webhook URL for alerts.
+     *
+     * Summary: Retrieves webhook URL.
+     *
+     * @returns A promise that resolves to the webhook configuration.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/alerts/webhook.
+     */
+    getWebhookURL: async (): Promise<{ url: string }> => {
+        const res = await fetchWithAuth('/api/v1/alerts/webhook');
+        if (!res.ok) throw new Error('Failed to fetch webhook URL');
+        return res.json();
+    },
+
+    /**
+     * Saves the configured global webhook URL for alerts.
+     *
+     * Summary: Saves webhook URL.
+     *
+     * @param url - The webhook URL.
+     * @returns A promise that resolves to the updated webhook configuration.
+     * @throws {Error} If saving fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/alerts/webhook.
+     */
+    saveWebhookURL: async (url: string) => {
+        const res = await fetchWithAuth('/api/v1/alerts/webhook', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url })
+        });
+        if (!res.ok) throw new Error('Failed to save webhook URL');
+        return res.json();
+    },
+
+    // Stack Management (Collections)
+
+    /**
+     * Lists all service collections (stacks).
+     *
+     * Summary: Lists collections.
+     *
+     * @returns A promise that resolves to a list of collections.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/collections.
+     */
+    listCollections: async () => {
+        const res = await fetchWithAuth('/api/v1/collections');
+        if (!res.ok) throw new Error('Failed to list collections');
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : (data.collections || []);
+        return list.map((c: any) => ({
+            name: c.name,
+            description: c.description,
+            author: c.author,
+            version: c.version,
+            services: (c.services || []).map(mapUpstreamServiceConfig)
+        }));
+    },
+
+    /**
+     * Gets a single service collection (stack) by its name.
+     *
+     * Summary: Retrieves a collection.
+     *
+     * @param name - The name of the collection.
+     * @returns A promise that resolves to the collection.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/collections/:name.
+     */
+    getCollection: async (name: string) => {
+        const res = await fetchWithAuth(`/api/v1/collections/${name}`);
+        if (!res.ok) throw new Error('Failed to get collection');
+        return res.json();
+    },
+
+    /**
+     * Saves a service collection (stack).
+     *
+     * Summary: Saves a collection.
+     *
+     * @param collection - The collection to save.
+     * @returns A promise that resolves when the collection is saved.
+     * @throws {Error} If saving fails.
+     *
+     * Side Effects: Makes a PUT request to /api/v1/collections/:name.
+     */
+    saveCollection: async (collection: any) => {
+        // Decide if create or update based on existence?
+        // The API might expect POST for create, PUT for update.
+        // For now, let's try POST to /api/v1/collections if id/name is new, or PUT if existing?
+        // But stack-editor logic handles "saving".
+        // The endpoint logic in api.go: handleCollections is POST, handleCollectionDetail is PUT.
+        // We'll use PUT if we have a name in the URL, POST otherwise?
+        // But `saveStackConfig` was replacing config.
+        // Let's assume we update an existing one usually.
+        const res = await fetchWithAuth(`/api/v1/collections/${collection.name}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(collection)
+        });
+        if (!res.ok) {
+             // If PUT fails (e.g. not found), try POST to create?
+             // But UI should know if it's new.
+             // For now just error.
+             throw new Error('Failed to save collection');
+        }
+        return res.json();
+    },
+
+    /**
+     * Deletes a service collection (stack).
+     *
+     * Summary: Deletes a collection.
+     *
+     * @param name - The name of the collection to delete.
+     * @returns A promise that resolves when the collection is deleted.
+     * @throws {Error} If deletion fails.
+     *
+     * Side Effects: Makes a DELETE request to /api/v1/collections/:name.
+     */
+    deleteCollection: async (name: string) => {
+        const res = await fetchWithAuth(`/api/v1/collections/${name}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete collection');
+        return {};
+    },
+
+    /**
+     * Gets the configuration for a stack (Compatibility wrapper).
+     *
+     * Summary: Retrieves stack config.
+     *
+     * @param stackId - The ID of the stack.
+     * @returns A promise that resolves to the stack configuration.
+     *
+     * Side Effects: Delegates to getCollection.
+     */
+    getStackConfig: async (stackId: string) => {
+        // Map to getCollection
+        return apiClient.getCollection(stackId);
+    },
+
+    /**
+     * Saves the configuration for a stack (Compatibility wrapper).
+     *
+     * Summary: Saves stack config.
+     *
+     * @param stackId - The ID of the stack.
+     * @param config - The configuration content (Collection object).
+     * @returns A promise that resolves when the config is saved.
+     *
+     * Side Effects: Delegates to saveCollection.
+     */
+    saveStackConfig: async (stackId: string, config: any) => {
+        // Map to saveCollection. Ensure name is set.
+        const collection = typeof config === 'string' ? JSON.parse(config) : config;
+        if (!collection.name) collection.name = stackId;
+        return apiClient.saveCollection(collection);
+    },
+
+    /**
+     * Gets the stack configuration as YAML.
+     *
+     * Summary: Retrieves stack config as YAML.
+     *
+     * @param stackId - The ID of the stack.
+     * @returns A promise that resolves to the YAML string.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/stacks/:id/config.
+     */
+    getStackYaml: async (stackId: string) => {
+        const res = await fetchWithAuth(`/api/v1/stacks/${stackId}/config`);
+        if (!res.ok) throw new Error('Failed to get stack config');
+        return res.text();
+    },
+
+    /**
+     * Lists all service templates from the marketplace.
+     *
+     * Summary: Lists service templates.
+     *
+     * @returns A promise that resolves to a list of service templates.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/templates.
+     */
+    listTemplates: async (): Promise<ServiceTemplate[]> => {
+        const res = await fetchWithAuth('/api/v1/templates');
+        if (!res.ok) throw new Error('Failed to fetch templates');
+        return res.json();
+    },
+
+    /**
+     * Saves a service template to the marketplace.
+     *
+     * Summary: Saves a service template.
+     *
+     * @param template - The template to save.
+     * @returns A promise that resolves when the template is saved.
+     * @throws {Error} If saving fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/templates.
+     */
+    saveTemplate: async (template: ServiceTemplate) => {
+        const res = await fetchWithAuth('/api/v1/templates', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(template)
+        });
+        if (!res.ok) throw new Error('Failed to save template');
+        return res.json();
+    },
+
+    /**
+     * Deletes a service template from the marketplace.
+     *
+     * Summary: Deletes a service template.
+     *
+     * @param id - The ID of the template to delete.
+     * @returns A promise that resolves when the template is deleted.
+     * @throws {Error} If deletion fails.
+     *
+     * Side Effects: Makes a DELETE request to /api/v1/templates/:id.
+     */
+    deleteTemplate: async (id: string) => {
+        const res = await fetchWithAuth(`/api/v1/templates/${id}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete template');
+        return {};
+    },
+
+    /**
+     * Saves the stack configuration from YAML.
+     *
+     * Summary: Saves stack config from YAML.
+     *
+     * @param stackId - The ID of the stack.
+     * @param yamlContent - The YAML configuration content.
+     * @returns A promise that resolves when the config is saved.
+     * @throws {Error} If saving fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/stacks/:id/config.
+     */
+    saveStackYaml: async (stackId: string, yamlContent: string) => {
+        const res = await fetchWithAuth(`/api/v1/stacks/${stackId}/config`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/yaml' }, // or text/plain depending on server handler
+            body: yamlContent
+        });
+        if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(`Failed to save stack config: ${txt}`);
+        }
+        return res.json();
+    },
+
+    // Audit Logs
+
+    /**
+     * Lists audit logs.
+     *
+     * Summary: Lists audit logs.
+     *
+     * @param filters - The filters for the audit logs.
+     * @returns A promise that resolves to the list of audit logs.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/audit/logs.
+     */
+    listAuditLogs: async (filters: {
+        start_time?: string;
+        end_time?: string;
+        tool_name?: string;
+        user_id?: string;
+        profile_id?: string;
+        limit?: number;
+        offset?: number;
+    }) => {
+        const query = new URLSearchParams();
+        if (filters.start_time) query.set('start_time', filters.start_time);
+        if (filters.end_time) query.set('end_time', filters.end_time);
+        if (filters.tool_name) query.set('tool_name', filters.tool_name);
+        if (filters.user_id) query.set('user_id', filters.user_id);
+        if (filters.profile_id) query.set('profile_id', filters.profile_id);
+        if (filters.limit) query.set('limit', filters.limit.toString());
+        if (filters.offset) query.set('offset', filters.offset.toString());
+
+        const res = await fetchWithAuth(`/api/v1/audit/logs?${query.toString()}`);
+        if (!res.ok) throw new Error('Failed to fetch audit logs');
+        return res.json();
+    },
+
+    /**
+     * Exports audit logs as a CSV file.
+     *
+     * Summary: Exports audit logs.
+     *
+     * @param filters - The filters for the audit logs.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Triggers a file download.
+     */
+    exportAuditLogs: async (filters: {
+        start_time?: string;
+        end_time?: string;
+        tool_name?: string;
+        user_id?: string;
+        profile_id?: string;
+    }) => {
+        const query = new URLSearchParams();
+        if (filters.start_time) query.set('start_time', filters.start_time);
+        if (filters.end_time) query.set('end_time', filters.end_time);
+        if (filters.tool_name) query.set('tool_name', filters.tool_name);
+        if (filters.user_id) query.set('user_id', filters.user_id);
+        if (filters.profile_id) query.set('profile_id', filters.profile_id);
+
+        const res = await fetchWithAuth(`/api/v1/audit/export?${query.toString()}`);
+        if (!res.ok) throw new Error('Failed to export audit logs');
+
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+
+        const contentDisposition = res.headers.get('Content-Disposition');
+        let filename = 'audit_export.csv';
+        if (contentDisposition) {
+            const filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
+            if (filenameMatch && filenameMatch.length === 2) {
+                filename = filenameMatch[1];
+            }
+        }
+
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+    },
+
+    /**
+     * Gets the discovery status.
+     *
+     * Summary: Retrieves auto-discovery status.
+     *
+     * @returns A promise that resolves to the list of provider statuses.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/discovery/status.
+     */
+    getDiscoveryStatus: async (): Promise<any[]> => {
+        const res = await fetchWithAuth('/api/v1/discovery/status');
+        if (!res.ok) throw new Error('Failed to fetch discovery status');
+        return res.json();
+    },
+
+    /**
+     * Triggers auto-discovery.
+     *
+     * Summary: Triggers a new discovery run.
+     *
+     * @returns A promise that resolves when the trigger is accepted.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/discovery/trigger.
+     */
+    triggerDiscovery: async () => {
+        const res = await fetchWithAuth('/api/v1/discovery/trigger', {
+            method: 'POST'
+        });
+        if (!res.ok) throw new Error('Failed to trigger discovery');
+        return {};
     }
-    const res = await fetchWithAuth(url);
-    if (!res.ok) throw new Error("Failed to fetch traces");
-    return res.json();
-  },
-
-  /**
-   * Gets the network topology graph.
-   *
-   * Summary: Retrieves network topology.
-   *
-   * @returns A promise that resolves to the graph.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/topology.
-   */
-  getTopology: async () => {
-    return dedupeRequests("getTopology", async () => {
-      const res = await fetchWithAuth("/api/v1/topology");
-      if (!res.ok) throw new Error("Failed to fetch topology");
-      return res.json();
-    });
-  },
-
-  /**
-   * Seeds the dashboard traffic history (Debug/Test only).
-   *
-   * Summary: Seeds traffic data.
-   *
-   * @param points - The traffic points to seed.
-   * @throws {Error} If seeding fails.
-   *
-   * Side Effects: Makes a POST request to /api/v1/debug/seed_traffic.
-   */
-  seedTrafficData: async (points: any[]) => {
-    const res = await fetchWithAuth("/api/v1/debug/seed_traffic", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(points),
-    });
-    if (!res.ok) throw new Error("Failed to seed traffic data");
-  },
-
-  /**
-   * Seeds a debug trace.
-   *
-   * Summary: Seeds a trace.
-   *
-   * @param trace - The trace object to seed.
-   * @returns A promise that resolves to the seeded trace.
-   * @throws {Error} If seeding fails.
-   *
-   * Side Effects: Makes a POST request to /api/v1/debug/traces.
-   */
-  seedTrace: async (trace?: any) => {
-    const res = await fetchWithAuth("/api/v1/debug/traces", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(trace || {}),
-    });
-    if (!res.ok) throw new Error("Failed to seed trace");
-    return res.json();
-  },
-
-  /**
-   * Updates an alert status.
-   *
-   * Summary: Updates alert status.
-   *
-   * @param id - The ID of the alert.
-   * @param status - The new status.
-   * @returns A promise that resolves to the updated alert.
-   * @throws {Error} If update fails.
-   *
-   * Side Effects: Makes a PATCH request to /api/v1/alerts/:id.
-   */
-  updateAlertStatus: async (id: string, status: string) => {
-    const res = await fetchWithAuth(`/api/v1/alerts/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
-    });
-    if (!res.ok) throw new Error("Failed to update alert status");
-    return res.json();
-  },
-
-  /**
-   * Gets the configured global webhook URL for alerts.
-   *
-   * Summary: Retrieves webhook URL.
-   *
-   * @returns A promise that resolves to the webhook configuration.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/alerts/webhook.
-   */
-  getWebhookURL: async (): Promise<{ url: string }> => {
-    const res = await fetchWithAuth("/api/v1/alerts/webhook");
-    if (!res.ok) throw new Error("Failed to fetch webhook URL");
-    return res.json();
-  },
-
-  /**
-   * Saves the configured global webhook URL for alerts.
-   *
-   * Summary: Saves webhook URL.
-   *
-   * @param url - The webhook URL.
-   * @returns A promise that resolves to the updated webhook configuration.
-   * @throws {Error} If saving fails.
-   *
-   * Side Effects: Makes a POST request to /api/v1/alerts/webhook.
-   */
-  saveWebhookURL: async (url: string) => {
-    const res = await fetchWithAuth("/api/v1/alerts/webhook", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ url }),
-    });
-    if (!res.ok) throw new Error("Failed to save webhook URL");
-    return res.json();
-  },
-
-  // Stack Management (Collections)
-
-  /**
-   * Lists all service collections (stacks).
-   *
-   * Summary: Lists collections.
-   *
-   * @returns A promise that resolves to a list of collections.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/collections.
-   */
-  listCollections: async () => {
-    const res = await fetchWithAuth("/api/v1/collections");
-    if (!res.ok) throw new Error("Failed to list collections");
-    const data = await res.json();
-    const list = Array.isArray(data) ? data : data.collections || [];
-    return list.map((c: any) => ({
-      name: c.name,
-      description: c.description,
-      author: c.author,
-      version: c.version,
-      services: (c.services || []).map(mapUpstreamServiceConfig),
-    }));
-  },
-
-  /**
-   * Gets a single service collection (stack) by its name.
-   *
-   * Summary: Retrieves a collection.
-   *
-   * @param name - The name of the collection.
-   * @returns A promise that resolves to the collection.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/collections/:name.
-   */
-  getCollection: async (name: string) => {
-    const res = await fetchWithAuth(`/api/v1/collections/${name}`);
-    if (!res.ok) throw new Error("Failed to get collection");
-    return res.json();
-  },
-
-  /**
-   * Saves a service collection (stack).
-   *
-   * Summary: Saves a collection.
-   *
-   * @param collection - The collection to save.
-   * @returns A promise that resolves when the collection is saved.
-   * @throws {Error} If saving fails.
-   *
-   * Side Effects: Makes a PUT request to /api/v1/collections/:name.
-   */
-  saveCollection: async (collection: any) => {
-    // Decide if create or update based on existence?
-    // The API might expect POST for create, PUT for update.
-    // For now, let's try POST to /api/v1/collections if id/name is new, or PUT if existing?
-    // But stack-editor logic handles "saving".
-    // The endpoint logic in api.go: handleCollections is POST, handleCollectionDetail is PUT.
-    // We'll use PUT if we have a name in the URL, POST otherwise?
-    // But `saveStackConfig` was replacing config.
-    // Let's assume we update an existing one usually.
-    const res = await fetchWithAuth(`/api/v1/collections/${collection.name}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(collection),
-    });
-    if (!res.ok) {
-      // If PUT fails (e.g. not found), try POST to create?
-      // But UI should know if it's new.
-      // For now just error.
-      throw new Error("Failed to save collection");
-    }
-    return res.json();
-  },
-
-  /**
-   * Deletes a service collection (stack).
-   *
-   * Summary: Deletes a collection.
-   *
-   * @param name - The name of the collection to delete.
-   * @returns A promise that resolves when the collection is deleted.
-   * @throws {Error} If deletion fails.
-   *
-   * Side Effects: Makes a DELETE request to /api/v1/collections/:name.
-   */
-  deleteCollection: async (name: string) => {
-    const res = await fetchWithAuth(`/api/v1/collections/${name}`, {
-      method: "DELETE",
-    });
-    if (!res.ok) throw new Error("Failed to delete collection");
-    return {};
-  },
-
-  /**
-   * Gets the configuration for a stack (Compatibility wrapper).
-   *
-   * Summary: Retrieves stack config.
-   *
-   * @param stackId - The ID of the stack.
-   * @returns A promise that resolves to the stack configuration.
-   *
-   * Side Effects: Delegates to getCollection.
-   */
-  getStackConfig: async (stackId: string) => {
-    // Map to getCollection
-    return apiClient.getCollection(stackId);
-  },
-
-  /**
-   * Saves the configuration for a stack (Compatibility wrapper).
-   *
-   * Summary: Saves stack config.
-   *
-   * @param stackId - The ID of the stack.
-   * @param config - The configuration content (Collection object).
-   * @returns A promise that resolves when the config is saved.
-   *
-   * Side Effects: Delegates to saveCollection.
-   */
-  saveStackConfig: async (stackId: string, config: any) => {
-    // Map to saveCollection. Ensure name is set.
-    const collection = typeof config === "string" ? JSON.parse(config) : config;
-    if (!collection.name) collection.name = stackId;
-    return apiClient.saveCollection(collection);
-  },
-
-  /**
-   * Gets the stack configuration as YAML.
-   *
-   * Summary: Retrieves stack config as YAML.
-   *
-   * @param stackId - The ID of the stack.
-   * @returns A promise that resolves to the YAML string.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/stacks/:id/config.
-   */
-  getStackYaml: async (stackId: string) => {
-    const res = await fetchWithAuth(`/api/v1/stacks/${stackId}/config`);
-    if (!res.ok) throw new Error("Failed to get stack config");
-    return res.text();
-  },
-
-  /**
-   * Lists all service templates from the marketplace.
-   *
-   * Summary: Lists service templates.
-   *
-   * @returns A promise that resolves to a list of service templates.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/templates.
-   */
-  listTemplates: async (): Promise<ServiceTemplate[]> => {
-    const res = await fetchWithAuth("/api/v1/templates");
-    if (!res.ok) throw new Error("Failed to fetch templates");
-    return res.json();
-  },
-
-  /**
-   * Saves a service template to the marketplace.
-   *
-   * Summary: Saves a service template.
-   *
-   * @param template - The template to save.
-   * @returns A promise that resolves when the template is saved.
-   * @throws {Error} If saving fails.
-   *
-   * Side Effects: Makes a POST request to /api/v1/templates.
-   */
-  saveTemplate: async (template: ServiceTemplate) => {
-    const res = await fetchWithAuth("/api/v1/templates", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(template),
-    });
-    if (!res.ok) throw new Error("Failed to save template");
-    return res.json();
-  },
-
-  /**
-   * Deletes a service template from the marketplace.
-   *
-   * Summary: Deletes a service template.
-   *
-   * @param id - The ID of the template to delete.
-   * @returns A promise that resolves when the template is deleted.
-   * @throws {Error} If deletion fails.
-   *
-   * Side Effects: Makes a DELETE request to /api/v1/templates/:id.
-   */
-  deleteTemplate: async (id: string) => {
-    const res = await fetchWithAuth(`/api/v1/templates/${id}`, {
-      method: "DELETE",
-    });
-    if (!res.ok) throw new Error("Failed to delete template");
-    return {};
-  },
-
-  /**
-   * Saves the stack configuration from YAML.
-   *
-   * Summary: Saves stack config from YAML.
-   *
-   * @param stackId - The ID of the stack.
-   * @param yamlContent - The YAML configuration content.
-   * @returns A promise that resolves when the config is saved.
-   * @throws {Error} If saving fails.
-   *
-   * Side Effects: Makes a POST request to /api/v1/stacks/:id/config.
-   */
-  saveStackYaml: async (stackId: string, yamlContent: string) => {
-    const res = await fetchWithAuth(`/api/v1/stacks/${stackId}/config`, {
-      method: "POST",
-      headers: { "Content-Type": "text/yaml" }, // or text/plain depending on server handler
-      body: yamlContent,
-    });
-    if (!res.ok) {
-      const txt = await res.text();
-      throw new Error(`Failed to save stack config: ${txt}`);
-    }
-    return res.json();
-  },
-
-  // Audit Logs
-
-  /**
-   * Lists audit logs.
-   *
-   * Summary: Lists audit logs.
-   *
-   * @param filters - The filters for the audit logs.
-   * @returns A promise that resolves to the list of audit logs.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/audit/logs.
-   */
-  listAuditLogs: async (filters: {
-    start_time?: string;
-    end_time?: string;
-    tool_name?: string;
-    user_id?: string;
-    profile_id?: string;
-    limit?: number;
-    offset?: number;
-  }) => {
-    const query = new URLSearchParams();
-    if (filters.start_time) query.set("start_time", filters.start_time);
-    if (filters.end_time) query.set("end_time", filters.end_time);
-    if (filters.tool_name) query.set("tool_name", filters.tool_name);
-    if (filters.user_id) query.set("user_id", filters.user_id);
-    if (filters.profile_id) query.set("profile_id", filters.profile_id);
-    if (filters.limit) query.set("limit", filters.limit.toString());
-    if (filters.offset) query.set("offset", filters.offset.toString());
-
-    const res = await fetchWithAuth(`/api/v1/audit/logs?${query.toString()}`);
-    if (!res.ok) throw new Error("Failed to fetch audit logs");
-    return res.json();
-  },
-
-  /**
-   * Exports audit logs as a CSV file.
-   *
-   * Summary: Exports audit logs.
-   *
-   * @param filters - The filters for the audit logs.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Triggers a file download.
-   */
-  exportAuditLogs: async (filters: {
-    start_time?: string;
-    end_time?: string;
-    tool_name?: string;
-    user_id?: string;
-    profile_id?: string;
-  }) => {
-    const query = new URLSearchParams();
-    if (filters.start_time) query.set("start_time", filters.start_time);
-    if (filters.end_time) query.set("end_time", filters.end_time);
-    if (filters.tool_name) query.set("tool_name", filters.tool_name);
-    if (filters.user_id) query.set("user_id", filters.user_id);
-    if (filters.profile_id) query.set("profile_id", filters.profile_id);
-
-    const res = await fetchWithAuth(`/api/v1/audit/export?${query.toString()}`);
-    if (!res.ok) throw new Error("Failed to export audit logs");
-
-    const blob = await res.blob();
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-
-    const contentDisposition = res.headers.get("Content-Disposition");
-    let filename = "audit_export.csv";
-    if (contentDisposition) {
-      const filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
-      if (filenameMatch && filenameMatch.length === 2) {
-        filename = filenameMatch[1];
-      }
-    }
-
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(a);
-  },
-
-  /**
-   * Gets the discovery status.
-   *
-   * Summary: Retrieves auto-discovery status.
-   *
-   * @returns A promise that resolves to the list of provider statuses.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a GET request to /api/v1/discovery/status.
-   */
-  getDiscoveryStatus: async (): Promise<any[]> => {
-    const res = await fetchWithAuth("/api/v1/discovery/status");
-    if (!res.ok) throw new Error("Failed to fetch discovery status");
-    return res.json();
-  },
-
-  /**
-   * Triggers auto-discovery.
-   *
-   * Summary: Triggers a new discovery run.
-   *
-   * @returns A promise that resolves when the trigger is accepted.
-   * @throws {Error} If the request fails.
-   *
-   * Side Effects: Makes a POST request to /api/v1/discovery/trigger.
-   */
-  triggerDiscovery: async () => {
-    const res = await fetchWithAuth("/api/v1/discovery/trigger", {
-      method: "POST",
-    });
-    if (!res.ok) throw new Error("Failed to trigger discovery");
-    return {};
-  },
 };
