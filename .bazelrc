@@ -101,7 +101,7 @@ common:buildbuddy-official --remote_local_fallback
 common:buildbuddy-official --remote_header=x-buildbuddy-api-key=vGFjlQg7X49NwoQHAfRW
 
 # Set buildbuddy as the default configuration for all builds
-build:remote --config=buildbuddy-official --local_ram_resources=HOST_RAM*0.5
+build:remote --config=buildbuddy-official
 # Avoid local test host overload for targets that cannot run remotely
 # (e.g. no-remote-exec Playwright/integration tests).
 test:remote --local_test_jobs=8
@@ -113,3 +113,7 @@ build:local --spawn_strategy=local
 
 # Workaround for JVM OOM error in CI during `bazel test //...`
 startup --host_jvm_args=-Xmx4g
+# Reduce local test parallelism to avoid OutOfMemoryError in CI
+test --local_test_jobs=4
+# Tell Bazel it only has access to a conservative amount of RAM to prevent the runner from being overwhelmed
+build --local_ram_resources=4096
