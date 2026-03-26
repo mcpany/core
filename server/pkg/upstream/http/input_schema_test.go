@@ -16,7 +16,16 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func TestHTTPUpstream_InputSchema_BugRepro(t *testing.T) {
+// TestHTTPUpstream_InputSchema_BugRepro ...
+// Summary: TestHTTPUpstream_InputSchema_BugRepro
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)

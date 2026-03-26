@@ -13,7 +13,16 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestValidateSQLService_Coverage(t *testing.T) {
+// TestValidateSQLService_Coverage ...
+// Summary: TestValidateSQLService_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name                string
 		config              *configv1.McpAnyServerConfig

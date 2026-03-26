@@ -11,7 +11,16 @@ import (
 	"github.com/mcpany/core/server/pkg/validation"
 )
 
-func TestMain(m *testing.M) {
+// TestMain ...
+// Summary: TestMain
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fmt.Println("DEBUG: Running TestMain in package tool")
 	// Mock IsSafeURL to allow all URLs during tests in this package.
 	// This is necessary because many tests use httptest.NewServer which runs on 127.0.0.1.

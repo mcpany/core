@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestHTTPUpstream_Register_Unreachable(t *testing.T) {
+// TestHTTPUpstream_Register_Unreachable ...
+// Summary: TestHTTPUpstream_Register_Unreachable
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test verifies that the Register method calls the doctor check (via log emission)
 	// when the service is unreachable, but does NOT return an error.
 

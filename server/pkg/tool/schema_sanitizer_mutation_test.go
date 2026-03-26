@@ -9,7 +9,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSanitizeJSONSchema_DoesNotMutateInput(t *testing.T) {
+// TestSanitizeJSONSchema_DoesNotMutateInput ...
+// Summary: TestSanitizeJSONSchema_DoesNotMutateInput
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	rawSchema := map[string]interface{}{
 		"properties": map[string]interface{}{
 			"foo": map[string]interface{}{
@@ -30,7 +39,16 @@ func TestSanitizeJSONSchema_DoesNotMutateInput(t *testing.T) {
 	assert.False(t, hasTypeAfter, "Input schema should not be mutated")
 }
 
-func TestSanitizeJSONSchema_DoesNotMutateNestedInput(t *testing.T) {
+// TestSanitizeJSONSchema_DoesNotMutateNestedInput ...
+// Summary: TestSanitizeJSONSchema_DoesNotMutateNestedInput
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	rawSchema := map[string]interface{}{
 		"type": "object",
 		"properties": map[string]interface{}{

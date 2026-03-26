@@ -13,7 +13,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestNatsBus_Publish_JsonError(t *testing.T) {
+// TestNatsBus_Publish_JsonError ...
+// Summary: TestNatsBus_Publish_JsonError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Start embedded server
 	config := &bus.NatsBus{}
 	b, err := New[any](config)
@@ -30,7 +39,16 @@ func TestNatsBus_Publish_JsonError(t *testing.T) {
 	assert.Contains(t, err.Error(), "json: unsupported type")
 }
 
-func TestNatsBus_Publish_ClosedConnection(t *testing.T) {
+// TestNatsBus_Publish_ClosedConnection ...
+// Summary: TestNatsBus_Publish_ClosedConnection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	config := &bus.NatsBus{}
 	b, err := New[string](config)
 	require.NoError(t, err)
@@ -53,7 +71,16 @@ func TestNatsBus_Publish_ClosedConnection(t *testing.T) {
 	assert.Contains(t, err.Error(), "nats: connection closed")
 }
 
-func TestNatsBus_Subscribe_InvalidJson(t *testing.T) {
+// TestNatsBus_Subscribe_InvalidJson ...
+// Summary: TestNatsBus_Subscribe_InvalidJson
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	config := &bus.NatsBus{}
 	b, err := New[string](config)
 	require.NoError(t, err)
@@ -88,7 +115,16 @@ func TestNatsBus_Subscribe_InvalidJson(t *testing.T) {
 	assert.False(t, received)
 }
 
-func TestNatsBus_SubscribeOnce_InvalidJson(t *testing.T) {
+// TestNatsBus_SubscribeOnce_InvalidJson ...
+// Summary: TestNatsBus_SubscribeOnce_InvalidJson
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	config := &bus.NatsBus{}
 	b, err := New[string](config)
 	require.NoError(t, err)
@@ -116,7 +152,16 @@ func TestNatsBus_SubscribeOnce_InvalidJson(t *testing.T) {
 	assert.False(t, received)
 }
 
-func TestNatsBus_StartServer_Failure(_ *testing.T) {
+// TestNatsBus_StartServer_Failure ...
+// Summary: TestNatsBus_StartServer_Failure
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Trying to start on a port that is busy?
 	// But we use port -1 for random port.
 	// Hard to force embedded server failure easily without mocking server package.

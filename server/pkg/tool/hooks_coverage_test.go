@@ -20,7 +20,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestNewWebhookHook(t *testing.T) {
+// TestNewWebhookHook ...
+// Summary: TestNewWebhookHook
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	config := configv1.WebhookConfig_builder{
 		Url:           "http://example.com",
@@ -32,7 +41,16 @@ func TestNewWebhookHook(t *testing.T) {
 	assert.NotNil(t, hook.client.webhook)
 }
 
-func TestSigningRoundTripper_RoundTrip(t *testing.T) {
+// TestSigningRoundTripper_RoundTrip ...
+// Summary: TestSigningRoundTripper_RoundTrip
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	// "secret" in base64 is c2VjcmV0, but specific library might require more.
 	// "test-secret-valid-base64" -> "dGVzdC1zZWNyZXQtdmFsaWQtYmFzZTY0"
@@ -76,18 +94,37 @@ func TestSigningRoundTripper_RoundTrip(t *testing.T) {
 	assert.Equal(t, 200, resp.StatusCode)
 }
 
-type MockTransport struct {
+// MockTransport ...
+// Summary: MockTransport
 	RoundTripFunc func(*http.Request) (*http.Response, error)
 }
 
-func (m *MockTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+// RoundTrip ...
+// Summary: RoundTrip
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.RoundTripFunc != nil {
 		return m.RoundTripFunc(req)
 	}
 	return &http.Response{StatusCode: 200, Body: io.NopCloser(strings.NewReader(""))}, nil
 }
 
-func TestWebhookHook_ExecutePre(t *testing.T) {
+// TestWebhookHook_ExecutePre ...
+// Summary: TestWebhookHook_ExecutePre
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		// Respond with CloudEvent in Binary Mode
@@ -121,7 +158,16 @@ func TestWebhookHook_ExecutePre(t *testing.T) {
 	assert.Equal(t, ActionAllow, action)
 }
 
-func TestWebhookHook_ExecutePre_Errors(t *testing.T) {
+// TestWebhookHook_ExecutePre_Errors ...
+// Summary: TestWebhookHook_ExecutePre_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	// 1. Unmarshal Inputs Fail
 	hook := NewWebhookHook(configv1.WebhookConfig_builder{}.Build())
@@ -153,7 +199,16 @@ func TestWebhookHook_ExecutePre_Errors(t *testing.T) {
 	assert.Equal(t, ActionDeny, action)
 }
 
-func TestPolicyHook_InvalidRegex(t *testing.T) {
+// TestPolicyHook_InvalidRegex ...
+// Summary: TestPolicyHook_InvalidRegex
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	// Case: Invalid Regex (Should skip and log error, not panic)
 	// We verify it falls back to default action (Deny in this case)

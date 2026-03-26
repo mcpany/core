@@ -13,7 +13,16 @@ import (
 	"testing"
 )
 
-func TestGzipCompressionMiddleware(t *testing.T) {
+// TestGzipCompressionMiddleware ...
+// Summary: TestGzipCompressionMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Helper to generate large string (> 1400 bytes)
 	largePayload := strings.Repeat("Hello, World! ", 150) // ~2100 bytes
 
@@ -182,19 +191,55 @@ type mockFlusher struct {
 	code             int
 }
 
-func (m *mockFlusher) Header() http.Header {
+// Header ...
+// Summary: Header
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.header
 }
 
-func (m *mockFlusher) Write(b []byte) (int, error) {
+// Write ...
+// Summary: Write
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.body.Write(b)
 }
 
-func (m *mockFlusher) WriteHeader(statusCode int) {
+// WriteHeader ...
+// Summary: WriteHeader
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.code = statusCode
 }
 
-func (m *mockFlusher) Flush() {
+// Flush ...
+// Summary: Flush
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Snapshot current body
 	snapshot := make([]byte, m.body.Len())
 	copy(snapshot, m.body.Bytes())

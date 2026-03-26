@@ -21,7 +21,16 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func TestHTTPUpstream_Register_CallPolicy_Blocked(t *testing.T) {
+// TestHTTPUpstream_Register_CallPolicy_Blocked ...
+// Summary: TestHTTPUpstream_Register_CallPolicy_Blocked
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
@@ -63,7 +72,16 @@ func TestHTTPUpstream_Register_CallPolicy_Blocked(t *testing.T) {
 	assert.Equal(t, "allowed-arg", discoveredTools[1].GetName())
 }
 
-func TestHTTPUpstream_Register_MalformedURL(t *testing.T) {
+// TestHTTPUpstream_Register_MalformedURL ...
+// Summary: TestHTTPUpstream_Register_MalformedURL
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
@@ -90,7 +108,16 @@ func TestHTTPUpstream_Register_MalformedURL(t *testing.T) {
 	assert.Len(t, discoveredTools, 0, "Tool with invalid URL should be skipped")
 }
 
-func TestHTTPUpstream_Register_ExportPolicy(t *testing.T) {
+// TestHTTPUpstream_Register_ExportPolicy ...
+// Summary: TestHTTPUpstream_Register_ExportPolicy
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test coverage for "Export Policy"
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
@@ -125,7 +152,16 @@ func TestHTTPUpstream_Register_ExportPolicy(t *testing.T) {
 	assert.Equal(t, "public-tool", discoveredTools[0].GetName())
 }
 
-func TestHTTPUpstream_Register_AutoDiscover(t *testing.T) {
+// TestHTTPUpstream_Register_AutoDiscover ...
+// Summary: TestHTTPUpstream_Register_AutoDiscover
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
@@ -152,7 +188,16 @@ func TestHTTPUpstream_Register_AutoDiscover(t *testing.T) {
 	assert.Contains(t, names, "call2")
 }
 
-func TestHTTPUpstream_Register_Comprehensive(t *testing.T) {
+// TestHTTPUpstream_Register_Comprehensive ...
+// Summary: TestHTTPUpstream_Register_Comprehensive
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
@@ -243,7 +288,16 @@ func TestHTTPUpstream_Register_Comprehensive(t *testing.T) {
 	assert.True(t, ok, "Public prompt should be exported")
 }
 
-func TestHTTPUpstream_Register_InputSchemaGeneration(t *testing.T) {
+// TestHTTPUpstream_Register_InputSchemaGeneration ...
+// Summary: TestHTTPUpstream_Register_InputSchemaGeneration
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test automatic input schema generation when InputSchema is missing but Parameters exist
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
@@ -300,7 +354,16 @@ func TestHTTPUpstream_Register_InputSchemaGeneration(t *testing.T) {
 	assert.Equal(t, "param1", reqList[0].GetStringValue())
 }
 
-func TestHTTPUpstream_Register_InvalidAddress(t *testing.T) {
+// TestHTTPUpstream_Register_InvalidAddress ...
+// Summary: TestHTTPUpstream_Register_InvalidAddress
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
@@ -319,7 +382,16 @@ func TestHTTPUpstream_Register_InvalidAddress(t *testing.T) {
 	assert.Contains(t, err.Error(), "invalid http service address")
 }
 
-func TestHTTPUpstream_Register_PoolConfig(t *testing.T) {
+// TestHTTPUpstream_Register_PoolConfig ...
+// Summary: TestHTTPUpstream_Register_PoolConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
@@ -352,7 +424,16 @@ func TestHTTPUpstream_Register_PoolConfig(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestHTTPUpstream_Register_PoolCreationFailure(t *testing.T) {
+// TestHTTPUpstream_Register_PoolCreationFailure ...
+// Summary: TestHTTPUpstream_Register_PoolCreationFailure
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
@@ -379,7 +460,16 @@ func TestHTTPUpstream_Register_PoolCreationFailure(t *testing.T) {
 	assert.Contains(t, err.Error(), "mock pool creation failed")
 }
 
-func TestHTTPUpstream_Register_ResourceErrors(t *testing.T) {
+// TestHTTPUpstream_Register_ResourceErrors ...
+// Summary: TestHTTPUpstream_Register_ResourceErrors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	upstream := NewUpstream(pm)
 
@@ -474,7 +564,16 @@ func TestHTTPUpstream_Register_ResourceErrors(t *testing.T) {
 	assert.Empty(t, rm.ListResources())
 }
 
-func TestHTTPUpstream_Register_PromptExportPolicy(t *testing.T) {
+// TestHTTPUpstream_Register_PromptExportPolicy ...
+// Summary: TestHTTPUpstream_Register_PromptExportPolicy
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
@@ -535,7 +634,16 @@ func TestHTTPUpstream_Register_PromptExportPolicy(t *testing.T) {
 	assert.False(t, foundDeny, "Explicit deny should be unexported")
 }
 
-func TestHTTPUpstream_Register_CoverageEnhancement(t *testing.T) {
+// TestHTTPUpstream_Register_CoverageEnhancement ...
+// Summary: TestHTTPUpstream_Register_CoverageEnhancement
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
@@ -616,7 +724,16 @@ func TestHTTPUpstream_Register_CoverageEnhancement(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestHTTPUpstream_Register_MoreDoubleSlash(t *testing.T) {
+// TestHTTPUpstream_Register_MoreDoubleSlash ...
+// Summary: TestHTTPUpstream_Register_MoreDoubleSlash
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
@@ -638,7 +755,16 @@ func TestHTTPUpstream_Register_MoreDoubleSlash(t *testing.T) {
 	assert.Empty(t, tools)
 }
 
-func TestHTTPUpstream_Register_InputSchemaMerge(t *testing.T) {
+// TestHTTPUpstream_Register_InputSchemaMerge ...
+// Summary: TestHTTPUpstream_Register_InputSchemaMerge
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
@@ -698,7 +824,16 @@ func TestHTTPUpstream_Register_InputSchemaMerge(t *testing.T) {
 	assert.Contains(t, reqStr, "new_param")
 }
 
-func TestHTTPUpstream_Register_DoubleSlashRecovery(t *testing.T) {
+// TestHTTPUpstream_Register_DoubleSlashRecovery ...
+// Summary: TestHTTPUpstream_Register_DoubleSlashRecovery
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
@@ -732,7 +867,16 @@ func TestHTTPUpstream_Register_DoubleSlashRecovery(t *testing.T) {
 	assert.Contains(t, fqn, "foo%2Fbar")
 }
 
-func TestHTTPUpstream_Register_DisabledItems(t *testing.T) {
+// TestHTTPUpstream_Register_DisabledItems ...
+// Summary: TestHTTPUpstream_Register_DisabledItems
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)

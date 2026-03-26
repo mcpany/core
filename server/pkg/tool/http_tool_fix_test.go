@@ -16,7 +16,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestNewHTTPTool_SpaceInURL(t *testing.T) {
+// TestNewHTTPTool_SpaceInURL ...
+// Summary: TestNewHTTPTool_SpaceInURL
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test specifically verifies that NewHTTPTool correctly parses URLs with spaces.
 	// This was a bug where strings.Fields splits URL incorrectly.
 
@@ -53,7 +62,16 @@ func TestNewHTTPTool_SpaceInURL(t *testing.T) {
 	assert.NotContains(t, err.Error(), "invalid http tool definition", "Initialization should not fail due to space in URL")
 }
 
-func TestNewHTTPTool_InvalidFormat(t *testing.T) {
+// TestNewHTTPTool_InvalidFormat ...
+// Summary: TestNewHTTPTool_InvalidFormat
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test the case where FQN is indeed invalid (no space)
 	fqn := "INVALID_FQN"
 	toolProto := pb.Tool_builder{
@@ -74,7 +92,16 @@ func TestNewHTTPTool_InvalidFormat(t *testing.T) {
 	assert.Contains(t, err.Error(), "invalid http tool definition")
 }
 
-func TestHTTPTool_PrepareBody_Template(t *testing.T) {
+// TestHTTPTool_PrepareBody_Template ...
+// Summary: TestHTTPTool_PrepareBody_Template
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test prepareBody with template
 	urlStr := "http://example.com/api"
 	fqn := "POST " + urlStr

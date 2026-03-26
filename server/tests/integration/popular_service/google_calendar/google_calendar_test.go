@@ -18,7 +18,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestUpstreamService_GoogleCalendar(t *testing.T) {
+// TestUpstreamService_GoogleCalendar ...
+// Summary: TestUpstreamService_GoogleCalendar
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// No longer skipping due to missing API Key
 	// if os.Getenv("GOOGLE_API_KEY") == "" {
 	// 	t.Skip("Skipping test because GOOGLE_API_KEY is not set")

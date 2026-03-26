@@ -11,7 +11,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestStripSecretsFromGrpcService(t *testing.T) {
+// TestStripSecretsFromGrpcService ...
+// Summary: TestStripSecretsFromGrpcService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	service := configv1.GrpcUpstreamService_builder{
 		Address: proto.String("localhost:50051"),
 		Calls: map[string]*configv1.GrpcCallDefinition{
@@ -25,7 +34,16 @@ func TestStripSecretsFromGrpcService(t *testing.T) {
 	assert.Equal(t, "localhost:50051", service.GetAddress())
 }
 
-func TestStripSecretsFromOpenapiService(t *testing.T) {
+// TestStripSecretsFromOpenapiService ...
+// Summary: TestStripSecretsFromOpenapiService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	service := configv1.OpenapiUpstreamService_builder{
 		SpecUrl: proto.String("http://example.com/spec.json"),
 	}.Build()
@@ -33,14 +51,32 @@ func TestStripSecretsFromOpenapiService(t *testing.T) {
 	assert.Equal(t, "http://example.com/spec.json", service.GetSpecUrl())
 }
 
-func TestStripSecretsFromMcpCall(t *testing.T) {
+// TestStripSecretsFromMcpCall ...
+// Summary: TestStripSecretsFromMcpCall
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	call := configv1.MCPCallDefinition_builder{
 		InputSchema: nil,
 	}.Build()
 	stripSecretsFromMcpCall(call)
 }
 
-func TestStripSecretsFromMcpService_StdioEnv(t *testing.T) {
+// TestStripSecretsFromMcpService_StdioEnv ...
+// Summary: TestStripSecretsFromMcpService_StdioEnv
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test environment variable stripping in McpService Stdio
 	mcp := configv1.McpUpstreamService_builder{
 		StdioConnection: configv1.McpStdioConnection_builder{
@@ -76,7 +112,16 @@ func TestStripSecretsFromMcpService_StdioEnv(t *testing.T) {
 	assert.False(t, env2["SECRET"].HasValue())
 }
 
-func TestScrubSecretValue(t *testing.T) {
+// TestScrubSecretValue ...
+// Summary: TestScrubSecretValue
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Nil
 	scrubSecretValue(nil)
 
@@ -95,7 +140,16 @@ func TestScrubSecretValue(t *testing.T) {
 	assert.True(t, sv2.HasValue())
 }
 
-func TestStripSecretsFromHook(t *testing.T) {
+// TestStripSecretsFromHook ...
+// Summary: TestStripSecretsFromHook
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Nil hook
 	stripSecretsFromHook(nil)
 
@@ -110,7 +164,16 @@ func TestStripSecretsFromHook(t *testing.T) {
 	assert.Equal(t, "", hook.GetWebhook().GetWebhookSecret())
 }
 
-func TestStripSecretsFromCacheConfig(t *testing.T) {
+// TestStripSecretsFromCacheConfig ...
+// Summary: TestStripSecretsFromCacheConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Nil
 	stripSecretsFromCacheConfig(nil)
 
@@ -139,7 +202,16 @@ func TestStripSecretsFromCacheConfig(t *testing.T) {
 	assert.False(t, cache2.GetSemanticConfig().GetApiKey().HasValue())
 }
 
-func TestStripSecretsFromCalls(t *testing.T) {
+// TestStripSecretsFromCalls ...
+// Summary: TestStripSecretsFromCalls
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// HTTP Call
 	httpCall := configv1.HttpCallDefinition_builder{
 		Parameters: []*configv1.HttpParameterMapping{
@@ -193,7 +265,16 @@ func TestStripSecretsFromCalls(t *testing.T) {
 	assert.False(t, cmdCall.GetParameters()[0].GetSecret().HasValue())
 }
 
-func TestHydrateSecretValue_Internal(t *testing.T) {
+// TestHydrateSecretValue_Internal ...
+// Summary: TestHydrateSecretValue_Internal
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	secrets := map[string]*configv1.SecretValue{
 		"API_KEY": configv1.SecretValue_builder{
 			PlainText: proto.String("12345"),
@@ -213,7 +294,16 @@ func TestHydrateSecretValue_Internal(t *testing.T) {
 
 // Tests migrated from secrets_test.go
 
-func TestStripSecretsFromService(t *testing.T) {
+// TestStripSecretsFromService ...
+// Summary: TestStripSecretsFromService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	svc := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service"),
 		UpstreamAuth: configv1.Authentication_builder{
@@ -234,7 +324,16 @@ func TestStripSecretsFromService(t *testing.T) {
 	assert.False(t, svc.GetUpstreamAuth().GetApiKey().GetValue().HasValue(), "Plain text secret should be cleared")
 }
 
-func TestStripSecretsFromProfile(t *testing.T) {
+// TestStripSecretsFromProfile ...
+// Summary: TestStripSecretsFromProfile
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	profile := configv1.ProfileDefinition_builder{
 		Name: proto.String("test-profile"),
 		Secrets: map[string]*configv1.SecretValue{
@@ -249,7 +348,16 @@ func TestStripSecretsFromProfile(t *testing.T) {
 	assert.False(t, secret.HasValue(), "Plain text secret should be cleared")
 }
 
-func TestStripSecretsFromCollection(t *testing.T) {
+// TestStripSecretsFromCollection ...
+// Summary: TestStripSecretsFromCollection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	collection := configv1.Collection_builder{
 		Name: proto.String("test-collection"),
 		Services: []*configv1.UpstreamServiceConfig{
@@ -274,7 +382,16 @@ func TestStripSecretsFromCollection(t *testing.T) {
 	assert.False(t, svc.GetUpstreamAuth().GetBasicAuth().GetPassword().HasValue(), "Plain text secret should be cleared")
 }
 
-func TestHydrateSecretsInService(t *testing.T) {
+// TestHydrateSecretsInService ...
+// Summary: TestHydrateSecretsInService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	svc := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service"),
 		UpstreamAuth: configv1.Authentication_builder{
@@ -298,7 +415,16 @@ func TestHydrateSecretsInService(t *testing.T) {
 	assert.Equal(t, "resolved-secret", val)
 }
 
-func TestHydrateSecretsInService_HttpService(t *testing.T) {
+// TestHydrateSecretsInService_HttpService ...
+// Summary: TestHydrateSecretsInService_HttpService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	svc := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-http-service"),
 		HttpService: configv1.HttpUpstreamService_builder{
@@ -334,7 +460,16 @@ func TestHydrateSecretsInService_HttpService(t *testing.T) {
 	assert.Equal(t, "resolved-secret", param.GetSecret().GetPlainText())
 }
 
-func TestHydrateSecretsInService_WebsocketService(t *testing.T) {
+// TestHydrateSecretsInService_WebsocketService ...
+// Summary: TestHydrateSecretsInService_WebsocketService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	svc := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-ws-service"),
 		WebsocketService: configv1.WebsocketUpstreamService_builder{
@@ -370,7 +505,16 @@ func TestHydrateSecretsInService_WebsocketService(t *testing.T) {
 	assert.Equal(t, "resolved-token", param.GetSecret().GetPlainText())
 }
 
-func TestHydrateSecretsInService_WebrtcService(t *testing.T) {
+// TestHydrateSecretsInService_WebrtcService ...
+// Summary: TestHydrateSecretsInService_WebrtcService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	svc := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-webrtc-service"),
 		WebrtcService: configv1.WebrtcUpstreamService_builder{
@@ -406,7 +550,16 @@ func TestHydrateSecretsInService_WebrtcService(t *testing.T) {
 	assert.Equal(t, "resolved-secret", param.GetSecret().GetPlainText())
 }
 
-func TestHydrateSecretsInService_CommandLineService(t *testing.T) {
+// TestHydrateSecretsInService_CommandLineService ...
+// Summary: TestHydrateSecretsInService_CommandLineService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	svc := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-cmd-service"),
 		CommandLineService: configv1.CommandLineUpstreamService_builder{
@@ -446,7 +599,16 @@ func TestHydrateSecretsInService_CommandLineService(t *testing.T) {
 	}
 }
 
-func TestHydrateSecretsInService_McpService(t *testing.T) {
+// TestHydrateSecretsInService_McpService ...
+// Summary: TestHydrateSecretsInService_McpService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Stdio
 	svcStdio := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-mcp-stdio"),
@@ -494,7 +656,16 @@ func TestHydrateSecretsInService_McpService(t *testing.T) {
 	}
 }
 
-func TestStripSecretsFromAllServices(t *testing.T) {
+// TestStripSecretsFromAllServices ...
+// Summary: TestStripSecretsFromAllServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup services with secrets
 	services := []*configv1.UpstreamServiceConfig{
 		configv1.UpstreamServiceConfig_builder{
@@ -574,7 +745,16 @@ func TestStripSecretsFromAllServices(t *testing.T) {
 	assert.Equal(t, "", services[5].GetFilesystemService().GetS3().GetSecretAccessKey())
 }
 
-func TestStripSecretsFromGrpcAndOpenapi(t *testing.T) {
+// TestStripSecretsFromGrpcAndOpenapi ...
+// Summary: TestStripSecretsFromGrpcAndOpenapi
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// These currently don't do much, but we test for coverage
 	svcGrpc := configv1.UpstreamServiceConfig_builder{
 		Id:          proto.String("grpc"),
@@ -589,7 +769,16 @@ func TestStripSecretsFromGrpcAndOpenapi(t *testing.T) {
 	StripSecretsFromService(svcOpenapi)
 }
 
-func TestStripSecretsFromHookAndCache(t *testing.T) {
+// TestStripSecretsFromHookAndCache ...
+// Summary: TestStripSecretsFromHookAndCache
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	svc := configv1.UpstreamServiceConfig_builder{
 		Id: proto.String("hook-cache"),
 		PreCallHooks: []*configv1.CallHook{
@@ -614,7 +803,16 @@ func TestStripSecretsFromHookAndCache(t *testing.T) {
 	assert.False(t, svc.GetCache().GetSemanticConfig().GetOpenai().GetApiKey().HasValue())
 }
 
-func TestHydrateSecretsInAuth_Extended(t *testing.T) {
+// TestHydrateSecretsInAuth_Extended ...
+// Summary: TestHydrateSecretsInAuth_Extended
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	auth := configv1.Authentication_builder{
 		BearerToken: configv1.BearerTokenAuth_builder{
 			Token: configv1.SecretValue_builder{
@@ -658,7 +856,16 @@ func TestHydrateSecretsInAuth_Extended(t *testing.T) {
 	assert.Equal(t, "secret", authOauth.GetOauth2().GetClientSecret().GetPlainText())
 }
 
-func TestCoverageForEmptyStripFunctions(t *testing.T) {
+// TestCoverageForEmptyStripFunctions ...
+// Summary: TestCoverageForEmptyStripFunctions
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Call empty functions to ensure coverage
 	stripSecretsFromGrpcService(nil)
 	stripSecretsFromOpenapiService(nil)
@@ -668,7 +875,18 @@ func TestCoverageForEmptyStripFunctions(t *testing.T) {
 // TestStripSecretsFromService_NilBranches ensures that our recursive stripping
 // functions safely handle nil or empty structures without panicking, which is a
 // required property of our configuration sanitization contract.
-func TestStripSecretsFromService_NilBranches(t *testing.T) {
+// TestStripSecretsFromService_NilBranches ensures that our recursive stripping
+// Summary: TestStripSecretsFromService_NilBranches
+// functions safely handle nil or empty structures without panicking, which is a
+// required property of our configuration sanitization contract.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		sanitize func()
@@ -760,7 +978,17 @@ func requireNotPanic(t *testing.T, f func()) {
 
 // TestStripSecretsFromService_VectorAndFS explicitly tests the branches
 // for VectorDb and Filesystem configurations to ensure credentials are removed.
-func TestStripSecretsFromService_VectorAndFS(t *testing.T) {
+// TestStripSecretsFromService_VectorAndFS explicitly tests the branches
+// Summary: TestStripSecretsFromService_VectorAndFS
+// for VectorDb and Filesystem configurations to ensure credentials are removed.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. Test Milvus VectorDB
 	sMilvus := configv1.VectorUpstreamService_builder{
 		Milvus: configv1.MilvusVectorDB_builder{
@@ -804,7 +1032,17 @@ func TestStripSecretsFromService_VectorAndFS(t *testing.T) {
 
 // TestEmptyServiceSignatures ensures that services with empty/no-op secret stripping
 // implementations still fulfill the contract without error.
-func TestEmptyServiceSignatures(t *testing.T) {
+// TestEmptyServiceSignatures ensures that services with empty/no-op secret stripping
+// Summary: TestEmptyServiceSignatures
+// implementations still fulfill the contract without error.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("GrpcService", func(t *testing.T) {
 		sGrpc := configv1.GrpcUpstreamService_builder{}.Build()
 		requireNotPanic(t, func() { stripSecretsFromGrpcService(sGrpc) })

@@ -217,7 +217,16 @@ const nonObjectBodySpecJSON = `
 }
 `
 
-func TestSanitizeOperationID(t *testing.T) {
+// TestSanitizeOperationID ...
+// Summary: TestSanitizeOperationID
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name  string
 		input string
@@ -271,7 +280,16 @@ func loadTestSpec(t *testing.T) *openapi3.T {
 	return doc
 }
 
-func TestExtractMcpOperationsFromOpenAPI(t *testing.T) {
+// TestExtractMcpOperationsFromOpenAPI ...
+// Summary: TestExtractMcpOperationsFromOpenAPI
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	doc := loadTestSpec(t)
 	ops := extractMcpOperationsFromOpenAPI(doc)
 
@@ -336,7 +354,16 @@ func TestExtractMcpOperationsFromOpenAPI(t *testing.T) {
 	}
 }
 
-func TestConvertMcpOperationsToTools(t *testing.T) {
+// TestConvertMcpOperationsToTools ...
+// Summary: TestConvertMcpOperationsToTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	doc := loadTestSpec(t)
 	ops := extractMcpOperationsFromOpenAPI(doc)
 	mcpServerServiceKey := "petstore_instance_1" // Service key should not contain a namespace.
@@ -495,7 +522,18 @@ func verifyShowPetByIDTool(t *testing.T, toolShowPetByID *v1.Tool) {
 // TestParseOpenAPISpec primarily tests loading and validation.
 // Actual parsing into structures is indirectly tested by other functions.
 // File operations are avoided here due to potential unreliability in the test environment.
-func TestParseOpenAPISpec_LoadAndValidate(t *testing.T) {
+// TestParseOpenAPISpec primarily tests loading and validation.
+// Summary: TestParseOpenAPISpec_LoadAndValidate
+// Actual parsing into structures is indirectly tested by other functions.
+// File operations are avoided here due to potential unreliability in the test environment.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test focuses on LoadFromData, which ParseOpenAPISpec uses internally via loader.LoadFromFile.
 	// The LoadFromFile aspect is harder to test reliably without file system access.
 	// We're essentially testing the core loader's ability to parse and validate a known good spec.
@@ -537,7 +575,16 @@ func TestParseOpenAPISpec_LoadAndValidate(t *testing.T) {
 	// The above commented-out section for non-existent file is illustrative.
 }
 
-func TestExtractMcpOperationsFromOpenAPI_XMLContent(t *testing.T) {
+// TestExtractMcpOperationsFromOpenAPI_XMLContent ...
+// Summary: TestExtractMcpOperationsFromOpenAPI_XMLContent
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	doc := loadTestSpec(t)
 	// Add a new operation with XML content
 	doc.Paths.Find("/pets").Post.RequestBody.Value.Content["application/xml"] = &openapi3.MediaType{
@@ -562,7 +609,16 @@ func TestExtractMcpOperationsFromOpenAPI_XMLContent(t *testing.T) {
 	}
 }
 
-func TestIsOperationIdempotent(t *testing.T) {
+// TestIsOperationIdempotent ...
+// Summary: TestIsOperationIdempotent
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCases := []struct {
 		method   string
 		expected bool
@@ -587,7 +643,16 @@ func TestIsOperationIdempotent(t *testing.T) {
 	}
 }
 
-func TestParseOpenAPISpec_Errors(t *testing.T) {
+// TestParseOpenAPISpec_Errors ...
+// Summary: TestParseOpenAPISpec_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 
 	t.Run("invalid json", func(t *testing.T) {
@@ -604,7 +669,16 @@ func TestParseOpenAPISpec_Errors(t *testing.T) {
 	})
 }
 
-func TestConvertOpenAPISchemaToInputSchemaProperties_Errors(t *testing.T) {
+// TestConvertOpenAPISchemaToInputSchemaProperties_Errors ...
+// Summary: TestConvertOpenAPISchemaToInputSchemaProperties_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	doc := loadTestSpec(t)
 	t.Run("nil schema ref", func(t *testing.T) {
 		_, err := convertOpenAPISchemaToInputSchemaProperties(nil, nil, doc)
@@ -618,7 +692,16 @@ func TestConvertOpenAPISchemaToInputSchemaProperties_Errors(t *testing.T) {
 	})
 }
 
-func TestConvertMcpOperationsToTools_NoOperationID(t *testing.T) {
+// TestConvertMcpOperationsToTools_NoOperationID ...
+// Summary: TestConvertMcpOperationsToTools_NoOperationID
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	spec := `
 {
   "openapi": "3.0.0",
@@ -642,7 +725,16 @@ func TestConvertMcpOperationsToTools_NoOperationID(t *testing.T) {
 	assert.Equal(t, "GET_/no-id", tools[0].GetName())
 }
 
-func TestConvertMcpOperationsToTools_NonObjectRequestBody(t *testing.T) {
+// TestConvertMcpOperationsToTools_NonObjectRequestBody ...
+// Summary: TestConvertMcpOperationsToTools_NonObjectRequestBody
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	loader := openapi3.NewLoader()
 	doc, err := loader.LoadFromData([]byte(nonObjectBodySpecJSON))
 	assert.NoError(t, err, "Failed to load non-object body spec")
@@ -678,7 +770,16 @@ func TestConvertMcpOperationsToTools_NonObjectRequestBody(t *testing.T) {
 	assert.NotNil(t, propSchema["items"], "The array property should have an 'items' schema")
 }
 
-func TestConvertMcpOperationsToTools_AllOfAndNested(t *testing.T) {
+// TestConvertMcpOperationsToTools_AllOfAndNested ...
+// Summary: TestConvertMcpOperationsToTools_AllOfAndNested
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	spec := `
 {
   "openapi": "3.0.0",

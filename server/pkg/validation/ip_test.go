@@ -8,7 +8,16 @@ import (
 	"testing"
 )
 
-func TestIsNAT64(t *testing.T) {
+// TestIsNAT64 ...
+// Summary: TestIsNAT64
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		ip   string
 		want bool
@@ -34,7 +43,16 @@ func TestIsNAT64(t *testing.T) {
 	}
 }
 
-func TestIsIPv4Compatible(t *testing.T) {
+// TestIsIPv4Compatible ...
+// Summary: TestIsIPv4Compatible
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		ip   string
 		want bool
@@ -58,7 +76,16 @@ func TestIsIPv4Compatible(t *testing.T) {
 	}
 }
 
-func TestIsNAT64LinkLocal(t *testing.T) {
+// TestIsNAT64LinkLocal ...
+// Summary: TestIsNAT64LinkLocal
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		ip   string
 		want bool
@@ -81,7 +108,16 @@ func TestIsNAT64LinkLocal(t *testing.T) {
 	}
 }
 
-func TestIsNAT64Loopback(t *testing.T) {
+// TestIsNAT64Loopback ...
+// Summary: TestIsNAT64Loopback
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		ip   string
 		want bool
@@ -105,7 +141,16 @@ func TestIsNAT64Loopback(t *testing.T) {
 	}
 }
 
-func TestIsPrivateNetworkIPv4(t *testing.T) {
+// TestIsPrivateNetworkIPv4 ...
+// Summary: TestIsPrivateNetworkIPv4
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		ip   string
 		want bool
@@ -186,7 +231,16 @@ func TestIsPrivateNetworkIPv4(t *testing.T) {
 	}
 }
 
-func TestIsPrivateNetworkIP(t *testing.T) {
+// TestIsPrivateNetworkIP ...
+// Summary: TestIsPrivateNetworkIP
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		ip   string
 		want bool
@@ -234,7 +288,16 @@ func TestIsPrivateNetworkIP(t *testing.T) {
 	}
 }
 
-func TestIsPrivateIP(t *testing.T) {
+// TestIsPrivateIP ...
+// Summary: TestIsPrivateIP
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		ip   string
 		want bool

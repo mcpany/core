@@ -15,7 +15,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestUpstreamService_GRPC_WithBearerAuth(t *testing.T) {
+// TestUpstreamService_GRPC_WithBearerAuth ...
+// Summary: TestUpstreamService_GRPC_WithBearerAuth
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCase := &framework.E2ETestCase{
 		Name:                "Authenticated gRPC Weather Server",
 		UpstreamServiceType: "grpc",

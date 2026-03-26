@@ -33,7 +33,16 @@ type mockMapResultTool struct {
 	result map[string]any
 }
 
-func (m *mockMapResultTool) Tool() *v1.Tool {
+// Tool ...
+// Summary: Tool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return v1.Tool_builder{
 		Name:      proto.String(m.name),
 		ServiceId: proto.String("test-service"),
@@ -48,20 +57,56 @@ func (m *mockMapResultTool) Tool() *v1.Tool {
 	}.Build()
 }
 
-func (m *mockMapResultTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+// Execute ...
+// Summary: Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.result, nil
 }
 
-func (m *mockMapResultTool) GetCacheConfig() *configv1.CacheConfig {
+// GetCacheConfig ...
+// Summary: GetCacheConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *mockMapResultTool) MCPTool() *mcp.Tool {
+// MCPTool ...
+// Summary: MCPTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t, _ := tool.ConvertProtoToMCPTool(m.Tool())
 	return t
 }
 
-func TestServer_CallTool_ResultHandling(t *testing.T) {
+// TestServer_CallTool_ResultHandling ...
+// Summary: TestServer_CallTool_ResultHandling
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()

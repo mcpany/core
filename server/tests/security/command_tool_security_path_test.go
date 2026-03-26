@@ -12,7 +12,16 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestCommandTool_Execute_PathTraversal_Comprehensive(t *testing.T) {
+// TestCommandTool_Execute_PathTraversal_Comprehensive ...
+// Summary: TestCommandTool_Execute_PathTraversal_Comprehensive
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 
 	inputSchema, _ := structpb.NewStruct(map[string]interface{}{

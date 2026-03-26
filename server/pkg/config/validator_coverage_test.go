@@ -16,7 +16,16 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestValidateFileExists(t *testing.T) {
+// TestValidateFileExists ...
+// Summary: TestValidateFileExists
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Mock validation.IsAllowedPath to focus on file existence check
 	oldIsAllowed := validation.IsAllowedPath
 	defer func() { validation.IsAllowedPath = oldIsAllowed }()
@@ -45,7 +54,16 @@ func TestValidateFileExists(t *testing.T) {
 	assert.Contains(t, err.Error(), "is a directory")
 }
 
-func TestValidateAuditConfig(t *testing.T) {
+// TestValidateAuditConfig ...
+// Summary: TestValidateAuditConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Case 1: Nil config
 	assert.NoError(t, validateAuditConfig(nil))
 
@@ -77,7 +95,16 @@ func TestValidateAuditConfig(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestValidateDLPConfig(t *testing.T) {
+// TestValidateDLPConfig ...
+// Summary: TestValidateDLPConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Case 1: Nil
 	assert.NoError(t, validateDLPConfig(nil))
 
@@ -95,7 +122,16 @@ func TestValidateDLPConfig(t *testing.T) {
 	assert.Contains(t, err.Error(), "invalid regex pattern")
 }
 
-func TestValidateSecretValue_RemoteContent_Errors(t *testing.T) {
+// TestValidateSecretValue_RemoteContent_Errors ...
+// Summary: TestValidateSecretValue_RemoteContent_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Empty URL
 	sv := configv1.SecretValue_builder{
 		RemoteContent: configv1.RemoteContent_builder{
@@ -117,7 +153,16 @@ func TestValidateSecretValue_RemoteContent_Errors(t *testing.T) {
 	assert.Contains(t, err.Error(), "invalid http_url scheme")
 }
 
-func TestValidateContainerEnvironment_Errors(t *testing.T) {
+// TestValidateContainerEnvironment_Errors ...
+// Summary: TestValidateContainerEnvironment_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Empty host path
 	env := configv1.ContainerEnvironment_builder{
 		Image: proto.String("alpine"),
@@ -138,7 +183,16 @@ func TestValidateContainerEnvironment_Errors(t *testing.T) {
 	assert.Contains(t, err.Error(), "container path is empty")
 }
 
-func TestValidateUpstreamAuthentication_Errors(t *testing.T) {
+// TestValidateUpstreamAuthentication_Errors ...
+// Summary: TestValidateUpstreamAuthentication_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 
 	// API Key errors
@@ -169,7 +223,16 @@ func TestValidateUpstreamAuthentication_Errors(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestValidateSQLService_Errors(t *testing.T) {
+// TestValidateSQLService_Errors ...
+// Summary: TestValidateSQLService_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Empty Driver
 	s := configv1.SqlUpstreamService_builder{}.Build()
 	s.SetDriver("")
@@ -200,7 +263,16 @@ func TestValidateSQLService_Errors(t *testing.T) {
 	assert.Contains(t, err.Error(), "query is empty")
 }
 
-func TestValidateGraphQLService_Errors(t *testing.T) {
+// TestValidateGraphQLService_Errors ...
+// Summary: TestValidateGraphQLService_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Empty Address
 	s := configv1.GraphQLUpstreamService_builder{
 		Address: proto.String(""),
@@ -216,7 +288,16 @@ func TestValidateGraphQLService_Errors(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestValidateWebrtcService_Errors(t *testing.T) {
+// TestValidateWebrtcService_Errors ...
+// Summary: TestValidateWebrtcService_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Empty Address
 	s := configv1.WebrtcUpstreamService_builder{
 		Address: proto.String(""),
@@ -232,7 +313,16 @@ func TestValidateWebrtcService_Errors(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestValidateOAuth2Auth_Errors(t *testing.T) {
+// TestValidateOAuth2Auth_Errors ...
+// Summary: TestValidateOAuth2Auth_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	auth := configv1.Authentication_builder{
 		Oauth2: configv1.OAuth2Auth_builder{
@@ -249,7 +339,16 @@ func TestValidateOAuth2Auth_Errors(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestValidateUpstreamAuthentication_AllTypes(t *testing.T) {
+// TestValidateUpstreamAuthentication_AllTypes ...
+// Summary: TestValidateUpstreamAuthentication_AllTypes
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	var auth *configv1.Authentication
 	// Oauth2
@@ -271,7 +370,16 @@ func TestValidateUpstreamAuthentication_AllTypes(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestValidateGCSettings(t *testing.T) {
+// TestValidateGCSettings ...
+// Summary: TestValidateGCSettings
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Case 1: Invalid interval
 	gc := configv1.GCSettings_builder{}.Build()
 	gc.SetInterval("invalid")
@@ -301,7 +409,16 @@ func TestValidateGCSettings(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestValidateHTTPService_SchemaErrors(t *testing.T) {
+// TestValidateHTTPService_SchemaErrors ...
+// Summary: TestValidateHTTPService_SchemaErrors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Invalid Input Schema
 	s := configv1.HttpUpstreamService_builder{
 		Address: proto.String("http://example.com"),
@@ -320,7 +437,16 @@ func TestValidateHTTPService_SchemaErrors(t *testing.T) {
 	assert.Contains(t, err.Error(), "input_schema")
 }
 
-func TestValidateAPIKeyAuth_Errors(t *testing.T) {
+// TestValidateAPIKeyAuth_Errors ...
+// Summary: TestValidateAPIKeyAuth_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	// Value missing
 	auth := configv1.Authentication_builder{
@@ -346,7 +472,16 @@ func TestValidateAPIKeyAuth_Errors(t *testing.T) {
 	assert.Contains(t, err.Error(), "resolved api key value is empty")
 }
 
-func TestValidateAPIKeyAuth_Incoming_Errors(t *testing.T) {
+// TestValidateAPIKeyAuth_Incoming_Errors ...
+// Summary: TestValidateAPIKeyAuth_Incoming_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	// Both Value and VerificationValue missing
 	auth := configv1.Authentication_builder{
@@ -365,7 +500,16 @@ func TestValidateAPIKeyAuth_Incoming_Errors(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestValidateMcpService_BundleErrors(t *testing.T) {
+// TestValidateMcpService_BundleErrors ...
+// Summary: TestValidateMcpService_BundleErrors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Empty Bundle Path
 	s := configv1.McpUpstreamService_builder{
 		BundleConnection: configv1.McpBundleConnection_builder{
@@ -377,7 +521,16 @@ func TestValidateMcpService_BundleErrors(t *testing.T) {
 	assert.Contains(t, err.Error(), "empty bundle_path")
 }
 
-func TestValidateSQLService_SchemaErrors(t *testing.T) {
+// TestValidateSQLService_SchemaErrors ...
+// Summary: TestValidateSQLService_SchemaErrors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Invalid Input Schema
 	s := configv1.SqlUpstreamService_builder{
 		Driver: proto.String("postgres"),
@@ -398,7 +551,16 @@ func TestValidateSQLService_SchemaErrors(t *testing.T) {
 	assert.Contains(t, err.Error(), "input_schema")
 }
 
-func TestValidate_ClientErrors(t *testing.T) {
+// TestValidate_ClientErrors ...
+// Summary: TestValidate_ClientErrors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cfg := configv1.McpAnyServerConfig_builder{
 		GlobalSettings: configv1.GlobalSettings_builder{
 			ApiKey: proto.String("short"),
@@ -409,7 +571,16 @@ func TestValidate_ClientErrors(t *testing.T) {
 	assert.Contains(t, errs[0].Err.Error(), "at least 16 characters")
 }
 
-func TestValidateCollection_Coverage(t *testing.T) {
+// TestValidateCollection_Coverage ...
+// Summary: TestValidateCollection_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 
 	// 1. Invalid Name

@@ -19,7 +19,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestFilesystemUpstream_Register_And_Execute(t *testing.T) {
+// TestFilesystemUpstream_Register_And_Execute ...
+// Summary: TestFilesystemUpstream_Register_And_Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary directory for testing
 	tempDir, err := os.MkdirTemp("", "fs_test")
 	require.NoError(t, err)
@@ -469,7 +478,16 @@ func TestFilesystemUpstream_Register_And_Execute(t *testing.T) {
 	})
 }
 
-func TestFilesystemUpstream_MemMapFs(t *testing.T) {
+// TestFilesystemUpstream_MemMapFs ...
+// Summary: TestFilesystemUpstream_MemMapFs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Configure the upstream with MemMapFs
 	config := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test_memfs"),
@@ -534,7 +552,16 @@ func TestFilesystemUpstream_MemMapFs(t *testing.T) {
 	assert.Equal(t, "hello.txt", entries[0].(map[string]interface{})["name"])
 }
 
-func TestFilesystemUpstream_ZipFs(t *testing.T) {
+// TestFilesystemUpstream_ZipFs ...
+// Summary: TestFilesystemUpstream_ZipFs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary zip file
 	tempDir, err := os.MkdirTemp("", "zip_test")
 	require.NoError(t, err)
@@ -633,7 +660,16 @@ func TestFilesystemUpstream_ZipFs(t *testing.T) {
 	u.Shutdown(context.Background())
 }
 
-func TestFilesystemUpstream_UnavailablePath(t *testing.T) {
+// TestFilesystemUpstream_UnavailablePath ...
+// Summary: TestFilesystemUpstream_UnavailablePath
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary directory for valid path
 	tempDir, err := os.MkdirTemp("", "fs_test_valid")
 	require.NoError(t, err)

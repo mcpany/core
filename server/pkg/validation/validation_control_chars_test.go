@@ -7,7 +7,16 @@ import (
 	"testing"
 )
 
-func TestIsValidURL_ControlChars(t *testing.T) {
+// TestIsValidURL_ControlChars ...
+// Summary: TestIsValidURL_ControlChars
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		input    string

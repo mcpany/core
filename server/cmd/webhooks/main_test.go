@@ -14,7 +14,16 @@ import (
 	"time"
 )
 
-func TestMain(m *testing.M) {
+// TestMain ...
+// Summary: TestMain
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	wd, _ := os.Getwd()
 	fmt.Printf("Running tests in: %s\n", wd)
 
@@ -49,7 +58,16 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func TestWebhookSidecar(t *testing.T) {
+// TestWebhookSidecar ...
+// Summary: TestWebhookSidecar
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Start the server on a random port
 	port := "8092"
 	cmd := exec.Command("./webhook-sidecar", "-port", port)

@@ -12,7 +12,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestBus_Coverage_New(t *testing.T) {
+// TestBus_Coverage_New ...
+// Summary: TestBus_Coverage_New
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// We verify that New creates a client with the correct options (address).
 	// Using protojson to avoid issues with opaque API fields.
 	// We use new(buspb.RedisBus) which returns a zero-valued config but valid pointer.
@@ -20,13 +29,31 @@ func TestBus_Coverage_New(t *testing.T) {
 	assert.NotNil(t, b)
 }
 
-func TestBus_Coverage_New_Nil(t *testing.T) {
+// TestBus_Coverage_New_Nil ...
+// Summary: TestBus_Coverage_New_Nil
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Verify handling of nil config
 	b, _ := New[any](nil)
 	assert.NotNil(t, b)
 }
 
-func TestBus_Close_Error_Simple(t *testing.T) {
+// TestBus_Close_Error_Simple ...
+// Summary: TestBus_Close_Error_Simple
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// redismock v9 might not expose ExpectClose.
 	// If it doesn't, we can skip Close error test or check if there's another way.
 	// client.Close() on mock usually just returns nil.
@@ -39,7 +66,16 @@ func TestBus_Close_Error_Simple(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestBus_Subscribe_ContextCancel(_ *testing.T) {
+// TestBus_Subscribe_ContextCancel ...
+// Summary: TestBus_Subscribe_ContextCancel
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	db, _ := redismock.NewClientMock()
 	b := NewWithClient[any](db)
 
@@ -55,7 +91,16 @@ func TestBus_Subscribe_ContextCancel(_ *testing.T) {
 	// We verify that it doesn't block or panic.
 }
 
-func TestBus_Close_WithPubSub(t *testing.T) {
+// TestBus_Close_WithPubSub ...
+// Summary: TestBus_Close_WithPubSub
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	db, _ := redismock.NewClientMock()
 	b := NewWithClient[any](db)
 
@@ -69,7 +114,16 @@ func TestBus_Close_WithPubSub(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestBus_Publish_Error(t *testing.T) {
+// TestBus_Publish_Error ...
+// Summary: TestBus_Publish_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	db, mock := redismock.NewClientMock()
 	b := NewWithClient[any](db)
 
@@ -81,7 +135,16 @@ func TestBus_Publish_Error(t *testing.T) {
 	assert.Equal(t, context.DeadlineExceeded, err)
 }
 
-func TestBus_SubscribeOnce_Success(t *testing.T) {
+// TestBus_SubscribeOnce_Success ...
+// Summary: TestBus_SubscribeOnce_Success
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	db, _ := redismock.NewClientMock()
 	b := NewWithClient[any](db)
 
@@ -99,7 +162,16 @@ func TestBus_SubscribeOnce_Success(t *testing.T) {
 	unsub()
 }
 
-func TestBus_Subscribe_NoPanicOnNil(t *testing.T) {
+// TestBus_Subscribe_NoPanicOnNil ...
+// Summary: TestBus_Subscribe_NoPanicOnNil
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// We want to verify that it does NOT panic on nil handler (just logs error).
 	db, _ := redismock.NewClientMock()
 	b := NewWithClient[any](db)

@@ -13,7 +13,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestLoadServices_Coverage(t *testing.T) {
+// TestLoadServices_Coverage ...
+// Summary: TestLoadServices_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	require.NoError(t, afero.WriteFile(fs, "/config.yaml", []byte("global_settings:\n  log_level: INFO"), 0644))
 	store := NewFileStore(fs, []string{"/config.yaml"})
@@ -30,7 +39,16 @@ func TestLoadServices_Coverage(t *testing.T) {
 	assert.NotNil(t, cfg)
 }
 
-func TestLoadServices_ValidationErrors(t *testing.T) {
+// TestLoadServices_ValidationErrors ...
+// Summary: TestLoadServices_ValidationErrors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	// Config with invalid service (empty name)
 	require.NoError(t, afero.WriteFile(fs, "/config.yaml", []byte(`
@@ -46,7 +64,16 @@ upstream_services:
 	assert.Contains(t, err.Error(), "Configuration Validation Failed")
 }
 
-func TestFileStore_Load_Coverage(t *testing.T) {
+// TestFileStore_Load_Coverage ...
+// Summary: TestFileStore_Load_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Skip Errors
 	fs := afero.NewMemMapFs()
 	require.NoError(t, afero.WriteFile(fs, "/bad.yaml", []byte(":"), 0644))

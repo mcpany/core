@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestRBACContextPopulation(t *testing.T) {
+// TestRBACContextPopulation ...
+// Summary: TestRBACContextPopulation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 	app.AuthManager = auth.NewManager()
 	app.SettingsManager = NewGlobalSettingsManager("", nil, nil)

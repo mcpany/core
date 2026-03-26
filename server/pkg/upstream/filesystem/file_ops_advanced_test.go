@@ -17,7 +17,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestFilesystemUpstream_AdvancedFileOperations(t *testing.T) {
+// TestFilesystemUpstream_AdvancedFileOperations ...
+// Summary: TestFilesystemUpstream_AdvancedFileOperations
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary directory for testing
 	tempDir, err := os.MkdirTemp("", "fs_adv_test")
 	require.NoError(t, err)

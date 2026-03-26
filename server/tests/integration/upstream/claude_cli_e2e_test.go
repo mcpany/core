@@ -15,7 +15,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestClaudeCLIE2E_Everything(t *testing.T) {
+// TestClaudeCLIE2E_Everything ...
+// Summary: TestClaudeCLIE2E_Everything
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	claude := framework.NewClaudeCLI(t)
 	claude.Install()
 

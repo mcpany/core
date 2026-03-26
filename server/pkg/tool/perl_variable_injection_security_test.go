@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestLocalCommandTool_Perl_UnquotedArrayInjection(t *testing.T) {
+// TestLocalCommandTool_Perl_UnquotedArrayInjection ...
+// Summary: TestLocalCommandTool_Perl_UnquotedArrayInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup Perl Tool with Unquoted Argument
 	tool := v1.Tool_builder{Name: proto.String("test-tool-perl-unquoted")}.Build()
 	service := configv1.CommandLineUpstreamService_builder{
@@ -59,7 +68,16 @@ func TestLocalCommandTool_Perl_UnquotedArrayInjection(t *testing.T) {
 	}
 }
 
-func TestLocalCommandTool_Ruby_UnquotedVariableInjection(t *testing.T) {
+// TestLocalCommandTool_Ruby_UnquotedVariableInjection ...
+// Summary: TestLocalCommandTool_Ruby_UnquotedVariableInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup Ruby Tool with Unquoted Argument
 	tool := v1.Tool_builder{Name: proto.String("test-tool-ruby-unquoted")}.Build()
 	service := configv1.CommandLineUpstreamService_builder{
@@ -103,7 +121,16 @@ func TestLocalCommandTool_Ruby_UnquotedVariableInjection(t *testing.T) {
 	}
 }
 
-func TestLocalCommandTool_Perl_DoubleQuoteArrayInjection(t *testing.T) {
+// TestLocalCommandTool_Perl_DoubleQuoteArrayInjection ...
+// Summary: TestLocalCommandTool_Perl_DoubleQuoteArrayInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup Perl Tool with Double Quoted Argument
 	tool := v1.Tool_builder{Name: proto.String("test-tool-perl-double")}.Build()
 	service := configv1.CommandLineUpstreamService_builder{
@@ -148,7 +175,16 @@ func TestLocalCommandTool_Perl_DoubleQuoteArrayInjection(t *testing.T) {
 	}
 }
 
-func TestLocalCommandTool_Ruby_DoubleQuoteInstanceInjection(t *testing.T) {
+// TestLocalCommandTool_Ruby_DoubleQuoteInstanceInjection ...
+// Summary: TestLocalCommandTool_Ruby_DoubleQuoteInstanceInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup Ruby Tool
 	tool := v1.Tool_builder{Name: proto.String("test-tool-ruby-double")}.Build()
 	service := configv1.CommandLineUpstreamService_builder{

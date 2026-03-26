@@ -12,7 +12,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestHydrateFromFile(t *testing.T) {
+// TestHydrateFromFile ...
+// Summary: TestHydrateFromFile
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Helper to reset GlobalBroadcaster to a clean state
 	resetBroadcaster := func(t *testing.T) {
 		old := GlobalBroadcaster

@@ -13,7 +13,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestYamlEngine_Unmarshal_Error(t *testing.T) {
+// TestYamlEngine_Unmarshal_Error ...
+// Summary: TestYamlEngine_Unmarshal_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	// Create invalid YAML file (tab indentation is invalid in YAML)
 	require.NoError(t, afero.WriteFile(fs, "/config/invalid.yaml", []byte("\tinvalid: yaml"), 0644))
@@ -24,7 +33,16 @@ func TestYamlEngine_Unmarshal_Error(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to unmarshal YAML")
 }
 
-func TestUnmarshal_NaN(t *testing.T) {
+// TestUnmarshal_NaN ...
+// Summary: TestUnmarshal_NaN
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	engine := &yamlEngine{}
 	// YAML supports NaN, but JSON does not.
 	// This should fail at json.Marshal step.
@@ -43,7 +61,16 @@ func TestUnmarshal_NaN(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to marshal map to JSON")
 }
 
-func TestMultiStore_HasConfigSources(t *testing.T) {
+// TestMultiStore_HasConfigSources ...
+// Summary: TestMultiStore_HasConfigSources
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	// Case 1: Empty MultiStore
 	ms := NewMultiStore()
@@ -64,7 +91,16 @@ func TestMultiStore_HasConfigSources(t *testing.T) {
 	assert.True(t, ms.HasConfigSources())
 }
 
-func TestMultiStore_Load(t *testing.T) {
+// TestMultiStore_Load ...
+// Summary: TestMultiStore_Load
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	require.NoError(t, afero.WriteFile(fs, "/config/1.yaml", []byte(`
 global_settings:

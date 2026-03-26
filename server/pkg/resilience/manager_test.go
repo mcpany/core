@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-func TestManager(t *testing.T) {
+// TestManager ...
+// Summary: TestManager
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	t.Run("execute_with_retry", func(t *testing.T) {
 		var attempts int
@@ -104,7 +113,16 @@ func TestManager(t *testing.T) {
 	})
 }
 
-func TestManager_Execute_WithTimeout(t *testing.T) {
+// TestManager_Execute_WithTimeout ...
+// Summary: TestManager_Execute_WithTimeout
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	t.Run("Timeout_triggers", func(t *testing.T) {
 		config := &configv1.ResilienceConfig{}

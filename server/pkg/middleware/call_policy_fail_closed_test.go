@@ -17,7 +17,16 @@ import (
 
 // Reusing mocks from call_policy_test.go.
 
-func TestCallPolicyMiddleware_FailClosed(t *testing.T) {
+// TestCallPolicyMiddleware_FailClosed ...
+// Summary: TestCallPolicyMiddleware_FailClosed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockToolManager := &callPolicyMockToolManager{}
 	cpMiddleware := middleware.NewCallPolicyMiddleware(mockToolManager)
 

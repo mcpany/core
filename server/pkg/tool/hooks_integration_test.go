@@ -21,7 +21,16 @@ func ptrIntegration[T any](v T) *T {
 	return &v
 }
 
-func TestToolManager_ExecuteTool_WithHooks(t *testing.T) {
+// TestToolManager_ExecuteTool_WithHooks ...
+// Summary: TestToolManager_ExecuteTool_WithHooks
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	// Setup Manager
 	busProvider, err := bus.NewProvider(&busproto.MessageBus{})
@@ -149,11 +158,21 @@ func TestToolManager_ExecuteTool_WithHooks(t *testing.T) {
 	})
 }
 
-type MockMiddleware struct {
+// MockMiddleware ...
+// Summary: MockMiddleware
 	ExecuteFunc func(ctx context.Context, req *ExecutionRequest, next ExecutionFunc) (any, error)
 }
 
-func (m *MockMiddleware) Execute(
+// Execute ...
+// Summary: Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx context.Context,
 	req *ExecutionRequest,
 	next ExecutionFunc,

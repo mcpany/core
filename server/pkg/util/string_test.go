@@ -8,7 +8,16 @@ import (
 	"testing"
 )
 
-func TestLevenshteinDistance(t *testing.T) {
+// TestLevenshteinDistance ...
+// Summary: TestLevenshteinDistance
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		s1, s2 string
 		want   int
@@ -35,7 +44,16 @@ func TestLevenshteinDistance(t *testing.T) {
 	}
 }
 
-func TestLevenshteinDistance_NonASCII(t *testing.T) {
+// TestLevenshteinDistance_NonASCII ...
+// Summary: TestLevenshteinDistance_NonASCII
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		s1, s2 string
 		want   int
@@ -56,7 +74,16 @@ func TestLevenshteinDistance_NonASCII(t *testing.T) {
 	}
 }
 
-func TestLevenshteinDistance_LargeASCII(t *testing.T) {
+// TestLevenshteinDistance_LargeASCII ...
+// Summary: TestLevenshteinDistance_LargeASCII
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Trigger the non-stack path (m+1 > 64)
 	s1 := "this is a very long string to trigger the heap allocation path in levenshteinASCII because it is longer than sixty four characters"
 	s2 := "this is a very long string to trigger the heap allocation path in levenshteinASCII because it is longer than sixty four characters." // one char diff
@@ -67,7 +94,16 @@ func TestLevenshteinDistance_LargeASCII(t *testing.T) {
 	}
 }
 
-func TestLevenshteinDistance_LargeUnicode(t *testing.T) {
+// TestLevenshteinDistance_LargeUnicode ...
+// Summary: TestLevenshteinDistance_LargeUnicode
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Trigger the non-stack path (m+1 > 256) for Unicode
 	// Japanese 'a' is 3 bytes. 300 chars > 256.
 	s1 := strings.Repeat("あ", 300)
@@ -79,7 +115,16 @@ func TestLevenshteinDistance_LargeUnicode(t *testing.T) {
 	}
 }
 
-func TestLevenshteinDistance_Swap(t *testing.T) {
+// TestLevenshteinDistance_Swap ...
+// Summary: TestLevenshteinDistance_Swap
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	s1 := "short"
 	s2 := "longer_string"
 	// s2 is longer than s1, should work
@@ -94,7 +139,16 @@ func TestLevenshteinDistance_Swap(t *testing.T) {
 	}
 }
 
-func TestLevenshteinDistanceWithLimit(t *testing.T) {
+// TestLevenshteinDistanceWithLimit ...
+// Summary: TestLevenshteinDistanceWithLimit
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		s1, s2 string
 		limit  int
@@ -133,7 +187,16 @@ func TestLevenshteinDistanceWithLimit(t *testing.T) {
 	}
 }
 
-func TestLevenshteinDistanceWithLimit_StackBoundary(t *testing.T) {
+// TestLevenshteinDistanceWithLimit_StackBoundary ...
+// Summary: TestLevenshteinDistanceWithLimit_StackBoundary
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test boundary conditions for stack allocation (256 runes)
 	// Case 1: 256 runes (fits in stack)
 	s256a := strings.Repeat("a", 256)

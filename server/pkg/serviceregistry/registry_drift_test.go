@@ -18,7 +18,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestServiceRegistry_UnregisterService_ShutdownFailure(t *testing.T) {
+// TestServiceRegistry_UnregisterService_ShutdownFailure ...
+// Summary: TestServiceRegistry_UnregisterService_ShutdownFailure
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockUpstream := &mockUpstream{
 		registerFunc: func(serviceName string) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 			serviceID, err := util.SanitizeServiceName(serviceName)

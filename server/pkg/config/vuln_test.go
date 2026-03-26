@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestBlindFileReadMitigation(t *testing.T) {
+// TestBlindFileReadMitigation ...
+// Summary: TestBlindFileReadMitigation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a file in CWD
 	fileName := "secret_test.txt"
 

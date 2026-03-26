@@ -12,7 +12,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestManager_IsToolAllowed(t *testing.T) {
+// TestManager_IsToolAllowed ...
+// Summary: TestManager_IsToolAllowed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	manager := NewManager(nil)
 
@@ -137,7 +146,16 @@ func TestManager_IsToolAllowed(t *testing.T) {
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-func TestMatchesProperties_Extended(t *testing.T) {
+// TestMatchesProperties_Extended ...
+// Summary: TestMatchesProperties_Extended
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tm := NewManager(nil)
 

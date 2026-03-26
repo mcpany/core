@@ -21,7 +21,16 @@ func mockExecLookPath() func() {
 	return func() { execLookPath = oldLookPath }
 }
 
-func TestPlainTextSecretValidation(t *testing.T) {
+// TestPlainTextSecretValidation ...
+// Summary: TestPlainTextSecretValidation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cleanup := mockExecLookPath()
 	defer cleanup()
 
@@ -60,7 +69,16 @@ func TestPlainTextSecretValidation(t *testing.T) {
 	}
 }
 
-func TestEnvSecretValidation(t *testing.T) {
+// TestEnvSecretValidation ...
+// Summary: TestEnvSecretValidation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cleanup := mockExecLookPath()
 	defer cleanup()
 
@@ -102,7 +120,16 @@ func TestEnvSecretValidation(t *testing.T) {
 	}
 }
 
-func TestEmptyPlainTextSecretValidation(t *testing.T) {
+// TestEmptyPlainTextSecretValidation ...
+// Summary: TestEmptyPlainTextSecretValidation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cleanup := mockExecLookPath()
 	defer cleanup()
 
@@ -142,7 +169,16 @@ func TestEmptyPlainTextSecretValidation(t *testing.T) {
 	}
 }
 
-func TestWhitespaceInEnvVar_WithRegex(t *testing.T) {
+// TestWhitespaceInEnvVar_WithRegex ...
+// Summary: TestWhitespaceInEnvVar_WithRegex
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cleanup := mockExecLookPath()
 	defer cleanup()
 
@@ -183,7 +219,16 @@ func TestWhitespaceInEnvVar_WithRegex(t *testing.T) {
 	assert.Empty(t, errs, "Validation errors not expected for env var with whitespace")
 }
 
-func TestWhitespaceInPlainText_WithRegex(t *testing.T) {
+// TestWhitespaceInPlainText_WithRegex ...
+// Summary: TestWhitespaceInPlainText_WithRegex
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cleanup := mockExecLookPath()
 	defer cleanup()
 

@@ -9,7 +9,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestValidateSafePathAndInjection_Bypass(t *testing.T) {
+// TestValidateSafePathAndInjection_Bypass ...
+// Summary: TestValidateSafePathAndInjection_Bypass
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// These inputs should be BLOCKED.
 	tests := []struct {
 		name     string

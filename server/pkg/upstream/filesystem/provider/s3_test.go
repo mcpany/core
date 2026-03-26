@@ -12,7 +12,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestNewS3Provider(t *testing.T) {
+// TestNewS3Provider ...
+// Summary: TestNewS3Provider
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("Valid Config", func(t *testing.T) {
 		config := configv1.S3Fs_builder{
 			Bucket:          proto.String("my-bucket"),
@@ -48,7 +57,16 @@ func TestNewS3Provider(t *testing.T) {
 	})
 }
 
-func TestS3Provider_ResolvePath(t *testing.T) {
+// TestS3Provider_ResolvePath ...
+// Summary: TestS3Provider_ResolvePath
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	config := configv1.S3Fs_builder{
 		Bucket: proto.String("my-bucket"),
 		Region: proto.String("us-east-1"),

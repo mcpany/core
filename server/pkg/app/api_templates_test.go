@@ -18,7 +18,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestHandleTemplates(t *testing.T) {
+// TestHandleTemplates ...
+// Summary: TestHandleTemplates
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, _ := setupApiTestApp()
 
 	// 1. Test GET (Empty)
@@ -67,7 +76,16 @@ func TestHandleTemplates(t *testing.T) {
 	assert.Equal(t, "Test Template", list[0]["name"])
 }
 
-func TestHandleTemplateDetail(t *testing.T) {
+// TestHandleTemplateDetail ...
+// Summary: TestHandleTemplateDetail
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 
 	// Seed a template

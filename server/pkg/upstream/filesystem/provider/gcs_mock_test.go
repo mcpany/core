@@ -24,11 +24,29 @@ type mockTransportForGcs struct {
 	roundTripFunc func(req *http.Request) (*http.Response, error)
 }
 
-func (m *mockTransportForGcs) RoundTrip(req *http.Request) (*http.Response, error) {
+// RoundTrip ...
+// Summary: RoundTrip
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.roundTripFunc(req)
 }
 
-func TestGcsProvider_Methods_WithMock(t *testing.T) {
+// TestGcsProvider_Methods_WithMock ...
+// Summary: TestGcsProvider_Methods_WithMock
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Backup and restore newStorageClient
 	oldNewStorageClient := newStorageClient
 	defer func() { newStorageClient = oldNewStorageClient }()
@@ -361,7 +379,16 @@ func TestGcsProvider_Methods_WithMock(t *testing.T) {
 }
 
 // Additional test to cover ReadAt which mimics how afero might use it
-func TestGcsFile_ReadAt_WithMock(t *testing.T) {
+// Additional test to cover ReadAt which mimics how afero might use it
+// Summary: TestGcsFile_ReadAt_WithMock
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Backup and restore newStorageClient
 	oldNewStorageClient := newStorageClient
 	defer func() { newStorageClient = oldNewStorageClient }()
@@ -417,7 +444,16 @@ func TestGcsFile_ReadAt_WithMock(t *testing.T) {
 }
 
 // Test WriteString explicitly
-func TestGcsFile_WriteString_WithMock(t *testing.T) {
+// Test WriteString explicitly
+// Summary: TestGcsFile_WriteString_WithMock
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Backup and restore newStorageClient
 	oldNewStorageClient := newStorageClient
 	defer func() { newStorageClient = oldNewStorageClient }()

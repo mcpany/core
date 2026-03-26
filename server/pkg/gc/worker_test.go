@@ -14,7 +14,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestNew(t *testing.T) {
+// TestNew ...
+// Summary: TestNew
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		input    Config
@@ -53,7 +62,16 @@ func TestNew(t *testing.T) {
 	}
 }
 
-func TestWorker_Start(t *testing.T) {
+// TestWorker_Start ...
+// Summary: TestWorker_Start
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary directory for testing
 	tmpDir, err := os.MkdirTemp("", "gc-test-*")
 	require.NoError(t, err)
@@ -119,7 +137,16 @@ func TestWorker_Start(t *testing.T) {
 	assert.NoError(t, err, "new file should exist")
 }
 
-func TestWorker_Start_Disabled(t *testing.T) {
+// TestWorker_Start_Disabled ...
+// Summary: TestWorker_Start_Disabled
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary directory for testing
 	tmpDir, err := os.MkdirTemp("", "gc-test-disabled-*")
 	require.NoError(t, err)
@@ -152,7 +179,16 @@ func TestWorker_Start_Disabled(t *testing.T) {
 	assert.NoError(t, err, "old file should still exist when disabled")
 }
 
-func TestWorker_Start_DangerousPaths(t *testing.T) {
+// TestWorker_Start_DangerousPaths ...
+// Summary: TestWorker_Start_DangerousPaths
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// We can't really test that it doesn't delete root without mocking os,
 	// but we can check coverage of that branch by setting path to "/" or "."
 	// Ideally we would mock the logger to verify the warning.

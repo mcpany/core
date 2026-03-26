@@ -26,7 +26,16 @@ type nilPrompt struct {
 	called bool
 }
 
-func (n *nilPrompt) Prompt() *mcp.Prompt {
+// Prompt ...
+// Summary: Prompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if !n.called {
 		n.called = true
 		return &mcp.Prompt{Name: "test-prompt"}
@@ -34,9 +43,36 @@ func (n *nilPrompt) Prompt() *mcp.Prompt {
 	return nil
 }
 
-func (n *nilPrompt) Service() string                        { return "nil-service" }
-func (n *nilPrompt) Definition() *configv1.PromptDefinition { return nil }
-func (n *nilPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
+// Service ...
+// Summary: Service
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Definition ...
+// Summary: Definition
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Get ...
+// Summary: Get
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
 
@@ -44,7 +80,16 @@ type nilResource struct {
 	called bool
 }
 
-func (n *nilResource) Resource() *mcp.Resource {
+// Resource ...
+// Summary: Resource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if !n.called {
 		n.called = true
 		return &mcp.Resource{Name: "test-resource", URI: "test://resource"}
@@ -52,11 +97,47 @@ func (n *nilResource) Resource() *mcp.Resource {
 	return nil
 }
 
-func (n *nilResource) Service() string                                           { return "nil-service" }
-func (n *nilResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) { return nil, nil }
-func (n *nilResource) Subscribe(ctx context.Context) error                       { return nil }
+// Service ...
+// Summary: Service
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Read ...
+// Summary: Read
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Subscribe ...
+// Summary: Subscribe
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func TestListPrompts_NilCheck(t *testing.T) {
+// TestListPrompts_NilCheck ...
+// Summary: TestListPrompts_NilCheck
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup dependencies
 	busProvider, _ := bus.NewProvider(nil)
 	toolManager := tool.NewManager(busProvider)
@@ -89,7 +170,16 @@ func TestListPrompts_NilCheck(t *testing.T) {
 	assert.False(t, foundNil, "ListPrompts should NOT contain nil")
 }
 
-func TestListResources_NilCheck(t *testing.T) {
+// TestListResources_NilCheck ...
+// Summary: TestListResources_NilCheck
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup dependencies
 	busProvider, _ := bus.NewProvider(nil)
 	toolManager := tool.NewManager(busProvider)

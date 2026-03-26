@@ -28,19 +28,38 @@ import (
 )
 
 // MockToolManager is a mock implementation of the ToolManagerInterface.
-type MockToolManager struct {
+// MockToolManager is a mock implementation of the ToolManagerInterface.
+// Summary: MockToolManager
 	mu      sync.Mutex
 	tools   map[string]tool.Tool
 	lastErr error
 }
 
-func NewMockToolManager(_ *bus.Provider) *MockToolManager {
+// NewMockToolManager ...
+// Summary: NewMockToolManager
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return &MockToolManager{
 		tools: make(map[string]tool.Tool),
 	}
 }
 
-func (m *MockToolManager) AddTool(t tool.Tool) error {
+// AddTool ...
+// Summary: AddTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	if m.lastErr != nil {
@@ -52,18 +71,45 @@ func (m *MockToolManager) AddTool(t tool.Tool) error {
 	return nil
 }
 
-func (m *MockToolManager) GetTool(name string) (tool.Tool, bool) {
+// GetTool ...
+// Summary: GetTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	t, ok := m.tools[name]
 	return t, ok
 }
 
-func (m *MockToolManager) IsServiceAllowed(serviceID, profileID string) bool {
+// IsServiceAllowed ...
+// Summary: IsServiceAllowed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return true
 }
 
-func (m *MockToolManager) ListTools() []tool.Tool {
+// ListTools ...
+// Summary: ListTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	tools := make([]tool.Tool, 0, len(m.tools))
@@ -73,11 +119,29 @@ func (m *MockToolManager) ListTools() []tool.Tool {
 	return tools
 }
 
-func (m *MockToolManager) ListMCPTools() []*mcp.Tool {
+// ListMCPTools ...
+// Summary: ListMCPTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *MockToolManager) ClearToolsForService(serviceID string) {
+// ClearToolsForService ...
+// Summary: ClearToolsForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	for name, t := range m.tools {
@@ -87,32 +151,113 @@ func (m *MockToolManager) ClearToolsForService(serviceID string) {
 	}
 }
 
-func (m *MockToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
+// SetMCPServer ...
+// Summary: SetMCPServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func (m *MockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
+// SetProfiles ...
+// Summary: SetProfiles
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func (m *MockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
+// AddServiceInfo ...
+// Summary: AddServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func (m *MockToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) {
+// GetServiceInfo ...
+// Summary: GetServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, false
 }
 
-func (m *MockToolManager) ListServices() []*tool.ServiceInfo {
+// ListServices ...
+// Summary: ListServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *MockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (interface{}, error) {
+// ExecuteTool ...
+// Summary: ExecuteTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, errors.New("not implemented")
 }
 
-func (m *MockToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {
+// AddMiddleware ...
+// Summary: AddMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 }
 
-func (m *MockToolManager) ToolMatchesProfile(tool tool.Tool, profileID string) bool {
+// ToolMatchesProfile ...
+// Summary: ToolMatchesProfile
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return true
 }
 
-func TestUpstream_Register_DisabledTool(t *testing.T) {
+// TestUpstream_Register_DisabledTool ...
+// Summary: TestUpstream_Register_DisabledTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	toolManager := NewMockToolManager(nil)
 	poolManager := pool.NewManager()
 	var promptManager prompt.ManagerInterface
@@ -148,14 +293,32 @@ func TestUpstream_Register_DisabledTool(t *testing.T) {
 	assert.Len(t, tools, 0)
 }
 
-func TestNewUpstream(t *testing.T) {
+// TestNewUpstream ...
+// Summary: TestNewUpstream
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	poolManager := pool.NewManager()
 	upstream := NewUpstream(poolManager)
 	require.NotNil(t, upstream)
 	assert.IsType(t, &Upstream{}, upstream)
 }
 
-func TestUpstream_Register_Mocked(t *testing.T) {
+// TestUpstream_Register_Mocked ...
+// Summary: TestUpstream_Register_Mocked
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("successful registration", func(t *testing.T) {
 		toolManager := NewMockToolManager(nil)
 		poolManager := pool.NewManager()
@@ -409,7 +572,16 @@ func TestUpstream_Register_Mocked(t *testing.T) {
 	})
 }
 
-func TestUpstream_Register_Integration(t *testing.T) {
+// TestUpstream_Register_Integration ...
+// Summary: TestUpstream_Register_Integration
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	upgrader := websocket.Upgrader{}
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -573,7 +745,16 @@ func TestUpstream_Register_Integration(t *testing.T) {
 	})
 }
 
-func TestUpstream_Register_WithReload(t *testing.T) {
+// TestUpstream_Register_WithReload ...
+// Summary: TestUpstream_Register_WithReload
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	server := httptest.NewServer(http.HandlerFunc(func(_ http.ResponseWriter, _ *http.Request) {
 	}))
 	defer server.Close()
@@ -618,7 +799,16 @@ func TestUpstream_Register_WithReload(t *testing.T) {
 	assert.NotNil(t, retrievedTool)
 }
 
-func TestUpstream_Register_DisabledItems(t *testing.T) {
+// TestUpstream_Register_DisabledItems ...
+// Summary: TestUpstream_Register_DisabledItems
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	poolManager := pool.NewManager()
 	tm := tool.NewManager(nil)
 	pm := prompt.NewManager()
@@ -669,7 +859,16 @@ func TestUpstream_Register_DisabledItems(t *testing.T) {
 	assert.Len(t, pm.ListPrompts(), 1, "Only enabled prompts should be registered")
 }
 
-func TestUpstream_Register_MissingCallDefinition(t *testing.T) {
+// TestUpstream_Register_MissingCallDefinition ...
+// Summary: TestUpstream_Register_MissingCallDefinition
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	poolManager := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(poolManager)
@@ -698,7 +897,16 @@ func TestUpstream_Register_MissingCallDefinition(t *testing.T) {
 	assert.Empty(t, tm.ListTools(), "No tools should be registered if call definition is missing")
 }
 
-func TestUpstream_createAndRegisterWebsocketTools_DynamicResourceMissingTool(t *testing.T) {
+// TestUpstream_createAndRegisterWebsocketTools_DynamicResourceMissingTool ...
+// Summary: TestUpstream_createAndRegisterWebsocketTools_DynamicResourceMissingTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	toolManager := tool.NewManager(nil)
 	resourceManager := resource.NewManager()
 	poolManager := pool.NewManager()
@@ -728,10 +936,28 @@ func TestUpstream_createAndRegisterWebsocketTools_DynamicResourceMissingTool(t *
 	assert.Empty(t, resourceManager.ListResources(), "No resources should be registered if tool is missing")
 }
 
-func (m *MockToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool) {
+// GetAllowedServiceIDs ...
+// Summary: GetAllowedServiceIDs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, true
 }
 
-func (m *MockToolManager) GetToolCountForService(serviceID string) int {
+// GetToolCountForService ...
+// Summary: GetToolCountForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return 0
 }

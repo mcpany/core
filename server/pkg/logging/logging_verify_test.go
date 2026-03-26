@@ -10,7 +10,16 @@ import (
 	"testing"
 )
 
-func TestInitAddSourceBehavior(t *testing.T) {
+// TestInitAddSourceBehavior ...
+// Summary: TestInitAddSourceBehavior
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Reset logger
 	ForTestsOnlyResetLogger()
 

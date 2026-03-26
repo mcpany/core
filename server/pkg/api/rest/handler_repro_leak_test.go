@@ -14,7 +14,16 @@ import (
 	"testing"
 )
 
-func TestValidateConfigHandler_EnvVarEnumeration(t *testing.T) {
+// TestValidateConfigHandler_EnvVarEnumeration ...
+// Summary: TestValidateConfigHandler_EnvVarEnumeration
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup: Set a secret environment variable
 	secretName := "TEST_EXISTING_SECRET"
 	secretValue := "dummy"

@@ -23,7 +23,16 @@ import (
 
 // --- HTTPTool Tests ---
 
-func TestHTTPTool_Execute_Success(t *testing.T) {
+// TestHTTPTool_Execute_Success ...
+// Summary: TestHTTPTool_Execute_Success
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
@@ -65,7 +74,16 @@ func TestHTTPTool_Execute_Success(t *testing.T) {
 	assert.Equal(t, "ok", resMap["status"])
 }
 
-func TestHTTPTool_Execute_Post_WithBody(t *testing.T) {
+// TestHTTPTool_Execute_Post_WithBody ...
+// Summary: TestHTTPTool_Execute_Post_WithBody
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "POST" {
@@ -122,7 +140,16 @@ func TestHTTPTool_Execute_Post_WithBody(t *testing.T) {
 	assert.Equal(t, true, resMap["accepted"])
 }
 
-func TestHTTPTool_Execute_Auth(t *testing.T) {
+// TestHTTPTool_Execute_Auth ...
+// Summary: TestHTTPTool_Execute_Auth
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Authorization") == "Bearer token" {
@@ -164,11 +191,21 @@ func TestHTTPTool_Execute_Auth(t *testing.T) {
 	assert.True(t, resMap["authed"].(bool))
 }
 
-type MockTypesAuthenticator struct {
+// MockTypesAuthenticator ...
+// Summary: MockTypesAuthenticator
 	AuthenticateFunc func(r *http.Request) error
 }
 
-func (m *MockTypesAuthenticator) Authenticate(r *http.Request) error {
+// Authenticate ...
+// Summary: Authenticate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.AuthenticateFunc != nil {
 		return m.AuthenticateFunc(r)
 	}
@@ -177,39 +214,130 @@ func (m *MockTypesAuthenticator) Authenticate(r *http.Request) error {
 
 // --- MCPTool Tests ---
 
-type MockTypesMCPClient struct {
+// MockTypesMCPClient ...
+// Summary: MockTypesMCPClient
 	CallToolFunc func(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error)
 }
 
-func (m *MockTypesMCPClient) CallTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
+// CallTool ...
+// Summary: CallTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.CallToolFunc != nil {
 		return m.CallToolFunc(ctx, params)
 	}
 	return nil, fmt.Errorf("not implemented")
 }
 
-func (m *MockTypesMCPClient) ReadResource(_ context.Context, _ *mcp.ReadResourceParams) (*mcp.ReadResourceResult, error) {
+// ReadResource ...
+// Summary: ReadResource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, fmt.Errorf("not implemented")
 }
-func (m *MockTypesMCPClient) ListTools(_ context.Context, _ *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
+// ListTools ...
+// Summary: ListTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, fmt.Errorf("not implemented")
 }
-func (m *MockTypesMCPClient) ListResources(_ context.Context, _ *mcp.ListResourcesParams) (*mcp.ListResourcesResult, error) {
+// ListResources ...
+// Summary: ListResources
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, fmt.Errorf("not implemented")
 }
-func (m *MockTypesMCPClient) ListPrompts(_ context.Context, _ *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error) {
+// ListPrompts ...
+// Summary: ListPrompts
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, fmt.Errorf("not implemented")
 }
-func (m *MockTypesMCPClient) GetPrompt(_ context.Context, _ *mcp.GetPromptParams) (*mcp.GetPromptResult, error) {
+// GetPrompt ...
+// Summary: GetPrompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, fmt.Errorf("not implemented")
 }
-func (m *MockTypesMCPClient) Initialize(_ context.Context, _ *mcp.InitializeParams) (*mcp.InitializeResult, error) {
+// Initialize ...
+// Summary: Initialize
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, fmt.Errorf("not implemented")
 }
-func (m *MockTypesMCPClient) Close() error                 { return nil }
-func (m *MockTypesMCPClient) Ping(_ context.Context) error { return nil }
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Ping ...
+// Summary: Ping
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func TestMCPTool_Execute(t *testing.T) {
+// TestMCPTool_Execute ...
+// Summary: TestMCPTool_Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	mockClient := &MockTypesMCPClient{
 		CallToolFunc: func(_ context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
@@ -261,7 +389,16 @@ func TestMCPTool_Execute(t *testing.T) {
 	assert.Equal(t, "success", resMap["result"])
 }
 
-func TestMCPTool_Execute_Errors(t *testing.T) {
+// TestMCPTool_Execute_Errors ...
+// Summary: TestMCPTool_Execute_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	mockClient := &MockTypesMCPClient{
 		CallToolFunc: func(_ context.Context, _ *mcp.CallToolParams) (*mcp.CallToolResult, error) {
@@ -277,7 +414,16 @@ func TestMCPTool_Execute_Errors(t *testing.T) {
 
 // --- OpenAPITool Tests ---
 
-func TestOpenAPITool_Execute_Success(t *testing.T) {
+// TestOpenAPITool_Execute_Success ...
+// Summary: TestOpenAPITool_Execute_Success
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" && r.URL.Path == "/items/123" {
@@ -314,7 +460,16 @@ func TestOpenAPITool_Execute_Success(t *testing.T) {
 	assert.Equal(t, "item", resMap["name"])
 }
 
-func TestOpenAPITool_Execute_QueryParam(t *testing.T) {
+// TestOpenAPITool_Execute_QueryParam ...
+// Summary: TestOpenAPITool_Execute_QueryParam
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Query().Get("q") == "search" {

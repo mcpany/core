@@ -17,11 +17,21 @@ import (
 )
 
 // MockLLMClient
-type MockLLMClient struct {
+// MockLLMClient
+// Summary: MockLLMClient
 	mock.Mock
 }
 
-func (m *MockLLMClient) ChatCompletion(ctx context.Context, req llm.ChatRequest) (*llm.ChatResponse, error) {
+// ChatCompletion ...
+// Summary: ChatCompletion
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, req)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
@@ -29,7 +39,16 @@ func (m *MockLLMClient) ChatCompletion(ctx context.Context, req llm.ChatRequest)
 	return args.Get(0).(*llm.ChatResponse), args.Error(1)
 }
 
-func TestSmartRecoveryMiddleware_Execute(t *testing.T) {
+// TestSmartRecoveryMiddleware_Execute ...
+// Summary: TestSmartRecoveryMiddleware_Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	req := &tool.ExecutionRequest{
 		ToolName:  "test-tool",

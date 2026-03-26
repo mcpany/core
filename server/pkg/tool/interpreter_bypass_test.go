@@ -7,7 +7,16 @@ import (
 	"testing"
 )
 
-func TestInterpreterFunctionCalls_BypassAttempts(t *testing.T) {
+// TestInterpreterFunctionCalls_BypassAttempts ...
+// Summary: TestInterpreterFunctionCalls_BypassAttempts
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cases := []struct {
 		name        string
 		val         string

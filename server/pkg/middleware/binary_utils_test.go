@@ -10,7 +10,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestFloat32ToBytes_And_Back(t *testing.T) {
+// TestFloat32ToBytes_And_Back ...
+// Summary: TestFloat32ToBytes_And_Back
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name  string
 		input []float32
@@ -44,13 +53,31 @@ func TestFloat32ToBytes_And_Back(t *testing.T) {
 	}
 }
 
-func TestBytesToFloat32_InvalidLength(t *testing.T) {
+// TestBytesToFloat32_InvalidLength ...
+// Summary: TestBytesToFloat32_InvalidLength
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	input := []byte{0x00, 0x00, 0x00} // 3 bytes
 	output := bytesToFloat32(input)
 	assert.Nil(t, output)
 }
 
-func TestFloat32ToBytes_NaN(t *testing.T) {
+// TestFloat32ToBytes_NaN ...
+// Summary: TestFloat32ToBytes_NaN
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// NaN != NaN so we test separately
 	input := []float32{float32(math.NaN())}
 	bytes := float32ToBytes(input)

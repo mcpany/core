@@ -8,7 +8,16 @@ import (
 	"testing"
 )
 
-func TestExtractIP_ZoneIndex(t *testing.T) {
+// TestExtractIP_ZoneIndex ...
+// Summary: TestExtractIP_ZoneIndex
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name          string
 		input         string

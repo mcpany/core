@@ -12,7 +12,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestVectorTools_HandlerErrors(t *testing.T) {
+// TestVectorTools_HandlerErrors ...
+// Summary: TestVectorTools_HandlerErrors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	upstream := &Upstream{}
 	mockClient := new(MockVectorClient)
 	tools := upstream.getTools(mockClient)
@@ -100,7 +109,16 @@ func TestVectorTools_HandlerErrors(t *testing.T) {
 	})
 }
 
-func TestVectorCallable_Error(t *testing.T) {
+// TestVectorCallable_Error ...
+// Summary: TestVectorCallable_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test that callable propagates handler errors
 	handler := func(ctx context.Context, args map[string]interface{}) (map[string]interface{}, error) {
 		return nil, errors.New("handler error")
@@ -118,7 +136,16 @@ func TestVectorCallable_Error(t *testing.T) {
 	assert.Equal(t, "handler error", err.Error())
 }
 
-func TestUpstream_Shutdown(t *testing.T) {
+// TestUpstream_Shutdown ...
+// Summary: TestUpstream_Shutdown
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewUpstream()
 	err := u.Shutdown(context.Background())
 	assert.NoError(t, err)

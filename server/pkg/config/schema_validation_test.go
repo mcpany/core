@@ -9,7 +9,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestValidateConfigAgainstSchema(t *testing.T) {
+// TestValidateConfigAgainstSchema ...
+// Summary: TestValidateConfigAgainstSchema
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. Valid Configuration
 	validConfig := map[string]interface{}{
 		"global_settings": map[string]interface{}{
@@ -51,7 +60,16 @@ func TestValidateConfigAgainstSchema(t *testing.T) {
 	assert.Contains(t, err.Error(), "additionalProperties")
 }
 
-func TestGenerateJSONSchemaBytes(t *testing.T) {
+// TestGenerateJSONSchemaBytes ...
+// Summary: TestGenerateJSONSchemaBytes
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	bytes, err := GenerateJSONSchemaBytes()
 	assert.NoError(t, err)
 	assert.NotNil(t, bytes)

@@ -7,7 +7,16 @@ import (
 	"testing"
 )
 
-func TestRedactSecrets_Recursive(t *testing.T) {
+// TestRedactSecrets_Recursive ...
+// Summary: TestRedactSecrets_Recursive
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test reproduces a bug where secrets that are substrings of the
 	// redacted placeholder ("[REDACTED]") caused recursive corruption.
 	// E.g. "REDACTED", "E", "ACT", etc.

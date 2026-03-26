@@ -23,7 +23,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestNewUpstreamServiceFactory(t *testing.T) {
+// TestNewUpstreamServiceFactory ...
+// Summary: TestNewUpstreamServiceFactory
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("with a valid pool manager", func(t *testing.T) {
 		pm := pool.NewManager()
 		f := NewUpstreamServiceFactory(pm, nil)
@@ -42,7 +51,16 @@ func TestNewUpstreamServiceFactory(t *testing.T) {
 	})
 }
 
-func TestUpstreamServiceFactory_NewUpstream(t *testing.T) {
+// TestUpstreamServiceFactory_NewUpstream ...
+// Summary: TestUpstreamServiceFactory_NewUpstream
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	f := NewUpstreamServiceFactory(pm, nil)
 

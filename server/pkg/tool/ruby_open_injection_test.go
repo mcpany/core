@@ -15,7 +15,16 @@ import (
 
 func strPtrRuby(s string) *string { return &s }
 
-func TestRubyOpenInjection(t *testing.T) {
+// TestRubyOpenInjection ...
+// Summary: TestRubyOpenInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test reproduces an RCE vulnerability where Ruby open("|cmd") can be injected
 	// into a double-quoted argument string.
 

@@ -12,7 +12,16 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-func BenchmarkRedactString_ManyPatterns(b *testing.B) {
+// BenchmarkRedactString_ManyPatterns ...
+// Summary: BenchmarkRedactString_ManyPatterns
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create 50 custom patterns simulating different secrets
 	patterns := make([]string, 50)
 	for i := 0; i < 50; i++ {

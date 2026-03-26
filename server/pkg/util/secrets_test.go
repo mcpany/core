@@ -18,7 +18,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestResolveSecret(t *testing.T) {
+// TestResolveSecret ...
+// Summary: TestResolveSecret
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_SECRETS", "true")
 	// t.Setenv("MCPANY_FILE_PATH_ALLOW_LIST", os.TempDir())
 	validation.SetAllowedPaths([]string{os.TempDir()})
@@ -297,7 +306,16 @@ func TestResolveSecret(t *testing.T) {
 	})
 }
 
-func TestResolveSecret_Vault(t *testing.T) {
+// TestResolveSecret_Vault ...
+// Summary: TestResolveSecret_Vault
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_SECRETS", "true")
 
 	t.Run("Vault", func(t *testing.T) {
@@ -489,7 +507,16 @@ func TestResolveSecret_Vault(t *testing.T) {
 	})
 }
 
-func TestResolveSecretMap(t *testing.T) {
+// TestResolveSecretMap ...
+// Summary: TestResolveSecretMap
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("Merge", func(t *testing.T) {
 		secretMap := map[string]*configv1.SecretValue{
 			"SECRET_VAR": configv1.SecretValue_builder{

@@ -15,7 +15,16 @@ import (
 
 // White-box testing for coverage
 
-func TestNew_DisableHealthCheck_FactoryError_Coverage(t *testing.T) {
+// TestNew_DisableHealthCheck_FactoryError_Coverage ...
+// Summary: TestNew_DisableHealthCheck_FactoryError_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	factory := func(ctx context.Context) (*mockClient, error) {
 		return nil, errors.New("factory failure")
 	}
@@ -25,7 +34,16 @@ func TestNew_DisableHealthCheck_FactoryError_Coverage(t *testing.T) {
 	assert.Contains(t, err.Error(), "factory failed to create initial client")
 }
 
-func TestNew_DisableHealthCheck_NilClient_Coverage(t *testing.T) {
+// TestNew_DisableHealthCheck_NilClient_Coverage ...
+// Summary: TestNew_DisableHealthCheck_NilClient_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	factory := func(ctx context.Context) (*mockClient, error) {
 		return nil, nil // Return nil client without error
 	}
@@ -35,7 +53,16 @@ func TestNew_DisableHealthCheck_NilClient_Coverage(t *testing.T) {
 	assert.Contains(t, err.Error(), "factory returned nil client")
 }
 
-func TestGet_RetryItem_Coverage_Correct(t *testing.T) {
+// TestGet_RetryItem_Coverage_Correct ...
+// Summary: TestGet_RetryItem_Coverage_Correct
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a pool with larger capacity.
 	p := newEmptyBufferedPool(t, newMockClientFactory(true), 2, 2)
 	require.NotNil(t, p)
@@ -56,7 +83,16 @@ func TestGet_RetryItem_Coverage_Correct(t *testing.T) {
 	assert.Equal(t, expectedClient, c)
 }
 
-func TestGet_Unhealthy_InFirstLoop_Coverage(t *testing.T) {
+// TestGet_Unhealthy_InFirstLoop_Coverage ...
+// Summary: TestGet_Unhealthy_InFirstLoop_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Need capacity >= 2 to hold both unhealthy and healthy without blocking
 	p := newEmptyBufferedPool(t, newMockClientFactory(true), 2, 2)
 	require.NotNil(t, p)
@@ -87,7 +123,16 @@ func TestGet_Unhealthy_InFirstLoop_Coverage(t *testing.T) {
 	assert.True(t, unhealthy.isClosed)
 }
 
-func TestGet_Race_ClosedAfterAcquire_Coverage(t *testing.T) {
+// TestGet_Race_ClosedAfterAcquire_Coverage ...
+// Summary: TestGet_Race_ClosedAfterAcquire_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This attempts to hit the path where TryAcquire succeeds but then we find the pool closed
 	// unbuffered (maxIdle=0)
 	p, err := New(newMockClientFactory(true), 0, 0, 1, 0, false)
@@ -109,7 +154,16 @@ func TestGet_Race_ClosedAfterAcquire_Coverage(t *testing.T) {
 	}
 }
 
-func TestDeregister_CloseError_Coverage(t *testing.T) {
+// TestDeregister_CloseError_Coverage ...
+// Summary: TestDeregister_CloseError_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewManager()
 
 	mockP := &mockPoolWithCloseErr{err: errors.New("close error")}
@@ -123,15 +177,42 @@ type mockPoolWithCloseErr struct {
 	err error
 }
 
-func (m *mockPoolWithCloseErr) Close() error {
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.err
 }
 
-func (m *mockPoolWithCloseErr) Len() int {
+// Len ...
+// Summary: Len
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return 0
 }
 
-func TestPut_Closed_DoubleCheck_Coverage(t *testing.T) {
+// TestPut_Closed_DoubleCheck_Coverage ...
+// Summary: TestPut_Closed_DoubleCheck_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Pre-fill 1
 	p, err := New(newMockClientFactory(true), 1, 1, 1, 0, false)
 	require.NoError(t, err)
@@ -150,7 +231,16 @@ func TestPut_Closed_DoubleCheck_Coverage(t *testing.T) {
 	assert.True(t, c.isClosed)
 }
 
-func TestClose_AlreadyClosed_Coverage(t *testing.T) {
+// TestClose_AlreadyClosed_Coverage ...
+// Summary: TestClose_AlreadyClosed_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	p, err := New(newMockClientFactory(true), 0, 0, 1, 0, false)
 	require.NoError(t, err)
 	err = p.Close()
@@ -160,7 +250,16 @@ func TestClose_AlreadyClosed_Coverage(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestGet_Wait_Retry_Coverage(t *testing.T) {
+// TestGet_Wait_Retry_Coverage ...
+// Summary: TestGet_Wait_Retry_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This targets the second select statement where we wait for a client.
 	// maxIdle=1. Buffered.
 	p := newEmptyBufferedPool(t, newMockClientFactory(true), 1, 1)
@@ -209,7 +308,16 @@ func TestGet_Wait_Retry_Coverage(t *testing.T) {
 	<-done
 }
 
-func TestGet_Wait_Unhealthy_Coverage(t *testing.T) {
+// TestGet_Wait_Unhealthy_Coverage ...
+// Summary: TestGet_Wait_Unhealthy_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// maxIdle=1. Buffered.
 	p := newEmptyBufferedPool(t, newMockClientFactory(true), 1, 1)
 	require.NotNil(t, p)

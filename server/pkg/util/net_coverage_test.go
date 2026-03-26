@@ -14,7 +14,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestCheckConnection(t *testing.T) {
+// TestCheckConnection ...
+// Summary: TestCheckConnection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 
 	// Start a local test server

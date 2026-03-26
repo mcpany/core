@@ -12,7 +12,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestResolvePath_EdgeCases(t *testing.T) {
+// TestResolvePath_EdgeCases ...
+// Summary: TestResolvePath_EdgeCases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary directory structure
 	rootDir, err := os.MkdirTemp("", "fs_edge_test")
 	require.NoError(t, err)

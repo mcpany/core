@@ -16,7 +16,16 @@ func actionPtr(a configv1.ExportPolicy_Action) *configv1.ExportPolicy_Action {
 	return &a
 }
 
-func TestShouldExport(t *testing.T) {
+// TestShouldExport ...
+// Summary: TestShouldExport
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tests := []struct {
 		name     string
@@ -136,7 +145,16 @@ func callActionPtr(a configv1.CallPolicy_Action) *configv1.CallPolicy_Action {
 	return &a
 }
 
-func TestEvaluateCallPolicy(t *testing.T) {
+// TestEvaluateCallPolicy ...
+// Summary: TestEvaluateCallPolicy
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tests := []struct {
 		name      string
@@ -255,7 +273,16 @@ func TestEvaluateCallPolicy(t *testing.T) {
 	}
 }
 
-func TestEvaluateCompiledCallPolicy(t *testing.T) {
+// TestEvaluateCompiledCallPolicy ...
+// Summary: TestEvaluateCompiledCallPolicy
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tests := []struct {
 		name      string
@@ -333,7 +360,16 @@ func TestEvaluateCompiledCallPolicy(t *testing.T) {
 	}
 }
 
-func TestCompileCallPolicies_InvalidRegex(t *testing.T) {
+// TestCompileCallPolicies_InvalidRegex ...
+// Summary: TestCompileCallPolicies_InvalidRegex
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	policies := []*configv1.CallPolicy{
 		configv1.CallPolicy_builder{

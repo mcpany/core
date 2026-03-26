@@ -16,7 +16,16 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-func TestCircuitBreaker(t *testing.T) {
+// TestCircuitBreaker ...
+// Summary: TestCircuitBreaker
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	t.Run("closed_state", func(t *testing.T) {
 		consecutiveFailures := int32(2)
@@ -162,7 +171,17 @@ func TestCircuitBreaker(t *testing.T) {
 
 // TestCircuitBreaker_ZombieSuccess_ClosesBreaker checks if a success from a stale request
 // (started when Closed) incorrectly closes the breaker when it is HalfOpen.
-func TestCircuitBreaker_ZombieSuccess_ClosesBreaker(t *testing.T) {
+// TestCircuitBreaker_ZombieSuccess_ClosesBreaker checks if a success from a stale request
+// Summary: TestCircuitBreaker_ZombieSuccess_ClosesBreaker
+// (started when Closed) incorrectly closes the breaker when it is HalfOpen.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	consecutiveFailures := int32(2)
 	halfOpenRequests := int32(1)
 	openDuration := 50 * time.Millisecond

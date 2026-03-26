@@ -9,7 +9,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRedactJSON_Coverage(t *testing.T) {
+// TestRedactJSON_Coverage ...
+// Summary: TestRedactJSON_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. Empty input
 	assert.Equal(t, []byte(""), RedactJSON([]byte("")))
 
@@ -27,7 +36,16 @@ func TestRedactJSON_Coverage(t *testing.T) {
 	assert.Equal(t, []byte("  x"), RedactJSON([]byte("  x")))
 }
 
-func TestIsKeyColon_Coverage(t *testing.T) {
+// TestIsKeyColon_Coverage ...
+// Summary: TestIsKeyColon_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Key at end of input
 	input := []byte(`"key"`)
 	// endOffset is 5

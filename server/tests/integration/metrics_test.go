@@ -20,7 +20,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMetrics(t *testing.T) {
+// TestMetrics ...
+// Summary: TestMetrics
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tempDir, err := os.MkdirTemp("", "mcpany-integration-test")
 	require.NoError(t, err)
 	defer os.RemoveAll(tempDir)

@@ -18,7 +18,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestUpstreamService_Slack(t *testing.T) {
+// TestUpstreamService_Slack ...
+// Summary: TestUpstreamService_Slack
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// if os.Getenv("SLACK_API_TOKEN") == "" {
 	// 	t.Skip("SLACK_API_TOKEN is not set")
 	// }

@@ -15,7 +15,8 @@ import (
 	v1 "github.com/opencontainers/image-spec/specs-go/v1"
 )
 
-type MockDockerClient struct {
+// MockDockerClient ...
+// Summary: MockDockerClient
 	ImagePullFunc       func(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error)
 	ContainerCreateFunc func(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error)
 	ContainerStartFunc  func(ctx context.Context, containerID string, options container.StartOptions) error
@@ -26,42 +27,96 @@ type MockDockerClient struct {
 	CloseFunc           func() error
 }
 
-func (m *MockDockerClient) ImagePull(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error) {
+// ImagePull ...
+// Summary: ImagePull
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.ImagePullFunc != nil {
 		return m.ImagePullFunc(ctx, ref, options)
 	}
 	return io.NopCloser(strings.NewReader("")), nil
 }
 
-func (m *MockDockerClient) ContainerCreate(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error) {
+// ContainerCreate ...
+// Summary: ContainerCreate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.ContainerCreateFunc != nil {
 		return m.ContainerCreateFunc(ctx, config, hostConfig, networkingConfig, platform, containerName)
 	}
 	return container.CreateResponse{ID: "test-container-id"}, nil
 }
 
-func (m *MockDockerClient) ContainerStart(ctx context.Context, containerID string, options container.StartOptions) error {
+// ContainerStart ...
+// Summary: ContainerStart
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.ContainerStartFunc != nil {
 		return m.ContainerStartFunc(ctx, containerID, options)
 	}
 	return nil
 }
 
-func (m *MockDockerClient) ContainerRemove(ctx context.Context, containerID string, options container.RemoveOptions) error {
+// ContainerRemove ...
+// Summary: ContainerRemove
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.ContainerRemoveFunc != nil {
 		return m.ContainerRemoveFunc(ctx, containerID, options)
 	}
 	return nil
 }
 
-func (m *MockDockerClient) ContainerLogs(ctx context.Context, container string, options container.LogsOptions) (io.ReadCloser, error) {
+// ContainerLogs ...
+// Summary: ContainerLogs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.ContainerLogsFunc != nil {
 		return m.ContainerLogsFunc(ctx, container, options)
 	}
 	return io.NopCloser(strings.NewReader("")), nil
 }
 
-func (m *MockDockerClient) ContainerWait(ctx context.Context, containerID string, condition container.WaitCondition) (<-chan container.WaitResponse, <-chan error) {
+// ContainerWait ...
+// Summary: ContainerWait
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.ContainerWaitFunc != nil {
 		return m.ContainerWaitFunc(ctx, containerID, condition)
 	}
@@ -73,14 +128,32 @@ func (m *MockDockerClient) ContainerWait(ctx context.Context, containerID string
 	return statusCh, errCh
 }
 
-func (m *MockDockerClient) ContainerAttach(ctx context.Context, container string, options container.AttachOptions) (types.HijackedResponse, error) {
+// ContainerAttach ...
+// Summary: ContainerAttach
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.ContainerAttachFunc != nil {
 		return m.ContainerAttachFunc(ctx, container, options)
 	}
 	return types.HijackedResponse{}, nil
 }
 
-func (m *MockDockerClient) Close() error {
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.CloseFunc != nil {
 		return m.CloseFunc()
 	}

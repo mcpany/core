@@ -8,7 +8,16 @@ import (
 	"time"
 )
 
-func TestCountTokensInValue_ByteSlice_Performance(t *testing.T) {
+// TestCountTokensInValue_ByteSlice_Performance ...
+// Summary: TestCountTokensInValue_ByteSlice_Performance
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a 1MB byte slice
 	size := 1024 * 1024
 	data := make([]byte, size)

@@ -15,11 +15,29 @@ import (
 
 type mockAuthenticator struct{}
 
-func (m *mockAuthenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
+// Authenticate ...
+// Summary: Authenticate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return ctx, nil
 }
 
-func BenchmarkAuthMiddleware_ServiceMethod(b *testing.B) {
+// BenchmarkAuthMiddleware_ServiceMethod ...
+// Summary: BenchmarkAuthMiddleware_ServiceMethod
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	authManager := auth.NewManager()
 	authManager.AddAuthenticator("myservice", &mockAuthenticator{})
 

@@ -14,7 +14,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGRPCHelperFunctions(t *testing.T) {
+// TestGRPCHelperFunctions ...
+// Summary: TestGRPCHelperFunctions
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	t.Run("unauthenticated", func(t *testing.T) {
 		t.Parallel()

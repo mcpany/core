@@ -11,7 +11,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestConvertVectorsToColumns_Types(t *testing.T) {
+// TestConvertVectorsToColumns_Types ...
+// Summary: TestConvertVectorsToColumns_Types
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	schema := &entity.Schema{
 		Fields: []*entity.Field{
 			{Name: "id", DataType: entity.FieldTypeInt64, PrimaryKey: true},
@@ -85,7 +94,16 @@ func TestConvertVectorsToColumns_Types(t *testing.T) {
 	assert.False(t, colMap["meta_bool"].(*entity.ColumnBool).Data()[1])
 }
 
-func TestConvertVectorsToColumns_IDConversion(t *testing.T) {
+// TestConvertVectorsToColumns_IDConversion ...
+// Summary: TestConvertVectorsToColumns_IDConversion
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Scenario 1: ID is string, PK is Int64
 	schemaInt := &entity.Schema{Fields: []*entity.Field{{Name: "id", DataType: entity.FieldTypeInt64, PrimaryKey: true}}}
 	cols, err := convertVectorsToColumns([]map[string]interface{}{{"id": "123"}}, schemaInt)
@@ -107,7 +125,16 @@ func TestConvertVectorsToColumns_IDConversion(t *testing.T) {
 	assert.Equal(t, "123", cols[0].(*entity.ColumnVarChar).Data()[0])
 }
 
-func TestInitializeColumns_Errors(t *testing.T) {
+// TestInitializeColumns_Errors ...
+// Summary: TestInitializeColumns_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Invalid dimension format
 	schema := &entity.Schema{
 		Fields: []*entity.Field{
@@ -119,7 +146,16 @@ func TestInitializeColumns_Errors(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to parse dimension")
 }
 
-func TestFillColumnData_MissingVector(t *testing.T) {
+// TestFillColumnData_MissingVector ...
+// Summary: TestFillColumnData_MissingVector
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	schema := &entity.Schema{
 		Fields: []*entity.Field{
 			{Name: "vec", DataType: entity.FieldTypeFloatVector, TypeParams: map[string]string{"dim": "2"}},
@@ -132,7 +168,16 @@ func TestFillColumnData_MissingVector(t *testing.T) {
 	assert.Equal(t, []float32{0, 0}, cols[0].(*entity.ColumnFloatVector).Data()[0])
 }
 
-func TestFillColumnData_MissingMetadata(t *testing.T) {
+// TestFillColumnData_MissingMetadata ...
+// Summary: TestFillColumnData_MissingMetadata
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	schema := &entity.Schema{
 		Fields: []*entity.Field{
 			{Name: "meta", DataType: entity.FieldTypeInt64},

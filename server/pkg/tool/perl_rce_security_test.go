@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestPerlRCE_Unquoted(t *testing.T) {
+// TestPerlRCE_Unquoted ...
+// Summary: TestPerlRCE_Unquoted
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Define a tool that runs perl -e {{script}}
 	toolDef := v1.Tool_builder{
 		Name: proto.String("perl_runner"),

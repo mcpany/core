@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestCommandInjection_Advanced(t *testing.T) {
+// TestCommandInjection_Advanced ...
+// Summary: TestCommandInjection_Advanced
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Case 1: Unquoted shell injection
 	t.Run("unquoted_shell_injection", func(t *testing.T) {
 		cmd := "sh"

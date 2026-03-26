@@ -35,21 +35,40 @@ import (
 )
 
 // MockToolManager is a mock implementation of the ToolManagerInterface.
-type MockToolManager struct {
+// MockToolManager is a mock implementation of the ToolManagerInterface.
+// Summary: MockToolManager
 	mu           sync.Mutex
 	tools        map[string]tool.Tool
 	serviceInfos map[string]*tool.ServiceInfo
 	lastErr      error
 }
 
-func NewMockToolManager() *MockToolManager {
+// NewMockToolManager ...
+// Summary: NewMockToolManager
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return &MockToolManager{
 		tools:        make(map[string]tool.Tool),
 		serviceInfos: make(map[string]*tool.ServiceInfo),
 	}
 }
 
-func (m *MockToolManager) AddTool(t tool.Tool) error {
+// AddTool ...
+// Summary: AddTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	if m.lastErr != nil {
@@ -61,18 +80,45 @@ func (m *MockToolManager) AddTool(t tool.Tool) error {
 	return nil
 }
 
-func (m *MockToolManager) IsServiceAllowed(serviceID, profileID string) bool {
+// IsServiceAllowed ...
+// Summary: IsServiceAllowed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return true
 }
 
-func (m *MockToolManager) GetTool(name string) (tool.Tool, bool) {
+// GetTool ...
+// Summary: GetTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	t, ok := m.tools[name]
 	return t, ok
 }
 
-func (m *MockToolManager) ListTools() []tool.Tool {
+// ListTools ...
+// Summary: ListTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	tools := make([]tool.Tool, 0, len(m.tools))
@@ -82,7 +128,16 @@ func (m *MockToolManager) ListTools() []tool.Tool {
 	return tools
 }
 
-func (m *MockToolManager) ListMCPTools() []*mcp.Tool {
+// ListMCPTools ...
+// Summary: ListMCPTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	mcpTools := make([]*mcp.Tool, 0, len(m.tools))
@@ -94,7 +149,16 @@ func (m *MockToolManager) ListMCPTools() []*mcp.Tool {
 	return mcpTools
 }
 
-func (m *MockToolManager) ClearToolsForService(serviceID string) {
+// ClearToolsForService ...
+// Summary: ClearToolsForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	for name, t := range m.tools {
@@ -104,24 +168,69 @@ func (m *MockToolManager) ClearToolsForService(serviceID string) {
 	}
 }
 
-func (m *MockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
+// SetProfiles ...
+// Summary: SetProfiles
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func (m *MockToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
+// SetMCPServer ...
+// Summary: SetMCPServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func (m *MockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
+// AddServiceInfo ...
+// Summary: AddServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.serviceInfos[serviceID] = info
 }
 
-func (m *MockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
+// GetServiceInfo ...
+// Summary: GetServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	info, ok := m.serviceInfos[serviceID]
 	return info, ok
 }
 
-func (m *MockToolManager) ListServices() []*tool.ServiceInfo {
+// ListServices ...
+// Summary: ListServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	services := make([]*tool.ServiceInfo, 0, len(m.serviceInfos))
@@ -131,39 +240,111 @@ func (m *MockToolManager) ListServices() []*tool.ServiceInfo {
 	return services
 }
 
-func (m *MockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (interface{}, error) {
+// ExecuteTool ...
+// Summary: ExecuteTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, errors.New("not implemented")
 }
 
-func (m *MockToolManager) SetError(err error) {
+// SetError ...
+// Summary: SetError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.lastErr = err
 }
 
-func (m *MockToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {
+// AddMiddleware ...
+// Summary: AddMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 }
 
-func (m *MockToolManager) ToolMatchesProfile(tool tool.Tool, profileID string) bool {
+// ToolMatchesProfile ...
+// Summary: ToolMatchesProfile
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return true
 }
 
-func (m *MockToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool) {
+// GetAllowedServiceIDs ...
+// Summary: GetAllowedServiceIDs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, true
 }
 
-func (m *MockToolManager) GetToolCountForService(serviceID string) int {
+// GetToolCountForService ...
+// Summary: GetToolCountForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return 0
 }
 
-func TestNewGRPCUpstream(t *testing.T) {
+// TestNewGRPCUpstream ...
+// Summary: TestNewGRPCUpstream
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	poolManager := pool.NewManager()
 	upstream := NewUpstream(poolManager)
 	require.NotNil(t, upstream)
 	assert.IsType(t, &Upstream{}, upstream)
 }
 
-func TestGRPCUpstream_Register(t *testing.T) {
+// TestGRPCUpstream_Register ...
+// Summary: TestGRPCUpstream_Register
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var promptManager prompt.ManagerInterface
 	var resourceManager resource.ManagerInterface
 
@@ -273,7 +454,16 @@ func TestGRPCUpstream_Register(t *testing.T) {
 	})
 }
 
-func TestGRPCUpstream_createAndRegisterGRPCTools(t *testing.T) {
+// TestGRPCUpstream_createAndRegisterGRPCTools ...
+// Summary: TestGRPCUpstream_createAndRegisterGRPCTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	poolManager := pool.NewManager()
 	upstream := NewUpstream(poolManager)
 	tm := NewMockToolManager()
@@ -339,7 +529,16 @@ type mockWeatherServer struct {
 	pb.UnimplementedWeatherServiceServer
 }
 
-func (s *mockWeatherServer) GetWeather(_ context.Context, _ *pb.GetWeatherRequest) (*pb.GetWeatherResponse, error) {
+// GetWeather ...
+// Summary: GetWeather
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return pb.GetWeatherResponse_builder{Weather: "sunny"}.Build(), nil
 }
 
@@ -368,7 +567,16 @@ func startMockServer(t *testing.T) (*grpc.Server, string) {
 	return s, lis.Addr().String()
 }
 
-func TestGRPCUpstream_Register_WithMockServer(t *testing.T) {
+// TestGRPCUpstream_Register_WithMockServer ...
+// Summary: TestGRPCUpstream_Register_WithMockServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var promptManager prompt.ManagerInterface
 	var resourceManager resource.ManagerInterface
 
@@ -462,7 +670,16 @@ func TestGRPCUpstream_Register_WithMockServer(t *testing.T) {
 	})
 }
 
-func TestFindMethodDescriptor(t *testing.T) {
+// TestFindMethodDescriptor ...
+// Summary: TestFindMethodDescriptor
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	server, addr := startMockServer(t)
 	defer server.Stop()
 	ctx := context.Background()
@@ -511,7 +728,16 @@ func TestFindMethodDescriptor(t *testing.T) {
 	})
 }
 
-func TestGRPCUpstream_Register_UseReflection_WithPolicy(t *testing.T) {
+// TestGRPCUpstream_Register_UseReflection_WithPolicy ...
+// Summary: TestGRPCUpstream_Register_UseReflection_WithPolicy
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var promptManager prompt.ManagerInterface
 	var resourceManager resource.ManagerInterface
 
@@ -564,7 +790,16 @@ func actionPtr(a configv1.ExportPolicy_Action) *configv1.ExportPolicy_Action {
 	return &a
 }
 
-func TestGRPCUpstream_Register_DynamicResources(t *testing.T) {
+// TestGRPCUpstream_Register_DynamicResources ...
+// Summary: TestGRPCUpstream_Register_DynamicResources
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var promptManager prompt.ManagerInterface
 	resourceManager := resource.NewManager()
 
@@ -607,7 +842,16 @@ func TestGRPCUpstream_Register_DynamicResources(t *testing.T) {
 	assert.Equal(t, "weather_resource", resources[0].Resource().Name)
 }
 
-func TestGRPCUpstream_Register_DuplicateTool(t *testing.T) {
+// TestGRPCUpstream_Register_DuplicateTool ...
+// Summary: TestGRPCUpstream_Register_DuplicateTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var promptManager prompt.ManagerInterface
 	var resourceManager resource.ManagerInterface
 
@@ -647,7 +891,16 @@ func TestGRPCUpstream_Register_DuplicateTool(t *testing.T) {
 	assert.Contains(t, toolNames, "ServerReflectionInfo")
 }
 
-func TestGRPCUpstream_Register_DuplicateTool_Config(t *testing.T) {
+// TestGRPCUpstream_Register_DuplicateTool_Config ...
+// Summary: TestGRPCUpstream_Register_DuplicateTool_Config
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var promptManager prompt.ManagerInterface
 	var resourceManager resource.ManagerInterface
 
@@ -708,7 +961,16 @@ message Response {}
 	assert.Empty(t, discoveredTools)
 }
 
-func TestGRPCUpstream_Register_ExportPolicy_Config(t *testing.T) {
+// TestGRPCUpstream_Register_ExportPolicy_Config ...
+// Summary: TestGRPCUpstream_Register_ExportPolicy_Config
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var promptManager prompt.ManagerInterface
 	var resourceManager resource.ManagerInterface
 
@@ -765,7 +1027,16 @@ message Response {}
 	assert.Empty(t, discoveredTools)
 }
 
-func TestGRPCUpstream_Register_AddToolError(t *testing.T) {
+// TestGRPCUpstream_Register_AddToolError ...
+// Summary: TestGRPCUpstream_Register_AddToolError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var promptManager prompt.ManagerInterface
 	var resourceManager resource.ManagerInterface
 
@@ -790,7 +1061,16 @@ func TestGRPCUpstream_Register_AddToolError(t *testing.T) {
 	assert.Empty(t, discoveredTools)
 }
 
-func TestGRPCUpstream_Register_DynamicResource_ToolNotFound(t *testing.T) {
+// TestGRPCUpstream_Register_DynamicResource_ToolNotFound ...
+// Summary: TestGRPCUpstream_Register_DynamicResource_ToolNotFound
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var promptManager prompt.ManagerInterface
 	resourceManager := resource.NewManager()
 
@@ -826,7 +1106,16 @@ func TestGRPCUpstream_Register_DynamicResource_ToolNotFound(t *testing.T) {
 	assert.Empty(t, resources)
 }
 
-func TestGRPCUpstream_Register_FromConfig(t *testing.T) {
+// TestGRPCUpstream_Register_FromConfig ...
+// Summary: TestGRPCUpstream_Register_FromConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var promptManager prompt.ManagerInterface
 	var resourceManager resource.ManagerInterface
 
@@ -887,7 +1176,16 @@ message GetWeatherResponse {
 	assert.Equal(t, "GetWeather", discoveredTools[0].GetName())
 }
 
-func TestGRPCUpstream_Register_WithPrompts(t *testing.T) {
+// TestGRPCUpstream_Register_WithPrompts ...
+// Summary: TestGRPCUpstream_Register_WithPrompts
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var resourceManager resource.ManagerInterface
 
 	promptManager := &MockPromptManager{}
@@ -920,7 +1218,16 @@ func TestGRPCUpstream_Register_WithPrompts(t *testing.T) {
 	assert.Equal(t, "weather-service-prompts.weather_prompt", promptManager.prompts[0].Prompt().Name)
 }
 
-func TestGRPCUpstream_Register_Prompts_Invalid(t *testing.T) {
+// TestGRPCUpstream_Register_Prompts_Invalid ...
+// Summary: TestGRPCUpstream_Register_Prompts_Invalid
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var resourceManager resource.ManagerInterface
 	promptManager := &MockPromptManager{}
 
@@ -949,7 +1256,16 @@ func TestGRPCUpstream_Register_Prompts_Invalid(t *testing.T) {
 	assert.Empty(t, promptManager.prompts)
 }
 
-func TestGRPCUpstream_Register_AutoDiscover(t *testing.T) {
+// TestGRPCUpstream_Register_AutoDiscover ...
+// Summary: TestGRPCUpstream_Register_AutoDiscover
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var promptManager prompt.ManagerInterface
 	var resourceManager resource.ManagerInterface
 
@@ -993,7 +1309,16 @@ message Response {}
 	assert.Equal(t, "GetData", discoveredTools[0].GetName())
 }
 
-func TestGRPCUpstream_Register_FromConfig_MethodNotFound(t *testing.T) {
+// TestGRPCUpstream_Register_FromConfig_MethodNotFound ...
+// Summary: TestGRPCUpstream_Register_FromConfig_MethodNotFound
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var promptManager prompt.ManagerInterface
 	var resourceManager resource.ManagerInterface
 
@@ -1042,7 +1367,16 @@ service TestService {}
 	assert.Empty(t, discoveredTools)
 }
 
-func TestGRPCUpstream_Register_DisabledTool_Reflection(t *testing.T) {
+// TestGRPCUpstream_Register_DisabledTool_Reflection ...
+// Summary: TestGRPCUpstream_Register_DisabledTool_Reflection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var promptManager prompt.ManagerInterface
 	var resourceManager resource.ManagerInterface
 
@@ -1082,41 +1416,132 @@ type simpleMockTool struct {
 	t *routerv1.Tool
 }
 
-func (s *simpleMockTool) Tool() *routerv1.Tool {
+// Tool ...
+// Summary: Tool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return s.t
 }
 
-func (s *simpleMockTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+// Execute ...
+// Summary: Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
 
-func (s *simpleMockTool) GetCacheConfig() *configv1.CacheConfig {
+// GetCacheConfig ...
+// Summary: GetCacheConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (s *simpleMockTool) MCPTool() *mcp.Tool {
+// MCPTool ...
+// Summary: MCPTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t, _ := tool.ConvertProtoToMCPTool(s.t)
 	return t
 }
 
-type MockPromptManager struct {
+// MockPromptManager ...
+// Summary: MockPromptManager
 	prompts []prompt.Prompt
 }
 
-func (m *MockPromptManager) AddPrompt(p prompt.Prompt) {
+// AddPrompt ...
+// Summary: AddPrompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.prompts = append(m.prompts, p)
 }
 
-func (m *MockPromptManager) UpdatePrompt(_ prompt.Prompt) {}
+// UpdatePrompt ...
+// Summary: UpdatePrompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func (m *MockPromptManager) GetPrompt(_ string) (prompt.Prompt, bool) {
+// GetPrompt ...
+// Summary: GetPrompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, false
 }
 
-func (m *MockPromptManager) ListPrompts() []prompt.Prompt {
+// ListPrompts ...
+// Summary: ListPrompts
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.prompts
 }
 
-func (m *MockPromptManager) ClearPromptsForService(_ string) {}
+// ClearPromptsForService ...
+// Summary: ClearPromptsForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func (m *MockPromptManager) SetMCPServer(_ prompt.MCPServerProvider) {}
+// SetMCPServer ...
+// Summary: SetMCPServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.

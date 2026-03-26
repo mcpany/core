@@ -18,7 +18,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestLoadAllPopularServices(t *testing.T) {
+// TestLoadAllPopularServices ...
+// Summary: TestLoadAllPopularServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 

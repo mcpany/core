@@ -11,7 +11,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestStripSecretsFromService_Comprehensive(t *testing.T) {
+// TestStripSecretsFromService_Comprehensive ...
+// Summary: TestStripSecretsFromService_Comprehensive
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	svc := func() *configv1.UpstreamServiceConfig {
 		auth := configv1.Authentication_builder{
 			BasicAuth: configv1.BasicAuth_builder{

@@ -13,7 +13,8 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-type Config struct {
+// Config ...
+// Summary: Config
 	UpstreamServices []struct {
 		Name        string `yaml:"name"`
 		HTTPService struct {
@@ -28,7 +29,16 @@ type Config struct {
 	} `yaml:"upstreamServices"`
 }
 
-func TestCLI(t *testing.T) {
+// TestCLI ...
+// Summary: TestCLI
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cmd := exec.Command("go", "run", "../../cmd/server/main.go", "config", "generate")
 
 	input := "http\nmy-service\nhttp://example.com\nget-user\nGet a user\nHTTP_METHOD_GET\n/users/{id}\n"

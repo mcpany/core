@@ -26,7 +26,16 @@ func waitForSubscribers(t *testing.T, client *goredis.Client, topic string, expe
 	}, 5*time.Second, 100*time.Millisecond, "timed out waiting for subscribers on topic %s", topic)
 }
 
-func TestRedisBus_Integration_Subscribe(t *testing.T) {
+// TestRedisBus_Integration_Subscribe ...
+// Summary: TestRedisBus_Integration_Subscribe
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	redisAddr, cleanup := StartRedisContainer(t)
 	defer cleanup()
 
@@ -62,7 +71,16 @@ func TestRedisBus_Integration_Subscribe(t *testing.T) {
 	wg.Wait()
 }
 
-func TestRedisBus_Integration_SubscribeOnce(t *testing.T) {
+// TestRedisBus_Integration_SubscribeOnce ...
+// Summary: TestRedisBus_Integration_SubscribeOnce
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	redisAddr, cleanup := StartRedisContainer(t)
 	defer cleanup()
 
@@ -98,7 +116,16 @@ func TestRedisBus_Integration_SubscribeOnce(t *testing.T) {
 	wg.Wait()
 }
 
-func TestBusProvider_Integration_Redis(t *testing.T) {
+// TestBusProvider_Integration_Redis ...
+// Summary: TestBusProvider_Integration_Redis
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	redisAddr, cleanup := StartRedisContainer(t)
 	defer cleanup()
 
@@ -119,7 +146,16 @@ func TestBusProvider_Integration_Redis(t *testing.T) {
 	assert.Same(t, bus1, bus3)
 }
 
-func TestRedisBus_Integration_Unsubscribe(t *testing.T) {
+// TestRedisBus_Integration_Unsubscribe ...
+// Summary: TestRedisBus_Integration_Unsubscribe
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	redisAddr, cleanup := StartRedisContainer(t)
 	defer cleanup()
 
@@ -172,7 +208,16 @@ func TestRedisBus_Integration_Unsubscribe(t *testing.T) {
 	assert.Equal(t, msg1, messages[0])
 }
 
-func TestRedisBus_Integration_Concurrent(t *testing.T) {
+// TestRedisBus_Integration_Concurrent ...
+// Summary: TestRedisBus_Integration_Concurrent
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	redisAddr, cleanup := StartRedisContainer(t)
 	defer cleanup()
 

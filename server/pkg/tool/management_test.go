@@ -19,17 +19,36 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-type TestMCPServerProvider struct {
+// TestMCPServerProvider ...
+// Summary: TestMCPServerProvider
 	server *mcp_sdk.Server
 }
 
-func (p *TestMCPServerProvider) Server() *mcp_sdk.Server {
+// Server ...
+// Summary: Server
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return p.server
 }
 
 // ptr is already defined in hooks_test.go in the same package.
 
-func TestToolManager_AddAndGetTool(t *testing.T) {
+// TestToolManager_AddAndGetTool ...
+// Summary: TestToolManager_AddAndGetTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tm := NewManager(nil)
 	mockTool := &MockTool{
@@ -51,7 +70,16 @@ func TestToolManager_AddAndGetTool(t *testing.T) {
 	assert.Equal(t, mockTool, retrievedTool, "Retrieved tool should be the one that was added")
 }
 
-func TestToolManager_ListTools(t *testing.T) {
+// TestToolManager_ListTools ...
+// Summary: TestToolManager_ListTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tm := NewManager(nil)
 	mockTool1 := &MockTool{
@@ -78,7 +106,16 @@ func TestToolManager_ListTools(t *testing.T) {
 	assert.Len(t, tools, 2, "Should have two tools")
 }
 
-func TestToolManager_ClearToolsForService(t *testing.T) {
+// TestToolManager_ClearToolsForService ...
+// Summary: TestToolManager_ClearToolsForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tm := NewManager(nil)
 	mockTool1 := &MockTool{
@@ -118,7 +155,16 @@ func TestToolManager_ClearToolsForService(t *testing.T) {
 	assert.Equal(t, "service-b", tools[0].Tool().GetServiceId(), "The remaining tool should belong to service-b")
 }
 
-func TestToolManager_ExecuteTool(t *testing.T) {
+// TestToolManager_ExecuteTool ...
+// Summary: TestToolManager_ExecuteTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tm := NewManager(nil)
 	sanitizedToolName, _ := util.SanitizeToolName("exec-tool")
@@ -146,7 +192,16 @@ func TestToolManager_ExecuteTool(t *testing.T) {
 	assert.Equal(t, expectedResult, result)
 }
 
-func TestToolManager_ExecuteTool_NotFound(t *testing.T) {
+// TestToolManager_ExecuteTool_NotFound ...
+// Summary: TestToolManager_ExecuteTool_NotFound
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tm := NewManager(nil)
 	execReq := &ExecutionRequest{ToolName: "non-existent-tool", ToolInputs: []byte(`{}`)}
@@ -155,7 +210,16 @@ func TestToolManager_ExecuteTool_NotFound(t *testing.T) {
 	assert.Equal(t, ErrToolNotFound, err, "Error should be ErrToolNotFound")
 }
 
-func TestToolManager_ConcurrentAccess(t *testing.T) {
+// TestToolManager_ConcurrentAccess ...
+// Summary: TestToolManager_ConcurrentAccess
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tm := NewManager(nil)
 	var wg sync.WaitGroup
@@ -193,7 +257,16 @@ func TestToolManager_ConcurrentAccess(t *testing.T) {
 	wg.Wait()
 }
 
-func TestToolManager_AddTool_NoServiceID(t *testing.T) {
+// TestToolManager_AddTool_NoServiceID ...
+// Summary: TestToolManager_AddTool_NoServiceID
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tm := NewManager(nil)
 	mockTool := &MockTool{
@@ -210,7 +283,16 @@ func TestToolManager_AddTool_NoServiceID(t *testing.T) {
 	assert.EqualError(t, err, "tool service ID cannot be empty")
 }
 
-func TestToolManager_AddTool_EmptyToolName(t *testing.T) {
+// TestToolManager_AddTool_EmptyToolName ...
+// Summary: TestToolManager_AddTool_EmptyToolName
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tm := NewManager(nil)
 	mockTool := &MockTool{
@@ -227,7 +309,16 @@ func TestToolManager_AddTool_EmptyToolName(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to sanitize tool name: id cannot be empty")
 }
 
-func TestToolManager_AddTool_WithMCPServer(t *testing.T) {
+// TestToolManager_AddTool_WithMCPServer ...
+// Summary: TestToolManager_AddTool_WithMCPServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tm := NewManager(nil)
 	mcpServer := mcp_sdk.NewServer(&mcp_sdk.Implementation{}, nil)
@@ -275,18 +366,37 @@ func TestToolManager_AddTool_WithMCPServer(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-type MockToolExecutionMiddleware struct {
+// MockToolExecutionMiddleware ...
+// Summary: MockToolExecutionMiddleware
 	ExecuteFunc func(ctx context.Context, req *ExecutionRequest, next ExecutionFunc) (any, error)
 }
 
-func (m *MockToolExecutionMiddleware) Execute(ctx context.Context, req *ExecutionRequest, next ExecutionFunc) (any, error) {
+// Execute ...
+// Summary: Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.ExecuteFunc != nil {
 		return m.ExecuteFunc(ctx, req, next)
 	}
 	return next(ctx, req)
 }
 
-func TestToolManager_AddAndExecuteWithMiddleware(t *testing.T) {
+// TestToolManager_AddAndExecuteWithMiddleware ...
+// Summary: TestToolManager_AddAndExecuteWithMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tm := NewManager(nil)
 
@@ -336,7 +446,16 @@ func TestToolManager_AddAndExecuteWithMiddleware(t *testing.T) {
 	assert.Equal(t, "tool success", result)
 }
 
-func TestToolManager_ClearToolsForService_NoDeletions(t *testing.T) {
+// TestToolManager_ClearToolsForService_NoDeletions ...
+// Summary: TestToolManager_ClearToolsForService_NoDeletions
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tm := NewManager(nil)
 	mockTool1 := &MockTool{
@@ -353,7 +472,16 @@ func TestToolManager_ClearToolsForService_NoDeletions(t *testing.T) {
 	assert.Len(t, tm.ListTools(), 1, "Should still have one tool")
 }
 
-func TestToolManager_AddTool_MCPServerAddToolError(t *testing.T) {
+// TestToolManager_AddTool_MCPServerAddToolError ...
+// Summary: TestToolManager_AddTool_MCPServerAddToolError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tm := NewManager(nil)
 	mcpServer := mcp_sdk.NewServer(&mcp_sdk.Implementation{}, nil)
@@ -376,7 +504,16 @@ func TestToolManager_AddTool_MCPServerAddToolError(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestToolManager_AddTool_WithMCPServerAndBus(t *testing.T) {
+// TestToolManager_AddTool_WithMCPServerAndBus ...
+// Summary: TestToolManager_AddTool_WithMCPServerAndBus
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	busProvider, _ := bus.NewProvider(nil)
 	tm := NewManager(busProvider)
@@ -413,7 +550,16 @@ func TestToolManager_AddTool_WithMCPServerAndBus(t *testing.T) {
 	assert.NotNil(t, toolID)
 }
 
-func TestToolManager_AddTool_WithMCPServer_ErrorCases(t *testing.T) {
+// TestToolManager_AddTool_WithMCPServer_ErrorCases ...
+// Summary: TestToolManager_AddTool_WithMCPServer_ErrorCases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tm := NewManager(nil)
 	mcpServer := mcp_sdk.NewServer(&mcp_sdk.Implementation{}, nil)
@@ -447,7 +593,16 @@ func TestToolManager_AddTool_WithMCPServer_ErrorCases(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestToolManager_AddAndGetServiceInfo(t *testing.T) {
+// TestToolManager_AddAndGetServiceInfo ...
+// Summary: TestToolManager_AddAndGetServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tm := NewManager(nil)
 	serviceID := "test-service"
@@ -465,7 +620,16 @@ func TestToolManager_AddAndGetServiceInfo(t *testing.T) {
 	assert.False(t, ok, "Service info for a non-existent service should not be found")
 }
 
-func TestToolManager_SetMCPServer(t *testing.T) {
+// TestToolManager_SetMCPServer ...
+// Summary: TestToolManager_SetMCPServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tm := NewManager(nil)
 	provider := &TestMCPServerProvider{server: nil}
@@ -473,7 +637,16 @@ func TestToolManager_SetMCPServer(t *testing.T) {
 	assert.Equal(t, provider, tm.mcpServer, "MCPServerProvider should be set")
 }
 
-func TestToolManager_ExecuteTool_ExecutionError(t *testing.T) {
+// TestToolManager_ExecuteTool_ExecutionError ...
+// Summary: TestToolManager_ExecuteTool_ExecutionError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tm := NewManager(nil)
 	sanitizedToolName, _ := util.SanitizeToolName("exec-tool")
@@ -500,7 +673,16 @@ func TestToolManager_ExecuteTool_ExecutionError(t *testing.T) {
 	assert.Equal(t, expectedError, err)
 }
 
-func TestToolManager_ListTools_Caching(t *testing.T) {
+// TestToolManager_ListTools_Caching ...
+// Summary: TestToolManager_ListTools_Caching
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tm := NewManager(nil)
 	mockTool1 := &MockTool{
@@ -534,7 +716,16 @@ func TestToolManager_ListTools_Caching(t *testing.T) {
 	assert.Len(t, list4, 0)
 }
 
-func TestToolManager_AddServiceInfo_WithConfig(t *testing.T) {
+// TestToolManager_AddServiceInfo_WithConfig ...
+// Summary: TestToolManager_AddServiceInfo_WithConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tm := NewManager(nil)
 	serviceID := "test-service-config"
@@ -570,7 +761,16 @@ func TestToolManager_AddServiceInfo_WithConfig(t *testing.T) {
 	assert.Len(t, retrievedInfo.PostHooks, 1)
 }
 
-func TestToolManager_ProfileFiltering(t *testing.T) {
+// TestToolManager_ProfileFiltering ...
+// Summary: TestToolManager_ProfileFiltering
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tm := NewManager(nil)
 
@@ -634,7 +834,16 @@ func TestToolManager_ProfileFiltering(t *testing.T) {
 	assert.True(t, foundT3)
 }
 
-func TestToolManager_ProfileFiltering_Properties(t *testing.T) {
+// TestToolManager_ProfileFiltering_Properties ...
+// Summary: TestToolManager_ProfileFiltering_Properties
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tm := NewManager(nil)
 

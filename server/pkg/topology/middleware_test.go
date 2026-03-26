@@ -17,7 +17,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestMiddleware_Comprehensive(t *testing.T) {
+// TestMiddleware_Comprehensive ...
+// Summary: TestMiddleware_Comprehensive
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Define test cases
 	tests := []struct {
 		name           string

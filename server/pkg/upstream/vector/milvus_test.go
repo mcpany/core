@@ -16,7 +16,19 @@ import (
 // Note: We cannot easily mock the Milvus SDK client interface without generating a mock for it,
 // and it's an external library. For unit tests, we mainly check configuration validation.
 // E2E tests would require a running Milvus instance.
-func TestNewMilvusClient(t *testing.T) {
+// TestNewMilvusClient tests the creation of a new Milvus client.
+// Summary: TestNewMilvusClient
+// Note: We cannot easily mock the Milvus SDK client interface without generating a mock for it,
+// and it's an external library. For unit tests, we mainly check configuration validation.
+// E2E tests would require a running Milvus instance.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name        string
 		config      *configv1.MilvusVectorDB
@@ -58,7 +70,16 @@ func TestNewMilvusClient(t *testing.T) {
 	}
 }
 
-func TestConvertVectorsToColumns(t *testing.T) {
+// TestConvertVectorsToColumns ...
+// Summary: TestConvertVectorsToColumns
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	schema := &entity.Schema{
 		Fields: []*entity.Field{
 			{
@@ -126,7 +147,16 @@ func TestConvertVectorsToColumns(t *testing.T) {
 	assert.Equal(t, "sports", catCol.Data()[1])
 }
 
-func TestConvertVectorsToColumns_Int64PK_MixedMetadata(t *testing.T) {
+// TestConvertVectorsToColumns_Int64PK_MixedMetadata ...
+// Summary: TestConvertVectorsToColumns_Int64PK_MixedMetadata
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	schema := &entity.Schema{
 		Fields: []*entity.Field{
 			{

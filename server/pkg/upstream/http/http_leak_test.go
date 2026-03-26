@@ -20,7 +20,16 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-func TestHTTPPoolConnectionLeak(t *testing.T) {
+// TestHTTPPoolConnectionLeak ...
+// Summary: TestHTTPPoolConnectionLeak
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Start a mock server that counts active connections
 	connectionCount := 0
 	server := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

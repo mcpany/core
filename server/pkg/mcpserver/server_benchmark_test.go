@@ -30,24 +30,69 @@ type mockMapTool struct {
 	result map[string]any
 }
 
-func (m *mockMapTool) Tool() *v1.Tool {
+// Tool ...
+// Summary: Tool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.tool
 }
 
-func (m *mockMapTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+// Execute ...
+// Summary: Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.result, nil
 }
 
-func (m *mockMapTool) GetCacheConfig() *configv1.CacheConfig {
+// GetCacheConfig ...
+// Summary: GetCacheConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *mockMapTool) MCPTool() *mcp.Tool {
+// MCPTool ...
+// Summary: MCPTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t, _ := tool.ConvertProtoToMCPTool(m.tool)
 	return t
 }
 
-func BenchmarkCallTool_MapResult(b *testing.B) {
+// BenchmarkCallTool_MapResult ...
+// Summary: BenchmarkCallTool_MapResult
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
@@ -106,7 +151,16 @@ func BenchmarkCallTool_MapResult(b *testing.B) {
 	}
 }
 
-func BenchmarkCallTool_PlainMapResult(b *testing.B) {
+// BenchmarkCallTool_PlainMapResult ...
+// Summary: BenchmarkCallTool_PlainMapResult
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()

@@ -10,7 +10,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestExpand_RecursiveDefault(t *testing.T) {
+// TestExpand_RecursiveDefault ...
+// Summary: TestExpand_RecursiveDefault
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	os.Setenv("OTHER_VAR", "expanded_value")
 	defer os.Unsetenv("OTHER_VAR")
 

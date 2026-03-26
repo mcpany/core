@@ -7,7 +7,16 @@ import (
 	"testing"
 )
 
-func TestReplaceURLPath_DoubleSubstitution(t *testing.T) {
+// TestReplaceURLPath_DoubleSubstitution ...
+// Summary: TestReplaceURLPath_DoubleSubstitution
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	// Case 1: "a" injects a placeholder for "b".
 	params := map[string]interface{}{
@@ -34,7 +43,16 @@ func TestReplaceURLPath_DoubleSubstitution(t *testing.T) {
 	}
 }
 
-func TestReplaceURLPath_Standard(t *testing.T) {
+// TestReplaceURLPath_Standard ...
+// Summary: TestReplaceURLPath_Standard
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	params := map[string]interface{}{
 		"id":   "123",
@@ -50,7 +68,16 @@ func TestReplaceURLPath_Standard(t *testing.T) {
 	}
 }
 
-func TestReplaceURLPath_MissingKey(t *testing.T) {
+// TestReplaceURLPath_MissingKey ...
+// Summary: TestReplaceURLPath_MissingKey
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	params := map[string]interface{}{
 		"id": "123",

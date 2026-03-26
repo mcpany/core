@@ -13,7 +13,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestHealthHandler(t *testing.T) {
+// TestHealthHandler ...
+// Summary: TestHealthHandler
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	req, err := http.NewRequest("GET", "/health", nil)
 	assert.NoError(t, err)
 
@@ -26,7 +35,16 @@ func TestHealthHandler(t *testing.T) {
 	assert.Equal(t, "OK\n", rr.Body.String())
 }
 
-func TestTimeHandler(t *testing.T) {
+// TestTimeHandler ...
+// Summary: TestTimeHandler
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	req, err := http.NewRequest("GET", "/time", nil)
 	assert.NoError(t, err)
 

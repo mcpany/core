@@ -8,7 +8,16 @@ import (
 	"testing"
 )
 
-func TestGetClientIP_XRealIP(t *testing.T) {
+// TestGetClientIP_XRealIP ...
+// Summary: TestGetClientIP_XRealIP
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name       string
 		remoteAddr string

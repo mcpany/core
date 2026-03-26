@@ -19,7 +19,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestFilesystemUpstream_UnavailablePath_Repro(t *testing.T) {
+// TestFilesystemUpstream_UnavailablePath_Repro ...
+// Summary: TestFilesystemUpstream_UnavailablePath_Repro
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary directory for valid path
 	tempDir, err := os.MkdirTemp("", "fs_repro_valid")
 	require.NoError(t, err)

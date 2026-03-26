@@ -10,7 +10,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMCPServerProvider(t *testing.T) {
+// TestMCPServerProvider ...
+// Summary: TestMCPServerProvider
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	server := &mcp.Server{}
 	provider := NewMCPServerProvider(server)
 

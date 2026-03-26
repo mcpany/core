@@ -33,20 +33,56 @@ type mockTool struct {
 	cacheConfig  *configv1.CacheConfig
 }
 
-func (m *mockTool) Tool() *v1.Tool {
+// Tool ...
+// Summary: Tool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.tool
 }
 
-func (m *mockTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+// Execute ...
+// Summary: Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.executeCount++
 	return successResult, nil
 }
 
-func (m *mockTool) GetCacheConfig() *configv1.CacheConfig {
+// GetCacheConfig ...
+// Summary: GetCacheConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.cacheConfig
 }
 
-func (m *mockTool) MCPTool() *mcp.Tool {
+// MCPTool ...
+// Summary: MCPTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t, _ := tool.ConvertProtoToMCPTool(m.tool)
 	return t
 }
@@ -54,28 +90,163 @@ func (m *mockTool) MCPTool() *mcp.Tool {
 // mockToolManager is a mock implementation of the tool.ManagerInterface.
 type mockToolManager struct{}
 
-func (m *mockToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) {
+// GetServiceInfo ...
+// Summary: GetServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return &tool.ServiceInfo{
 		Config: &configv1.UpstreamServiceConfig{},
 	}, true
 }
-func (m *mockToolManager) AddTool(_ tool.Tool) error                { return nil }
-func (m *mockToolManager) GetTool(_ string) (tool.Tool, bool)       { return nil, false }
-func (m *mockToolManager) ListTools() []tool.Tool                   { return nil }
-func (m *mockToolManager) ListMCPTools() []*mcp.Tool                { return nil }
-func (m *mockToolManager) ListServices() []*tool.ServiceInfo        { return nil }
-func (m *mockToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {}
-func (m *mockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (interface{}, error) {
+// AddTool ...
+// Summary: AddTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// GetTool ...
+// Summary: GetTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ListTools ...
+// Summary: ListTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ListMCPTools ...
+// Summary: ListMCPTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ListServices ...
+// Summary: ListServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// AddMiddleware ...
+// Summary: AddMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ExecuteTool ...
+// Summary: ExecuteTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (m *mockToolManager) SetMCPServer(_ tool.MCPServerProvider)                    {}
-func (m *mockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo)             {}
-func (m *mockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition)  {}
-func (m *mockToolManager) IsServiceAllowed(serviceID, profileID string) bool        { return true }
-func (m *mockToolManager) ClearToolsForService(_ string)                            {}
-func (m *mockToolManager) ToolMatchesProfile(tool tool.Tool, profileID string) bool { return true }
+// SetMCPServer ...
+// Summary: SetMCPServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// AddServiceInfo ...
+// Summary: AddServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// SetProfiles ...
+// Summary: SetProfiles
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// IsServiceAllowed ...
+// Summary: IsServiceAllowed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ClearToolsForService ...
+// Summary: ClearToolsForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ToolMatchesProfile ...
+// Summary: ToolMatchesProfile
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func TestCachingMiddleware_ExecutionAndCacheHit(t *testing.T) {
+// TestCachingMiddleware_ExecutionAndCacheHit ...
+// Summary: TestCachingMiddleware_ExecutionAndCacheHit
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup
 	tm := &mockToolManager{}
 	cacheMiddleware := middleware.NewCachingMiddleware(tm)
@@ -117,7 +288,16 @@ func TestCachingMiddleware_ExecutionAndCacheHit(t *testing.T) {
 	assert.Equal(t, 1, testTool.executeCount, "Tool should not have been executed again; result should come from cache")
 }
 
-func TestCachingMiddleware_CacheExpiration(t *testing.T) {
+// TestCachingMiddleware_CacheExpiration ...
+// Summary: TestCachingMiddleware_CacheExpiration
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup
 	tm := &mockToolManager{}
 	cacheMiddleware := middleware.NewCachingMiddleware(tm)
@@ -155,7 +335,16 @@ func TestCachingMiddleware_CacheExpiration(t *testing.T) {
 	assert.Equal(t, 2, testTool.executeCount, "Tool should be executed again after cache expiry")
 }
 
-func TestCachingMiddleware_CacheDisabled(t *testing.T) {
+// TestCachingMiddleware_CacheDisabled ...
+// Summary: TestCachingMiddleware_CacheDisabled
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup
 	tm := &mockToolManager{}
 	cacheMiddleware := middleware.NewCachingMiddleware(tm)
@@ -187,7 +376,16 @@ func TestCachingMiddleware_CacheDisabled(t *testing.T) {
 	assert.Equal(t, 2, testTool.executeCount, "Tool should be executed every time when cache is disabled")
 }
 
-func TestCachingMiddleware_NoCacheConfig(t *testing.T) {
+// TestCachingMiddleware_NoCacheConfig ...
+// Summary: TestCachingMiddleware_NoCacheConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup
 	tm := &mockToolManager{}
 	cacheMiddleware := middleware.NewCachingMiddleware(tm)
@@ -216,7 +414,16 @@ func TestCachingMiddleware_NoCacheConfig(t *testing.T) {
 	assert.Equal(t, 2, testTool.executeCount, "Tool should be executed every time when there is no cache config")
 }
 
-func TestCachingMiddleware_ServiceInfoNotFound(t *testing.T) {
+// TestCachingMiddleware_ServiceInfoNotFound ...
+// Summary: TestCachingMiddleware_ServiceInfoNotFound
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup
 	tm := &mockToolManager{}
 	cacheMiddleware := middleware.NewCachingMiddleware(tm)
@@ -243,7 +450,16 @@ func TestCachingMiddleware_ServiceInfoNotFound(t *testing.T) {
 	assert.Equal(t, 1, testTool.executeCount)
 }
 
-func TestCachingMiddleware_ActionDeleteCache(t *testing.T) {
+// TestCachingMiddleware_ActionDeleteCache ...
+// Summary: TestCachingMiddleware_ActionDeleteCache
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup
 	tm := &mockToolManager{}
 	cacheMiddleware := middleware.NewCachingMiddleware(tm)
@@ -284,7 +500,16 @@ func TestCachingMiddleware_ActionDeleteCache(t *testing.T) {
 	assert.Equal(t, 2, testTool.executeCount, "Tool should be executed again when ActionDeleteCache is used")
 }
 
-func TestCachingMiddleware_DeterministicKeys(t *testing.T) {
+// TestCachingMiddleware_DeterministicKeys ...
+// Summary: TestCachingMiddleware_DeterministicKeys
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup
 	tm := &mockToolManager{}
 	cacheMiddleware := middleware.NewCachingMiddleware(tm)
@@ -329,7 +554,16 @@ func TestCachingMiddleware_DeterministicKeys(t *testing.T) {
 	assert.Equal(t, 1, testTool.executeCount, "Should be cache hit despite different key order")
 }
 
-func TestCachingMiddleware_Clear(t *testing.T) {
+// TestCachingMiddleware_Clear ...
+// Summary: TestCachingMiddleware_Clear
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup
 	tm := &mockToolManager{}
 	cacheMiddleware := middleware.NewCachingMiddleware(tm)
@@ -366,7 +600,16 @@ func TestCachingMiddleware_Clear(t *testing.T) {
 	assert.Equal(t, 2, testTool.executeCount, "Tool should be executed again after cache clear")
 }
 
-func TestCachingMiddleware_ActionDeleteCache_VerifyDeletion(t *testing.T) {
+// TestCachingMiddleware_ActionDeleteCache_VerifyDeletion ...
+// Summary: TestCachingMiddleware_ActionDeleteCache_VerifyDeletion
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup
 	tm := &mockToolManager{}
 	cacheMiddleware := middleware.NewCachingMiddleware(tm)
@@ -409,26 +652,55 @@ func TestCachingMiddleware_ActionDeleteCache_VerifyDeletion(t *testing.T) {
 }
 
 // MockProviderFactory mocks the EmbeddingProvider creation.
-type MockProviderFactory struct {
+// MockProviderFactory mocks the EmbeddingProvider creation.
+// Summary: MockProviderFactory
 	embeddings map[string][]float32
 }
 
-func (m *MockProviderFactory) Create(_ *configv1.SemanticCacheConfig, _ string) (middleware.EmbeddingProvider, error) {
+// Create ...
+// Summary: Create
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return &MockEmbeddingProvider{embeddings: m.embeddings}, nil
 }
 
-type MockEmbeddingProvider struct {
+// MockEmbeddingProvider ...
+// Summary: MockEmbeddingProvider
 	embeddings map[string][]float32
 }
 
-func (m *MockEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
+// Embed ...
+// Summary: Embed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if val, ok := m.embeddings[text]; ok {
 		return val, nil
 	}
 	return []float32{0, 0, 0}, nil
 }
 
-func TestCachingMiddleware_SemanticCache(t *testing.T) {
+// TestCachingMiddleware_SemanticCache ...
+// Summary: TestCachingMiddleware_SemanticCache
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup
 	tm := &mockToolManager{}
 	cacheMiddleware := middleware.NewCachingMiddleware(tm)
@@ -512,7 +784,16 @@ func TestCachingMiddleware_SemanticCache(t *testing.T) {
 	assert.Equal(t, 1, testTool.executeCount, "Should be semantic cache hit")
 }
 
-func TestCachingMiddleware_ProviderFactory(t *testing.T) {
+// TestCachingMiddleware_ProviderFactory ...
+// Summary: TestCachingMiddleware_ProviderFactory
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup
 	tm := &mockToolManager{}
 	cacheMiddleware := middleware.NewCachingMiddleware(tm)
@@ -602,10 +883,28 @@ func TestCachingMiddleware_ProviderFactory(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func (m *mockToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool) {
+// GetAllowedServiceIDs ...
+// Summary: GetAllowedServiceIDs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, true
 }
 
-func (m *mockToolManager) GetToolCountForService(serviceID string) int {
+// GetToolCountForService ...
+// Summary: GetToolCountForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return 0
 }

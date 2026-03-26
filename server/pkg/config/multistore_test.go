@@ -13,43 +13,116 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-type MockStore struct {
+// MockStore ...
+// Summary: MockStore
 	Config *configv1.McpAnyServerConfig
 	Err    error
 }
 
-func (m *MockStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
+// Load ...
+// Summary: Load
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.Config, m.Err
 }
 
-func (m *MockStore) SaveService(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
+// SaveService ...
+// Summary: SaveService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.Err
 }
 
-func (m *MockStore) GetService(ctx context.Context, name string) (*configv1.UpstreamServiceConfig, error) {
+// GetService ...
+// Summary: GetService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, m.Err
 }
 
-func (m *MockStore) ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
+// ListServices ...
+// Summary: ListServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.Config != nil {
 		return m.Config.GetUpstreamServices(), nil
 	}
 	return nil, m.Err
 }
 
-func (m *MockStore) DeleteService(ctx context.Context, name string) error {
+// DeleteService ...
+// Summary: DeleteService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.Err
 }
 
-func (m *MockStore) Close() error {
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *MockStore) HasConfigSources() bool {
+// HasConfigSources ...
+// Summary: HasConfigSources
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return true
 }
 
-func TestMultiStore(t *testing.T) {
+// TestMultiStore ...
+// Summary: TestMultiStore
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("MergeConfigs", func(t *testing.T) {
 		s1 := &MockStore{
 			Config: func() *configv1.McpAnyServerConfig {

@@ -17,11 +17,21 @@ import (
 )
 
 // MockToolManagerForRegistry is a mock implementation of tool.ManagerInterface
-type MockToolManagerForRegistry struct {
+// MockToolManagerForRegistry is a mock implementation of tool.ManagerInterface
+// Summary: MockToolManagerForRegistry
 	mock.Mock
 }
 
-func (m *MockToolManagerForRegistry) GetTool(name string) (tool.Tool, bool) {
+// GetTool ...
+// Summary: GetTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(name)
 	if t := args.Get(0); t != nil {
 		return t.(tool.Tool), args.Bool(1)
@@ -29,26 +39,71 @@ func (m *MockToolManagerForRegistry) GetTool(name string) (tool.Tool, bool) {
 	return nil, args.Bool(1)
 }
 
-func (m *MockToolManagerForRegistry) ListTools() []tool.Tool {
+// ListTools ...
+// Summary: ListTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	return args.Get(0).([]tool.Tool)
 }
 
-func (m *MockToolManagerForRegistry) ListMCPTools() []*mcp.Tool {
+// ListMCPTools ...
+// Summary: ListMCPTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	return args.Get(0).([]*mcp.Tool)
 }
 
-func (m *MockToolManagerForRegistry) AddTool(t tool.Tool) error {
+// AddTool ...
+// Summary: AddTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(t)
 	return args.Error(0)
 }
 
-func (m *MockToolManagerForRegistry) AddServiceInfo(serviceName string, config *tool.ServiceInfo) {
+// AddServiceInfo ...
+// Summary: AddServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.Called(serviceName, config)
 }
 
-func (m *MockToolManagerForRegistry) GetServiceInfo(serviceName string) (*tool.ServiceInfo, bool) {
+// GetServiceInfo ...
+// Summary: GetServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(serviceName)
 	if c := args.Get(0); c != nil {
 		return c.(*tool.ServiceInfo), args.Bool(1)
@@ -56,41 +111,122 @@ func (m *MockToolManagerForRegistry) GetServiceInfo(serviceName string) (*tool.S
 	return nil, args.Bool(1)
 }
 
-func (m *MockToolManagerForRegistry) ClearToolsForService(serviceName string) {
+// ClearToolsForService ...
+// Summary: ClearToolsForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.Called(serviceName)
 }
 
-func (m *MockToolManagerForRegistry) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+// ExecuteTool ...
+// Summary: ExecuteTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, req)
 	return args.Get(0), args.Error(1)
 }
 
-func (m *MockToolManagerForRegistry) SetMCPServer(mcpServer tool.MCPServerProvider) {
+// SetMCPServer ...
+// Summary: SetMCPServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.Called(mcpServer)
 }
 
-func (m *MockToolManagerForRegistry) AddMiddleware(middleware tool.ExecutionMiddleware) {
+// AddMiddleware ...
+// Summary: AddMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.Called(middleware)
 }
 
-func (m *MockToolManagerForRegistry) ListServices() []*tool.ServiceInfo {
+// ListServices ...
+// Summary: ListServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	return args.Get(0).([]*tool.ServiceInfo)
 }
 
-func (m *MockToolManagerForRegistry) SetProfiles(enabled []string, defs []*configv1.ProfileDefinition) {
+// SetProfiles ...
+// Summary: SetProfiles
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.Called(enabled, defs)
 }
 
-func (m *MockToolManagerForRegistry) IsServiceAllowed(serviceID, profileID string) bool {
+// IsServiceAllowed ...
+// Summary: IsServiceAllowed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return true
 }
 
-func (m *MockToolManagerForRegistry) ToolMatchesProfile(tool tool.Tool, profileID string) bool {
+// ToolMatchesProfile ...
+// Summary: ToolMatchesProfile
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return true
 }
 
-func TestInitStandardMiddlewares(t *testing.T) {
+// TestInitStandardMiddlewares ...
+// Summary: TestInitStandardMiddlewares
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup dependencies
 	authManager := auth.NewManager()
 	mockToolManager := new(MockToolManagerForRegistry)
@@ -229,7 +365,16 @@ func TestInitStandardMiddlewares(t *testing.T) {
 	})
 }
 
-func TestInitStandardMiddlewares_AuditError(t *testing.T) {
+// TestInitStandardMiddlewares_AuditError ...
+// Summary: TestInitStandardMiddlewares_AuditError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup dependencies
 	authManager := auth.NewManager()
 	mockToolManager := new(MockToolManagerForRegistry)
@@ -249,11 +394,29 @@ func TestInitStandardMiddlewares_AuditError(t *testing.T) {
 	assert.Nil(t, standardMiddlewares)
 }
 
-func (m *MockToolManagerForRegistry) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
+// GetAllowedServiceIDs ...
+// Summary: GetAllowedServiceIDs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(profileID)
 	return args.Get(0).(map[string]bool), args.Bool(1)
 }
 
-func (m *MockToolManagerForRegistry) GetToolCountForService(serviceID string) int {
+// GetToolCountForService ...
+// Summary: GetToolCountForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return 0
 }

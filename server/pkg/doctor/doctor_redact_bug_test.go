@@ -11,7 +11,16 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-func TestCheckService_Redaction_Redis_Bug(t *testing.T) {
+// TestCheckService_Redaction_Redis_Bug ...
+// Summary: TestCheckService_Redaction_Redis_Bug
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test simulates the bug where RedactDSN fails to redact passwords in DSNs
 	// that fail URL parsing (e.g., redis://:password) and are passed to RedactDSN
 	// via error messages.

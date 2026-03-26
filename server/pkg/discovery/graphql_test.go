@@ -11,12 +11,30 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGraphQLProvider_Name(t *testing.T) {
+// TestGraphQLProvider_Name ...
+// Summary: TestGraphQLProvider_Name
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	provider := &GraphQLProvider{}
 	assert.Equal(t, "graphql", provider.Name())
 }
 
-func TestGraphQLProvider_Discover(t *testing.T) {
+// TestGraphQLProvider_Discover ...
+// Summary: TestGraphQLProvider_Discover
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	provider := &GraphQLProvider{Endpoint: "http://localhost:8080/graphql"}
 
 	svcs, err := provider.Discover(context.Background())

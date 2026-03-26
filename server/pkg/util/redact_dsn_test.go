@@ -9,7 +9,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRedactDSN(t *testing.T) {
+// TestRedactDSN ...
+// Summary: TestRedactDSN
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 
 	tests := []struct {

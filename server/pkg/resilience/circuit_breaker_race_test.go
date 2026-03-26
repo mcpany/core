@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-func TestCircuitBreaker_Flapping_Race(t *testing.T) {
+// TestCircuitBreaker_Flapping_Race ...
+// Summary: TestCircuitBreaker_Flapping_Race
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	consecutiveFailures := int32(1)
 	// We want to allow 2 concurrent probes

@@ -13,7 +13,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestTransformer_Coverage(t *testing.T) {
+// TestTransformer_Coverage ...
+// Summary: TestTransformer_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	transformer := NewTransformer()
 
@@ -59,7 +68,16 @@ func TestTransformer_Coverage(t *testing.T) {
 	assert.Equal(t, expected, string(got))
 }
 
-func TestTextParser_ParseJQ_Coverage(t *testing.T) {
+// TestTextParser_ParseJQ_Coverage ...
+// Summary: TestTextParser_ParseJQ_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	parser := NewTextParser()
 	jsonInput := []byte(`{"a": 1, "b": "string"}`)

@@ -23,16 +23,35 @@ import (
 )
 
 // MockToolManager is a mock of ToolManagerInterface.
-type MockToolManager struct {
+// MockToolManager is a mock of ToolManagerInterface.
+// Summary: MockToolManager
 	mock.Mock
 }
 
-func (m *MockToolManager) AddTool(tool tool.Tool) error {
+// AddTool ...
+// Summary: AddTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(tool)
 	return args.Error(0)
 }
 
-func (m *MockToolManager) GetTool(toolID string) (tool.Tool, bool) {
+// GetTool ...
+// Summary: GetTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(toolID)
 	if args.Get(0) == nil {
 		return nil, args.Bool(1)
@@ -40,28 +59,82 @@ func (m *MockToolManager) GetTool(toolID string) (tool.Tool, bool) {
 	return args.Get(0).(tool.Tool), args.Bool(1)
 }
 
-func (m *MockToolManager) ListServices() []*tool.ServiceInfo {
+// ListServices ...
+// Summary: ListServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *MockToolManager) ListTools() []tool.Tool {
+// ListTools ...
+// Summary: ListTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	return args.Get(0).([]tool.Tool)
 }
 
-func (m *MockToolManager) ListMCPTools() []*mcp.Tool {
+// ListMCPTools ...
+// Summary: ListMCPTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *MockToolManager) ClearToolsForService(serviceID string) {
+// ClearToolsForService ...
+// Summary: ClearToolsForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.Called(serviceID)
 }
 
-func (m *MockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
+// AddServiceInfo ...
+// Summary: AddServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.Called(serviceID, info)
 }
 
-func (m *MockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
+// GetServiceInfo ...
+// Summary: GetServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(serviceID)
 	if args.Get(0) == nil {
 		return nil, args.Bool(1)
@@ -69,11 +142,29 @@ func (m *MockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 	return args.Get(0).(*tool.ServiceInfo), args.Bool(1)
 }
 
-func (m *MockToolManager) SetMCPServer(provider tool.MCPServerProvider) {
+// SetMCPServer ...
+// Summary: SetMCPServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.Called(provider)
 }
 
-func (m *MockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+// ExecuteTool ...
+// Summary: ExecuteTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, req)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
@@ -81,22 +172,67 @@ func (m *MockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRe
 	return args.Get(0), args.Error(1)
 }
 
-func (m *MockToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {
+// AddMiddleware ...
+// Summary: AddMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 }
 
-func (m *MockToolManager) ToolMatchesProfile(tool tool.Tool, profileID string) bool {
+// ToolMatchesProfile ...
+// Summary: ToolMatchesProfile
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return true
 }
 
-func (m *MockToolManager) SetProfiles(enabled []string, defs []*configv1.ProfileDefinition) {
+// SetProfiles ...
+// Summary: SetProfiles
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.Called(enabled, defs)
 }
 
-func (m *MockToolManager) IsServiceAllowed(serviceID, profileID string) bool {
+// IsServiceAllowed ...
+// Summary: IsServiceAllowed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return true
 }
 
-func TestNewOpenAPIUpstream(t *testing.T) {
+// TestNewOpenAPIUpstream ...
+// Summary: TestNewOpenAPIUpstream
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewOpenAPIUpstream()
 	assert.NotNil(t, u)
 	ou, ok := u.(*OpenAPIUpstream)
@@ -105,7 +241,16 @@ func TestNewOpenAPIUpstream(t *testing.T) {
 	assert.NotNil(t, ou.httpClients)
 }
 
-func TestOpenAPIUpstream_getHTTPClient(t *testing.T) {
+// TestOpenAPIUpstream_getHTTPClient ...
+// Summary: TestOpenAPIUpstream_getHTTPClient
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewOpenAPIUpstream()
 	ou := u.(*OpenAPIUpstream)
 
@@ -120,7 +265,16 @@ func TestOpenAPIUpstream_getHTTPClient(t *testing.T) {
 	assert.NotSame(t, client1, client3, "Should return different clients for different service keys")
 }
 
-func TestOpenAPIUpstream_Register_Errors(t *testing.T) {
+// TestOpenAPIUpstream_Register_Errors ...
+// Summary: TestOpenAPIUpstream_Register_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	mockToolManager := new(MockToolManager)
 	upstream := NewOpenAPIUpstream()
@@ -187,7 +341,16 @@ func TestOpenAPIUpstream_Register_Errors(t *testing.T) {
 	})
 }
 
-func TestOpenAPIUpstream_Register_SpecUrl(t *testing.T) {
+// TestOpenAPIUpstream_Register_SpecUrl ...
+// Summary: TestOpenAPIUpstream_Register_SpecUrl
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	mockToolManager := new(MockToolManager)
 	upstream := NewOpenAPIUpstream()
@@ -220,7 +383,16 @@ func TestOpenAPIUpstream_Register_SpecUrl(t *testing.T) {
 	mockToolManager.AssertExpectations(t)
 }
 
-func TestOpenAPIUpstream_Register_SpecUrl_SSRF(t *testing.T) {
+// TestOpenAPIUpstream_Register_SpecUrl_SSRF ...
+// Summary: TestOpenAPIUpstream_Register_SpecUrl_SSRF
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	mockToolManager := new(MockToolManager)
 	upstream := NewOpenAPIUpstream()
@@ -251,7 +423,16 @@ func TestOpenAPIUpstream_Register_SpecUrl_SSRF(t *testing.T) {
 	assert.Contains(t, err.Error(), "OpenAPI spec content is missing")
 }
 
-func TestOpenAPIUpstream_Register_InvalidSpecUrl(t *testing.T) {
+// TestOpenAPIUpstream_Register_InvalidSpecUrl ...
+// Summary: TestOpenAPIUpstream_Register_InvalidSpecUrl
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	mockToolManager := new(MockToolManager)
 	upstream := NewOpenAPIUpstream()
@@ -272,7 +453,16 @@ func TestOpenAPIUpstream_Register_InvalidSpecUrl(t *testing.T) {
 	assert.Contains(t, err.Error(), "OpenAPI spec content is missing")
 }
 
-func TestAddOpenAPIToolsToIndex_Errors(t *testing.T) {
+// TestAddOpenAPIToolsToIndex_Errors ...
+// Summary: TestAddOpenAPIToolsToIndex_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	u := NewOpenAPIUpstream().(*OpenAPIUpstream)
 	serviceID := "test-service"
@@ -358,7 +548,16 @@ func TestAddOpenAPIToolsToIndex_Errors(t *testing.T) {
 	})
 }
 
-func TestOpenAPIUpstream_Register_Cache(t *testing.T) {
+// TestOpenAPIUpstream_Register_Cache ...
+// Summary: TestOpenAPIUpstream_Register_Cache
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	mockToolManager := new(MockToolManager)
 	u := NewOpenAPIUpstream()
@@ -401,7 +600,16 @@ func TestOpenAPIUpstream_Register_Cache(t *testing.T) {
 	mockToolManager.AssertExpectations(t)
 }
 
-func TestInputSchemaGeneration(t *testing.T) {
+// TestInputSchemaGeneration ...
+// Summary: TestInputSchemaGeneration
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	mockToolManager := new(MockToolManager)
 	upstream := NewOpenAPIUpstream()
@@ -509,7 +717,16 @@ const sampleOpenAPISpecJSONForCacheTest = `{
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-func TestOpenAPIUpstream_Shutdown(t *testing.T) {
+// TestOpenAPIUpstream_Shutdown ...
+// Summary: TestOpenAPIUpstream_Shutdown
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewOpenAPIUpstream()
 	ou := u.(*OpenAPIUpstream)
 
@@ -528,7 +745,16 @@ func TestOpenAPIUpstream_Shutdown(t *testing.T) {
 	assert.False(t, exists, "Client should be removed after shutdown")
 }
 
-func TestHttpClientImpl_Do(t *testing.T) {
+// TestHttpClientImpl_Do ...
+// Summary: TestHttpClientImpl_Do
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a real client but mock the transport to avoid network calls
 	client := &http.Client{
 		Transport: &mockTransport{},
@@ -543,13 +769,31 @@ func TestHttpClientImpl_Do(t *testing.T) {
 
 type mockTransport struct{}
 
-func (m *mockTransport) RoundTrip(_ *http.Request) (*http.Response, error) {
+// RoundTrip ...
+// Summary: RoundTrip
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return &http.Response{
 		StatusCode: 200,
 	}, nil
 }
 
-func TestConvertMcpOperationsToTools_NonObjectResponseBody(t *testing.T) {
+// TestConvertMcpOperationsToTools_NonObjectResponseBody ...
+// Summary: TestConvertMcpOperationsToTools_NonObjectResponseBody
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	spec := `
 {
   "openapi": "3.0.0",
@@ -593,7 +837,16 @@ func TestConvertMcpOperationsToTools_NonObjectResponseBody(t *testing.T) {
 	assert.Equal(t, "array", respBody["type"].GetStringValue())
 }
 
-func TestConvertSchemaToStructPB_ArrayTypes(t *testing.T) {
+// TestConvertSchemaToStructPB_ArrayTypes ...
+// Summary: TestConvertSchemaToStructPB_ArrayTypes
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test array without items
 	schema := &openapi3.Schema{
 		Type: &openapi3.Types{"array"},
@@ -622,7 +875,16 @@ func TestConvertSchemaToStructPB_ArrayTypes(t *testing.T) {
 	assert.Equal(t, "string", items["type"].GetStringValue())
 }
 
-func TestResolveSchemaRef_EdgeCases(t *testing.T) {
+// TestResolveSchemaRef_EdgeCases ...
+// Summary: TestResolveSchemaRef_EdgeCases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Nil schema ref
 	val, err := resolveSchemaRef(nil, nil)
 	assert.NoError(t, err)
@@ -635,7 +897,16 @@ func TestResolveSchemaRef_EdgeCases(t *testing.T) {
 	assert.Contains(t, err.Error(), "nil doc")
 }
 
-func TestMergeSchemaProperties_Recursion(t *testing.T) {
+// TestMergeSchemaProperties_Recursion ...
+// Summary: TestMergeSchemaProperties_Recursion
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Construct a schema with nested AllOf
 	doc := &openapi3.T{
 		Components: &openapi3.Components{
@@ -682,7 +953,16 @@ func TestMergeSchemaProperties_Recursion(t *testing.T) {
 	assert.Contains(t, merged, "finalProp")
 }
 
-func TestConvertSchemaToStructPB_NoTypeButAllOf(t *testing.T) {
+// TestConvertSchemaToStructPB_NoTypeButAllOf ...
+// Summary: TestConvertSchemaToStructPB_NoTypeButAllOf
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Case where Type is nil but AllOf is present -> should be treated as object
 	schema := &openapi3.Schema{
 		AllOf: openapi3.SchemaRefs{
@@ -703,7 +983,16 @@ func TestConvertSchemaToStructPB_NoTypeButAllOf(t *testing.T) {
 	assert.Contains(t, fields["properties"].GetStructValue().GetFields(), "prop")
 }
 
-func TestConvertSchemaToStructPB_UnhandledType(t *testing.T) {
+// TestConvertSchemaToStructPB_UnhandledType ...
+// Summary: TestConvertSchemaToStructPB_UnhandledType
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	schema := &openapi3.Schema{
 		Type: &openapi3.Types{"unknown"},
 	}
@@ -715,7 +1004,16 @@ func TestConvertSchemaToStructPB_UnhandledType(t *testing.T) {
 	assert.Equal(t, "string", fields["type"].GetStringValue())
 }
 
-func TestConvertSchemaToStructPB_WithEnumAndDefault(t *testing.T) {
+// TestConvertSchemaToStructPB_WithEnumAndDefault ...
+// Summary: TestConvertSchemaToStructPB_WithEnumAndDefault
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	schema := &openapi3.Schema{
 		Type:    &openapi3.Types{"string"},
 		Enum:    []interface{}{"A", "B"},
@@ -735,11 +1033,29 @@ func TestConvertSchemaToStructPB_WithEnumAndDefault(t *testing.T) {
 	assert.Equal(t, "A", fields["default"].GetStringValue())
 }
 
-func (m *MockToolManager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
+// GetAllowedServiceIDs ...
+// Summary: GetAllowedServiceIDs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(profileID)
 	return args.Get(0).(map[string]bool), args.Bool(1)
 }
 
-func (m *MockToolManager) GetToolCountForService(serviceID string) int {
+// GetToolCountForService ...
+// Summary: GetToolCountForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return 0
 }

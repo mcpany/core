@@ -10,7 +10,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestToString_BugFix(t *testing.T) {
+// TestToString_BugFix ...
+// Summary: TestToString_BugFix
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 2^63 is 9223372036854775808.
 	// MaxInt64 is 9223372036854775807.
 	// float64(MaxInt64) is 9223372036854775808 (rounded up).
@@ -25,7 +34,16 @@ func TestToString_BugFix(t *testing.T) {
 	assert.Contains(t, str, "e+", "ToString(2^63) should be in scientific notation")
 }
 
-func TestToString_EdgeCases(t *testing.T) {
+// TestToString_EdgeCases ...
+// Summary: TestToString_EdgeCases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		input    interface{}

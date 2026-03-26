@@ -8,7 +8,16 @@ import (
 	"testing"
 )
 
-func TestExtractIP_Hunter(t *testing.T) {
+// TestExtractIP_Hunter ...
+// Summary: TestExtractIP_Hunter
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		input    string
 		expected string
@@ -35,7 +44,16 @@ func TestExtractIP_Hunter(t *testing.T) {
 	}
 }
 
-func TestRedactDSN_Hunter(t *testing.T) {
+// TestRedactDSN_Hunter ...
+// Summary: TestRedactDSN_Hunter
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		input    string
 		expected string
@@ -64,7 +82,16 @@ func TestRedactDSN_Hunter(t *testing.T) {
 	}
 }
 
-func TestRedactJSON_Hunter(t *testing.T) {
+// TestRedactJSON_Hunter ...
+// Summary: TestRedactJSON_Hunter
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name         string
 		input        string
@@ -93,7 +120,16 @@ func TestRedactJSON_Hunter(t *testing.T) {
 	}
 }
 
-func TestRedactDSN_FalsePositive_Hunter(t *testing.T) {
+// TestRedactDSN_FalsePositive_Hunter ...
+// Summary: TestRedactDSN_FalsePositive_Hunter
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// A valid URL where path contains : and @
 	// This is common in some API endpoints or just random paths.
 	input := "http://example.com/path/with:colon@something"

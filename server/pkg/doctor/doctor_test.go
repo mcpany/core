@@ -25,7 +25,16 @@ func boolPtr(b bool) *bool {
 	return &b
 }
 
-func TestRunChecks_Http(t *testing.T) {
+// TestRunChecks_Http ...
+// Summary: TestRunChecks_Http
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	// Start a mock HTTP server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -74,7 +83,16 @@ func TestRunChecks_Http(t *testing.T) {
 	assert.Equal(t, StatusSkipped, results[2].Status)
 }
 
-func TestRunChecks_Grpc(t *testing.T) {
+// TestRunChecks_Grpc ...
+// Summary: TestRunChecks_Grpc
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	// We can cheat and use the HTTP listener address for TCP check
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
@@ -107,7 +125,16 @@ func TestRunChecks_Grpc(t *testing.T) {
 	assert.Equal(t, StatusError, results[1].Status)
 }
 
-func TestRunChecks_OpenAPI(t *testing.T) {
+// TestRunChecks_OpenAPI ...
+// Summary: TestRunChecks_OpenAPI
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -138,7 +165,16 @@ func TestRunChecks_OpenAPI(t *testing.T) {
 	assert.Equal(t, StatusError, results[1].Status)
 }
 
-func TestRunChecks_Authentication_OAuth2(t *testing.T) {
+// TestRunChecks_Authentication_OAuth2 ...
+// Summary: TestRunChecks_Authentication_OAuth2
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	// Mock OAuth2 Token Endpoint
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -242,7 +278,16 @@ func TestRunChecks_Authentication_OAuth2(t *testing.T) {
 	assert.Contains(t, results[4].Message, "server error")
 }
 
-func TestRunChecks_Filesystem(t *testing.T) {
+// TestRunChecks_Filesystem ...
+// Summary: TestRunChecks_Filesystem
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tmpDir, err := os.MkdirTemp("", "doctor-fs")
 	require.NoError(t, err)
 	defer os.RemoveAll(tmpDir)
@@ -278,7 +323,16 @@ func TestRunChecks_Filesystem(t *testing.T) {
 	assert.Equal(t, StatusError, results[1].Status)
 }
 
-func TestRunChecks_CommandLine(t *testing.T) {
+// TestRunChecks_CommandLine ...
+// Summary: TestRunChecks_CommandLine
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Assume "ls" (or "dir" on windows) exists. Docker env is linux.
 	cmd := "ls"
 	config := configv1.McpAnyServerConfig_builder{
@@ -305,7 +359,16 @@ func TestRunChecks_CommandLine(t *testing.T) {
 	assert.Equal(t, StatusError, results[1].Status)
 }
 
-func TestRunChecks_MCP(t *testing.T) {
+// TestRunChecks_MCP ...
+// Summary: TestRunChecks_MCP
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -340,7 +403,16 @@ func TestRunChecks_MCP(t *testing.T) {
 	assert.Equal(t, StatusOk, results[1].Status)
 }
 
-func TestRunChecks_WebSocket(t *testing.T) {
+// TestRunChecks_WebSocket ...
+// Summary: TestRunChecks_WebSocket
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -366,7 +438,16 @@ func TestRunChecks_WebSocket(t *testing.T) {
 	assert.Equal(t, StatusOk, results[0].Status)
 }
 
-func TestRunChecks_OIDC(t *testing.T) {
+// TestRunChecks_OIDC ...
+// Summary: TestRunChecks_OIDC
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/.well-known/openid-configuration" {
@@ -396,7 +477,16 @@ func TestRunChecks_OIDC(t *testing.T) {
 	assert.Equal(t, StatusOk, results[0].Status)
 }
 
-func TestRunChecks_GraphQL(t *testing.T) {
+// TestRunChecks_GraphQL ...
+// Summary: TestRunChecks_GraphQL
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -419,7 +509,16 @@ func TestRunChecks_GraphQL(t *testing.T) {
 	assert.Equal(t, StatusOk, results[0].Status)
 }
 
-func TestRunChecks_WebRTC(t *testing.T) {
+// TestRunChecks_WebRTC ...
+// Summary: TestRunChecks_WebRTC
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -442,7 +541,16 @@ func TestRunChecks_WebRTC(t *testing.T) {
 	assert.Equal(t, StatusOk, results[0].Status)
 }
 
-func TestRunChecks_SQL(t *testing.T) {
+// TestRunChecks_SQL ...
+// Summary: TestRunChecks_SQL
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// DSN: ":memory:" for sqlite
 	config := configv1.McpAnyServerConfig_builder{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{

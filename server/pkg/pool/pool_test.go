@@ -25,19 +25,46 @@ type mockClient struct {
 	mu        sync.RWMutex
 }
 
-func (c *mockClient) IsHealthy(_ context.Context) bool {
+// IsHealthy ...
+// Summary: IsHealthy
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 	return c.isHealthy
 }
 
-func (c *mockClient) IsClosed() bool {
+// IsClosed ...
+// Summary: IsClosed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 	return c.isClosed
 }
 
-func (c *mockClient) Close() error {
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	c.isClosed = true
@@ -61,7 +88,16 @@ func newEmptyBufferedPool(t *testing.T, factory func(context.Context) (*mockClie
 	return p
 }
 
-func TestPool_New(t *testing.T) {
+// TestPool_New ...
+// Summary: TestPool_New
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	t.Run("valid config", func(t *testing.T) {
 		t.Parallel()
@@ -136,7 +172,16 @@ func TestPool_New(t *testing.T) {
 	})
 }
 
-func TestPool_GetPut(t *testing.T) {
+// TestPool_GetPut ...
+// Summary: TestPool_GetPut
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	// initial=1
 	p, err := New(newMockClientFactory(true), 1, 1, 2, 100, false)
@@ -159,7 +204,16 @@ func TestPool_GetPut(t *testing.T) {
 	assert.Equal(t, c1, c2)
 }
 
-func TestPool_Get_Unhealthy(t *testing.T) {
+// TestPool_Get_Unhealthy ...
+// Summary: TestPool_Get_Unhealthy
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	// Factory creates one unhealthy client, then healthy ones.
 	var createdCount int32
@@ -181,7 +235,16 @@ func TestPool_Get_Unhealthy(t *testing.T) {
 	assert.NotNil(t, c)
 }
 
-func TestPool_Put_Unhealthy(t *testing.T) {
+// TestPool_Put_Unhealthy ...
+// Summary: TestPool_Put_Unhealthy
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	// Needs buffered pool to store returned client.
 	p := newEmptyBufferedPool(t, newMockClientFactory(true), 2, 2)
@@ -211,7 +274,16 @@ func TestPool_Put_Unhealthy(t *testing.T) {
 	assert.True(t, c2.isHealthy)
 }
 
-func TestPool_Full(t *testing.T) {
+// TestPool_Full ...
+// Summary: TestPool_Full
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	// Max idle 1, Max active 1. Empty initially.
 	p := newEmptyBufferedPool(t, newMockClientFactory(true), 1, 1)
@@ -230,7 +302,16 @@ func TestPool_Full(t *testing.T) {
 	assert.ErrorIs(t, err, context.DeadlineExceeded, "Getting from a full pool should block until context is cancelled")
 }
 
-func TestPool_Close(t *testing.T) {
+// TestPool_Close ...
+// Summary: TestPool_Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	client := &mockClient{isHealthy: true}
 	factory := func(_ context.Context) (*mockClient, error) {
@@ -244,7 +325,16 @@ func TestPool_Close(t *testing.T) {
 	assert.True(t, client.isClosed)
 }
 
-func TestManager(t *testing.T) {
+// TestManager ...
+// Summary: TestManager
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	m := NewManager()
 	p, err := New(newMockClientFactory(true), 1, 1, 5, 100, false)
@@ -262,12 +352,30 @@ type mockCloser struct {
 	closed bool
 }
 
-func (m *mockCloser) Close() error {
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.closed = true
 	return nil
 }
 
-func TestManager_RegisterOverwriteClosesOldPoolWithCloser(t *testing.T) {
+// TestManager_RegisterOverwriteClosesOldPoolWithCloser ...
+// Summary: TestManager_RegisterOverwriteClosesOldPoolWithCloser
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewManager()
 	closer1 := &mockCloser{}
 	closer2 := &mockCloser{}
@@ -281,16 +389,43 @@ type simpleMockPool struct {
 	closed bool
 }
 
-func (p *simpleMockPool) Close() error {
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	p.closed = true
 	return nil
 }
 
-func (p *simpleMockPool) Len() int {
+// Len ...
+// Summary: Len
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return 0
 }
 
-func TestManager_RegisterOverwriteClosesOldPool(t *testing.T) {
+// TestManager_RegisterOverwriteClosesOldPool ...
+// Summary: TestManager_RegisterOverwriteClosesOldPool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewManager()
 	pool1 := &simpleMockPool{}
 	pool2 := &simpleMockPool{}
@@ -300,7 +435,16 @@ func TestManager_RegisterOverwriteClosesOldPool(t *testing.T) {
 	assert.False(t, pool2.closed, "Expected new pool to not be closed")
 }
 
-func TestPool_Put_UnhealthyClientDoesNotLeakSemaphore(t *testing.T) {
+// TestPool_Put_UnhealthyClientDoesNotLeakSemaphore ...
+// Summary: TestPool_Put_UnhealthyClientDoesNotLeakSemaphore
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	const maxSize = 2
 	// Use buffered pool
 	p := newEmptyBufferedPool(t, newMockClientFactory(true), maxSize, maxSize)
@@ -334,7 +478,16 @@ func TestPool_Put_UnhealthyClientDoesNotLeakSemaphore(t *testing.T) {
 	}
 }
 
-func TestPool_PutOnClosedPool(t *testing.T) {
+// TestPool_PutOnClosedPool ...
+// Summary: TestPool_PutOnClosedPool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	const maxSize = 1
 	p := newEmptyBufferedPool(t, newMockClientFactory(true), maxSize, maxSize)
 
@@ -360,7 +513,16 @@ func TestPool_PutOnClosedPool(t *testing.T) {
 	}
 }
 
-func TestPool_ConcurrentGetPut(t *testing.T) {
+// TestPool_ConcurrentGetPut ...
+// Summary: TestPool_ConcurrentGetPut
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	const (
 		maxSize    = 20
 		numClients = 100
@@ -399,7 +561,16 @@ func TestPool_ConcurrentGetPut(t *testing.T) {
 	wg.Wait()
 }
 
-func TestManager_Concurrent(t *testing.T) {
+// TestManager_Concurrent ...
+// Summary: TestManager_Concurrent
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewManager()
 	var wg sync.WaitGroup
 	numRoutines := 100
@@ -430,7 +601,16 @@ func TestManager_Concurrent(t *testing.T) {
 	m.CloseAll()
 }
 
-func TestManager_Deregister(t *testing.T) {
+// TestManager_Deregister ...
+// Summary: TestManager_Deregister
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewManager()
 	p, err := New(newMockClientFactory(true), 1, 1, 5, 100, false)
 	require.NoError(t, err)
@@ -445,7 +625,16 @@ func TestManager_Deregister(t *testing.T) {
 	assert.False(t, ok, "Pool should have been deregistered")
 }
 
-func TestPool_New_FactoryError(t *testing.T) {
+// TestPool_New_FactoryError ...
+// Summary: TestPool_New_FactoryError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	factory := func(_ context.Context) (*mockClient, error) {
 		return nil, fmt.Errorf("factory error")
 	}
@@ -454,7 +643,16 @@ func TestPool_New_FactoryError(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestPool_New_DisableHealthCheck_WithUnhealthyClient(t *testing.T) {
+// TestPool_New_DisableHealthCheck_WithUnhealthyClient ...
+// Summary: TestPool_New_DisableHealthCheck_WithUnhealthyClient
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	factory := newMockClientFactory(false)   // Creates unhealthy clients
 	p, err := New(factory, 1, 1, 1, 0, true) // disableHealthCheck = true
 	require.NoError(t, err)
@@ -473,7 +671,16 @@ func TestPool_New_DisableHealthCheck_WithUnhealthyClient(t *testing.T) {
 	assert.False(t, c.IsHealthy(context.Background()))
 }
 
-func TestPool_Get_FactoryError(t *testing.T) {
+// TestPool_Get_FactoryError ...
+// Summary: TestPool_Get_FactoryError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var callCount int32
 	factory := func(_ context.Context) (*mockClient, error) {
 		if atomic.AddInt32(&callCount, 1) > 1 {
@@ -500,7 +707,16 @@ func TestPool_Get_FactoryError(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestPool_DisableHealthCheck(t *testing.T) {
+// TestPool_DisableHealthCheck ...
+// Summary: TestPool_DisableHealthCheck
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	factory := newMockClientFactory(false)   // Creates unhealthy clients
 	p, err := New(factory, 1, 1, 1, 0, true) // disableHealthCheck = true
 	require.NoError(t, err)
@@ -522,7 +738,16 @@ func TestPool_DisableHealthCheck(t *testing.T) {
 	assert.Same(t, c, c2)
 }
 
-func TestPool_GetWithAlreadyCanceledContext(t *testing.T) {
+// TestPool_GetWithAlreadyCanceledContext ...
+// Summary: TestPool_GetWithAlreadyCanceledContext
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	p := newEmptyBufferedPool(t, newMockClientFactory(true), 1, 1)
 	defer func() {
 		err := p.Close()
@@ -536,7 +761,16 @@ func TestPool_GetWithAlreadyCanceledContext(t *testing.T) {
 	assert.ErrorIs(t, err, context.Canceled)
 }
 
-func TestPool_PutToFullPool(t *testing.T) {
+// TestPool_PutToFullPool ...
+// Summary: TestPool_PutToFullPool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	p := newEmptyBufferedPool(t, newMockClientFactory(true), 1, 1)
 	defer func() {
 		err := p.Close()
@@ -567,7 +801,16 @@ type anotherMockClient struct {
 	mockClient
 }
 
-func TestManager_Get_TypeSafety(t *testing.T) {
+// TestManager_Get_TypeSafety ...
+// Summary: TestManager_Get_TypeSafety
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewManager()
 	p, err := New(newMockClientFactory(true), 1, 1, 1, 0, false)
 	require.NoError(t, err)
@@ -583,7 +826,16 @@ func TestManager_Get_TypeSafety(t *testing.T) {
 	assert.False(t, ok)
 }
 
-func TestPool_GetPrefersIdleClientsOverCreatingNew(t *testing.T) {
+// TestPool_GetPrefersIdleClientsOverCreatingNew ...
+// Summary: TestPool_GetPrefersIdleClientsOverCreatingNew
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	const maxSize = 2
 	var factoryCallCount int32
 	factory := func(_ context.Context) (*mockClient, error) {
@@ -624,7 +876,16 @@ func TestPool_GetPrefersIdleClientsOverCreatingNew(t *testing.T) {
 	p.Put(clients[1])
 }
 
-func TestPool_ConcurrentGetAndClose(t *testing.T) {
+// TestPool_ConcurrentGetAndClose ...
+// Summary: TestPool_ConcurrentGetAndClose
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	const (
 		maxSize    = 20
 		numGetters = 50
@@ -668,7 +929,16 @@ func TestPool_ConcurrentGetAndClose(t *testing.T) {
 	assert.Equal(t, ErrPoolClosed, err, "Getting from a closed pool should return ErrPoolClosed")
 }
 
-func TestPool_PutNilClientReleasesSemaphore(t *testing.T) {
+// TestPool_PutNilClientReleasesSemaphore ...
+// Summary: TestPool_PutNilClientReleasesSemaphore
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	const maxSize = 1
 	p := newEmptyBufferedPool(t, newMockClientFactory(true), maxSize, maxSize)
 	defer func() {
@@ -693,7 +963,16 @@ func TestPool_PutNilClientReleasesSemaphore(t *testing.T) {
 	assert.NoError(t, err, "Should be able to get a client after putting nil, but it timed out, indicating a semaphore leak.")
 }
 
-func TestPool_ConcurrentClose(_ *testing.T) {
+// TestPool_ConcurrentClose ...
+// Summary: TestPool_ConcurrentClose
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pool, _ := New(newMockClientFactory(true), 0, 0, 10, 0, false)
 	var wg sync.WaitGroup
 	wg.Add(10)
@@ -706,7 +985,16 @@ func TestPool_ConcurrentClose(_ *testing.T) {
 	wg.Wait()
 }
 
-func TestPool_GetWithUnhealthyClients(t *testing.T) {
+// TestPool_GetWithUnhealthyClients ...
+// Summary: TestPool_GetWithUnhealthyClients
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	maxSize := 5
 	factory := newMockClientFactory(true)
@@ -738,7 +1026,16 @@ func TestPool_GetWithUnhealthyClients(t *testing.T) {
 	}
 }
 
-func TestPool_GetRetriesWhenClientIsNil(t *testing.T) {
+// TestPool_GetRetriesWhenClientIsNil ...
+// Summary: TestPool_GetRetriesWhenClientIsNil
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	p := newEmptyBufferedPool(t, newMockClientFactory(true), 1, 1)
 	defer func() {
 		err := p.Close()
@@ -754,7 +1051,16 @@ func TestPool_GetRetriesWhenClientIsNil(t *testing.T) {
 	assert.NotNil(t, c)
 }
 
-func TestPool_Get_RaceWithClose(t *testing.T) {
+// TestPool_Get_RaceWithClose ...
+// Summary: TestPool_Get_RaceWithClose
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	const maxSize = 1
 	factoryStarted := make(chan struct{})
 	factoryProceed := make(chan struct{})
@@ -801,7 +1107,16 @@ func TestPool_Get_RaceWithClose(t *testing.T) {
 	}
 }
 
-func TestPool_Get_RaceWithPut(t *testing.T) {
+// TestPool_Get_RaceWithPut ...
+// Summary: TestPool_Get_RaceWithPut
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	const maxSize = 1
 	var factoryCallCount int32
 	factoryWillBlock := make(chan struct{})
@@ -862,7 +1177,16 @@ func TestPool_Get_RaceWithPut(t *testing.T) {
 	assert.Equal(t, 1, p.Len(), "Pool should have one idle client")
 }
 
-func TestPool_Get_Full_ContextCanceled(t *testing.T) {
+// TestPool_Get_Full_ContextCanceled ...
+// Summary: TestPool_Get_Full_ContextCanceled
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	p := newEmptyBufferedPool(t, newMockClientFactory(true), 1, 1)
 	defer func() {
 		err := p.Close()
@@ -893,7 +1217,16 @@ func TestPool_Get_Full_ContextCanceled(t *testing.T) {
 	p.Put(c)
 }
 
-func TestPool_Get_WaitsForClientThenGetsUnhealthy(t *testing.T) {
+// TestPool_Get_WaitsForClientThenGetsUnhealthy ...
+// Summary: TestPool_Get_WaitsForClientThenGetsUnhealthy
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	p := newEmptyBufferedPool(t, newMockClientFactory(true), 1, 1)
 	defer func() {
 		err := p.Close()
@@ -922,7 +1255,16 @@ func TestPool_Get_WaitsForClientThenGetsUnhealthy(t *testing.T) {
 	wg.Wait()
 }
 
-func TestManager_ConcurrentAccess(t *testing.T) {
+// TestManager_ConcurrentAccess ...
+// Summary: TestManager_ConcurrentAccess
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewManager()
 	var wg sync.WaitGroup
 	numGoroutines := 50
@@ -952,7 +1294,16 @@ func secureRandomInt(maxVal int) int {
 	return int(n.Int64())
 }
 
-func TestPool_Starvation(t *testing.T) {
+// TestPool_Starvation ...
+// Summary: TestPool_Starvation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Max size 1.
 	p := newEmptyBufferedPool(t, newMockClientFactory(true), 1, 1)
 	defer func() { _ = p.Close() }()
@@ -1000,7 +1351,16 @@ func TestPool_Starvation(t *testing.T) {
 	}
 }
 
-func TestPool_New_DisableHealthCheck_FactoryError(t *testing.T) {
+// TestPool_New_DisableHealthCheck_FactoryError ...
+// Summary: TestPool_New_DisableHealthCheck_FactoryError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	factory := func(_ context.Context) (*mockClient, error) {
 		return nil, fmt.Errorf("factory error")
 	}
@@ -1011,11 +1371,29 @@ func TestPool_New_DisableHealthCheck_FactoryError(t *testing.T) {
 
 type errorCloser struct{}
 
-func (e *errorCloser) Close() error {
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return fmt.Errorf("close error")
 }
 
-func TestManager_RegisterOverwrite_CloseError(t *testing.T) {
+// TestManager_RegisterOverwrite_CloseError ...
+// Summary: TestManager_RegisterOverwrite_CloseError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewManager()
 	pool1 := &errorCloser{}
 	pool2 := &simpleMockPool{}
@@ -1028,7 +1406,16 @@ func TestManager_RegisterOverwrite_CloseError(t *testing.T) {
 	assert.Equal(t, pool2, m.pools["test_pool"])
 }
 
-func TestPool_New_DisableHealthCheck_NilClient(t *testing.T) {
+// TestPool_New_DisableHealthCheck_NilClient ...
+// Summary: TestPool_New_DisableHealthCheck_NilClient
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	factory := func(_ context.Context) (*mockClient, error) {
 		return nil, nil // Return nil client with no error
 	}

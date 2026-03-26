@@ -17,36 +17,83 @@ import (
 )
 
 // MockWriter is a mock for kafkaWriter
-type MockWriter struct {
+// MockWriter is a mock for kafkaWriter
+// Summary: MockWriter
 	mock.Mock
 }
 
-func (m *MockWriter) WriteMessages(ctx context.Context, msgs ...kafkago.Message) error {
+// WriteMessages ...
+// Summary: WriteMessages
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, msgs)
 	return args.Error(0)
 }
 
-func (m *MockWriter) Close() error {
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	return args.Error(0)
 }
 
 // MockReader is a mock for kafkaReader
-type MockReader struct {
+// MockReader is a mock for kafkaReader
+// Summary: MockReader
 	mock.Mock
 }
 
-func (m *MockReader) ReadMessage(ctx context.Context) (kafkago.Message, error) {
+// ReadMessage ...
+// Summary: ReadMessage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx)
 	return args.Get(0).(kafkago.Message), args.Error(1)
 }
 
-func (m *MockReader) Close() error {
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	return args.Error(0)
 }
 
-func TestPublish(t *testing.T) {
+// TestPublish ...
+// Summary: TestPublish
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockWriter := new(MockWriter)
 	config := &bus.KafkaBus{}
 	config.SetBrokers([]string{"127.0.0.1:9092"})
@@ -70,7 +117,16 @@ func TestPublish(t *testing.T) {
 	mockWriter.AssertExpectations(t)
 }
 
-func TestSubscribe(t *testing.T) {
+// TestSubscribe ...
+// Summary: TestSubscribe
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockWriter := new(MockWriter) // Not used but needed for New
 	mockReader := new(MockReader)
 
@@ -119,7 +175,16 @@ func TestSubscribe(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 }
 
-func TestSubscribeOnce(t *testing.T) {
+// TestSubscribeOnce ...
+// Summary: TestSubscribeOnce
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockWriter := new(MockWriter)
 	mockReader := new(MockReader)
 
@@ -170,7 +235,16 @@ func TestSubscribeOnce(t *testing.T) {
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-func TestNew_Errors(t *testing.T) {
+// TestNew_Errors ...
+// Summary: TestNew_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Missing brokers
 	config := &bus.KafkaBus{}
 	b, err := New[string](config)
@@ -179,7 +253,16 @@ func TestNew_Errors(t *testing.T) {
 	assert.Contains(t, err.Error(), "kafka brokers are missing")
 }
 
-func TestClose(t *testing.T) {
+// TestClose ...
+// Summary: TestClose
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockWriter := new(MockWriter)
 	config := &bus.KafkaBus{}
 	config.SetBrokers([]string{"127.0.0.1:9092"})
@@ -195,7 +278,16 @@ func TestClose(t *testing.T) {
 	mockWriter.AssertExpectations(t)
 }
 
-func TestPublish_Error(t *testing.T) {
+// TestPublish_Error ...
+// Summary: TestPublish_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockWriter := new(MockWriter)
 	config := &bus.KafkaBus{}
 	config.SetBrokers([]string{"127.0.0.1:9092"})
@@ -219,7 +311,16 @@ func TestPublish_Error(t *testing.T) {
 	mockWriter.AssertExpectations(t)
 }
 
-func TestSubscribe_HandlerNil(t *testing.T) {
+// TestSubscribe_HandlerNil ...
+// Summary: TestSubscribe_HandlerNil
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	config := &bus.KafkaBus{}
 	config.SetBrokers([]string{"127.0.0.1:9092"})
 	b, err := New[string](config)
@@ -230,7 +331,16 @@ func TestSubscribe_HandlerNil(t *testing.T) {
 	unsubscribe()
 }
 
-func TestSubscribeOnce_HandlerNil(t *testing.T) {
+// TestSubscribeOnce_HandlerNil ...
+// Summary: TestSubscribeOnce_HandlerNil
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	config := &bus.KafkaBus{}
 	config.SetBrokers([]string{"127.0.0.1:9092"})
 	b, err := New[string](config)

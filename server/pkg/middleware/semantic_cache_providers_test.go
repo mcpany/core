@@ -13,7 +13,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestHttpEmbeddingProvider_Embed(t *testing.T) {
+// TestHttpEmbeddingProvider_Embed ...
+// Summary: TestHttpEmbeddingProvider_Embed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Mock HTTP Server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Authorization") != "Bearer test" {

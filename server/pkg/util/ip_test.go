@@ -10,7 +10,16 @@ import (
 	"testing"
 )
 
-func TestContextWithRemoteIP(t *testing.T) {
+// TestContextWithRemoteIP ...
+// Summary: TestContextWithRemoteIP
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	ctx := context.Background()
 	ip := "127.0.0.1"
@@ -32,7 +41,16 @@ func TestContextWithRemoteIP(t *testing.T) {
 	}
 }
 
-func TestExtractIP(t *testing.T) {
+// TestExtractIP ...
+// Summary: TestExtractIP
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tests := []struct {
 		name     string
@@ -101,7 +119,16 @@ func TestExtractIP(t *testing.T) {
 	}
 }
 
-func TestGetClientIP(t *testing.T) {
+// TestGetClientIP ...
+// Summary: TestGetClientIP
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tests := []struct {
 		name       string
@@ -205,7 +232,16 @@ func TestGetClientIP(t *testing.T) {
 	}
 }
 
-func TestIsPrivateNetworkIP(t *testing.T) {
+// TestIsPrivateNetworkIP ...
+// Summary: TestIsPrivateNetworkIP
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tests := []struct {
 		ip       string
@@ -275,7 +311,16 @@ func TestIsPrivateNetworkIP(t *testing.T) {
 	}
 }
 
-func TestIsPrivateIP(t *testing.T) {
+// TestIsPrivateIP ...
+// Summary: TestIsPrivateIP
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tests := []struct {
 		ip       string

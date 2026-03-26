@@ -12,7 +12,16 @@ import (
 	"testing"
 )
 
-func TestValidateConfigHandler_FilesystemLeak(t *testing.T) {
+// TestValidateConfigHandler_FilesystemLeak ...
+// Summary: TestValidateConfigHandler_FilesystemLeak
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a dummy executable file to test with
 	tmpFile, err := os.CreateTemp("", "dummy_exec")
 	if err != nil {

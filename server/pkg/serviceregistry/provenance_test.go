@@ -10,7 +10,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestInjectProvenance(t *testing.T) {
+// TestInjectProvenance ...
+// Summary: TestInjectProvenance
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	r := &ServiceRegistry{}
 
 	tests := []struct {

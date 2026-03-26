@@ -15,7 +15,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestNewTestPoolManager(t *testing.T) {
+// TestNewTestPoolManager ...
+// Summary: TestNewTestPoolManager
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := NewTestPoolManager(t)
 	require.NotNil(t, pm)
 
@@ -25,7 +34,16 @@ func TestNewTestPoolManager(t *testing.T) {
 	assert.NotNil(t, p)
 }
 
-func TestMockAuthenticator(t *testing.T) {
+// TestMockAuthenticator ...
+// Summary: TestMockAuthenticator
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("AuthenticateFunc set", func(t *testing.T) {
 		called := false
 		auth := &MockAuthenticator{
@@ -49,7 +67,16 @@ func TestMockAuthenticator(t *testing.T) {
 	})
 }
 
-func TestMockTool(t *testing.T) {
+// TestMockTool ...
+// Summary: TestMockTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("Tool definition", func(t *testing.T) {
 		mt := &MockTool{}
 		def := mt.Tool()

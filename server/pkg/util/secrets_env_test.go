@@ -13,7 +13,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestResolveSecret_EnvVar_Empty(t *testing.T) {
+// TestResolveSecret_EnvVar_Empty ...
+// Summary: TestResolveSecret_EnvVar_Empty
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	key := "TEST_EMPTY_SECRET_BUG"
 	// Set the environment variable to an empty string.
 	// This is a valid state (the variable exists, but its value is empty).

@@ -15,7 +15,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestResolveSecret_AwsSecretManager(t *testing.T) {
+// TestResolveSecret_AwsSecretManager ...
+// Summary: TestResolveSecret_AwsSecretManager
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Mock AWS Secrets Manager Server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// assert.Equal(t, "POST", r.Method)

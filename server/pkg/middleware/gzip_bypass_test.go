@@ -14,7 +14,17 @@ import (
 
 // TestGzipBypassOptimization verifies that large payloads which trigger the buffer bypass
 // still result in correctly gzipped output.
-func TestGzipBypassOptimization(t *testing.T) {
+// TestGzipBypassOptimization verifies that large payloads which trigger the buffer bypass
+// Summary: TestGzipBypassOptimization
+// still result in correctly gzipped output.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a payload larger than minSize (1400) to trigger potential bypass
 	largePayload := strings.Repeat("BypassBuffer ", 200) // ~2600 bytes
 
@@ -64,7 +74,17 @@ func TestGzipBypassOptimization(t *testing.T) {
 
 // TestGzipBypassSniffing verifies that Content-Type sniffing works correctly
 // when the buffer is bypassed.
-func TestGzipBypassSniffing(t *testing.T) {
+// TestGzipBypassSniffing verifies that Content-Type sniffing works correctly
+// Summary: TestGzipBypassSniffing
+// when the buffer is bypassed.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// HTML content to trigger text/html detection
 	htmlPayload := strings.Repeat("<html><body><h1>Hello World</h1></body></html>", 50) // ~2400 bytes
 

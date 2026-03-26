@@ -12,7 +12,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCloseAll_Error(t *testing.T) {
+// TestCloseAll_Error ...
+// Summary: TestCloseAll_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewManager()
 	p := &errorCloser{}
 	m.Register("pool1", p)
@@ -21,7 +30,16 @@ func TestCloseAll_Error(t *testing.T) {
 }
 
 // Test Get context done at start
-func TestGet_ContextAlreadyDone(t *testing.T) {
+// Test Get context done at start
+// Summary: TestGet_ContextAlreadyDone
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	p, _ := New(newMockClientFactory(true), 0, 0, 1, 0, false)
 	defer func() { _ = p.Close() }()
 	ctx, cancel := context.WithCancel(context.Background())
@@ -31,7 +49,16 @@ func TestGet_ContextAlreadyDone(t *testing.T) {
 }
 
 // Test Get returns error if pool closed (fast path)
-func TestGet_PoolClosed_FastPath(t *testing.T) {
+// Test Get returns error if pool closed (fast path)
+// Summary: TestGet_PoolClosed_FastPath
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	p, _ := New(newMockClientFactory(true), 0, 0, 1, 0, false)
 	_ = p.Close()
 	_, err := p.Get(context.Background())
@@ -39,7 +66,16 @@ func TestGet_PoolClosed_FastPath(t *testing.T) {
 }
 
 // Test Get returns error if pool closed while waiting on channel
-func TestGet_PoolClosed_WhileWaiting(t *testing.T) {
+// Test Get returns error if pool closed while waiting on channel
+// Summary: TestGet_PoolClosed_WhileWaiting
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	p, _ := New(newMockClientFactory(true), 0, 0, 1, 0, false)
 	// Fill pool (maxSize 1)
 	c, _ := p.Get(context.Background())
@@ -61,7 +97,16 @@ func TestGet_PoolClosed_WhileWaiting(t *testing.T) {
 }
 
 // Test Put nil client
-func TestPut_Nil(t *testing.T) {
+// Test Put nil client
+// Summary: TestPut_Nil
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	p, _ := New(newMockClientFactory(true), 0, 0, 1, 0, false)
 	defer func() { _ = p.Close() }()
 
@@ -82,7 +127,16 @@ func TestPut_Nil(t *testing.T) {
 }
 
 // Test retry logic in loop (retry item in channel)
-func TestGet_RetryItem(t *testing.T) {
+// Test retry logic in loop (retry item in channel)
+// Summary: TestGet_RetryItem
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Use buffered pool so we can inject retry item
 	p := newEmptyBufferedPool(t, newMockClientFactory(true), 1, 1)
 	defer func() { _ = p.Close() }()
@@ -98,7 +152,16 @@ func TestGet_RetryItem(t *testing.T) {
 }
 
 // Test race: Acquire permit, but client becomes available in channel.
-func TestGet_Race_Acquire_But_ClientAvailable(t *testing.T) {
+// Test race: Acquire permit, but client becomes available in channel.
+// Summary: TestGet_Race_Acquire_But_ClientAvailable
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Use buffered pool
 	p := newEmptyBufferedPool(t, newMockClientFactory(true), 1, 1)
 	defer func() { _ = p.Close() }()
@@ -119,7 +182,16 @@ func TestGet_Race_Acquire_But_ClientAvailable(t *testing.T) {
 }
 
 // Test race: Acquire permit, but retry item becomes available in channel.
-func TestGet_Race_Acquire_But_ClientAvailable_Retry(t *testing.T) {
+// Test race: Acquire permit, but retry item becomes available in channel.
+// Summary: TestGet_Race_Acquire_But_ClientAvailable_Retry
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	p := newEmptyBufferedPool(t, newMockClientFactory(true), 1, 1)
 	defer func() { _ = p.Close() }()
 
@@ -140,7 +212,16 @@ func TestGet_Race_Acquire_But_ClientAvailable_Retry(t *testing.T) {
 }
 
 // Test race: Acquire permit, but unhealthy client becomes available in channel.
-func TestGet_Race_Acquire_But_ClientAvailable_Unhealthy(t *testing.T) {
+// Test race: Acquire permit, but unhealthy client becomes available in channel.
+// Summary: TestGet_Race_Acquire_But_ClientAvailable_Unhealthy
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	p := newEmptyBufferedPool(t, newMockClientFactory(true), 1, 1)
 	defer func() { _ = p.Close() }()
 
@@ -165,28 +246,64 @@ func TestGet_Race_Acquire_But_ClientAvailable_Unhealthy(t *testing.T) {
 }
 
 // Test CloseAll with non-closer pool (coverage for "ok := untypedPool.(io.Closer)")
-func TestCloseAll_NonCloser(t *testing.T) {
+// Test CloseAll with non-closer pool (coverage for "ok := untypedPool.(io.Closer)")
+// Summary: TestCloseAll_NonCloser
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewManager()
 	m.Register("pool1", "string is not closer")
 	m.CloseAll()
 }
 
 // Test Deregister with non-closer
-func TestDeregister_NonCloser(t *testing.T) {
+// Test Deregister with non-closer
+// Summary: TestDeregister_NonCloser
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewManager()
 	m.Register("pool1", "string is not closer")
 	m.Deregister("pool1")
 }
 
 // Test Register overwrite non-closer
-func TestRegister_Overwrite_NonCloser(t *testing.T) {
+// Test Register overwrite non-closer
+// Summary: TestRegister_Overwrite_NonCloser
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewManager()
 	m.Register("pool1", "string is not closer")
 	m.Register("pool1", &simpleMockPool{})
 }
 
 // Test Put with interface type and nil
-func TestPut_NilInterface(t *testing.T) {
+// Test Put with interface type and nil
+// Summary: TestPut_NilInterface
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	factory := func(_ context.Context) (ClosableClient, error) {
 		return &mockClient{isHealthy: true}, nil
 	}
@@ -208,7 +325,16 @@ func TestPut_NilInterface(t *testing.T) {
 }
 
 // Test Close handles retry items in channel
-func TestClose_WithRetryItems(t *testing.T) {
+// Test Close handles retry items in channel
+// Summary: TestClose_WithRetryItems
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Use buffered pool
 	p := newEmptyBufferedPool(t, newMockClientFactory(true), 1, 1)
 	pi := p.(*poolImpl[*mockClient])
@@ -219,7 +345,16 @@ func TestClose_WithRetryItems(t *testing.T) {
 }
 
 // Test Get backoff context cancellation
-func TestGet_Backoff_ContextCancel(t *testing.T) {
+// Test Get backoff context cancellation
+// Summary: TestGet_Backoff_ContextCancel
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	factory := func(_ context.Context) (*mockClient, error) {
 		return &mockClient{isHealthy: false}, nil
 	}
@@ -239,7 +374,16 @@ func TestGet_Backoff_ContextCancel(t *testing.T) {
 }
 
 // Test New with minSize > 0 and factory error (verify Close called)
-func TestNew_FactoryError_VerifyClose(t *testing.T) {
+// Test New with minSize > 0 and factory error (verify Close called)
+// Summary: TestNew_FactoryError_VerifyClose
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	factory := func(_ context.Context) (*mockClient, error) {
 		return nil, errors.New("fail")
 	}
@@ -250,7 +394,16 @@ func TestNew_FactoryError_VerifyClose(t *testing.T) {
 
 // Additional coverage tests
 
-func TestNew_EnabledHealthCheck_FactoryError(t *testing.T) {
+// TestNew_EnabledHealthCheck_FactoryError ...
+// Summary: TestNew_EnabledHealthCheck_FactoryError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	factory := func(_ context.Context) (*mockClient, error) {
 		return nil, errors.New("factory failure")
 	}
@@ -260,7 +413,16 @@ func TestNew_EnabledHealthCheck_FactoryError(t *testing.T) {
 	assert.Contains(t, err.Error(), "factory failed to create initial client")
 }
 
-func TestNew_EnabledHealthCheck_NilClient(t *testing.T) {
+// TestNew_EnabledHealthCheck_NilClient ...
+// Summary: TestNew_EnabledHealthCheck_NilClient
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	factory := func(_ context.Context) (*mockClient, error) {
 		return nil, nil
 	}
@@ -270,7 +432,16 @@ func TestNew_EnabledHealthCheck_NilClient(t *testing.T) {
 	assert.Contains(t, err.Error(), "factory returned nil client")
 }
 
-func TestGet_ContextCancel_WhileWaitFull(t *testing.T) {
+// TestGet_ContextCancel_WhileWaitFull ...
+// Summary: TestGet_ContextCancel_WhileWaitFull
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	p := newEmptyBufferedPool(t, newMockClientFactory(true), 1, 1)
 	defer func() { _ = p.Close() }()
 
@@ -295,7 +466,16 @@ func TestGet_ContextCancel_WhileWaitFull(t *testing.T) {
 	p.Put(c)
 }
 
-func TestGet_Coverage_ClosedChannel_FirstLoop(t *testing.T) {
+// TestGet_Coverage_ClosedChannel_FirstLoop ...
+// Summary: TestGet_Coverage_ClosedChannel_FirstLoop
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	p, _ := New(newMockClientFactory(true), 1, 1, 1, 0, false)
 	pi := p.(*poolImpl[*mockClient])
 
@@ -318,11 +498,29 @@ type panicCloser struct {
 	mockClient
 }
 
-func (c *panicCloser) Close() error {
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	panic("close panic")
 }
 
-func TestPut_PanicOnClose(t *testing.T) {
+// TestPut_PanicOnClose ...
+// Summary: TestPut_PanicOnClose
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	factory := func(_ context.Context) (*panicCloser, error) {
 		return &panicCloser{mockClient: mockClient{isHealthy: true}}, nil
 	}
@@ -349,7 +547,16 @@ func TestPut_PanicOnClose(t *testing.T) {
 	assert.NotNil(t, c2)
 }
 
-func TestClose_PanicOnClose(t *testing.T) {
+// TestClose_PanicOnClose ...
+// Summary: TestClose_PanicOnClose
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	factory := func(_ context.Context) (*panicCloser, error) {
 		return &panicCloser{mockClient: mockClient{isHealthy: true}}, nil
 	}
@@ -363,7 +570,16 @@ func TestClose_PanicOnClose(t *testing.T) {
 	})
 }
 
-func TestClose_WithNilClient(t *testing.T) {
+// TestClose_WithNilClient ...
+// Summary: TestClose_WithNilClient
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	p := newEmptyBufferedPool(t, newMockClientFactory(true), 1, 1)
 	pi := p.(*poolImpl[*mockClient])
 	// Inject nil client
@@ -374,7 +590,16 @@ func TestClose_WithNilClient(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestPool_MaxIdleConnections_RespectsLimit(t *testing.T) {
+// TestPool_MaxIdleConnections_RespectsLimit ...
+// Summary: TestPool_MaxIdleConnections_RespectsLimit
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	factory := func(ctx context.Context) (*mockClient, error) {
 		return &mockClient{isHealthy: true}, nil
 	}

@@ -59,7 +59,16 @@ func generateTestCerts(t *testing.T, tempDir string) (certPath, keyPath string) 
 	return certFile.Name(), keyFile.Name()
 }
 
-func TestNewHTTPClientWithTLS(t *testing.T) {
+// TestNewHTTPClientWithTLS ...
+// Summary: TestNewHTTPClientWithTLS
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	t.Run("nil config returns client with safe dialer", func(t *testing.T) {
 		client, err := NewHTTPClientWithTLS(nil)
@@ -182,7 +191,16 @@ func TestNewHTTPClientWithTLS(t *testing.T) {
 	})
 }
 
-func TestNewHTTPClientWithTLS_Env(t *testing.T) {
+// TestNewHTTPClientWithTLS_Env ...
+// Summary: TestNewHTTPClientWithTLS_Env
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("with MCPANY_DENY_PRIVATE_UPSTREAM", func(t *testing.T) {
 		t.Setenv("MCPANY_DENY_PRIVATE_UPSTREAM", "true")
 		client, err := NewHTTPClientWithTLS(nil)

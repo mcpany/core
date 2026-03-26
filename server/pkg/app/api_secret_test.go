@@ -19,7 +19,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestSecretCRUD(t *testing.T) {
+// TestSecretCRUD ...
+// Summary: TestSecretCRUD
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 	app.Storage = memory.NewStore()
 	ctx := context.Background()

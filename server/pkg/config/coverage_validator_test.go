@@ -16,7 +16,16 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestValidateSchema_Coverage(t *testing.T) {
+// TestValidateSchema_Coverage ...
+// Summary: TestValidateSchema_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name      string
 		schema    *structpb.Struct
@@ -50,7 +59,16 @@ func TestValidateSchema_Coverage(t *testing.T) {
 	}
 }
 
-func TestValidateCommandExists_Coverage(t *testing.T) {
+// TestValidateCommandExists_Coverage ...
+// Summary: TestValidateCommandExists_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary directory and file
 	tmpDir := t.TempDir()
 	tmpFile := filepath.Join(tmpDir, "test-exec")
@@ -115,7 +133,16 @@ func TestValidateCommandExists_Coverage(t *testing.T) {
 	}
 }
 
-func TestValidateDirectoryExists_Coverage(t *testing.T) {
+// TestValidateDirectoryExists_Coverage ...
+// Summary: TestValidateDirectoryExists_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tmpDir := t.TempDir()
 	tmpFile := filepath.Join(tmpDir, "test-file")
 	os.WriteFile(tmpFile, []byte("content"), 0644)
@@ -149,7 +176,16 @@ func TestValidateDirectoryExists_Coverage(t *testing.T) {
 	}
 }
 
-func TestValidateFileExists_Coverage(t *testing.T) {
+// TestValidateFileExists_Coverage ...
+// Summary: TestValidateFileExists_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Mock validation.IsAllowedPath
 	oldIsAllowed := validation.IsAllowedPath
 	defer func() { validation.IsAllowedPath = oldIsAllowed }()
@@ -197,7 +233,16 @@ func TestValidateFileExists_Coverage(t *testing.T) {
 	}
 }
 
-func TestValidateGCSettings_Coverage(t *testing.T) {
+// TestValidateGCSettings_Coverage ...
+// Summary: TestValidateGCSettings_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name      string
 		gc        *configv1.GCSettings
@@ -247,7 +292,16 @@ func TestValidateGCSettings_Coverage(t *testing.T) {
 	}
 }
 
-func TestValidateMcpService_Coverage(t *testing.T) {
+// TestValidateMcpService_Coverage ...
+// Summary: TestValidateMcpService_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name      string
 		service   *configv1.McpUpstreamService
@@ -349,7 +403,16 @@ func TestValidateMcpService_Coverage(t *testing.T) {
 	}
 }
 
-func TestValidateHTTPService_Coverage(t *testing.T) {
+// TestValidateHTTPService_Coverage ...
+// Summary: TestValidateHTTPService_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name      string
 		service   *configv1.HttpUpstreamService
@@ -438,7 +501,16 @@ func TestValidateHTTPService_Coverage(t *testing.T) {
 	}
 }
 
-func TestValidateWebSocketService_Coverage(t *testing.T) {
+// TestValidateWebSocketService_Coverage ...
+// Summary: TestValidateWebSocketService_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name      string
 		service   *configv1.WebsocketUpstreamService
@@ -520,7 +592,16 @@ func TestValidateWebSocketService_Coverage(t *testing.T) {
 	}
 }
 
-func TestValidateContainerEnvironment_Coverage(t *testing.T) {
+// TestValidateContainerEnvironment_Coverage ...
+// Summary: TestValidateContainerEnvironment_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name      string
 		env       *configv1.ContainerEnvironment
@@ -575,7 +656,16 @@ func TestValidateContainerEnvironment_Coverage(t *testing.T) {
 	}
 }
 
-func TestValidateAPIKeyAuth_Coverage(t *testing.T) {
+// TestValidateAPIKeyAuth_Coverage ...
+// Summary: TestValidateAPIKeyAuth_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	tests := []struct {
 		name      string
@@ -642,7 +732,16 @@ func TestValidateAPIKeyAuth_Coverage(t *testing.T) {
 	}
 }
 
-func TestValidateBearerTokenAuth_Coverage(t *testing.T) {
+// TestValidateBearerTokenAuth_Coverage ...
+// Summary: TestValidateBearerTokenAuth_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	tests := []struct {
 		name      string
@@ -689,7 +788,16 @@ func TestValidateBearerTokenAuth_Coverage(t *testing.T) {
 	}
 }
 
-func TestValidateBasicAuth_Coverage(t *testing.T) {
+// TestValidateBasicAuth_Coverage ...
+// Summary: TestValidateBasicAuth_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	tests := []struct {
 		name      string

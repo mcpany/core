@@ -22,26 +22,71 @@ type mockToolManager struct {
 	serviceInfo map[string]*tool.ServiceInfo
 }
 
-func (m *mockToolManager) AddTool(t tool.Tool) error {
+// AddTool ...
+// Summary: AddTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.tools[t.Tool().GetName()] = t
 	return nil
 }
 
-func (m *mockToolManager) GetTool(name string) (tool.Tool, bool) {
+// GetTool ...
+// Summary: GetTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t, ok := m.tools[name]
 	return t, ok
 }
 
-func (m *mockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
+// AddServiceInfo ...
+// Summary: AddServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.serviceInfo[serviceID] = info
 }
 
-func (m *mockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
+// GetServiceInfo ...
+// Summary: GetServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	info, ok := m.serviceInfo[serviceID]
 	return info, ok
 }
 
-func (m *mockToolManager) ListServices() []*tool.ServiceInfo {
+// ListServices ...
+// Summary: ListServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	services := make([]*tool.ServiceInfo, 0, len(m.serviceInfo))
 	for _, info := range m.serviceInfo {
 		services = append(services, info)
@@ -49,7 +94,16 @@ func (m *mockToolManager) ListServices() []*tool.ServiceInfo {
 	return services
 }
 
-func (m *mockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
+// SetProfiles ...
+// Summary: SetProfiles
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
 func newMockToolManager() *mockToolManager {
 	return &mockToolManager{
@@ -63,7 +117,16 @@ type mockPromptManager struct {
 	prompts map[string]prompt.Prompt
 }
 
-func (m *mockPromptManager) AddPrompt(p prompt.Prompt) {
+// AddPrompt ...
+// Summary: AddPrompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.prompts[p.Prompt().Name] = p
 }
 
@@ -73,7 +136,16 @@ func newMockPromptManager() *mockPromptManager {
 	}
 }
 
-func TestGRPCUpstream_Register_WithProtoContent(t *testing.T) {
+// TestGRPCUpstream_Register_WithProtoContent ...
+// Summary: TestGRPCUpstream_Register_WithProtoContent
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	protoContent := `
 syntax = "proto3";
 package test3;

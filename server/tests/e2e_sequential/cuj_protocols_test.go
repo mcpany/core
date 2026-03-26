@@ -22,7 +22,16 @@ import (
 )
 
 // TestCUJ_Protocols covers CUJs 6-10: HTTP(SSE), External integrations, Errors, etc.
-func TestCUJ_Protocols(t *testing.T) {
+// TestCUJ_Protocols covers CUJs 6-10: HTTP(SSE), External integrations, Errors, etc.
+// Summary: TestCUJ_Protocols
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	rootDir, err := os.Getwd()
 	require.NoError(t, err)
 	if strings.HasSuffix(rootDir, "tests/e2e_sequential") {

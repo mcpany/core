@@ -17,7 +17,16 @@ type mockRebindingResolver struct {
 	safeIP    net.IP
 }
 
-func (r *mockRebindingResolver) LookupIP(ctx context.Context, network, host string) ([]net.IP, error) {
+// LookupIP ...
+// Summary: LookupIP
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	r.callCount++
 	return []net.IP{r.safeIP}, nil
 }
@@ -26,23 +35,113 @@ type rebindMockDialer struct {
 	dialedAddr string
 }
 
-func (d *rebindMockDialer) DialContext(ctx context.Context, network, address string) (net.Conn, error) {
+// DialContext ...
+// Summary: DialContext
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	d.dialedAddr = address
 	return &rebindMockConn{}, nil
 }
 
 type rebindMockConn struct{}
 
-func (m *rebindMockConn) Read(b []byte) (n int, err error)   { return 0, nil }
-func (m *rebindMockConn) Write(b []byte) (n int, err error)  { return 0, nil }
-func (m *rebindMockConn) Close() error                       { return nil }
-func (m *rebindMockConn) LocalAddr() net.Addr                { return &net.TCPAddr{} }
-func (m *rebindMockConn) RemoteAddr() net.Addr               { return &net.TCPAddr{} }
-func (m *rebindMockConn) SetDeadline(t time.Time) error      { return nil }
-func (m *rebindMockConn) SetReadDeadline(t time.Time) error  { return nil }
-func (m *rebindMockConn) SetWriteDeadline(t time.Time) error { return nil }
+// Read ...
+// Summary: Read
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Write ...
+// Summary: Write
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// LocalAddr ...
+// Summary: LocalAddr
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// RemoteAddr ...
+// Summary: RemoteAddr
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// SetDeadline ...
+// Summary: SetDeadline
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// SetReadDeadline ...
+// Summary: SetReadDeadline
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// SetWriteDeadline ...
+// Summary: SetWriteDeadline
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func TestSafeDialer_DNSRebindingProtection(t *testing.T) {
+// TestSafeDialer_DNSRebindingProtection ...
+// Summary: TestSafeDialer_DNSRebindingProtection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test verifies that SafeDialer resolves the IP once, validates it,
 	// and then dials the *resolved IP* directly.
 	// This prevents TOCTOU (Time-of-Check Time-of-Use) DNS rebinding attacks

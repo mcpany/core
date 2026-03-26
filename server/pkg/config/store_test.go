@@ -17,7 +17,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestFileStore_CollectFilePaths(t *testing.T) {
+// TestFileStore_CollectFilePaths ...
+// Summary: TestFileStore_CollectFilePaths
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	// Setup files
 	require.NoError(t, afero.WriteFile(fs, "/config/a.yaml", []byte(""), 0644))
@@ -109,14 +118,32 @@ upstream_services:
 	}
 }
 
-func TestFileStore_CollectFilePaths_WalkError(_ *testing.T) {
+// TestFileStore_CollectFilePaths_WalkError ...
+// Summary: TestFileStore_CollectFilePaths_WalkError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Mock FS to force walk error?
 	// afero.MemMapFs doesn't easily mock errors.
 	// But we can simulate a file that acts like a directory?
 	// Or use a ReadDir error.
 }
 
-func TestFileStore_Load_Error(t *testing.T) {
+// TestFileStore_Load_Error ...
+// Summary: TestFileStore_Load_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	store := NewFileStore(fs, []string{"/missing"})
 	_, err := store.Load(context.Background())
@@ -124,7 +151,16 @@ func TestFileStore_Load_Error(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to collect config file paths")
 }
 
-func TestFileStore_Load_Engines(t *testing.T) {
+// TestFileStore_Load_Engines ...
+// Summary: TestFileStore_Load_Engines
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	err := os.Setenv("MY_VAR", "expanded")
 	assert.NoError(t, err)
@@ -147,7 +183,16 @@ func TestFileStore_Load_Engines(t *testing.T) {
 	assert.Equal(t, "proto-key", cfg.GetGlobalSettings().GetApiKey())
 }
 
-func TestExpand(t *testing.T) {
+// TestExpand ...
+// Summary: TestExpand
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name        string
 		input       string
@@ -249,7 +294,16 @@ func TestExpand(t *testing.T) {
 	}
 }
 
-func TestYamlEngine_LogLevelFix(t *testing.T) {
+// TestYamlEngine_LogLevelFix ...
+// Summary: TestYamlEngine_LogLevelFix
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	require.NoError(t, afero.WriteFile(fs, "/config/log.yaml", []byte(`
 global_settings:
@@ -262,14 +316,32 @@ global_settings:
 	assert.Equal(t, configv1.GlobalSettings_LOG_LEVEL_INFO, cfg.GetGlobalSettings().GetLogLevel())
 }
 
-func TestYamlEngine_ValidationFail(_ *testing.T) {
+// TestYamlEngine_ValidationFail ...
+// Summary: TestYamlEngine_ValidationFail
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	_ = afero.NewMemMapFs()
 	// Invalid config: missing required fields or constraint violation?
 	// Currently validation is weak (stubbed).
 	// But duplicate service names in different files?
 }
 
-func TestReadURL_Redirect(t *testing.T) {
+// TestReadURL_Redirect ...
+// Summary: TestReadURL_Redirect
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Verify that redirects are disabled.
 	// We mock the global httpClient for this test to allow 127.0.0.1 connections
 	// while maintaining the CheckRedirect logic we want to test.
@@ -293,7 +365,16 @@ func TestReadURL_Redirect(t *testing.T) {
 	assert.Contains(t, err.Error(), "redirects are disabled")
 }
 
-func TestYamlEngine_MultipleServiceTypes(t *testing.T) {
+// TestYamlEngine_MultipleServiceTypes ...
+// Summary: TestYamlEngine_MultipleServiceTypes
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	// Define a service with BOTH http_service and grpc_service to trigger oneof error
 	require.NoError(t, afero.WriteFile(fs, "/config/multi.yaml", []byte(`
@@ -312,7 +393,16 @@ upstream_services:
 	assert.Contains(t, err.Error(), "has multiple service types defined")
 }
 
-func TestYamlEngine_UnknownField(t *testing.T) {
+// TestYamlEngine_UnknownField ...
+// Summary: TestYamlEngine_UnknownField
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	require.NoError(t, afero.WriteFile(fs, "/config/unknown.yaml", []byte(`
 global_settings:
@@ -326,7 +416,16 @@ global_settings:
 	assert.Contains(t, err.Error(), "unknown field")
 }
 
-func TestYamlEngine_MCPServersField(t *testing.T) {
+// TestYamlEngine_MCPServersField ...
+// Summary: TestYamlEngine_MCPServersField
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	// Config that looks like Claude Desktop config
 	// Note: @ needs to be quoted in YAML if it starts a value, but here it's in a list
@@ -349,7 +448,16 @@ mcpServers:
 	assert.Contains(t, err.Error(), "mcpServers")
 }
 
-func TestReadURL_Localhost(t *testing.T) {
+// TestReadURL_Localhost ...
+// Summary: TestReadURL_Localhost
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Verify we can read from 127.0.0.1 if the client is configured to allow it.
 	// We mock the global httpClient to simulate a SafeHTTPClient with loopback enabled.
 	originalClient := httpClient
@@ -379,7 +487,16 @@ func TestReadURL_Localhost(t *testing.T) {
 	assert.Equal(t, configv1.GlobalSettings_LOG_LEVEL_INFO, cfg.GetGlobalSettings().GetLogLevel())
 }
 
-func TestYamlEngine_ServiceConfigWrapper(t *testing.T) {
+// TestYamlEngine_ServiceConfigWrapper ...
+// Summary: TestYamlEngine_ServiceConfigWrapper
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	// Config that incorrectly uses service_config wrapper
 	require.NoError(t, afero.WriteFile(fs, "/config/service_config_wrapper.yaml", []byte(`

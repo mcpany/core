@@ -14,7 +14,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestConfigLoadingWithArg(t *testing.T) {
+// TestConfigLoadingWithArg ...
+// Summary: TestConfigLoadingWithArg
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary config file
 	configContent := `
 upstream_services:

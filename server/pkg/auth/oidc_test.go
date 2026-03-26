@@ -14,7 +14,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestNewOIDCProvider(t *testing.T) {
+// TestNewOIDCProvider ...
+// Summary: TestNewOIDCProvider
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockServer := NewMockOAuth2Server(t)
 	defer mockServer.Close()
 
@@ -36,7 +45,16 @@ func TestNewOIDCProvider(t *testing.T) {
 	assert.Equal(t, mockServer.URL+"/auth", provider.oauth2Config.Endpoint.AuthURL)
 }
 
-func TestOIDCProvider_HandleLogin_Redirect(t *testing.T) {
+// TestOIDCProvider_HandleLogin_Redirect ...
+// Summary: TestOIDCProvider_HandleLogin_Redirect
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockServer := NewMockOAuth2Server(t)
 	defer mockServer.Close()
 

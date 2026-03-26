@@ -25,7 +25,16 @@ import (
 )
 
 // StartStdioServer starts the MCP server in Stdio mode and returns the client.
-func StartStdioServer(t *testing.T, configFile string) (*MCPClient, func()) {
+// StartStdioServer starts the MCP server in Stdio mode and returns the client.
+// Summary: StartStdioServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Helper()
 
 	serverBin := ServerBinary(t)
@@ -74,7 +83,8 @@ func StartStdioServer(t *testing.T, configFile string) (*MCPClient, func()) {
 }
 
 // Update MCPClient for Stdio
-type MCPClient struct {
+// Update MCPClient for Stdio
+// Summary: MCPClient
 	stdin  io.WriteCloser
 	stdout *bufio.Scanner
 	events chan map[string]interface{}
@@ -91,7 +101,16 @@ func (c *MCPClient) readLoop() {
 	}
 }
 
-func (c *MCPClient) Initialize(ctx context.Context) error {
+// Initialize ...
+// Summary: Initialize
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	initParams := map[string]interface{}{
 		"protocolVersion": "2024-11-05",
 		"capabilities": map[string]interface{}{
@@ -114,7 +133,16 @@ func (c *MCPClient) Initialize(ctx context.Context) error {
 	return c.Notify(ctx, "notifications/initialized", map[string]interface{}{})
 }
 
-func (c *MCPClient) Call(ctx context.Context, method string, params interface{}) (interface{}, error) {
+// Call ...
+// Summary: Call
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	c.nextID++
 	id := c.nextID
 	reqBody, _ := json.Marshal(map[string]interface{}{
@@ -148,7 +176,16 @@ func (c *MCPClient) Call(ctx context.Context, method string, params interface{})
 	}
 }
 
-func (c *MCPClient) Notify(_ context.Context, method string, params interface{}) error {
+// Notify ...
+// Summary: Notify
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	reqBody, _ := json.Marshal(map[string]interface{}{
 		"jsonrpc": "2.0",
 		"method":  method,
@@ -158,7 +195,16 @@ func (c *MCPClient) Notify(_ context.Context, method string, params interface{})
 	return err
 }
 
-func (c *MCPClient) ListTools(ctx context.Context) (*mcp.ListToolsResult, error) {
+// ListTools ...
+// Summary: ListTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	res, err := c.Call(ctx, "tools/list", map[string]interface{}{})
 	if err != nil {
 		return nil, err
@@ -169,7 +215,16 @@ func (c *MCPClient) ListTools(ctx context.Context) (*mcp.ListToolsResult, error)
 	return &result, err
 }
 
-func (c *MCPClient) CallTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
+// CallTool ...
+// Summary: CallTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	res, err := c.Call(ctx, "tools/call", params)
 	if err != nil {
 		return nil, err
@@ -180,7 +235,16 @@ func (c *MCPClient) CallTool(ctx context.Context, params *mcp.CallToolParams) (*
 	return &result, err
 }
 
-func (c *MCPClient) ListPrompts(ctx context.Context) (*mcp.ListPromptsResult, error) {
+// ListPrompts ...
+// Summary: ListPrompts
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	res, err := c.Call(ctx, "prompts/list", map[string]interface{}{})
 	if err != nil {
 		return nil, err
@@ -191,7 +255,16 @@ func (c *MCPClient) ListPrompts(ctx context.Context) (*mcp.ListPromptsResult, er
 	return &result, err
 }
 
-func (c *MCPClient) ListResources(ctx context.Context) (*mcp.ListResourcesResult, error) {
+// ListResources ...
+// Summary: ListResources
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	res, err := c.Call(ctx, "resources/list", map[string]interface{}{})
 	if err != nil {
 		return nil, err
@@ -202,7 +275,16 @@ func (c *MCPClient) ListResources(ctx context.Context) (*mcp.ListResourcesResult
 	return &result, err
 }
 
-func TestAutoDiscoverAndExportPolicy(t *testing.T) {
+// TestAutoDiscoverAndExportPolicy ...
+// Summary: TestAutoDiscoverAndExportPolicy
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte(`{"status": "ok"}`))
@@ -278,7 +360,16 @@ func TestAutoDiscoverAndExportPolicy(t *testing.T) {
 	}, 5*time.Second, 100*time.Millisecond, "Expected tools to be discovered and hidden tools to be excluded")
 }
 
-func TestCallPolicyExecution(t *testing.T) {
+// TestCallPolicyExecution ...
+// Summary: TestCallPolicyExecution
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case "/allowed":
@@ -374,7 +465,16 @@ func TestCallPolicyExecution(t *testing.T) {
 	assert.Contains(t, string(contentBytes), "unknown tool")
 }
 
-func TestExportPolicyForPromptsAndResources(t *testing.T) {
+// TestExportPolicyForPromptsAndResources ...
+// Summary: TestExportPolicyForPromptsAndResources
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))

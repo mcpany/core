@@ -24,35 +24,107 @@ type mockSessionBundle struct {
 	CloseFunc     func() error
 }
 
-func (m *mockSessionBundle) ListTools(ctx context.Context, params *mcp_sdk.ListToolsParams) (*mcp_sdk.ListToolsResult, error) {
+// ListTools ...
+// Summary: ListTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.ListToolsFunc != nil {
 		return m.ListToolsFunc(ctx, params)
 	}
 	return &mcp_sdk.ListToolsResult{}, nil
 }
-func (m *mockSessionBundle) ListPrompts(_ context.Context, _ *mcp_sdk.ListPromptsParams) (*mcp_sdk.ListPromptsResult, error) {
+// ListPrompts ...
+// Summary: ListPrompts
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return &mcp_sdk.ListPromptsResult{Prompts: []*mcp_sdk.Prompt{}}, nil
 }
-func (m *mockSessionBundle) ListResources(_ context.Context, _ *mcp_sdk.ListResourcesParams) (*mcp_sdk.ListResourcesResult, error) {
+// ListResources ...
+// Summary: ListResources
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return &mcp_sdk.ListResourcesResult{Resources: []*mcp_sdk.Resource{}}, nil
 }
-func (m *mockSessionBundle) GetPrompt(_ context.Context, _ *mcp_sdk.GetPromptParams) (*mcp_sdk.GetPromptResult, error) {
+// GetPrompt ...
+// Summary: GetPrompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (m *mockSessionBundle) ReadResource(_ context.Context, _ *mcp_sdk.ReadResourceParams) (*mcp_sdk.ReadResourceResult, error) {
+// ReadResource ...
+// Summary: ReadResource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (m *mockSessionBundle) CallTool(_ context.Context, _ *mcp_sdk.CallToolParams) (*mcp_sdk.CallToolResult, error) {
+// CallTool ...
+// Summary: CallTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (m *mockSessionBundle) Close() error {
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.CloseFunc != nil {
 		return m.CloseFunc()
 	}
 	return nil
 }
 
-func TestUnzipBundle_Cases(t *testing.T) {
+// TestUnzipBundle_Cases ...
+// Summary: TestUnzipBundle_Cases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("ValidZip", func(t *testing.T) {
 		tmpZip := filepath.Join(t.TempDir(), "valid.zip")
 		destDir := t.TempDir()
@@ -151,7 +223,16 @@ func TestUnzipBundle_Cases(t *testing.T) {
 	})
 }
 
-func TestCreateAndRegisterMCPItemsFromBundle_Coverage(t *testing.T) {
+// TestCreateAndRegisterMCPItemsFromBundle_Coverage ...
+// Summary: TestCreateAndRegisterMCPItemsFromBundle_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	oldNewClient := newClientForTesting
 	oldConnect := connectForTesting
 	defer func() {

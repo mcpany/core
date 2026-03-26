@@ -17,7 +17,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestResolveSecret_PathTraversal(t *testing.T) {
+// TestResolveSecret_PathTraversal ...
+// Summary: TestResolveSecret_PathTraversal
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Construct a path that attempts to traverse up.
 	// Since we don't know the CWD, we just use a path starting with ../
 	// We don't care if the file exists, we expect the validation to fail BEFORE reading.
@@ -37,7 +46,16 @@ func TestResolveSecret_PathTraversal(t *testing.T) {
 	}
 }
 
-func TestResolveSecret_ValidPathWithDoubleDotsInName(t *testing.T) {
+// TestResolveSecret_ValidPathWithDoubleDotsInName ...
+// Summary: TestResolveSecret_ValidPathWithDoubleDotsInName
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test ensures we didn't break valid filenames like "my..secret.txt"
 	tempDir, err := os.MkdirTemp("", "mcpany-repro-valid")
 	require.NoError(t, err)
@@ -60,7 +78,16 @@ func TestResolveSecret_ValidPathWithDoubleDotsInName(t *testing.T) {
 	assert.Equal(t, "VALID_SECRET", resolved)
 }
 
-func TestResolveSecret_SSRF_Blocked(t *testing.T) {
+// TestResolveSecret_SSRF_Blocked ...
+// Summary: TestResolveSecret_SSRF_Blocked
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Attempt to access AWS Metadata service IP
 	// This should be blocked by our SSRF protection
 	// The test expects the function to return an error explicitly stating it is blocked.
@@ -81,7 +108,16 @@ func TestResolveSecret_SSRF_Blocked(t *testing.T) {
 	assert.Contains(t, err.Error(), "resolved to link-local ip")
 }
 
-func TestResolveSecret_SSRF_PrivateIP_Blocked(t *testing.T) {
+// TestResolveSecret_SSRF_PrivateIP_Blocked ...
+// Summary: TestResolveSecret_SSRF_PrivateIP_Blocked
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Attempt to access a private IP (e.g. 192.168.1.1)
 	// This should be blocked by our SSRF protection (if enhanced).
 
@@ -101,7 +137,16 @@ func TestResolveSecret_SSRF_PrivateIP_Blocked(t *testing.T) {
 	assert.Contains(t, err.Error(), "resolved to private ip")
 }
 
-func TestResolveSecret_SSRF_PrivateIP_Allowed(t *testing.T) {
+// TestResolveSecret_SSRF_PrivateIP_Allowed ...
+// Summary: TestResolveSecret_SSRF_PrivateIP_Allowed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Attempt to access a private IP (e.g. 192.168.1.1)
 	// This should be ALLOWED if env var is true.
 	// Since we can't actually connect, it will timeout or fail with network error.
@@ -123,7 +168,16 @@ func TestResolveSecret_SSRF_PrivateIP_Allowed(t *testing.T) {
 	assert.NotContains(t, err.Error(), "resolved to private ip")
 }
 
-func TestResolveSecret_AbsolutePathsBlockedByDefault(t *testing.T) {
+// TestResolveSecret_AbsolutePathsBlockedByDefault ...
+// Summary: TestResolveSecret_AbsolutePathsBlockedByDefault
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Ensure env var is NOT set
 	// os.Unsetenv("MCPANY_FILE_PATH_ALLOW_LIST")
 	validation.SetAllowedPaths(nil)
@@ -153,7 +207,16 @@ func TestResolveSecret_AbsolutePathsBlockedByDefault(t *testing.T) {
 	}
 }
 
-func TestResolveSecret_AbsolutePathsAllowedWithList(t *testing.T) {
+// TestResolveSecret_AbsolutePathsAllowedWithList ...
+// Summary: TestResolveSecret_AbsolutePathsAllowedWithList
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temp file
 	tmpFile, err := os.CreateTemp("", "secret_test_allowed")
 	require.NoError(t, err)

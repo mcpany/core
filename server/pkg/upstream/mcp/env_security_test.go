@@ -17,7 +17,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestStdioTransport_EnvironmentSecurity(t *testing.T) {
+// TestStdioTransport_EnvironmentSecurity ...
+// Summary: TestStdioTransport_EnvironmentSecurity
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Set a secret environment variable in the parent process
 	secretKey := "SENTINEL_SECRET"
 	secretVal := "super_secret_value"

@@ -9,7 +9,16 @@ import (
 	"testing"
 )
 
-func TestPrintResults(t *testing.T) {
+// TestPrintResults ...
+// Summary: TestPrintResults
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	results := []CheckResult{
 		{ServiceName: "ServiceA", Status: StatusOk, Message: "All good"},
 		{ServiceName: "ServiceB", Status: StatusWarning, Message: "Something minor"},

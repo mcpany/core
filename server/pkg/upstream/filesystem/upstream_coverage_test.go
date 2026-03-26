@@ -17,7 +17,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestFilesystemUpstream_UnsupportedTypes(t *testing.T) {
+// TestFilesystemUpstream_UnsupportedTypes ...
+// Summary: TestFilesystemUpstream_UnsupportedTypes
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewUpstream()
 	tm := tool.NewManager(nil)
 
@@ -48,7 +57,16 @@ func TestFilesystemUpstream_UnsupportedTypes(t *testing.T) {
 	}
 }
 
-func TestFilesystemUpstream_InputValidation(t *testing.T) {
+// TestFilesystemUpstream_InputValidation ...
+// Summary: TestFilesystemUpstream_InputValidation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewUpstream()
 	b, _ := bus.NewProvider(nil)
 	tm := tool.NewManager(b)
@@ -138,7 +156,16 @@ func TestFilesystemUpstream_InputValidation(t *testing.T) {
 	}
 }
 
-func TestFilesystemUpstream_PathResolution(t *testing.T) {
+// TestFilesystemUpstream_PathResolution ...
+// Summary: TestFilesystemUpstream_PathResolution
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewUpstream()
 	b, _ := bus.NewProvider(nil)
 	tm := tool.NewManager(b)
@@ -190,7 +217,16 @@ func TestFilesystemUpstream_PathResolution(t *testing.T) {
 	assert.Contains(t, err.Error(), "not allowed")
 }
 
-func TestFilesystemUpstream_SearchEdgeCases(t *testing.T) {
+// TestFilesystemUpstream_SearchEdgeCases ...
+// Summary: TestFilesystemUpstream_SearchEdgeCases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewUpstream()
 	b, _ := bus.NewProvider(nil)
 	tm := tool.NewManager(b)
@@ -251,7 +287,16 @@ func TestFilesystemUpstream_SearchEdgeCases(t *testing.T) {
 	}
 }
 
-func TestFilesystemUpstream_FileOperations(t *testing.T) {
+// TestFilesystemUpstream_FileOperations ...
+// Summary: TestFilesystemUpstream_FileOperations
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewUpstream()
 	b, _ := bus.NewProvider(nil)
 	tm := tool.NewManager(b)
@@ -290,7 +335,16 @@ func TestFilesystemUpstream_FileOperations(t *testing.T) {
 	assert.Error(t, err) // fs.Remove returns error if not exists
 }
 
-func TestFilesystemUpstream_SanitizeError(t *testing.T) {
+// TestFilesystemUpstream_SanitizeError ...
+// Summary: TestFilesystemUpstream_SanitizeError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test error when sanitizing service name fails (empty name)
 	u := NewUpstream()
 	tm := tool.NewManager(nil)
@@ -302,7 +356,16 @@ func TestFilesystemUpstream_SanitizeError(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestFilesystemUpstream_NilConfig(t *testing.T) {
+// TestFilesystemUpstream_NilConfig ...
+// Summary: TestFilesystemUpstream_NilConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewUpstream()
 	tm := tool.NewManager(nil)
 	config := configv1.UpstreamServiceConfig_builder{

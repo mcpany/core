@@ -13,7 +13,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGeminiCLIE2E_Everything(t *testing.T) {
+// TestGeminiCLIE2E_Everything ...
+// Summary: TestGeminiCLIE2E_Everything
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	apiKey := os.Getenv("GEMINI_API_KEY")
 	if apiKey == "" {
 		// t.Skip("GEMINI_API_KEY not set, skipping test")

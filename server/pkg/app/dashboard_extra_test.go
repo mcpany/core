@@ -20,7 +20,16 @@ import (
 	gomock "go.uber.org/mock/gomock"
 )
 
-func TestHandleDashboardMetrics_EdgeCases(t *testing.T) {
+// TestHandleDashboardMetrics_EdgeCases ...
+// Summary: TestHandleDashboardMetrics_EdgeCases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 

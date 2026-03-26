@@ -19,7 +19,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestUpstreamService_OpenNotify(t *testing.T) {
+// TestUpstreamService_OpenNotify ...
+// Summary: TestUpstreamService_OpenNotify
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Increased timeout to handle flaky public API connection
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeMedium)
 	defer cancel()

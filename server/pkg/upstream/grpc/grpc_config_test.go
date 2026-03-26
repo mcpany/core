@@ -18,7 +18,16 @@ import (
 	"google.golang.org/protobuf/types/descriptorpb"
 )
 
-func TestGRPCUpstream_createAndRegisterGRPCToolsFromConfig(t *testing.T) {
+// TestGRPCUpstream_createAndRegisterGRPCToolsFromConfig ...
+// Summary: TestGRPCUpstream_createAndRegisterGRPCToolsFromConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	poolManager := pool.NewManager()
 	upstream := NewUpstream(poolManager)
 	tm := NewMockToolManager()
@@ -146,7 +155,16 @@ func TestGRPCUpstream_createAndRegisterGRPCToolsFromConfig(t *testing.T) {
 	})
 }
 
-func TestGRPCUpstream_createAndRegisterPromptsFromConfig(t *testing.T) {
+// TestGRPCUpstream_createAndRegisterPromptsFromConfig ...
+// Summary: TestGRPCUpstream_createAndRegisterPromptsFromConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	poolManager := pool.NewManager()
 	upstream := NewUpstream(poolManager)
 	tm := NewMockToolManager()

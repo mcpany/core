@@ -16,7 +16,16 @@ import (
 
 func strPtrBackslash(s string) *string { return &s }
 
-func TestNodeBackslashInjection(t *testing.T) {
+// TestNodeBackslashInjection ...
+// Summary: TestNodeBackslashInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Vulnerability: Injecting backslash into a single-quoted string in an interpreter context (Node.js)
 	// allows escaping the closing quote and continuing the string until the next quote,
 	// potentially treating subsequent code/parameters as string content and exposing intervening code.

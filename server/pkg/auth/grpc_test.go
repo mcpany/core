@@ -13,7 +13,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestNewPerRPCCredentials(t *testing.T) {
+// TestNewPerRPCCredentials ...
+// Summary: TestNewPerRPCCredentials
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("NilAuthenticator", func(t *testing.T) {
 		creds := NewPerRPCCredentials(nil)
 		assert.Nil(t, creds)
@@ -28,7 +37,16 @@ func TestNewPerRPCCredentials(t *testing.T) {
 	})
 }
 
-func TestPerRPCCredentials_GetRequestMetadata(t *testing.T) {
+// TestPerRPCCredentials_GetRequestMetadata ...
+// Summary: TestPerRPCCredentials_GetRequestMetadata
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 
 	t.Run("Success", func(t *testing.T) {
@@ -73,7 +91,16 @@ func TestPerRPCCredentials_GetRequestMetadata(t *testing.T) {
 	})
 }
 
-func TestPerRPCCredentials_RequireTransportSecurity(t *testing.T) {
+// TestPerRPCCredentials_RequireTransportSecurity ...
+// Summary: TestPerRPCCredentials_RequireTransportSecurity
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	creds := &PerRPCCredentials{}
 	assert.False(t, creds.RequireTransportSecurity(), "RequireTransportSecurity should return false")
 }

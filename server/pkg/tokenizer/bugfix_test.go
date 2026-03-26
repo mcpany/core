@@ -8,7 +8,16 @@ import (
 	"testing"
 )
 
-func TestHunter_WordTokenizer_PrimitiveSlice_Undercount(t *testing.T) {
+// TestHunter_WordTokenizer_PrimitiveSlice_Undercount ...
+// Summary: TestHunter_WordTokenizer_PrimitiveSlice_Undercount
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Factor 1.9. int(1.9) is 1.
 	// For a slice of 10 ints, fast path returns 10 * 1 = 10.
 	// We expect 10 * 1.9 = 19.
@@ -28,7 +37,16 @@ func TestHunter_WordTokenizer_PrimitiveSlice_Undercount(t *testing.T) {
 	}
 }
 
-func TestHunter_WordTokenizer_PrimitiveSlice_Int64(t *testing.T) {
+// TestHunter_WordTokenizer_PrimitiveSlice_Int64 ...
+// Summary: TestHunter_WordTokenizer_PrimitiveSlice_Int64
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	wt := &WordTokenizer{Factor: 1.5}
 	input := []int64{1, 2, 3, 4}
 	// Expected: 4 * 1.5 = 6.
@@ -44,7 +62,16 @@ func TestHunter_WordTokenizer_PrimitiveSlice_Int64(t *testing.T) {
 	}
 }
 
-func TestHunter_WordTokenizer_EdgeCases(t *testing.T) {
+// TestHunter_WordTokenizer_EdgeCases ...
+// Summary: TestHunter_WordTokenizer_EdgeCases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test empty slice
 	wt := &WordTokenizer{Factor: 1.5}
 	inputEmpty := []int{}

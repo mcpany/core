@@ -10,7 +10,18 @@ import (
 // TestReplaceURLPath_Integration simulates a real-world scenario of constructing an external API URL
 // where one of the parameters might be a pointer (e.g. from a struct field that is a pointer).
 // This serves as an integration test for the utility package's public API.
-func TestReplaceURLPath_Integration(t *testing.T) {
+// TestReplaceURLPath_Integration simulates a real-world scenario of constructing an external API URL
+// Summary: TestReplaceURLPath_Integration
+// where one of the parameters might be a pointer (e.g. from a struct field that is a pointer).
+// This serves as an integration test for the utility package's public API.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Scenario: Constructing a URL for a user profile update API call.
 	// The user struct has a pointer to an organization ID (optional field).
 

@@ -9,7 +9,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestIsShellCommand_ExtendedList(t *testing.T) {
+// TestIsShellCommand_ExtendedList ...
+// Summary: TestIsShellCommand_ExtendedList
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		cmd      string
 		expected bool

@@ -9,7 +9,16 @@ import (
 	"time"
 )
 
-func TestWatcher(t *testing.T) {
+// TestWatcher ...
+// Summary: TestWatcher
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary file to watch.
 	file, err := os.CreateTemp("", "watcher_test")
 	if err != nil {
@@ -62,7 +71,16 @@ func TestWatcher(t *testing.T) {
 	}
 }
 
-func TestWatcher_AddError(t *testing.T) {
+// TestWatcher_AddError ...
+// Summary: TestWatcher_AddError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	w, err := NewWatcher()
 	if err != nil {
 		t.Fatal(err)
@@ -76,7 +94,16 @@ func TestWatcher_AddError(t *testing.T) {
 	}
 }
 
-func TestWatcher_URL(t *testing.T) {
+// TestWatcher_URL ...
+// Summary: TestWatcher_URL
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	w, err := NewWatcher()
 	if err != nil {
 		t.Fatal(err)

@@ -12,7 +12,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestPool_PanicInFactory(t *testing.T) {
+// TestPool_PanicInFactory ...
+// Summary: TestPool_PanicInFactory
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Factory panics.
 	factory := func(_ context.Context) (*mockClient, error) {
 		panic("factory panic")
@@ -29,7 +38,16 @@ func TestPool_PanicInFactory(t *testing.T) {
 	})
 }
 
-func TestPool_PanicInFactory_Recover(t *testing.T) {
+// TestPool_PanicInFactory_Recover ...
+// Summary: TestPool_PanicInFactory_Recover
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	panicked := false
 	factory := func(_ context.Context) (*mockClient, error) {
 		if !panicked {
@@ -64,7 +82,16 @@ func TestPool_PanicInFactory_Recover(t *testing.T) {
 	assert.NoError(t, err, "Pool should recover after factory panic")
 }
 
-func TestPool_PanicInIsHealthy(t *testing.T) {
+// TestPool_PanicInIsHealthy ...
+// Summary: TestPool_PanicInIsHealthy
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Factory creates client that panics on IsHealthy
 	factory := func(_ context.Context) (*mockClient, error) {
 		return &mockClient{isHealthy: true}, nil // Initially healthy-ish
@@ -87,14 +114,32 @@ type panicMockClient struct {
 	panicOnHealth bool
 }
 
-func (c *panicMockClient) IsHealthy(ctx context.Context) bool {
+// IsHealthy ...
+// Summary: IsHealthy
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if c.panicOnHealth {
 		panic("health check panic")
 	}
 	return c.mockClient.IsHealthy(ctx)
 }
 
-func TestPool_PanicInIsHealthy_Recover(t *testing.T) {
+// TestPool_PanicInIsHealthy_Recover ...
+// Summary: TestPool_PanicInIsHealthy_Recover
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	factory := func(_ context.Context) (*panicMockClient, error) {
 		return &panicMockClient{mockClient: mockClient{isHealthy: true}}, nil
 	}

@@ -48,7 +48,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestReloadConfig(t *testing.T) {
+// TestReloadConfig ...
+// Summary: TestReloadConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("successful reload", func(t *testing.T) {
 		fs := afero.NewMemMapFs()
 		app := NewApplication()
@@ -157,7 +166,16 @@ upstream_services:
 	})
 }
 
-func TestUploadFile(t *testing.T) {
+// TestUploadFile ...
+// Summary: TestUploadFile
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 
 	// Test case 1: Successful file upload
@@ -212,7 +230,16 @@ type connCountingListener struct {
 	connCount int32
 }
 
-func (l *connCountingListener) Accept() (net.Conn, error) {
+// Accept ...
+// Summary: Accept
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	conn, err := l.Listener.Accept()
 	if err == nil {
 		atomic.AddInt32(&l.connCount, 1)
@@ -221,24 +248,52 @@ func (l *connCountingListener) Accept() (net.Conn, error) {
 }
 
 // ThreadSafeBuffer is a bytes.Buffer that is safe for concurrent use.
-type ThreadSafeBuffer struct {
+// ThreadSafeBuffer is a bytes.Buffer that is safe for concurrent use.
+// Summary: ThreadSafeBuffer
 	b bytes.Buffer
 	m sync.Mutex
 }
 
-func (b *ThreadSafeBuffer) Write(p []byte) (n int, err error) {
+// Write ...
+// Summary: Write
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	b.m.Lock()
 	defer b.m.Unlock()
 	return b.b.Write(p)
 }
 
-func (b *ThreadSafeBuffer) String() string {
+// String ...
+// Summary: String
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	b.m.Lock()
 	defer b.m.Unlock()
 	return b.b.String()
 }
 
-func TestHealthCheck(t *testing.T) {
+// TestHealthCheck ...
+// Summary: TestHealthCheck
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("health check against specific IP address", func(t *testing.T) {
 		// This test is designed to fail if '127.0.0.1' resolves to an IP
 		// address that the server is not listening on. For example, on an
@@ -534,7 +589,16 @@ func TestHealthCheck(t *testing.T) {
 	})
 }
 
-func TestSetup(t *testing.T) {
+// TestSetup ...
+// Summary: TestSetup
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("with nil fs", func(t *testing.T) {
 		logging.ForTestsOnlyResetLogger()
 		var buf ThreadSafeBuffer
@@ -554,7 +618,16 @@ func TestSetup(t *testing.T) {
 	})
 }
 
-func TestRun_ServerMode(t *testing.T) {
+// TestRun_ServerMode ...
+// Summary: TestRun_ServerMode
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
@@ -592,7 +665,16 @@ upstream_services:
 	assert.NoError(t, err, "app.Run should return nil on graceful shutdown")
 }
 
-func TestRun_ConfigLoadError(t *testing.T) {
+// TestRun_ConfigLoadError ...
+// Summary: TestRun_ConfigLoadError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	// Create a malformed config file
 	err := afero.WriteFile(fs, "/config.yaml", []byte("malformed yaml:"), 0o644)
@@ -629,7 +711,16 @@ func TestRun_ConfigLoadError(t *testing.T) {
 	assert.Contains(t, err.Error(), "malformed yaml")
 }
 
-func TestRun_BusProviderError(t *testing.T) {
+// TestRun_BusProviderError ...
+// Summary: TestRun_BusProviderError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
 	require.NoError(t, err)
@@ -651,7 +742,16 @@ func TestRun_BusProviderError(t *testing.T) {
 	}
 }
 
-func TestRun_EmptyConfig(t *testing.T) {
+// TestRun_EmptyConfig ...
+// Summary: TestRun_EmptyConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	// Create an empty config file
 	err := afero.WriteFile(fs, "/config.yaml", []byte("{}"), 0o644)
@@ -675,7 +775,16 @@ func TestRun_EmptyConfig(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestRun_StdioMode(t *testing.T) {
+// TestRun_StdioMode ...
+// Summary: TestRun_StdioMode
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var stdioModeCalled bool
 	mockStdioFunc := func(_ context.Context, _ *mcpserver.Server) error {
 		stdioModeCalled = true
@@ -706,7 +815,16 @@ func TestRun_StdioMode(t *testing.T) {
 	}
 }
 
-func TestRun_NoGrpcServer(t *testing.T) {
+// TestRun_NoGrpcServer ...
+// Summary: TestRun_NoGrpcServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
@@ -721,7 +839,16 @@ func TestRun_NoGrpcServer(t *testing.T) {
 	assert.NoError(t, err, "app.Run should return nil on graceful shutdown")
 }
 
-func TestRun_ServerStartupErrors(t *testing.T) {
+// TestRun_ServerStartupErrors ...
+// Summary: TestRun_ServerStartupErrors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 	mockStore := new(MockStore)
 	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
@@ -804,7 +931,16 @@ func TestRun_ServerStartupErrors(t *testing.T) {
 	})
 }
 
-func TestRun_ServerStartupError_GracefulShutdown(t *testing.T) {
+// TestRun_ServerStartupError_GracefulShutdown ...
+// Summary: TestRun_ServerStartupError_GracefulShutdown
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	logging.ForTestsOnlyResetLogger()
 	var buf ThreadSafeBuffer
 	logging.Init(slog.LevelInfo, &buf, "")
@@ -845,7 +981,16 @@ func TestRun_ServerStartupError_GracefulShutdown(t *testing.T) {
 	}, 2*time.Second, 10*time.Millisecond, "The gRPC server should have been shut down gracefully.")
 }
 
-func TestRun_DefaultBindAddress(t *testing.T) {
+// TestRun_DefaultBindAddress ...
+// Summary: TestRun_DefaultBindAddress
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Set the environment variable to use a dynamic port (127.0.0.1:0) as default
 	// This avoids "address already in use" errors when 8070 is occupied.
 	t.Setenv("MCPANY_DEFAULT_HTTP_ADDR", "127.0.0.1:0")
@@ -908,7 +1053,16 @@ func TestRun_DefaultBindAddress(t *testing.T) {
 	}, 2*time.Second, 100*time.Millisecond, "port should be released after shutdown")
 }
 
-func TestRun_GrpcPortNumber(t *testing.T) {
+// TestRun_GrpcPortNumber ...
+// Summary: TestRun_GrpcPortNumber
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -947,7 +1101,16 @@ func TestRun_GrpcPortNumber(t *testing.T) {
 	assert.NoError(t, err, "app.Run should return nil on graceful shutdown")
 }
 
-func TestRunServerMode_GracefulShutdownOnContextCancel(t *testing.T) {
+// TestRunServerMode_GracefulShutdownOnContextCancel ...
+// Summary: TestRunServerMode_GracefulShutdownOnContextCancel
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	logging.ForTestsOnlyResetLogger()
 	var buf ThreadSafeBuffer
 	logging.Init(slog.LevelInfo, &buf, "")
@@ -1015,7 +1178,16 @@ func TestRunServerMode_GracefulShutdownOnContextCancel(t *testing.T) {
 	assert.Contains(t, logs, "All servers have shut down.")
 }
 
-func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
+// TestGRPCServer_PortReleasedAfterShutdown ...
+// Summary: TestGRPCServer_PortReleasedAfterShutdown
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Find an available port for the gRPC server to listen on.
 	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err, "Failed to find a free port.")
@@ -1059,7 +1231,16 @@ func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
 	}
 }
 
-func TestRun_ServerMode_LogsCorrectPort(t *testing.T) {
+// TestRun_ServerMode_LogsCorrectPort ...
+// Summary: TestRun_ServerMode_LogsCorrectPort
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	logging.ForTestsOnlyResetLogger()
 	var buf ThreadSafeBuffer
 	logging.Init(slog.LevelInfo, &buf, "")
@@ -1094,7 +1275,16 @@ func TestRun_ServerMode_LogsCorrectPort(t *testing.T) {
 	assert.NotContains(t, logs, "port:127.0.0.1:0", "Should not log the configured port '0'.")
 }
 
-func TestGRPCServer_FastShutdownRace(t *testing.T) {
+// TestGRPCServer_FastShutdownRace ...
+// Summary: TestGRPCServer_FastShutdownRace
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test is designed to be flaky if the race condition exists.
 	// We run it multiple times to increase the chance of catching it.
 	for i := 0; i < 20; i++ {
@@ -1129,7 +1319,16 @@ func TestGRPCServer_FastShutdownRace(t *testing.T) {
 	}
 }
 
-func TestHTTPServer_GoroutineTerminatesOnError(t *testing.T) {
+// TestHTTPServer_GoroutineTerminatesOnError ...
+// Summary: TestHTTPServer_GoroutineTerminatesOnError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a listener and close it immediately to force a Serve error
 	l, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
@@ -1156,7 +1355,16 @@ func TestHTTPServer_GoroutineTerminatesOnError(t *testing.T) {
 	wg.Wait()
 }
 
-func TestHTTPServer_ShutdownTimesOut(t *testing.T) {
+// TestHTTPServer_ShutdownTimesOut ...
+// Summary: TestHTTPServer_ShutdownTimesOut
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test verifies that the HTTP server's graceful shutdown waits for
 	// the timeout duration when a request hangs.
 
@@ -1214,7 +1422,16 @@ func TestHTTPServer_ShutdownTimesOut(t *testing.T) {
 	}
 }
 
-func TestGRPCServer_GracefulShutdownHangs(t *testing.T) {
+// TestGRPCServer_GracefulShutdownHangs ...
+// Summary: TestGRPCServer_GracefulShutdownHangs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test verifies that the gRPC server hangs on graceful shutdown if an
 	// RPC is in progress, because GracefulStop() has no timeout.
 	// The test is expected to FAIL by timing out before the fix is applied.
@@ -1290,12 +1507,31 @@ type mockHangService struct {
 
 // Hang is a mock RPC that simulates a long-running operation by sleeping
 // for the configured hangTime.
-func (s *mockHangService) Hang(_ context.Context, _ interface{}) (interface{}, error) {
+// Hang is a mock RPC that simulates a long-running operation by sleeping
+// Summary: Hang
+// for the configured hangTime.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	time.Sleep(s.hangTime)
 	return &struct{}{}, nil
 }
 
-func TestGRPCServer_GracefulShutdownWithTimeout(t *testing.T) {
+// TestGRPCServer_GracefulShutdownWithTimeout ...
+// Summary: TestGRPCServer_GracefulShutdownWithTimeout
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test verifies that the gRPC server's graceful shutdown times out
 	// correctly when a request hangs, preventing the server from blocking
 	// indefinitely.
@@ -1370,7 +1606,16 @@ func TestGRPCServer_GracefulShutdownWithTimeout(t *testing.T) {
 	}
 }
 
-func TestGRPCServer_NoDoubleClickOnForceShutdown(t *testing.T) {
+// TestGRPCServer_NoDoubleClickOnForceShutdown ...
+// Summary: TestGRPCServer_NoDoubleClickOnForceShutdown
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test ensures that the listener is not closed more than once, even
 	// when a graceful shutdown times out and the server is forcefully stopped.
 	rawlis, err := net.Listen("tcp", "127.0.0.1:0")
@@ -1427,7 +1672,16 @@ func TestGRPCServer_NoDoubleClickOnForceShutdown(t *testing.T) {
 	assert.Equal(t, int32(1), atomic.LoadInt32(&countinglis.closeCount), "The listener's Close() method should be called exactly once.")
 }
 
-func TestHTTPServer_HangOnListenError(t *testing.T) {
+// TestHTTPServer_HangOnListenError ...
+// Summary: TestHTTPServer_HangOnListenError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a listener and close it to simulate error during Serve (since we passed Listen phase)
 	l, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
@@ -1454,7 +1708,16 @@ func TestHTTPServer_HangOnListenError(t *testing.T) {
 	wg.Wait()
 }
 
-func TestRunServerMode_ContextCancellation(t *testing.T) {
+// TestRunServerMode_ContextCancellation ...
+// Summary: TestRunServerMode_ContextCancellation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 	app.fs = afero.NewMemMapFs()
 	ctx, cancel := context.WithCancel(context.Background())
@@ -1501,7 +1764,16 @@ func TestRunServerMode_ContextCancellation(t *testing.T) {
 	}
 }
 
-func TestRunStdioMode(t *testing.T) {
+// TestRunStdioMode ...
+// Summary: TestRunStdioMode
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var called bool
 	mockStdioFunc := func(_ context.Context, _ *mcpserver.Server) error {
 		called = true
@@ -1532,7 +1804,16 @@ func TestRunStdioMode(t *testing.T) {
 	assert.NoError(t, err, "runStdioMode should not return an error in this mock")
 }
 
-func Test_runStdioMode_real(t *testing.T) {
+// Test_runStdioMode_real ...
+// Summary: Test_runStdioMode_real
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	oldStdin := os.Stdin
 	oldStdout := os.Stdout
 	defer func() {
@@ -1597,7 +1878,16 @@ func Test_runStdioMode_real(t *testing.T) {
 	assert.Contains(t, response, `"result":{"capabilities":{`)
 }
 
-func TestRun_InMemoryBus(t *testing.T) {
+// TestRun_InMemoryBus ...
+// Summary: TestRun_InMemoryBus
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	// An empty config will result in an in-memory bus.
 	err := afero.WriteFile(fs, "/config.yaml", []byte("{}"), 0o644)
@@ -1616,7 +1906,16 @@ func TestRun_InMemoryBus(t *testing.T) {
 	}
 }
 
-func TestRun_CachingMiddleware(t *testing.T) {
+// TestRun_CachingMiddleware ...
+// Summary: TestRun_CachingMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	err := afero.WriteFile(fs, "/config.yaml", []byte("{}"), 0o644)
 	require.NoError(t, err)
@@ -1646,7 +1945,16 @@ func TestRun_CachingMiddleware(t *testing.T) {
 	assert.Contains(t, middlewareNames, "CachingMiddleware", "CachingMiddleware should be in the middleware chain")
 }
 
-func TestStartGrpcServer_RegistrationServerError(t *testing.T) {
+// TestStartGrpcServer_RegistrationServerError ...
+// Summary: TestStartGrpcServer_RegistrationServerError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test that runServerMode returns an error when NewRegistrationServer fails.
 	// NewRegistrationServerHook lets us inject a failure into the registration path.
 	mcpserver.NewRegistrationServerHook = func(_ interface{}, _ interface{}) (*mcpserver.RegistrationServer, error) {
@@ -1668,7 +1976,16 @@ func TestStartGrpcServer_RegistrationServerError(t *testing.T) {
 	assert.Contains(t, err.Error(), "injected registration server error")
 }
 
-func TestHTTPServer_GracefulShutdown(t *testing.T) {
+// TestHTTPServer_GracefulShutdown ...
+// Summary: TestHTTPServer_GracefulShutdown
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	errChan := make(chan error, 1)
 	ctx, cancel := context.WithCancel(context.Background())
 	var wg sync.WaitGroup
@@ -1690,7 +2007,16 @@ func TestHTTPServer_GracefulShutdown(t *testing.T) {
 	}
 }
 
-func TestGRPCServer_GracefulShutdown(t *testing.T) {
+// TestGRPCServer_GracefulShutdown ...
+// Summary: TestGRPCServer_GracefulShutdown
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	errChan := make(chan error, 1)
 	ctx, cancel := context.WithCancel(context.Background())
 	var wg sync.WaitGroup
@@ -1711,7 +2037,16 @@ func TestGRPCServer_GracefulShutdown(t *testing.T) {
 	}
 }
 
-func TestGRPCServer_GoroutineTerminatesOnError(t *testing.T) {
+// TestGRPCServer_GoroutineTerminatesOnError ...
+// Summary: TestGRPCServer_GoroutineTerminatesOnError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Find a free port and create a listener that is already closed to force an error.
 	l, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
@@ -1743,7 +2078,16 @@ func TestGRPCServer_GoroutineTerminatesOnError(t *testing.T) {
 	wg.Wait()
 }
 
-func TestGRPCServer_ShutdownWithoutRace(t *testing.T) {
+// TestGRPCServer_ShutdownWithoutRace ...
+// Summary: TestGRPCServer_ShutdownWithoutRace
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test is designed to fail if the double-close issue is present.
 	// It runs the shutdown sequence multiple times to ensure stability.
 	for i := 0; i < 10; i++ {
@@ -1780,7 +2124,16 @@ func TestGRPCServer_ShutdownWithoutRace(t *testing.T) {
 	}
 }
 
-func TestRun_ServiceRegistrationPublication(t *testing.T) {
+// TestRun_ServiceRegistrationPublication ...
+// Summary: TestRun_ServiceRegistrationPublication
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -1857,7 +2210,16 @@ upstream_services:
 	}
 }
 
-func TestRun_ServiceRegistrationSkipsDisabled(t *testing.T) {
+// TestRun_ServiceRegistrationSkipsDisabled ...
+// Summary: TestRun_ServiceRegistrationSkipsDisabled
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
@@ -1921,7 +2283,16 @@ upstream_services:
 	}
 }
 
-func TestRun_NoConfigDoesNotBlock(t *testing.T) {
+// TestRun_NoConfigDoesNotBlock ...
+// Summary: TestRun_NoConfigDoesNotBlock
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
@@ -1937,7 +2308,16 @@ func TestRun_NoConfigDoesNotBlock(t *testing.T) {
 	assert.NoError(t, err, "app.Run should not return an error on graceful shutdown")
 }
 
-func TestRun_NoConfig(t *testing.T) {
+// TestRun_NoConfig ...
+// Summary: TestRun_NoConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
@@ -1961,7 +2341,16 @@ type closableListener struct {
 	mu     sync.Mutex
 }
 
-func (l *closableListener) Close() error {
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	l.closed = true
@@ -1974,7 +2363,16 @@ func (l *closableListener) isClosed() bool {
 	return l.closed
 }
 
-func TestGRPCServer_ListenerClosedOnForcedShutdown(t *testing.T) {
+// TestGRPCServer_ListenerClosedOnForcedShutdown ...
+// Summary: TestGRPCServer_ListenerClosedOnForcedShutdown
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test verifies that the network listener is closed even when a
 	// graceful shutdown of the gRPC server times out and is forced to stop.
 	rawLis, err := net.Listen("tcp", "127.0.0.1:0")
@@ -2029,12 +2427,31 @@ type mockCloseCountingListener struct {
 
 // Close increments a counter and then calls the underlying listener's Close
 // method.
-func (l *mockCloseCountingListener) Close() error {
+// Close increments a counter and then calls the underlying listener's Close
+// Summary: Close
+// method.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	atomic.AddInt32(&l.closeCount, 1)
 	return l.Listener.Close()
 }
 
-func TestGRPCServer_NoListenerDoubleClickOnForceShutdown(t *testing.T) {
+// TestGRPCServer_NoListenerDoubleClickOnForceShutdown ...
+// Summary: TestGRPCServer_NoListenerDoubleClickOnForceShutdown
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test ensures that the listener is not closed more than once, even
 	// when a graceful shutdown times out and the server is forcefully stopped.
 	rawLis, err := net.Listen("tcp", "127.0.0.1:0")
@@ -2107,7 +2524,16 @@ func newMockBus[T any]() *mockBus[T] {
 }
 
 // Publish records the message in the publishedMessages slice.
-func (m *mockBus[T]) Publish(_ context.Context, _ string, msg T) error {
+// Publish records the message in the publishedMessages slice.
+// Summary: Publish
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.publishedMessages = append(m.publishedMessages, msg)
@@ -2115,16 +2541,43 @@ func (m *mockBus[T]) Publish(_ context.Context, _ string, msg T) error {
 }
 
 // Subscribe is a no-op for this mock.
-func (m *mockBus[T]) Subscribe(_ context.Context, _ string, _ func(T)) (unsubscribe func()) {
+// Subscribe is a no-op for this mock.
+// Summary: Subscribe
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return func() {}
 }
 
 // SubscribeOnce is a no-op for this mock.
-func (m *mockBus[T]) SubscribeOnce(_ context.Context, _ string, _ func(T)) (unsubscribe func()) {
+// SubscribeOnce is a no-op for this mock.
+// Summary: SubscribeOnce
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return func() {}
 }
 
-func TestGRPCServer_PanicInRegistration(t *testing.T) {
+// TestGRPCServer_PanicInRegistration ...
+// Summary: TestGRPCServer_PanicInRegistration
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Since registration is now external (not a callback in startGrpcServer),
 	// test that startGrpcServer handles a nil server gracefully by completing
 	// immediately without blocking or sending an error.
@@ -2148,7 +2601,16 @@ func TestGRPCServer_PanicInRegistration(t *testing.T) {
 	}
 }
 
-func TestRunServerMode_grpcListenErrorHangs(t *testing.T) {
+// TestRunServerMode_grpcListenErrorHangs ...
+// Summary: TestRunServerMode_grpcListenErrorHangs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test is designed to fail by timing out if the bug is present.
 	// Occupy a port to force a listen error.
 	l, err := net.Listen("tcp", "127.0.0.1:0")
@@ -2183,7 +2645,16 @@ func TestRunServerMode_grpcListenErrorHangs(t *testing.T) {
 	}
 }
 
-func TestStartGrpcServer_PanicHandling(t *testing.T) {
+// TestStartGrpcServer_PanicHandling ...
+// Summary: TestStartGrpcServer_PanicHandling
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test that startGrpcServer handles graceful shutdown cleanly across multiple
 	// iterations, verifying that clean cancellation produces no errors.
 	for i := 0; i < 3; i++ {
@@ -2210,7 +2681,16 @@ func TestStartGrpcServer_PanicHandling(t *testing.T) {
 	}
 }
 
-func TestStartGrpcServer_PanicInRegistrationRecovers(t *testing.T) {
+// TestStartGrpcServer_PanicInRegistrationRecovers ...
+// Summary: TestStartGrpcServer_PanicInRegistrationRecovers
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test that startGrpcServer sends exactly one error to errChan when Serve
 	// fails immediately (via a pre-closed listener), and does not block.
 	ctx, cancel := context.WithCancel(context.Background())
@@ -2240,7 +2720,16 @@ func TestStartGrpcServer_PanicInRegistrationRecovers(t *testing.T) {
 	wg.Wait()
 }
 
-func TestGRPCServer_PortReleasedOnForcedShutdown(t *testing.T) {
+// TestGRPCServer_PortReleasedOnForcedShutdown ...
+// Summary: TestGRPCServer_PortReleasedOnForcedShutdown
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err, "Failed to find a free port.")
 	port := lis.Addr().(*net.TCPAddr).Port
@@ -2307,7 +2796,16 @@ func waitForServerReady(t *testing.T, addr string) {
 	}, 5*time.Second, 100*time.Millisecond, "server should be ready to accept connections")
 }
 
-func TestRun_APIKeyAuthentication(t *testing.T) {
+// TestRun_APIKeyAuthentication ...
+// Summary: TestRun_APIKeyAuthentication
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -2376,7 +2874,16 @@ func TestRun_APIKeyAuthentication(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestGRPCServer_PortReleasedOnGracefulShutdown(t *testing.T) {
+// TestGRPCServer_PortReleasedOnGracefulShutdown ...
+// Summary: TestGRPCServer_PortReleasedOnGracefulShutdown
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Find an available port for the gRPC server to listen on.
 	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err, "Failed to find a free port.")
@@ -2419,7 +2926,16 @@ func TestGRPCServer_PortReleasedOnGracefulShutdown(t *testing.T) {
 	}
 }
 
-func TestRun_IPAllowlist(t *testing.T) {
+// TestRun_IPAllowlist ...
+// Summary: TestRun_IPAllowlist
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("Allowed", func(t *testing.T) {
 		fs := afero.NewMemMapFs()
 		ctx, cancel := context.WithCancel(context.Background())
@@ -2519,7 +3035,16 @@ upstream_services: []
 	})
 }
 
-func TestConfigHealthCheck(t *testing.T) {
+// TestConfigHealthCheck ...
+// Summary: TestConfigHealthCheck
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	app := NewApplication()
 	mockStore := new(MockStore)
@@ -2562,7 +3087,16 @@ func ptr[T any](v T) *T {
 	return &v
 }
 
-func TestRunServerMode_Auth(t *testing.T) {
+// TestRunServerMode_Auth ...
+// Summary: TestRunServerMode_Auth
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -2670,7 +3204,16 @@ func TestRunServerMode_Auth(t *testing.T) {
 	<-errChan
 }
 
-func TestHealthEndpointAlias(t *testing.T) {
+// TestHealthEndpointAlias ...
+// Summary: TestHealthEndpointAlias
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -2723,7 +3266,16 @@ upstream_services: []
 	<-errChan
 }
 
-func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
+// TestAuthMiddleware_LocalhostSecurity ...
+// Summary: TestAuthMiddleware_LocalhostSecurity
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 	app.SettingsManager = NewGlobalSettingsManager("", nil, nil)
 
@@ -2740,7 +3292,16 @@ func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 	})
 }
 
-func TestAuthMiddleware_AuthDisabled(t *testing.T) {
+// TestAuthMiddleware_AuthDisabled ...
+// Summary: TestAuthMiddleware_AuthDisabled
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -2786,7 +3347,16 @@ func TestAuthMiddleware_AuthDisabled(t *testing.T) {
 	<-errChan
 }
 
-func TestReloadConfig_Directory(t *testing.T) {
+// TestReloadConfig_Directory ...
+// Summary: TestReloadConfig_Directory
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	app := NewApplication()
 	poolManager := pool.NewManager()
@@ -2801,7 +3371,16 @@ func TestReloadConfig_Directory(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestServer_CORS(t *testing.T) {
+// TestServer_CORS ...
+// Summary: TestServer_CORS
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -2844,7 +3423,16 @@ func TestServer_CORS(t *testing.T) {
 	<-errChan
 }
 
-func TestServer_CORS_Strict(t *testing.T) {
+// TestServer_CORS_Strict ...
+// Summary: TestServer_CORS_Strict
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -2886,13 +3474,31 @@ func TestServer_CORS_Strict(t *testing.T) {
 	<-errChan
 }
 
-func TestHealthCheckWithContext_InvalidAddr(t *testing.T) {
+// TestHealthCheckWithContext_InvalidAddr ...
+// Summary: TestHealthCheckWithContext_InvalidAddr
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	err := HealthCheckWithContext(context.Background(), io.Discard, "invalid\naddr")
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to create request")
 }
 
-func TestRun_WithListenAddress(t *testing.T) {
+// TestRun_WithListenAddress ...
+// Summary: TestRun_WithListenAddress
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -2914,7 +3520,16 @@ func TestRun_WithListenAddress(t *testing.T) {
 	}
 }
 
-func TestUploadFile_TempDirFail(t *testing.T) {
+// TestUploadFile_TempDirFail ...
+// Summary: TestUploadFile_TempDirFail
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	orig := os.Getenv("TMPDIR")
 	_ = os.Setenv("TMPDIR", "/non-existent")
 	defer os.Setenv("TMPDIR", orig)
@@ -2936,7 +3551,16 @@ func TestUploadFile_TempDirFail(t *testing.T) {
 	}
 }
 
-func TestMultiUserHandler_EdgeCases(t *testing.T) {
+// TestMultiUserHandler_EdgeCases ...
+// Summary: TestMultiUserHandler_EdgeCases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	afero.WriteFile(fs, "/config.yaml", []byte("users:\n  - id: \"user1\"\n    profile_ids: [\"profile1\"]"), 0644)
 
@@ -2987,7 +3611,16 @@ func TestMultiUserHandler_EdgeCases(t *testing.T) {
 	<-errChan
 }
 
-func TestMultiUserHandler_UserAuth(t *testing.T) {
+// TestMultiUserHandler_UserAuth ...
+// Summary: TestMultiUserHandler_UserAuth
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	configContent := "users:\n  - id: \"user_auth\"\n    profile_ids: [\"p1\"]\n    authentication:\n      api_key:\n        param_name: \"X-Key\"\n        verification_value: \"secret\"\n        in: \"HEADER\""
 	afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0644)
@@ -3034,7 +3667,16 @@ func TestMultiUserHandler_UserAuth(t *testing.T) {
 	cancel()
 }
 
-func TestReloadConfig_DynamicUpdates(t *testing.T) {
+// TestReloadConfig_DynamicUpdates ...
+// Summary: TestReloadConfig_DynamicUpdates
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	afero.WriteFile(fs, "/config.yaml", []byte("global_settings:\n  allowed_ips: [\"127.0.0.1\"]"), 0644)
 
@@ -3076,7 +3718,16 @@ func TestReloadConfig_DynamicUpdates(t *testing.T) {
 	assert.True(t, mid.Allow("10.0.0.1"))
 }
 
-func TestMultiUserHandler_RBAC_RoleMismatch(t *testing.T) {
+// TestMultiUserHandler_RBAC_RoleMismatch ...
+// Summary: TestMultiUserHandler_RBAC_RoleMismatch
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	configContent := "global_settings:\n  profile_definitions:\n    - name: \"admin_profile\"\n      required_roles: [\"admin\"]\nusers:\n  - id: \"user_regular\"\n    profile_ids: [\"admin_profile\"]\n    roles: [\"user\"]"
 	afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0644)
@@ -3109,18 +3760,37 @@ func TestMultiUserHandler_RBAC_RoleMismatch(t *testing.T) {
 	assert.Equal(t, http.StatusForbidden, resp.StatusCode)
 }
 
-type MockUpstreamFactory struct {
+// MockUpstreamFactory ...
+// Summary: MockUpstreamFactory
 	NewUpstreamFunc func(config *configv1.UpstreamServiceConfig) (upstream.Upstream, error)
 }
 
-func (m *MockUpstreamFactory) NewUpstream(config *configv1.UpstreamServiceConfig) (upstream.Upstream, error) {
+// NewUpstream ...
+// Summary: NewUpstream
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.NewUpstreamFunc != nil {
 		return m.NewUpstreamFunc(config)
 	}
 	return nil, fmt.Errorf("mock factory: NewUpstreamFunc not set")
 }
 
-func TestReloadConfig_FactoryError(t *testing.T) {
+// TestReloadConfig_FactoryError ...
+// Summary: TestReloadConfig_FactoryError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	app := NewApplication()
 	app.UpstreamFactory = &MockUpstreamFactory{
@@ -3134,7 +3804,16 @@ func TestReloadConfig_FactoryError(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestHealthCheckWithContextConcurrent(t *testing.T) {
+// TestHealthCheckWithContextConcurrent ...
+// Summary: TestHealthCheckWithContextConcurrent
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
@@ -3154,7 +3833,16 @@ func TestHealthCheckWithContextConcurrent(t *testing.T) {
 	wg.Wait()
 }
 
-func TestAuthMiddleware_IPBypass(t *testing.T) {
+// TestAuthMiddleware_IPBypass ...
+// Summary: TestAuthMiddleware_IPBypass
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 	app.SettingsManager = NewGlobalSettingsManager("", nil, nil)
 	middleware := app.createAuthMiddleware(false, false)
@@ -3185,16 +3873,35 @@ func TestAuthMiddleware_IPBypass(t *testing.T) {
 	}
 }
 
-type MockMiddlewareFactory struct {
+// MockMiddlewareFactory ...
+// Summary: MockMiddlewareFactory
 	mock.Mock
 }
 
-func (m *MockMiddlewareFactory) Create(cfg *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
+// Create ...
+// Summary: Create
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(cfg)
 	return args.Get(0).(func(mcp.MethodHandler) mcp.MethodHandler)
 }
 
-func TestMiddlewareRegistry(t *testing.T) {
+// TestMiddlewareRegistry ...
+// Summary: TestMiddlewareRegistry
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	middleware.RegisterMCP("test_middleware", func(cfg *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
 		return func(next mcp.MethodHandler) mcp.MethodHandler {
 			return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
@@ -3221,7 +3928,16 @@ func TestMiddlewareRegistry(t *testing.T) {
 	})
 }
 
-func TestConfigureUIHandler(t *testing.T) {
+// TestConfigureUIHandler ...
+// Summary: TestConfigureUIHandler
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	busProvider, _ := bus.NewProvider(nil)
 	poolManager := pool.NewManager()
 	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager, nil)
@@ -3245,7 +3961,16 @@ func TestConfigureUIHandler(t *testing.T) {
 	})
 }
 
-func TestUploadFile_Coverage(t *testing.T) {
+// TestUploadFile_Coverage ...
+// Summary: TestUploadFile_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 
 	t.Run("Invalid Method", func(t *testing.T) {
@@ -3299,7 +4024,16 @@ func TestUploadFile_Coverage(t *testing.T) {
 	})
 }
 
-func TestFilesystemHealthCheck(t *testing.T) {
+// TestFilesystemHealthCheck ...
+// Summary: TestFilesystemHealthCheck
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tempDir := t.TempDir()
 	existingDir := filepath.Join(tempDir, "existing")
 	os.Mkdir(existingDir, 0755)
@@ -3320,7 +4054,16 @@ func TestFilesystemHealthCheck(t *testing.T) {
 	assert.Equal(t, "ok", res.Status)
 }
 
-func TestMultiUserToolFiltering(t *testing.T) {
+// TestMultiUserToolFiltering ...
+// Summary: TestMultiUserToolFiltering
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	configContent := `
 global_settings:
@@ -3350,7 +4093,16 @@ upstream_services:
 	<-errChan
 }
 
-func TestFix_ReloadReliability(t *testing.T) {
+// TestFix_ReloadReliability ...
+// Summary: TestFix_ReloadReliability
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{"openapi": "3.0.0", "info": {"title": "T", "version": "1"}, "paths": {"/t": {"get": {"operationId": "op"}}}}`))
@@ -3385,7 +4137,16 @@ func TestFix_ReloadReliability(t *testing.T) {
 	<-errChan
 }
 
-func TestStartup_Resilience_UpstreamFailure(t *testing.T) {
+// TestStartup_Resilience_UpstreamFailure ...
+// Summary: TestStartup_Resilience_UpstreamFailure
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -3408,7 +4169,16 @@ func TestStartup_Resilience_UpstreamFailure(t *testing.T) {
 	<-errChan
 }
 
-func TestTemplateManager_Persistence(t *testing.T) {
+// TestTemplateManager_Persistence ...
+// Summary: TestTemplateManager_Persistence
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tmpDir := t.TempDir()
 	tm := NewTemplateManager(tmpDir)
 	// Clear seeded templates for clean state testing
@@ -3430,7 +4200,16 @@ func TestTemplateManager_Persistence(t *testing.T) {
 	assert.Empty(t, tm.ListTemplates())
 }
 
-func TestTemplateManager_LoadCorrupt(t *testing.T) {
+// TestTemplateManager_LoadCorrupt ...
+// Summary: TestTemplateManager_LoadCorrupt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tmpDir := t.TempDir()
 	path := filepath.Join(tmpDir, "templates.json")
 	os.WriteFile(path, []byte("{invalid json"), 0600)
@@ -3440,7 +4219,16 @@ func TestTemplateManager_LoadCorrupt(t *testing.T) {
 	assert.Len(t, tm.ListTemplates(), len(BuiltinTemplates))
 }
 
-func TestMCPUserHandler_NoAuth_PublicIP_Blocked(t *testing.T) {
+// TestMCPUserHandler_NoAuth_PublicIP_Blocked ...
+// Summary: TestMCPUserHandler_NoAuth_PublicIP_Blocked
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Set TRUST PROXY to simulate forwarded IP
 	t.Setenv("MCPANY_TRUST_PROXY", "true")
 	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "")

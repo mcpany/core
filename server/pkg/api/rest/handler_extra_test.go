@@ -15,11 +15,29 @@ type failWriter struct {
 	http.ResponseWriter
 }
 
-func (f *failWriter) Write(p []byte) (n int, err error) {
+// Write ...
+// Summary: Write
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return 0, errors.New("write failed")
 }
 
-func TestValidateConfigHandler_WriteFailure(t *testing.T) {
+// TestValidateConfigHandler_WriteFailure ...
+// Summary: TestValidateConfigHandler_WriteFailure
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a valid request body
 	body := `{"content": "global_settings:\n  mcp_listen_address: :8080"}`
 	req := httptest.NewRequest(http.MethodPost, "/api/v1/config/validate", strings.NewReader(body))
@@ -34,7 +52,16 @@ func TestValidateConfigHandler_WriteFailure(t *testing.T) {
 	}
 }
 
-func TestValidateConfigHandler_RespondWithValidationErrors_WriteFailure(t *testing.T) {
+// TestValidateConfigHandler_RespondWithValidationErrors_WriteFailure ...
+// Summary: TestValidateConfigHandler_RespondWithValidationErrors_WriteFailure
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Trigger validation error by passing invalid YAML
 	body := `{"content": ": invalid yaml"}`
 	req := httptest.NewRequest(http.MethodPost, "/api/v1/config/validate", strings.NewReader(body))

@@ -13,7 +13,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestSeededE2E(t *testing.T) {
+// TestSeededE2E ...
+// Summary: TestSeededE2E
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx, cancel := context.WithTimeout(context.Background(), TestWaitTimeShort)
 	defer cancel()
 

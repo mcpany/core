@@ -12,7 +12,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestYamlEngine_Unmarshal_LineNumber(t *testing.T) {
+// TestYamlEngine_Unmarshal_LineNumber ...
+// Summary: TestYamlEngine_Unmarshal_LineNumber
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	yamlContent := `global_settings:
   mcp_listen_address: "0.0.0.0:50050"
   log_level: "INFO"

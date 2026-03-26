@@ -12,7 +12,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestManager(t *testing.T) {
+// TestManager ...
+// Summary: TestManager
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tempDir, err := os.MkdirTemp("", "skills-test-*")
 	require.NoError(t, err)
 	defer os.RemoveAll(tempDir)

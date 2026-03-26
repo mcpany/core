@@ -9,7 +9,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMockWatcher(t *testing.T) {
+// TestMockWatcher ...
+// Summary: TestMockWatcher
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	w := NewMockWatcher()
 
 	calledWatch := false

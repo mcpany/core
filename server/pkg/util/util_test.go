@@ -14,7 +14,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSanitizeID(t *testing.T) {
+// TestSanitizeID ...
+// Summary: TestSanitizeID
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCases := []struct {
 		name                     string
 		ids                      []string
@@ -147,15 +156,34 @@ func TestSanitizeID(t *testing.T) {
 	}
 }
 
-type StringerStruct struct {
+// StringerStruct ...
+// Summary: StringerStruct
 	val string
 }
 
-func (s StringerStruct) String() string {
+// String ...
+// Summary: String
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return s.val
 }
 
-func TestToString(t *testing.T) {
+// TestToString ...
+// Summary: TestToString
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		input    interface{}
@@ -201,7 +229,16 @@ func TestToString(t *testing.T) {
 
 // TestIsNil removed to avoid duplication with isnil_test.go
 
-func TestReplaceURLPath_Security(t *testing.T) {
+// TestReplaceURLPath_Security ...
+// Summary: TestReplaceURLPath_Security
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		urlPath  string
@@ -242,7 +279,16 @@ func TestReplaceURLPath_Security(t *testing.T) {
 	}
 }
 
-func TestSanitizeServiceName(t *testing.T) {
+// TestSanitizeServiceName ...
+// Summary: TestSanitizeServiceName
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCases := []struct {
 		name        string
 		input       string
@@ -283,7 +329,16 @@ func TestSanitizeServiceName(t *testing.T) {
 	}
 }
 
-func TestSanitizeToolName(t *testing.T) {
+// TestSanitizeToolName ...
+// Summary: TestSanitizeToolName
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCases := []struct {
 		name        string
 		input       string
@@ -324,7 +379,16 @@ func TestSanitizeToolName(t *testing.T) {
 	}
 }
 
-func TestSanitizeOperationID(t *testing.T) {
+// TestSanitizeOperationID ...
+// Summary: TestSanitizeOperationID
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCases := []struct {
 		name     string
 		input    string
@@ -362,7 +426,16 @@ func TestSanitizeOperationID(t *testing.T) {
 	}
 }
 
-func TestGetDockerCommand(t *testing.T) {
+// TestGetDockerCommand ...
+// Summary: TestGetDockerCommand
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("without sudo", func(t *testing.T) {
 		t.Setenv("USE_SUDO_FOR_DOCKER", "false")
 		cmd, args := GetDockerCommand()
@@ -386,7 +459,16 @@ func TestGetDockerCommand(t *testing.T) {
 	})
 }
 
-func TestGenerateUUID(t *testing.T) {
+// TestGenerateUUID ...
+// Summary: TestGenerateUUID
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	uuid := GenerateUUID()
 	match, err := regexp.MatchString(`^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$`, uuid)
 	if err != nil {
@@ -397,7 +479,16 @@ func TestGenerateUUID(t *testing.T) {
 	}
 }
 
-func TestParseToolName(t *testing.T) {
+// TestParseToolName ...
+// Summary: TestParseToolName
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCases := []struct {
 		name             string
 		toolName         string
@@ -451,7 +542,16 @@ func TestParseToolName(t *testing.T) {
 	}
 }
 
-func TestReplaceURLPath(t *testing.T) {
+// TestReplaceURLPath ...
+// Summary: TestReplaceURLPath
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name           string
 		urlPath        string
@@ -505,7 +605,16 @@ func TestReplaceURLPath(t *testing.T) {
 	}
 }
 
-func TestReplaceURLQuery(t *testing.T) {
+// TestReplaceURLQuery ...
+// Summary: TestReplaceURLQuery
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name           string
 		urlQuery       string
@@ -542,14 +651,32 @@ func TestReplaceURLQuery(t *testing.T) {
 	}
 }
 
-func TestRandomFloat64(t *testing.T) {
+// TestRandomFloat64 ...
+// Summary: TestRandomFloat64
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	val := RandomFloat64()
 	if val < 0.0 || val >= 1.0 {
 		t.Errorf("RandomFloat64() = %v, want [0.0, 1.0)", val)
 	}
 }
 
-func TestSanitizeFilename(t *testing.T) {
+// TestSanitizeFilename ...
+// Summary: TestSanitizeFilename
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		input    string

@@ -7,7 +7,16 @@ import (
 	"testing"
 )
 
-func TestManager_Rules(t *testing.T) {
+// TestManager_Rules ...
+// Summary: TestManager_Rules
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewManager()
 
 	// 1. Create Rule

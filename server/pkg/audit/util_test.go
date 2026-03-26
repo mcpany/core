@@ -10,7 +10,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestComputeHash(t *testing.T) {
+// TestComputeHash ...
+// Summary: TestComputeHash
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ts := "2023-10-27T10:00:00Z"
 	toolName := "test_tool"
 	userID := "user1"
@@ -34,7 +43,16 @@ func TestComputeHash(t *testing.T) {
 	assert.NotEqual(t, hash1, hash3)
 }
 
-func TestComputeHashV0(t *testing.T) {
+// TestComputeHashV0 ...
+// Summary: TestComputeHashV0
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ts := "2023-10-27T10:00:00Z"
 	toolName := "test_tool"
 	userID := "user1"
@@ -52,7 +70,16 @@ func TestComputeHashV0(t *testing.T) {
 	assert.Equal(t, hash1, hash2)
 }
 
-func TestJsonSerializationConsistency(t *testing.T) {
+// TestJsonSerializationConsistency ...
+// Summary: TestJsonSerializationConsistency
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Ensure that computeHash behaves consistently
 	fields := []any{"a", "b", 123}
 	data, _ := json.Marshal(fields)

@@ -7,7 +7,16 @@ import (
 	"testing"
 )
 
-func BenchmarkTextTemplate_Render(b *testing.B) {
+// BenchmarkTextTemplate_Render ...
+// Summary: BenchmarkTextTemplate_Render
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	templateString := "Hello, {{name}}! You are {{age}} years old. This is a {{test}} of {{performance}}."
 	tpl, err := NewTemplate(templateString, "{{", "}}")
 	if err != nil {
@@ -30,7 +39,16 @@ func BenchmarkTextTemplate_Render(b *testing.B) {
 	}
 }
 
-func BenchmarkTransformer_JoinStrings(b *testing.B) {
+// BenchmarkTransformer_JoinStrings ...
+// Summary: BenchmarkTransformer_JoinStrings
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	b.ReportAllocs()
 	t := NewTransformer()
 	// Create a large list
@@ -54,7 +72,16 @@ func BenchmarkTransformer_JoinStrings(b *testing.B) {
 	}
 }
 
-func BenchmarkTransformer_Join(b *testing.B) {
+// BenchmarkTransformer_Join ...
+// Summary: BenchmarkTransformer_Join
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	b.ReportAllocs()
 	t := NewTransformer()
 	// Create a large list
@@ -78,7 +105,16 @@ func BenchmarkTransformer_Join(b *testing.B) {
 	}
 }
 
-func BenchmarkTransformer_Transform(b *testing.B) {
+// BenchmarkTransformer_Transform ...
+// Summary: BenchmarkTransformer_Transform
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t := NewTransformer()
 	templateStr := "Hello, {{.name}}! You are {{.age}} years old. This is a {{.test}} of {{.performance}}."
 	data := map[string]any{
@@ -97,7 +133,16 @@ func BenchmarkTransformer_Transform(b *testing.B) {
 	}
 }
 
-func BenchmarkTextParser_ParseJSON(b *testing.B) {
+// BenchmarkTextParser_ParseJSON ...
+// Summary: BenchmarkTextParser_ParseJSON
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	parser := NewTextParser()
 	jsonInput := []byte(`{"person": {"name": "test", "age": 123}}`)
 	config := map[string]string{
@@ -114,7 +159,16 @@ func BenchmarkTextParser_ParseJSON(b *testing.B) {
 	}
 }
 
-func BenchmarkTextParser_ParseXML(b *testing.B) {
+// BenchmarkTextParser_ParseXML ...
+// Summary: BenchmarkTextParser_ParseXML
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	parser := NewTextParser()
 	xmlInput := []byte(`<root><name>test</name><value>123</value></root>`)
 	config := map[string]string{
@@ -131,7 +185,16 @@ func BenchmarkTextParser_ParseXML(b *testing.B) {
 	}
 }
 
-func BenchmarkTextParser_ParseText(b *testing.B) {
+// BenchmarkTextParser_ParseText ...
+// Summary: BenchmarkTextParser_ParseText
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	parser := NewTextParser()
 	textInput := []byte(`User ID: 12345, Name: John Doe`)
 	config := map[string]string{
@@ -148,7 +211,16 @@ func BenchmarkTextParser_ParseText(b *testing.B) {
 	}
 }
 
-func BenchmarkTextParser_ParseJQ(b *testing.B) {
+// BenchmarkTextParser_ParseJQ ...
+// Summary: BenchmarkTextParser_ParseJQ
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	parser := NewTextParser()
 	jsonInput := []byte(`{"users": [{"name": "Alice"}, {"name": "Bob"}]}`)
 	query := `{names: [.users[].name]}`
@@ -162,7 +234,16 @@ func BenchmarkTextParser_ParseJQ(b *testing.B) {
 	}
 }
 
-func BenchmarkJoinStringsDirect(b *testing.B) {
+// BenchmarkJoinStringsDirect ...
+// Summary: BenchmarkJoinStringsDirect
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t := NewTransformer()
 	listSize := 1000
 	items := make([]string, listSize)
@@ -182,7 +263,16 @@ func BenchmarkJoinStringsDirect(b *testing.B) {
 	}
 }
 
-func BenchmarkJoinIntsDirect(b *testing.B) {
+// BenchmarkJoinIntsDirect ...
+// Summary: BenchmarkJoinIntsDirect
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t := NewTransformer()
 	listSize := 1000
 	items := make([]int, listSize)

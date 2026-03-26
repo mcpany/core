@@ -17,7 +17,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestSecretsCoverage(t *testing.T) {
+// TestSecretsCoverage ...
+// Summary: TestSecretsCoverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test StripSecretsFromService for GRPC
 	grpcService := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("grpc-service"),
@@ -55,7 +64,16 @@ func TestSecretsCoverage(t *testing.T) {
 	assert.NotNil(t, mcpService)
 }
 
-func TestSettingsCoverage(t *testing.T) {
+// TestSettingsCoverage ...
+// Summary: TestSettingsCoverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	s := config.GlobalSettings()
 
 	// Test SetMiddlewares / Middlewares
@@ -80,7 +98,16 @@ func TestSettingsCoverage(t *testing.T) {
 	assert.Equal(t, "", s.GithubAPIURL())
 }
 
-func TestValidatorCoverage(t *testing.T) {
+// TestValidatorCoverage ...
+// Summary: TestValidatorCoverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test ValidateOrError
 	// ValidateOrError expects UpstreamServiceConfig
 	cfg := configv1.UpstreamServiceConfig_builder{
@@ -101,7 +128,16 @@ func TestValidatorCoverage(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestValidatorCoverageMore(t *testing.T) {
+// TestValidatorCoverageMore ...
+// Summary: TestValidatorCoverageMore
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 
 	// Test Validate (Global Config) with errors
@@ -180,7 +216,16 @@ func TestValidatorCoverageMore(t *testing.T) {
 	assert.Contains(t, errs[0].Err.Error(), "duplicate service name")
 }
 
-func TestSecretsHydration(t *testing.T) {
+// TestSecretsHydration ...
+// Summary: TestSecretsHydration
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test HydrateSecretsInService with various types to hit coverage
 	secrets := map[string]*configv1.SecretValue{
 		"MY_SECRET": configv1.SecretValue_builder{
@@ -290,7 +335,16 @@ func TestSecretsHydration(t *testing.T) {
 	assert.Equal(t, "real_secret", httpSvc.GetHttpService().GetCalls()["call1"].GetParameters()[0].GetSecret().GetPlainText())
 }
 
-func TestResolveEnvValueFallback(t *testing.T) {
+// TestResolveEnvValueFallback ...
+// Summary: TestResolveEnvValueFallback
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test the CSV parsing fallback by providing a string that is invalid CSV
 	fs := afero.NewMemMapFs()
 	configContent := `
@@ -323,7 +377,16 @@ upstream_services:
 	assert.Equal(t, "baz", args[1])
 }
 
-func TestStoreBoolConversion(t *testing.T) {
+// TestStoreBoolConversion ...
+// Summary: TestStoreBoolConversion
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	configContent := `
 upstream_services:
@@ -346,7 +409,16 @@ upstream_services:
 	assert.True(t, cfg.GetUpstreamServices()[0].GetDisable())
 }
 
-func TestValidatorCommandExists(t *testing.T) {
+// TestValidatorCommandExists ...
+// Summary: TestValidatorCommandExists
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a dummy executable
 	tmpDir := t.TempDir()
 	exePath := filepath.Join(tmpDir, "myexe")

@@ -19,7 +19,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestUpstreamService_ArtInstituteChicago(t *testing.T) {
+// TestUpstreamService_ArtInstituteChicago ...
+// Summary: TestUpstreamService_ArtInstituteChicago
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
 	defer cancel()
 

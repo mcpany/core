@@ -17,7 +17,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestNewAPIKeyAuthenticator(t *testing.T) {
+// TestNewAPIKeyAuthenticator ...
+// Summary: TestNewAPIKeyAuthenticator
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("nil_config", func(t *testing.T) {
 		authenticator := NewAPIKeyAuthenticator(nil)
 		assert.Nil(t, authenticator)
@@ -45,7 +54,16 @@ func TestNewAPIKeyAuthenticator(t *testing.T) {
 	})
 }
 
-func TestAPIKeyAuthenticator(t *testing.T) {
+// TestAPIKeyAuthenticator ...
+// Summary: TestAPIKeyAuthenticator
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	config := configv1.APIKeyAuth_builder{
 		ParamName:         proto.String("X-API-Key"),
 		VerificationValue: proto.String("secret-key"),
@@ -77,7 +95,16 @@ func TestAPIKeyAuthenticator(t *testing.T) {
 	})
 }
 
-func TestAuthManager(t *testing.T) {
+// TestAuthManager ...
+// Summary: TestAuthManager
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	authManager := NewManager()
 	require.NotNil(t, authManager)
 
@@ -224,7 +251,16 @@ func TestAuthManager(t *testing.T) {
 	})
 }
 
-func TestContextHelpers(t *testing.T) {
+// TestContextHelpers ...
+// Summary: TestContextHelpers
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 
 	t.Run("user_context", func(t *testing.T) {
@@ -261,7 +297,16 @@ func TestContextHelpers(t *testing.T) {
 	})
 }
 
-func TestAddOAuth2Authenticator(t *testing.T) {
+// TestAddOAuth2Authenticator ...
+// Summary: TestAddOAuth2Authenticator
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	authManager := NewManager()
 	require.NotNil(t, authManager)
 
@@ -308,7 +353,16 @@ func TestAddOAuth2Authenticator(t *testing.T) {
 	})
 }
 
-func TestAPIKeyAuthenticator_Query(t *testing.T) {
+// TestAPIKeyAuthenticator_Query ...
+// Summary: TestAPIKeyAuthenticator_Query
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	config := configv1.APIKeyAuth_builder{
 		ParamName:         proto.String("api_key"),
 		VerificationValue: proto.String("secret"),
@@ -356,7 +410,16 @@ func TestAPIKeyAuthenticator_Query(t *testing.T) {
 	})
 }
 
-func TestValidateAuthentication(t *testing.T) {
+// TestValidateAuthentication ...
+// Summary: TestValidateAuthentication
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("nil_config", func(t *testing.T) {
 		err := ValidateAuthentication(context.Background(), nil, nil)
 		assert.NoError(t, err)
@@ -489,7 +552,16 @@ func TestValidateAuthentication(t *testing.T) {
 	})
 }
 
-func TestBasicAuthenticator(t *testing.T) {
+// TestBasicAuthenticator ...
+// Summary: TestBasicAuthenticator
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	password := "secret123"
 	hashed, _ := passhash.Password(password)
 	config := configv1.BasicAuth_builder{
@@ -520,7 +592,16 @@ func TestBasicAuthenticator(t *testing.T) {
 	})
 }
 
-func TestTrustedHeaderAuthenticator(t *testing.T) {
+// TestTrustedHeaderAuthenticator ...
+// Summary: TestTrustedHeaderAuthenticator
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	config := configv1.TrustedHeaderAuth_builder{
 		HeaderName:  proto.String("X-Trusted-User"),
 		HeaderValue: proto.String("verified"),

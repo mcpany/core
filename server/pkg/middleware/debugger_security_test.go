@@ -11,7 +11,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDebuggerRedactsSensitiveHeaders(t *testing.T) {
+// TestDebuggerRedactsSensitiveHeaders ...
+// Summary: TestDebuggerRedactsSensitiveHeaders
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	debugger := NewDebugger(10)
 	defer debugger.Close()
 

@@ -13,7 +13,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestLocalCommandTool_AwkSystem_Security(t *testing.T) {
+// TestLocalCommandTool_AwkSystem_Security ...
+// Summary: TestLocalCommandTool_AwkSystem_Security
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Define a tool that uses 'awk'.
 	tool := v1.Tool_builder{
 		Name: proto.String("awk-tool"),

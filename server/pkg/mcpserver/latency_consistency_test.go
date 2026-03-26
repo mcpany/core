@@ -30,7 +30,16 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestMetricLatencyConsistency(t *testing.T) {
+// TestMetricLatencyConsistency ...
+// Summary: TestMetricLatencyConsistency
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Initialize metrics with an in-memory sink
 	sink := metrics.NewInmemSink(10*time.Millisecond, 1*time.Minute)
 	conf := metrics.DefaultConfig("mcpany")

@@ -21,7 +21,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestUpdateCommand(t *testing.T) {
+// TestUpdateCommand ...
+// Summary: TestUpdateCommand
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Prepare the mock servers
 	assetName := fmt.Sprintf("server-%s-%s", runtime.GOOS, runtime.GOARCH)
 	assetContent := "this is a fake binary"

@@ -11,7 +11,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestBundleGC(t *testing.T) {
+// TestBundleGC ...
+// Summary: TestBundleGC
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup temp dir for testing
 	tmpDir, err := os.MkdirTemp("", "gc-test")
 	assert.NoError(t, err)

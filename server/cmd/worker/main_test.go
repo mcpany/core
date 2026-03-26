@@ -14,11 +14,21 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-type MainTestSuite struct {
+// MainTestSuite ...
+// Summary: MainTestSuite
 	suite.Suite
 }
 
-func (s *MainTestSuite) TestSetup_InMemoryBus() {
+// TestSetup_InMemoryBus ...
+// Summary: TestSetup_InMemoryBus
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Ensure REDIS_ADDR is not set
 	_ = os.Unsetenv("REDIS_ADDR")
 
@@ -26,21 +36,48 @@ func (s *MainTestSuite) TestSetup_InMemoryBus() {
 	s.NoError(err, "setup() should not return an error when using in-memory bus")
 }
 
-func (s *MainTestSuite) TestSetup_ValidRedisAddress() {
+// TestSetup_ValidRedisAddress ...
+// Summary: TestSetup_ValidRedisAddress
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	s.T().Setenv("REDIS_ADDR", "127.0.0.1:6379")
 
 	_, err := setup()
 	s.NoError(err, "setup() should not return an error with a valid REDIS_ADDR because the connection is lazy")
 }
 
-func (s *MainTestSuite) TestSetup_InvalidRedisAddress() {
+// TestSetup_InvalidRedisAddress ...
+// Summary: TestSetup_InvalidRedisAddress
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	s.T().Setenv("REDIS_ADDR", "invalid-address")
 
 	_, err := setup()
 	s.NoError(err, "setup() should not return an error with an invalid REDIS_ADDR because the connection is lazy")
 }
 
-func (s *MainTestSuite) TestMainLifecycle() {
+// TestMainLifecycle ...
+// Summary: TestMainLifecycle
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Ensure REDIS_ADDR is not set, so we use the in-memory bus
 	_ = os.Unsetenv("REDIS_ADDR")
 
@@ -65,11 +102,29 @@ func (s *MainTestSuite) TestMainLifecycle() {
 	}
 }
 
-func TestMainTestSuite(t *testing.T) {
+// TestMainTestSuite ...
+// Summary: TestMainTestSuite
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	suite.Run(t, new(MainTestSuite))
 }
 
-func TestSetup_InMemoryBus(t *testing.T) {
+// TestSetup_InMemoryBus ...
+// Summary: TestSetup_InMemoryBus
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Unset REDIS_ADDR to fall back to in-memory bus
 	_ = os.Unsetenv("REDIS_ADDR")
 
@@ -77,7 +132,16 @@ func TestSetup_InMemoryBus(t *testing.T) {
 	assert.NoError(t, err, "setup() should not return an error when using in-memory bus")
 }
 
-func TestSetup_DirectValidationError(t *testing.T) {
+// TestSetup_DirectValidationError ...
+// Summary: TestSetup_DirectValidationError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test directly manipulates the config to trigger an error in the validation logic
 	// to ensure the error handling in setup() is covered.
 	busConfig := &buspb.MessageBus{}

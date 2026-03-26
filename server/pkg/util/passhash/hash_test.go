@@ -10,7 +10,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestPassword(t *testing.T) {
+// TestPassword ...
+// Summary: TestPassword
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	password := "mysecretpassword"
 	hash, err := Password(password)
 	assert.NoError(t, err)
@@ -21,7 +30,16 @@ func TestPassword(t *testing.T) {
 	assert.False(t, CheckPassword("wrongpassword", hash))
 }
 
-func TestPassword_Error(t *testing.T) {
+// TestPassword_Error ...
+// Summary: TestPassword_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// bcrypt returns error if password is too long (> 72 bytes)
 	longPassword := strings.Repeat("a", 73)
 	hash, err := Password(longPassword)

@@ -12,7 +12,16 @@ import (
 	"time"
 )
 
-func TestRecursiveContextManager_APIHandler(t *testing.T) {
+// TestRecursiveContextManager_APIHandler ...
+// Summary: TestRecursiveContextManager_APIHandler
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	manager := NewRecursiveContextManager()
 	handler := manager.APIHandler()
 
@@ -80,7 +89,16 @@ func TestRecursiveContextManager_APIHandler(t *testing.T) {
 	}
 }
 
-func TestRecursiveContextManager_HandleContext(t *testing.T) {
+// TestRecursiveContextManager_HandleContext ...
+// Summary: TestRecursiveContextManager_HandleContext
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	manager := NewRecursiveContextManager()
 	data := map[string]interface{}{"role": "admin"}
 	session := manager.CreateSession(data, 1*time.Hour)

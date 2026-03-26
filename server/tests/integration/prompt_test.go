@@ -30,19 +30,55 @@ type testPrompt struct {
 	prompt *mcp.Prompt
 }
 
-func (p *testPrompt) Prompt() *mcp.Prompt {
+// Prompt ...
+// Summary: Prompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return p.prompt
 }
 
-func (p *testPrompt) Service() string {
+// Service ...
+// Summary: Service
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return "test-service"
 }
 
-func (p *testPrompt) Definition() *configv1.PromptDefinition {
+// Definition ...
+// Summary: Definition
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (p *testPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
+// Get ...
+// Summary: Get
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var parsedArgs map[string]string
 	if err := json.Unmarshal(args, &parsedArgs); err != nil {
 		return nil, err
@@ -58,7 +94,16 @@ func (p *testPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.GetPromp
 	}, nil
 }
 
-func TestPromptIntegration(t *testing.T) {
+// TestPromptIntegration ...
+// Summary: TestPromptIntegration
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -144,7 +189,16 @@ func TestPromptIntegration(t *testing.T) {
 	assert.Contains(t, textContent.Text, "def hello():\n  print('world')")
 }
 
-func TestPromptLifecycle(t *testing.T) {
+// TestPromptLifecycle ...
+// Summary: TestPromptLifecycle
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// MCP Server Setup
 	serverImpl := &mcp.Implementation{Name: "test-server", Version: "v0.0.1"}
 	serverOpts := &mcp.ServerOptions{HasPrompts: true}

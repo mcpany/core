@@ -15,7 +15,16 @@ import (
 
 func strPtrInj(s string) *string { return &s }
 
-func TestPythonDoubleQuoteInjection(t *testing.T) {
+// TestPythonDoubleQuoteInjection ...
+// Summary: TestPythonDoubleQuoteInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test reproduces an RCE vulnerability where Python code can be injected
 	// into a double-quoted argument string.
 

@@ -31,7 +31,16 @@ type mockAuthenticator struct {
 	err error
 }
 
-func (m *mockAuthenticator) Authenticate(_ *http.Request) error {
+// Authenticate ...
+// Summary: Authenticate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.err
 }
 
@@ -65,7 +74,16 @@ func setupHTTPToolTest(t *testing.T, handler http.Handler, callDefinition *confi
 	return httpTool, server
 }
 
-func TestHTTPTool_Execute_InputTransformation(t *testing.T) {
+// TestHTTPTool_Execute_InputTransformation ...
+// Summary: TestHTTPTool_Execute_InputTransformation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
 	expectedBody := `name=test&age=30`
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -98,7 +116,16 @@ func TestHTTPTool_Execute_InputTransformation(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestHTTPTool_Execute_OutputTransformation_XML(t *testing.T) {
+// TestHTTPTool_Execute_OutputTransformation_XML ...
+// Summary: TestHTTPTool_Execute_OutputTransformation_XML
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
 	xmlResponse := `<user><id>123</id><name>Test</name></user>`
 	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
@@ -131,7 +158,16 @@ func TestHTTPTool_Execute_OutputTransformation_XML(t *testing.T) {
 	assert.Equal(t, "Test", resultMap["name"])
 }
 
-func TestHTTPTool_Execute_OutputTransformation_Text(t *testing.T) {
+// TestHTTPTool_Execute_OutputTransformation_Text ...
+// Summary: TestHTTPTool_Execute_OutputTransformation_Text
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
 	textResponse := "User: test-user, Role: admin"
 	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
@@ -164,7 +200,16 @@ func TestHTTPTool_Execute_OutputTransformation_Text(t *testing.T) {
 	assert.Equal(t, "admin", resultMap["role"])
 }
 
-func TestHTTPTool_Execute_NoTransformation(t *testing.T) {
+// TestHTTPTool_Execute_NoTransformation ...
+// Summary: TestHTTPTool_Execute_NoTransformation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, "test", r.URL.Query().Get("param"))
@@ -196,7 +241,16 @@ func TestHTTPTool_Execute_NoTransformation(t *testing.T) {
 	assert.Equal(t, "test", resultMap["param"])
 }
 
-func TestHTTPTool_Execute_Errors(t *testing.T) {
+// TestHTTPTool_Execute_Errors ...
+// Summary: TestHTTPTool_Execute_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
 	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -490,7 +544,16 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 
 }
 
-func TestHTTPTool_Execute_ErrorBodyRedaction(t *testing.T) {
+// TestHTTPTool_Execute_ErrorBodyRedaction ...
+// Summary: TestHTTPTool_Execute_ErrorBodyRedaction
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Not parallel because it modifies environment variables
 
 	origDebug := os.Getenv("MCPANY_DEBUG")
@@ -521,7 +584,16 @@ func TestHTTPTool_Execute_ErrorBodyRedaction(t *testing.T) {
 	assert.Contains(t, err.Error(), "Sensitive Stack Trace")
 }
 
-func TestHTTPTool_Execute_InputTransformation_Webhook(t *testing.T) {
+// TestHTTPTool_Execute_InputTransformation_Webhook ...
+// Summary: TestHTTPTool_Execute_InputTransformation_Webhook
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
 	webhookServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/cloudevents+json")
@@ -563,7 +635,16 @@ func TestHTTPTool_Execute_InputTransformation_Webhook(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestHTTPTool_Execute_OutputTransformation_RawBytes(t *testing.T) {
+// TestHTTPTool_Execute_OutputTransformation_RawBytes ...
+// Summary: TestHTTPTool_Execute_OutputTransformation_RawBytes
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
 	rawBytesResponse := []byte{0xDE, 0xAD, 0xBE, 0xEF}
 	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
@@ -591,7 +672,16 @@ func TestHTTPTool_Execute_OutputTransformation_RawBytes(t *testing.T) {
 	assert.Equal(t, rawBytesResponse, resultMap["raw"])
 }
 
-func TestHTTPTool_Execute_OutputTransformation_JQ(t *testing.T) {
+// TestHTTPTool_Execute_OutputTransformation_JQ ...
+// Summary: TestHTTPTool_Execute_OutputTransformation_JQ
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
 	jsonResponse := `{"users": [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]}`
 	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
@@ -622,7 +712,16 @@ func TestHTTPTool_Execute_OutputTransformation_JQ(t *testing.T) {
 	assert.Contains(t, resultList, "Bob")
 }
 
-func TestHTTPTool_Execute_PathParameterEncoding(t *testing.T) {
+// TestHTTPTool_Execute_PathParameterEncoding ...
+// Summary: TestHTTPTool_Execute_PathParameterEncoding
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
 	pathHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		expectedPath := "/users/test%2Fuser"
@@ -662,7 +761,16 @@ func TestHTTPTool_Execute_PathParameterEncoding(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestHTTPTool_Execute_WithRetry(t *testing.T) {
+// TestHTTPTool_Execute_WithRetry ...
+// Summary: TestHTTPTool_Execute_WithRetry
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
 	t.Run("retry_succeeds", func(t *testing.T) {
 
@@ -816,7 +924,16 @@ func TestHTTPTool_Execute_WithRetry(t *testing.T) {
 	})
 }
 
-func TestHTTPTool_Execute_ConsecutiveCalls(t *testing.T) {
+// TestHTTPTool_Execute_ConsecutiveCalls ...
+// Summary: TestHTTPTool_Execute_ConsecutiveCalls
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		id := r.URL.Query().Get("id")
@@ -868,7 +985,16 @@ func TestHTTPTool_Execute_ConsecutiveCalls(t *testing.T) {
 	assert.Equal(t, "2", resultMap2["id"])
 }
 
-func TestHTTPTool_Execute_LargeFloatParameter(t *testing.T) {
+// TestHTTPTool_Execute_LargeFloatParameter ...
+// Summary: TestHTTPTool_Execute_LargeFloatParameter
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
 	// Handler expects a large number in the path
 	// 2^63 = 9.223372036854776e+18
@@ -921,7 +1047,16 @@ func TestHTTPTool_Execute_LargeFloatParameter(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestHTTPTool_Execute_StripsUndefinedParameters(t *testing.T) {
+// TestHTTPTool_Execute_StripsUndefinedParameters ...
+// Summary: TestHTTPTool_Execute_StripsUndefinedParameters
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		body, err := io.ReadAll(r.Body)

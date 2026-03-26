@@ -11,7 +11,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestBindRootFlags(t *testing.T) {
+// TestBindRootFlags ...
+// Summary: TestBindRootFlags
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cmd := &cobra.Command{}
 	BindRootFlags(cmd)
 
@@ -29,7 +38,16 @@ func TestBindRootFlags(t *testing.T) {
 	// Since we are passing a valid command with flags just added, it shouldn't fail.
 }
 
-func TestBindServerFlags(t *testing.T) {
+// TestBindServerFlags ...
+// Summary: TestBindServerFlags
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cmd := &cobra.Command{}
 	BindServerFlags(cmd)
 
@@ -41,7 +59,16 @@ func TestBindServerFlags(t *testing.T) {
 	assert.NotNil(t, cmd.Flags().Lookup("db-path"))
 }
 
-func TestSettings_ToProto(t *testing.T) {
+// TestSettings_ToProto ...
+// Summary: TestSettings_ToProto
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	viper.Reset()
 	s := GlobalSettings()
 	proto := s.ToProto()

@@ -18,7 +18,16 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestHTTPUpstream_CheckHealth_Coverage(t *testing.T) {
+// TestHTTPUpstream_CheckHealth_Coverage ...
+// Summary: TestHTTPUpstream_CheckHealth_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("no address and no checker", func(t *testing.T) {
 		pm := pool.NewManager()
 		u := NewUpstream(pm)
@@ -75,14 +84,32 @@ func TestHTTPUpstream_CheckHealth_Coverage(t *testing.T) {
 	})
 }
 
-func TestHTTPMethodToString_Coverage(t *testing.T) {
+// TestHTTPMethodToString_Coverage ...
+// Summary: TestHTTPMethodToString_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test invalid method
 	_, err := httpMethodToString(configv1.HttpCallDefinition_HttpMethod(999))
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "unsupported HTTP method")
 }
 
-func TestHTTPUpstream_Register_Coverage(t *testing.T) {
+// TestHTTPUpstream_Register_Coverage ...
+// Summary: TestHTTPUpstream_Register_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	u := NewUpstream(pm)
 	tm := tool.NewManager(nil)
@@ -133,7 +160,16 @@ func TestHTTPUpstream_Register_Coverage(t *testing.T) {
 	})
 }
 
-func TestHTTPUpstream_CreateTools_Coverage(t *testing.T) {
+// TestHTTPUpstream_CreateTools_Coverage ...
+// Summary: TestHTTPUpstream_CreateTools_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	u := NewUpstream(pm)
 	tm := tool.NewManager(nil)

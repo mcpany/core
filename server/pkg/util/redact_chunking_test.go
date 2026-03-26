@@ -11,7 +11,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRedactJSON_FalsePositive_Chunking(t *testing.T) {
+// TestRedactJSON_FalsePositive_Chunking ...
+// Summary: TestRedactJSON_FalsePositive_Chunking
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// We want to trigger a false positive for "authenticity" (which starts with "auth").
 	// "auth" is sensitive. "authenticity" is not.
 	// We need "auth" to fall exactly at the end of a chunk (4096 bytes).

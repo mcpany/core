@@ -23,26 +23,63 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type MockAuditStore struct {
+// MockAuditStore ...
+// Summary: MockAuditStore
 	mock.Mock
 }
 
-func (m *MockAuditStore) Write(ctx context.Context, entry audit.Entry) error {
+// Write ...
+// Summary: Write
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, entry)
 	return args.Error(0)
 }
 
-func (m *MockAuditStore) Read(ctx context.Context, filter audit.Filter) ([]audit.Entry, error) {
+// Read ...
+// Summary: Read
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, filter)
 	return args.Get(0).([]audit.Entry), args.Error(1)
 }
 
-func (m *MockAuditStore) Close() error {
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	return args.Error(0)
 }
 
-func TestHandleAuditExport_Mock(t *testing.T) {
+// TestHandleAuditExport_Mock ...
+// Summary: TestHandleAuditExport_Mock
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 	mockStore := new(MockAuditStore)
 
@@ -117,7 +154,16 @@ func TestHandleAuditExport_Mock(t *testing.T) {
 	})
 }
 
-func TestHandleAuditLogs(t *testing.T) {
+// TestHandleAuditLogs ...
+// Summary: TestHandleAuditLogs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, _ := setupApiTestApp()
 	app.standardMiddlewares = &middleware.StandardMiddlewares{}
 

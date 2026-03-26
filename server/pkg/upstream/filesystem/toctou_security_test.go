@@ -13,7 +13,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestTOCTOU_Vulnerability_Mitigation(t *testing.T) {
+// TestTOCTOU_Vulnerability_Mitigation ...
+// Summary: TestTOCTOU_Vulnerability_Mitigation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test verifies that the safeWriteFile function prevents writing to a file
 	// if the path traverses a symlink that was introduced after initial path resolution.
 

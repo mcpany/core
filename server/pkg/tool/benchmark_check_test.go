@@ -8,7 +8,16 @@ import (
 	"testing"
 )
 
-func BenchmarkCheckUnquotedKeywords(b *testing.B) {
+// BenchmarkCheckUnquotedKeywords ...
+// Summary: BenchmarkCheckUnquotedKeywords
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a large input string with many safe words
 	input := strings.Repeat("hello world safe word test process run execution ", 1000)
 	keywords := []string{"system", "exec", "popen", "eval"}
@@ -22,7 +31,16 @@ func BenchmarkCheckUnquotedKeywords(b *testing.B) {
 	}
 }
 
-func BenchmarkCheckContextualKeywords(b *testing.B) {
+// BenchmarkCheckContextualKeywords ...
+// Summary: BenchmarkCheckContextualKeywords
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a large input string with many safe words and context delimiters
 	input := strings.Repeat("hello.world safe[0] test(arg) process.run execution ", 1000)
 	keywords := []string{"system", "exec", "popen", "eval"}

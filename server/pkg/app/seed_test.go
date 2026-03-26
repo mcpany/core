@@ -18,7 +18,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestHandleDebugSeed(t *testing.T) {
+// TestHandleDebugSeed ...
+// Summary: TestHandleDebugSeed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup application with memory storage
 	store := memory.NewStore()
 	app := &Application{

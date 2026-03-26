@@ -18,7 +18,16 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func TestRegistrationServer_ValidateService(t *testing.T) {
+// TestRegistrationServer_ValidateService ...
+// Summary: TestRegistrationServer_ValidateService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 
 	// Setup bus

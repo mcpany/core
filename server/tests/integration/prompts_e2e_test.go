@@ -29,7 +29,16 @@ import (
 // mockPrompt is a mock implementation of the prompt.Prompt interface for testing.
 type mockPrompt struct{}
 
-func (m *mockPrompt) Prompt() *mcp.Prompt {
+// Prompt ...
+// Summary: Prompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return &mcp.Prompt{
 		Name:        "test_prompt",
 		Title:       "Test Prompt",
@@ -44,15 +53,42 @@ func (m *mockPrompt) Prompt() *mcp.Prompt {
 	}
 }
 
-func (m *mockPrompt) Service() string {
+// Service ...
+// Summary: Service
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return "test_service"
 }
 
-func (m *mockPrompt) Definition() *configv1.PromptDefinition {
+// Definition ...
+// Summary: Definition
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *mockPrompt) Get(
+// Get ...
+// Summary: Get
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	_ context.Context,
 	_ json.RawMessage,
 ) (*mcp.GetPromptResult, error) {
@@ -66,7 +102,16 @@ func (m *mockPrompt) Get(
 	}, nil
 }
 
-func TestPromptsEndToEnd(t *testing.T) {
+// TestPromptsEndToEnd ...
+// Summary: TestPromptsEndToEnd
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 

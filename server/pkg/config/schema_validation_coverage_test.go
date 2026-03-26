@@ -9,7 +9,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestValidateConfigAgainstSchema_Invalid(t *testing.T) {
+// TestValidateConfigAgainstSchema_Invalid ...
+// Summary: TestValidateConfigAgainstSchema_Invalid
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test with invalid map that doesn't match schema
 	// e.g. wrong type for field
 	data := map[string]interface{}{
@@ -24,7 +33,16 @@ func TestValidateConfigAgainstSchema_Invalid(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestEnsureSchema_Error(t *testing.T) {
+// TestEnsureSchema_Error ...
+// Summary: TestEnsureSchema_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// ensureSchema is internal, but we can trigger it via ValidateConfigAgainstSchema maybe?
 	// It's used in ValidateConfigAgainstSchema:
 	/*

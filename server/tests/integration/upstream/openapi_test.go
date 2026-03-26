@@ -15,7 +15,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestUpstreamService_OpenAPI(t *testing.T) {
+// TestUpstreamService_OpenAPI ...
+// Summary: TestUpstreamService_OpenAPI
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	gemini := framework.NewGeminiCLI(t)
 	gemini.Install()
 

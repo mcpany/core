@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestTarInjection_Vulnerability(t *testing.T) {
+// TestTarInjection_Vulnerability ...
+// Summary: TestTarInjection_Vulnerability
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test demonstrates that "tar" IS NOW treated as a dangerous command,
 	// preventing argument injection that can lead to RCE via --checkpoint-action.
 

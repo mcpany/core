@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestLocalCommandTool_PlusInjection_Prevention(t *testing.T) {
+// TestLocalCommandTool_PlusInjection_Prevention ...
+// Summary: TestLocalCommandTool_PlusInjection_Prevention
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 
 	// Setup a tool definition (using vim as an example of a tool susceptible to + flags)

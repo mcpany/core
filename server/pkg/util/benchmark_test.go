@@ -8,7 +8,16 @@ import (
 	"testing"
 )
 
-func BenchmarkSanitizeID(b *testing.B) {
+// BenchmarkSanitizeID ...
+// Summary: BenchmarkSanitizeID
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Common case: valid ID, no sanitization needed, no hash appended
 	b.Run("ValidID_NoHash", func(b *testing.B) {
 		ids := []string{"valid_service_name", "valid_tool_name"}
@@ -51,7 +60,16 @@ func BenchmarkSanitizeID(b *testing.B) {
 	})
 }
 
-func BenchmarkReplaceURLPath(b *testing.B) {
+// BenchmarkReplaceURLPath ...
+// Summary: BenchmarkReplaceURLPath
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	path := "/api/v1/users/{{userId}}/posts/{{postId}}"
 	params := map[string]interface{}{
 		"userId": "123",
@@ -66,7 +84,16 @@ func BenchmarkReplaceURLPath(b *testing.B) {
 	})
 }
 
-func BenchmarkSanitizeOperationID(b *testing.B) {
+// BenchmarkSanitizeOperationID ...
+// Summary: BenchmarkSanitizeOperationID
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	b.Run("Clean", func(b *testing.B) {
 		input := "validOperationID-123_test"
 		b.ReportAllocs()

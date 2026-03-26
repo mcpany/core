@@ -13,7 +13,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestImageMagick_Injection_Security(t *testing.T) {
+// TestImageMagick_Injection_Security ...
+// Summary: TestImageMagick_Injection_Security
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Represents a tool definition for ImageMagick 'convert'
 	// convert {{input}} output.png
 	cmd := "convert"

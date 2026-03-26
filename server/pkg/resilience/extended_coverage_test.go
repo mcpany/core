@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-func TestNewRetry_NilConfig_Works(t *testing.T) {
+// TestNewRetry_NilConfig_Works ...
+// Summary: TestNewRetry_NilConfig_Works
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Should not panic
 	retry := NewRetry(nil)
 	require.NotNil(t, retry)
@@ -34,7 +43,16 @@ func TestNewRetry_NilConfig_Works(t *testing.T) {
 	require.Error(t, err)
 }
 
-func TestRetry_Backoff_Overflow(t *testing.T) {
+// TestRetry_Backoff_Overflow ...
+// Summary: TestRetry_Backoff_Overflow
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	config := &configv1.RetryConfig{}
 	config.SetBaseBackoff(durationpb.New(time.Second))
 	config.SetMaxBackoff(durationpb.New(100 * time.Second))
@@ -57,7 +75,16 @@ func TestRetry_Backoff_Overflow(t *testing.T) {
 	require.Equal(t, time.Second, dur, "Backoff(-1) should return BaseBackoff")
 }
 
-func TestRetry_Backoff_BaseZero(t *testing.T) {
+// TestRetry_Backoff_BaseZero ...
+// Summary: TestRetry_Backoff_BaseZero
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	config := &configv1.RetryConfig{}
 	config.SetBaseBackoff(durationpb.New(0))
 	config.SetMaxBackoff(durationpb.New(10 * time.Second))
@@ -67,7 +94,16 @@ func TestRetry_Backoff_BaseZero(t *testing.T) {
 	require.Equal(t, time.Duration(0), dur)
 }
 
-func TestRetry_ContextCancellation(t *testing.T) {
+// TestRetry_ContextCancellation ...
+// Summary: TestRetry_ContextCancellation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test context cancelled before execution
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
@@ -99,7 +135,16 @@ func TestRetry_ContextCancellation(t *testing.T) {
 	require.Less(t, elapsed, 400*time.Millisecond, "Should have returned early due to cancellation")
 }
 
-func TestCircuitBreaker_HalfOpenLimit(t *testing.T) {
+// TestCircuitBreaker_HalfOpenLimit ...
+// Summary: TestCircuitBreaker_HalfOpenLimit
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	config := &configv1.CircuitBreakerConfig{}
 	config.SetHalfOpenRequests(1)
 	config.SetOpenDuration(durationpb.New(time.Millisecond))
@@ -163,7 +208,16 @@ func TestCircuitBreaker_HalfOpenLimit(t *testing.T) {
 	close(block)
 }
 
-func TestCircuitBreaker_OnFailure_WhenOpen(t *testing.T) {
+// TestCircuitBreaker_OnFailure_WhenOpen ...
+// Summary: TestCircuitBreaker_OnFailure_WhenOpen
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	config := &configv1.CircuitBreakerConfig{}
 	cb := NewCircuitBreaker(config)
 

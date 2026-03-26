@@ -17,7 +17,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestArgInjection(t *testing.T) {
+// TestArgInjection ...
+// Summary: TestArgInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tm := newMockToolManager()
 	prm := prompt.NewManager()
 	rm := resource.NewManager()

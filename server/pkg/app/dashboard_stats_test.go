@@ -26,7 +26,16 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-func TestHandleDashboardToolFailures(t *testing.T) {
+// TestHandleDashboardToolFailures ...
+// Summary: TestHandleDashboardToolFailures
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Define counters matching what the middleware uses
 	toolsCallTotal := prometheus.NewCounterVec(
 		prometheus.CounterOpts{
@@ -95,7 +104,16 @@ func TestHandleDashboardToolFailures(t *testing.T) {
 	assert.Equal(t, 10.0, myStats[2].FailureRate)
 }
 
-func TestHandleDashboardTopTools(t *testing.T) {
+// TestHandleDashboardTopTools ...
+// Summary: TestHandleDashboardTopTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Define counters
 	toolsCallTotal := prometheus.NewCounterVec(
 		prometheus.CounterOpts{
@@ -148,7 +166,16 @@ func TestHandleDashboardTopTools(t *testing.T) {
 	assert.Equal(t, int64(50), t2.Count)
 }
 
-func TestHandleDashboardTraffic(t *testing.T) {
+// TestHandleDashboardTraffic ...
+// Summary: TestHandleDashboardTraffic
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -192,7 +219,16 @@ func TestHandleDashboardTraffic(t *testing.T) {
 	assert.True(t, found, "Should find the seeded point")
 }
 
-func TestHandleDebugSeedTraffic(t *testing.T) {
+// TestHandleDebugSeedTraffic ...
+// Summary: TestHandleDebugSeedTraffic
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -221,31 +257,114 @@ func TestHandleDebugSeedTraffic(t *testing.T) {
 	assert.Equal(t, int64(123), stats.TotalRequests)
 }
 
-type TestMockPrompt struct {
+// TestMockPrompt ...
+// Summary: TestMockPrompt
 	name string
 }
 
-func (m *TestMockPrompt) Prompt() *mcp.Prompt {
+// Prompt ...
+// Summary: Prompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return &mcp.Prompt{Name: m.name}
 }
-func (m *TestMockPrompt) Service() string                        { return "test" }
-func (m *TestMockPrompt) Definition() *configv1.PromptDefinition { return nil }
-func (m *TestMockPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
+// Service ...
+// Summary: Service
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Definition ...
+// Summary: Definition
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Get ...
+// Summary: Get
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
 
-type TestMockResource struct {
+// TestMockResource ...
+// Summary: TestMockResource
 	uri string
 }
 
-func (m *TestMockResource) Resource() *mcp.Resource { return &mcp.Resource{URI: m.uri} }
-func (m *TestMockResource) Service() string         { return "test" }
-func (m *TestMockResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
+// Resource ...
+// Summary: Resource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Service ...
+// Summary: Service
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Read ...
+// Summary: Read
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (m *TestMockResource) Subscribe(ctx context.Context) error { return nil }
+// Subscribe ...
+// Summary: Subscribe
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func TestHandleDashboardMetrics(t *testing.T) {
+// TestHandleDashboardMetrics ...
+// Summary: TestHandleDashboardMetrics
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -305,7 +424,16 @@ func TestHandleDashboardMetrics(t *testing.T) {
 	assert.Equal(t, "60", metricMap["Total Requests"])
 }
 
-func TestHandleDashboardToolUsage(t *testing.T) {
+// TestHandleDashboardToolUsage ...
+// Summary: TestHandleDashboardToolUsage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Define counters matching what the middleware uses
 	toolsCallTotal := prometheus.NewCounterVec(
 		prometheus.CounterOpts{
@@ -367,7 +495,16 @@ func TestHandleDashboardToolUsage(t *testing.T) {
 	assert.Equal(t, 100.0, myStats[1].SuccessRate)
 }
 
-func TestStatsCacheEviction(t *testing.T) {
+// TestStatsCacheEviction ...
+// Summary: TestStatsCacheEviction
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := &Application{
 		statsCache: make(map[string]statsCacheEntry),
 	}
@@ -396,7 +533,16 @@ func TestStatsCacheEviction(t *testing.T) {
 	assert.Equal(t, 101, val)
 }
 
-func TestCalculateUptime(t *testing.T) {
+// TestCalculateUptime ...
+// Summary: TestCalculateUptime
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 24h window
 	window := 24 * time.Hour
 	now := time.Now().UnixMilli()

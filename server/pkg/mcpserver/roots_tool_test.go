@@ -15,11 +15,21 @@ import (
 )
 
 // MockSession mocks the Session interface.
-type MockSession struct {
+// MockSession mocks the Session interface.
+// Summary: MockSession
 	mock.Mock
 }
 
-func (m *MockSession) ListRoots(ctx context.Context) (*mcp.ListRootsResult, error) {
+// ListRoots ...
+// Summary: ListRoots
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
@@ -27,7 +37,16 @@ func (m *MockSession) ListRoots(ctx context.Context) (*mcp.ListRootsResult, erro
 	return args.Get(0).(*mcp.ListRootsResult), args.Error(1)
 }
 
-func (m *MockSession) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
+// CreateMessage ...
+// Summary: CreateMessage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, params)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
@@ -35,7 +54,16 @@ func (m *MockSession) CreateMessage(ctx context.Context, params *mcp.CreateMessa
 	return args.Get(0).(*mcp.CreateMessageResult), args.Error(1)
 }
 
-func TestRootsTool_Execute(t *testing.T) {
+// TestRootsTool_Execute ...
+// Summary: TestRootsTool_Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("successful execution", func(t *testing.T) {
 		rootsTool := NewRootsTool()
 		ctx := context.Background()
@@ -91,7 +119,16 @@ func TestRootsTool_Execute(t *testing.T) {
 	})
 }
 
-func TestRootsTool_Metadata(t *testing.T) {
+// TestRootsTool_Metadata ...
+// Summary: TestRootsTool_Metadata
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	rootsTool := NewRootsTool()
 
 	assert.NotNil(t, rootsTool.Tool())
@@ -100,6 +137,15 @@ func TestRootsTool_Metadata(t *testing.T) {
 	assert.Nil(t, rootsTool.GetCacheConfig())
 }
 
-func TestRootsTool_Interface(t *testing.T) {
+// TestRootsTool_Interface ...
+// Summary: TestRootsTool_Interface
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var _ tool.Tool = (*RootsTool)(nil)
 }

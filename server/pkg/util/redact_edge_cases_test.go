@@ -5,7 +5,16 @@ package util
 
 import "testing"
 
-func TestRedact_EdgeCases(t *testing.T) {
+// TestRedact_EdgeCases ...
+// Summary: TestRedact_EdgeCases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test boundary conditions in scanForSensitiveKeys -> checkPotentialMatch
 	t.Run("WordBoundaries", func(t *testing.T) {
 		tests := []struct {

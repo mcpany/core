@@ -27,7 +27,16 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestHtmlToMdE2E_Binary(t *testing.T) {
+// TestHtmlToMdE2E_Binary ...
+// Summary: TestHtmlToMdE2E_Binary
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. Build Webhook Server
 	tempDir := t.TempDir()
 	binaryPath := filepath.Join(tempDir, "html_to_md_server")

@@ -9,7 +9,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestAppConsts(t *testing.T) {
+// TestAppConsts ...
+// Summary: TestAppConsts
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	assert.NotEmpty(t, Name)
 	assert.NotEmpty(t, Version)
 }

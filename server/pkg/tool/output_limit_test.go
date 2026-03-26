@@ -18,7 +18,16 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestLocalCommandTool_Execute_LargeOutput(t *testing.T) {
+// TestLocalCommandTool_Execute_LargeOutput ...
+// Summary: TestLocalCommandTool_Execute_LargeOutput
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	inputSchema, _ := structpb.NewStruct(map[string]interface{}{
 		"properties": map[string]interface{}{
 			"args": map[string]interface{}{},
@@ -58,7 +67,16 @@ func TestLocalCommandTool_Execute_LargeOutput(t *testing.T) {
 	t.Logf("Execution took %v, output size: %d", time.Since(start), len(stdout))
 }
 
-func TestLocalCommandTool_Execute_LargeOutput_Truncated(t *testing.T) {
+// TestLocalCommandTool_Execute_LargeOutput_Truncated ...
+// Summary: TestLocalCommandTool_Execute_LargeOutput_Truncated
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	os.Setenv("MCPANY_MAX_COMMAND_OUTPUT_SIZE", "1024")
 	defer os.Unsetenv("MCPANY_MAX_COMMAND_OUTPUT_SIZE")
 

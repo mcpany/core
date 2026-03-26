@@ -7,7 +7,16 @@ import (
 	"testing"
 )
 
-func TestIsSecurePath(t *testing.T) {
+// TestIsSecurePath ...
+// Summary: TestIsSecurePath
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name    string
 		path    string
@@ -40,7 +49,16 @@ func TestIsSecurePath(t *testing.T) {
 	}
 }
 
-func TestIsSecureRelativePath(t *testing.T) {
+// TestIsSecureRelativePath ...
+// Summary: TestIsSecureRelativePath
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name    string
 		path    string

@@ -14,7 +14,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestHotReload(t *testing.T) {
+// TestHotReload ...
+// Summary: TestHotReload
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if testing.Short() {
 		// t.Skip("Skipping integration test in short mode")
 	}

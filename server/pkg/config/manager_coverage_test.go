@@ -12,7 +12,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestUnmarshalServices_JSON(t *testing.T) {
+// TestUnmarshalServices_JSON ...
+// Summary: TestUnmarshalServices_JSON
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewUpstreamServiceManager(nil)
 	data := []byte(`{"services": [{"name": "s1", "http_service": {"address": "http://127.0.0.1"}}]}`)
 	var services []*configv1.UpstreamServiceConfig
@@ -22,7 +31,16 @@ func TestUnmarshalServices_JSON(t *testing.T) {
 	assert.Equal(t, "s1", services[0].GetName())
 }
 
-func TestUnmarshalServices_YAML(t *testing.T) {
+// TestUnmarshalServices_YAML ...
+// Summary: TestUnmarshalServices_YAML
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewUpstreamServiceManager(nil)
 	data := []byte(`
 services:
@@ -37,7 +55,16 @@ services:
 	assert.Equal(t, "s1", services[0].GetName())
 }
 
-func TestUnmarshalServices_ProtoText(t *testing.T) {
+// TestUnmarshalServices_ProtoText ...
+// Summary: TestUnmarshalServices_ProtoText
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewUpstreamServiceManager(nil)
 	// Protobuf text format
 	data := []byte(`
@@ -55,7 +82,16 @@ services {
 	assert.Equal(t, "s1", services[0].GetName())
 }
 
-func TestUnmarshalServices_SingleService_JSON(t *testing.T) {
+// TestUnmarshalServices_SingleService_JSON ...
+// Summary: TestUnmarshalServices_SingleService_JSON
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewUpstreamServiceManager(nil)
 	data := []byte(`{"name": "s1", "http_service": {"address": "http://127.0.0.1"}}`)
 	var services []*configv1.UpstreamServiceConfig
@@ -65,7 +101,16 @@ func TestUnmarshalServices_SingleService_JSON(t *testing.T) {
 	assert.Equal(t, "s1", services[0].GetName())
 }
 
-func TestUnmarshalServices_Invalid(t *testing.T) {
+// TestUnmarshalServices_Invalid ...
+// Summary: TestUnmarshalServices_Invalid
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewUpstreamServiceManager(nil)
 	data := []byte(`invalid json`)
 	var services []*configv1.UpstreamServiceConfig
@@ -73,7 +118,16 @@ func TestUnmarshalServices_Invalid(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestUnmarshalServices_InvalidProto(t *testing.T) {
+// TestUnmarshalServices_InvalidProto ...
+// Summary: TestUnmarshalServices_InvalidProto
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewUpstreamServiceManager(nil)
 	data := []byte(`invalid proto`)
 	var services []*configv1.UpstreamServiceConfig
@@ -81,7 +135,16 @@ func TestUnmarshalServices_InvalidProto(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestUnmarshalServices_Version(t *testing.T) {
+// TestUnmarshalServices_Version ...
+// Summary: TestUnmarshalServices_Version
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewUpstreamServiceManager(nil)
 	data := []byte(`{"version": "1.0.0", "services": []}`)
 	var services []*configv1.UpstreamServiceConfig
@@ -89,7 +152,16 @@ func TestUnmarshalServices_Version(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestUnmarshalServices_InvalidVersion(t *testing.T) {
+// TestUnmarshalServices_InvalidVersion ...
+// Summary: TestUnmarshalServices_InvalidVersion
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewUpstreamServiceManager(nil)
 	data := []byte(`{"version": "invalid", "services": []}`)
 	var services []*configv1.UpstreamServiceConfig
@@ -98,7 +170,16 @@ func TestUnmarshalServices_InvalidVersion(t *testing.T) {
 	assert.Contains(t, err.Error(), "invalid semantic version")
 }
 
-func TestAddService_Overrides(t *testing.T) {
+// TestAddService_Overrides ...
+// Summary: TestAddService_Overrides
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewUpstreamServiceManager([]string{"prod"})
 	// Setup overrides manually
 	enabled := false
@@ -117,7 +198,16 @@ func TestAddService_Overrides(t *testing.T) {
 	assert.Nil(t, m.services["s1"])
 }
 
-func TestAddService_ConfigError(t *testing.T) {
+// TestAddService_ConfigError ...
+// Summary: TestAddService_ConfigError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewUpstreamServiceManager(nil)
 	svc := configv1.UpstreamServiceConfig_builder{
 		Name:        proto.String("s1"),
@@ -132,7 +222,16 @@ func TestAddService_ConfigError(t *testing.T) {
 	assert.True(t, loaded.GetDisable())
 }
 
-func TestAddService_Duplicate(t *testing.T) {
+// TestAddService_Duplicate ...
+// Summary: TestAddService_Duplicate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewUpstreamServiceManager(nil)
 	svc1 := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("s1"),

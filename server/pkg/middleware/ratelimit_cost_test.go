@@ -21,11 +21,21 @@ import (
 // Define Mocks locally to avoid dependency issues with main package tests if necessary
 
 // MockToolManagerForCost is a mock for tool.ManagerInterface
-type MockToolManagerForCost struct {
+// MockToolManagerForCost is a mock for tool.ManagerInterface
+// Summary: MockToolManagerForCost
 	mock.Mock
 }
 
-func (m *MockToolManagerForCost) GetTool(name string) (tool.Tool, bool) {
+// GetTool ...
+// Summary: GetTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(name)
 	if args.Get(0) == nil {
 		return nil, args.Bool(1)
@@ -33,7 +43,16 @@ func (m *MockToolManagerForCost) GetTool(name string) (tool.Tool, bool) {
 	return args.Get(0).(tool.Tool), args.Bool(1)
 }
 
-func (m *MockToolManagerForCost) GetServiceInfo(id string) (*tool.ServiceInfo, bool) {
+// GetServiceInfo ...
+// Summary: GetServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(id)
 	if args.Get(0) == nil {
 		return nil, args.Bool(1)
@@ -41,51 +60,214 @@ func (m *MockToolManagerForCost) GetServiceInfo(id string) (*tool.ServiceInfo, b
 	return args.Get(0).(*tool.ServiceInfo), args.Bool(1)
 }
 
-func (m *MockToolManagerForCost) ListTools() []tool.Tool { return nil }
-func (m *MockToolManagerForCost) ListMCPTools() []*github_com_modelcontextprotocol_go_sdk_mcp.Tool {
+// ListTools ...
+// Summary: ListTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ListMCPTools ...
+// Summary: ListMCPTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
-func (m *MockToolManagerForCost) AddTool(t tool.Tool) error                    { return nil }
-func (m *MockToolManagerForCost) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
-func (m *MockToolManagerForCost) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+// AddTool ...
+// Summary: AddTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// AddServiceInfo ...
+// Summary: AddServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ExecuteTool ...
+// Summary: ExecuteTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (m *MockToolManagerForCost) SetMCPServer(_ tool.MCPServerProvider) {}
-func (m *MockToolManagerForCost) ClearToolsForService(_ string)         {}
-func (m *MockToolManagerForCost) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {
+// SetMCPServer ...
+// Summary: SetMCPServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ClearToolsForService ...
+// Summary: ClearToolsForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// SetProfiles ...
+// Summary: SetProfiles
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 }
-func (m *MockToolManagerForCost) IsServiceAllowed(serviceID, profileID string) bool { return true }
-func (m *MockToolManagerForCost) AddMiddleware(_ tool.ExecutionMiddleware)          {}
-func (m *MockToolManagerForCost) ListServices() []*tool.ServiceInfo                 { return nil }
-func (m *MockToolManagerForCost) ToolMatchesProfile(tool tool.Tool, profileID string) bool {
+// IsServiceAllowed ...
+// Summary: IsServiceAllowed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// AddMiddleware ...
+// Summary: AddMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ListServices ...
+// Summary: ListServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ToolMatchesProfile ...
+// Summary: ToolMatchesProfile
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return true
 }
 
 // MockToolForCost is a mock for tool.Tool
-type MockToolForCost struct {
+// MockToolForCost is a mock for tool.Tool
+// Summary: MockToolForCost
 	mock.Mock
 }
 
-func (m *MockToolForCost) Tool() *v1.Tool {
+// Tool ...
+// Summary: Tool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	return args.Get(0).(*v1.Tool)
 }
 
-func (m *MockToolForCost) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+// Execute ...
+// Summary: Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (m *MockToolForCost) Service() string {
+// Service ...
+// Summary: Service
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return "service1"
 }
 
 // Return concrete type instead of interface proxy
-func (m *MockToolForCost) MCPTool() *github_com_modelcontextprotocol_go_sdk_mcp.Tool { return nil }
-func (m *MockToolForCost) GetCacheConfig() *configv1.CacheConfig                     { return nil }
+// Return concrete type instead of interface proxy
+// Summary: MCPTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// GetCacheConfig ...
+// Summary: GetCacheConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
 // Need dummy type for MCPTool return to satisfy interface
 type github_com_modelcontextprotocol_go_sdk_mcp_Tool struct{}
 
-func TestRateLimitMiddleware_EstimateTokenCost(t *testing.T) {
+// TestRateLimitMiddleware_EstimateTokenCost ...
+// Summary: TestRateLimitMiddleware_EstimateTokenCost
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Default SimpleTokenizer (4 chars/token)
 	m := NewRateLimitMiddleware(&MockToolManagerForCost{})
 
@@ -145,7 +327,16 @@ func TestRateLimitMiddleware_EstimateTokenCost(t *testing.T) {
 	}
 }
 
-func TestRateLimitMiddleware_EstimateTokenCost_WordTokenizer(t *testing.T) {
+// TestRateLimitMiddleware_EstimateTokenCost_WordTokenizer ...
+// Summary: TestRateLimitMiddleware_EstimateTokenCost_WordTokenizer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// WordTokenizer (1.3 * words)
 	wt := tokenizer.NewWordTokenizer()
 	m := NewRateLimitMiddleware(&MockToolManagerForCost{}, WithTokenizer(wt))
@@ -195,7 +386,16 @@ func TestRateLimitMiddleware_EstimateTokenCost_WordTokenizer(t *testing.T) {
 	}
 }
 
-func TestRateLimitMiddleware_AllowN(t *testing.T) {
+// TestRateLimitMiddleware_AllowN ...
+// Summary: TestRateLimitMiddleware_AllowN
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockManager := new(MockToolManagerForCost)
 	middleware := NewRateLimitMiddleware(mockManager)
 
@@ -280,11 +480,29 @@ func TestRateLimitMiddleware_AllowN(t *testing.T) {
 	assert.False(t, nextCalled)
 }
 
-func (m *MockToolManagerForCost) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
+// GetAllowedServiceIDs ...
+// Summary: GetAllowedServiceIDs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(profileID)
 	return args.Get(0).(map[string]bool), args.Bool(1)
 }
 
-func (m *MockToolManagerForCost) GetToolCountForService(serviceID string) int {
+// GetToolCountForService ...
+// Summary: GetToolCountForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return 0
 }

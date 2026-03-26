@@ -13,7 +13,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestSQLiteVectorStore(t *testing.T) {
+// TestSQLiteVectorStore ...
+// Summary: TestSQLiteVectorStore
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup temporary DB
 	tmpDir := t.TempDir()
 	dbPath := filepath.Join(tmpDir, "vectors.db")
@@ -55,7 +64,16 @@ func TestSQLiteVectorStore(t *testing.T) {
 	assert.Equal(t, result, res)
 }
 
-func TestSQLiteVectorStore_Expiry(t *testing.T) {
+// TestSQLiteVectorStore_Expiry ...
+// Summary: TestSQLiteVectorStore_Expiry
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tmpDir := t.TempDir()
 	dbPath := filepath.Join(tmpDir, "vectors_expiry.db")
 

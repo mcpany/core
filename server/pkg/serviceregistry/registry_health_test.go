@@ -23,14 +23,32 @@ type mockHealthCheckerUpstream struct {
 	checkHealthFunc func(ctx context.Context) error
 }
 
-func (m *mockHealthCheckerUpstream) CheckHealth(ctx context.Context) error {
+// CheckHealth ...
+// Summary: CheckHealth
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.checkHealthFunc != nil {
 		return m.checkHealthFunc(ctx)
 	}
 	return nil
 }
 
-func TestHealthCheck(t *testing.T) {
+// TestHealthCheck ...
+// Summary: TestHealthCheck
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	healthErr := errors.New("health check failed")
 	f := &mockFactory{
 		newUpstreamFunc: func() (upstream.Upstream, error) {

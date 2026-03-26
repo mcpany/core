@@ -17,7 +17,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDebugMiddleware(t *testing.T) {
+// TestDebugMiddleware ...
+// Summary: TestDebugMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	logging.ForTestsOnlyResetLogger()
 	var logOutput bytes.Buffer
 	logging.Init(slog.LevelDebug, &logOutput, "")
@@ -42,7 +51,16 @@ func TestDebugMiddleware(t *testing.T) {
 	assert.Contains(t, logStr, "test-tool")
 }
 
-func TestDebugMiddleware_NoLoggingWhenDisabled(t *testing.T) {
+// TestDebugMiddleware_NoLoggingWhenDisabled ...
+// Summary: TestDebugMiddleware_NoLoggingWhenDisabled
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	logging.ForTestsOnlyResetLogger()
 	var logOutput bytes.Buffer
 	logging.Init(slog.LevelInfo, &logOutput, "")
@@ -69,11 +87,29 @@ type mockUnmarshallableResult struct {
 	mcp.ListToolsResult
 }
 
-func (m *mockUnmarshallableResult) MarshalJSON() ([]byte, error) {
+// MarshalJSON ...
+// Summary: MarshalJSON
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, &json.UnsupportedTypeError{Type: reflect.TypeOf(func() {})}
 }
 
-func TestDebugMiddleware_MarshalErrors(t *testing.T) {
+// TestDebugMiddleware_MarshalErrors ...
+// Summary: TestDebugMiddleware_MarshalErrors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	logging.ForTestsOnlyResetLogger()
 	var logOutput bytes.Buffer
 	logging.Init(slog.LevelDebug, &logOutput, "")
@@ -98,11 +134,29 @@ type unmarshallableRequest struct {
 	mcp.ListToolsRequest
 }
 
-func (u *unmarshallableRequest) MarshalJSON() ([]byte, error) {
+// MarshalJSON ...
+// Summary: MarshalJSON
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, &json.UnsupportedTypeError{Type: reflect.TypeOf(func() {})}
 }
 
-func TestDebugMiddleware_RequestMarshalError(t *testing.T) {
+// TestDebugMiddleware_RequestMarshalError ...
+// Summary: TestDebugMiddleware_RequestMarshalError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	logging.ForTestsOnlyResetLogger()
 	var logOutput bytes.Buffer
 	logging.Init(slog.LevelDebug, &logOutput, "")

@@ -9,7 +9,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestTerraformResource(t *testing.T) {
+// TestTerraformResource ...
+// Summary: TestTerraformResource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	schema := Schema()
 	assert.Contains(t, schema, "name")
 	assert.Contains(t, schema, "port")

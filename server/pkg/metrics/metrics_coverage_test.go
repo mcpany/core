@@ -12,7 +12,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestSetGauge_Labels(t *testing.T) {
+// TestSetGauge_Labels ...
+// Summary: TestSetGauge_Labels
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup in-memory sink to inspect metrics
 	sink := metrics.NewInmemSink(10*time.Second, 10*time.Minute)
 	conf := metrics.DefaultConfig("mcpany")
@@ -59,7 +68,16 @@ func TestSetGauge_Labels(t *testing.T) {
 	assert.True(t, found, "Expected gauge_multi with service_name=foo, ignoring extra args")
 }
 
-func TestWrappers(t *testing.T) {
+// TestWrappers ...
+// Summary: TestWrappers
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Ensure these wrappers don't panic and pass data correctly
 	sink := metrics.NewInmemSink(10*time.Second, 10*time.Minute)
 	conf := metrics.DefaultConfig("mcpany")

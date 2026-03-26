@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestNewPineconeClient(t *testing.T) {
+// TestNewPineconeClient ...
+// Summary: TestNewPineconeClient
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Missing API Key
 	_, err := NewPineconeClient(configv1.PineconeVectorDB_builder{}.Build())
 	assert.Error(t, err)
@@ -47,7 +56,16 @@ func TestNewPineconeClient(t *testing.T) {
 	assert.Equal(t, "https://idx-proj.svc.env.pinecone.io", c.baseURL)
 }
 
-func TestPineconeClient_Operations(t *testing.T) {
+// TestPineconeClient_Operations ...
+// Summary: TestPineconeClient_Operations
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Mock Server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, "application/json", r.Header.Get("Content-Type"))
@@ -128,7 +146,16 @@ func TestPineconeClient_Operations(t *testing.T) {
 	assert.Equal(t, float64(100), res["totalVectorCount"])
 }
 
-func TestPineconeClient_Errors(t *testing.T) {
+// TestPineconeClient_Errors ...
+// Summary: TestPineconeClient_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(`{"error": "bad request"}`))

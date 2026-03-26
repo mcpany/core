@@ -20,7 +20,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestGRPCUpstream_Shutdown(t *testing.T) {
+// TestGRPCUpstream_Shutdown ...
+// Summary: TestGRPCUpstream_Shutdown
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	poolManager := pool.NewManager()
 	upstream := NewUpstream(poolManager)
 
@@ -53,7 +62,16 @@ func TestGRPCUpstream_Shutdown(t *testing.T) {
 	assert.False(t, ok)
 }
 
-func TestNewGrpcPool_Coverage(t *testing.T) {
+// TestNewGrpcPool_Coverage ...
+// Summary: TestNewGrpcPool_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("nil config", func(t *testing.T) {
 		_, err := NewGrpcPool(1, 1, time.Second, nil, nil, nil, false)
 		assert.Error(t, err)
@@ -160,7 +178,16 @@ func TestNewGrpcPool_Coverage(t *testing.T) {
 	})
 }
 
-func TestGRPCUpstream_Prompts_Coverage(t *testing.T) {
+// TestGRPCUpstream_Prompts_Coverage ...
+// Summary: TestGRPCUpstream_Prompts_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	poolManager := pool.NewManager()
 	upstream := NewUpstream(poolManager)
 	tm := NewMockToolManager()
@@ -199,7 +226,16 @@ func TestGRPCUpstream_Prompts_Coverage(t *testing.T) {
 	assert.Empty(t, prompts)
 }
 
-func TestGRPCUpstream_DynamicResources_Coverage(t *testing.T) {
+// TestGRPCUpstream_DynamicResources_Coverage ...
+// Summary: TestGRPCUpstream_DynamicResources_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	resourceManager := resource.NewManager()
 	poolManager := pool.NewManager()
 	upstream := NewUpstream(poolManager)

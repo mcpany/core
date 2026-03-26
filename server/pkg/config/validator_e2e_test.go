@@ -14,7 +14,17 @@ import (
 
 // TestGlobalSettings_InvalidBindAddress tests that an invalid bind address in global settings is rejected.
 // This serves as an "E2E-like" test for the validation logic integration.
-func TestGlobalSettings_InvalidBindAddress(t *testing.T) {
+// TestGlobalSettings_InvalidBindAddress tests that an invalid bind address in global settings is rejected.
+// Summary: TestGlobalSettings_InvalidBindAddress
+// This serves as an "E2E-like" test for the validation logic integration.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name          string
 		bindAddress   string

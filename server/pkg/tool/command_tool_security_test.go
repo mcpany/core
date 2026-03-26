@@ -17,7 +17,16 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestCommandTool_ShellInjection_Prevention(t *testing.T) {
+// TestCommandTool_ShellInjection_Prevention ...
+// Summary: TestCommandTool_ShellInjection_Prevention
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup a CommandTool configured to use "awk"
 	// This test verifies that shell injection protections are active for CommandTool.
 

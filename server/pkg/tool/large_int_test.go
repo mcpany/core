@@ -23,7 +23,16 @@ type mockExecutor struct {
 	capturedArgs []string
 }
 
-func (m *mockExecutor) Execute(ctx context.Context, cmd string, args []string, workingDir string, env []string) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
+// Execute ...
+// Summary: Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.capturedArgs = args
 	ch := make(chan int, 1)
 	ch <- 0
@@ -31,11 +40,29 @@ func (m *mockExecutor) Execute(ctx context.Context, cmd string, args []string, w
 	return io.NopCloser(strings.NewReader("")), io.NopCloser(strings.NewReader("")), ch, nil
 }
 
-func (m *mockExecutor) ExecuteWithStdIO(ctx context.Context, cmd string, args []string, workingDir string, env []string) (io.WriteCloser, io.ReadCloser, io.ReadCloser, <-chan int, error) {
+// ExecuteWithStdIO ...
+// Summary: ExecuteWithStdIO
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil, nil, nil, nil
 }
 
-func TestLargeIntPrecisionLoss(t *testing.T) {
+// TestLargeIntPrecisionLoss ...
+// Summary: TestLargeIntPrecisionLoss
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	// Large integer that cannot be represented exactly as float64
 	// 2^63 - 1 = 9223372036854775807

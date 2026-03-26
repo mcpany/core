@@ -14,7 +14,16 @@ import (
 	"google.golang.org/grpc/stats"
 )
 
-func TestGrpcStatsHandler(t *testing.T) {
+// TestGrpcStatsHandler ...
+// Summary: TestGrpcStatsHandler
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Initialize the metrics system
 	if err := Initialize(); err != nil {
 		t.Fatalf("failed to initialize metrics: %v", err)
@@ -81,25 +90,70 @@ type mockStatsHandler struct {
 	handleConnCalled bool
 }
 
-func (m *mockStatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) context.Context {
+// TagRPC ...
+// Summary: TagRPC
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.tagRPCCalled = true
 	return ctx
 }
 
-func (m *mockStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
+// HandleRPC ...
+// Summary: HandleRPC
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.handleRPCCalled = true
 }
 
-func (m *mockStatsHandler) TagConn(ctx context.Context, info *stats.ConnTagInfo) context.Context {
+// TagConn ...
+// Summary: TagConn
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.tagConnCalled = true
 	return ctx
 }
 
-func (m *mockStatsHandler) HandleConn(ctx context.Context, s stats.ConnStats) {
+// HandleConn ...
+// Summary: HandleConn
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.handleConnCalled = true
 }
 
-func TestGrpcStatsHandler_Wrapped(t *testing.T) {
+// TestGrpcStatsHandler_Wrapped ...
+// Summary: TestGrpcStatsHandler_Wrapped
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mock := &mockStatsHandler{}
 	h := &GrpcStatsHandler{Wrapped: mock}
 

@@ -17,7 +17,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestContextHelpers_Extra(t *testing.T) {
+// TestContextHelpers_Extra ...
+// Summary: TestContextHelpers_Extra
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 
 	// Tool context
@@ -43,7 +52,16 @@ func TestContextHelpers_Extra(t *testing.T) {
 	assert.False(t, ok)
 }
 
-func TestCheckForLocalFileAccess(t *testing.T) {
+// TestCheckForLocalFileAccess ...
+// Summary: TestCheckForLocalFileAccess
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	assert.Error(t, checkForLocalFileAccess("/absolute"))
 	assert.Error(t, checkForLocalFileAccess("file:///etc/passwd"))
 	assert.Error(t, checkForLocalFileAccess("FILE:///etc/passwd"))
@@ -51,13 +69,31 @@ func TestCheckForLocalFileAccess(t *testing.T) {
 	assert.NoError(t, checkForLocalFileAccess("relative"))
 }
 
-func TestCheckForArgumentInjection(t *testing.T) {
+// TestCheckForArgumentInjection ...
+// Summary: TestCheckForArgumentInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	assert.Error(t, checkForArgumentInjection("-flag"))
 	assert.NoError(t, checkForArgumentInjection("-123")) // Number allowed
 	assert.NoError(t, checkForArgumentInjection("safe"))
 }
 
-func TestCheckForShellInjection(t *testing.T) {
+// TestCheckForShellInjection ...
+// Summary: TestCheckForShellInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	assert.Error(t, checkForShellInjection("safe; rm -rf /", "", "", "sh", true))
 	assert.NoError(t, checkForShellInjection("safe", "", "", "sh", true))
 
@@ -84,7 +120,16 @@ func TestCheckForShellInjection(t *testing.T) {
 	assert.NoError(t, checkForShellInjection("VAR=val", "", "", "sh", true), "sh command should allow '='")
 }
 
-func TestIsShellCommand(t *testing.T) {
+// TestIsShellCommand ...
+// Summary: TestIsShellCommand
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	assert.True(t, isShellCommand("bash"))
 	assert.True(t, isShellCommand("/bin/sh"))
 	assert.True(t, isShellCommand("python"))
@@ -106,7 +151,16 @@ func setupHTTPToolExtra(t *testing.T, handler http.Handler, callDefinition *conf
 	return NewHTTPTool(toolDef, poolManager, "s", nil, callDefinition, nil, nil, ""), server
 }
 
-func TestHTTPTool_Execute_Secret(t *testing.T) {
+// TestHTTPTool_Execute_Secret ...
+// Summary: TestHTTPTool_Execute_Secret
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Query().Get("key") == "mysecret" {
 			w.WriteHeader(http.StatusOK)
@@ -136,7 +190,16 @@ func TestHTTPTool_Execute_Secret(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestHTTPTool_Execute_MissingRequired(t *testing.T) {
+// TestHTTPTool_Execute_MissingRequired ...
+// Summary: TestHTTPTool_Execute_MissingRequired
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	})
@@ -160,7 +223,16 @@ func TestHTTPTool_Execute_MissingRequired(t *testing.T) {
 	assert.Contains(t, err.Error(), "missing required parameter")
 }
 
-func TestHTTPTool_Execute_PathTraversal(t *testing.T) {
+// TestHTTPTool_Execute_PathTraversal ...
+// Summary: TestHTTPTool_Execute_PathTraversal
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})
 
 	param := configv1.HttpParameterMapping_builder{
@@ -181,7 +253,16 @@ func TestHTTPTool_Execute_PathTraversal(t *testing.T) {
 	assert.Contains(t, err.Error(), "path traversal attempt detected")
 }
 
-func TestHTTPTool_Execute_Secret_Error(t *testing.T) {
+// TestHTTPTool_Execute_Secret_Error ...
+// Summary: TestHTTPTool_Execute_Secret_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})
 
 	secretVal := configv1.SecretValue_builder{

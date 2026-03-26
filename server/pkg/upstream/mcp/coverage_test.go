@@ -22,7 +22,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestRegister_DynamicResource(t *testing.T) {
+// TestRegister_DynamicResource ...
+// Summary: TestRegister_DynamicResource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	toolManager := tool.NewManager(nil)
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
@@ -93,7 +102,16 @@ func TestRegister_DynamicResource(t *testing.T) {
 	assert.Equal(t, serviceID, r.Service())
 }
 
-func TestRegister_Http_DynamicResource(t *testing.T) {
+// TestRegister_Http_DynamicResource ...
+// Summary: TestRegister_Http_DynamicResource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
@@ -168,7 +186,16 @@ func TestRegister_Http_DynamicResource(t *testing.T) {
 	assert.Equal(t, serviceID, r.Service())
 }
 
-func TestRegister_DisabledItems(t *testing.T) {
+// TestRegister_DisabledItems ...
+// Summary: TestRegister_DisabledItems
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	toolManager := tool.NewManager(nil)
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
@@ -271,7 +298,16 @@ func TestRegister_DisabledItems(t *testing.T) {
 	assert.False(t, ok, "disabled-resource should not be present")
 }
 
-func TestPrompt_Get_ComplexArgs(t *testing.T) {
+// TestPrompt_Get_ComplexArgs ...
+// Summary: TestPrompt_Get_ComplexArgs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
@@ -316,7 +352,16 @@ func TestPrompt_Get_ComplexArgs(t *testing.T) {
 	wg.Wait()
 }
 
-func TestResource_Subscribe(t *testing.T) {
+// TestResource_Subscribe ...
+// Summary: TestResource_Subscribe
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	r := &mcpResource{
 		mcpResource: &mcp.Resource{URI: "test-uri"},
 	}
@@ -325,7 +370,16 @@ func TestResource_Subscribe(t *testing.T) {
 	assert.Contains(t, err.Error(), "not yet implemented")
 }
 
-func TestRegister_CallDefinitionMatching(t *testing.T) {
+// TestRegister_CallDefinitionMatching ...
+// Summary: TestRegister_CallDefinitionMatching
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	toolManager := tool.NewManager(nil)
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()

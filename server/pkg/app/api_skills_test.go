@@ -30,7 +30,16 @@ func setupSkillManagerForHTTPTest(t *testing.T) (*skill.Manager, string) {
 	return manager, tmpDir
 }
 
-func TestHandleSkills(t *testing.T) {
+// TestHandleSkills ...
+// Summary: TestHandleSkills
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	manager, _ := setupSkillManagerForHTTPTest(t)
 	app := &Application{
 		SkillManager: manager,
@@ -114,7 +123,16 @@ func TestHandleSkills(t *testing.T) {
 	}
 }
 
-func TestHandleSkillDetail(t *testing.T) {
+// TestHandleSkillDetail ...
+// Summary: TestHandleSkillDetail
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	manager, _ := setupSkillManagerForHTTPTest(t)
 	app := &Application{
 		SkillManager: manager,
@@ -234,7 +252,16 @@ func TestHandleSkillDetail(t *testing.T) {
 	}
 }
 
-func TestHandleUploadSkillAsset(t *testing.T) {
+// TestHandleUploadSkillAsset ...
+// Summary: TestHandleUploadSkillAsset
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	manager, tmpDir := setupSkillManagerForHTTPTest(t)
 	app := &Application{
 		SkillManager: manager,
@@ -320,6 +347,15 @@ func TestHandleUploadSkillAsset(t *testing.T) {
 
 type skillErrorReader struct{}
 
-func (e *skillErrorReader) Read(p []byte) (n int, err error) {
+// Read ...
+// Summary: Read
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return 0, io.ErrUnexpectedEOF
 }

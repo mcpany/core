@@ -16,7 +16,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestUpstreamService_HTTP_Everything(t *testing.T) {
+// TestUpstreamService_HTTP_Everything ...
+// Summary: TestUpstreamService_HTTP_Everything
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCase := &framework.E2ETestCase{
 		Name:                "HTTP Everything",
 		UpstreamServiceType: "streamablehttp",

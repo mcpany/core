@@ -29,7 +29,16 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestServer_CallTool_Latency_Metrics_Repro(t *testing.T) {
+// TestServer_CallTool_Latency_Metrics_Repro ...
+// Summary: TestServer_CallTool_Latency_Metrics_Repro
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Initialize metrics with an in-memory sink
 	// Use a short interval to ensure data is flushed quickly for the test
 	sink := metrics.NewInmemSink(10*time.Millisecond, 10*time.Second)

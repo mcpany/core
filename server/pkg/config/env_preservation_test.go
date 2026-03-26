@@ -14,7 +14,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestEnvVarOverridePreservesOtherListItems(t *testing.T) {
+// TestEnvVarOverridePreservesOtherListItems ...
+// Summary: TestEnvVarOverridePreservesOtherListItems
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary config file with two services
 	fs := afero.NewMemMapFs()
 	configContent := `

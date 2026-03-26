@@ -14,12 +14,30 @@ import (
 	"google.golang.org/grpc/test/bufconn"
 )
 
-func TestNewConnectionFactory(t *testing.T) {
+// TestNewConnectionFactory ...
+// Summary: TestNewConnectionFactory
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	factory := NewConnectionFactory()
 	assert.NotNil(t, factory, "NewConnectionFactory should not return nil")
 }
 
-func TestWithDialer(t *testing.T) {
+// TestWithDialer ...
+// Summary: TestWithDialer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	factory := NewConnectionFactory()
 	customDialer := func(context.Context, string) (net.Conn, error) {
 		return nil, nil
@@ -28,7 +46,16 @@ func TestWithDialer(t *testing.T) {
 	assert.NotNil(t, factory.dialer, "WithDialer should set the dialer")
 }
 
-func TestNewConnection(t *testing.T) {
+// TestNewConnection ...
+// Summary: TestNewConnection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test with a real gRPC server
 	lis := bufconn.Listen(1024 * 1024)
 	s := grpc.NewServer()

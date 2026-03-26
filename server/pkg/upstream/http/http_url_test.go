@@ -16,7 +16,16 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func TestHTTPUpstream_URLConstruction_BugRepro(t *testing.T) {
+// TestHTTPUpstream_URLConstruction_BugRepro ...
+// Summary: TestHTTPUpstream_URLConstruction_BugRepro
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCases := []struct {
 		name         string
 		address      string

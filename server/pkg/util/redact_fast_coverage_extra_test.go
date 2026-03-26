@@ -10,7 +10,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRedactJSON_EscapedKeys_Coverage(t *testing.T) {
+// TestRedactJSON_EscapedKeys_Coverage ...
+// Summary: TestRedactJSON_EscapedKeys_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test escaping to match sensitive keys
 	tests := []struct {
 		name     string
@@ -47,7 +56,16 @@ func TestRedactJSON_EscapedKeys_Coverage(t *testing.T) {
 	}
 }
 
-func TestRedactJSON_LargeKey_Coverage(t *testing.T) {
+// TestRedactJSON_LargeKey_Coverage ...
+// Summary: TestRedactJSON_LargeKey_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test large key to force fallback or streaming path
 	// 256 is unescapeStackLimit
 	// We need a key > 256 chars that contains escapes.

@@ -9,7 +9,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestIsTextMime(t *testing.T) {
+// TestIsTextMime ...
+// Summary: TestIsTextMime
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		mimeType string
 		want     bool

@@ -22,7 +22,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestCommandExample(t *testing.T) {
+// TestCommandExample ...
+// Summary: TestCommandExample
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCase := &framework.E2ETestCase{
 		Name:                "Command Example",
 		UpstreamServiceType: "command",
@@ -118,7 +127,16 @@ upstream_services:
 	framework.RunE2ETest(t, testCase)
 }
 
-func TestCommandExampleWithTimeout(t *testing.T) {
+// TestCommandExampleWithTimeout ...
+// Summary: TestCommandExampleWithTimeout
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCase := &framework.E2ETestCase{
 		Name:                "Command Example with Timeout",
 		UpstreamServiceType: "command",
@@ -187,7 +205,16 @@ upstream_services:
 	framework.RunE2ETest(t, testCase)
 }
 
-func TestCommandExampleWithContainer(t *testing.T) {
+// TestCommandExampleWithContainer ...
+// Summary: TestCommandExampleWithContainer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCase := &framework.E2ETestCase{
 		Name:                "Command Example with Container",
 		UpstreamServiceType: "command",

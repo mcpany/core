@@ -13,7 +13,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestMockToolCoverage(t *testing.T) {
+// TestMockToolCoverage ...
+// Summary: TestMockToolCoverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mt := &MockTool{}
 
 	// Tool()
@@ -41,7 +50,16 @@ func TestMockToolCoverage(t *testing.T) {
 	assert.Nil(t, mt.GetCacheConfig())
 }
 
-func TestMockManagerInterfaceCoverage(t *testing.T) {
+// TestMockManagerInterfaceCoverage ...
+// Summary: TestMockManagerInterfaceCoverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 

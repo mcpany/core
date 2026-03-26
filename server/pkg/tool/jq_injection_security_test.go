@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestJQEnvLeakage(t *testing.T) {
+// TestJQEnvLeakage ...
+// Summary: TestJQEnvLeakage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup service config
 	service := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("jq"),

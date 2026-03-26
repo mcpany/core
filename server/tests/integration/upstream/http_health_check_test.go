@@ -17,7 +17,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestUpstreamService_HTTP_HealthCheck(t *testing.T) {
+// TestUpstreamService_HTTP_HealthCheck ...
+// Summary: TestUpstreamService_HTTP_HealthCheck
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	const echoServiceID = "e2e_http_echo_health"
 	var upstream *integration.ManagedProcess
 

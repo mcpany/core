@@ -15,7 +15,16 @@ import (
 	"sigs.k8s.io/yaml"
 )
 
-func TestMonitoringConfig(t *testing.T) {
+// TestMonitoringConfig ...
+// Summary: TestMonitoringConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Read the config.yaml file
 	content, err := os.ReadFile("config.yaml")
 	require.NoError(t, err)

@@ -11,7 +11,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestConfigValidationFailures(t *testing.T) {
+// TestConfigValidationFailures ...
+// Summary: TestConfigValidationFailures
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	root := ProjectRoot(t)
 	mcpanyBinary := ServerBinary(t)
 

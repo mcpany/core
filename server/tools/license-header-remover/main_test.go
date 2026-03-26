@@ -7,7 +7,16 @@ import (
 	"testing"
 )
 
-func TestIsSourceFile(t *testing.T) {
+// TestIsSourceFile ...
+// Summary: TestIsSourceFile
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCases := []struct {
 		name     string
 		path     string
@@ -39,7 +48,16 @@ const dummyGoFileContent = `// Copyright 2025
 package main
 `
 
-func TestRemoveLicenseHeaders(t *testing.T) {
+// TestRemoveLicenseHeaders ...
+// Summary: TestRemoveLicenseHeaders
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tmpDir := t.TempDir()
 
 	// Create a dummy go file with a license header
@@ -158,7 +176,16 @@ print("Hello")
 
 }
 
-func TestFindBlockComment(t *testing.T) {
+// TestFindBlockComment ...
+// Summary: TestFindBlockComment
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCases := []struct {
 		name          string
 		lines         []string
@@ -198,7 +225,16 @@ func TestFindBlockComment(t *testing.T) {
 	}
 }
 
-func TestRefineEndIndex(t *testing.T) {
+// TestRefineEndIndex ...
+// Summary: TestRefineEndIndex
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCases := []struct {
 		name     string
 		lines    []string
@@ -221,7 +257,16 @@ func TestRefineEndIndex(t *testing.T) {
 	}
 }
 
-func TestIsHeaderBlock(t *testing.T) {
+// TestIsHeaderBlock ...
+// Summary: TestIsHeaderBlock
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCases := []struct {
 		name     string
 		lines    []string
@@ -244,7 +289,16 @@ func TestIsHeaderBlock(t *testing.T) {
 	}
 }
 
-func TestProcessFile(t *testing.T) {
+// TestProcessFile ...
+// Summary: TestProcessFile
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tmpDir := t.TempDir()
 	testCases := []struct {
 		name            string

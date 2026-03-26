@@ -17,7 +17,16 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestHTTPUpstream_InputSchema_Comprehensive(t *testing.T) {
+// TestHTTPUpstream_InputSchema_Comprehensive ...
+// Summary: TestHTTPUpstream_InputSchema_Comprehensive
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCases := []struct {
 		name       string
 		configJSON string

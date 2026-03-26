@@ -22,7 +22,17 @@ import (
 
 // TestCUJ_Lifecycle_And_Config tests lifecycle events and config changes.
 // Using Filesystem upstream to avoid dependency on external binaries or containers.
-func TestCUJ_Lifecycle_And_Config(t *testing.T) {
+// TestCUJ_Lifecycle_And_Config tests lifecycle events and config changes.
+// Summary: TestCUJ_Lifecycle_And_Config
+// Using Filesystem upstream to avoid dependency on external binaries or containers.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Enable running local if Docker is not available
 	useLocal := os.Getenv("E2E_DOCKER") != "true"
 

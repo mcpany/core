@@ -12,7 +12,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestValidatorActionableErrors(t *testing.T) {
+// TestValidatorActionableErrors ...
+// Summary: TestValidatorActionableErrors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. Test missing env var
 	secretEnv := configv1.SecretValue_builder{
 		EnvironmentVariable: proto.String("MISSING_ENV_VAR_TEST"),

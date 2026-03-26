@@ -17,7 +17,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestZipProvider_E2E(t *testing.T) {
+// TestZipProvider_E2E ...
+// Summary: TestZipProvider_E2E
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary zip file
 	tmpDir := t.TempDir()
 

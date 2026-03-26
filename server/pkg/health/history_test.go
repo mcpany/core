@@ -9,7 +9,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestHealthHistory(t *testing.T) {
+// TestHealthHistory ...
+// Summary: TestHealthHistory
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Reset store
 	historyMu.Lock()
 	historyStore = make(map[string]*ServiceHealthHistory)

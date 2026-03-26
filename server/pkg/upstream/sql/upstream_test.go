@@ -21,7 +21,16 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-func TestSQLUpstream_Register_Execute(t *testing.T) {
+// TestSQLUpstream_Register_Execute ...
+// Summary: TestSQLUpstream_Register_Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -101,7 +110,16 @@ func TestSQLUpstream_Register_Execute(t *testing.T) {
 	assert.Equal(t, "Bob", resSlice[0]["name"])
 }
 
-func TestUpstream_Register_Errors(t *testing.T) {
+// TestUpstream_Register_Errors ...
+// Summary: TestUpstream_Register_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -154,7 +172,16 @@ func TestUpstream_Register_Errors(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to add tool")
 }
 
-func TestTool_Execute_Errors(t *testing.T) {
+// TestTool_Execute_Errors ...
+// Summary: TestTool_Execute_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup DB
 	db, err := sql.Open("sqlite", ":memory:")
 	require.NoError(t, err)
@@ -191,7 +218,16 @@ func TestTool_Execute_Errors(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to execute query")
 }
 
-func TestTool_Execute_EdgeCases(t *testing.T) {
+// TestTool_Execute_EdgeCases ...
+// Summary: TestTool_Execute_EdgeCases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup DB
 	db, err := sql.Open("sqlite", ":memory:")
 	require.NoError(t, err)
@@ -234,7 +270,16 @@ func TestTool_Execute_EdgeCases(t *testing.T) {
 	assert.Nil(t, resSlice[0]["nullable"])
 }
 
-func TestUpstream_Shutdown(t *testing.T) {
+// TestUpstream_Shutdown ...
+// Summary: TestUpstream_Shutdown
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewUpstream()
 	// db is nil initially
 	err := u.Shutdown(context.Background())
@@ -253,7 +298,16 @@ func TestUpstream_Shutdown(t *testing.T) {
 	assert.Error(t, err) // closed
 }
 
-func TestTool_GetCacheConfig(t *testing.T) {
+// TestTool_GetCacheConfig ...
+// Summary: TestTool_GetCacheConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	callDef := configv1.SqlCallDefinition_builder{
 		Cache: configv1.CacheConfig_builder{
 			IsEnabled: proto.Bool(true),
@@ -269,7 +323,16 @@ func TestTool_GetCacheConfig(t *testing.T) {
 	assert.Nil(t, tl2.GetCacheConfig())
 }
 
-func TestTool_MCPTool(t *testing.T) {
+// TestTool_MCPTool ...
+// Summary: TestTool_MCPTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	toolProto := v1.Tool_builder{
 		Name:        proto.String("test_tool"),
 		Description: proto.String("desc"),

@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestReproFileSecretValidation(t *testing.T) {
+// TestReproFileSecretValidation ...
+// Summary: TestReproFileSecretValidation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temp file with invalid content
 	tmpFile, err := os.CreateTemp("", "secret")
 	require.NoError(t, err)

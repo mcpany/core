@@ -19,7 +19,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestUpstreamService_TheCocktailDB(t *testing.T) {
+// TestUpstreamService_TheCocktailDB ...
+// Summary: TestUpstreamService_TheCocktailDB
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 

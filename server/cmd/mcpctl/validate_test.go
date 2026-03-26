@@ -13,7 +13,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestValidateCmd(t *testing.T) {
+// TestValidateCmd ...
+// Summary: TestValidateCmd
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tempDir := t.TempDir()
 
 	// 1. Valid Configuration

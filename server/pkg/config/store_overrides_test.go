@@ -11,7 +11,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestApplySetOverrides(t *testing.T) {
+// TestApplySetOverrides ...
+// Summary: TestApplySetOverrides
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name      string
 		initial   map[string]interface{}

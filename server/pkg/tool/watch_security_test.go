@@ -7,7 +7,16 @@ import (
 	"testing"
 )
 
-func TestWatchIsDetectedAsShell(t *testing.T) {
+// TestWatchIsDetectedAsShell ...
+// Summary: TestWatchIsDetectedAsShell
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if !isShellCommand("watch") {
 		t.Errorf("VULNERABILITY: 'watch' is not detected as a shell command/runner. It executes arguments using sh -c, allowing Command Injection via arguments like '; id'.")
 	}

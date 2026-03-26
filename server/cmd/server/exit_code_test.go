@@ -20,24 +20,60 @@ import (
 
 type mockFailingRunner struct{}
 
-func (m *mockFailingRunner) Run(opts app.RunOptions) error {
+// Run ...
+// Summary: Run
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if opts.ShutdownTimeout != 10*time.Second {
 		return fmt.Errorf("expected shutdown timeout of 10s, but got %v", opts.ShutdownTimeout)
 	}
 	return errors.New("mock run failure")
 }
 
-func (m *mockFailingRunner) RunHealthServer(_ string) error {
+// RunHealthServer ...
+// Summary: RunHealthServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *mockFailingRunner) ReloadConfig(_ context.Context, _ afero.Fs, _ []string) error {
+// ReloadConfig ...
+// Summary: ReloadConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
 var _ app.Runner = &mockFailingRunner{}
 
-func TestMain_FailingExitCode(t *testing.T) {
+// TestMain_FailingExitCode ...
+// Summary: TestMain_FailingExitCode
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if os.Getenv("GO_TEST_EXIT_CODE") == "1" {
 		appRunner = &mockFailingRunner{}
 		os.Args = append(os.Args, "--shutdown-timeout=10s")

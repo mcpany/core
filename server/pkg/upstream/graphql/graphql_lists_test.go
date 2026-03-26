@@ -19,7 +19,17 @@ import (
 
 // TestGraphQLUpstream_Register_ListHandling verifies that list types (and nested non-null/list types)
 // are correctly handled during registration and query generation.
-func TestGraphQLUpstream_Register_ListHandling(t *testing.T) {
+// TestGraphQLUpstream_Register_ListHandling verifies that list types (and nested non-null/list types)
+// Summary: TestGraphQLUpstream_Register_ListHandling
+// are correctly handled during registration and query generation.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a mock GraphQL server with a schema containing list types
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		response := map[string]interface{}{

@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestStore(t *testing.T) {
+// TestStore ...
+// Summary: TestStore
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tmpDir, err := os.MkdirTemp("", "mcpany-test-*")
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
@@ -408,7 +417,16 @@ func TestStore(t *testing.T) {
 	})
 }
 
-func TestSaveServiceValidation(t *testing.T) {
+// TestSaveServiceValidation ...
+// Summary: TestSaveServiceValidation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tmpDir, err := os.MkdirTemp("", "mcpany-test-validation-*")
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
@@ -437,7 +455,16 @@ func TestSaveServiceValidation(t *testing.T) {
 	}
 }
 
-func TestNewDBErrors(t *testing.T) {
+// TestNewDBErrors ...
+// Summary: TestNewDBErrors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test case: Invalid path (directory creation failure)
 	// We can try to create a DB in a read-only directory or a non-existent parent that we can't create
 	// But in a sandbox, permissions are tricky.
@@ -460,7 +487,16 @@ func TestNewDBErrors(t *testing.T) {
 	}
 }
 
-func TestLoadInvalidData(t *testing.T) {
+// TestLoadInvalidData ...
+// Summary: TestLoadInvalidData
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tmpDir, err := os.MkdirTemp("", "mcpany-test-invalid-data-*")
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
@@ -498,7 +534,16 @@ func TestLoadInvalidData(t *testing.T) {
 	}
 }
 
-func TestDBErrors(t *testing.T) {
+// TestDBErrors ...
+// Summary: TestDBErrors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tmpDir, err := os.MkdirTemp("", "mcpany-test-db-closed-*")
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)

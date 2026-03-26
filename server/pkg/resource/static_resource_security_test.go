@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestStaticResource_SSRFProtection(t *testing.T) {
+// TestStaticResource_SSRFProtection ...
+// Summary: TestStaticResource_SSRFProtection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Ensure loopback is BLOCKED (default behavior)
 	// Ensure loopback is BLOCKED (default behavior)
 	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "")

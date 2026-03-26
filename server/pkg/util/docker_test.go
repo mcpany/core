@@ -13,7 +13,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestIsDockerSocketAccessible(t *testing.T) {
+// TestIsDockerSocketAccessible ...
+// Summary: TestIsDockerSocketAccessible
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// t.Parallel() removed due to global variable modification
 	originalFunc := IsDockerSocketAccessibleFunc
 	defer func() { IsDockerSocketAccessibleFunc = originalFunc }()
@@ -33,7 +42,16 @@ func TestIsDockerSocketAccessible(t *testing.T) {
 	})
 }
 
-func TestCloseDockerClient(t *testing.T) {
+// TestCloseDockerClient ...
+// Summary: TestCloseDockerClient
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// t.Parallel() removed due to global variable modification
 	// This is a smoke test to ensure CloseDockerClient doesn't panic.
 	// A proper test would require refactoring to use interfaces.
@@ -49,7 +67,16 @@ func TestCloseDockerClient(t *testing.T) {
 	CloseDockerClient() // Should not panic
 }
 
-func TestIsDockerSocketAccessibleDefault(t *testing.T) {
+// TestIsDockerSocketAccessibleDefault ...
+// Summary: TestIsDockerSocketAccessibleDefault
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// t.Parallel() removed due to global variable modification
 	originalClient := dockerClient
 	originalOnce := once

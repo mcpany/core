@@ -23,7 +23,16 @@ func strPtr(s string) *string {
 	return &s
 }
 
-func TestValidateSecretValue(t *testing.T) {
+// TestValidateSecretValue ...
+// Summary: TestValidateSecretValue
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Mock FileExists for this test
 	oldFileExists := validation.FileExists
 	defer func() { validation.FileExists = oldFileExists }()
@@ -187,7 +196,16 @@ func TestValidateSecretValue(t *testing.T) {
 	}
 }
 
-func TestValidateMcpStdioConnection_RelativeCommandWithWorkingDir(t *testing.T) {
+// TestValidateMcpStdioConnection_RelativeCommandWithWorkingDir ...
+// Summary: TestValidateMcpStdioConnection_RelativeCommandWithWorkingDir
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary directory for the "working directory" in the current directory
 	// so that IsAllowedPath passes.
 	tempDir, err := os.MkdirTemp(".", "mcpany-test-wd")
@@ -220,7 +238,16 @@ func TestValidateMcpStdioConnection_RelativeCommandWithWorkingDir(t *testing.T) 
 	assert.Empty(t, errors, "Expected no validation errors for relative command in working directory")
 }
 
-func TestValidateMcpStdioConnection_RelativeCommandMissing(t *testing.T) {
+// TestValidateMcpStdioConnection_RelativeCommandMissing ...
+// Summary: TestValidateMcpStdioConnection_RelativeCommandMissing
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary directory for the "working directory" in the current directory
 	tempDir, err := os.MkdirTemp(".", "mcpany-test-wd")
 	require.NoError(t, err)
@@ -249,7 +276,16 @@ func TestValidateMcpStdioConnection_RelativeCommandMissing(t *testing.T) {
 	// Since it's missing in WD, it falls through to LookPath, which fails finding it in PATH/CWD.
 }
 
-func TestValidateMcpStdioConnection_ArgsValidation(t *testing.T) {
+// TestValidateMcpStdioConnection_ArgsValidation ...
+// Summary: TestValidateMcpStdioConnection_ArgsValidation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary directory
 	tempDir, err := os.MkdirTemp(".", "mcpany-test-args")
 	require.NoError(t, err)
@@ -367,7 +403,16 @@ func TestValidateMcpStdioConnection_ArgsValidation(t *testing.T) {
 	}
 }
 
-func TestValidateSecretMap(t *testing.T) {
+// TestValidateSecretMap ...
+// Summary: TestValidateSecretMap
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Mock FileExists
 	oldFileExists := validation.FileExists
 	defer func() { validation.FileExists = oldFileExists }()
@@ -422,7 +467,16 @@ func TestValidateSecretMap(t *testing.T) {
 	}
 }
 
-func TestValidateContainerEnvironment_Volumes(t *testing.T) {
+// TestValidateContainerEnvironment_Volumes ...
+// Summary: TestValidateContainerEnvironment_Volumes
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name      string
 		env       *configv1.ContainerEnvironment
@@ -497,7 +551,16 @@ func TestValidateContainerEnvironment_Volumes(t *testing.T) {
 	}
 }
 
-func TestValidateMcpService_StdioConnection(t *testing.T) {
+// TestValidateMcpService_StdioConnection ...
+// Summary: TestValidateMcpService_StdioConnection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Mock execLookPath
 	oldLookPath := execLookPath
 	defer func() { execLookPath = oldLookPath }()
@@ -597,7 +660,16 @@ func TestValidateMcpService_StdioConnection(t *testing.T) {
 	}
 }
 
-func TestValidateCommandExists(t *testing.T) {
+// TestValidateCommandExists ...
+// Summary: TestValidateCommandExists
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Mock execLookPath
 	oldLookPath := execLookPath
 	defer func() { execLookPath = oldLookPath }()
@@ -670,7 +742,16 @@ func TestValidateCommandExists(t *testing.T) {
 	}
 }
 
-func TestValidateDirectoryExists(t *testing.T) {
+// TestValidateDirectoryExists ...
+// Summary: TestValidateDirectoryExists
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Mock osStat
 	oldOsStat := osStat
 	defer func() { osStat = oldOsStat }()
@@ -726,14 +807,77 @@ type mockFileInfo struct {
 	isDir bool
 }
 
-func (m *mockFileInfo) Name() string       { return "mock" }
-func (m *mockFileInfo) Size() int64        { return 0 }
-func (m *mockFileInfo) Mode() os.FileMode  { return 0 }
-func (m *mockFileInfo) ModTime() time.Time { return time.Time{} }
-func (m *mockFileInfo) IsDir() bool        { return m.isDir }
-func (m *mockFileInfo) Sys() any           { return nil }
+// Name ...
+// Summary: Name
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Size ...
+// Summary: Size
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Mode ...
+// Summary: Mode
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ModTime ...
+// Summary: ModTime
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// IsDir ...
+// Summary: IsDir
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Sys ...
+// Summary: Sys
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func TestValidateMcpService_BundleConnection(t *testing.T) {
+// TestValidateMcpService_BundleConnection ...
+// Summary: TestValidateMcpService_BundleConnection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Mock FileExists for secret validation
 	oldFileExists := validation.FileExists
 	defer func() { validation.FileExists = oldFileExists }()
@@ -797,7 +941,16 @@ func TestValidateMcpService_BundleConnection(t *testing.T) {
 	}
 }
 
-func TestValidateUpstreamAuthentication(t *testing.T) {
+// TestValidateUpstreamAuthentication ...
+// Summary: TestValidateUpstreamAuthentication
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 
 	t.Run("MTLS", func(t *testing.T) {
@@ -855,7 +1008,16 @@ func TestValidateUpstreamAuthentication(t *testing.T) {
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-func TestValidate_ExtraServices(t *testing.T) {
+// TestValidate_ExtraServices ...
+// Summary: TestValidate_ExtraServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name                string
 		config              *configv1.McpAnyServerConfig
@@ -1121,7 +1283,16 @@ func TestValidate_ExtraServices(t *testing.T) {
 func boolPtr(b bool) *bool                                                                { return &b }
 func storageTypePtr(t configv1.AuditConfig_StorageType) *configv1.AuditConfig_StorageType { return &t }
 
-func TestValidateUsers(t *testing.T) {
+// TestValidateUsers ...
+// Summary: TestValidateUsers
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 
 	tests := []struct {
@@ -1240,7 +1411,16 @@ func TestValidateUsers(t *testing.T) {
 	}
 }
 
-func TestValidateGlobalSettings_Extended(t *testing.T) {
+// TestValidateGlobalSettings_Extended ...
+// Summary: TestValidateGlobalSettings_Extended
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 
 	tests := []struct {

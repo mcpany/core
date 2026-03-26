@@ -11,7 +11,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDefaultBus_Latency(t *testing.T) {
+// TestDefaultBus_Latency ...
+// Summary: TestDefaultBus_Latency
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a bus with a timeout that is significant but not too long
 	bus := New[string]()
 	timeout := 200 * time.Millisecond

@@ -9,7 +9,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestApplyEnvVarsFromSlice_Determinism(t *testing.T) {
+// TestApplyEnvVarsFromSlice_Determinism ...
+// Summary: TestApplyEnvVarsFromSlice_Determinism
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Scenario: Conflicting environment variables.
 	// MCPANY__A=val sets "a" to a string "val".
 	// MCPANY__A__B=val2 sets "a" to a map {"b": "val2"}.

@@ -19,7 +19,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestStdioExample(t *testing.T) {
+// TestStdioExample ...
+// Summary: TestStdioExample
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCase := &framework.E2ETestCase{
 		Name:                "Stdio Example",
 		UpstreamServiceType: "stdio",

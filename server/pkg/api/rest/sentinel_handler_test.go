@@ -14,7 +14,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestValidateConfigHandler_Security(t *testing.T) {
+// TestValidateConfigHandler_Security ...
+// Summary: TestValidateConfigHandler_Security
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. Large Payload
 	t.Run("LargePayload", func(t *testing.T) {
 		// Create a large payload > 5MB

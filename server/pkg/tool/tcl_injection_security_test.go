@@ -7,7 +7,16 @@ import (
 	"testing"
 )
 
-func TestTclInjection(t *testing.T) {
+// TestTclInjection ...
+// Summary: TestTclInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Tcl (tclsh) allows "exec ls" without parentheses.
 	// We have now enforced strict mode for tclsh, so "exec" should be blocked as a keyword.
 
@@ -24,7 +33,16 @@ func TestTclInjection(t *testing.T) {
 	}
 }
 
-func TestLuaInjection(t *testing.T) {
+// TestLuaInjection ...
+// Summary: TestLuaInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Lua allows "os.execute 'ls'"
 	// We enforce strict mode, so "os" or "execute" should be blocked?
 	// strict mode blocks "statementKeywords".

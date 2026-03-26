@@ -12,7 +12,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestValidate_UpstreamApiKeyMissingValue(t *testing.T) {
+// TestValidate_UpstreamApiKeyMissingValue ...
+// Summary: TestValidate_UpstreamApiKeyMissingValue
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 
 	// Upstream Service with API Key auth that has verification_value but NO value.

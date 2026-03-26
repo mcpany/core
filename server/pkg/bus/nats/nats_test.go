@@ -14,7 +14,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNatsBus(t *testing.T) {
+// TestNatsBus ...
+// Summary: TestNatsBus
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Start a NATS server for testing
 	s, err := server.NewServer(&server.Options{Port: -1})
 	assert.NoError(t, err)
@@ -75,7 +84,16 @@ func TestNatsBus(t *testing.T) {
 	assert.Equal(t, "", receivedOnceMsg)
 }
 
-func TestNatsBus_EmbeddedServer(t *testing.T) {
+// TestNatsBus_EmbeddedServer ...
+// Summary: TestNatsBus_EmbeddedServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a new NATS bus with an empty server URL
 	natsBusConfig := &bus.NatsBus{}
 	bus, err := New[string](natsBusConfig)

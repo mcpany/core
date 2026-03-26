@@ -8,7 +8,16 @@ import (
 	"testing"
 )
 
-func TestRedactSensitiveKeys(t *testing.T) {
+// TestRedactSensitiveKeys ...
+// Summary: TestRedactSensitiveKeys
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	data := map[string]string{
 		"passphrase":   "secret_value_1",
 		"passphrases":  "secret_value_2",

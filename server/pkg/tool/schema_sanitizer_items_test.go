@@ -10,7 +10,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestSanitizeJSONSchema_RecursiveItems(t *testing.T) {
+// TestSanitizeJSONSchema_RecursiveItems ...
+// Summary: TestSanitizeJSONSchema_RecursiveItems
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// A schema with an array whose items are objects with properties, but missing "type": "object"
 	input := map[string]interface{}{
 		"type": "object",

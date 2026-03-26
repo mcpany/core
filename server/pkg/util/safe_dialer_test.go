@@ -17,21 +17,41 @@ import (
 )
 
 // MockIPResolver is a mock implementation of util.IPResolver.
-type MockIPResolver struct {
+// MockIPResolver is a mock implementation of util.IPResolver.
+// Summary: MockIPResolver
 	mock.Mock
 }
 
-func (m *MockIPResolver) LookupIP(ctx context.Context, network, host string) ([]net.IP, error) {
+// LookupIP ...
+// Summary: LookupIP
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, network, host)
 	return args.Get(0).([]net.IP), args.Error(1)
 }
 
 // MockDialer is a mock implementation of util.NetDialer.
-type MockDialer struct {
+// MockDialer is a mock implementation of util.NetDialer.
+// Summary: MockDialer
 	mock.Mock
 }
 
-func (m *MockDialer) DialContext(ctx context.Context, network, address string) (net.Conn, error) {
+// DialContext ...
+// Summary: DialContext
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, network, address)
 	val := args.Get(0)
 	if val == nil {
@@ -40,7 +60,16 @@ func (m *MockDialer) DialContext(ctx context.Context, network, address string) (
 	return val.(net.Conn), args.Error(1)
 }
 
-func TestSafeDialer_MultipleIPs_HappyEyeballs(t *testing.T) {
+// TestSafeDialer_MultipleIPs_HappyEyeballs ...
+// Summary: TestSafeDialer_MultipleIPs_HappyEyeballs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup
 	resolver := new(MockIPResolver)
 	dialer := new(MockDialer)
@@ -82,7 +111,16 @@ func TestSafeDialer_MultipleIPs_HappyEyeballs(t *testing.T) {
 	dialer.AssertCalled(t, "DialContext", ctx, "tcp", net.JoinHostPort(ip2.String(), port))
 }
 
-func TestSafeDialer_AllIPsFail(t *testing.T) {
+// TestSafeDialer_AllIPsFail ...
+// Summary: TestSafeDialer_AllIPsFail
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup
 	resolver := new(MockIPResolver)
 	dialer := new(MockDialer)
@@ -115,7 +153,16 @@ func TestSafeDialer_AllIPsFail(t *testing.T) {
 	assert.Equal(t, expectedErr, err)
 }
 
-func TestSafeDialer_BlocksUnspecified(t *testing.T) {
+// TestSafeDialer_BlocksUnspecified ...
+// Summary: TestSafeDialer_BlocksUnspecified
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup
 	resolver := new(MockIPResolver)
 	dialer := new(MockDialer)
@@ -148,7 +195,16 @@ func TestSafeDialer_BlocksUnspecified(t *testing.T) {
 	assert.Contains(t, err.Error(), "loopback ip")
 }
 
-func TestSafeDialer_Networks(t *testing.T) {
+// TestSafeDialer_Networks ...
+// Summary: TestSafeDialer_Networks
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup
 	resolver := new(MockIPResolver)
 	dialer := new(MockDialer)

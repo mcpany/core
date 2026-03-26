@@ -18,7 +18,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestTool_Execute_Coverage(t *testing.T) {
+// TestTool_Execute_Coverage ...
+// Summary: TestTool_Execute_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()

@@ -8,7 +8,16 @@ import (
 	"testing"
 )
 
-func TestHunter_WordTokenizer_Consistency(t *testing.T) {
+// TestHunter_WordTokenizer_Consistency ...
+// Summary: TestHunter_WordTokenizer_Consistency
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Factor 1.9.
 	// 1 word -> 1.9 -> 1 token.
 	// 2 words -> 3.8 -> 3 tokens.

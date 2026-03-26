@@ -18,7 +18,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestCreateProvider_Coverage(t *testing.T) {
+// TestCreateProvider_Coverage ...
+// Summary: TestCreateProvider_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewUpstream()
 	b, _ := bus.NewProvider(nil)
 	tm := tool.NewManager(b)
@@ -89,7 +98,16 @@ func TestCreateProvider_Coverage(t *testing.T) {
 	// NewS3Provider might return error if config is invalid (e.g. nil), but here it's valid enough.
 }
 
-func TestCall_Coverage(t *testing.T) {
+// TestCall_Coverage ...
+// Summary: TestCall_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test Call method of fsCallable directly to cover unmarshal error
 	handler := func(ctx context.Context, args map[string]interface{}) (map[string]interface{}, error) {
 		return nil, nil
@@ -105,7 +123,16 @@ func TestCall_Coverage(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to unmarshal arguments")
 }
 
-func TestTools_ErrorPaths(t *testing.T) {
+// TestTools_ErrorPaths ...
+// Summary: TestTools_ErrorPaths
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tempDir, err := os.MkdirTemp("", "tools_error_test")
 	require.NoError(t, err)
 	defer os.RemoveAll(tempDir)
@@ -503,7 +530,16 @@ func contains(s, substr string) bool {
 		(s[0:len(substr)] == substr || contains(s[1:], substr))
 }
 
-func TestValidateLocalPaths_Error(t *testing.T) {
+// TestValidateLocalPaths_Error ...
+// Summary: TestValidateLocalPaths_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a directory with no permissions to trigger os.Stat error
 	tempDir, err := os.MkdirTemp("", "validate_error")
 	require.NoError(t, err)

@@ -9,7 +9,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestE2ETestCase(t *testing.T) {
+// TestE2ETestCase ...
+// Summary: TestE2ETestCase
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tc := &E2ETestCase{
 		Name: "test",
 	}

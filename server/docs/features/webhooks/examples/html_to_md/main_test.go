@@ -11,7 +11,16 @@ import (
 	"testing"
 )
 
-func TestConvertHandler(t *testing.T) {
+// TestConvertHandler ...
+// Summary: TestConvertHandler
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	reqData := WebhookRequest{
 		Kind:     2,
 		ToolName: "get_page_content",

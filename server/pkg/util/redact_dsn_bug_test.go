@@ -7,7 +7,16 @@ import (
 	"testing"
 )
 
-func TestRedactDSN_EdgeCases(t *testing.T) {
+// TestRedactDSN_EdgeCases ...
+// Summary: TestRedactDSN_EdgeCases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		input    string

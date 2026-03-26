@@ -12,7 +12,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRedisLimiter_GetConfigHash(t *testing.T) {
+// TestRedisLimiter_GetConfigHash ...
+// Summary: TestRedisLimiter_GetConfigHash
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	db, _ := redismock.NewClientMock()
 
 	rps := 10.0

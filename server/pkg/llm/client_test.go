@@ -16,7 +16,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestNewOpenAIClient(t *testing.T) {
+// TestNewOpenAIClient ...
+// Summary: TestNewOpenAIClient
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	client := NewOpenAIClient("test-key", "")
 	assert.Equal(t, "test-key", client.apiKey)
 	assert.Equal(t, "https://api.openai.com/v1", client.baseURL)
@@ -28,7 +37,16 @@ func TestNewOpenAIClient(t *testing.T) {
 	assert.Equal(t, "http://custom-url", client2.baseURL)
 }
 
-func TestChatCompletion(t *testing.T) {
+// TestChatCompletion ...
+// Summary: TestChatCompletion
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name           string
 		req            ChatRequest

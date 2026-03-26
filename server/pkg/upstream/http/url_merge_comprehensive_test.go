@@ -16,7 +16,16 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func TestHTTPUpstream_URLConstruction_Comprehensive(t *testing.T) {
+// TestHTTPUpstream_URLConstruction_Comprehensive ...
+// Summary: TestHTTPUpstream_URLConstruction_Comprehensive
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCases := []struct {
 		name         string
 		address      string

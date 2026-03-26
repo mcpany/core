@@ -22,7 +22,16 @@ import (
 // But `go test` compiles all files in the package together (including _test.go files).
 // So I should be able to use `newMockToolManager` and `mockToolManager`.
 
-func TestInputSchemaRequiredCorruption(t *testing.T) {
+// TestInputSchemaRequiredCorruption ...
+// Summary: TestInputSchemaRequiredCorruption
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	// Use the mock defined in http_test.go
 	mockTm := newMockToolManager()

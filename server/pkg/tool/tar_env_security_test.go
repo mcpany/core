@@ -16,7 +16,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestTarEnvInjection_Protection(t *testing.T) {
+// TestTarEnvInjection_Protection ...
+// Summary: TestTarEnvInjection_Protection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test ensures that TAR_OPTIONS injection via environment variables is prevented
 	// either by argument injection checks or by the tool itself rejecting invalid options.
 

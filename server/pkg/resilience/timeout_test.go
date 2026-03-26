@@ -12,7 +12,16 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-func TestTimeout_Execute(t *testing.T) {
+// TestTimeout_Execute ...
+// Summary: TestTimeout_Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name        string
 		timeout     time.Duration

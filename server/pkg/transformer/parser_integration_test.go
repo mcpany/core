@@ -10,7 +10,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestTextParser_ParseAndTransform_JSON(t *testing.T) {
+// TestTextParser_ParseAndTransform_JSON ...
+// Summary: TestTextParser_ParseAndTransform_JSON
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	parser := NewTextParser()
 	jsonInput := []byte(`{"person": {"name": "test", "age": 123}}`)
@@ -28,7 +37,16 @@ func TestTextParser_ParseAndTransform_JSON(t *testing.T) {
 	assert.JSONEq(t, `{"name": "test", "age": 123}`, string(result))
 }
 
-func TestTextParser_ParseAndTransform_XML(t *testing.T) {
+// TestTextParser_ParseAndTransform_XML ...
+// Summary: TestTextParser_ParseAndTransform_XML
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	parser := NewTextParser()
 	xmlInput := []byte(`<root><name>test</name><value>123</value></root>`)
@@ -46,7 +64,16 @@ func TestTextParser_ParseAndTransform_XML(t *testing.T) {
 	assert.JSONEq(t, `{"name": "test", "value": "123"}`, string(result))
 }
 
-func TestTextParser_ParseAndTransform_Text(t *testing.T) {
+// TestTextParser_ParseAndTransform_Text ...
+// Summary: TestTextParser_ParseAndTransform_Text
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	parser := NewTextParser()
 	textInput := []byte(`User ID: 12345, Name: John Doe`)
@@ -64,7 +91,16 @@ func TestTextParser_ParseAndTransform_Text(t *testing.T) {
 	assert.JSONEq(t, `{"userId": "12345", "name": "John Doe"}`, string(result))
 }
 
-func TestTextParser_ParseAndTransform_JQ(t *testing.T) {
+// TestTextParser_ParseAndTransform_JQ ...
+// Summary: TestTextParser_ParseAndTransform_JQ
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	parser := NewTextParser()
 	jsonInput := []byte(`{"users": [{"name": "Alice"}, {"name": "Bob"}]}`)

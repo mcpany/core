@@ -14,7 +14,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestStdioTransport_Read_Request_StringID(t *testing.T) {
+// TestStdioTransport_Read_Request_StringID ...
+// Summary: TestStdioTransport_Read_Request_StringID
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -37,7 +46,16 @@ func TestStdioTransport_Read_Request_StringID(t *testing.T) {
 	assert.Equal(t, "ping", req.Method)
 }
 
-func TestStdioTransport_Read_HeaderUnmarshalError(t *testing.T) {
+// TestStdioTransport_Read_HeaderUnmarshalError ...
+// Summary: TestStdioTransport_Read_HeaderUnmarshalError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -57,7 +75,16 @@ func TestStdioTransport_Read_HeaderUnmarshalError(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to unmarshal message header")
 }
 
-func TestStdioTransport_Write_StringID(t *testing.T) {
+// TestStdioTransport_Write_StringID ...
+// Summary: TestStdioTransport_Write_StringID
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -92,7 +119,16 @@ func TestStdioTransport_Write_StringID(t *testing.T) {
 	assert.Equal(t, "test", reqRead.Method)
 }
 
-func TestStdioTransport_Read_RequestUnmarshalError(t *testing.T) {
+// TestStdioTransport_Read_RequestUnmarshalError ...
+// Summary: TestStdioTransport_Read_RequestUnmarshalError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 

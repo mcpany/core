@@ -16,26 +16,63 @@ import (
 )
 
 // MockServiceRegistry is a mock implementation of the ServiceRegistryInterface.
-type MockServiceRegistry struct {
+// MockServiceRegistry is a mock implementation of the ServiceRegistryInterface.
+// Summary: MockServiceRegistry
 	mock.Mock
 }
 
-func (m *MockServiceRegistry) RegisterService(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+// RegisterService ...
+// Summary: RegisterService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, serviceConfig)
 	return args.String(0), args.Get(1).([]*configv1.ToolDefinition), args.Get(2).([]*configv1.ResourceDefinition), args.Error(3)
 }
 
-func (m *MockServiceRegistry) UnregisterService(ctx context.Context, serviceName string) error {
+// UnregisterService ...
+// Summary: UnregisterService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, serviceName)
 	return args.Error(0)
 }
 
-func (m *MockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfig, error) {
+// GetAllServices ...
+// Summary: GetAllServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	return args.Get(0).([]*configv1.UpstreamServiceConfig), args.Error(1)
 }
 
-func (m *MockServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
+// GetServiceInfo ...
+// Summary: GetServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(serviceID)
 	if args.Get(0) == nil {
 		return nil, args.Bool(1)
@@ -44,21 +81,49 @@ func (m *MockServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInf
 }
 
 // MockPrompt is a mock implementation of the Prompt interface.
-type MockPrompt struct {
+// MockPrompt is a mock implementation of the Prompt interface.
+// Summary: MockPrompt
 	mock.Mock
 }
 
-func (m *MockPrompt) Prompt() *mcp.Prompt {
+// Prompt ...
+// Summary: Prompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	return args.Get(0).(*mcp.Prompt)
 }
 
-func (m *MockPrompt) Service() string {
+// Service ...
+// Summary: Service
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	return args.String(0)
 }
 
-func (m *MockPrompt) Definition() *configv1.PromptDefinition {
+// Definition ...
+// Summary: Definition
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	if args.Get(0) == nil {
 		return nil
@@ -66,12 +131,30 @@ func (m *MockPrompt) Definition() *configv1.PromptDefinition {
 	return args.Get(0).(*configv1.PromptDefinition)
 }
 
-func (m *MockPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
+// Get ...
+// Summary: Get
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	calledArgs := m.Called(ctx, args)
 	return calledArgs.Get(0).(*mcp.GetPromptResult), calledArgs.Error(1)
 }
 
-func TestPromptManager(t *testing.T) {
+// TestPromptManager ...
+// Summary: TestPromptManager
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	promptManager := NewManager()
 
 	t.Run("add and get prompt", func(t *testing.T) {

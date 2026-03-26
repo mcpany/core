@@ -16,7 +16,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestTruncateHandler_Comprehensive(t *testing.T) {
+// TestTruncateHandler_Comprehensive ...
+// Summary: TestTruncateHandler_Comprehensive
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	handler := &TruncateHandler{}
 
 	tests := []struct {
@@ -113,7 +122,16 @@ func TestTruncateHandler_Comprehensive(t *testing.T) {
 	}
 }
 
-func TestPaginateHandler_Comprehensive(t *testing.T) {
+// TestPaginateHandler_Comprehensive ...
+// Summary: TestPaginateHandler_Comprehensive
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	handler := &PaginateHandler{}
 
 	tests := []struct {

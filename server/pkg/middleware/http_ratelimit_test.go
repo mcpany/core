@@ -11,7 +11,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestHTTPRateLimitMiddleware(t *testing.T) {
+// TestHTTPRateLimitMiddleware ...
+// Summary: TestHTTPRateLimitMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 5 RPS, burst 5
 	limiter := NewHTTPRateLimitMiddleware(5, 5)
 	handler := limiter.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -42,7 +51,16 @@ func TestHTTPRateLimitMiddleware(t *testing.T) {
 	assert.Equal(t, http.StatusOK, rec2.Code, "Different IP should be allowed")
 }
 
-func TestHTTPRateLimitMiddleware_LoopbackOrigin(t *testing.T) {
+// TestHTTPRateLimitMiddleware_LoopbackOrigin ...
+// Summary: TestHTTPRateLimitMiddleware_LoopbackOrigin
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 2 RPS, burst 2
 	limiter := NewHTTPRateLimitMiddleware(2, 2)
 	handler := limiter.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -85,7 +103,16 @@ func TestHTTPRateLimitMiddleware_LoopbackOrigin(t *testing.T) {
 	assert.Equal(t, http.StatusTooManyRequests, recIPv6.Code, "IPv6 Loopback Origin 1 should share the cache and be blocked")
 }
 
-func TestHTTPRateLimitMiddleware_TrustProxy(t *testing.T) {
+// TestHTTPRateLimitMiddleware_TrustProxy ...
+// Summary: TestHTTPRateLimitMiddleware_TrustProxy
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 5 RPS, burst 5, Trust Proxy Enabled
 	limiter := NewHTTPRateLimitMiddleware(5, 5, WithTrustProxy(true))
 	handler := limiter.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -130,7 +157,16 @@ func TestHTTPRateLimitMiddleware_TrustProxy(t *testing.T) {
 	assert.Equal(t, http.StatusOK, rec3.Code, "User 3 Request 1 should be allowed")
 }
 
-func TestHTTPRateLimitMiddleware_NoTrustProxy(t *testing.T) {
+// TestHTTPRateLimitMiddleware_NoTrustProxy ...
+// Summary: TestHTTPRateLimitMiddleware_NoTrustProxy
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 5 RPS, burst 5, Trust Proxy Disabled (Default)
 	limiter := NewHTTPRateLimitMiddleware(5, 5, WithTrustProxy(false))
 	handler := limiter.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

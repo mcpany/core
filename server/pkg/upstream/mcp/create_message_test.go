@@ -13,7 +13,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestHandleCreateMessage(t *testing.T) {
+// TestHandleCreateMessage ...
+// Summary: TestHandleCreateMessage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewUpstream(configv1.GlobalSettings_builder{}.Build()).(*Upstream)
 	ctx := context.Background()
 

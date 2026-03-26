@@ -16,12 +16,30 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMain(m *testing.M) {
+// TestMain ...
+// Summary: TestMain
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	metrics.Initialize()
 	os.Exit(m.Run())
 }
 
-func TestIPInfoService(t *testing.T) {
+// TestIPInfoService ...
+// Summary: TestIPInfoService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("IPINFO_API_TOKEN", os.Getenv("IPINFO_API_TOKEN"))
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()

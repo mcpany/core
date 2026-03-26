@@ -12,7 +12,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestUpstreamServiceManager_ApplyAuthentication_Error(t *testing.T) {
+// TestUpstreamServiceManager_ApplyAuthentication_Error ...
+// Summary: TestUpstreamServiceManager_ApplyAuthentication_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mgr := &UpstreamServiceManager{}
 	req := httptest.NewRequest("GET", "http://example.com", nil)
 

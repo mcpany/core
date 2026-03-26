@@ -13,7 +13,16 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestValidateOAuth2Auth_IssuerUrl_Error(t *testing.T) {
+// TestValidateOAuth2Auth_IssuerUrl_Error ...
+// Summary: TestValidateOAuth2Auth_IssuerUrl_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	// Test case where TokenUrl is empty, so it falls back to IssuerUrl validation
 	auth := configv1.OAuth2Auth_builder{
@@ -25,7 +34,16 @@ func TestValidateOAuth2Auth_IssuerUrl_Error(t *testing.T) {
 	assert.Contains(t, err.Error(), "invalid oauth2 issuer_url")
 }
 
-func TestValidateSchema_InvalidJsonSchema(t *testing.T) {
+// TestValidateSchema_InvalidJsonSchema ...
+// Summary: TestValidateSchema_InvalidJsonSchema
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test case where schema is structurally valid as structpb but invalid JSON Schema
 	// e.g. "type" field has invalid value
 	s := &structpb.Struct{
@@ -38,14 +56,32 @@ func TestValidateSchema_InvalidJsonSchema(t *testing.T) {
 	assert.Contains(t, err.Error(), "invalid JSON schema")
 }
 
-func TestMcpService_NoConnectionType(t *testing.T) {
+// TestMcpService_NoConnectionType ...
+// Summary: TestMcpService_NoConnectionType
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	s := configv1.McpUpstreamService_builder{}.Build()
 	err := validateMcpService(context.Background(), s)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "no connection_type")
 }
 
-func TestValidateAuth_SecretValidationErrors(t *testing.T) {
+// TestValidateAuth_SecretValidationErrors ...
+// Summary: TestValidateAuth_SecretValidationErrors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 
 	// Basic Auth: Password secret validation fails (e.g. invalid file path)

@@ -17,7 +17,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestSplunkAuditStore(t *testing.T) {
+// TestSplunkAuditStore ...
+// Summary: TestSplunkAuditStore
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var receivedCount int32
 	received := make(chan struct{}, 10)
 
@@ -81,7 +90,16 @@ func TestSplunkAuditStore(t *testing.T) {
 	assert.Equal(t, int32(1), atomic.LoadInt32(&receivedCount))
 }
 
-func TestSplunkAuditStore_Batch(t *testing.T) {
+// TestSplunkAuditStore_Batch ...
+// Summary: TestSplunkAuditStore_Batch
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var totalReceived int32
 	done := make(chan struct{}, 10)
 

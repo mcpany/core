@@ -19,7 +19,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestRateLimitPartitioning(t *testing.T) {
+// TestRateLimitPartitioning ...
+// Summary: TestRateLimitPartitioning
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	const successResult = "success"
 
 	setupMiddleware := func(keyBy configv1.RateLimitConfig_KeyBy) (*middleware.RateLimitMiddleware, *rateLimitMockToolManager) {

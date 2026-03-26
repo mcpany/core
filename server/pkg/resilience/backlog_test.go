@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-func TestCircuitBreaker_Backlog_Scenario(t *testing.T) {
+// TestCircuitBreaker_Backlog_Scenario ...
+// Summary: TestCircuitBreaker_Backlog_Scenario
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	consecutiveFailures := int32(1)
 	openDuration := 50 * time.Millisecond

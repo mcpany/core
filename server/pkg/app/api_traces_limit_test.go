@@ -14,7 +14,16 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 )
 
-func TestHandleTraces_Limit(t *testing.T) {
+// TestHandleTraces_Limit ...
+// Summary: TestHandleTraces_Limit
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, am := setupTracesTestApp(t)
 
 	// Inject 10 audit entries

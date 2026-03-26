@@ -28,14 +28,32 @@ type mockToolSimple struct {
 	serviceID   string
 }
 
-func (m *mockToolSimple) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+// Execute ...
+// Summary: Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.executeFunc != nil {
 		return m.executeFunc(ctx, req)
 	}
 	return "success", nil
 }
 
-func (m *mockToolSimple) Tool() *routerv1.Tool {
+// Tool ...
+// Summary: Tool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.toolDef == nil {
 		inputSchema, _ := structpb.NewStruct(map[string]interface{}{"type": "object"})
 		return routerv1.Tool_builder{
@@ -47,9 +65,27 @@ func (m *mockToolSimple) Tool() *routerv1.Tool {
 	return m.toolDef
 }
 
-func (m *mockToolSimple) GetCacheConfig() *configv1.CacheConfig { return nil }
+// GetCacheConfig ...
+// Summary: GetCacheConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func (m *mockToolSimple) MCPTool() *mcp.Tool {
+// MCPTool ...
+// Summary: MCPTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t, _ := ConvertProtoToMCPTool(m.Tool())
 	return t
 }
@@ -59,12 +95,30 @@ type mockMiddleware struct {
 	called bool
 }
 
-func (m *mockMiddleware) Execute(ctx context.Context, req *ExecutionRequest, next ExecutionFunc) (any, error) {
+// Execute ...
+// Summary: Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.called = true
 	return next(ctx, req)
 }
 
-func TestManager_ExecuteTool_Coverage(t *testing.T) {
+// TestManager_ExecuteTool_Coverage ...
+// Summary: TestManager_ExecuteTool_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 
 	b, _ := bus.NewProvider(nil)
@@ -92,7 +146,16 @@ func TestManager_ExecuteTool_Coverage(t *testing.T) {
 	assert.True(t, mw.called)
 }
 
-func TestManager_ExecuteTool_Hooks_Coverage(t *testing.T) {
+// TestManager_ExecuteTool_Hooks_Coverage ...
+// Summary: TestManager_ExecuteTool_Hooks_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 
 	b, _ := bus.NewProvider(nil)
@@ -134,7 +197,16 @@ func TestManager_ExecuteTool_Hooks_Coverage(t *testing.T) {
 	}
 }
 
-func TestManager_ClearToolsForService_Coverage(t *testing.T) {
+// TestManager_ClearToolsForService_Coverage ...
+// Summary: TestManager_ClearToolsForService_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 
 	b, _ := bus.NewProvider(nil)
@@ -163,11 +235,29 @@ type mockMCPServerProvider struct {
 	server *mcp.Server
 }
 
-func (m *mockMCPServerProvider) Server() *mcp.Server {
+// Server ...
+// Summary: Server
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.server
 }
 
-func TestManager_AddTool_WithMCPServer_Coverage(t *testing.T) {
+// TestManager_AddTool_WithMCPServer_Coverage ...
+// Summary: TestManager_AddTool_WithMCPServer_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 
 	b, _ := bus.NewProvider(nil)

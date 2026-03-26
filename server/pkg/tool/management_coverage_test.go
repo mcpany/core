@@ -23,22 +23,58 @@ type mockTool struct {
 	executeFunc func(ctx context.Context, req *tool.ExecutionRequest) (any, error)
 }
 
-func (m *mockTool) Tool() *v1.Tool {
+// Tool ...
+// Summary: Tool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.toolDef
 }
 
-func (m *mockTool) MCPTool() *mcp.Tool {
+// MCPTool ...
+// Summary: MCPTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil // Not needed for ExecuteTool tests unless mcp server integration is involved
 }
 
-func (m *mockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+// Execute ...
+// Summary: Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.executeFunc != nil {
 		return m.executeFunc(ctx, req)
 	}
 	return "success", nil
 }
 
-func (m *mockTool) GetCacheConfig() *configv1.CacheConfig {
+// GetCacheConfig ...
+// Summary: GetCacheConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
@@ -48,7 +84,16 @@ type mockPreHook struct {
 	err    error
 }
 
-func (m *mockPreHook) ExecutePre(ctx context.Context, req *tool.ExecutionRequest) (tool.Action, *tool.ExecutionRequest, error) {
+// ExecutePre ...
+// Summary: ExecutePre
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.action, nil, m.err
 }
 
@@ -57,11 +102,29 @@ type mockPostHook struct {
 	err error
 }
 
-func (m *mockPostHook) ExecutePost(ctx context.Context, req *tool.ExecutionRequest, result any) (any, error) {
+// ExecutePost ...
+// Summary: ExecutePost
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return result, m.err
 }
 
-func TestManager_ExecuteTool_Coverage(t *testing.T) {
+// TestManager_ExecuteTool_Coverage ...
+// Summary: TestManager_ExecuteTool_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 
 	t.Run("Service Unhealthy", func(t *testing.T) {
@@ -161,7 +224,16 @@ func TestManager_ExecuteTool_Coverage(t *testing.T) {
 	})
 }
 
-func TestManager_ProfileFiltering_Coverage(t *testing.T) {
+// TestManager_ProfileFiltering_Coverage ...
+// Summary: TestManager_ProfileFiltering_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 
 	t.Run("AddTool Filtered Out", func(t *testing.T) {

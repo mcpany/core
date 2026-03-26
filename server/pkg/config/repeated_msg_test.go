@@ -15,7 +15,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestEnvVarRepeatedMessage(t *testing.T) {
+// TestEnvVarRepeatedMessage ...
+// Summary: TestEnvVarRepeatedMessage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create an empty config file
 	fs := afero.NewMemMapFs()
 	err := afero.WriteFile(fs, "/minimal.yaml", []byte("{}"), 0644)
@@ -72,7 +81,16 @@ func TestEnvVarRepeatedMessage(t *testing.T) {
 	}
 }
 
-func TestEnvVarRepeatedMessageCSVWithJSON(t *testing.T) {
+// TestEnvVarRepeatedMessageCSVWithJSON ...
+// Summary: TestEnvVarRepeatedMessageCSVWithJSON
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	err := afero.WriteFile(fs, "/minimal.yaml", []byte("{}"), 0644)
 	require.NoError(t, err)

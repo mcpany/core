@@ -11,7 +11,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestZipSecurity(t *testing.T) {
+// TestZipSecurity ...
+// Summary: TestZipSecurity
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This tests a vulnerability where zip/unzip/rsync were not in the isShellCommand list.
 	// We attempt to pass a shell command string to zip -TT which executes it.
 	// If zip is in the blacklist, this should fail with "shell injection detected".

@@ -15,7 +15,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestResolveSecret_OAuth2(t *testing.T) {
+// TestResolveSecret_OAuth2 ...
+// Summary: TestResolveSecret_OAuth2
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_SECRETS", "true")
 
 	// 1. Setup Mock Token Server
@@ -78,7 +87,16 @@ func TestResolveSecret_OAuth2(t *testing.T) {
 	assert.Equal(t, "my-remote-secret-via-oauth", resolved)
 }
 
-func TestResolveSecret_OAuth2_TokenFail(t *testing.T) {
+// TestResolveSecret_OAuth2_TokenFail ...
+// Summary: TestResolveSecret_OAuth2_TokenFail
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Token server fails
 	tokenServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -111,7 +129,16 @@ func TestResolveSecret_OAuth2_TokenFail(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to get oauth2 token")
 }
 
-func TestResolveSecret_RemoteContent_AuthErrors(t *testing.T) {
+// TestResolveSecret_RemoteContent_AuthErrors ...
+// Summary: TestResolveSecret_RemoteContent_AuthErrors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_SECRETS", "true")
 
 	// 1. Bearer Token Resolution Error

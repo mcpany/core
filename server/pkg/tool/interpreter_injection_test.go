@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestSedSandbox_Prevention(t *testing.T) {
+// TestSedSandbox_Prevention ...
+// Summary: TestSedSandbox_Prevention
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cmd := "sed"
 
 	// Create tool for sed -e {{script}}
@@ -95,7 +104,16 @@ func TestSedSandbox_Prevention(t *testing.T) {
 	}
 }
 
-func TestSedSandbox_ValidUsage(t *testing.T) {
+// TestSedSandbox_ValidUsage ...
+// Summary: TestSedSandbox_ValidUsage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cmd := "sed"
 	toolDef := v1.Tool_builder{Name: proto.String("sed-tool")}.Build()
 	service := configv1.CommandLineUpstreamService_builder{

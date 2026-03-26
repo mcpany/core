@@ -11,7 +11,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestHandleCreateMessage_NilSession(t *testing.T) {
+// TestHandleCreateMessage_NilSession ...
+// Summary: TestHandleCreateMessage_NilSession
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test reproduces the bug where `session == nil` check fails for a nil *ClientSession wrapped in an interface.
 
 	u := &Upstream{

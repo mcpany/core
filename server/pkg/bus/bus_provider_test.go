@@ -15,7 +15,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestBusProvider_GetBus_InMemory(t *testing.T) {
+// TestBusProvider_GetBus_InMemory ...
+// Summary: TestBusProvider_GetBus_InMemory
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	messageBus := &bus.MessageBus{}
 	messageBus.SetInMemory(&bus.InMemoryBus{})
 	provider, err := NewProvider(messageBus)
@@ -30,7 +39,16 @@ func TestBusProvider_GetBus_InMemory(t *testing.T) {
 	assert.NotSame(t, bus1, bus3, "Expected different bus instances for different topics")
 }
 
-func TestBusProvider_GetBus_Redis(t *testing.T) {
+// TestBusProvider_GetBus_Redis ...
+// Summary: TestBusProvider_GetBus_Redis
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	client := redis.NewClient(&redis.Options{
 		Addr: "127.0.0.1:6379",
 	})
@@ -53,7 +71,16 @@ func TestBusProvider_GetBus_Redis(t *testing.T) {
 	assert.Same(t, bus1, bus2, "Expected the same bus instance for the same topic")
 }
 
-func TestBusProvider_GetBus_Nats(t *testing.T) {
+// TestBusProvider_GetBus_Nats ...
+// Summary: TestBusProvider_GetBus_Nats
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	s, err := server.NewServer(&server.Options{Port: -1})
 	assert.NoError(t, err)
 	go s.Start()
@@ -77,7 +104,16 @@ func TestBusProvider_GetBus_Nats(t *testing.T) {
 	assert.Same(t, bus1, bus2, "Expected the same bus instance for the same topic")
 }
 
-func TestBusProvider_GetBus_Concurrent(t *testing.T) {
+// TestBusProvider_GetBus_Concurrent ...
+// Summary: TestBusProvider_GetBus_Concurrent
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	messageBus := &bus.MessageBus{}
 	messageBus.SetInMemory(&bus.InMemoryBus{})
 	provider, err := NewProvider(messageBus)
@@ -106,7 +142,16 @@ func TestBusProvider_GetBus_Concurrent(t *testing.T) {
 	}
 }
 
-func TestBusProvider_DefaultBus(t *testing.T) {
+// TestBusProvider_DefaultBus ...
+// Summary: TestBusProvider_DefaultBus
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	provider, err := NewProvider(nil)
 	assert.NoError(t, err)
 	assert.NotNil(t, provider.config)

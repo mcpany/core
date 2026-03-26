@@ -12,7 +12,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestManager_AddTool_EnforcesNamespacing(t *testing.T) {
+// TestManager_AddTool_EnforcesNamespacing ...
+// Summary: TestManager_AddTool_EnforcesNamespacing
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tm := NewManager(nil)
 
 	// Case 1: Tool with ServiceID

@@ -12,7 +12,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestValidate_ReproSilentFailures(t *testing.T) {
+// TestValidate_ReproSilentFailures ...
+// Summary: TestValidate_ReproSilentFailures
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 
 	tests := []struct {

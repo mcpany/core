@@ -8,7 +8,16 @@ import (
 	"testing"
 )
 
-func TestRedactSlice_MultipleDirty(t *testing.T) {
+// TestRedactSlice_MultipleDirty ...
+// Summary: TestRedactSlice_MultipleDirty
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Slice with multiple items needing redaction to trigger "newSlice != nil" path
 	input := []interface{}{
 		map[string]interface{}{"password": "s1"},
@@ -22,7 +31,16 @@ func TestRedactSlice_MultipleDirty(t *testing.T) {
 	assert.Equal(t, "[REDACTED]", list[1].(map[string]interface{})["password"])
 }
 
-func TestRedactSlice_NestedSliceDirty(t *testing.T) {
+// TestRedactSlice_NestedSliceDirty ...
+// Summary: TestRedactSlice_NestedSliceDirty
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Slice containing nested slices that are dirty
 	input := []interface{}{
 		[]interface{}{map[string]interface{}{"password": "s1"}},

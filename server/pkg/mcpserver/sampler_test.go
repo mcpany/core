@@ -14,7 +14,16 @@ import (
 // The go-sdk/mcp package does not easily allow mocking ServerSession because it is a struct, not an interface.
 // However, we can test the nil session checks.
 
-func TestMCPSession_NilSession(t *testing.T) {
+// TestMCPSession_NilSession ...
+// Summary: TestMCPSession_NilSession
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	s := NewMCPSession(nil)
 
 	t.Run("CreateMessage with nil session", func(t *testing.T) {
@@ -32,7 +41,16 @@ func TestMCPSession_NilSession(t *testing.T) {
 	})
 }
 
-func TestNewMCPSampler(t *testing.T) {
+// TestNewMCPSampler ...
+// Summary: TestNewMCPSampler
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	s := NewMCPSampler(nil)
 	assert.NotNil(t, s)
 }

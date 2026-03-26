@@ -20,7 +20,16 @@ import (
 // that returns a minimal HTML document.
 type httpPageFetcher struct{}
 
-func (f *httpPageFetcher) FetchText(ctx context.Context, url string) (string, error) {
+// FetchText ...
+// Summary: FetchText
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return "", fmt.Errorf("could not create request: %w", err)
@@ -42,7 +51,16 @@ func (f *httpPageFetcher) FetchText(ctx context.Context, url string) (string, er
 	return string(buf), nil
 }
 
-func TestBrowserProvider(t *testing.T) {
+// TestBrowserProvider ...
+// Summary: TestBrowserProvider
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Use a local HTTP test server to avoid external network access.
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/html")

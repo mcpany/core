@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestInitiateOAuth(t *testing.T) {
+// TestInitiateOAuth ...
+// Summary: TestInitiateOAuth
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	store := memory.NewStore()
 	am := NewManager()
 	am.SetStorage(store)
@@ -56,7 +65,16 @@ func TestInitiateOAuth(t *testing.T) {
 	assert.Contains(t, err.Error(), "storage not initialized")
 }
 
-func TestInitiateOAuth_Credential(t *testing.T) {
+// TestInitiateOAuth_Credential ...
+// Summary: TestInitiateOAuth_Credential
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	store := memory.NewStore()
 	am := NewManager()
 	am.SetStorage(store)
@@ -97,7 +115,16 @@ func TestInitiateOAuth_Credential(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestResolveSecretValue(t *testing.T) {
+// TestResolveSecretValue ...
+// Summary: TestResolveSecretValue
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// resolveSecretValue was removed in favour of util.ResolveSecret.
 	// These sub-tests verify that InitiateOAuth (which calls util.ResolveSecret
 	// internally) correctly resolves different secret types.
@@ -162,7 +189,16 @@ func TestResolveSecretValue(t *testing.T) {
 	})
 }
 
-func TestHandleOAuthCallback_Validation(t *testing.T) {
+// TestHandleOAuthCallback_Validation ...
+// Summary: TestHandleOAuthCallback_Validation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	store := memory.NewStore()
 	am := NewManager()
 	am.SetStorage(store)

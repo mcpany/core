@@ -117,7 +117,16 @@ func startSFTPServer(t *testing.T, authorizedKey ssh.PublicKey) (string, *ssh.Se
 	return addr, config, func() { listener.Close() }
 }
 
-func TestSftpProvider(t *testing.T) {
+// TestSftpProvider ...
+// Summary: TestSftpProvider
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary directory for the SFTP server to serve
 	addr, _, cleanup := startSFTPServer(t, nil)
 	defer cleanup()
@@ -320,7 +329,16 @@ func TestSftpProvider(t *testing.T) {
 	})
 }
 
-func TestNewSftpProvider_KeyAuth(t *testing.T) {
+// TestNewSftpProvider_KeyAuth ...
+// Summary: TestNewSftpProvider_KeyAuth
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Generate a key pair for the client
 	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
 	require.NoError(t, err)
@@ -360,7 +378,16 @@ func TestNewSftpProvider_KeyAuth(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestNewSftpProvider_Errors(t *testing.T) {
+// TestNewSftpProvider_Errors ...
+// Summary: TestNewSftpProvider_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("Nil Config", func(t *testing.T) {
 		_, err := NewSftpProvider(nil)
 		assert.Error(t, err)

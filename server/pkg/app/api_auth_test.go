@@ -27,11 +27,29 @@ type mockTransport struct {
 	RoundTripFunc func(req *http.Request) (*http.Response, error)
 }
 
-func (m *mockTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+// RoundTrip ...
+// Summary: RoundTrip
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.RoundTripFunc(req)
 }
 
-func TestHandleInitiateOAuth_MethodNotAllowed(t *testing.T) {
+// TestHandleInitiateOAuth_MethodNotAllowed ...
+// Summary: TestHandleInitiateOAuth_MethodNotAllowed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 	handler := http.HandlerFunc(app.handleInitiateOAuth)
 
@@ -41,7 +59,16 @@ func TestHandleInitiateOAuth_MethodNotAllowed(t *testing.T) {
 	assert.Equal(t, http.StatusMethodNotAllowed, w.Code)
 }
 
-func TestHandleOAuthCallback(t *testing.T) {
+// TestHandleOAuthCallback ...
+// Summary: TestHandleOAuthCallback
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 	app.fs = afero.NewMemMapFs()
 	app.AuthManager = auth.NewManager()

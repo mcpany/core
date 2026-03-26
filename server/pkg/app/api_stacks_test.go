@@ -18,7 +18,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestHandleStackConfig_Get(t *testing.T) {
+// TestHandleStackConfig_Get ...
+// Summary: TestHandleStackConfig_Get
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 	handler := app.handleStackConfig(store)
 
@@ -51,7 +60,16 @@ func TestHandleStackConfig_Get(t *testing.T) {
 	assert.Contains(t, body, "http_service")
 }
 
-func TestHandleStackConfig_Post(t *testing.T) {
+// TestHandleStackConfig_Post ...
+// Summary: TestHandleStackConfig_Post
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 	handler := app.handleStackConfig(store)
 
@@ -81,7 +99,16 @@ services:
 	assert.Equal(t, "http://example.org", collection.GetServices()[0].GetHttpService().GetAddress())
 }
 
-func TestHandleStackConfig_Post_Invalid(t *testing.T) {
+// TestHandleStackConfig_Post_Invalid ...
+// Summary: TestHandleStackConfig_Post_Invalid
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 	handler := app.handleStackConfig(store)
 
@@ -121,7 +148,16 @@ services:
 	})
 }
 
-func TestIsUnsafeAllowed(t *testing.T) {
+// TestIsUnsafeAllowed ...
+// Summary: TestIsUnsafeAllowed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 	handler := app.handleStackConfig(store)
 

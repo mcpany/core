@@ -12,7 +12,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSSOMiddleware(t *testing.T) {
+// TestSSOMiddleware ...
+// Summary: TestSSOMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	gin.SetMode(gin.TestMode)
 
 	config := SSOConfig{

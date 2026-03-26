@@ -8,7 +8,16 @@ import (
 	"testing"
 )
 
-func TestMain(m *testing.M) {
+// TestMain ...
+// Summary: TestMain
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Enable file configuration for all tests in this package
 	// as many legacy tests rely on loading config from files.
 	os.Setenv("MCPANY_ENABLE_FILE_CONFIG", "true")

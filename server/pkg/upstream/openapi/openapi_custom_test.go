@@ -18,7 +18,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestOpenAPIUpstream_Register_Content(t *testing.T) {
+// TestOpenAPIUpstream_Register_Content ...
+// Summary: TestOpenAPIUpstream_Register_Content
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -69,7 +78,16 @@ paths:
 	assert.Empty(t, resources)
 }
 
-func TestOpenAPIUpstream_Register_URL(t *testing.T) {
+// TestOpenAPIUpstream_Register_URL ...
+// Summary: TestOpenAPIUpstream_Register_URL
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -118,7 +136,16 @@ paths:
 	assert.Len(t, tools, 1)
 }
 
-func TestOpenAPIUpstream_Register_WithPromptsAndResources(t *testing.T) {
+// TestOpenAPIUpstream_Register_WithPromptsAndResources ...
+// Summary: TestOpenAPIUpstream_Register_WithPromptsAndResources
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 

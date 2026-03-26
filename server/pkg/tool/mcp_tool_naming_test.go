@@ -17,7 +17,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMCPTool_Execute_Bug_OriginalName(t *testing.T) {
+// TestMCPTool_Execute_Bug_OriginalName ...
+// Summary: TestMCPTool_Execute_Bug_OriginalName
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	// This test demonstrates the fix where MCPTool uses the original name (from tool definition)
 	// instead of the sanitized name (from request parsing) when calling the upstream service.

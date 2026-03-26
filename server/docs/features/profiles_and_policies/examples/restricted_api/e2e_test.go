@@ -27,7 +27,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestRestrictedApiE2E(t *testing.T) {
+// TestRestrictedApiE2E ...
+// Summary: TestRestrictedApiE2E
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Enable local IPs for testing purposes (SSRF protection bypass)
 	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
 

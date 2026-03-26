@@ -25,7 +25,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestUserManagement(t *testing.T) {
+// TestUserManagement ...
+// Summary: TestUserManagement
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Enable file config for this test
 	os.Setenv("MCPANY_ENABLE_FILE_CONFIG", "true")
 	defer os.Unsetenv("MCPANY_ENABLE_FILE_CONFIG")

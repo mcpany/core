@@ -10,7 +10,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMockWASMRuntime(t *testing.T) {
+// TestMockWASMRuntime ...
+// Summary: TestMockWASMRuntime
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	runtime := NewMockRuntime()
 	defer func() {
 		assert.NoError(t, runtime.Close())

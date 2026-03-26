@@ -19,11 +19,29 @@ type mockTransport struct {
 	roundTripFunc func(*http.Request) (*http.Response, error)
 }
 
-func (m *mockTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+// RoundTrip ...
+// Summary: RoundTrip
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.roundTripFunc(req)
 }
 
-func TestDoctorHandler(t *testing.T) {
+// TestDoctorHandler ...
+// Summary: TestDoctorHandler
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	doctor := NewDoctor()
 
 	// Mock the HTTP client to avoid external calls
@@ -53,7 +71,16 @@ func TestDoctorHandler(t *testing.T) {
 	assert.Equal(t, "ok", report.Checks["internet"].Status)
 }
 
-func TestDoctor_AddCheck(t *testing.T) {
+// TestDoctor_AddCheck ...
+// Summary: TestDoctor_AddCheck
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	doctor := NewDoctor()
 	// Mock client
 	doctor.httpClient = &http.Client{

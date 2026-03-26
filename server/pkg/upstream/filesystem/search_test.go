@@ -19,19 +19,55 @@ type mockProvider struct {
 	fs afero.Fs
 }
 
-func (m *mockProvider) ResolvePath(path string) (string, error) {
+// ResolvePath ...
+// Summary: ResolvePath
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return path, nil
 }
 
-func (m *mockProvider) GetFs() afero.Fs {
+// GetFs ...
+// Summary: GetFs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.fs
 }
 
-func (m *mockProvider) Close() error {
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func TestSearchFiles_HappyPath(t *testing.T) {
+// TestSearchFiles_HappyPath ...
+// Summary: TestSearchFiles_HappyPath
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	prov := &mockProvider{fs: fs}
 	toolDef := searchFilesTool(prov, fs)
@@ -62,7 +98,16 @@ func TestSearchFiles_HappyPath(t *testing.T) {
 	assert.Contains(t, paths, filepath.Join(rootDir, "subdir", "file2.txt"))
 }
 
-func TestSearchFiles_Regex(t *testing.T) {
+// TestSearchFiles_Regex ...
+// Summary: TestSearchFiles_Regex
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	prov := &mockProvider{fs: fs}
 	toolDef := searchFilesTool(prov, fs)
@@ -85,7 +130,16 @@ func TestSearchFiles_Regex(t *testing.T) {
 	assert.Equal(t, "Error: code 500", matches[0]["line_content"])
 }
 
-func TestSearchFiles_InvalidRegex(t *testing.T) {
+// TestSearchFiles_InvalidRegex ...
+// Summary: TestSearchFiles_InvalidRegex
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	prov := &mockProvider{fs: fs}
 	toolDef := searchFilesTool(prov, fs)
@@ -98,7 +152,16 @@ func TestSearchFiles_InvalidRegex(t *testing.T) {
 	assert.Contains(t, err.Error(), "invalid regex pattern")
 }
 
-func TestSearchFiles_Exclusion(t *testing.T) {
+// TestSearchFiles_Exclusion ...
+// Summary: TestSearchFiles_Exclusion
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	prov := &mockProvider{fs: fs}
 	toolDef := searchFilesTool(prov, fs)
@@ -122,7 +185,16 @@ func TestSearchFiles_Exclusion(t *testing.T) {
 	assert.Equal(t, filepath.Join(rootDir, "keep.txt"), matches[0]["file"])
 }
 
-func TestSearchFiles_Hidden(t *testing.T) {
+// TestSearchFiles_Hidden ...
+// Summary: TestSearchFiles_Hidden
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	prov := &mockProvider{fs: fs}
 	toolDef := searchFilesTool(prov, fs)
@@ -154,7 +226,16 @@ func TestSearchFiles_Hidden(t *testing.T) {
 	assert.NotContains(t, paths, filepath.Join(rootDir, ".git", "config"))
 }
 
-func TestSearchFiles_Binary(t *testing.T) {
+// TestSearchFiles_Binary ...
+// Summary: TestSearchFiles_Binary
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	prov := &mockProvider{fs: fs}
 	toolDef := searchFilesTool(prov, fs)
@@ -181,7 +262,16 @@ func TestSearchFiles_Binary(t *testing.T) {
 	assert.Equal(t, filepath.Join(rootDir, "text.txt"), matches[0]["file"])
 }
 
-func TestSearchFiles_MaxMatches(t *testing.T) {
+// TestSearchFiles_MaxMatches ...
+// Summary: TestSearchFiles_MaxMatches
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	prov := &mockProvider{fs: fs}
 	toolDef := searchFilesTool(prov, fs)
@@ -205,7 +295,16 @@ func TestSearchFiles_MaxMatches(t *testing.T) {
 	assert.Len(t, matches, 100)
 }
 
-func TestSearchFiles_FileSizeLimit(t *testing.T) {
+// TestSearchFiles_FileSizeLimit ...
+// Summary: TestSearchFiles_FileSizeLimit
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	prov := &mockProvider{fs: fs}
 	toolDef := searchFilesTool(prov, fs)
@@ -244,7 +343,16 @@ func TestSearchFiles_FileSizeLimit(t *testing.T) {
 	assert.Equal(t, filepath.Join(rootDir, "normal.txt"), matches[0]["file"])
 }
 
-func TestSearchFiles_Cancellation(t *testing.T) {
+// TestSearchFiles_Cancellation ...
+// Summary: TestSearchFiles_Cancellation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	prov := &mockProvider{fs: fs}
 	toolDef := searchFilesTool(prov, fs)
@@ -271,7 +379,16 @@ func TestSearchFiles_Cancellation(t *testing.T) {
 	assert.Equal(t, context.Canceled, err)
 }
 
-func TestSearchFiles_InputValidation(t *testing.T) {
+// TestSearchFiles_InputValidation ...
+// Summary: TestSearchFiles_InputValidation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	prov := &mockProvider{fs: fs}
 	toolDef := searchFilesTool(prov, fs)

@@ -16,7 +16,18 @@ import (
 // TestEnvVar_RepeatedMessage_WithComma verifies that we can set repeated message fields
 // via environment variables even if the JSON objects contain commas.
 // This was a bug where the CSV parser would split the JSON object at the internal comma.
-func TestEnvVar_RepeatedMessage_WithComma(t *testing.T) {
+// TestEnvVar_RepeatedMessage_WithComma verifies that we can set repeated message fields
+// Summary: TestEnvVar_RepeatedMessage_WithComma
+// via environment variables even if the JSON objects contain commas.
+// This was a bug where the CSV parser would split the JSON object at the internal comma.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup env var with repeated message containing comma
 	// MCPANY__UPSTREAM_SERVICES maps to upstream_services
 	os.Setenv("MCPANY__UPSTREAM_SERVICES", `{"name": "service,1", "http_service": {"address": "http://localhost:8080"}}, {"name": "service2", "http_service": {"address": "http://localhost:8081"}}`)

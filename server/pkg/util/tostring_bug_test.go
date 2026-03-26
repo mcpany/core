@@ -10,7 +10,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestToString_Float64_LargeValue(t *testing.T) {
+// TestToString_Float64_LargeValue ...
+// Summary: TestToString_Float64_LargeValue
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// A value larger than int64 (> 9.22e18)
 	// 1e20
 	var val float64 = 1e20
@@ -21,7 +30,16 @@ func TestToString_Float64_LargeValue(t *testing.T) {
 	assert.Equal(t, "1e+20", actual, "Should format 1e20 using scientific notation (standard 'g' behavior)")
 }
 
-func TestToString_Float64_Boundary(t *testing.T) {
+// TestToString_Float64_Boundary ...
+// Summary: TestToString_Float64_Boundary
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// MaxInt64 is 9223372036854775807
 	var val float64 = float64(math.MaxInt64)
 
@@ -38,7 +56,16 @@ func TestToString_Float64_Boundary(t *testing.T) {
 	assert.Contains(t, actual, "e+")
 }
 
-func TestToString_Float32_LargeInteger(t *testing.T) {
+// TestToString_Float32_LargeInteger ...
+// Summary: TestToString_Float32_LargeInteger
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 3 billion is larger than MaxInt32 (2.14 billion)
 	// It is exactly representable in float32 because it has trailing zeros in binary.
 	var val float32 = 3.0e9
@@ -64,7 +91,16 @@ func TestToString_Float32_LargeInteger(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
-func TestToString_Float32_Fractional(t *testing.T) {
+// TestToString_Float32_Fractional ...
+// Summary: TestToString_Float32_Fractional
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Should still use normal formatting for non-integers
 	var val float32 = 3.5
 	expected := "3.5"

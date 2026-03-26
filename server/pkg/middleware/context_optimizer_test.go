@@ -13,7 +13,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestContextOptimizerMiddleware(t *testing.T) {
+// TestContextOptimizerMiddleware ...
+// Summary: TestContextOptimizerMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	opt := NewContextOptimizer(10)
 
 	mux := http.NewServeMux()
@@ -79,7 +88,16 @@ func TestContextOptimizerMiddleware(t *testing.T) {
 	assert.Equal(t, "Short", text)
 }
 
-func TestContextOptimizerMiddleware_WriterType(t *testing.T) {
+// TestContextOptimizerMiddleware_WriterType ...
+// Summary: TestContextOptimizerMiddleware_WriterType
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	opt := NewContextOptimizer(10)
 
 	var isResponseBuffer bool
@@ -99,7 +117,16 @@ func TestContextOptimizerMiddleware_WriterType(t *testing.T) {
 	assert.Equal(t, 200, w.Code)
 }
 
-func TestContextOptimizerMiddleware_Multibyte(t *testing.T) {
+// TestContextOptimizerMiddleware_Multibyte ...
+// Summary: TestContextOptimizerMiddleware_Multibyte
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Limit to 2 characters to test cutting multibyte strings
 	opt := NewContextOptimizer(2)
 

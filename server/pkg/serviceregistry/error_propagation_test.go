@@ -22,23 +22,60 @@ import (
 )
 
 // MockHealthCheckerUpstream implements upstream.Upstream and upstream.HealthChecker
-type MockHealthCheckerUpstream struct {
+// MockHealthCheckerUpstream implements upstream.Upstream and upstream.HealthChecker
+// Summary: MockHealthCheckerUpstream
 	upstream.Upstream
 	healthErr error
 }
 
-func (m *MockHealthCheckerUpstream) CheckHealth(_ context.Context) error {
+// CheckHealth ...
+// Summary: CheckHealth
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.healthErr
 }
 
-func (m *MockHealthCheckerUpstream) Register(_ context.Context, serviceConfig *configv1.UpstreamServiceConfig, _ tool.ManagerInterface, _ prompt.ManagerInterface, _ resource.ManagerInterface, _ bool) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+// Register ...
+// Summary: Register
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	serviceID, _ := util.SanitizeServiceName(serviceConfig.GetName())
 	return serviceID, nil, nil, nil
 }
 
-func (m *MockHealthCheckerUpstream) Shutdown(_ context.Context) error { return nil }
+// Shutdown ...
+// Summary: Shutdown
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func TestErrorPropagation_HealthCheckFailure(t *testing.T) {
+// TestErrorPropagation_HealthCheckFailure ...
+// Summary: TestErrorPropagation_HealthCheckFailure
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockU := &MockHealthCheckerUpstream{
 		healthErr: errors.New("connection refused"),
 	}
@@ -77,7 +114,16 @@ func TestErrorPropagation_HealthCheckFailure(t *testing.T) {
 	assert.Equal(t, "connection refused", cfg.GetLastError())
 }
 
-func TestToolCountPropagation(t *testing.T) {
+// TestToolCountPropagation ...
+// Summary: TestToolCountPropagation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockU := &MockHealthCheckerUpstream{}
 	f := &mockFactory{
 		newUpstreamFunc: func() (upstream.Upstream, error) {

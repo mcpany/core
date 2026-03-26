@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestRegistry_HTTPMiddlewares(t *testing.T) {
+// TestRegistry_HTTPMiddlewares ...
+// Summary: TestRegistry_HTTPMiddlewares
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Register a test middleware
 	mwName := "test-http-middleware"
 	mwHeaderKey := "X-Test-Middleware"
@@ -114,7 +123,16 @@ func TestRegistry_HTTPMiddlewares(t *testing.T) {
 	})
 }
 
-func TestRegistry_MCPMiddlewares(t *testing.T) {
+// TestRegistry_MCPMiddlewares ...
+// Summary: TestRegistry_MCPMiddlewares
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mwName := "test-mcp-middleware"
 	RegisterMCP(mwName, func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
 		return func(next mcp.MethodHandler) mcp.MethodHandler {
@@ -155,7 +173,16 @@ func activeMiddlewareName(c *configv1.Middleware) string {
 	return c.GetName()
 }
 
-func TestInitStandardMiddlewares_ContextOptimizer_Default(t *testing.T) {
+// TestInitStandardMiddlewares_ContextOptimizer_Default ...
+// Summary: TestInitStandardMiddlewares_ContextOptimizer_Default
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Initialize with empty ContextOptimizerConfig (MaxChars = 0)
 	config := &configv1.ContextOptimizerConfig{} // Defaults to 0
 

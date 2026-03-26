@@ -8,7 +8,16 @@ import (
 	"testing"
 )
 
-func TestEstimateJSONSize(t *testing.T) {
+// TestEstimateJSONSize ...
+// Summary: TestEstimateJSONSize
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name string
 		v    interface{}
@@ -79,7 +88,16 @@ func TestEstimateJSONSize(t *testing.T) {
 	}
 }
 
-func TestEstimateJSONSizeCycles(t *testing.T) {
+// TestEstimateJSONSizeCycles ...
+// Summary: TestEstimateJSONSizeCycles
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Map cycle
 	m := make(map[string]interface{})
 	m["self"] = m
@@ -96,7 +114,16 @@ func TestEstimateJSONSizeCycles(t *testing.T) {
 	EstimateJSONSize(n)
 }
 
-func BenchmarkEstimateJSONSize(b *testing.B) {
+// BenchmarkEstimateJSONSize ...
+// Summary: BenchmarkEstimateJSONSize
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	v := map[string]interface{}{
 		"id":    "12345",
 		"data":  make([]string, 1000),
@@ -119,7 +146,16 @@ func BenchmarkEstimateJSONSize(b *testing.B) {
 	}
 }
 
-func BenchmarkJSONMarshal(b *testing.B) {
+// BenchmarkJSONMarshal ...
+// Summary: BenchmarkJSONMarshal
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	v := map[string]interface{}{
 		"id":    "12345",
 		"data":  make([]string, 1000),
@@ -142,7 +178,16 @@ func BenchmarkJSONMarshal(b *testing.B) {
 	}
 }
 
-func TestEstimateJSONSizeEmptyValues(t *testing.T) {
+// TestEstimateJSONSizeEmptyValues ...
+// Summary: TestEstimateJSONSizeEmptyValues
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Need to cover isEmptyValue cases
 	tests := []struct {
 		name string
@@ -218,13 +263,31 @@ func TestEstimateJSONSizeEmptyValues(t *testing.T) {
 	}
 }
 
-func TestEstimateJSONSizeVisitedPool(t *testing.T) {
+// TestEstimateJSONSizeVisitedPool ...
+// Summary: TestEstimateJSONSizeVisitedPool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Force reuse of the sync.Pool by calling concurrently or just multiple times
 	for i := 0; i < 100; i++ {
 		EstimateJSONSize(map[string]int{"a": 1})
 	}
 }
-func TestEstimateJSONSizeVisitedPoolConcurrent(t *testing.T) {
+// TestEstimateJSONSizeVisitedPoolConcurrent ...
+// Summary: TestEstimateJSONSizeVisitedPoolConcurrent
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Let's use multiple goroutines to cause the pool to allocate multiple maps
 	done := make(chan bool)
 	for i := 0; i < 10; i++ {
@@ -237,7 +300,16 @@ func TestEstimateJSONSizeVisitedPoolConcurrent(t *testing.T) {
 		<-done
 	}
 }
-func TestEstimateJSONSizeRemainingBranches(t *testing.T) {
+// TestEstimateJSONSizeRemainingBranches ...
+// Summary: TestEstimateJSONSizeRemainingBranches
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name string
 		v    interface{}
@@ -309,7 +381,16 @@ func TestEstimateJSONSizeRemainingBranches(t *testing.T) {
 		})
 	}
 }
-func TestEstimateJSONSizePtrReflect(t *testing.T) {
+// TestEstimateJSONSizePtrReflect ...
+// Summary: TestEstimateJSONSizePtrReflect
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// We need a custom type to trigger reflect.Ptr logic not handled by fast paths
 	type MyInt int
 	val := MyInt(42)
@@ -327,7 +408,16 @@ func TestEstimateJSONSizePtrReflect(t *testing.T) {
 	EstimateJSONSize(n)
 }
 
-func TestEstimateJSONSizeReflectInterfaceNil(t *testing.T) {
+// TestEstimateJSONSizeReflectInterfaceNil ...
+// Summary: TestEstimateJSONSizeReflectInterfaceNil
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Cover reflect.Interface where it's nil
 	type Wrapper struct {
 		I interface{}
@@ -335,7 +425,16 @@ func TestEstimateJSONSizeReflectInterfaceNil(t *testing.T) {
 	w := Wrapper{}
 	EstimateJSONSize(w)
 }
-func TestEstimateJSONSizeEmptyValueEdgeCases(t *testing.T) {
+// TestEstimateJSONSizeEmptyValueEdgeCases ...
+// Summary: TestEstimateJSONSizeEmptyValueEdgeCases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Let's call isEmptyValue directly to guarantee coverage of all its branches
 	// Since it's an unexported function, we can test it indirectly via structs with omitempty
 
@@ -371,7 +470,16 @@ func TestEstimateJSONSizeEmptyValueEdgeCases(t *testing.T) {
 	}
 }
 
-func TestEstimateReflectRemaining(t *testing.T) {
+// TestEstimateReflectRemaining ...
+// Summary: TestEstimateReflectRemaining
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// estimateReflect defaults
 	type MyString string
 	v := MyString("hello")

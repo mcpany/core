@@ -21,7 +21,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestHandleLogin(t *testing.T) {
+// TestHandleLogin ...
+// Summary: TestHandleLogin
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 	app.fs = afero.NewMemMapFs()
 	app.AuthManager = auth.NewManager()

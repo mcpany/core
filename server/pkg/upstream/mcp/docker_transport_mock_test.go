@@ -24,49 +24,112 @@ type mockDockerClient struct {
 	CloseFunc           func() error
 }
 
-func (m *mockDockerClient) ImagePull(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error) {
+// ImagePull ...
+// Summary: ImagePull
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.ImagePullFunc != nil {
 		return m.ImagePullFunc(ctx, ref, options)
 	}
 	return nil, nil
 }
 
-func (m *mockDockerClient) ContainerCreate(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error) {
+// ContainerCreate ...
+// Summary: ContainerCreate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.ContainerCreateFunc != nil {
 		return m.ContainerCreateFunc(ctx, config, hostConfig, networkingConfig, platform, containerName)
 	}
 	return container.CreateResponse{}, nil
 }
 
-func (m *mockDockerClient) ContainerAttach(ctx context.Context, container string, options container.AttachOptions) (types.HijackedResponse, error) {
+// ContainerAttach ...
+// Summary: ContainerAttach
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.ContainerAttachFunc != nil {
 		return m.ContainerAttachFunc(ctx, container, options)
 	}
 	return types.HijackedResponse{}, nil
 }
 
-func (m *mockDockerClient) ContainerStart(ctx context.Context, container string, options container.StartOptions) error {
+// ContainerStart ...
+// Summary: ContainerStart
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.ContainerStartFunc != nil {
 		return m.ContainerStartFunc(ctx, container, options)
 	}
 	return nil
 }
 
-func (m *mockDockerClient) ContainerStop(ctx context.Context, containerID string, options container.StopOptions) error {
+// ContainerStop ...
+// Summary: ContainerStop
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.ContainerStopFunc != nil {
 		return m.ContainerStopFunc(ctx, containerID, options)
 	}
 	return nil
 }
 
-func (m *mockDockerClient) ContainerRemove(ctx context.Context, containerID string, options container.RemoveOptions) error {
+// ContainerRemove ...
+// Summary: ContainerRemove
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.ContainerRemoveFunc != nil {
 		return m.ContainerRemoveFunc(ctx, containerID, options)
 	}
 	return nil
 }
 
-func (m *mockDockerClient) Close() error {
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.CloseFunc != nil {
 		return m.CloseFunc()
 	}

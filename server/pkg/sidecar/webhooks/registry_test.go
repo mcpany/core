@@ -13,9 +13,27 @@ import (
 
 type mockHandler struct{}
 
-func (h *mockHandler) Handle(w http.ResponseWriter, r *http.Request) {}
+// Handle ...
+// Summary: Handle
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func TestRegistry(t *testing.T) {
+// TestRegistry ...
+// Summary: TestRegistry
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	r := NewRegistry()
 
 	t.Run("Register and Get", func(t *testing.T) {

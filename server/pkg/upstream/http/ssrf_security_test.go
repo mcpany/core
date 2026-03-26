@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestSSRFProtection(t *testing.T) {
+// TestSSRFProtection ...
+// Summary: TestSSRFProtection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. Start a local server (target for SSRF)
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -59,7 +68,16 @@ func TestSSRFProtection(t *testing.T) {
 	}
 }
 
-func TestSSRFProtection_Allowed(t *testing.T) {
+// TestSSRFProtection_Allowed ...
+// Summary: TestSSRFProtection_Allowed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. Start a local server (target for SSRF)
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)

@@ -28,7 +28,8 @@ func boolPtr(b bool) *bool {
 }
 
 // MockServiceRegistry is a comprehensive mock for serviceregistry.ServiceRegistryInterface
-type MockServiceRegistry struct {
+// MockServiceRegistry is a comprehensive mock for serviceregistry.ServiceRegistryInterface
+// Summary: MockServiceRegistry
 	serviceregistry.ServiceRegistryInterface // Embed to satisfy interface, but override methods we use
 
 	registerFunc         func(ctx context.Context, config *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error)
@@ -37,43 +38,106 @@ type MockServiceRegistry struct {
 	getServiceConfigFunc func(serviceID string) (*configv1.UpstreamServiceConfig, bool)
 }
 
-func (m *MockServiceRegistry) RegisterService(ctx context.Context, config *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+// RegisterService ...
+// Summary: RegisterService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.registerFunc != nil {
 		return m.registerFunc(ctx, config)
 	}
 	return "service1", nil, nil, nil
 }
 
-func (m *MockServiceRegistry) UnregisterService(ctx context.Context, name string) error {
+// UnregisterService ...
+// Summary: UnregisterService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.unregisterFunc != nil {
 		return m.unregisterFunc(ctx, name)
 	}
 	return nil
 }
 
-func (m *MockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfig, error) {
+// GetAllServices ...
+// Summary: GetAllServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.getAllServicesFunc != nil {
 		return m.getAllServicesFunc()
 	}
 	return nil, nil
 }
 
-func (m *MockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.UpstreamServiceConfig, bool) {
+// GetServiceConfig ...
+// Summary: GetServiceConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.getServiceConfigFunc != nil {
 		return m.getServiceConfigFunc(serviceID)
 	}
 	return nil, false
 }
 
-func (m *MockServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
+// GetServiceInfo ...
+// Summary: GetServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, false
 }
 
-func (m *MockServiceRegistry) GetServiceError(serviceID string) (string, bool) {
+// GetServiceError ...
+// Summary: GetServiceError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return "", false
 }
 
-func TestServiceRegistrationWorker_Stop(t *testing.T) {
+// TestServiceRegistrationWorker_Stop ...
+// Summary: TestServiceRegistrationWorker_Stop
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	globalTestLock.Lock()
 	defer globalTestLock.Unlock()
 
@@ -99,7 +163,16 @@ func TestServiceRegistrationWorker_Stop(t *testing.T) {
 	assert.True(t, true)
 }
 
-func TestServiceRegistrationWorker_Register_Success(t *testing.T) {
+// TestServiceRegistrationWorker_Register_Success ...
+// Summary: TestServiceRegistrationWorker_Register_Success
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	globalTestLock.Lock()
 	defer globalTestLock.Unlock()
 
@@ -155,7 +228,16 @@ func TestServiceRegistrationWorker_Register_Success(t *testing.T) {
 	}
 }
 
-func TestServiceRegistrationWorker_Register_Failure(t *testing.T) {
+// TestServiceRegistrationWorker_Register_Failure ...
+// Summary: TestServiceRegistrationWorker_Register_Failure
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	globalTestLock.Lock()
 	defer globalTestLock.Unlock()
 
@@ -204,7 +286,16 @@ func TestServiceRegistrationWorker_Register_Failure(t *testing.T) {
 	}
 }
 
-func TestServiceRegistrationWorker_Unregister(t *testing.T) {
+// TestServiceRegistrationWorker_Unregister ...
+// Summary: TestServiceRegistrationWorker_Unregister
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	globalTestLock.Lock()
 	defer globalTestLock.Unlock()
 
@@ -263,7 +354,16 @@ func TestServiceRegistrationWorker_Unregister(t *testing.T) {
 	}
 }
 
-func TestServiceRegistrationWorker_List(t *testing.T) {
+// TestServiceRegistrationWorker_List ...
+// Summary: TestServiceRegistrationWorker_List
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	globalTestLock.Lock()
 	defer globalTestLock.Unlock()
 
@@ -313,7 +413,16 @@ func TestServiceRegistrationWorker_List(t *testing.T) {
 	}
 }
 
-func TestServiceRegistrationWorker_Get(t *testing.T) {
+// TestServiceRegistrationWorker_Get ...
+// Summary: TestServiceRegistrationWorker_Get
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	globalTestLock.Lock()
 	defer globalTestLock.Unlock()
 
@@ -363,7 +472,16 @@ func TestServiceRegistrationWorker_Get(t *testing.T) {
 	}
 }
 
-func TestServiceRegistrationWorker_Get_NotFound(t *testing.T) {
+// TestServiceRegistrationWorker_Get_NotFound ...
+// Summary: TestServiceRegistrationWorker_Get_NotFound
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	globalTestLock.Lock()
 	defer globalTestLock.Unlock()
 
@@ -408,7 +526,16 @@ func TestServiceRegistrationWorker_Get_NotFound(t *testing.T) {
 	}
 }
 
-func TestServiceRegistrationWorker_Register_Timeout(t *testing.T) {
+// TestServiceRegistrationWorker_Register_Timeout ...
+// Summary: TestServiceRegistrationWorker_Register_Timeout
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	globalTestLock.Lock()
 	defer globalTestLock.Unlock()
 

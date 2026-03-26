@@ -15,7 +15,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestHandleAlerts(t *testing.T) {
+// TestHandleAlerts ...
+// Summary: TestHandleAlerts
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 	// Use default seeded data from NewManager
 	app.AlertsManager = alerts.NewManager()
@@ -64,7 +73,16 @@ func TestHandleAlerts(t *testing.T) {
 	})
 }
 
-func TestHandleAlertDetail(t *testing.T) {
+// TestHandleAlertDetail ...
+// Summary: TestHandleAlertDetail
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 	// Ensure we have a known alert
 	alert := &alerts.Alert{
@@ -120,7 +138,16 @@ func TestHandleAlertDetail(t *testing.T) {
 	})
 }
 
-func TestHandleAlertRules(t *testing.T) {
+// TestHandleAlertRules ...
+// Summary: TestHandleAlertRules
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 
 	t.Run("ListRules", func(t *testing.T) {
@@ -159,7 +186,16 @@ func TestHandleAlertRules(t *testing.T) {
 	})
 }
 
-func TestHandleAlertRuleDetail(t *testing.T) {
+// TestHandleAlertRuleDetail ...
+// Summary: TestHandleAlertRuleDetail
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 	rule := &alerts.AlertRule{
 		ID:   "rule-123",
@@ -216,7 +252,16 @@ func TestHandleAlertRuleDetail(t *testing.T) {
 	})
 }
 
-func TestHandleAlertWebhook(t *testing.T) {
+// TestHandleAlertWebhook ...
+// Summary: TestHandleAlertWebhook
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 
 	t.Run("GetWebhookURL_Default", func(t *testing.T) {

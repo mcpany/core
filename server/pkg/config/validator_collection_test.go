@@ -12,7 +12,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestValidate_Collection_InvalidURL(t *testing.T) {
+// TestValidate_Collection_InvalidURL ...
+// Summary: TestValidate_Collection_InvalidURL
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	config := configv1.McpAnyServerConfig_builder{
 		Collections: []*configv1.Collection{
 			configv1.Collection_builder{
@@ -28,7 +37,16 @@ func TestValidate_Collection_InvalidURL(t *testing.T) {
 	assert.NotEmpty(t, errs, "Expected validation error for invalid URL in collection")
 }
 
-func TestValidate_Collection_EmptyURL(t *testing.T) {
+// TestValidate_Collection_EmptyURL ...
+// Summary: TestValidate_Collection_EmptyURL
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	config := configv1.McpAnyServerConfig_builder{
 		Collections: []*configv1.Collection{
 			configv1.Collection_builder{
@@ -45,7 +63,16 @@ func TestValidate_Collection_EmptyURL(t *testing.T) {
 	// Verify exact error if possible or just existence
 }
 
-func TestValidate_Collection_InlineWithSkills(t *testing.T) {
+// TestValidate_Collection_InlineWithSkills ...
+// Summary: TestValidate_Collection_InlineWithSkills
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	config := configv1.McpAnyServerConfig_builder{
 		Collections: []*configv1.Collection{
 			configv1.Collection_builder{

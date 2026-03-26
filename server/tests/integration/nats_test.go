@@ -16,7 +16,16 @@ import (
 
 const testMessage = "hello"
 
-func TestNatsBus_EmbeddedServer(t *testing.T) {
+// TestNatsBus_EmbeddedServer ...
+// Summary: TestNatsBus_EmbeddedServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	serverInfo := StartInProcessMCPANYServer(t, "embedded-nats")
 	defer serverInfo.CleanupFunc()
 
@@ -44,7 +53,16 @@ func TestNatsBus_EmbeddedServer(t *testing.T) {
 	}, 5*time.Second, 100*time.Millisecond, "did not receive message in time")
 }
 
-func TestNatsBus_ExternalServer(t *testing.T) {
+// TestNatsBus_ExternalServer ...
+// Summary: TestNatsBus_ExternalServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	serverInfo := StartMCPANYServer(t, "external-nats")
 	defer serverInfo.CleanupFunc()
 

@@ -15,7 +15,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestIsValidURL(t *testing.T) {
+// TestIsValidURL ...
+// Summary: TestIsValidURL
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCases := []struct {
 		name     string
 		rawURL   string
@@ -79,7 +88,16 @@ func TestIsValidURL(t *testing.T) {
 	}
 }
 
-func TestIsValidBindAddress(t *testing.T) {
+// TestIsValidBindAddress ...
+// Summary: TestIsValidBindAddress
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name    string
 		address string
@@ -109,7 +127,16 @@ func TestIsValidBindAddress(t *testing.T) {
 	}
 }
 
-func TestFileExists(t *testing.T) {
+// TestFileExists ...
+// Summary: TestFileExists
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary file to test the case where the file exists.
 	file, err := os.CreateTemp("", "test")
 	if err != nil {
@@ -124,7 +151,16 @@ func TestFileExists(t *testing.T) {
 	assert.Error(t, FileExists("non-existent-file"))
 }
 
-func TestValidateHTTPServiceDefinition(t *testing.T) {
+// TestValidateHTTPServiceDefinition ...
+// Summary: TestValidateHTTPServiceDefinition
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	methodPost := configv1.HttpCallDefinition_HTTP_METHOD_POST
 	methodGet := configv1.HttpCallDefinition_HTTP_METHOD_GET
 	methodUnspecified := configv1.HttpCallDefinition_HTTP_METHOD_UNSPECIFIED
@@ -200,7 +236,16 @@ func TestValidateHTTPServiceDefinition(t *testing.T) {
 	}
 }
 
-func TestIsAllowedPath_AllowedDotDotPrefix(t *testing.T) {
+// TestIsAllowedPath_AllowedDotDotPrefix ...
+// Summary: TestIsAllowedPath_AllowedDotDotPrefix
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary directory for our "CWD"
 	cwd, err := os.MkdirTemp("", "mcpany-cwd")
 	require.NoError(t, err)
@@ -224,7 +269,16 @@ func TestIsAllowedPath_AllowedDotDotPrefix(t *testing.T) {
 	require.NoError(t, err, "IsAllowedPath should allow filenames starting with '..'")
 }
 
-func TestIsAllowedPath_Symlinks(t *testing.T) {
+// TestIsAllowedPath_Symlinks ...
+// Summary: TestIsAllowedPath_Symlinks
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tmpDir := t.TempDir()
 
 	// Create a safe directory
@@ -279,7 +333,16 @@ func TestIsAllowedPath_Symlinks(t *testing.T) {
 	require.Error(t, err, "file via symlink should be denied")
 }
 
-func TestIsAllowedPath_SymlinkLoop(t *testing.T) {
+// TestIsAllowedPath_SymlinkLoop ...
+// Summary: TestIsAllowedPath_SymlinkLoop
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tmpDir := t.TempDir()
 
 	// Create a loop

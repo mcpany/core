@@ -12,7 +12,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestRedactor_Bug_CommentInKey(t *testing.T) {
+// TestRedactor_Bug_CommentInKey ...
+// Summary: TestRedactor_Bug_CommentInKey
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// A credit card number as a key (unlikely but possible).
 	// If the redactor bugs out on comments, it will treat this KEY as a VALUE and redact it.
 	cc := "1234-5678-9012-3456"
@@ -37,7 +46,16 @@ func TestRedactor_Bug_CommentInKey(t *testing.T) {
 	assert.Contains(t, string(redacted), cc)
 }
 
-func TestRedactor_Bug_PlainText(t *testing.T) {
+// TestRedactor_Bug_PlainText ...
+// Summary: TestRedactor_Bug_PlainText
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This previously triggered a bug where RedactJSON would modify plain text
 	// if it contained quotes and colons.
 	input := `This is plain text with "token": "mysecret" embedded.`
@@ -56,7 +74,16 @@ func TestRedactor_Bug_PlainText(t *testing.T) {
 	assert.Equal(t, input, string(redacted))
 }
 
-func TestRedactor_Bug_StringInComment_CorruptsStructure(t *testing.T) {
+// TestRedactor_Bug_StringInComment_CorruptsStructure ...
+// Summary: TestRedactor_Bug_StringInComment_CorruptsStructure
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// PII in a comment, but the comment contains an unclosed quote from the walker's perspective.
 	// Walker sees: "user@example.com */ "
 	// It replaces it with "***REDACTED***"

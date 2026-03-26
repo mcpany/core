@@ -14,7 +14,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestSystemStatus(t *testing.T) {
+// TestSystemStatus ...
+// Summary: TestSystemStatus
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 	// Mock SettingsManager to avoid nil pointer dereference
 	app.SettingsManager = NewGlobalSettingsManager("", nil, nil)

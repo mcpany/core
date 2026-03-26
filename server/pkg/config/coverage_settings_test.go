@@ -11,7 +11,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSettings_LogFormat_Fallback(t *testing.T) {
+// TestSettings_LogFormat_Fallback ...
+// Summary: TestSettings_LogFormat_Fallback
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	viper.Reset()
 	viper.Set("log-format", "INVALID_FORMAT")
 
@@ -19,7 +28,16 @@ func TestSettings_LogFormat_Fallback(t *testing.T) {
 	assert.Equal(t, configv1.GlobalSettings_LOG_FORMAT_TEXT, s2.LogFormat())
 }
 
-func TestSettings_LogLevel_Invalid(t *testing.T) {
+// TestSettings_LogLevel_Invalid ...
+// Summary: TestSettings_LogLevel_Invalid
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	s := &Settings{
 		logLevel: "INVALID_LEVEL",
 	}
@@ -27,7 +45,16 @@ func TestSettings_LogLevel_Invalid(t *testing.T) {
 	assert.Equal(t, configv1.GlobalSettings_LOG_LEVEL_INFO, s.LogLevel())
 }
 
-func TestGetStringSlice_Coverage(t *testing.T) {
+// TestGetStringSlice_Coverage ...
+// Summary: TestGetStringSlice_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	viper.Reset()
 
 	// Case 1: String with comma (Env var simulation)

@@ -15,7 +15,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestCopilotCLIE2E_Everything(t *testing.T) {
+// TestCopilotCLIE2E_Everything ...
+// Summary: TestCopilotCLIE2E_Everything
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	copilot := framework.NewCopilotCLI(t)
 	copilot.Install()
 

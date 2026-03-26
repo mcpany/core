@@ -7,7 +7,16 @@ import (
 	"testing"
 )
 
-func TestManager_CreateAndGet(t *testing.T) {
+// TestManager_CreateAndGet ...
+// Summary: TestManager_CreateAndGet
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewManager()
 	alert := &Alert{
 		Title:    "Test Alert",
@@ -28,7 +37,16 @@ func TestManager_CreateAndGet(t *testing.T) {
 	}
 }
 
-func TestManager_List(t *testing.T) {
+// TestManager_List ...
+// Summary: TestManager_List
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewManager()
 	// Should have seeded data (5 items)
 	list := m.ListAlerts()
@@ -37,7 +55,16 @@ func TestManager_List(t *testing.T) {
 	}
 }
 
-func TestManager_Update(t *testing.T) {
+// TestManager_Update ...
+// Summary: TestManager_Update
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewManager()
 	alert := &Alert{Title: "Test", Status: StatusActive}
 	created := m.CreateAlert(alert)
@@ -53,7 +80,16 @@ func TestManager_Update(t *testing.T) {
 	}
 }
 
-func TestManager_Webhook(t *testing.T) {
+// TestManager_Webhook ...
+// Summary: TestManager_Webhook
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewManager()
 	url := "http://example.com/webhook"
 	m.SetWebhookURL(url)
@@ -63,7 +99,16 @@ func TestManager_Webhook(t *testing.T) {
 	}
 }
 
-func TestManager_GetAlertStats(t *testing.T) {
+// TestManager_GetAlertStats ...
+// Summary: TestManager_GetAlertStats
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewManager()
 	stats := m.GetAlertStats()
 	if stats == nil {

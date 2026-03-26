@@ -16,7 +16,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestSftpProvider_Extended(t *testing.T) {
+// TestSftpProvider_Extended ...
+// Summary: TestSftpProvider_Extended
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary directory for the SFTP server to serve
 	addr, _, cleanup := startSFTPServer(t, nil)
 	defer cleanup()

@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestFindInjection(t *testing.T) {
+// TestFindInjection ...
+// Summary: TestFindInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("Find_Exec_Injection", func(t *testing.T) {
 		toolDef := (&pb.Tool_builder{
 			Name: proto.String("find_tool"),

@@ -19,7 +19,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestAuthMiddleware(t *testing.T) {
+// TestAuthMiddleware ...
+// Summary: TestAuthMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("should return error when no authenticator is configured", func(t *testing.T) {
 		authManager := auth.NewManager()
 		mw := middleware.AuthMiddleware(authManager)

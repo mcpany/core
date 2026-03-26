@@ -18,7 +18,16 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-func TestToolMetricsMiddleware_Execute(t *testing.T) {
+// TestToolMetricsMiddleware_Execute ...
+// Summary: TestToolMetricsMiddleware_Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Ensure metrics are registered
 	middleware := NewToolMetricsMiddleware(nil)
 
@@ -301,7 +310,16 @@ func TestToolMetricsMiddleware_Execute(t *testing.T) {
 	})
 }
 
-func BenchmarkToolMetricsMiddleware_Execute(b *testing.B) {
+// BenchmarkToolMetricsMiddleware_Execute ...
+// Summary: BenchmarkToolMetricsMiddleware_Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	middleware := NewToolMetricsMiddleware(nil)
 	req := &tool.ExecutionRequest{
 		ToolName:   "bench_tool",
@@ -327,7 +345,16 @@ func BenchmarkToolMetricsMiddleware_Execute(b *testing.B) {
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-func TestCalculateOutputSize(t *testing.T) {
+// TestCalculateOutputSize ...
+// Summary: TestCalculateOutputSize
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		input    any
@@ -403,7 +430,16 @@ func TestCalculateOutputSize(t *testing.T) {
 	}
 }
 
-func TestCachingMiddleware_Clear(t *testing.T) {
+// TestCachingMiddleware_Clear ...
+// Summary: TestCachingMiddleware_Clear
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 

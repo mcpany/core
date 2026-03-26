@@ -9,7 +9,16 @@ import (
 	"testing"
 )
 
-func TestGetClientIP_XFF_Validation(t *testing.T) {
+// TestGetClientIP_XFF_Validation ...
+// Summary: TestGetClientIP_XFF_Validation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		xff      string

@@ -16,7 +16,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestWebhookAuditStore(t *testing.T) {
+// TestWebhookAuditStore ...
+// Summary: TestWebhookAuditStore
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup test server
 	var mu sync.Mutex
 	var receivedEntries []Entry
@@ -89,7 +98,16 @@ func TestWebhookAuditStore(t *testing.T) {
 	assert.Equal(t, "application/json", receivedHeaders.Get("Content-Type"))
 }
 
-func TestWebhookAuditStore_Batch(t *testing.T) {
+// TestWebhookAuditStore_Batch ...
+// Summary: TestWebhookAuditStore_Batch
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var mu sync.Mutex
 	var receivedEntries []Entry
 	done := make(chan struct{})

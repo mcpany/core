@@ -10,7 +10,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestStripSecretsFromService_Coverage(t *testing.T) {
+// TestStripSecretsFromService_Coverage ...
+// Summary: TestStripSecretsFromService_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name string
 		svc  *configv1.UpstreamServiceConfig
@@ -62,7 +71,16 @@ func TestStripSecretsFromService_Coverage(t *testing.T) {
 	}
 }
 
-func TestStripSecretsFromService_McpConnection(t *testing.T) {
+// TestStripSecretsFromService_McpConnection ...
+// Summary: TestStripSecretsFromService_McpConnection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Stdio
 	stdio := configv1.UpstreamServiceConfig_builder{}.Build()
 	{
@@ -110,7 +128,16 @@ func TestStripSecretsFromService_McpConnection(t *testing.T) {
 	}
 }
 
-func TestStripSecretsFromProfile_Coverage(t *testing.T) {
+// TestStripSecretsFromProfile_Coverage ...
+// Summary: TestStripSecretsFromProfile_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	StripSecretsFromProfile(nil)
 
 	profile := configv1.ProfileDefinition_builder{
@@ -126,11 +153,29 @@ func TestStripSecretsFromProfile_Coverage(t *testing.T) {
 	}
 }
 
-func TestStripSecretsFromCollection_Coverage(t *testing.T) {
+// TestStripSecretsFromCollection_Coverage ...
+// Summary: TestStripSecretsFromCollection_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	StripSecretsFromCollection(nil)
 }
 
-func TestHydrateSecrets_Coverage(t *testing.T) {
+// TestHydrateSecrets_Coverage ...
+// Summary: TestHydrateSecrets_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	HydrateSecretsInService(nil, nil)
 	HydrateSecretsInService(configv1.UpstreamServiceConfig_builder{}.Build(), nil)
 
@@ -277,7 +322,16 @@ func TestHydrateSecrets_Coverage(t *testing.T) {
 	HydrateSecretsInService(httpSvc, secrets)
 }
 
-func TestStripSecretsFromService_Filesystem_Vector_More(t *testing.T) {
+// TestStripSecretsFromService_Filesystem_Vector_More ...
+// Summary: TestStripSecretsFromService_Filesystem_Vector_More
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test Filesystem S3
 	fsS3 := configv1.UpstreamServiceConfig_builder{}.Build()
 	{

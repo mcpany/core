@@ -12,7 +12,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestCallableTool(t *testing.T) {
+// TestCallableTool ...
+// Summary: TestCallableTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	// Setup
 	toolDef := configv1.ToolDefinition_builder{Name: proto.String("test-tool")}.Build()
@@ -30,22 +39,50 @@ func TestCallableTool(t *testing.T) {
 	assert.Nil(t, ct.GetCacheConfig())
 }
 
-type MockCallable struct {
+// MockCallable ...
+// Summary: MockCallable
 	CallFunc func(context.Context, *ExecutionRequest) (any, error)
 }
 
-func (m *MockCallable) Call(ctx context.Context, req *ExecutionRequest) (any, error) {
+// Call ...
+// Summary: Call
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.CallFunc != nil {
 		return m.CallFunc(ctx, req)
 	}
 	return "result", nil
 }
 
-func (m *MockCallable) Parameters() map[string]any {
+// Parameters ...
+// Summary: Parameters
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func TestCallableTool_Execute(t *testing.T) {
+// TestCallableTool_Execute ...
+// Summary: TestCallableTool_Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	mockC := &MockCallable{}
 	ct, _ := NewCallableTool(

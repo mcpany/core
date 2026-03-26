@@ -11,12 +11,30 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGRPCProvider_Name(t *testing.T) {
+// TestGRPCProvider_Name ...
+// Summary: TestGRPCProvider_Name
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	provider := &GRPCProvider{}
 	assert.Equal(t, "grpc", provider.Name())
 }
 
-func TestGRPCProvider_Discover(t *testing.T) {
+// TestGRPCProvider_Discover ...
+// Summary: TestGRPCProvider_Discover
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	provider := &GRPCProvider{Endpoint: "localhost:50051"}
 
 	svcs, err := provider.Discover(context.Background())

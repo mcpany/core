@@ -18,7 +18,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestHandleGetUserPreferences(t *testing.T) {
+// TestHandleGetUserPreferences ...
+// Summary: TestHandleGetUserPreferences
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup
 	store := memory.NewStore()
 	app := &Application{Storage: store}
@@ -48,7 +57,16 @@ func TestHandleGetUserPreferences(t *testing.T) {
 	assert.Equal(t, "dark", prefs["theme"])
 }
 
-func TestHandleGetUserPreferences_NotFound(t *testing.T) {
+// TestHandleGetUserPreferences_NotFound ...
+// Summary: TestHandleGetUserPreferences_NotFound
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	store := memory.NewStore()
 	app := &Application{Storage: store}
 
@@ -66,7 +84,16 @@ func TestHandleGetUserPreferences_NotFound(t *testing.T) {
 	assert.Empty(t, prefs)
 }
 
-func TestHandleUpdateUserPreferences(t *testing.T) {
+// TestHandleUpdateUserPreferences ...
+// Summary: TestHandleUpdateUserPreferences
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	store := memory.NewStore()
 	app := &Application{Storage: store}
 

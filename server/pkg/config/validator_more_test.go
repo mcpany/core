@@ -18,7 +18,16 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestValidate_MoreServices(t *testing.T) {
+// TestValidate_MoreServices ...
+// Summary: TestValidate_MoreServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Mock execLookPath
 	oldLookPath := execLookPath
 	defer func() { execLookPath = oldLookPath }()
@@ -782,7 +791,16 @@ func TestValidate_MoreServices(t *testing.T) {
 	}
 }
 
-func TestValidate_MtlsInsecure(t *testing.T) {
+// TestValidate_MtlsInsecure ...
+// Summary: TestValidate_MtlsInsecure
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a real file for insecure path
 	f, err := os.CreateTemp("", "insecure.pem")
 	require.NoError(t, err)
@@ -978,7 +996,16 @@ func TestValidate_MtlsInsecure(t *testing.T) {
 	}
 }
 
-func TestValidate_RedisAddressNil(t *testing.T) {
+// TestValidate_RedisAddressNil ...
+// Summary: TestValidate_RedisAddressNil
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	msgBus := &bus.MessageBus{}
 	msgBus.SetRedis(&bus.RedisBus{})
 
@@ -993,7 +1020,16 @@ func TestValidate_RedisAddressNil(t *testing.T) {
 	assert.Contains(t, errs[0].Error(), "redis message bus address is empty")
 }
 
-func TestValidate_MemoryBus(t *testing.T) {
+// TestValidate_MemoryBus ...
+// Summary: TestValidate_MemoryBus
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	msgBus := &bus.MessageBus{}
 	msgBus.SetInMemory(&bus.InMemoryBus{})
 

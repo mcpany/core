@@ -9,7 +9,16 @@ import (
 	"testing"
 )
 
-func TestCountTokensInValue_FastPathConsistency(t *testing.T) {
+// TestCountTokensInValue_FastPathConsistency ...
+// Summary: TestCountTokensInValue_FastPathConsistency
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	st := NewSimpleTokenizer()
 	wt := NewWordTokenizer()
 

@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestOpenAPIUpstream_Register_SpaceInPath_Bug(t *testing.T) {
+// TestOpenAPIUpstream_Register_SpaceInPath_Bug ...
+// Summary: TestOpenAPIUpstream_Register_SpaceInPath_Bug
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	mockToolManager := new(MockToolManager)
 	upstream := NewOpenAPIUpstream()

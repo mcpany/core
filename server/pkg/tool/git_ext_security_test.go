@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestLocalCommandTool_Git_Ext_RCE_Repro(t *testing.T) {
+// TestLocalCommandTool_Git_Ext_RCE_Repro ...
+// Summary: TestLocalCommandTool_Git_Ext_RCE_Repro
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test attempts to demonstrate that git command execution allows injecting
 	// dangerous protocols like ext:: which can lead to RCE.
 

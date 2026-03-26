@@ -18,7 +18,16 @@ import (
 	"gopkg.in/square/go-jose.v2"
 )
 
-func TestOIDCProvider_HandleCallback(t *testing.T) {
+// TestOIDCProvider_HandleCallback ...
+// Summary: TestOIDCProvider_HandleCallback
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Generate RSA key for signing tokens
 	rsaKey, err := rsa.GenerateKey(rand.Reader, 2048)
 	require.NoError(t, err)

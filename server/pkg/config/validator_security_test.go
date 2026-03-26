@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func TestValidate_Security_VolumeMounts(t *testing.T) {
+// TestValidate_Security_VolumeMounts ...
+// Summary: TestValidate_Security_VolumeMounts
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test reproduces a security vulnerability where insecure volume mounts
 	// (using ".." traversal) are allowed in the container environment configuration.
 	// We first assert that it IS allowed (proving the issue), then we will fix it
@@ -49,7 +58,16 @@ func TestValidate_Security_VolumeMounts(t *testing.T) {
 	assert.Contains(t, validationErrors[0].Error(), "container environment volume host path")
 }
 
-func TestValidate_Security_StdioArgs_PathBypass(t *testing.T) {
+// TestValidate_Security_StdioArgs_PathBypass ...
+// Summary: TestValidate_Security_StdioArgs_PathBypass
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test ensures that script arguments for stdio connection must be within allowed paths.
 	// Previously, validateStdioArgs only checked for existence, allowing execution of scripts outside CWD.
 

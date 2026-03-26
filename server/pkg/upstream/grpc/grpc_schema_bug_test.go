@@ -16,7 +16,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestGRPCUpstream_SchemaBug_ExplicitConfig(t *testing.T) {
+// TestGRPCUpstream_SchemaBug_ExplicitConfig ...
+// Summary: TestGRPCUpstream_SchemaBug_ExplicitConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var promptManager prompt.ManagerInterface
 	var resourceManager resource.ManagerInterface
 

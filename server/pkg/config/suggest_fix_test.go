@@ -12,7 +12,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSuggestFix_CommonAlias_Services(t *testing.T) {
+// TestSuggestFix_CommonAlias_Services ...
+// Summary: TestSuggestFix_CommonAlias_Services
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	// Config using "services" which is a common mistake for "upstream_services"
 	badConfig := `
@@ -30,7 +39,16 @@ services:
 	assert.True(t, strings.Contains(err.Error(), "Did you mean \"upstream_services\"? \"services\" is not a valid top-level key."), "Error message should contain specific hint for 'services'")
 }
 
-func TestSuggestFix_Recursion_Excluded(t *testing.T) {
+// TestSuggestFix_Recursion_Excluded ...
+// Summary: TestSuggestFix_Recursion_Excluded
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// We want to ensure that fields from irrelevant messages (like Collection which has 'services')
 	// are NOT suggested when we are at the root level.
 	// We can't easily test 'Collection' exclusion specifically without mocking, but we can test
@@ -54,7 +72,16 @@ upstream_services:
 	assert.True(t, strings.Contains(err.Error(), "Did you mean \"http_service\"?"), "Should suggest http_service")
 }
 
-func TestSuggestFix_DeeplyNested_Included(t *testing.T) {
+// TestSuggestFix_DeeplyNested_Included ...
+// Summary: TestSuggestFix_DeeplyNested_Included
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// "address" is in HttpUpstreamService, which is in our allowed list.
 	fs := afero.NewMemMapFs()
 	badConfig := `

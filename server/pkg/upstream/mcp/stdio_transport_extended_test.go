@@ -14,7 +14,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestStdioTransport_SessionID(t *testing.T) {
+// TestStdioTransport_SessionID ...
+// Summary: TestStdioTransport_SessionID
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	cmd := exec.CommandContext(ctx, "echo", "dummy")
 	transport := &StdioTransport{Command: cmd}
@@ -25,7 +34,16 @@ func TestStdioTransport_SessionID(t *testing.T) {
 	assert.Equal(t, "stdio-session", conn.SessionID())
 }
 
-func TestStdioTransport_CloseIdempotency(t *testing.T) {
+// TestStdioTransport_CloseIdempotency ...
+// Summary: TestStdioTransport_CloseIdempotency
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	cmd := exec.CommandContext(ctx, "echo", "dummy")
 	transport := &StdioTransport{Command: cmd}
@@ -36,7 +54,16 @@ func TestStdioTransport_CloseIdempotency(t *testing.T) {
 	assert.NoError(t, conn.Close()) // Should not error on second close
 }
 
-func TestStdioTransport_Read_InvalidJSON(t *testing.T) {
+// TestStdioTransport_Read_InvalidJSON ...
+// Summary: TestStdioTransport_Read_InvalidJSON
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -52,7 +79,16 @@ func TestStdioTransport_Read_InvalidJSON(t *testing.T) {
 	assert.Contains(t, err.Error(), "invalid character")
 }
 
-func TestStdioTransport_Read_Response(t *testing.T) {
+// TestStdioTransport_Read_Response ...
+// Summary: TestStdioTransport_Read_Response
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -96,7 +132,16 @@ func TestStdioTransport_Read_Response(t *testing.T) {
 	assert.Contains(t, string(resp.Result), "success")
 }
 
-func TestStdioTransport_Read_Response_StringID(t *testing.T) {
+// TestStdioTransport_Read_Response_StringID ...
+// Summary: TestStdioTransport_Read_Response_StringID
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 

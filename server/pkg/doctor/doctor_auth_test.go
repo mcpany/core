@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestRunChecks_Authentication_ActiveVerification(t *testing.T) {
+// TestRunChecks_Authentication_ActiveVerification ...
+// Summary: TestRunChecks_Authentication_ActiveVerification
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	// Start a mock HTTP server that enforces authentication
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

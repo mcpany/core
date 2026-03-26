@@ -8,7 +8,16 @@ import (
 	"testing"
 )
 
-func BenchmarkLevenshteinDistance(b *testing.B) {
+// BenchmarkLevenshteinDistance ...
+// Summary: BenchmarkLevenshteinDistance
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	s1 := "kittens"
 	s2 := "sitting"
 	b.Run("Short", func(b *testing.B) {

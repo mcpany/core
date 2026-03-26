@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestLocalCommandTool_ShellInjection_ArgsBypass(t *testing.T) {
+// TestLocalCommandTool_ShellInjection_ArgsBypass ...
+// Summary: TestLocalCommandTool_ShellInjection_ArgsBypass
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	// Define a tool that uses 'sh', which is in isShellCommand list.
 	// We allow 'args' input.

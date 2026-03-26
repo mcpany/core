@@ -8,7 +8,16 @@ import (
 	"testing"
 )
 
-func TestIsPrivateNetworkIP_NAT64(t *testing.T) {
+// TestIsPrivateNetworkIP_NAT64 ...
+// Summary: TestIsPrivateNetworkIP_NAT64
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		ip       string
@@ -54,7 +63,16 @@ func TestIsPrivateNetworkIP_NAT64(t *testing.T) {
 	}
 }
 
-func TestIsPrivateIP_NAT64(t *testing.T) {
+// TestIsPrivateIP_NAT64 ...
+// Summary: TestIsPrivateIP_NAT64
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// IsPrivateIP should also handle NAT64 correctly by delegating to IsPrivateNetworkIP
 	tests := []struct {
 		name     string

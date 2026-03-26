@@ -14,7 +14,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDLPMiddleware(t *testing.T) {
+// TestDLPMiddleware ...
+// Summary: TestDLPMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	logger := logging.GetLogger()
 	enabled := true
 	cfg := configv1.DLPConfig_builder{

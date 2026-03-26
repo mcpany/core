@@ -19,7 +19,16 @@ import (
 )
 
 // TestExportIntegration tests the integration of AuditMiddleware with the new exporters.
-func TestExportIntegration(t *testing.T) {
+// TestExportIntegration tests the integration of AuditMiddleware with the new exporters.
+// Summary: TestExportIntegration
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Mock Splunk Server
 	var splunkReceived int32
 	splunkSignal := make(chan struct{}, 10)

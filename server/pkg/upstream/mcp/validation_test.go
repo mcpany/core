@@ -12,7 +12,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestBuildCommandFromStdioConfig_Validation(t *testing.T) {
+// TestBuildCommandFromStdioConfig_Validation ...
+// Summary: TestBuildCommandFromStdioConfig_Validation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 
 	t.Run("Validation passed", func(t *testing.T) {

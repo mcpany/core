@@ -25,11 +25,29 @@ type webhookMockMCPClient struct {
 	callToolErr      error
 }
 
-func (m *webhookMockMCPClient) CallTool(_ context.Context, _ *mcp.CallToolParams) (*mcp.CallToolResult, error) {
+// CallTool ...
+// Summary: CallTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.callToolResponse, m.callToolErr
 }
 
-func TestMCPTool_Execute_InputTransformation_Webhook(t *testing.T) {
+// TestMCPTool_Execute_InputTransformation_Webhook ...
+// Summary: TestMCPTool_Execute_InputTransformation_Webhook
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
 
 	webhookServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

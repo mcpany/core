@@ -17,7 +17,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDefaultBus(t *testing.T) {
+// TestDefaultBus ...
+// Summary: TestDefaultBus
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("Publish and Subscribe", func(t *testing.T) {
 		bus := New[string]()
 		var wg sync.WaitGroup
@@ -69,7 +78,16 @@ func TestDefaultBus(t *testing.T) {
 	})
 }
 
-func TestDefaultBus_Concurrent(t *testing.T) {
+// TestDefaultBus_Concurrent ...
+// Summary: TestDefaultBus_Concurrent
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	bus := New[int]()
 	topic := "concurrent_topic"
 	numSubscribers := 10
@@ -110,7 +128,16 @@ func TestDefaultBus_Concurrent(t *testing.T) {
 	assert.Equal(t, int32(expectedReceives), atomic.LoadInt32(&receivedCount)) //nolint:gosec
 }
 
-func TestDefaultBus_PublishTimeout(t *testing.T) {
+// TestDefaultBus_PublishTimeout ...
+// Summary: TestDefaultBus_PublishTimeout
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. Set up a logger to capture output
 	var logBuffer bytes.Buffer
 	logging.ForTestsOnlyResetLogger()
@@ -148,7 +175,16 @@ func TestDefaultBus_PublishTimeout(t *testing.T) {
 	wg.Done()
 }
 
-func TestDefaultBus_SubscribeOnce_Unsubscribe(t *testing.T) {
+// TestDefaultBus_SubscribeOnce_Unsubscribe ...
+// Summary: TestDefaultBus_SubscribeOnce_Unsubscribe
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	bus := New[string]()
 	handlerCalled := false
 

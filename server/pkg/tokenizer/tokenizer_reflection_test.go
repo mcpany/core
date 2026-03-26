@@ -11,16 +11,27 @@ import (
 )
 
 // Structs for testing reflection
-type TestStruct struct {
+// Structs for testing reflection
+// Summary: TestStruct
 	Name string
 	Val  int
 }
 
-type NestedStruct struct {
+// NestedStruct ...
+// Summary: NestedStruct
 	Child *TestStruct
 }
 
-func TestSimpleTokenizer_ReflectionCoverage(t *testing.T) {
+// TestSimpleTokenizer_ReflectionCoverage ...
+// Summary: TestSimpleTokenizer_ReflectionCoverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tok := tokenizer.NewSimpleTokenizer()
 
 	tests := []struct {
@@ -52,7 +63,16 @@ func TestSimpleTokenizer_ReflectionCoverage(t *testing.T) {
 	}
 }
 
-func TestWordTokenizer_ReflectionCoverage(t *testing.T) {
+// TestWordTokenizer_ReflectionCoverage ...
+// Summary: TestWordTokenizer_ReflectionCoverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tok := tokenizer.NewWordTokenizer()
 
 	tests := []struct {
@@ -105,13 +125,32 @@ func TestWordTokenizer_ReflectionCoverage(t *testing.T) {
 }
 
 // MockTokenizer for generic reflection path
-type MockReflectTokenizer struct{}
+// MockTokenizer for generic reflection path
+// Summary: MockReflectTokenizer
 
-func (m *MockReflectTokenizer) CountTokens(text string) (int, error) {
+// CountTokens ...
+// Summary: CountTokens
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return 1, nil
 }
 
-func TestGenericTokenizer_ReflectionCoverage(t *testing.T) {
+// TestGenericTokenizer_ReflectionCoverage ...
+// Summary: TestGenericTokenizer_ReflectionCoverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tok := &MockReflectTokenizer{}
 
 	tests := []struct {

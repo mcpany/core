@@ -44,7 +44,16 @@ const (
 	bearerPrefix    = "Bearer "
 )
 
-func TestNewOAuth2Authenticator(t *testing.T) {
+// TestNewOAuth2Authenticator ...
+// Summary: TestNewOAuth2Authenticator
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	privateKey := newTestKey(t)
 
 	// Mock OIDC provider
@@ -78,7 +87,16 @@ func TestNewOAuth2Authenticator(t *testing.T) {
 	assert.NotNil(t, authenticator)
 }
 
-func TestOAuth2Authenticator_Authenticate(t *testing.T) {
+// TestOAuth2Authenticator_Authenticate ...
+// Summary: TestOAuth2Authenticator_Authenticate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	privateKey := newTestKey(t)
 
 	// Mock OIDC provider
@@ -188,7 +206,16 @@ func mustMarshal(t *testing.T, v interface{}) []byte {
 	return bytes
 }
 
-func TestNewOAuth2Authenticator_Error(t *testing.T) {
+// TestNewOAuth2Authenticator_Error ...
+// Summary: TestNewOAuth2Authenticator_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	config := &OAuth2Config{
 		IssuerURL: "http://127.0.0.1:12345",
 	}
@@ -196,7 +223,16 @@ func TestNewOAuth2Authenticator_Error(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestOAuth2Authenticator_Authenticate_ClaimError(t *testing.T) {
+// TestOAuth2Authenticator_Authenticate_ClaimError ...
+// Summary: TestOAuth2Authenticator_Authenticate_ClaimError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	privateKey := newTestKey(t)
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {

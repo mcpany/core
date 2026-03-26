@@ -15,7 +15,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestHandleValidate(t *testing.T) {
+// TestHandleValidate ...
+// Summary: TestHandleValidate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := &Application{}
 
 	tests := []struct {
@@ -154,7 +163,16 @@ upstream_services:
 	}
 }
 
-func TestHandleValidate_LargePayload(t *testing.T) {
+// TestHandleValidate_LargePayload ...
+// Summary: TestHandleValidate_LargePayload
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := &Application{}
 
 	// Generate a payload slightly larger than 1MB

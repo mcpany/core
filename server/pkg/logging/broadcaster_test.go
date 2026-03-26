@@ -8,7 +8,16 @@ import (
 	"testing"
 )
 
-func TestBroadcaster_History(t *testing.T) {
+// TestBroadcaster_History ...
+// Summary: TestBroadcaster_History
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	b := NewBroadcaster()
 	b.limit = 5 // Small limit for testing
 
@@ -31,7 +40,16 @@ func TestBroadcaster_History(t *testing.T) {
 	}
 }
 
-func TestBroadcaster_SubscribeWithHistory(t *testing.T) {
+// TestBroadcaster_SubscribeWithHistory ...
+// Summary: TestBroadcaster_SubscribeWithHistory
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	b := NewBroadcaster()
 	b.limit = 10
 
@@ -68,7 +86,16 @@ func TestBroadcaster_SubscribeWithHistory(t *testing.T) {
 // If 'any' is a value type (like struct or string), it's safe.
 // If it's a pointer, it's shared. We assume callers know this.
 
-func TestBroadcaster_Hydrate(t *testing.T) {
+// TestBroadcaster_Hydrate ...
+// Summary: TestBroadcaster_Hydrate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	b := NewBroadcaster()
 	b.limit = 5
 

@@ -8,7 +8,16 @@ import (
 	"testing"
 )
 
-func TestRedactMissingPlurals(t *testing.T) {
+// TestRedactMissingPlurals ...
+// Summary: TestRedactMissingPlurals
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// The bug was that "credentials" (plural) was not in the sensitive list,
 	// and the boundary check logic prevented "credential" from matching "credentials".
 	// Similarly for "secrets".

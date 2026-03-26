@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestLocalCommandTool_BashAwkFileWrite_Repro(t *testing.T) {
+// TestLocalCommandTool_BashAwkFileWrite_Repro ...
+// Summary: TestLocalCommandTool_BashAwkFileWrite_Repro
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Define a tool that uses 'bash' to run 'awk'.
 	tool := v1.Tool_builder{
 		Name: proto.String("bash-awk-tool"),

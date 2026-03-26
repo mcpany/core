@@ -15,7 +15,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestOpenAIEmbeddingProvider_Embed(t *testing.T) {
+// TestOpenAIEmbeddingProvider_Embed ...
+// Summary: TestOpenAIEmbeddingProvider_Embed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup mock server
 	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Verify Request
@@ -55,7 +64,16 @@ func TestOpenAIEmbeddingProvider_Embed(t *testing.T) {
 	assert.Equal(t, []float32{0.1, 0.2, 0.3}, embedding)
 }
 
-func TestOpenAIEmbeddingProvider_Embed_Error(t *testing.T) {
+// TestOpenAIEmbeddingProvider_Embed_Error ...
+// Summary: TestOpenAIEmbeddingProvider_Embed_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("internal server error"))
@@ -72,7 +90,16 @@ func TestOpenAIEmbeddingProvider_Embed_Error(t *testing.T) {
 	assert.Nil(t, embedding)
 }
 
-func TestOpenAIEmbeddingProvider_Embed_APIError(t *testing.T) {
+// TestOpenAIEmbeddingProvider_Embed_APIError ...
+// Summary: TestOpenAIEmbeddingProvider_Embed_APIError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		resp := openAIEmbeddingResponse{}
 		resp.Error = &struct {
@@ -94,7 +121,16 @@ func TestOpenAIEmbeddingProvider_Embed_APIError(t *testing.T) {
 	assert.Nil(t, embedding)
 }
 
-func TestSimpleVectorStore_Eviction(t *testing.T) {
+// TestSimpleVectorStore_Eviction ...
+// Summary: TestSimpleVectorStore_Eviction
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	store := NewSimpleVectorStore()
 	store.maxEntries = 2 // Small limit for testing
 
@@ -140,7 +176,16 @@ func TestSimpleVectorStore_Eviction(t *testing.T) {
 	assert.Equal(t, "result3", res)
 }
 
-func TestSimpleVectorStore_Cleanup(t *testing.T) {
+// TestSimpleVectorStore_Cleanup ...
+// Summary: TestSimpleVectorStore_Cleanup
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	store := NewSimpleVectorStore()
 	key := "test-key"
 
@@ -163,7 +208,16 @@ func TestSimpleVectorStore_Cleanup(t *testing.T) {
 	assert.Equal(t, "result2", res)
 }
 
-func TestCosineSimilarity_EdgeCases(t *testing.T) {
+// TestCosineSimilarity_EdgeCases ...
+// Summary: TestCosineSimilarity_EdgeCases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Empty vectors
 	score := dotProduct([]float32{}, []float32{})
 	assert.Equal(t, float32(0), score)

@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestSentinel_GitArgumentInjection(t *testing.T) {
+// TestSentinel_GitArgumentInjection ...
+// Summary: TestSentinel_GitArgumentInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. Configure a tool that uses git with user input in an argument
 	svc := configv1.CommandLineUpstreamService_builder{
 		Command:          proto.String("git"),
@@ -96,7 +105,16 @@ func TestSentinel_GitArgumentInjection(t *testing.T) {
 	}
 }
 
-func TestSentinel_GitExtProtocol(t *testing.T) {
+// TestSentinel_GitExtProtocol ...
+// Summary: TestSentinel_GitExtProtocol
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	svc := configv1.CommandLineUpstreamService_builder{
 		Command:          proto.String("git"),
 		WorkingDirectory: proto.String("."),

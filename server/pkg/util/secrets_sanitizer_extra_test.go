@@ -9,7 +9,16 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-func TestHydrateSecrets_EdgeCases_Extra(t *testing.T) {
+// TestHydrateSecrets_EdgeCases_Extra ...
+// Summary: TestHydrateSecrets_EdgeCases_Extra
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test nil service
 	hydrateSecretsInHTTPService(nil, nil)
 	hydrateSecretsInWebsocketService(nil, nil)
@@ -41,7 +50,16 @@ func TestHydrateSecrets_EdgeCases_Extra(t *testing.T) {
 	hydrateSecretValue(nil, nil)
 }
 
-func TestStripSecrets_EdgeCases_Extra(t *testing.T) {
+// TestStripSecrets_EdgeCases_Extra ...
+// Summary: TestStripSecrets_EdgeCases_Extra
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test nil services
 	stripSecretsFromCommandLineService(nil)
 	stripSecretsFromHTTPService(nil)
@@ -69,7 +87,16 @@ func TestStripSecrets_EdgeCases_Extra(t *testing.T) {
 	scrubSecretValue(nil)
 }
 
-func TestRedact_EdgeCases_Extra(t *testing.T) {
+// TestRedact_EdgeCases_Extra ...
+// Summary: TestRedact_EdgeCases_Extra
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// redactsSlice
 	// We can't access redactSlice easily as it is unexported and unused?
 	// But it might be called by RedactMap if logic changes.
@@ -92,7 +119,16 @@ func TestRedact_EdgeCases_Extra(t *testing.T) {
 	}
 }
 
-func TestSanitizeID_EdgeCases_Extra(t *testing.T) {
+// TestSanitizeID_EdgeCases_Extra ...
+// Summary: TestSanitizeID_EdgeCases_Extra
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Empty slice
 	SanitizeID(nil, false, 10, 8)
 	SanitizeID([]string{}, false, 10, 8)

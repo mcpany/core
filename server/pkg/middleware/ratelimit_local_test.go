@@ -11,7 +11,16 @@ import (
 	"golang.org/x/time/rate"
 )
 
-func TestLocalLimiter_Allow(t *testing.T) {
+// TestLocalLimiter_Allow ...
+// Summary: TestLocalLimiter_Allow
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 10 requests per second, burst 1
 	rl := rate.NewLimiter(rate.Limit(10), 1)
 	l := &LocalLimiter{Limiter: rl}
@@ -27,7 +36,16 @@ func TestLocalLimiter_Allow(t *testing.T) {
 	// To test blocking, we can use a very slow rate.
 }
 
-func TestLocalLimiter_AllowN(t *testing.T) {
+// TestLocalLimiter_AllowN ...
+// Summary: TestLocalLimiter_AllowN
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1 request per second, burst 5
 	rl := rate.NewLimiter(rate.Limit(1), 5)
 	l := &LocalLimiter{Limiter: rl}
@@ -45,7 +63,16 @@ func TestLocalLimiter_AllowN(t *testing.T) {
 	assert.False(t, allowed)
 }
 
-func TestLocalLimiter_Update(t *testing.T) {
+// TestLocalLimiter_Update ...
+// Summary: TestLocalLimiter_Update
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Start with 1 RPS, Burst 1
 	rl := rate.NewLimiter(rate.Limit(1), 1)
 	l := &LocalLimiter{Limiter: rl}

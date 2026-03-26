@@ -17,7 +17,18 @@ import (
 // TestSettings_Load_PartialConfigFailure validates that global settings (like mcp-listen-address)
 // are loaded from the config file even if there are validation errors in the services.
 // This ensures that the server attempts to bind to the correct address even if services are misconfigured.
-func TestSettings_Load_PartialConfigFailure(t *testing.T) {
+// TestSettings_Load_PartialConfigFailure validates that global settings (like mcp-listen-address)
+// Summary: TestSettings_Load_PartialConfigFailure
+// are loaded from the config file even if there are validation errors in the services.
+// This ensures that the server attempts to bind to the correct address even if services are misconfigured.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	viper.Reset()
 	fs := afero.NewMemMapFs()
 	cmd := &cobra.Command{}

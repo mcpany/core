@@ -22,7 +22,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestWebsocketTool_Execute_Success(t *testing.T) {
+// TestWebsocketTool_Execute_Success ...
+// Summary: TestWebsocketTool_Execute_Success
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	upgrader := websocket.Upgrader{}
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -94,7 +103,16 @@ func TestWebsocketTool_Execute_Success(t *testing.T) {
 	assert.Equal(t, "bar", resMap["foo"])
 }
 
-func TestWebsocketTool_Execute_NoPool(t *testing.T) {
+// TestWebsocketTool_Execute_NoPool ...
+// Summary: TestWebsocketTool_Execute_NoPool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	pm := pool.NewManager()
 	wt := NewWebsocketTool(
@@ -109,7 +127,16 @@ func TestWebsocketTool_Execute_NoPool(t *testing.T) {
 	assert.Contains(t, err.Error(), "no websocket pool found")
 }
 
-func TestWebsocketTool_Execute_PoolGetError(t *testing.T) {
+// TestWebsocketTool_Execute_PoolGetError ...
+// Summary: TestWebsocketTool_Execute_PoolGetError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	factory := func(_ context.Context) (*client.WebsocketClientWrapper, error) {
 		return nil, fmt.Errorf("factory failed")
@@ -133,7 +160,16 @@ func TestWebsocketTool_Execute_PoolGetError(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to get websocket connection")
 }
 
-func TestWebsocketTool_Execute_WriteError(t *testing.T) {
+// TestWebsocketTool_Execute_WriteError ...
+// Summary: TestWebsocketTool_Execute_WriteError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	upgrader := websocket.Upgrader{}
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -175,7 +211,16 @@ func TestWebsocketTool_Execute_WriteError(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestWebsocketTool_Execute_Transformer(t *testing.T) {
+// TestWebsocketTool_Execute_Transformer ...
+// Summary: TestWebsocketTool_Execute_Transformer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	upgrader := websocket.Upgrader{}
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -229,7 +274,16 @@ func TestWebsocketTool_Execute_Transformer(t *testing.T) {
 	assert.Equal(t, "raw text response", resMap["content"])
 }
 
-func TestWebsocketTool_Execute_MalformedInputs(t *testing.T) {
+// TestWebsocketTool_Execute_MalformedInputs ...
+// Summary: TestWebsocketTool_Execute_MalformedInputs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	pm := pool.NewManager()
 	wt := NewWebsocketTool(
@@ -268,7 +322,16 @@ func TestWebsocketTool_Execute_MalformedInputs(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to unmarshal tool inputs")
 }
 
-func TestWebsocketTool_Execute_TemplateError(t *testing.T) {
+// TestWebsocketTool_Execute_TemplateError ...
+// Summary: TestWebsocketTool_Execute_TemplateError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	pm := pool.NewManager()
 	s := httptest.NewServer(http.HandlerFunc(func(_ http.ResponseWriter, _ *http.Request) {}))

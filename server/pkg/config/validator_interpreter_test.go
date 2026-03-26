@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestValidatorInterpreterDetection(t *testing.T) {
+// TestValidatorInterpreterDetection ...
+// Summary: TestValidatorInterpreterDetection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary directory for dummy commands
 	tmpDir, err := os.MkdirTemp("", "mcp-test")
 	require.NoError(t, err)

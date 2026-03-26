@@ -13,12 +13,30 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestOllamaProvider_Name(t *testing.T) {
+// TestOllamaProvider_Name ...
+// Summary: TestOllamaProvider_Name
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	provider := &OllamaProvider{}
 	assert.Equal(t, "ollama", provider.Name())
 }
 
-func TestOllamaProvider_Discover(t *testing.T) {
+// TestOllamaProvider_Discover ...
+// Summary: TestOllamaProvider_Discover
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name        string
 		setupServer func(t *testing.T) *httptest.Server

@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-func TestCircuitBreaker_HalfOpenLimitBug(t *testing.T) {
+// TestCircuitBreaker_HalfOpenLimitBug ...
+// Summary: TestCircuitBreaker_HalfOpenLimitBug
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	consecutiveFailures := int32(1)
 	halfOpenRequests := int32(1)

@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestResolveSecret_ValidationRegex(t *testing.T) {
+// TestResolveSecret_ValidationRegex ...
+// Summary: TestResolveSecret_ValidationRegex
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_SECRETS", "true")
 
 	t.Run("PlainText with valid regex", func(t *testing.T) {

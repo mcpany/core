@@ -13,7 +13,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestExpandWithBracesInDefault(t *testing.T) {
+// TestExpandWithBracesInDefault ...
+// Summary: TestExpandWithBracesInDefault
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Case 1: Default value contains braces
 	input := []byte(`key: ${VAR:{}}`)
 	expected := []byte(`key: {}`)
@@ -26,7 +35,16 @@ func TestExpandWithBracesInDefault(t *testing.T) {
 	assert.Equal(t, string(expected), string(expanded))
 }
 
-func TestExpandDetailed(t *testing.T) {
+// TestExpandDetailed ...
+// Summary: TestExpandDetailed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name      string
 		input     string
@@ -164,7 +182,16 @@ func TestExpandDetailed(t *testing.T) {
 	}
 }
 
-func TestMultiStoreMerging(t *testing.T) {
+// TestMultiStoreMerging ...
+// Summary: TestMultiStoreMerging
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 
 	// Store 1: DB-like (weather-service)
@@ -202,10 +229,28 @@ type mockStore struct {
 	cfg *configv1.McpAnyServerConfig
 }
 
-func (m *mockStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
+// Load ...
+// Summary: Load
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.cfg, nil
 }
 
-func (m *mockStore) HasConfigSources() bool {
+// HasConfigSources ...
+// Summary: HasConfigSources
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return true
 }

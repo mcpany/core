@@ -11,7 +11,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRedactJSON_EscapedKey(t *testing.T) {
+// TestRedactJSON_EscapedKey ...
+// Summary: TestRedactJSON_EscapedKey
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// "auth" is a sensitive key
 	// "au\u0074h" is "auth" escaped
 	input := []byte(`{"au\u0074h": "sensitive_value"}`)
@@ -21,7 +30,16 @@ func TestRedactJSON_EscapedKey(t *testing.T) {
 	assert.Equal(t, string(expected), string(result))
 }
 
-func TestRedactJSON_EscapedKey_Complex(t *testing.T) {
+// TestRedactJSON_EscapedKey_Complex ...
+// Summary: TestRedactJSON_EscapedKey_Complex
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// "password" is sensitive
 	// "pass\u0077ord"
 	input := []byte(`{"pass\u0077ord": "sensitive_value_123"}`)
@@ -31,7 +49,16 @@ func TestRedactJSON_EscapedKey_Complex(t *testing.T) {
 	assert.Equal(t, string(expected), string(result))
 }
 
-func TestRedactJSON_LargeKeyWithEscapes(t *testing.T) {
+// TestRedactJSON_LargeKeyWithEscapes ...
+// Summary: TestRedactJSON_LargeKeyWithEscapes
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a key larger than 1024 bytes
 	// "password" escaped as "p\u0061ssword"
 	padding := strings.Repeat("a", 1100)
@@ -63,7 +90,16 @@ func TestRedactJSON_LargeKeyWithEscapes(t *testing.T) {
 	assert.Equal(t, "[REDACTED]", val, "Large key with escapes should be redacted")
 }
 
-func TestRedactJSON_HugeKeyWithEscapes(t *testing.T) {
+// TestRedactJSON_HugeKeyWithEscapes ...
+// Summary: TestRedactJSON_HugeKeyWithEscapes
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a key larger than 1MB (1024*1024 bytes)
 	// "password" escaped as "p\u0061ssword"
 	// We want to verify that even for huge keys, we attempt to detect sensitive info if possible,

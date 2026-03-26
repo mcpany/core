@@ -8,7 +8,16 @@ import (
 	"testing"
 )
 
-func TestMain(m *testing.M) {
+// TestMain ...
+// Summary: TestMain
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create dummy cert file for tests
 	_ = os.WriteFile("dummy-cert.pem", []byte("cert"), 0600)
 	code := m.Run()

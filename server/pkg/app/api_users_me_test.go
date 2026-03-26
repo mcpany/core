@@ -19,7 +19,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestHandleUserMe(t *testing.T) {
+// TestHandleUserMe ...
+// Summary: TestHandleUserMe
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 	// Minimal setup for handleUserMe
 	store := memory.NewStore()

@@ -19,7 +19,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestUpstreamService_PokeAPI(t *testing.T) {
+// TestUpstreamService_PokeAPI ...
+// Summary: TestUpstreamService_PokeAPI
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
@@ -120,7 +129,16 @@ func TestUpstreamService_PokeAPI(t *testing.T) {
 	t.Log("INFO: E2E Test Scenario for PokeAPI Server Completed Successfully!")
 }
 
-func TestUpstreamService_PokeAPI_ParameterSubstitution(t *testing.T) {
+// TestUpstreamService_PokeAPI_ParameterSubstitution ...
+// Summary: TestUpstreamService_PokeAPI_ParameterSubstitution
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 

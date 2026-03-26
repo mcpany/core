@@ -20,7 +20,16 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-func TestSQLUpstream_Register_Errors(t *testing.T) {
+// TestSQLUpstream_Register_Errors ...
+// Summary: TestSQLUpstream_Register_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -89,7 +98,16 @@ func TestSQLUpstream_Register_Errors(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to add tool")
 }
 
-func TestSQLUpstream_Register_Twice(t *testing.T) {
+// TestSQLUpstream_Register_Twice ...
+// Summary: TestSQLUpstream_Register_Twice
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	mockToolManager := tool.NewMockManagerInterface(ctrl)
@@ -114,7 +132,16 @@ func TestSQLUpstream_Register_Twice(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestSQLUpstream_Register_PingFailure(t *testing.T) {
+// TestSQLUpstream_Register_PingFailure ...
+// Summary: TestSQLUpstream_Register_PingFailure
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	mockToolManager := tool.NewMockManagerInterface(ctrl)
@@ -136,7 +163,16 @@ func TestSQLUpstream_Register_PingFailure(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to ping database")
 }
 
-func TestSQLUpstream_Execute_Errors(t *testing.T) {
+// TestSQLUpstream_Execute_Errors ...
+// Summary: TestSQLUpstream_Execute_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup SQLite DB manually
 	db, err := sql.Open("sqlite", "file::memory:?cache=shared")
 	require.NoError(t, err)
@@ -167,7 +203,16 @@ func TestSQLUpstream_Execute_Errors(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to execute query") // table not found
 }
 
-func TestSQLTool_Execute_EdgeCases(t *testing.T) {
+// TestSQLTool_Execute_EdgeCases ...
+// Summary: TestSQLTool_Execute_EdgeCases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	db, err := sql.Open("sqlite", "file::memory:?cache=shared")
 	require.NoError(t, err)
 	defer db.Close()
@@ -214,7 +259,16 @@ func TestSQLTool_Execute_EdgeCases(t *testing.T) {
 	assert.Equal(t, "Hello", resSliceBlob[0]["data"])
 }
 
-func TestSQLTool_Methods(t *testing.T) {
+// TestSQLTool_Methods ...
+// Summary: TestSQLTool_Methods
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	db, err := sql.Open("sqlite", "file::memory:?cache=shared")
 	require.NoError(t, err)
 	defer db.Close()
@@ -236,7 +290,16 @@ func TestSQLTool_Methods(t *testing.T) {
 	assert.NotNil(t, toolInstance.MCPTool())
 }
 
-func TestSQLTool_GetCacheConfig(t *testing.T) {
+// TestSQLTool_GetCacheConfig ...
+// Summary: TestSQLTool_GetCacheConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("Returns Config", func(t *testing.T) {
 		callDef := configv1.SqlCallDefinition_builder{
 			Cache: configv1.CacheConfig_builder{

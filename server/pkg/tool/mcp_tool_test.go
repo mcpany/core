@@ -24,14 +24,32 @@ type mockMCPClient struct {
 	callToolFunc func(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error)
 }
 
-func (m *mockMCPClient) CallTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
+// CallTool ...
+// Summary: CallTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.callToolFunc != nil {
 		return m.callToolFunc(ctx, params)
 	}
 	return nil, errors.New("not implemented")
 }
 
-func TestMCPTool_Execute(t *testing.T) {
+// TestMCPTool_Execute ...
+// Summary: TestMCPTool_Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	t.Run("successful execution", func(t *testing.T) {
 		mockClient := &mockMCPClient{

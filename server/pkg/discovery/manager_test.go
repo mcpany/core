@@ -13,21 +13,49 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type MockProvider struct {
+// MockProvider ...
+// Summary: MockProvider
 	name     string
 	services []*configv1.UpstreamServiceConfig
 	err      error
 }
 
-func (m *MockProvider) Name() string {
+// Name ...
+// Summary: Name
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.name
 }
 
-func (m *MockProvider) Discover(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
+// Discover ...
+// Summary: Discover
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.services, m.err
 }
 
-func TestManager_Run(t *testing.T) {
+// TestManager_Run ...
+// Summary: TestManager_Run
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	manager := NewManager()
 
 	// Provider 1: Success
@@ -72,7 +100,16 @@ func pointer(s string) *string {
 	return &s
 }
 
-func TestManager_GetStatuses(t *testing.T) {
+// TestManager_GetStatuses ...
+// Summary: TestManager_GetStatuses
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	manager := NewManager()
 
 	p1 := &MockProvider{name: "p1"}

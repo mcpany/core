@@ -30,7 +30,16 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestServer_CallTool_LogsArgsRedacted(t *testing.T) {
+// TestServer_CallTool_LogsArgsRedacted ...
+// Summary: TestServer_CallTool_LogsArgsRedacted
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Reset logger to capture output
 	logging.ForTestsOnlyResetLogger()
 	var logBuffer bytes.Buffer

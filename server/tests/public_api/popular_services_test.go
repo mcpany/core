@@ -22,7 +22,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestPopularServices_Load(t *testing.T) {
+// TestPopularServices_Load ...
+// Summary: TestPopularServices_Load
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// t.Parallel() removed because t.Setenv is used
 
 	// 1. Setup Mock OpenAPI Server (Hermetic)

@@ -14,7 +14,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestPortConflict(t *testing.T) {
+// TestPortConflict ...
+// Summary: TestPortConflict
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. Start a listener on a random port
 	l, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)

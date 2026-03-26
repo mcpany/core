@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestLocalCommandTool_Execute(t *testing.T) {
+// TestLocalCommandTool_Execute ...
+// Summary: TestLocalCommandTool_Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	inputSchema := &structpb.Struct{
 		Fields: map[string]*structpb.Value{
@@ -64,7 +73,16 @@ func TestLocalCommandTool_Execute(t *testing.T) {
 	assert.Nil(t, localTool.GetCacheConfig())
 }
 
-func TestLocalCommandTool_Execute_WithEnv(t *testing.T) {
+// TestLocalCommandTool_Execute_WithEnv ...
+// Summary: TestLocalCommandTool_Execute_WithEnv
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tool := v1.Tool_builder{
 		Name: proto.String("test-tool-env"),
@@ -99,7 +117,16 @@ func TestLocalCommandTool_Execute_WithEnv(t *testing.T) {
 	assert.Equal(t, "match", resultMap["stdout"])
 }
 
-func TestLocalCommandTool_Execute_RedactsSecrets(t *testing.T) {
+// TestLocalCommandTool_Execute_RedactsSecrets ...
+// Summary: TestLocalCommandTool_Execute_RedactsSecrets
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tool := v1.Tool_builder{
 		Name: proto.String("test-tool-redact"),
@@ -133,7 +160,16 @@ func TestLocalCommandTool_Execute_RedactsSecrets(t *testing.T) {
 	assert.Equal(t, "[REDACTED]", resultMap["stdout"])
 }
 
-func TestLocalCommandTool_Execute_BlockedByPolicy(t *testing.T) {
+// TestLocalCommandTool_Execute_BlockedByPolicy ...
+// Summary: TestLocalCommandTool_Execute_BlockedByPolicy
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tool := v1.Tool_builder{
 		Name:        proto.String("test-tool-blocked"),
@@ -170,7 +206,16 @@ func TestLocalCommandTool_Execute_BlockedByPolicy(t *testing.T) {
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-func TestLocalCommandTool_Execute_JSONProtocol_StderrCapture(t *testing.T) {
+// TestLocalCommandTool_Execute_JSONProtocol_StderrCapture ...
+// Summary: TestLocalCommandTool_Execute_JSONProtocol_StderrCapture
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tool := v1.Tool_builder{
 		Name:        proto.String("test-tool-json-stderr"),

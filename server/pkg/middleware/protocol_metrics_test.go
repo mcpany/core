@@ -18,7 +18,16 @@ import (
 )
 
 // MockMethodHandler mimics the behavior of an MCP method handler.
-func MockMethodHandler(response mcp.Result, err error) mcp.MethodHandler {
+// MockMethodHandler mimics the behavior of an MCP method handler.
+// Summary: MockMethodHandler
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
 		// Simulate some work
 		time.Sleep(10 * time.Millisecond)
@@ -26,7 +35,16 @@ func MockMethodHandler(response mcp.Result, err error) mcp.MethodHandler {
 	}
 }
 
-func TestPrometheusMetricsMiddleware(t *testing.T) {
+// TestPrometheusMetricsMiddleware ...
+// Summary: TestPrometheusMetricsMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Reset registry for clean state testing if possible, but Prometheus global registry is static.
 	// We rely on testutil to scrape what we have.
 	// Since we use MustRegister which panics on dupes, we should ensure our middleware handles existing registration.
@@ -133,7 +151,16 @@ func TestPrometheusMetricsMiddleware(t *testing.T) {
 	})
 }
 
-func TestEstimateRequestTokens(t *testing.T) {
+// TestEstimateRequestTokens ...
+// Summary: TestEstimateRequestTokens
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tok := tokenizer.NewSimpleTokenizer()
 
 	tests := []struct {
@@ -183,7 +210,16 @@ func TestEstimateRequestTokens(t *testing.T) {
 	}
 }
 
-func TestEstimateResultTokens(t *testing.T) {
+// TestEstimateResultTokens ...
+// Summary: TestEstimateResultTokens
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tok := tokenizer.NewSimpleTokenizer()
 
 	tests := []struct {
@@ -251,7 +287,16 @@ func TestEstimateResultTokens(t *testing.T) {
 	}
 }
 
-func TestCalculateToolResultSize(t *testing.T) {
+// TestCalculateToolResultSize ...
+// Summary: TestCalculateToolResultSize
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	_ = tokenizer.NewSimpleTokenizer()
 
 	tests := []struct {
@@ -318,7 +363,16 @@ func TestCalculateToolResultSize(t *testing.T) {
 	}
 }
 
-func TestEstimateResultSize(t *testing.T) {
+// TestEstimateResultSize ...
+// Summary: TestEstimateResultSize
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name    string
 		res     mcp.Result

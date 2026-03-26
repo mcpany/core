@@ -28,14 +28,32 @@ type mockHTTPClient struct {
 	doFunc func(req *http.Request) (*http.Response, error)
 }
 
-func (m *mockHTTPClient) Do(req *http.Request) (*http.Response, error) {
+// Do ...
+// Summary: Do
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.doFunc != nil {
 		return m.doFunc(req)
 	}
 	return nil, errors.New("not implemented")
 }
 
-func TestOpenAPITool_Execute(t *testing.T) {
+// TestOpenAPITool_Execute ...
+// Summary: TestOpenAPITool_Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	t.Run("successful execution with path and query params", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -123,7 +141,16 @@ func TestOpenAPITool_Execute(t *testing.T) {
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-func TestOpenAPITool_Execute_Extended(t *testing.T) {
+// TestOpenAPITool_Execute_Extended ...
+// Summary: TestOpenAPITool_Execute_Extended
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	t.Run("POST with Input Template", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

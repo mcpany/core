@@ -19,7 +19,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestExampleConfigs(t *testing.T) {
+// TestExampleConfigs ...
+// Summary: TestExampleConfigs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Set dummy API key for validation to pass
 	t.Setenv("GEMINI_API_KEY", "dummy-key")
 	projectRoot, err := sourceProjectRoot()

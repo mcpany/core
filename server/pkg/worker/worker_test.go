@@ -30,14 +30,32 @@ type mockBus[T any] struct {
 	subscribeFunc func(ctx context.Context, topic string, handler func(T)) func()
 }
 
-func (m *mockBus[T]) Publish(ctx context.Context, topic string, msg T) error {
+// Publish ...
+// Summary: Publish
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.publishFunc != nil {
 		return m.publishFunc(ctx, topic, msg)
 	}
 	return nil
 }
 
-func (m *mockBus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) func() {
+// Subscribe ...
+// Summary: Subscribe
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.subscribeFunc != nil {
 		return m.subscribeFunc(ctx, topic, handler)
 	}
@@ -52,28 +70,64 @@ type mockServiceRegistry struct {
 	getAllServicesFunc func() ([]*configv1.UpstreamServiceConfig, error)
 }
 
-func (m *mockServiceRegistry) RegisterService(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+// RegisterService ...
+// Summary: RegisterService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.registerFunc != nil {
 		return m.registerFunc(ctx, serviceConfig)
 	}
 	return "mock-service-key", nil, nil, nil
 }
 
-func (m *mockServiceRegistry) RegisterResource(ctx context.Context, resourceConfig *configv1.ResourceDefinition) error {
+// RegisterResource ...
+// Summary: RegisterResource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.registerResFunc != nil {
 		return m.registerResFunc(ctx, resourceConfig)
 	}
 	return nil
 }
 
-func (m *mockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfig, error) {
+// GetAllServices ...
+// Summary: GetAllServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.getAllServicesFunc != nil {
 		return m.getAllServicesFunc()
 	}
 	return nil, nil
 }
 
-func (m *mockServiceRegistry) GetServiceHealth(serviceID string) (string, bool) {
+// GetServiceHealth ...
+// Summary: GetServiceHealth
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return "healthy", true
 }
 
@@ -82,49 +136,157 @@ type mockToolManager struct {
 	executeFunc func(ctx context.Context, req *tool.ExecutionRequest) (any, error)
 }
 
-func (m *mockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+// ExecuteTool ...
+// Summary: ExecuteTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.executeFunc != nil {
 		return m.executeFunc(ctx, req)
 	}
 	return "mock-result", nil
 }
 
-func (m *mockToolManager) AddTool(_ tool.Tool) error {
+// AddTool ...
+// Summary: AddTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *mockToolManager) GetTool(_ string) (tool.Tool, bool) {
+// GetTool ...
+// Summary: GetTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, false
 }
 
-func (m *mockToolManager) ListServices() []*tool.ServiceInfo {
+// ListServices ...
+// Summary: ListServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *mockToolManager) ListTools() []tool.Tool {
+// ListTools ...
+// Summary: ListTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *mockToolManager) ClearToolsForService(_ string) {
+// ClearToolsForService ...
+// Summary: ClearToolsForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 }
 
-func (m *mockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {
+// SetProfiles ...
+// Summary: SetProfiles
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 }
 
-func (m *mockToolManager) SetMCPServer(_ tool.MCPServerProvider) {
+// SetMCPServer ...
+// Summary: SetMCPServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 }
 
-func (m *mockToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {
+// AddMiddleware ...
+// Summary: AddMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 }
 
-func (m *mockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {
+// AddServiceInfo ...
+// Summary: AddServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 }
 
-func (m *mockToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) {
+// GetServiceInfo ...
+// Summary: GetServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, false
 }
 
-func TestServiceRegistrationWorker(t *testing.T) {
+// TestServiceRegistrationWorker ...
+// Summary: TestServiceRegistrationWorker
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	globalTestLock.Lock()
 	defer globalTestLock.Unlock()
 
@@ -265,7 +427,16 @@ func TestServiceRegistrationWorker(t *testing.T) {
 	})
 }
 
-func TestUpstreamWorker(t *testing.T) {
+// TestUpstreamWorker ...
+// Summary: TestUpstreamWorker
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	globalTestLock.Lock()
 	defer globalTestLock.Unlock()
 
@@ -450,7 +621,16 @@ func TestUpstreamWorker(t *testing.T) {
 	})
 }
 
-func TestServiceRegistrationWorker_Concurrent(t *testing.T) {
+// TestServiceRegistrationWorker_Concurrent ...
+// Summary: TestServiceRegistrationWorker_Concurrent
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	globalTestLock.Lock()
 	defer globalTestLock.Unlock()
 
@@ -503,7 +683,16 @@ func TestServiceRegistrationWorker_Concurrent(t *testing.T) {
 	wg.Wait()
 }
 
-func TestWorker_ContextPropagation(t *testing.T) {
+// TestWorker_ContextPropagation ...
+// Summary: TestWorker_ContextPropagation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	globalTestLock.Lock()
 	defer globalTestLock.Unlock()
 
@@ -573,7 +762,16 @@ func TestWorker_ContextPropagation(t *testing.T) {
 	wg.Wait()
 }
 
-func TestUpstreamWorker_Concurrent(t *testing.T) {
+// TestUpstreamWorker_Concurrent ...
+// Summary: TestUpstreamWorker_Concurrent
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	globalTestLock.Lock()
 	defer globalTestLock.Unlock()
 
@@ -630,7 +828,16 @@ func ptr[T any](v T) *T {
 	return &v
 }
 
-func TestServiceRegistrationWorker_ListRequest(t *testing.T) {
+// TestServiceRegistrationWorker_ListRequest ...
+// Summary: TestServiceRegistrationWorker_ListRequest
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	globalTestLock.Lock()
 	defer globalTestLock.Unlock()
 

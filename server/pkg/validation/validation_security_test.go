@@ -11,7 +11,16 @@ import (
 	"testing"
 )
 
-func TestIsAllowedPath_SymlinkTraversal_Block(t *testing.T) {
+// TestIsAllowedPath_SymlinkTraversal_Block ...
+// Summary: TestIsAllowedPath_SymlinkTraversal_Block
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup: Create a temp directory for the test
 	tempDir := t.TempDir()
 	cwd, _ := os.Getwd()
@@ -39,7 +48,16 @@ func TestIsAllowedPath_SymlinkTraversal_Block(t *testing.T) {
 	assert.Contains(t, err.Error(), "is not allowed")
 }
 
-func TestIsAllowedPath_NonExistentFile_Safe(t *testing.T) {
+// TestIsAllowedPath_NonExistentFile_Safe ...
+// Summary: TestIsAllowedPath_NonExistentFile_Safe
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup
 	tempDir := t.TempDir()
 	cwd, _ := os.Getwd()
@@ -55,7 +73,16 @@ func TestIsAllowedPath_NonExistentFile_Safe(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestIsAllowedPath_NonExistentFile_UnsafeSymlinkParent(t *testing.T) {
+// TestIsAllowedPath_NonExistentFile_UnsafeSymlinkParent ...
+// Summary: TestIsAllowedPath_NonExistentFile_UnsafeSymlinkParent
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup
 	tempDir := t.TempDir()
 	cwd, _ := os.Getwd()
@@ -82,7 +109,16 @@ func TestIsAllowedPath_NonExistentFile_UnsafeSymlinkParent(t *testing.T) {
 	assert.Contains(t, err.Error(), "is not allowed")
 }
 
-func TestIsAllowedPath_EvalSymlinksError_Permission(t *testing.T) {
+// TestIsAllowedPath_EvalSymlinksError_Permission ...
+// Summary: TestIsAllowedPath_EvalSymlinksError_Permission
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup
 	tempDir := t.TempDir()
 	cwd, _ := os.Getwd()

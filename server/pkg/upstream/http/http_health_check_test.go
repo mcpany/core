@@ -11,7 +11,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestHTTPUpstream_CheckHealth_BeforeRegister(t *testing.T) {
+// TestHTTPUpstream_CheckHealth_BeforeRegister ...
+// Summary: TestHTTPUpstream_CheckHealth_BeforeRegister
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	upstream := NewUpstream(pm)
 

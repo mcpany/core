@@ -15,7 +15,18 @@ import (
 // TestManagedProcess_StopFallback tests that the ManagedProcess.Stop function
 // correctly falls back to sending SIGINT to the process directly if sending to the
 // process group fails.
-func TestManagedProcess_StopFallback(t *testing.T) {
+// TestManagedProcess_StopFallback tests that the ManagedProcess.Stop function
+// Summary: TestManagedProcess_StopFallback
+// correctly falls back to sending SIGINT to the process directly if sending to the
+// process group fails.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test uses a simple 'sleep' command. We will patch the syscall.Kill
 	// function to simulate a failure when trying to signal the process group.
 	// This will allow us to test the fallback logic in a controlled manner.

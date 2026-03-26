@@ -10,12 +10,30 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCircuitBreakerOpenError(t *testing.T) {
+// TestCircuitBreakerOpenError ...
+// Summary: TestCircuitBreakerOpenError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	err := &CircuitBreakerOpenError{}
 	assert.Equal(t, "circuit breaker is open", err.Error())
 }
 
-func TestPermanentError(t *testing.T) {
+// TestPermanentError ...
+// Summary: TestPermanentError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("with error", func(t *testing.T) {
 		originalErr := errors.New("original error")
 		permErr := &PermanentError{Err: originalErr}

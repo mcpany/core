@@ -20,7 +20,16 @@ type mockWeatherServer struct {
 	v1.UnimplementedWeatherServiceServer
 }
 
-func (s *mockWeatherServer) GetWeather(_ context.Context, _ *v1.GetWeatherRequest) (*v1.GetWeatherResponse, error) {
+// GetWeather ...
+// Summary: GetWeather
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return v1.GetWeatherResponse_builder{Weather: "sunny"}.Build(), nil
 }
 
@@ -47,7 +56,16 @@ func setupMockGRPCServer(t *testing.T) (string, func()) {
 	}
 }
 
-func TestParseProtoByReflection_Integration(t *testing.T) {
+// TestParseProtoByReflection_Integration ...
+// Summary: TestParseProtoByReflection_Integration
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	addr, cleanup := setupMockGRPCServer(t)
 	defer cleanup()
 

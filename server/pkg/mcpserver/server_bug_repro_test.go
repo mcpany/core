@@ -29,7 +29,16 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestServer_CallTool_Metrics_Repro(t *testing.T) {
+// TestServer_CallTool_Metrics_Repro ...
+// Summary: TestServer_CallTool_Metrics_Repro
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Initialize metrics with an in-memory sink
 	sink := metrics.NewInmemSink(10*time.Second, 30*time.Second)
 	conf := metrics.DefaultConfig("mcpany")

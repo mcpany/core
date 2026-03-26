@@ -7,7 +7,16 @@ import (
 	"testing"
 )
 
-func TestRedactDSN_Leak_AtInPassword(t *testing.T) {
+// TestRedactDSN_Leak_AtInPassword ...
+// Summary: TestRedactDSN_Leak_AtInPassword
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Case 3: Password contains @ and no scheme (url.Parse fails)
 	// "user:p@ssword@host"
 	dsn := "user:p@ssword@host"
@@ -25,7 +34,16 @@ func TestRedactDSN_Leak_AtInPassword(t *testing.T) {
 	}
 }
 
-func TestRedactDSN_SpaceFalsePositive(t *testing.T) {
+// TestRedactDSN_SpaceFalsePositive ...
+// Summary: TestRedactDSN_SpaceFalsePositive
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// "Contact: bob@example.com"
 	// Should NOT be redacted because of space.
 	dsn := "Contact: bob@example.com"
@@ -37,7 +55,16 @@ func TestRedactDSN_SpaceFalsePositive(t *testing.T) {
 	}
 }
 
-func TestRedactDSN_NoSpaceFalsePositive(t *testing.T) {
+// TestRedactDSN_NoSpaceFalsePositive ...
+// Summary: TestRedactDSN_NoSpaceFalsePositive
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// "email:bob@example.com"
 	// This will still be redacted because we can't distinguish from dsn.
 	dsn := "email:bob@example.com"

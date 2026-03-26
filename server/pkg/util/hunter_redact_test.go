@@ -9,7 +9,16 @@ import (
 	"testing"
 )
 
-func TestRedactDSN_QueryParam(t *testing.T) {
+// TestRedactDSN_QueryParam ...
+// Summary: TestRedactDSN_QueryParam
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		input    string
@@ -62,7 +71,16 @@ func TestRedactDSN_QueryParam(t *testing.T) {
 	}
 }
 
-func TestSanitizeFilename_EdgeCases(t *testing.T) {
+// TestSanitizeFilename_EdgeCases ...
+// Summary: TestSanitizeFilename_EdgeCases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		input    string
@@ -100,7 +118,16 @@ func TestSanitizeFilename_EdgeCases(t *testing.T) {
 	}
 }
 
-func TestExtractIP_EdgeCases(t *testing.T) {
+// TestExtractIP_EdgeCases ...
+// Summary: TestExtractIP_EdgeCases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		input    string
@@ -153,7 +180,16 @@ func TestExtractIP_EdgeCases(t *testing.T) {
 	}
 }
 
-func TestIsPrivateIP_EdgeCases(t *testing.T) {
+// TestIsPrivateIP_EdgeCases ...
+// Summary: TestIsPrivateIP_EdgeCases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		ip       string
@@ -204,7 +240,16 @@ func TestIsPrivateIP_EdgeCases(t *testing.T) {
 	}
 }
 
-func TestLevenshteinDistance_Unicode(t *testing.T) {
+// TestLevenshteinDistance_Unicode ...
+// Summary: TestLevenshteinDistance_Unicode
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		s1, s2 string
 		want   int

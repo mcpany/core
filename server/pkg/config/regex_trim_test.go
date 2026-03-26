@@ -31,7 +31,16 @@ import (
 // The provided `Code Edit` snippet seems to be malformed or
 // indicates a redundant addition that would cause a syntax error.
 
-func TestRegexTrimValidationBug(t *testing.T) {
+// TestRegexTrimValidationBug ...
+// Summary: TestRegexTrimValidationBug
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup: plain_text value with spaces
 	config := func() *configv1.McpAnyServerConfig {
 		secret := configv1.SecretValue_builder{

@@ -23,13 +23,23 @@ import (
 )
 
 // MockExecutor for testing CommandTool
-type MockExecutor struct {
+// MockExecutor for testing CommandTool
+// Summary: MockExecutor
 	stdout   string
 	stderr   string
 	exitCode int
 }
 
-func (m *MockExecutor) Execute(ctx context.Context, cmd string, args []string, workingDir string, env []string) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
+// Execute ...
+// Summary: Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	outR := io.NopCloser(strings.NewReader(m.stdout))
 	errR := io.NopCloser(strings.NewReader(m.stderr))
 	ch := make(chan int, 1)
@@ -38,7 +48,16 @@ func (m *MockExecutor) Execute(ctx context.Context, cmd string, args []string, w
 	return outR, errR, ch, nil
 }
 
-func (m *MockExecutor) ExecuteWithStdIO(ctx context.Context, cmd string, args []string, workingDir string, env []string) (io.WriteCloser, io.ReadCloser, io.ReadCloser, <-chan int, error) {
+// ExecuteWithStdIO ...
+// Summary: ExecuteWithStdIO
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil, nil, nil, nil
 }
 
@@ -59,7 +78,16 @@ func setupHTTPTool(t *testing.T, handler http.Handler, callDef *configv1.HttpCal
 	return NewHTTPTool(toolDef, poolManager, "s", nil, callDef, nil, nil, ""), server
 }
 
-func TestHTTPTool_Execute_DryRun(t *testing.T) {
+// TestHTTPTool_Execute_DryRun ...
+// Summary: TestHTTPTool_Execute_DryRun
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		t.Error("Should not be called in dry run")
 	})
@@ -79,7 +107,16 @@ func TestHTTPTool_Execute_DryRun(t *testing.T) {
 	assert.True(t, resMap["dry_run"].(bool))
 }
 
-func TestHTTPTool_Execute_InvalidInputJSON(t *testing.T) {
+// TestHTTPTool_Execute_InvalidInputJSON ...
+// Summary: TestHTTPTool_Execute_InvalidInputJSON
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})
 	callDef := &configv1.HttpCallDefinition{}
 	tool, server := setupHTTPTool(t, handler, callDef)
@@ -93,7 +130,16 @@ func TestHTTPTool_Execute_InvalidInputJSON(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to unmarshal tool inputs")
 }
 
-func TestCommandTool_DryRun(t *testing.T) {
+// TestCommandTool_DryRun ...
+// Summary: TestCommandTool_DryRun
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	service := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("echo"),
 	}.Build()
@@ -127,7 +173,16 @@ func TestCommandTool_DryRun(t *testing.T) {
 	assert.True(t, val.(bool))
 }
 
-func TestCommandTool_ResolveServiceEnv_Error(t *testing.T) {
+// TestCommandTool_ResolveServiceEnv_Error ...
+// Summary: TestCommandTool_ResolveServiceEnv_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test error when resolving service env secrets
 	service := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("echo"),
@@ -150,7 +205,16 @@ func TestCommandTool_ResolveServiceEnv_Error(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to resolve service env")
 }
 
-func TestCommandTool_ResolveContainerEnv_Error(t *testing.T) {
+// TestCommandTool_ResolveContainerEnv_Error ...
+// Summary: TestCommandTool_ResolveContainerEnv_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test error when resolving container env secrets
 	// We use NewCommandTool because LocalCommandTool does not handle container envs
 	service := configv1.CommandLineUpstreamService_builder{
@@ -178,7 +242,16 @@ func TestCommandTool_ResolveContainerEnv_Error(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to resolve container env")
 }
 
-func TestCommandTool_ResolveParameterSecret_Error(t *testing.T) {
+// TestCommandTool_ResolveParameterSecret_Error ...
+// Summary: TestCommandTool_ResolveParameterSecret_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	service := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("echo"),
 	}.Build()
@@ -204,7 +277,16 @@ func TestCommandTool_ResolveParameterSecret_Error(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to resolve secret")
 }
 
-func TestCommandTool_Success(t *testing.T) {
+// TestCommandTool_Success ...
+// Summary: TestCommandTool_Success
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	service := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("echo"),
 		ContainerEnvironment: configv1.ContainerEnvironment_builder{
@@ -248,7 +330,16 @@ func TestCommandTool_Success(t *testing.T) {
 	}
 }
 
-func TestHTTPTool_OutputTransformer(t *testing.T) {
+// TestHTTPTool_OutputTransformer ...
+// Summary: TestHTTPTool_OutputTransformer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`{"foo": "bar"}`))
@@ -278,7 +369,16 @@ func TestHTTPTool_OutputTransformer(t *testing.T) {
 	assert.Equal(t, "Foo is bar", resMap["result"])
 }
 
-func TestHTTPTool_OutputTransformer_Raw(t *testing.T) {
+// TestHTTPTool_OutputTransformer_Raw ...
+// Summary: TestHTTPTool_OutputTransformer_Raw
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`raw data`))
 	})
@@ -302,7 +402,16 @@ func TestHTTPTool_OutputTransformer_Raw(t *testing.T) {
 	assert.Equal(t, []byte("raw data"), resMap["raw"])
 }
 
-func TestHTTPTool_InputTransformer_Template(t *testing.T) {
+// TestHTTPTool_InputTransformer_Template ...
+// Summary: TestHTTPTool_InputTransformer_Template
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// We need to use POST to trigger body preparation
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		buf := new(bytes.Buffer)

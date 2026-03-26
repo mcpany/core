@@ -24,23 +24,68 @@ func newMockToolManager() *mockToolManager {
 	}
 }
 
-func (m *mockToolManager) AddTool(t tool.Tool) error {
+// AddTool ...
+// Summary: AddTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.tools[t.Tool().GetName()] = t
 	return nil
 }
 
-func (m *mockToolManager) GetTool(toolName string) (tool.Tool, bool) {
+// GetTool ...
+// Summary: GetTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t, ok := m.tools[toolName]
 	return t, ok
 }
 
-func (m *mockToolManager) ListServices() []*tool.ServiceInfo {
+// ListServices ...
+// Summary: ListServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *mockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
+// AddServiceInfo ...
+// Summary: AddServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func (m *mockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
+// SetProfiles ...
+// Summary: SetProfiles
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
 type mockPromptManager struct {
 	prompt.ManagerInterface
@@ -53,11 +98,29 @@ func newMockPromptManager() *mockPromptManager {
 	}
 }
 
-func (m *mockPromptManager) AddPrompt(p prompt.Prompt) {
+// AddPrompt ...
+// Summary: AddPrompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.prompts[p.Prompt().Name] = p
 }
 
-func (m *mockPromptManager) GetPrompt(name string) (prompt.Prompt, bool) {
+// GetPrompt ...
+// Summary: GetPrompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	p, ok := m.prompts[name]
 	return p, ok
 }
@@ -73,18 +136,54 @@ func newMockResourceManager() *mockResourceManager {
 	}
 }
 
-func (m *mockResourceManager) AddResource(r resource.Resource) {
+// AddResource ...
+// Summary: AddResource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.resources[r.Resource().URI] = r
 }
 
-func (m *mockResourceManager) GetResource(uri string) (resource.Resource, bool) {
+// GetResource ...
+// Summary: GetResource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	r, ok := m.resources[uri]
 	return r, ok
 }
 
-func (m *mockResourceManager) OnListChanged(_ func()) {}
+// OnListChanged ...
+// Summary: OnListChanged
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func (m *mockResourceManager) Subscribe(_ context.Context, _ string) error {
+// Subscribe ...
+// Summary: Subscribe
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
@@ -92,7 +191,16 @@ type mockAuthenticator struct {
 	AuthenticateFunc func(req *http.Request) error
 }
 
-func (m *mockAuthenticator) Authenticate(req *http.Request) error {
+// Authenticate ...
+// Summary: Authenticate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.AuthenticateFunc != nil {
 		return m.AuthenticateFunc(req)
 	}
@@ -103,7 +211,16 @@ type mockRoundTripper struct {
 	roundTripFunc func(req *http.Request) (*http.Response, error)
 }
 
-func (m *mockRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
+// RoundTrip ...
+// Summary: RoundTrip
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.roundTripFunc != nil {
 		return m.roundTripFunc(req)
 	}

@@ -18,7 +18,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestUpstreamService_GitHub(t *testing.T) {
+// TestUpstreamService_GitHub ...
+// Summary: TestUpstreamService_GitHub
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// if os.Getenv("GITHUB_TOKEN") == "" {
 	// 	t.Skip("GITHUB_TOKEN is not set")
 	// }

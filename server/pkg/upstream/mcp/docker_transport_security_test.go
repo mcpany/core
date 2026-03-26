@@ -30,14 +30,77 @@ type mockNetConn struct {
 	io.Writer
 }
 
-func (m *mockNetConn) Close() error                       { return nil }
-func (m *mockNetConn) LocalAddr() net.Addr                { return nil }
-func (m *mockNetConn) RemoteAddr() net.Addr               { return nil }
-func (m *mockNetConn) SetDeadline(t time.Time) error      { return nil }
-func (m *mockNetConn) SetReadDeadline(t time.Time) error  { return nil }
-func (m *mockNetConn) SetWriteDeadline(t time.Time) error { return nil }
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// LocalAddr ...
+// Summary: LocalAddr
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// RemoteAddr ...
+// Summary: RemoteAddr
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// SetDeadline ...
+// Summary: SetDeadline
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// SetReadDeadline ...
+// Summary: SetReadDeadline
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// SetWriteDeadline ...
+// Summary: SetWriteDeadline
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func TestDockerTransport_Security_SetupCommands(t *testing.T) {
+// TestDockerTransport_Security_SetupCommands ...
+// Summary: TestDockerTransport_Security_SetupCommands
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Mock Docker Client
 	originalNewDockerClient := newDockerClient
 	var capturedCmd []string

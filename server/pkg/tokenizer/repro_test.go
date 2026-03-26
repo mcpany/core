@@ -9,7 +9,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCountTokensInValue_MapCycle(t *testing.T) {
+// TestCountTokensInValue_MapCycle ...
+// Summary: TestCountTokensInValue_MapCycle
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tokenizer := NewSimpleTokenizer()
 
 	// Create a map that contains itself
@@ -21,7 +30,16 @@ func TestCountTokensInValue_MapCycle(t *testing.T) {
 	assert.Contains(t, err.Error(), "cycle detected")
 }
 
-func TestCountTokensInValue_SliceCycle(t *testing.T) {
+// TestCountTokensInValue_SliceCycle ...
+// Summary: TestCountTokensInValue_SliceCycle
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tokenizer := NewSimpleTokenizer()
 
 	// Create a slice that contains itself

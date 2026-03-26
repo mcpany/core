@@ -25,7 +25,17 @@ import (
 
 // TestHTTPTool_Execute_SecretLeakageInLogs verifies that secrets passed as query parameters
 // are redacted in the logs when an upstream error occurs.
-func TestHTTPTool_Execute_SecretLeakageInLogs(t *testing.T) {
+// TestHTTPTool_Execute_SecretLeakageInLogs verifies that secrets passed as query parameters
+// Summary: TestHTTPTool_Execute_SecretLeakageInLogs
+// are redacted in the logs when an upstream error occurs.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Allow local IPs for testing (bypass SSRF protection)
 	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
 
@@ -101,7 +111,17 @@ func TestHTTPTool_Execute_SecretLeakageInLogs(t *testing.T) {
 
 // TestHTTPTool_Execute_SecretLeakageInDebugLogs verifies that secrets passed as query parameters
 // are redacted in the debug logs when a successful request occurs and debug is enabled.
-func TestHTTPTool_Execute_SecretLeakageInDebugLogs(t *testing.T) {
+// TestHTTPTool_Execute_SecretLeakageInDebugLogs verifies that secrets passed as query parameters
+// Summary: TestHTTPTool_Execute_SecretLeakageInDebugLogs
+// are redacted in the debug logs when a successful request occurs and debug is enabled.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Allow local IPs for testing (bypass SSRF protection)
 	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
 

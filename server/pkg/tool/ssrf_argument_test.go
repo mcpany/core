@@ -17,7 +17,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestSSRFArgumentProtection(t *testing.T) {
+// TestSSRFArgumentProtection ...
+// Summary: TestSSRFArgumentProtection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Mock IsSafeURL to fail for loopback/private IPs for this test
 	// TestMain mocks it to always pass, which breaks our "existing check" test case.
 	originalIsSafeURL := validation.IsSafeURL

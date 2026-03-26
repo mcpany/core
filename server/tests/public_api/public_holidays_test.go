@@ -19,7 +19,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestUpstreamService_PublicHolidaysWithTransformation(t *testing.T) {
+// TestUpstreamService_PublicHolidaysWithTransformation ...
+// Summary: TestUpstreamService_PublicHolidaysWithTransformation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
@@ -130,7 +139,16 @@ func TestUpstreamService_PublicHolidaysWithTransformation(t *testing.T) {
 	t.Log("INFO: E2E Test Scenario for Public Holidays API with Transformation Completed Successfully!")
 }
 
-func TestUpstreamService_PublicHolidaysWithTransformation_CA_2025(t *testing.T) {
+// TestUpstreamService_PublicHolidaysWithTransformation_CA_2025 ...
+// Summary: TestUpstreamService_PublicHolidaysWithTransformation_CA_2025
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 

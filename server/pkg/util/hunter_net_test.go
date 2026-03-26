@@ -15,7 +15,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestCheckConnection_Coverage(t *testing.T) {
+// TestCheckConnection_Coverage ...
+// Summary: TestCheckConnection_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Allow loopback for this test as we are testing connection checks on local listener
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 
@@ -51,7 +60,16 @@ func TestCheckConnection_Coverage(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestSafeDialer_Coverage(t *testing.T) {
+// TestSafeDialer_Coverage ...
+// Summary: TestSafeDialer_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a test server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -90,7 +108,16 @@ func TestSafeDialer_Coverage(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestCheckConnection_NoPort(t *testing.T) {
+// TestCheckConnection_NoPort ...
+// Summary: TestCheckConnection_NoPort
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 
 	// Mocking CheckConnection's behavior for no port is hard because it defaults to 80.
@@ -113,7 +140,16 @@ type spyResolver struct {
 	lastNetwork string
 }
 
-func (s *spyResolver) LookupIP(ctx context.Context, network, host string) ([]net.IP, error) {
+// LookupIP ...
+// Summary: LookupIP
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	s.lastNetwork = network
 	// Simulate behavior of a real resolver: if asked for ip4, only return IPv4.
 	var filtered []net.IP
@@ -135,11 +171,29 @@ type mockDialer struct {
 	err  error
 }
 
-func (m *mockDialer) DialContext(ctx context.Context, network, address string) (net.Conn, error) {
+// DialContext ...
+// Summary: DialContext
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.conn, m.err
 }
 
-func TestSafeDialer_Bug_MixedFamilies(t *testing.T) {
+// TestSafeDialer_Bug_MixedFamilies ...
+// Summary: TestSafeDialer_Bug_MixedFamilies
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Scenario: Host resolves to a private IPv6 (loopback) and a public IPv4.
 	// We dial with "tcp4", so we should ignore the IPv6 address and succeed with IPv4.
 
@@ -174,7 +228,16 @@ func TestSafeDialer_Bug_MixedFamilies(t *testing.T) {
 	}
 }
 
-func TestSafeDialer_NetworkMapping(t *testing.T) {
+// TestSafeDialer_NetworkMapping ...
+// Summary: TestSafeDialer_NetworkMapping
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		network        string
 		expectedLookup string

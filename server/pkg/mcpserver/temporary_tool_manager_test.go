@@ -13,7 +13,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestTemporaryToolManager(t *testing.T) {
+// TestTemporaryToolManager ...
+// Summary: TestTemporaryToolManager
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewTemporaryToolManager()
 
 	t.Run("ServiceInfo", func(t *testing.T) {

@@ -7,7 +7,16 @@ import (
 	"testing"
 )
 
-func TestCheckSQLiteInjection(t *testing.T) {
+// TestCheckSQLiteInjection ...
+// Summary: TestCheckSQLiteInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name    string
 		val     string
@@ -35,7 +44,16 @@ func TestCheckSQLiteInjection(t *testing.T) {
 	}
 }
 
-func TestCheckMySQLInjection(t *testing.T) {
+// TestCheckMySQLInjection ...
+// Summary: TestCheckMySQLInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name    string
 		val     string
@@ -58,7 +76,16 @@ func TestCheckMySQLInjection(t *testing.T) {
 	}
 }
 
-func TestCheckPSQLInjection(t *testing.T) {
+// TestCheckPSQLInjection ...
+// Summary: TestCheckPSQLInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name       string
 		val        string
@@ -82,7 +109,16 @@ func TestCheckPSQLInjection(t *testing.T) {
 	}
 }
 
-func TestCheckSQLInjection(t *testing.T) {
+// TestCheckSQLInjection ...
+// Summary: TestCheckSQLInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name       string
 		val        string

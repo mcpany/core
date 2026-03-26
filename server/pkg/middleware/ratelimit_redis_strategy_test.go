@@ -17,7 +17,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestRedisStrategy(t *testing.T) {
+// TestRedisStrategy ...
+// Summary: TestRedisStrategy
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup mock creator
 	var createdClients []*redis.Client
 	middleware.SetRedisClientCreatorForTests(func(opts *redis.Options) *redis.Client {

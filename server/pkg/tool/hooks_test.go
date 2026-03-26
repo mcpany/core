@@ -21,7 +21,16 @@ func ptr[T any](v T) *T {
 	return &v
 }
 
-func TestPolicyHook_ExecutePre(t *testing.T) {
+// TestPolicyHook_ExecutePre ...
+// Summary: TestPolicyHook_ExecutePre
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tests := []struct {
 		name       string
@@ -163,7 +172,16 @@ func TestPolicyHook_ExecutePre(t *testing.T) {
 	}
 }
 
-func TestWebhookHook(t *testing.T) {
+// TestWebhookHook ...
+// Summary: TestWebhookHook
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var reqMap map[string]any

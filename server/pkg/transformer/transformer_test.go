@@ -12,13 +12,32 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type CustomInt int
+// CustomInt ...
+// Summary: CustomInt
 
-func (c CustomInt) String() string {
+// String ...
+// Summary: String
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return fmt.Sprintf("Custom(%d)", int(c))
 }
 
-func TestTransformer_JoinEdgeCases(t *testing.T) {
+// TestTransformer_JoinEdgeCases ...
+// Summary: TestTransformer_JoinEdgeCases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tr := NewTransformer()
 
 	t.Run("nil_in_slice", func(t *testing.T) {
@@ -54,7 +73,16 @@ func TestTransformer_JoinEdgeCases(t *testing.T) {
 	})
 }
 
-func TestTransformer(t *testing.T) {
+// TestTransformer ...
+// Summary: TestTransformer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	transformer := NewTransformer()
 

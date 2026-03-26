@@ -19,7 +19,16 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-func TestResilienceMiddleware_Execute_CircuitBreaker(t *testing.T) {
+// TestResilienceMiddleware_Execute_CircuitBreaker ...
+// Summary: TestResilienceMiddleware_Execute_CircuitBreaker
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -107,7 +116,16 @@ func TestResilienceMiddleware_Execute_CircuitBreaker(t *testing.T) {
 	assert.True(t, called4)
 }
 
-func TestResilienceMiddleware_Execute_Retry(t *testing.T) {
+// TestResilienceMiddleware_Execute_Retry ...
+// Summary: TestResilienceMiddleware_Execute_Retry
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -166,7 +184,16 @@ func TestResilienceMiddleware_Execute_Retry(t *testing.T) {
 	assert.Equal(t, 3, attempts, "Should have run 3 times (1 initial + 2 retries)")
 }
 
-func TestResilienceMiddleware_NoConfig(t *testing.T) {
+// TestResilienceMiddleware_NoConfig ...
+// Summary: TestResilienceMiddleware_NoConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 

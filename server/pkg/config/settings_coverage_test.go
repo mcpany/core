@@ -20,7 +20,16 @@ func ptr[T any](v T) *T {
 	return &v
 }
 
-func TestSettings_Getters(t *testing.T) {
+// TestSettings_Getters ...
+// Summary: TestSettings_Getters
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	s := &Settings{
 		proto: func() *configv1.GlobalSettings {
 			return configv1.GlobalSettings_builder{
@@ -39,7 +48,16 @@ func TestSettings_Getters(t *testing.T) {
 	assert.True(t, s.GetDlp().GetEnabled())
 }
 
-func TestSettings_Load_DbSettings(t *testing.T) {
+// TestSettings_Load_DbSettings ...
+// Summary: TestSettings_Load_DbSettings
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	viper.Reset()
 	fs := afero.NewMemMapFs()
 	cmd := &cobra.Command{}
@@ -57,7 +75,16 @@ func TestSettings_Load_DbSettings(t *testing.T) {
 	assert.Equal(t, "sqlite3", settings.GetDbDriver())
 }
 
-func TestGetStringSlice(t *testing.T) {
+// TestGetStringSlice ...
+// Summary: TestGetStringSlice
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		key      string
@@ -117,7 +144,16 @@ func TestGetStringSlice(t *testing.T) {
 	}
 }
 
-func TestSettings_Load_StringSliceEnv(t *testing.T) {
+// TestSettings_Load_StringSliceEnv ...
+// Summary: TestSettings_Load_StringSliceEnv
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Integration test for Load using getStringSlice logic via viper
 	viper.Reset()
 	fs := afero.NewMemMapFs()

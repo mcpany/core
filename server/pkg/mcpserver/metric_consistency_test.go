@@ -30,7 +30,16 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestMetricNamingConsistency(t *testing.T) {
+// TestMetricNamingConsistency ...
+// Summary: TestMetricNamingConsistency
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Initialize metrics with an in-memory sink
 	sink := metrics.NewInmemSink(10*time.Second, 30*time.Second)
 	conf := metrics.DefaultConfig("mcpany")

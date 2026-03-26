@@ -26,7 +26,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestLoginFlow(t *testing.T) {
+// TestLoginFlow ...
+// Summary: TestLoginFlow
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Enable file config for this test
 	os.Setenv("MCPANY_ENABLE_FILE_CONFIG", "true")
 	defer os.Unsetenv("MCPANY_ENABLE_FILE_CONFIG")

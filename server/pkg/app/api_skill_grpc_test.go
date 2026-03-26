@@ -32,7 +32,16 @@ func setupTestManager(t *testing.T) (*skill.Manager, string) {
 	return manager, tmpDir
 }
 
-func TestSkillServiceServer_CreateSkill(t *testing.T) {
+// TestSkillServiceServer_CreateSkill ...
+// Summary: TestSkillServiceServer_CreateSkill
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	manager, _ := setupTestManager(t)
 
 	server := NewSkillServiceServer(manager)
@@ -99,7 +108,16 @@ func TestSkillServiceServer_CreateSkill(t *testing.T) {
 	})
 }
 
-func TestSkillServiceServer_GetSkill(t *testing.T) {
+// TestSkillServiceServer_GetSkill ...
+// Summary: TestSkillServiceServer_GetSkill
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	manager, _ := setupTestManager(t)
 	server := NewSkillServiceServer(manager)
 	ctx := context.Background()
@@ -140,7 +158,16 @@ func TestSkillServiceServer_GetSkill(t *testing.T) {
 	})
 }
 
-func TestSkillServiceServer_ListSkills(t *testing.T) {
+// TestSkillServiceServer_ListSkills ...
+// Summary: TestSkillServiceServer_ListSkills
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	manager, _ := setupTestManager(t)
 	server := NewSkillServiceServer(manager)
 	ctx := context.Background()
@@ -163,7 +190,16 @@ func TestSkillServiceServer_ListSkills(t *testing.T) {
 	assert.True(t, names["skill-2"])
 }
 
-func TestSkillServiceServer_UpdateSkill(t *testing.T) {
+// TestSkillServiceServer_UpdateSkill ...
+// Summary: TestSkillServiceServer_UpdateSkill
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	manager, _ := setupTestManager(t)
 	server := NewSkillServiceServer(manager)
 	ctx := context.Background()
@@ -242,7 +278,16 @@ func TestSkillServiceServer_UpdateSkill(t *testing.T) {
 	})
 }
 
-func TestSkillServiceServer_DeleteSkill(t *testing.T) {
+// TestSkillServiceServer_DeleteSkill ...
+// Summary: TestSkillServiceServer_DeleteSkill
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	manager, tmpDir := setupTestManager(t)
 	server := NewSkillServiceServer(manager)
 	ctx := context.Background()

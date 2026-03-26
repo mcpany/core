@@ -20,7 +20,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestHTTPTool_Execute_MissingAndEmptyParams(t *testing.T) {
+// TestHTTPTool_Execute_MissingAndEmptyParams ...
+// Summary: TestHTTPTool_Execute_MissingAndEmptyParams
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	// Setup a server that echoes the path
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

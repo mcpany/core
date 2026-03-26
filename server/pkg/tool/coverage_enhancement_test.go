@@ -29,14 +29,32 @@ type mockHTTPClient struct {
 	doFunc func(req *http.Request) (*http.Response, error)
 }
 
-func (m *mockHTTPClient) Do(req *http.Request) (*http.Response, error) {
+// Do ...
+// Summary: Do
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.doFunc != nil {
 		return m.doFunc(req)
 	}
 	return nil, errors.New("not implemented")
 }
 
-func TestLocalCommandTool_SecurityChecks(t *testing.T) {
+// TestLocalCommandTool_SecurityChecks ...
+// Summary: TestLocalCommandTool_SecurityChecks
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test CommandTool security checks directly via Execute or helper methods if exposed (they are not exported)
 	// We use Execute to trigger them.
 
@@ -118,7 +136,16 @@ func TestLocalCommandTool_SecurityChecks(t *testing.T) {
 	}
 }
 
-func TestLocalCommandTool_ShellInjection(t *testing.T) {
+// TestLocalCommandTool_ShellInjection ...
+// Summary: TestLocalCommandTool_ShellInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test shell injection checks when command is a shell
 	svcConfig := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("bash"),
@@ -178,7 +205,16 @@ func TestLocalCommandTool_ShellInjection(t *testing.T) {
 	}
 }
 
-func TestLocalCommandTool_ArgsParameter(t *testing.T) {
+// TestLocalCommandTool_ArgsParameter ...
+// Summary: TestLocalCommandTool_ArgsParameter
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test the "args" parameter special handling
 	svcConfig := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("ls"),
@@ -223,7 +259,16 @@ func TestLocalCommandTool_ArgsParameter(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestLocalCommandTool_DockerEnv(t *testing.T) {
+// TestLocalCommandTool_DockerEnv ...
+// Summary: TestLocalCommandTool_DockerEnv
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test that checking for absolute path is skipped for Docker
 	svcConfig := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("ls"),
@@ -263,7 +308,16 @@ func helperSetupHTTPTool(t *testing.T, toolDef *v1.Tool, callDef *configv1.HttpC
 	return NewHTTPTool(toolDef, poolManager, "svc", nil, callDef, nil, nil, "call1")
 }
 
-func TestHTTPTool_RootDoubleSlash(t *testing.T) {
+// TestHTTPTool_RootDoubleSlash ...
+// Summary: TestHTTPTool_RootDoubleSlash
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	callDef := configv1.HttpCallDefinition_builder{
 		Parameters: []*configv1.HttpParameterMapping{
 			configv1.HttpParameterMapping_builder{
@@ -291,7 +345,16 @@ func TestHTTPTool_RootDoubleSlash(t *testing.T) {
 	assert.Equal(t, "http://example.com//", urlStr)
 }
 
-func TestOpenAPITool_Coverage(t *testing.T) {
+// TestOpenAPITool_Coverage ...
+// Summary: TestOpenAPITool_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	t.Run("POST with Input Template", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -426,11 +489,29 @@ type mockExecutorForCoverage struct {
 	err    error
 }
 
-func (m *mockExecutorForCoverage) Execute(ctx context.Context, name string, args []string, dir string, env []string) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
+// Execute ...
+// Summary: Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil, nil, errors.New("not implemented")
 }
 
-func (m *mockExecutorForCoverage) ExecuteWithStdIO(ctx context.Context, name string, args []string, dir string, env []string) (io.WriteCloser, io.ReadCloser, io.ReadCloser, <-chan int, error) {
+// ExecuteWithStdIO ...
+// Summary: ExecuteWithStdIO
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Return pipes
 	prOut, pwOut := io.Pipe()
 	go func() {
@@ -458,7 +539,16 @@ func (m *mockExecutorForCoverage) ExecuteWithStdIO(ctx context.Context, name str
 	return pwIn, prOut, prErr, exitChan, m.err
 }
 
-func TestLocalCommandTool_JSONProtocol(t *testing.T) {
+// TestLocalCommandTool_JSONProtocol ...
+// Summary: TestLocalCommandTool_JSONProtocol
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	svcConfig := configv1.CommandLineUpstreamService_builder{
 		Command:               proto.String("my-json-tool"),
 		CommunicationProtocol: configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON.Enum(),

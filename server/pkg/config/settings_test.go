@@ -18,7 +18,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestSettings_Load(t *testing.T) {
+// TestSettings_Load ...
+// Summary: TestSettings_Load
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Reset viper for testing
 	viper.Reset()
 
@@ -71,7 +80,16 @@ upstream_services: []
 	assert.Equal(t, configv1.GlobalSettings_LOG_LEVEL_DEBUG, settings.LogLevel())
 }
 
-func TestSettings_Defaults(t *testing.T) {
+// TestSettings_Defaults ...
+// Summary: TestSettings_Defaults
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	viper.Reset()
 	fs := afero.NewMemMapFs()
 	cmd := &cobra.Command{}
@@ -86,7 +104,16 @@ func TestSettings_Defaults(t *testing.T) {
 	assert.Equal(t, configv1.GlobalSettings_LOG_LEVEL_INFO, settings.LogLevel())
 }
 
-func TestSettings_SetAPIKey(t *testing.T) {
+// TestSettings_SetAPIKey ...
+// Summary: TestSettings_SetAPIKey
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test SetAPIKey on a fresh instance
 	// Reset singleton if possible, but we can just use new instance for safety in unit test
 	// But `GlobalSettings` returns singleton.
@@ -98,7 +125,16 @@ func TestSettings_SetAPIKey(t *testing.T) {
 	assert.Equal(t, "new-key", s.APIKey())
 }
 
-func TestSettings_LoggingInit(t *testing.T) {
+// TestSettings_LoggingInit ...
+// Summary: TestSettings_LoggingInit
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test creating a real log file
 	viper.Reset()
 	fs := afero.NewMemMapFs() // Used for config, but log file uses os.Open...
@@ -121,7 +157,16 @@ func TestSettings_LoggingInit(t *testing.T) {
 	assert.Equal(t, tmpFile.Name(), settings.LogFile())
 }
 
-func TestSettings_MCPListenAddress_Precedence(t *testing.T) {
+// TestSettings_MCPListenAddress_Precedence ...
+// Summary: TestSettings_MCPListenAddress_Precedence
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	viper.Reset()
 	fs := afero.NewMemMapFs()
 	cmd := &cobra.Command{}
@@ -149,7 +194,16 @@ global_settings:
 	assert.Equal(t, "127.0.0.1:9091", settings.MCPListenAddress())
 }
 
-func TestSettings_MCPListenAddress_EnvPrecedence(t *testing.T) {
+// TestSettings_MCPListenAddress_EnvPrecedence ...
+// Summary: TestSettings_MCPListenAddress_EnvPrecedence
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test verifies that Environment Variables override Config Files.
 	// Precedence should be: Flag > Env > Config > Default
 	viper.Reset()
@@ -191,7 +245,16 @@ global_settings:
 	assert.Equal(t, expectedVal, settings.MCPListenAddress())
 }
 
-func TestSettings_GetDbDsn(t *testing.T) {
+// TestSettings_GetDbDsn ...
+// Summary: TestSettings_GetDbDsn
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	viper.Reset()
 	fs := afero.NewMemMapFs()
 	cmd := &cobra.Command{}
@@ -207,7 +270,16 @@ func TestSettings_GetDbDsn(t *testing.T) {
 	assert.Equal(t, "postgres://user:pass@127.0.0.1:5432/db", settings.GetDbDsn())
 }
 
-func TestSettings_GetDbDriver(t *testing.T) {
+// TestSettings_GetDbDriver ...
+// Summary: TestSettings_GetDbDriver
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	viper.Reset()
 	fs := afero.NewMemMapFs()
 	cmd := &cobra.Command{}
@@ -223,7 +295,16 @@ func TestSettings_GetDbDriver(t *testing.T) {
 	assert.Equal(t, "postgres", settings.GetDbDriver())
 }
 
-func TestSettings_GetDlp(t *testing.T) {
+// TestSettings_GetDlp ...
+// Summary: TestSettings_GetDlp
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	enabled := true
 	settings := &Settings{
 		proto: func() *configv1.GlobalSettings {
@@ -242,7 +323,16 @@ func TestSettings_GetDlp(t *testing.T) {
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-func TestSettings_ExtraGetters(t *testing.T) {
+// TestSettings_ExtraGetters ...
+// Summary: TestSettings_ExtraGetters
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a Settings instance manually with populated fields
 	middlewares := []*configv1.Middleware{
 		func() *configv1.Middleware {

@@ -11,7 +11,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRouter(t *testing.T) {
+// TestRouter ...
+// Summary: TestRouter
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	router := NewRouter()
 
 	t.Run("register and get handler", func(t *testing.T) {

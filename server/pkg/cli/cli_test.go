@@ -10,7 +10,16 @@ import (
 	"testing"
 )
 
-func TestJSONExecutor(t *testing.T) {
+// TestJSONExecutor ...
+// Summary: TestJSONExecutor
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	in := &bytes.Buffer{}
 	out := &bytes.Buffer{}
@@ -50,11 +59,29 @@ func TestJSONExecutor(t *testing.T) {
 
 type failWriter struct{}
 
-func (w *failWriter) Write(_ []byte) (n int, err error) {
+// Write ...
+// Summary: Write
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return 0, errors.New("fail write")
 }
 
-func TestJSONExecutor_Errors(t *testing.T) {
+// TestJSONExecutor_Errors ...
+// Summary: TestJSONExecutor_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	t.Run("Encode Error", func(t *testing.T) {
 		t.Parallel()

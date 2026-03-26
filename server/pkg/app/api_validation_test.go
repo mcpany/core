@@ -16,7 +16,16 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func TestHandleServiceValidate_Filesystem(t *testing.T) {
+// TestHandleServiceValidate_Filesystem ...
+// Summary: TestHandleServiceValidate_Filesystem
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := &Application{}
 	tmpDir := t.TempDir()
 
@@ -64,7 +73,16 @@ func TestHandleServiceValidate_Filesystem(t *testing.T) {
 	}
 }
 
-func TestHandleServiceValidate_CommandLine(t *testing.T) {
+// TestHandleServiceValidate_CommandLine ...
+// Summary: TestHandleServiceValidate_CommandLine
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := &Application{}
 
 	// Assuming "ls" (or "dir" on windows) exists.

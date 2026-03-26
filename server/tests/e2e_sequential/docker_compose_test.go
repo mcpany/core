@@ -25,7 +25,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestDockerComposeE2E(t *testing.T) {
+// TestDockerComposeE2E ...
+// Summary: TestDockerComposeE2E
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if os.Getenv("E2E_DOCKER") != "true" {
 		// Auto-detect if we can run it, or just set it to true if we are confident.
 		// For this task, we want to resurrect it.

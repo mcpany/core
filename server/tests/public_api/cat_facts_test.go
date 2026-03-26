@@ -19,7 +19,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestUpstreamService_CatFacts(t *testing.T) {
+// TestUpstreamService_CatFacts ...
+// Summary: TestUpstreamService_CatFacts
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// t.Skip("Skipping flaky cat facts test due to rate limiting issues")
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()

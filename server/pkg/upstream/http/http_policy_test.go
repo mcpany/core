@@ -16,7 +16,16 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func TestHTTPUpstream_InvalidCallPolicy(t *testing.T) {
+// TestHTTPUpstream_InvalidCallPolicy ...
+// Summary: TestHTTPUpstream_InvalidCallPolicy
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)

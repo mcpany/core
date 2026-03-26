@@ -14,7 +14,16 @@ import (
 	"testing"
 )
 
-func TestValidateConfigHandler_InformationLeakage_Fixed(t *testing.T) {
+// TestValidateConfigHandler_InformationLeakage_Fixed ...
+// Summary: TestValidateConfigHandler_InformationLeakage_Fixed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup: Set a secret environment variable
 	secretName := "TEST_LEAK_SECRET"
 	secretValue := "SECRET_VALUE_123"

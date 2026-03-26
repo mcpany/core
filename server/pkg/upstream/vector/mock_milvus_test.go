@@ -26,56 +26,128 @@ type mockMilvusClient struct {
 	closeFunc                   func() error
 }
 
-func (m *mockMilvusClient) HasCollection(ctx context.Context, name string) (bool, error) {
+// HasCollection ...
+// Summary: HasCollection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.hasCollectionFunc != nil {
 		return m.hasCollectionFunc(ctx, name)
 	}
 	return false, nil
 }
 
-func (m *mockMilvusClient) LoadCollection(ctx context.Context, name string, async bool, opts ...client.LoadCollectionOption) error {
+// LoadCollection ...
+// Summary: LoadCollection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.loadCollectionFunc != nil {
 		return m.loadCollectionFunc(ctx, name, async, opts...)
 	}
 	return nil
 }
 
-func (m *mockMilvusClient) DescribeCollection(ctx context.Context, name string) (*entity.Collection, error) {
+// DescribeCollection ...
+// Summary: DescribeCollection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.describeCollectionFunc != nil {
 		return m.describeCollectionFunc(ctx, name)
 	}
 	return nil, nil
 }
 
-func (m *mockMilvusClient) Search(ctx context.Context, collectionName string, partitions []string, expr string, outputFields []string, vectors []entity.Vector, vectorField string, metricType entity.MetricType, topK int, sp entity.SearchParam, opts ...client.SearchQueryOptionFunc) ([]client.SearchResult, error) {
+// Search ...
+// Summary: Search
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.searchFunc != nil {
 		return m.searchFunc(ctx, collectionName, partitions, expr, outputFields, vectors, vectorField, metricType, topK, sp, opts...)
 	}
 	return nil, nil
 }
 
-func (m *mockMilvusClient) Upsert(ctx context.Context, collectionName string, partitionName string, columns ...entity.Column) (entity.Column, error) {
+// Upsert ...
+// Summary: Upsert
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.upsertFunc != nil {
 		return m.upsertFunc(ctx, collectionName, partitionName, columns...)
 	}
 	return nil, nil
 }
 
-func (m *mockMilvusClient) Delete(ctx context.Context, collectionName string, partitionName string, expr string) error {
+// Delete ...
+// Summary: Delete
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.deleteFunc != nil {
 		return m.deleteFunc(ctx, collectionName, partitionName, expr)
 	}
 	return nil
 }
 
-func (m *mockMilvusClient) GetCollectionStatistics(ctx context.Context, name string) (map[string]string, error) {
+// GetCollectionStatistics ...
+// Summary: GetCollectionStatistics
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.getCollectionStatisticsFunc != nil {
 		return m.getCollectionStatisticsFunc(ctx, name)
 	}
 	return nil, nil
 }
 
-func (m *mockMilvusClient) Close() error {
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.closeFunc != nil {
 		return m.closeFunc()
 	}

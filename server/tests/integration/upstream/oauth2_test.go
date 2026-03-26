@@ -130,7 +130,16 @@ auth:
 	return integration.StartMCPANYServerWithConfig(t, "mcpany_oauth2_test", config)
 }
 
-func TestUpstreamService_HTTP_WithOAuth2(t *testing.T) {
+// TestUpstreamService_HTTP_WithOAuth2 ...
+// Summary: TestUpstreamService_HTTP_WithOAuth2
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var tokenURL, clientIDVal, clientSecretVal string
 	if os.Getenv("TEST_OAUTH_SERVER_URL") != "" {
 		tokenURL = os.Getenv("TEST_OAUTH_TOKEN_URL")
@@ -196,7 +205,16 @@ func TestUpstreamService_HTTP_WithOAuth2(t *testing.T) {
 	framework.RunE2ETest(t, testCase)
 }
 
-func TestUpstreamService_HTTP_WithOAuth2_InvalidCredentials(t *testing.T) {
+// TestUpstreamService_HTTP_WithOAuth2_InvalidCredentials ...
+// Summary: TestUpstreamService_HTTP_WithOAuth2_InvalidCredentials
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	oauth2Server := newMockOAuth2Server(t)
 	defer oauth2Server.Close()
 
@@ -245,7 +263,16 @@ func TestUpstreamService_HTTP_WithOAuth2_InvalidCredentials(t *testing.T) {
 	framework.RunE2ETest(t, testCase)
 }
 
-func TestUpstreamService_MCPANY_WithOAuth2(t *testing.T) {
+// TestUpstreamService_MCPANY_WithOAuth2 ...
+// Summary: TestUpstreamService_MCPANY_WithOAuth2
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var issuer, audience, tokenURL, clientIDVal, clientSecretVal string
 	if os.Getenv("TEST_OAUTH_SERVER_URL") != "" {
 		issuer = os.Getenv("TEST_OAUTH_SERVER_URL") + "/" // Hydra issuer usually ends with /

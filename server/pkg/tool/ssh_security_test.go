@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestLocalCommandTool_SSHInjection_Prevention(t *testing.T) {
+// TestLocalCommandTool_SSHInjection_Prevention ...
+// Summary: TestLocalCommandTool_SSHInjection_Prevention
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	// This test verifies that arguments to 'ssh' command are checked for shell injection.
 

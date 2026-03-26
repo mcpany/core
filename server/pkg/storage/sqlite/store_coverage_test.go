@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestStore_Close(t *testing.T) {
+// TestStore_Close ...
+// Summary: TestStore_Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tmpDir, err := os.MkdirTemp("", "mcpany-test-store-close-*")
 	require.NoError(t, err)
 	defer os.RemoveAll(tmpDir)
@@ -35,7 +44,16 @@ func TestStore_Close(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestStore_GetGlobalSettings_Empty(t *testing.T) {
+// TestStore_GetGlobalSettings_Empty ...
+// Summary: TestStore_GetGlobalSettings_Empty
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tmpDir, err := os.MkdirTemp("", "mcpany-test-store-gs-*")
 	require.NoError(t, err)
 	defer os.RemoveAll(tmpDir)
@@ -52,7 +70,16 @@ func TestStore_GetGlobalSettings_Empty(t *testing.T) {
 	assert.Nil(t, gs)
 }
 
-func TestStore_Validations(t *testing.T) {
+// TestStore_Validations ...
+// Summary: TestStore_Validations
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tmpDir, err := os.MkdirTemp("", "mcpany-test-store-val-*")
 	require.NoError(t, err)
 	defer os.RemoveAll(tmpDir)
@@ -109,7 +136,16 @@ func TestStore_Validations(t *testing.T) {
 	})
 }
 
-func TestStore_HasConfigSources(t *testing.T) {
+// TestStore_HasConfigSources ...
+// Summary: TestStore_HasConfigSources
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tmpDir, err := os.MkdirTemp("", "mcpany-test-store-config-*")
 	require.NoError(t, err)
 	defer os.RemoveAll(tmpDir)

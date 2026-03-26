@@ -18,7 +18,16 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func TestHTTPUpstream_URLConstruction_RuntimeDoubleSlashRootBug(t *testing.T) {
+// TestHTTPUpstream_URLConstruction_RuntimeDoubleSlashRootBug ...
+// Summary: TestHTTPUpstream_URLConstruction_RuntimeDoubleSlashRootBug
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Use t.Setenv for thread-safe environment variable setting
 	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
 

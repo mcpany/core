@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestManager_SettersAndGetters(t *testing.T) {
+// TestManager_SettersAndGetters ...
+// Summary: TestManager_SettersAndGetters
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	am := NewManager()
 
 	// Test SetStorage

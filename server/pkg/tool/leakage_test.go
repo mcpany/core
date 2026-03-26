@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestLocalCommandTool_Leakage(t *testing.T) {
+// TestLocalCommandTool_Leakage ...
+// Summary: TestLocalCommandTool_Leakage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test verifies that sensitive inputs are redacted from args and output.
 	// "api_key" is a known sensitive key in util.IsSensitiveKey
 

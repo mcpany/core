@@ -11,7 +11,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestIsPrivateIP_Coverage(t *testing.T) {
+// TestIsPrivateIP_Coverage ...
+// Summary: TestIsPrivateIP_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name      string
 		ipStr     string
@@ -103,7 +112,16 @@ func TestIsPrivateIP_Coverage(t *testing.T) {
 	}
 }
 
-func TestIsNAT64_Coverage(t *testing.T) {
+// TestIsNAT64_Coverage ...
+// Summary: TestIsNAT64_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 64:ff9b::1 is valid NAT64 prefix but not embedded IPv4 at end?
 	// RFC 6052: prefix is 96 bits.
 	// 64:ff9b:: is the Well-Known Prefix.
@@ -121,7 +139,16 @@ func TestIsNAT64_Coverage(t *testing.T) {
 	}
 }
 
-func TestIsIPv4Compatible_Coverage(t *testing.T) {
+// TestIsIPv4Compatible_Coverage ...
+// Summary: TestIsIPv4Compatible_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ip := net.ParseIP("::1.2.3.4") // IPv4 compatible
 	// net.ParseIP for "::1.2.3.4" returns 16 bytes.
 	if !IsIPv4Compatible(ip) {
@@ -135,7 +162,16 @@ func TestIsIPv4Compatible_Coverage(t *testing.T) {
 	}
 }
 
-func TestValidateIP_Multicast(t *testing.T) {
+// TestValidateIP_Multicast ...
+// Summary: TestValidateIP_Multicast
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Multicast IPv4
 	err := IsSafeURL("http://224.0.0.1")
 	if err == nil {
@@ -149,7 +185,16 @@ func TestValidateIP_Multicast(t *testing.T) {
 	}
 }
 
-func TestValidateHTTPServiceDefinition_Coverage(t *testing.T) {
+// TestValidateHTTPServiceDefinition_Coverage ...
+// Summary: TestValidateHTTPServiceDefinition_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test invalid characters in path to trigger url.Parse error
 	methodGet := configv1.HttpCallDefinition_HTTP_METHOD_GET
 	def := configv1.HttpCallDefinition_builder{

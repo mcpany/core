@@ -15,7 +15,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestSkillResource_BinaryAsset(t *testing.T) {
+// TestSkillResource_BinaryAsset ...
+// Summary: TestSkillResource_BinaryAsset
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup
 	tmpDir, err := os.MkdirTemp("", "skill-blob-test")
 	require.NoError(t, err)

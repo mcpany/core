@@ -22,7 +22,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestHTTPTool_Security_PathTraversal(t *testing.T) {
+// TestHTTPTool_Security_PathTraversal ...
+// Summary: TestHTTPTool_Security_PathTraversal
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -90,7 +99,16 @@ func TestHTTPTool_Security_PathTraversal(t *testing.T) {
 	}
 }
 
-func TestHTTPTool_Security_SSRF_Host_Parsing(t *testing.T) {
+// TestHTTPTool_Security_SSRF_Host_Parsing ...
+// Summary: TestHTTPTool_Security_SSRF_Host_Parsing
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	// This test confirms that dynamic host injection via simple substitution
 	// (e.g. http://{{host}}/) is PREVENTED by the strict URL parsing at initialization.
@@ -131,7 +149,16 @@ func TestHTTPTool_Security_SSRF_Host_Parsing(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to parse url")
 }
 
-func TestHTTPTool_Security_SSRF_Scheme(t *testing.T) {
+// TestHTTPTool_Security_SSRF_Scheme ...
+// Summary: TestHTTPTool_Security_SSRF_Scheme
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	// Verify that Scheme Injection is prevented.
 	// We rely on the real IsSafeURL or http.Client validation.
@@ -181,7 +208,16 @@ func TestHTTPTool_Security_SSRF_Scheme(t *testing.T) {
 		"Error should indicate blocked scheme or invalid URL: %v", err)
 }
 
-func TestHTTPTool_Security_HeaderInjection(t *testing.T) {
+// TestHTTPTool_Security_HeaderInjection ...
+// Summary: TestHTTPTool_Security_HeaderInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	// Attempt to inject headers via path or query parameters.
 	// Go's net/http and url packages should prevent this by escaping or rejecting control characters.

@@ -17,7 +17,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestE2EPrompt(t *testing.T) {
+// TestE2EPrompt ...
+// Summary: TestE2EPrompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	framework.RunE2ETest(t, &framework.E2ETestCase{
 		Name:                "prompt",
 		UpstreamServiceType: "http",
@@ -28,19 +37,46 @@ func TestE2EPrompt(t *testing.T) {
 	})
 }
 
-func BuildPromptServer(t *testing.T) *integration.ManagedProcess {
+// BuildPromptServer ...
+// Summary: BuildPromptServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	port := integration.FindFreePort(t)
 	proc := integration.NewManagedProcess(t, "prompt_server", integration.MockBinary(t, "prompt-server"), []string{"--port", fmt.Sprintf("%d", port)}, nil)
 	proc.Port = port
 	return proc
 }
 
-func RegisterPromptService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
+// RegisterPromptService ...
+// Summary: RegisterPromptService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	const serviceID = "e2e_prompt_server"
 	integration.RegisterStreamableMCPService(t, registrationClient, serviceID, upstreamEndpoint, true, nil)
 }
 
-func InvokeAIWithPrompt(t *testing.T, mcpanyEndpoint string) {
+// InvokeAIWithPrompt ...
+// Summary: InvokeAIWithPrompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Not using the gemini CLI for this test, as it's not working as expected.
 	// Instead, we'll use the mcpserver directly.
 	// The prompt server has a "hello" prompt that returns "Hello, world!".

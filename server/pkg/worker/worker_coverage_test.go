@@ -16,7 +16,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestServiceRegistrationWorker_Panic_Registration(t *testing.T) {
+// TestServiceRegistrationWorker_Panic_Registration ...
+// Summary: TestServiceRegistrationWorker_Panic_Registration
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	globalTestLock.Lock()
 	defer globalTestLock.Unlock()
 
@@ -61,7 +70,16 @@ func TestServiceRegistrationWorker_Panic_Registration(t *testing.T) {
 	}
 }
 
-func TestServiceRegistrationWorker_Panic_List(t *testing.T) {
+// TestServiceRegistrationWorker_Panic_List ...
+// Summary: TestServiceRegistrationWorker_Panic_List
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	globalTestLock.Lock()
 	defer globalTestLock.Unlock()
 
@@ -111,14 +129,32 @@ type extendedMockServiceRegistry struct {
 	getServiceConfigFunc func(name string) (*configv1.UpstreamServiceConfig, bool)
 }
 
-func (m *extendedMockServiceRegistry) GetServiceConfig(name string) (*configv1.UpstreamServiceConfig, bool) {
+// GetServiceConfig ...
+// Summary: GetServiceConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.getServiceConfigFunc != nil {
 		return m.getServiceConfigFunc(name)
 	}
 	return nil, false
 }
 
-func TestServiceRegistrationWorker_GetServiceConfig(t *testing.T) {
+// TestServiceRegistrationWorker_GetServiceConfig ...
+// Summary: TestServiceRegistrationWorker_GetServiceConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	globalTestLock.Lock()
 	defer globalTestLock.Unlock()
 
@@ -179,7 +215,16 @@ func TestServiceRegistrationWorker_GetServiceConfig(t *testing.T) {
 	}
 }
 
-func TestServiceRegistrationWorker_Panic_Get(t *testing.T) {
+// TestServiceRegistrationWorker_Panic_Get ...
+// Summary: TestServiceRegistrationWorker_Panic_Get
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	globalTestLock.Lock()
 	defer globalTestLock.Unlock()
 
@@ -225,7 +270,16 @@ func TestServiceRegistrationWorker_Panic_Get(t *testing.T) {
 	}
 }
 
-func TestWorker_PublishFailure(t *testing.T) {
+// TestWorker_PublishFailure ...
+// Summary: TestWorker_PublishFailure
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	globalTestLock.Lock()
 	defer globalTestLock.Unlock()
 
@@ -286,7 +340,16 @@ func TestWorker_PublishFailure(t *testing.T) {
 	// If we are here and no panic, it passed.
 }
 
-func TestUpstreamWorker_PublishFailure(t *testing.T) {
+// TestUpstreamWorker_PublishFailure ...
+// Summary: TestUpstreamWorker_PublishFailure
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	globalTestLock.Lock()
 	defer globalTestLock.Unlock()
 
@@ -348,7 +411,16 @@ func TestUpstreamWorker_PublishFailure(t *testing.T) {
 	}
 }
 
-func TestWorker_Start_BusErrors(t *testing.T) {
+// TestWorker_Start_BusErrors ...
+// Summary: TestWorker_Start_BusErrors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	globalTestLock.Lock()
 	defer globalTestLock.Unlock()
 

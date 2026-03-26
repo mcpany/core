@@ -16,6 +16,7 @@ import (
 )
 
 // DefaultClaudeModel is the default Claude model to use.
+// Summary: Default model constant.
 const DefaultClaudeModel = "claude-3-5-sonnet-latest"
 
 // ClaudeCLI handles interactions with the Claude CLI tool for testing.

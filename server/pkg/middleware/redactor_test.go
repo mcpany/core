@@ -13,7 +13,16 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestNewRedactor(t *testing.T) {
+// TestNewRedactor ...
+// Summary: TestNewRedactor
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	enabled := true
 	cfg := configv1.DLPConfig_builder{
 		Enabled:        &enabled,
@@ -42,7 +51,16 @@ func TestNewRedactor(t *testing.T) {
 	assert.Nil(t, r)
 }
 
-func TestRedactString(t *testing.T) {
+// TestRedactString ...
+// Summary: TestRedactString
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	enabled := true
 	cfg := configv1.DLPConfig_builder{
 		Enabled:        &enabled,
@@ -94,13 +112,31 @@ func TestRedactString(t *testing.T) {
 	}
 }
 
-func TestRedactString_NilRedactor(t *testing.T) {
+// TestRedactString_NilRedactor ...
+// Summary: TestRedactString_NilRedactor
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var r *Redactor
 	input := "user@example.com"
 	assert.Equal(t, input, r.RedactString(input))
 }
 
-func TestRedactStruct(t *testing.T) {
+// TestRedactStruct ...
+// Summary: TestRedactStruct
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	enabled := true
 	cfg := configv1.DLPConfig_builder{
 		Enabled:        &enabled,
@@ -136,7 +172,16 @@ func TestRedactStruct(t *testing.T) {
 	assert.Equal(t, expected, input)
 }
 
-func TestRedactStruct_NilRedactor(t *testing.T) {
+// TestRedactStruct_NilRedactor ...
+// Summary: TestRedactStruct_NilRedactor
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var r *Redactor
 	input := map[string]interface{}{
 		"email": "user@example.com",
@@ -145,7 +190,16 @@ func TestRedactStruct_NilRedactor(t *testing.T) {
 	assert.Equal(t, "user@example.com", input["email"])
 }
 
-func TestRedactValue(t *testing.T) {
+// TestRedactValue ...
+// Summary: TestRedactValue
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	enabled := true
 	cfg := configv1.DLPConfig_builder{
 		Enabled:        &enabled,
@@ -202,13 +256,31 @@ func TestRedactValue(t *testing.T) {
 	}
 }
 
-func TestRedactValue_NilRedactor(t *testing.T) {
+// TestRedactValue_NilRedactor ...
+// Summary: TestRedactValue_NilRedactor
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var r *Redactor
 	input := "user@example.com"
 	assert.Equal(t, input, r.RedactValue(input))
 }
 
-func TestRedactJSON(t *testing.T) {
+// TestRedactJSON ...
+// Summary: TestRedactJSON
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	enabled := true
 	cfg := configv1.DLPConfig_builder{
 		Enabled:        &enabled,
@@ -236,7 +308,16 @@ func TestRedactJSON(t *testing.T) {
 	assert.NotContains(t, outputStr, "secret-123")
 }
 
-func TestRedactJSON_NilRedactor(t *testing.T) {
+// TestRedactJSON_NilRedactor ...
+// Summary: TestRedactJSON_NilRedactor
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var r *Redactor
 	input := []byte(`{"email":"user@example.com"}`)
 	output, err := r.RedactJSON(input)
@@ -244,7 +325,16 @@ func TestRedactJSON_NilRedactor(t *testing.T) {
 	assert.Equal(t, input, output)
 }
 
-func TestRedactJSON_Empty(t *testing.T) {
+// TestRedactJSON_Empty ...
+// Summary: TestRedactJSON_Empty
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	enabled := true
 	cfg := configv1.DLPConfig_builder{
 		Enabled: &enabled,
@@ -260,7 +350,16 @@ func TestRedactJSON_Empty(t *testing.T) {
 	assert.Empty(t, output)
 }
 
-func TestNewRedactor_DuplicateNamedGroups(t *testing.T) {
+// TestNewRedactor_DuplicateNamedGroups ...
+// Summary: TestNewRedactor_DuplicateNamedGroups
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	enabled := true
 	cfg := configv1.DLPConfig_builder{
 		Enabled:        &enabled,
@@ -278,7 +377,16 @@ func TestNewRedactor_DuplicateNamedGroups(t *testing.T) {
 	assert.Equal(t, "***REDACTED***", r.RedactString("bar"))
 }
 
-func TestRedactString_Fallback(t *testing.T) {
+// TestRedactString_Fallback ...
+// Summary: TestRedactString_Fallback
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Manually construct a Redactor to force fallback path
 	p1 := regexp.MustCompile(`foo`)
 	p2 := regexp.MustCompile(`bar`)

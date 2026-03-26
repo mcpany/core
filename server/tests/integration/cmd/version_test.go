@@ -13,7 +13,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestVersionCmdExitCode(t *testing.T) {
+// TestVersionCmdExitCode ...
+// Summary: TestVersionCmdExitCode
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a command that will fail to write to stdout
 	rootCmd := newRootCmd()
 	r, w, err := os.Pipe()

@@ -16,7 +16,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestUpstreamServiceManager_LoadAndMergeServices_GitHub(t *testing.T) {
+// TestUpstreamServiceManager_LoadAndMergeServices_GitHub ...
+// Summary: TestUpstreamServiceManager_LoadAndMergeServices_GitHub
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var server *httptest.Server
 	server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

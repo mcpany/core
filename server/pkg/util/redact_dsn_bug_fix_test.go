@@ -7,7 +7,16 @@ import (
 	"testing"
 )
 
-func TestRedactDSN_Bug_RedisNoUser(t *testing.T) {
+// TestRedactDSN_Bug_RedisNoUser ...
+// Summary: TestRedactDSN_Bug_RedisNoUser
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Scenario: Redis DSN with empty user and password, no host (or implicit).
 	// redis://:mysecretpassword
 	// url.Parse fails because ":mysecretpassword" is not a valid port.
@@ -25,7 +34,16 @@ func TestRedactDSN_Bug_RedisNoUser(t *testing.T) {
 	}
 }
 
-func TestRedactDSN_Bug_UserPasswordNoHost(t *testing.T) {
+// TestRedactDSN_Bug_UserPasswordNoHost ...
+// Summary: TestRedactDSN_Bug_UserPasswordNoHost
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Scenario: User:Password but no host.
 	// postgres://user:mysecretpassword
 	// url.Parse fails.
@@ -41,7 +59,16 @@ func TestRedactDSN_Bug_UserPasswordNoHost(t *testing.T) {
 	}
 }
 
-func TestRedactDSN_Regression_HostPort(t *testing.T) {
+// TestRedactDSN_Regression_HostPort ...
+// Summary: TestRedactDSN_Regression_HostPort
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Scenario: Standard URL with host:port.
 	// http://localhost:8080
 	// Should NOT be redacted as http://localhost:[REDACTED].

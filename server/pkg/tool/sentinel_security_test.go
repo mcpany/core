@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestSentinelRCE_AwkInShell(t *testing.T) {
+// TestSentinelRCE_AwkInShell ...
+// Summary: TestSentinelRCE_AwkInShell
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. Configure a tool that uses sh -c to run awk with user input in single quotes
 	svc := configv1.CommandLineUpstreamService_builder{
 		Command:          proto.String("sh"),
@@ -69,7 +78,16 @@ func TestSentinelRCE_AwkInShell(t *testing.T) {
 	assert.Contains(t, err.Error(), "system")
 }
 
-func TestSentinelRCE_Backticks(t *testing.T) {
+// TestSentinelRCE_Backticks ...
+// Summary: TestSentinelRCE_Backticks
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. Configure a tool that uses sh -c to run perl with user input in single quotes
 	svc := configv1.CommandLineUpstreamService_builder{
 		Command:          proto.String("sh"),
@@ -125,7 +143,16 @@ func TestSentinelRCE_Backticks(t *testing.T) {
 	assert.Contains(t, err.Error(), "backtick")
 }
 
-func TestSentinelRCE_WhitespaceEvasion(t *testing.T) {
+// TestSentinelRCE_WhitespaceEvasion ...
+// Summary: TestSentinelRCE_WhitespaceEvasion
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. Configure a tool that uses sh -c to run awk with user input in single quotes
 	svc := configv1.CommandLineUpstreamService_builder{
 		Command:          proto.String("sh"),
@@ -180,7 +207,16 @@ func TestSentinelRCE_WhitespaceEvasion(t *testing.T) {
 	assert.Contains(t, err.Error(), "system")
 }
 
-func TestSentinelRCE_QuoteParsingBypass(t *testing.T) {
+// TestSentinelRCE_QuoteParsingBypass ...
+// Summary: TestSentinelRCE_QuoteParsingBypass
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. Configure a tool that uses sh -c with a vulnerable template (accidentally using \' inside single quotes)
 	// Template: echo 'foo\'{{input}}'
 	// This template is parsed by Bash as: 'foo\' (string) then {{input}} (unquoted) then ' (string start)
@@ -240,7 +276,16 @@ func TestSentinelRCE_QuoteParsingBypass(t *testing.T) {
 	assert.Contains(t, err.Error(), ";")
 }
 
-func TestSentinelRCE_Python_Eval_DoubleQuotes(t *testing.T) {
+// TestSentinelRCE_Python_Eval_DoubleQuotes ...
+// Summary: TestSentinelRCE_Python_Eval_DoubleQuotes
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. Configure a tool that uses python -c with eval inside double quotes
 	svc := configv1.CommandLineUpstreamService_builder{
 		Command:          proto.String("python3"),
@@ -294,7 +339,16 @@ func TestSentinelRCE_Python_Eval_DoubleQuotes(t *testing.T) {
 	assert.Contains(t, err.Error(), "interpreter injection detected")
 }
 
-func TestSentinelRCE_NodeExecSync(t *testing.T) {
+// TestSentinelRCE_NodeExecSync ...
+// Summary: TestSentinelRCE_NodeExecSync
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. Configure a tool that uses node -e
 	svc := configv1.CommandLineUpstreamService_builder{
 		Command:          proto.String("node"),

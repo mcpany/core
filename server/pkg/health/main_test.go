@@ -8,7 +8,16 @@ import (
 	"testing"
 )
 
-func TestMain(m *testing.M) {
+// TestMain ...
+// Summary: TestMain
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Allow loopback resources for tests
 	os.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	code := m.Run()

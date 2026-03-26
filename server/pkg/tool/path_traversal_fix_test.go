@@ -20,7 +20,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestHTTPTool_PathTraversal_Blocked(t *testing.T) {
+// TestHTTPTool_PathTraversal_Blocked ...
+// Summary: TestHTTPTool_PathTraversal_Blocked
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -81,7 +90,16 @@ func TestHTTPTool_PathTraversal_Blocked(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestLocalCommandTool_ShellInjection_Prevention_NewCommands(t *testing.T) {
+// TestLocalCommandTool_ShellInjection_Prevention_NewCommands ...
+// Summary: TestLocalCommandTool_ShellInjection_Prevention_NewCommands
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Tests that newly added commands (busybox, expect) are treated as shells
 	t.Parallel()
 

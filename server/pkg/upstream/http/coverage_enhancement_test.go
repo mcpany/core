@@ -24,7 +24,16 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func TestCoverageEnhancement_DynamicResourceErrors(t *testing.T) {
+// TestCoverageEnhancement_DynamicResourceErrors ...
+// Summary: TestCoverageEnhancement_DynamicResourceErrors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	mockTm := newMockToolManager()
 	upstream := NewUpstream(pm)
@@ -79,7 +88,16 @@ func TestCoverageEnhancement_DynamicResourceErrors(t *testing.T) {
 	assert.False(t, ok, "Resource with missing tool should not be registered")
 }
 
-func TestCoverageEnhancement_InvalidEndpointPath(t *testing.T) {
+// TestCoverageEnhancement_InvalidEndpointPath ...
+// Summary: TestCoverageEnhancement_InvalidEndpointPath
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	mockTm := newMockToolManager()
 	upstream := NewUpstream(pm)
@@ -112,7 +130,16 @@ func TestCoverageEnhancement_InvalidEndpointPath(t *testing.T) {
 	assert.Empty(t, discoveredTools)
 }
 
-func TestCoverageEnhancement_InvalidQueryEncoding(t *testing.T) {
+// TestCoverageEnhancement_InvalidQueryEncoding ...
+// Summary: TestCoverageEnhancement_InvalidQueryEncoding
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	mockTm := newMockToolManager()
 	upstream := NewUpstream(pm)
@@ -152,7 +179,16 @@ func TestCoverageEnhancement_InvalidQueryEncoding(t *testing.T) {
 	assert.Contains(t, fqn, "%GG")
 }
 
-func TestCoverageEnhancement_MTLSError(t *testing.T) {
+// TestCoverageEnhancement_MTLSError ...
+// Summary: TestCoverageEnhancement_MTLSError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	mockTm := newMockToolManager()
 	upstream := NewUpstream(pm)
@@ -189,7 +225,16 @@ func TestCoverageEnhancement_MTLSError(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to create HTTP pool")
 }
 
-func TestCoverageEnhancement_URLConstruction(t *testing.T) {
+// TestCoverageEnhancement_URLConstruction ...
+// Summary: TestCoverageEnhancement_URLConstruction
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Tests for specific URL construction edge cases including double slash
 	pm := pool.NewManager()
 	mockTm := newMockToolManager()
@@ -240,7 +285,16 @@ func TestCoverageEnhancement_URLConstruction(t *testing.T) {
 	}
 }
 
-func TestCoverageEnhancement_ExportPolicy(t *testing.T) {
+// TestCoverageEnhancement_ExportPolicy ...
+// Summary: TestCoverageEnhancement_ExportPolicy
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	mockTm := newMockToolManager()
 	upstream := NewUpstream(pm)
@@ -277,7 +331,16 @@ func TestCoverageEnhancement_ExportPolicy(t *testing.T) {
 	assert.Equal(t, "public-tool", discoveredTools[0].GetName())
 }
 
-func TestCoverageEnhancement_InvalidCallPolicy(t *testing.T) {
+// TestCoverageEnhancement_InvalidCallPolicy ...
+// Summary: TestCoverageEnhancement_InvalidCallPolicy
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	mockTm := newMockToolManager()
 	upstream := NewUpstream(pm)
@@ -313,7 +376,16 @@ func TestCoverageEnhancement_InvalidCallPolicy(t *testing.T) {
 	assert.NoError(t, err) // It doesn't return error, just logs it and returns nil tools.
 }
 
-func TestCoverageEnhancement_DynamicResource_EmptyToolName(t *testing.T) {
+// TestCoverageEnhancement_DynamicResource_EmptyToolName ...
+// Summary: TestCoverageEnhancement_DynamicResource_EmptyToolName
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	mockTm := newMockToolManager()
 	upstream := NewUpstream(pm)
@@ -352,7 +424,16 @@ func TestCoverageEnhancement_DynamicResource_EmptyToolName(t *testing.T) {
 	assert.False(t, ok, "Resource with unnamed tool should not be registered (due to sanitization failure)")
 }
 
-func TestCoverageEnhancement_DynamicResource_NoCall(t *testing.T) {
+// TestCoverageEnhancement_DynamicResource_NoCall ...
+// Summary: TestCoverageEnhancement_DynamicResource_NoCall
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	mockTm := newMockToolManager()
 	upstream := NewUpstream(pm)
@@ -391,7 +472,16 @@ func TestCoverageEnhancement_DynamicResource_NoCall(t *testing.T) {
 	assert.False(t, ok)
 }
 
-func TestCoverageEnhancement_QueryFlags(t *testing.T) {
+// TestCoverageEnhancement_QueryFlags ...
+// Summary: TestCoverageEnhancement_QueryFlags
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	mockTm := newMockToolManager()
 	upstream := NewUpstream(pm)
@@ -446,7 +536,16 @@ func TestCoverageEnhancement_QueryFlags(t *testing.T) {
 	}
 }
 
-func TestCoverageEnhancement_InputSchemaOverlap(t *testing.T) {
+// TestCoverageEnhancement_InputSchemaOverlap ...
+// Summary: TestCoverageEnhancement_InputSchemaOverlap
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	mockTm := newMockToolManager()
 	upstream := NewUpstream(pm)
@@ -499,7 +598,16 @@ func TestCoverageEnhancement_InputSchemaOverlap(t *testing.T) {
 	assert.Equal(t, "foo", reqVal.Values[0].GetStringValue())
 }
 
-func TestCoverageEnhancement_EmptyAddress(t *testing.T) {
+// TestCoverageEnhancement_EmptyAddress ...
+// Summary: TestCoverageEnhancement_EmptyAddress
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	mockTm := newMockToolManager()
 	upstream := NewUpstream(pm)
@@ -524,7 +632,16 @@ func TestCoverageEnhancement_EmptyAddress(t *testing.T) {
 	assert.Contains(t, err.Error(), "address is required")
 }
 
-func TestCoverageEnhancement_InputSchema_InvalidPropertiesType(t *testing.T) {
+// TestCoverageEnhancement_InputSchema_InvalidPropertiesType ...
+// Summary: TestCoverageEnhancement_InputSchema_InvalidPropertiesType
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	mockTm := newMockToolManager()
 	upstream := NewUpstream(pm)
@@ -632,7 +749,16 @@ func generateCertFiles(t *testing.T, dir string) (string, string, string) {
 	return caPath, certPath, keyPath
 }
 
-func TestCoverageEnhancement_MTLSSuccess(t *testing.T) {
+// TestCoverageEnhancement_MTLSSuccess ...
+// Summary: TestCoverageEnhancement_MTLSSuccess
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	mockTm := newMockToolManager()
 	upstream := NewUpstream(pm)
@@ -670,7 +796,16 @@ func TestCoverageEnhancement_MTLSSuccess(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestCoverageEnhancement_AutoDiscovery(t *testing.T) {
+// TestCoverageEnhancement_AutoDiscovery ...
+// Summary: TestCoverageEnhancement_AutoDiscovery
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	mockTm := newMockToolManager()
 	upstream := NewUpstream(pm)
@@ -717,7 +852,16 @@ func TestCoverageEnhancement_AutoDiscovery(t *testing.T) {
 	assert.True(t, names["implicit-call"], "Implicit tool should be present (named after call ID)")
 }
 
-func TestCoverageEnhancement_InputSchema_EmptyStruct(t *testing.T) {
+// TestCoverageEnhancement_InputSchema_EmptyStruct ...
+// Summary: TestCoverageEnhancement_InputSchema_EmptyStruct
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	mockTm := newMockToolManager()
 	upstream := NewUpstream(pm)

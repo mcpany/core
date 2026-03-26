@@ -9,7 +9,16 @@ import (
 	"testing"
 )
 
-func TestSimpleTokenizer(t *testing.T) {
+// TestSimpleTokenizer ...
+// Summary: TestSimpleTokenizer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tokenizer := NewSimpleTokenizer()
 
 	tests := []struct {
@@ -31,7 +40,16 @@ func TestSimpleTokenizer(t *testing.T) {
 	}
 }
 
-func TestWordTokenizer(t *testing.T) {
+// TestWordTokenizer ...
+// Summary: TestWordTokenizer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tokenizer := NewWordTokenizer()
 
 	tests := []struct {
@@ -55,7 +73,16 @@ func TestWordTokenizer(t *testing.T) {
 	}
 }
 
-func TestCountTokensInValue(t *testing.T) {
+// TestCountTokensInValue ...
+// Summary: TestCountTokensInValue
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tokenizer := NewSimpleTokenizer()
 
 	val := map[string]interface{}{
@@ -86,7 +113,16 @@ func TestCountTokensInValue(t *testing.T) {
 	}
 }
 
-func TestCountTokensInValue_Word(t *testing.T) {
+// TestCountTokensInValue_Word ...
+// Summary: TestCountTokensInValue_Word
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tokenizer := NewWordTokenizer()
 
 	tests := []struct {
@@ -117,7 +153,16 @@ func TestCountTokensInValue_Word(t *testing.T) {
 	}
 }
 
-func BenchmarkWordTokenizer(b *testing.B) {
+// BenchmarkWordTokenizer ...
+// Summary: BenchmarkWordTokenizer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t := NewWordTokenizer()
 	text := strings.Repeat("This is a sample sentence to test tokenization. ", 1000)
 
@@ -131,29 +176,51 @@ func BenchmarkWordTokenizer(b *testing.B) {
 // NEW TESTS FOR COVERAGE
 // ----------------------------------------------------------------------------
 
-type ExportedStruct struct {
+// ExportedStruct ...
+// Summary: ExportedStruct
 	Name string
 	Age  int
 }
 
-type UnexportedStruct struct {
+// UnexportedStruct ...
+// Summary: UnexportedStruct
 	name string
 	Age  int
 }
 
-type StringerImpl struct {
+// StringerImpl ...
+// Summary: StringerImpl
 	msg string
 }
 
-func (s StringerImpl) String() string {
+// String ...
+// Summary: String
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return s.msg
 }
 
-type RecursiveNode struct {
+// RecursiveNode ...
+// Summary: RecursiveNode
 	Next *RecursiveNode
 }
 
-func TestCountTokensInValue_Coverage(t *testing.T) {
+// TestCountTokensInValue_Coverage ...
+// Summary: TestCountTokensInValue_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tokenizer := NewSimpleTokenizer() // 4 chars per token
 
 	t.Run("Struct Exported", func(t *testing.T) {
@@ -285,7 +352,16 @@ func TestCountTokensInValue_Coverage(t *testing.T) {
 	})
 }
 
-func TestWordTokenizer_Struct(t *testing.T) {
+// TestWordTokenizer_Struct ...
+// Summary: TestWordTokenizer_Struct
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tokenizer := NewWordTokenizer()
 	// Test falling back to reflect (struct)
 	s := ExportedStruct{Name: "hello", Age: 123}
@@ -301,7 +377,16 @@ func TestWordTokenizer_Struct(t *testing.T) {
 	}
 }
 
-func TestWordTokenizer_Branches(t *testing.T) {
+// TestWordTokenizer_Branches ...
+// Summary: TestWordTokenizer_Branches
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tokenizer := NewWordTokenizer()
 
 	tests := []struct {
@@ -323,7 +408,16 @@ func TestWordTokenizer_Branches(t *testing.T) {
 	}
 }
 
-func TestErrorPropagation(t *testing.T) {
+// TestErrorPropagation ...
+// Summary: TestErrorPropagation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	node := &RecursiveNode{}
 	node.Next = node
 
@@ -402,7 +496,16 @@ func TestErrorPropagation(t *testing.T) {
 	})
 }
 
-func TestFloatConsistency(t *testing.T) {
+// TestFloatConsistency ...
+// Summary: TestFloatConsistency
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tokenizer := NewSimpleTokenizer()
 
 	// These numbers are integers but represented as floats.
@@ -429,7 +532,16 @@ func TestFloatConsistency(t *testing.T) {
 	}
 }
 
-func TestCountTokensInValueSimpleFast(t *testing.T) {
+// TestCountTokensInValueSimpleFast ...
+// Summary: TestCountTokensInValueSimpleFast
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	st := NewSimpleTokenizer()
 
 	tests := []struct {

@@ -22,7 +22,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestDashboardMetrics(t *testing.T) {
+// TestDashboardMetrics ...
+// Summary: TestDashboardMetrics
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -148,7 +157,16 @@ func TestDashboardMetrics(t *testing.T) {
 	assert.Equal(t, "10.00%", metricsMap["Error Rate"].Value)
 }
 
-func TestDashboardMetrics_MethodNotAllowed(t *testing.T) {
+// TestDashboardMetrics_MethodNotAllowed ...
+// Summary: TestDashboardMetrics_MethodNotAllowed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := &Application{}
 	req := httptest.NewRequest(http.MethodPost, "/api/dashboard/metrics", nil)
 	w := httptest.NewRecorder()

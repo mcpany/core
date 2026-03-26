@@ -10,7 +10,16 @@ import (
 	"time"
 )
 
-func TestGetLoggerBeforeInit(t *testing.T) {
+// TestGetLoggerBeforeInit ...
+// Summary: TestGetLoggerBeforeInit
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Reset logger for test
 	ForTestsOnlyResetLogger()
 

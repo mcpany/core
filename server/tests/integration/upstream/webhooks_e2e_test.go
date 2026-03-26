@@ -69,7 +69,16 @@ func mockMCPBinary(t *testing.T) string {
 	return mockBin
 }
 
-func TestWebhooksE2E(t *testing.T) {
+// TestWebhooksE2E ...
+// Summary: TestWebhooksE2E
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	webhookBin := webhookBinary(t)
 
 	// Start webhook server
@@ -169,7 +178,16 @@ func TestWebhooksE2E(t *testing.T) {
 	})
 }
 
-func TestFullSystemWebhooks(t *testing.T) {
+// TestFullSystemWebhooks ...
+// Summary: TestFullSystemWebhooks
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	webhookBin := webhookBinary(t)
 	mockMcpBin := mockMCPBinary(t)
 

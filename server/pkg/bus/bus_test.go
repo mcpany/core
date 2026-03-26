@@ -26,7 +26,16 @@ func waitForSubscribers(t *testing.T, client *redis.Client, topic string, expect
 	}, 5*time.Second, 500*time.Millisecond, "timed out waiting for subscribers on topic %s", topic)
 }
 
-func TestBusProvider(t *testing.T) {
+// TestBusProvider ...
+// Summary: TestBusProvider
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("InMemory", func(t *testing.T) {
 		messageBus := bus.MessageBus_builder{}.Build()
 		messageBus.SetInMemory(bus.InMemoryBus_builder{}.Build())
@@ -93,7 +102,16 @@ func TestBusProvider(t *testing.T) {
 	})
 }
 
-func TestBusProvider_Errors(t *testing.T) {
+// TestBusProvider_Errors ...
+// Summary: TestBusProvider_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("NewProvider_NilConfig", func(t *testing.T) {
 		// Should default to InMemory
 		provider, err := NewProvider(nil)
@@ -156,19 +174,55 @@ func TestBusProvider_Errors(t *testing.T) {
 type MockBus[T any] struct {
 }
 
-func (m *MockBus[T]) Publish(ctx context.Context, topic string, msg T) error {
+// Publish ...
+// Summary: Publish
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *MockBus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
+// Subscribe ...
+// Summary: Subscribe
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return func() {}
 }
 
-func (m *MockBus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
+// SubscribeOnce ...
+// Summary: SubscribeOnce
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return func() {}
 }
 
-func TestIntegration(t *testing.T) {
+// TestIntegration ...
+// Summary: TestIntegration
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	messageBus := bus.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus.InMemoryBus_builder{}.Build())
 	provider, err := NewProvider(messageBus)
@@ -216,7 +270,16 @@ func TestIntegration(t *testing.T) {
 	wg.Wait()
 }
 
-func TestBusProvider_Concurrent(t *testing.T) {
+// TestBusProvider_Concurrent ...
+// Summary: TestBusProvider_Concurrent
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	messageBus := bus.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus.InMemoryBus_builder{}.Build())
 	provider, err := NewProvider(messageBus)
@@ -240,7 +303,16 @@ func TestBusProvider_Concurrent(t *testing.T) {
 	wg.Wait()
 }
 
-func TestRedisBus_SubscribeOnce(t *testing.T) {
+// TestRedisBus_SubscribeOnce ...
+// Summary: TestRedisBus_SubscribeOnce
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mr := miniredis.RunT(t)
 	client := redis.NewClient(&redis.Options{
 		Addr: mr.Addr(),
@@ -278,7 +350,16 @@ func TestRedisBus_SubscribeOnce(t *testing.T) {
 	assert.Equal(t, "hello", receivedMessages[0])
 }
 
-func TestRedisBus_Unsubscribe(t *testing.T) {
+// TestRedisBus_Unsubscribe ...
+// Summary: TestRedisBus_Unsubscribe
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mr := miniredis.RunT(t)
 	client := redis.NewClient(&redis.Options{
 		Addr: mr.Addr(),
@@ -328,7 +409,16 @@ func TestRedisBus_Unsubscribe(t *testing.T) {
 	assert.Equal(t, "hello", receivedMessages[0])
 }
 
-func TestRedisBus_Concurrent(t *testing.T) {
+// TestRedisBus_Concurrent ...
+// Summary: TestRedisBus_Concurrent
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mr := miniredis.RunT(t)
 	client := redis.NewClient(&redis.Options{
 		Addr: mr.Addr(),

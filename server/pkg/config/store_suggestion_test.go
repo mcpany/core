@@ -10,7 +10,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSuggestFix_Aliases(t *testing.T) {
+// TestSuggestFix_Aliases ...
+// Summary: TestSuggestFix_Aliases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	root := configv1.UpstreamServiceConfig_builder{}.Build()
 
 	tests := []struct {
@@ -35,7 +44,16 @@ func TestSuggestFix_Aliases(t *testing.T) {
 	}
 }
 
-func TestSuggestFix_Fuzzy(t *testing.T) {
+// TestSuggestFix_Fuzzy ...
+// Summary: TestSuggestFix_Fuzzy
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// HttpUpstreamService has 'address'
 	root := configv1.HttpUpstreamService_builder{}.Build()
 

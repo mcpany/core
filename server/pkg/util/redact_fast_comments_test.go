@@ -10,7 +10,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRedactJSON_CommentsWithStructuralChars(t *testing.T) {
+// TestRedactJSON_CommentsWithStructuralChars ...
+// Summary: TestRedactJSON_CommentsWithStructuralChars
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		input    string
@@ -138,7 +147,16 @@ func TestRedactJSON_CommentsWithStructuralChars(t *testing.T) {
 	}
 }
 
-func TestRedactJSON_SkipStringCoverage(t *testing.T) {
+// TestRedactJSON_SkipStringCoverage ...
+// Summary: TestRedactJSON_SkipStringCoverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test skipString with tricky escapes to bump coverage in json_utils.go
 	// skipString is internal, but we can exercise it via RedactJSON
 
@@ -170,7 +188,16 @@ func TestRedactJSON_SkipStringCoverage(t *testing.T) {
 	assert.JSONEq(t, string(expectedBytes), string(gotBytes))
 }
 
-func TestRedactJSON_UnescapeKeyCoverage(t *testing.T) {
+// TestRedactJSON_UnescapeKeyCoverage ...
+// Summary: TestRedactJSON_UnescapeKeyCoverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test keys with escapes to cover unescapeKeySmall
 	input := `{
 		"sec\u0072et": "value"
@@ -198,7 +225,16 @@ func TestRedactJSON_UnescapeKeyCoverage(t *testing.T) {
 	assert.JSONEq(t, string(expectedBytes), string(gotBytes))
 }
 
-func TestRedactJSON_UnescapeKeyCoverage_Complex(t *testing.T) {
+// TestRedactJSON_UnescapeKeyCoverage_Complex ...
+// Summary: TestRedactJSON_UnescapeKeyCoverage_Complex
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test with more complex escapes
 	input := `{
         "a\u0070\u0069_key": "val"
@@ -220,7 +256,16 @@ func TestRedactJSON_UnescapeKeyCoverage_Complex(t *testing.T) {
 	assert.JSONEq(t, string(expectedBytes), string(gotBytes))
 }
 
-func TestRedactJSON_SkipObjectCoverage(t *testing.T) {
+// TestRedactJSON_SkipObjectCoverage ...
+// Summary: TestRedactJSON_SkipObjectCoverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test cases to improve skipObject coverage
 	tests := []struct {
 		name     string
@@ -275,7 +320,16 @@ func TestRedactJSON_SkipObjectCoverage(t *testing.T) {
 	}
 }
 
-func TestRedactJSON_UnescapeKeyMoreCoverage(t *testing.T) {
+// TestRedactJSON_UnescapeKeyMoreCoverage ...
+// Summary: TestRedactJSON_UnescapeKeyMoreCoverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test other escapes in keys
 	// "se\ncret" -> secret? No.
 	// We want to hit cases in unescapeKeySmall
@@ -301,7 +355,16 @@ func TestRedactJSON_UnescapeKeyMoreCoverage(t *testing.T) {
 	// If we provide malformed JSON key: `"key\` -> unescape might fail.
 }
 
-func TestRedactJSON_CommentWithQuoteAfterNumber(t *testing.T) {
+// TestRedactJSON_CommentWithQuoteAfterNumber ...
+// Summary: TestRedactJSON_CommentWithQuoteAfterNumber
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test case demonstrates a fix for a bug where a comment immediately following a number
 	// causes the scanner to misinterpret the comment content as a string.
 	// We verify that "password" is redacted.

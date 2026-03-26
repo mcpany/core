@@ -13,7 +13,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestCORSMiddleware(t *testing.T) {
+// TestCORSMiddleware ...
+// Summary: TestCORSMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("should call next handler", func(t *testing.T) {
 		mw := middleware.CORSMiddleware()
 

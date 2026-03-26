@@ -20,7 +20,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestGraphQLUpstream_Register(t *testing.T) {
+// TestGraphQLUpstream_Register ...
+// Summary: TestGraphQLUpstream_Register
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a mock GraphQL server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		response := map[string]interface{}{
@@ -143,7 +152,16 @@ func TestGraphQLUpstream_Register(t *testing.T) {
 	assert.Contains(t, callable.query, "user(id: $id) { id name }")
 }
 
-func TestGraphQLUpstream_RegisterWithSelectionSet(t *testing.T) {
+// TestGraphQLUpstream_RegisterWithSelectionSet ...
+// Summary: TestGraphQLUpstream_RegisterWithSelectionSet
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a mock GraphQL server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		response := map[string]interface{}{
@@ -218,7 +236,16 @@ func TestGraphQLUpstream_RegisterWithSelectionSet(t *testing.T) {
 	assert.Contains(t, callable.query, "user(id: $id) { id }")
 }
 
-func TestGraphQLUpstream_RegisterWithAPIKeyAuth(t *testing.T) {
+// TestGraphQLUpstream_RegisterWithAPIKeyAuth ...
+// Summary: TestGraphQLUpstream_RegisterWithAPIKeyAuth
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a mock GraphQL server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, "test-api-key", r.Header.Get("X-API-Key"))
@@ -302,7 +329,16 @@ func TestGraphQLUpstream_RegisterWithAPIKeyAuth(t *testing.T) {
 	assert.Equal(t, "world", respMap["hello"])
 }
 
-func TestGraphQLUpstream_RegisterWithAPIKeyAuth_IntrospectionFails(t *testing.T) {
+// TestGraphQLUpstream_RegisterWithAPIKeyAuth_IntrospectionFails ...
+// Summary: TestGraphQLUpstream_RegisterWithAPIKeyAuth_IntrospectionFails
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a mock GraphQL server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusUnauthorized)
@@ -332,7 +368,16 @@ func TestGraphQLUpstream_RegisterWithAPIKeyAuth_IntrospectionFails(t *testing.T)
 	assert.Contains(t, err.Error(), "failed to run introspection query")
 }
 
-func TestGraphQLUpstream_RegisterWithAPIKeyAuth_ToolCallFails(t *testing.T) {
+// TestGraphQLUpstream_RegisterWithAPIKeyAuth_ToolCallFails ...
+// Summary: TestGraphQLUpstream_RegisterWithAPIKeyAuth_ToolCallFails
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a mock GraphQL server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, "test-api-key", r.Header.Get("X-API-Key"))
@@ -408,7 +453,16 @@ func TestGraphQLUpstream_RegisterWithAPIKeyAuth_ToolCallFails(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to run graphql query")
 }
 
-func TestGraphQLTool_ExecuteQuery(t *testing.T) {
+// TestGraphQLTool_ExecuteQuery ...
+// Summary: TestGraphQLTool_ExecuteQuery
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a mock GraphQL server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		response := map[string]interface{}{
@@ -458,7 +512,16 @@ func TestGraphQLTool_ExecuteQuery(t *testing.T) {
 	assert.Equal(t, "test", user["name"])
 }
 
-func TestGraphQLTool_ExecuteMutation(t *testing.T) {
+// TestGraphQLTool_ExecuteMutation ...
+// Summary: TestGraphQLTool_ExecuteMutation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a mock GraphQL server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		response := map[string]interface{}{
@@ -508,7 +571,16 @@ func TestGraphQLTool_ExecuteMutation(t *testing.T) {
 	assert.Equal(t, "new-user", user["name"])
 }
 
-func TestGraphQLUpstream_Register_InvalidAddress(t *testing.T) {
+// TestGraphQLUpstream_Register_InvalidAddress ...
+// Summary: TestGraphQLUpstream_Register_InvalidAddress
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	upstream := NewGraphQLUpstream()
 	toolManager := tool.NewManager(nil)
 

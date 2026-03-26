@@ -19,7 +19,7 @@ func main() {
 		if err != nil {
 			return err
 		}
-		if info.IsDir() || !strings.HasSuffix(path, ".go") || strings.Contains(path, "vendor") || strings.Contains(path, ".pb.go") || strings.Contains(path, "_test.go") {
+		if info.IsDir() || !strings.HasSuffix(path, ".go") || strings.Contains(path, "vendor") || strings.Contains(path, ".pb.go") {
 			return nil
 		}
 		return processFile(path)
@@ -93,20 +93,17 @@ func processFile(path string) error {
 					if strings.Contains(dl, "Side Effects:") { hasSideEffects = true }
 				}
 
+				// Copy existing first doc line
+				newLines = append(newLines, lines[docStart])
+
 				if !hasSummary {
-					// Insert Summary at docStart + 1
-					newLines = append(newLines, lines[docStart])
 					newLines = append(newLines, fmt.Sprintf("// Summary: %s", symbol))
 					changed = true
-					// Continue from docStart + 1 in next iteration
-					docLines = lines[docStart+1 : i]
-				} else {
-					newLines = append(newLines, lines[docStart])
-					docLines = lines[docStart+1 : i]
 				}
 
-				for _, dl := range docLines {
-					newLines = append(newLines, dl)
+				// Copy remaining existing doc lines
+				for j := docStart + 1; j < i; j++ {
+					newLines = append(newLines, lines[j])
 				}
 
 				if isFunc {

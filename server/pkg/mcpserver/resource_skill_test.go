@@ -15,7 +15,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestNewSkillResource(t *testing.T) {
+// TestNewSkillResource ...
+// Summary: TestNewSkillResource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	s := &skill.Skill{
 		Frontmatter: skill.Frontmatter{
 			Name: "test-skill",
@@ -27,7 +36,16 @@ func TestNewSkillResource(t *testing.T) {
 	assert.Equal(t, "skills://test-skill/SKILL.md", r.URI())
 }
 
-func TestNewSkillAssetResource(t *testing.T) {
+// TestNewSkillAssetResource ...
+// Summary: TestNewSkillAssetResource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	s := &skill.Skill{
 		Frontmatter: skill.Frontmatter{
 			Name: "test-skill",
@@ -39,7 +57,16 @@ func TestNewSkillAssetResource(t *testing.T) {
 	assert.Equal(t, "skills://test-skill/scripts/test.py", r.URI())
 }
 
-func TestSkillResource_Metadata(t *testing.T) {
+// TestSkillResource_Metadata ...
+// Summary: TestSkillResource_Metadata
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	s := &skill.Skill{
 		Frontmatter: skill.Frontmatter{
 			Name:        "test-skill",
@@ -66,7 +93,16 @@ func TestSkillResource_Metadata(t *testing.T) {
 	assert.Equal(t, "application/json", mcpRes2.MIMEType)
 }
 
-func TestSkillResource_Read(t *testing.T) {
+// TestSkillResource_Read ...
+// Summary: TestSkillResource_Read
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup temporary skill directory
 	tempDir := t.TempDir()
 	skillDir := filepath.Join(tempDir, "test-skill")
@@ -167,7 +203,16 @@ func TestSkillResource_Read(t *testing.T) {
 	})
 }
 
-func TestRegisterSkillResources(t *testing.T) {
+// TestRegisterSkillResources ...
+// Summary: TestRegisterSkillResources
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup Managers
 	tempDir := t.TempDir()
 	sm, err := skill.NewManager(tempDir)

@@ -12,7 +12,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSimpleVectorStore_Add_Eviction(t *testing.T) {
+// TestSimpleVectorStore_Add_Eviction ...
+// Summary: TestSimpleVectorStore_Add_Eviction
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	store := NewSimpleVectorStore()
 	store.maxEntries = 2 // Set small limit for testing
 
@@ -39,7 +48,16 @@ func TestSimpleVectorStore_Add_Eviction(t *testing.T) {
 	assert.Equal(t, "item3", entries[1].Result)
 }
 
-func TestSimpleVectorStore_Search(t *testing.T) {
+// TestSimpleVectorStore_Search ...
+// Summary: TestSimpleVectorStore_Search
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	store := NewSimpleVectorStore()
 	ctx := context.Background()
 	key := "test_key"
@@ -71,7 +89,16 @@ func TestSimpleVectorStore_Search(t *testing.T) {
 	assert.False(t, found)
 }
 
-func TestSimpleVectorStore_Expiry(t *testing.T) {
+// TestSimpleVectorStore_Expiry ...
+// Summary: TestSimpleVectorStore_Expiry
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	store := NewSimpleVectorStore()
 	ctx := context.Background()
 	key := "test_key"
@@ -85,7 +112,16 @@ func TestSimpleVectorStore_Expiry(t *testing.T) {
 	assert.False(t, found)
 }
 
-func TestSimpleVectorStore_Prune(t *testing.T) {
+// TestSimpleVectorStore_Prune ...
+// Summary: TestSimpleVectorStore_Prune
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	store := NewSimpleVectorStore()
 	ctx := context.Background()
 	key := "test_key"
@@ -106,7 +142,16 @@ func TestSimpleVectorStore_Prune(t *testing.T) {
 	assert.Equal(t, "valid", entries[0].Result)
 }
 
-func TestVectorMath(t *testing.T) {
+// TestVectorMath ...
+// Summary: TestVectorMath
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// vectorNorm
 	v := []float32{3.0, 4.0}
 	assert.Equal(t, float32(5.0), vectorNorm(v))
@@ -135,7 +180,16 @@ func TestVectorMath(t *testing.T) {
 	assert.Equal(t, float32(0.0), dotProduct(v1, []float32{1.0})) // Length mismatch
 }
 
-func TestSimpleVectorStore_Concurrency(t *testing.T) {
+// TestSimpleVectorStore_Concurrency ...
+// Summary: TestSimpleVectorStore_Concurrency
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	store := NewSimpleVectorStore()
 	ctx := context.Background()
 	key := "concurrent_key"

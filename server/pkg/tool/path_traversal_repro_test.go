@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestLocalCommandTool_PathTraversal_EncodedBypass(t *testing.T) {
+// TestLocalCommandTool_PathTraversal_EncodedBypass ...
+// Summary: TestLocalCommandTool_PathTraversal_EncodedBypass
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	// Define a simple tool that cats a file
 	inputSchema := &structpb.Struct{
@@ -71,7 +80,16 @@ func TestLocalCommandTool_PathTraversal_EncodedBypass(t *testing.T) {
 	}
 }
 
-func TestLocalCommandTool_FileScheme_EncodedBypass(t *testing.T) {
+// TestLocalCommandTool_FileScheme_EncodedBypass ...
+// Summary: TestLocalCommandTool_FileScheme_EncodedBypass
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	inputSchema := &structpb.Struct{
 		Fields: map[string]*structpb.Value{

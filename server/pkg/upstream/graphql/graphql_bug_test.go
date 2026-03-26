@@ -17,7 +17,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestGraphQLUpstream_Register_ListArgumentBug(t *testing.T) {
+// TestGraphQLUpstream_Register_ListArgumentBug ...
+// Summary: TestGraphQLUpstream_Register_ListArgumentBug
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a mock GraphQL server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		response := map[string]interface{}{

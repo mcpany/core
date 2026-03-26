@@ -15,7 +15,17 @@ import (
 
 // TestAuthMiddleware_Bypass_WithGlobalKey tests that if a global API key is set,
 // it is enforced even if no authenticator is registered for a specific service.
-func TestAuthMiddleware_Bypass_WithGlobalKey(t *testing.T) {
+// TestAuthMiddleware_Bypass_WithGlobalKey tests that if a global API key is set,
+// Summary: TestAuthMiddleware_Bypass_WithGlobalKey
+// it is enforced even if no authenticator is registered for a specific service.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. Setup Auth Manager with a global API key
 	am := auth.NewManager()
 	am.SetAPIKey("secret-global-key")

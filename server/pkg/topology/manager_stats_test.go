@@ -10,7 +10,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestManager_GetRecentServiceStats(t *testing.T) {
+// TestManager_GetRecentServiceStats ...
+// Summary: TestManager_GetRecentServiceStats
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewManager(nil, nil)
 	defer m.Close()
 

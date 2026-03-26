@@ -9,7 +9,16 @@ import (
 	"github.com/mcpany/core/server/pkg/tokenizer"
 )
 
-func TestCountTokensInValue_Types(t *testing.T) {
+// TestCountTokensInValue_Types ...
+// Summary: TestCountTokensInValue_Types
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tok := tokenizer.NewSimpleTokenizer()
 
 	tests := []struct {

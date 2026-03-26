@@ -17,7 +17,18 @@ import (
 // TestAuthMiddleware_TypedNil_Panic verifies that the middleware does not panic
 // when a typed nil interface is passed.
 // This test ensures robustness against nil pointers.
-func TestAuthMiddleware_TypedNil_Panic(t *testing.T) {
+// TestAuthMiddleware_TypedNil_Panic verifies that the middleware does not panic
+// Summary: TestAuthMiddleware_TypedNil_Panic
+// when a typed nil interface is passed.
+// This test ensures robustness against nil pointers.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	authManager := auth.NewManager()
 	authManager.SetAPIKey("global-secret") // Setup global key to avoid early exit on extraction failure
 

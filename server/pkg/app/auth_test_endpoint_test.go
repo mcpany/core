@@ -23,7 +23,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestHandleAuthTest_Detailed(t *testing.T) {
+// TestHandleAuthTest_Detailed ...
+// Summary: TestHandleAuthTest_Detailed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup
 	store := memory.NewStore()
 	am := auth.NewManager()

@@ -9,7 +9,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewOAuthConfig(t *testing.T) {
+// TestNewOAuthConfig ...
+// Summary: TestNewOAuthConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCases := []struct {
 		name        string
 		config      *OAuth2Config

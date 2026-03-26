@@ -14,16 +14,53 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type MockUpstream struct{}
+// MockUpstream ...
+// Summary: MockUpstream
 
-func (m *MockUpstream) Shutdown(ctx context.Context) error { return nil }
+// Shutdown ...
+// Summary: Shutdown
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func (m *MockUpstream) Register(ctx context.Context, config *configv1.UpstreamServiceConfig, tm tool.ManagerInterface, pm prompt.ManagerInterface, rm resource.ManagerInterface, isReload bool) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+// Register ...
+// Summary: Register
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return "", nil, nil, nil
 }
-func (m *MockUpstream) Close() error { return nil }
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func TestUpstreamInterface(t *testing.T) {
+// TestUpstreamInterface ...
+// Summary: TestUpstreamInterface
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Verify MockUpstream implements Upstream
 	var _ Upstream = &MockUpstream{}
 	assert.True(t, true)

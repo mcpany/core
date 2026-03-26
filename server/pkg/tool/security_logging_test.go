@@ -26,7 +26,16 @@ import (
 // sensitiveAuthenticator adds a sensitive header
 type sensitiveAuthenticator struct{}
 
-func (a *sensitiveAuthenticator) Authenticate(r *http.Request) error {
+// Authenticate ...
+// Summary: Authenticate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	r.Header.Set("Authorization", "Bearer sensitive-token-123")
 	r.Header.Set("X-Api-Key", "secret-api-key-456")
 	return nil
@@ -34,7 +43,16 @@ func (a *sensitiveAuthenticator) Authenticate(r *http.Request) error {
 
 var _ auth.UpstreamAuthenticator = &sensitiveAuthenticator{}
 
-func TestHTTPTool_Execute_LogsSensitiveHeaders(t *testing.T) {
+// TestHTTPTool_Execute_LogsSensitiveHeaders ...
+// Summary: TestHTTPTool_Execute_LogsSensitiveHeaders
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// t.Parallel() removed to avoid race on global logger
 	// Reset logger to ensure we can set it to DEBUG
 	logging.ForTestsOnlyResetLogger()

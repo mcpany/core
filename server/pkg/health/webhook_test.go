@@ -18,7 +18,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestSendWebhook(t *testing.T) {
+// TestSendWebhook ...
+// Summary: TestSendWebhook
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. Setup a mock webhook receiver server
 	receivedPayloads := make(chan map[string]interface{}, 1)
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

@@ -13,7 +13,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestLocalProvider_SymlinkMode(t *testing.T) {
+// TestLocalProvider_SymlinkMode ...
+// Summary: TestLocalProvider_SymlinkMode
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tmpDir := t.TempDir()
 
 	// Create root directory

@@ -12,7 +12,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestLocalProvider_RootSlashBug(t *testing.T) {
+// TestLocalProvider_RootSlashBug ...
+// Summary: TestLocalProvider_RootSlashBug
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Root mapping: / -> /
 	rootPaths := map[string]string{"/": "/"}
 

@@ -7,7 +7,16 @@ import (
 	"testing"
 )
 
-func TestCheckAwkInjection(t *testing.T) {
+// TestCheckAwkInjection ...
+// Summary: TestCheckAwkInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name    string
 		val     string
@@ -103,7 +112,16 @@ func TestCheckAwkInjection(t *testing.T) {
 	}
 }
 
-func TestCheckBacktickInjection(t *testing.T) {
+// TestCheckBacktickInjection ...
+// Summary: TestCheckBacktickInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name    string
 		val     string
@@ -169,7 +187,16 @@ func TestCheckBacktickInjection(t *testing.T) {
 	}
 }
 
-func TestCheckGdbInjection(t *testing.T) {
+// TestCheckGdbInjection ...
+// Summary: TestCheckGdbInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name       string
 		val        string
@@ -245,7 +272,16 @@ func TestCheckGdbInjection(t *testing.T) {
 	}
 }
 
-func TestCheckJqInjection(t *testing.T) {
+// TestCheckJqInjection ...
+// Summary: TestCheckJqInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name       string
 		val        string
@@ -307,7 +343,16 @@ func TestCheckJqInjection(t *testing.T) {
 	}
 }
 
-func TestCheckTarInjection(t *testing.T) {
+// TestCheckTarInjection ...
+// Summary: TestCheckTarInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name    string
 		val     string

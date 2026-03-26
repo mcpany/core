@@ -16,13 +16,31 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestGraphQLUpstream_Shutdown(t *testing.T) {
+// TestGraphQLUpstream_Shutdown ...
+// Summary: TestGraphQLUpstream_Shutdown
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewGraphQLUpstream()
 	err := u.Shutdown(context.Background())
 	assert.NoError(t, err)
 }
 
-func TestMapGraphQLTypeToJSONSchemaType(t *testing.T) {
+// TestMapGraphQLTypeToJSONSchemaType ...
+// Summary: TestMapGraphQLTypeToJSONSchemaType
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		in  string
 		out string
@@ -40,7 +58,16 @@ func TestMapGraphQLTypeToJSONSchemaType(t *testing.T) {
 	}
 }
 
-func TestGraphQLUpstream_Register_MissingConfig(t *testing.T) {
+// TestGraphQLUpstream_Register_MissingConfig ...
+// Summary: TestGraphQLUpstream_Register_MissingConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewGraphQLUpstream()
 	tm := tool.NewManager(nil)
 
@@ -53,7 +80,16 @@ func TestGraphQLUpstream_Register_MissingConfig(t *testing.T) {
 	assert.Contains(t, err.Error(), "missing graphql service config")
 }
 
-func TestGraphQLUpstream_Call_AuthFailure(t *testing.T) {
+// TestGraphQLUpstream_Call_AuthFailure ...
+// Summary: TestGraphQLUpstream_Call_AuthFailure
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockAuth := &failingAuthenticator{err: errors.New("injected auth error")}
 	callable := &Callable{
 		authenticator: mockAuth,
@@ -71,6 +107,15 @@ type failingAuthenticator struct {
 	err error
 }
 
-func (f *failingAuthenticator) Authenticate(_ *http.Request) error {
+// Authenticate ...
+// Summary: Authenticate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return f.err
 }

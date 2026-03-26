@@ -17,21 +17,49 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-type MockPrompt struct {
+// MockPrompt ...
+// Summary: MockPrompt
 	mock.Mock
 }
 
-func (m *MockPrompt) Prompt() *mcp.Prompt {
+// Prompt ...
+// Summary: Prompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	return args.Get(0).(*mcp.Prompt)
 }
 
-func (m *MockPrompt) Service() string {
+// Service ...
+// Summary: Service
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	return args.String(0)
 }
 
-func (m *MockPrompt) Definition() *configv1.PromptDefinition {
+// Definition ...
+// Summary: Definition
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	if args.Get(0) == nil {
 		return nil
@@ -39,7 +67,16 @@ func (m *MockPrompt) Definition() *configv1.PromptDefinition {
 	return args.Get(0).(*configv1.PromptDefinition)
 }
 
-func (m *MockPrompt) Get(
+// Get ...
+// Summary: Get
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx context.Context,
 	args json.RawMessage,
 ) (*mcp.GetPromptResult, error) {
@@ -47,52 +84,135 @@ func (m *MockPrompt) Get(
 	return calledArgs.Get(0).(*mcp.GetPromptResult), calledArgs.Error(1)
 }
 
-type MockErrorPrompt struct {
+// MockErrorPrompt ...
+// Summary: MockErrorPrompt
 	MockPrompt
 }
 
-func (m *MockErrorPrompt) Get(
+// Get ...
+// Summary: Get
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	_ context.Context,
 	_ json.RawMessage,
 ) (*mcp.GetPromptResult, error) {
 	return nil, fmt.Errorf("error from Get")
 }
 
-type MockPromptManager struct {
+// MockPromptManager ...
+// Summary: MockPromptManager
 	mock.Mock
 }
 
-func (m *MockPromptManager) GetPrompt(name string) (prompt.Prompt, bool) {
+// GetPrompt ...
+// Summary: GetPrompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(name)
 	return args.Get(0).(prompt.Prompt), args.Bool(1)
 }
 
-func (m *MockPromptManager) AddPrompt(p prompt.Prompt) {
+// AddPrompt ...
+// Summary: AddPrompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.Called(p)
 }
 
-func (m *MockPromptManager) UpdatePrompt(p prompt.Prompt) {
+// UpdatePrompt ...
+// Summary: UpdatePrompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.Called(p)
 }
 
-func (m *MockPromptManager) RemovePrompt(name string) {
+// RemovePrompt ...
+// Summary: RemovePrompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.Called(name)
 }
 
-func (m *MockPromptManager) ListPrompts() []prompt.Prompt {
+// ListPrompts ...
+// Summary: ListPrompts
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	return args.Get(0).([]prompt.Prompt)
 }
 
-func (m *MockPromptManager) SetMCPServer(mcpServer prompt.MCPServerProvider) {
+// SetMCPServer ...
+// Summary: SetMCPServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.Called(mcpServer)
 }
 
-func (m *MockPromptManager) ClearPromptsForService(serviceID string) {
+// ClearPromptsForService ...
+// Summary: ClearPromptsForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.Called(serviceID)
 }
 
-func (m *MockPromptManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
+// GetServiceInfo ...
+// Summary: GetServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(serviceID)
 	if args.Get(0) == nil {
 		return nil, args.Bool(1)
@@ -100,7 +220,16 @@ func (m *MockPromptManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo,
 	return args.Get(0).(*tool.ServiceInfo), args.Bool(1)
 }
 
-func TestService_ListPrompts(t *testing.T) {
+// TestService_ListPrompts ...
+// Summary: TestService_ListPrompts
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockPromptManager := new(MockPromptManager)
 	service := prompt.NewService(mockPromptManager)
 
@@ -122,17 +251,28 @@ func TestService_ListPrompts(t *testing.T) {
 	mockPrompts[0].(*MockPrompt).AssertExpectations(t)
 }
 
-type TestMessage struct {
+// TestMessage ...
+// Summary: TestMessage
 	Role    string      `json:"role"`
 	Content interface{} `json:"content"`
 }
 
-type TestTextContent struct {
+// TestTextContent ...
+// Summary: TestTextContent
 	Type string `json:"type"`
 	Text string `json:"text"`
 }
 
-func TestService_GetPrompt(t *testing.T) {
+// TestService_GetPrompt ...
+// Summary: TestService_GetPrompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockPromptManager := new(MockPromptManager)
 	service := prompt.NewService(mockPromptManager)
 
@@ -167,7 +307,16 @@ func TestService_GetPrompt(t *testing.T) {
 	mockPrompt.AssertExpectations(t)
 }
 
-func TestService_GetPrompt_NotFound(t *testing.T) {
+// TestService_GetPrompt_NotFound ...
+// Summary: TestService_GetPrompt_NotFound
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockPromptManager := new(MockPromptManager)
 	service := prompt.NewService(mockPromptManager)
 
@@ -183,7 +332,16 @@ func TestService_GetPrompt_NotFound(t *testing.T) {
 	mockPromptManager.AssertExpectations(t)
 }
 
-func TestService_GetPrompt_GetError(t *testing.T) {
+// TestService_GetPrompt_GetError ...
+// Summary: TestService_GetPrompt_GetError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockPromptManager := new(MockPromptManager)
 	service := prompt.NewService(mockPromptManager)
 
@@ -204,7 +362,16 @@ func TestService_GetPrompt_GetError(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestService_SetMCPServer(t *testing.T) {
+// TestService_SetMCPServer ...
+// Summary: TestService_SetMCPServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockPromptManager := new(MockPromptManager)
 	service := prompt.NewService(mockPromptManager)
 	server := &mcp.Server{}

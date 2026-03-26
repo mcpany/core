@@ -14,7 +14,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestNewPostgresVectorStoreWithDB(t *testing.T) {
+// TestNewPostgresVectorStoreWithDB ...
+// Summary: TestNewPostgresVectorStoreWithDB
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("Success", func(t *testing.T) {
 		db, mock, err := sqlmock.New(sqlmock.MonitorPingsOption(true))
 		require.NoError(t, err)
@@ -77,7 +86,16 @@ func TestNewPostgresVectorStoreWithDB(t *testing.T) {
 	})
 }
 
-func TestPostgresVectorStore_Add(t *testing.T) {
+// TestPostgresVectorStore_Add ...
+// Summary: TestPostgresVectorStore_Add
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -100,7 +118,16 @@ func TestPostgresVectorStore_Add(t *testing.T) {
 	assert.NoError(t, mock.ExpectationsWereMet())
 }
 
-func TestPostgresVectorStore_Search(t *testing.T) {
+// TestPostgresVectorStore_Search ...
+// Summary: TestPostgresVectorStore_Search
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -127,7 +154,16 @@ func TestPostgresVectorStore_Search(t *testing.T) {
 	assert.NoError(t, mock.ExpectationsWereMet())
 }
 
-func TestPostgresVectorStore_Search_NotFound(t *testing.T) {
+// TestPostgresVectorStore_Search_NotFound ...
+// Summary: TestPostgresVectorStore_Search_NotFound
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -155,7 +191,16 @@ func TestPostgresVectorStore_Search_NotFound(t *testing.T) {
 	assert.NoError(t, mock.ExpectationsWereMet())
 }
 
-func TestPostgresVectorStore_Prune(t *testing.T) {
+// TestPostgresVectorStore_Prune ...
+// Summary: TestPostgresVectorStore_Prune
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()

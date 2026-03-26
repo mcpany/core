@@ -9,7 +9,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCheckAuth(t *testing.T) {
+// TestCheckAuth ...
+// Summary: TestCheckAuth
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Clear all relevant environment variables before each test
 	cleanupEnv := func(t *testing.T) {
 		keys := []string{
@@ -115,7 +124,18 @@ func TestCheckAuth(t *testing.T) {
 // TestCheckAuth_Environment_Restore ensures that environment variables are restored after test.
 // This is implicitly handled by t.Setenv, but good to verify if we were doing manual os.Setenv.
 // Since we use t.Setenv, this is just a sanity check that it works as expected.
-func TestCheckAuth_Manual_Verify(t *testing.T) {
+// TestCheckAuth_Environment_Restore ensures that environment variables are restored after test.
+// Summary: TestCheckAuth_Manual_Verify
+// This is implicitly handled by t.Setenv, but good to verify if we were doing manual os.Setenv.
+// Since we use t.Setenv, this is just a sanity check that it works as expected.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Set a value
 	key := "OPENAI_API_KEY"
 	val := "test-val-12345"

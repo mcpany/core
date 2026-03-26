@@ -7,7 +7,16 @@ import (
 	"testing"
 )
 
-func TestRubySystemSpace(t *testing.T) {
+// TestRubySystemSpace ...
+// Summary: TestRubySystemSpace
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Vulnerability: checkInterpreterFunctionCalls allows 'system "id"' (no parens)
 	// This is dangerous if the input is used in an eval context or similar.
 

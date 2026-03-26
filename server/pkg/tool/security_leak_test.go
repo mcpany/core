@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestLocalCommandTool_DoesNotLeakHostEnv(t *testing.T) {
+// TestLocalCommandTool_DoesNotLeakHostEnv ...
+// Summary: TestLocalCommandTool_DoesNotLeakHostEnv
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Set a sensitive environment variable in the host process
 	secretKey := "HOST_SECRET_KEY"
 	secretValue := "SuperSecretValue123"
@@ -55,7 +64,16 @@ func TestLocalCommandTool_DoesNotLeakHostEnv(t *testing.T) {
 	assert.NotContains(t, stdout, secretValue, "Host environment variable should NOT be leaked")
 }
 
-func TestCommandTool_DoesNotLeakHostEnv(t *testing.T) {
+// TestCommandTool_DoesNotLeakHostEnv ...
+// Summary: TestCommandTool_DoesNotLeakHostEnv
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Set a sensitive environment variable in the host process
 	secretKey := "HOST_SECRET_KEY_2"
 	secretValue := "SuperSecretValue456"

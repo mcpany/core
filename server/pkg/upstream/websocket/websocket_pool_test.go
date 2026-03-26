@@ -35,7 +35,16 @@ func newTestWSServer() *httptest.Server {
 	}))
 }
 
-func TestNewPool(t *testing.T) {
+// TestNewPool ...
+// Summary: TestNewPool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("successful pool creation", func(t *testing.T) {
 		server := newTestWSServer()
 		defer server.Close()

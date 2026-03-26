@@ -16,7 +16,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestUpstreamServiceManager_LoadAndMergeCollection_GitHub_CaseInsensitive(t *testing.T) {
+// TestUpstreamServiceManager_LoadAndMergeCollection_GitHub_CaseInsensitive ...
+// Summary: TestUpstreamServiceManager_LoadAndMergeCollection_GitHub_CaseInsensitive
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Mock GitHub API server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/repos/owner/repo/contents/path" {

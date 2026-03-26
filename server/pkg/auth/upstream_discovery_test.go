@@ -16,7 +16,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestOAuth2Auth_Authenticate_Discovery(t *testing.T) {
+// TestOAuth2Auth_Authenticate_Discovery ...
+// Summary: TestOAuth2Auth_Authenticate_Discovery
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a mock OIDC provider server
 	// We use a variable to break the circular dependency in the closure
 	var serverURL string
@@ -83,7 +92,16 @@ func TestOAuth2Auth_Authenticate_Discovery(t *testing.T) {
 	assert.Equal(t, server.URL+"/token", oauthAuth.TokenURL)
 }
 
-func TestOAuth2Auth_Authenticate_Discovery_Fail(t *testing.T) {
+// TestOAuth2Auth_Authenticate_Discovery_Fail ...
+// Summary: TestOAuth2Auth_Authenticate_Discovery_Fail
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Mock server that returns 404 for discovery
 	server := httptest.NewServer(http.NotFoundHandler())
 	defer server.Close()

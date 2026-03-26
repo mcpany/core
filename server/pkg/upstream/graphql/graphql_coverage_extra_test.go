@@ -19,7 +19,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestGraphQLUpstream_Register_EmptyAddress(t *testing.T) {
+// TestGraphQLUpstream_Register_EmptyAddress ...
+// Summary: TestGraphQLUpstream_Register_EmptyAddress
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewGraphQLUpstream()
 	tm := tool.NewManager(nil)
 
@@ -35,7 +44,16 @@ func TestGraphQLUpstream_Register_EmptyAddress(t *testing.T) {
 	assert.Contains(t, err.Error(), "graphql service address is required")
 }
 
-func TestGraphQLUpstream_Register_InvalidURL(t *testing.T) {
+// TestGraphQLUpstream_Register_InvalidURL ...
+// Summary: TestGraphQLUpstream_Register_InvalidURL
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewGraphQLUpstream()
 	tm := tool.NewManager(nil)
 
@@ -51,7 +69,16 @@ func TestGraphQLUpstream_Register_InvalidURL(t *testing.T) {
 	assert.Contains(t, err.Error(), "invalid graphql service address")
 }
 
-func TestGraphQLUpstream_Register_AuthCreationError(t *testing.T) {
+// TestGraphQLUpstream_Register_AuthCreationError ...
+// Summary: TestGraphQLUpstream_Register_AuthCreationError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewGraphQLUpstream()
 	tm := tool.NewManager(nil)
 
@@ -75,7 +102,16 @@ func TestGraphQLUpstream_Register_AuthCreationError(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to create upstream authenticator")
 }
 
-func TestFormatGraphQLType(t *testing.T) {
+// TestFormatGraphQLType ...
+// Summary: TestFormatGraphQLType
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		input    *graphQLType
@@ -147,7 +183,16 @@ func TestFormatGraphQLType(t *testing.T) {
 	}
 }
 
-func TestConvertGraphQLTypeToJSONSchema(t *testing.T) {
+// TestConvertGraphQLTypeToJSONSchema ...
+// Summary: TestConvertGraphQLTypeToJSONSchema
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Basic check for nil
 	res := convertGraphQLTypeToJSONSchema(nil)
 	require.NotNil(t, res)
@@ -166,7 +211,16 @@ func TestConvertGraphQLTypeToJSONSchema(t *testing.T) {
 	assert.Equal(t, "string", res.GetStructValue().Fields["items"].GetStructValue().Fields["type"].GetStringValue())
 }
 
-func TestGraphQLUpstream_Register_AddToolError(t *testing.T) {
+// TestGraphQLUpstream_Register_AddToolError ...
+// Summary: TestGraphQLUpstream_Register_AddToolError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -215,7 +269,16 @@ func TestGraphQLUpstream_Register_AddToolError(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to add tool")
 }
 
-func TestCallable_Call_NewRequestError(t *testing.T) {
+// TestCallable_Call_NewRequestError ...
+// Summary: TestCallable_Call_NewRequestError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	c := &Callable{
 		address:       "http://example.com\x7f", // Invalid char
 		authenticator: &dummyAuthenticator{},
@@ -230,6 +293,15 @@ func TestCallable_Call_NewRequestError(t *testing.T) {
 
 type dummyAuthenticator struct{}
 
-func (d *dummyAuthenticator) Authenticate(req *http.Request) error {
+// Authenticate ...
+// Summary: Authenticate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }

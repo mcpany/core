@@ -17,7 +17,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestUpstreamService_Float32Bug(t *testing.T) {
+// TestUpstreamService_Float32Bug ...
+// Summary: TestUpstreamService_Float32Bug
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. Start a mock upstream server
 	var receivedPath string
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

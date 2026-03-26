@@ -12,7 +12,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestManager_Cache(t *testing.T) {
+// TestManager_Cache ...
+// Summary: TestManager_Cache
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tempDir, err := os.MkdirTemp("", "skills-cache-test-*")
 	require.NoError(t, err)
 	defer os.RemoveAll(tempDir)

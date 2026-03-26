@@ -9,7 +9,16 @@ import (
 	"testing"
 )
 
-func TestIsAllowedPath(t *testing.T) {
+// TestIsAllowedPath ...
+// Summary: TestIsAllowedPath
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name      string
 		path      string

@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func TestHTTPGateway_RegisterService(t *testing.T) {
+// TestHTTPGateway_RegisterService ...
+// Summary: TestHTTPGateway_RegisterService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	server := StartInProcessMCPANYServer(t, "HTTPGatewayTest")
 	defer server.CleanupFunc()
 

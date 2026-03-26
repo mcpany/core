@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestIsGitHubURL(t *testing.T) {
+// TestIsGitHubURL ...
+// Summary: TestIsGitHubURL
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCases := []struct {
 		name     string
 		url      string
@@ -47,7 +56,16 @@ func TestIsGitHubURL(t *testing.T) {
 	}
 }
 
-func TestNewGitHub(t *testing.T) {
+// TestNewGitHub ...
+// Summary: TestNewGitHub
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCases := []struct {
 		name          string
 		url           string
@@ -113,7 +131,16 @@ func TestNewGitHub(t *testing.T) {
 	}
 }
 
-func TestGitHub_ToRawContentURL(t *testing.T) {
+// TestGitHub_ToRawContentURL ...
+// Summary: TestGitHub_ToRawContentURL
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	g := &GitHub{
 		Owner:         "mcpany",
 		Repo:          "core",
@@ -127,7 +154,16 @@ func TestGitHub_ToRawContentURL(t *testing.T) {
 	}
 }
 
-func TestGitHub_List(t *testing.T) {
+// TestGitHub_List ...
+// Summary: TestGitHub_List
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Authorization") != "Bearer my-secret-token" {
 			w.WriteHeader(http.StatusUnauthorized)
@@ -173,7 +209,16 @@ func TestGitHub_List(t *testing.T) {
 	}
 }
 
-func TestGitHub_List_With_Single_File(t *testing.T) {
+// TestGitHub_List_With_Single_File ...
+// Summary: TestGitHub_List_With_Single_File
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte(`{"type": "file", "html_url": "https://github.com/mcpany/core/blob/main/examples/README.md", "download_url": "https://raw.githubusercontent.com/mcpany/core/main/examples/README.md"}`))
@@ -207,7 +252,16 @@ func TestGitHub_List_With_Single_File(t *testing.T) {
 	}
 }
 
-func TestGitHub_List_ssrf(t *testing.T) {
+// TestGitHub_List_ssrf ...
+// Summary: TestGitHub_List_ssrf
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test verifies that the GitHub client blocks requests to loopback addresses.
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -237,7 +291,16 @@ func TestGitHub_List_ssrf(t *testing.T) {
 	}
 }
 
-func TestGitHub_List_Auth_Variants(t *testing.T) {
+// TestGitHub_List_Auth_Variants ...
+// Summary: TestGitHub_List_Auth_Variants
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Check API Key
 		if apiKey := r.Header.Get("X-API-Key"); apiKey != "" {

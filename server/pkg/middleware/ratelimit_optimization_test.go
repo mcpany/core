@@ -16,7 +16,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestRateLimitMiddleware_ArgumentsPopulated(t *testing.T) {
+// TestRateLimitMiddleware_ArgumentsPopulated ...
+// Summary: TestRateLimitMiddleware_ArgumentsPopulated
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockToolManager := &rateLimitMockToolManager{}
 	rlMiddleware := middleware.NewRateLimitMiddleware(mockToolManager)
 

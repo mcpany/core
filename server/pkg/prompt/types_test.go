@@ -18,7 +18,16 @@ import (
 
 var _ = mcpsdk.TextContent{}
 
-func TestTemplatedPrompt_Get(t *testing.T) {
+// TestTemplatedPrompt_Get ...
+// Summary: TestTemplatedPrompt_Get
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	role := configv1.PromptMessage_USER
 	definition := configv1.PromptDefinition_builder{
 		Name:        proto.String("test-prompt"),
@@ -67,7 +76,16 @@ func TestTemplatedPrompt_Get(t *testing.T) {
 	})
 }
 
-func TestTemplatedPrompt_Get_UnmarshalError(t *testing.T) {
+// TestTemplatedPrompt_Get_UnmarshalError ...
+// Summary: TestTemplatedPrompt_Get_UnmarshalError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	definition := configv1.PromptDefinition_builder{}.Build()
 	templatedPrompt, err := prompt.NewTemplatedPrompt(definition, "test-service")
 	assert.NoError(t, err)
@@ -76,7 +94,16 @@ func TestTemplatedPrompt_Get_UnmarshalError(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestTemplatedPrompt_Get_RenderError(t *testing.T) {
+// TestTemplatedPrompt_Get_RenderError ...
+// Summary: TestTemplatedPrompt_Get_RenderError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	role := configv1.PromptMessage_USER
 	definition := configv1.PromptDefinition_builder{
 		Messages: []*configv1.PromptMessage{
@@ -96,7 +123,16 @@ func TestTemplatedPrompt_Get_RenderError(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestTemplatedPrompt_Prompt(t *testing.T) {
+// TestTemplatedPrompt_Prompt ...
+// Summary: TestTemplatedPrompt_Prompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	definition := configv1.PromptDefinition_builder{
 		Name:        proto.String("test-prompt"),
 		Title:       proto.String("Test Prompt"),
@@ -130,14 +166,32 @@ func TestTemplatedPrompt_Prompt(t *testing.T) {
 	assert.Equal(t, "name", mcpPrompt.Arguments[0].Name)
 }
 
-func TestTemplatedPrompt_Service(t *testing.T) {
+// TestTemplatedPrompt_Service ...
+// Summary: TestTemplatedPrompt_Service
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	definition := configv1.PromptDefinition_builder{}.Build()
 	templatedPrompt, err := prompt.NewTemplatedPrompt(definition, "test-service")
 	assert.NoError(t, err)
 	assert.Equal(t, "test-service", templatedPrompt.Service())
 }
 
-func TestNewPromptFromConfig(t *testing.T) {
+// TestNewPromptFromConfig ...
+// Summary: TestNewPromptFromConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	definition := configv1.PromptDefinition_builder{
 		Name:        proto.String("test-prompt"),
 		Title:       proto.String("Test Prompt"),
@@ -151,7 +205,16 @@ func TestNewPromptFromConfig(t *testing.T) {
 	assert.Equal(t, "test-service.test-prompt", p.Prompt().Name)
 }
 
-func TestTemplatedPrompt_Get_NoText(t *testing.T) {
+// TestTemplatedPrompt_Get_NoText ...
+// Summary: TestTemplatedPrompt_Get_NoText
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	role := configv1.PromptMessage_USER
 	definition := configv1.PromptDefinition_builder{
 		Messages: []*configv1.PromptMessage{

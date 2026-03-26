@@ -62,7 +62,16 @@ func setupApiTestApp() (*Application, storage.Storage) {
 	return app, store
 }
 
-func TestIsUnsafeConfig(t *testing.T) {
+// TestIsUnsafeConfig ...
+// Summary: TestIsUnsafeConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		config   *configv1.UpstreamServiceConfig
@@ -118,7 +127,16 @@ func TestIsUnsafeConfig(t *testing.T) {
 	}
 }
 
-func TestHandleServiceStatus_Mocked(t *testing.T) {
+// TestHandleServiceStatus_Mocked ...
+// Summary: TestHandleServiceStatus_Mocked
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	store := memory.NewStore()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -178,7 +196,16 @@ func TestHandleServiceStatus_Mocked(t *testing.T) {
 
 // Tests from api_coverage_test.go
 
-func TestHandleServices(t *testing.T) {
+// TestHandleServices ...
+// Summary: TestHandleServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 	handler := app.handleServices(store)
 
@@ -220,7 +247,16 @@ func TestHandleServices(t *testing.T) {
 	}
 }
 
-func TestHandleServiceDetail(t *testing.T) {
+// TestHandleServiceDetail ...
+// Summary: TestHandleServiceDetail
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 	handler := app.handleServiceDetail(store)
 
@@ -272,7 +308,16 @@ func TestHandleServiceDetail(t *testing.T) {
 	}
 }
 
-func TestHandleServiceStatus_Detailed(t *testing.T) {
+// TestHandleServiceStatus_Detailed ...
+// Summary: TestHandleServiceStatus_Detailed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 	handler := app.handleServiceDetail(store)
 
@@ -292,7 +337,16 @@ func TestHandleServiceStatus_Detailed(t *testing.T) {
 	}
 }
 
-func TestHandleSettings_Detailed(t *testing.T) {
+// TestHandleSettings_Detailed ...
+// Summary: TestHandleSettings_Detailed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 	handler := app.handleSettings(store)
 
@@ -318,7 +372,16 @@ func TestHandleSettings_Detailed(t *testing.T) {
 	}
 }
 
-func TestHandleTools_Detailed(t *testing.T) {
+// TestHandleTools_Detailed ...
+// Summary: TestHandleTools_Detailed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, _ := setupApiTestApp()
 	handler := app.handleTools()
 
@@ -330,7 +393,16 @@ func TestHandleTools_Detailed(t *testing.T) {
 	}
 }
 
-func TestHandlePrompts_Detailed(t *testing.T) {
+// TestHandlePrompts_Detailed ...
+// Summary: TestHandlePrompts_Detailed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, _ := setupApiTestApp()
 	handler := app.handlePrompts()
 
@@ -342,7 +414,16 @@ func TestHandlePrompts_Detailed(t *testing.T) {
 	}
 }
 
-func TestHandleResources_Detailed(t *testing.T) {
+// TestHandleResources_Detailed ...
+// Summary: TestHandleResources_Detailed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, _ := setupApiTestApp()
 	handler := app.handleResources()
 
@@ -354,7 +435,16 @@ func TestHandleResources_Detailed(t *testing.T) {
 	}
 }
 
-func TestHandleSecrets_Detailed(t *testing.T) {
+// TestHandleSecrets_Detailed ...
+// Summary: TestHandleSecrets_Detailed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 	handler := app.handleSecrets(store)
 
@@ -386,7 +476,16 @@ func TestHandleSecrets_Detailed(t *testing.T) {
 	}
 }
 
-func TestHandleSecretDetail_Detailed(t *testing.T) {
+// TestHandleSecretDetail_Detailed ...
+// Summary: TestHandleSecretDetail_Detailed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 	handler := app.handleSecretDetail(store)
 
@@ -417,7 +516,16 @@ func TestHandleSecretDetail_Detailed(t *testing.T) {
 	}
 }
 
-func TestHandleProfiles_Detailed(t *testing.T) {
+// TestHandleProfiles_Detailed ...
+// Summary: TestHandleProfiles_Detailed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 	handler := app.handleProfiles(store)
 
@@ -441,7 +549,16 @@ func TestHandleProfiles_Detailed(t *testing.T) {
 	}
 }
 
-func TestHandleProfileDetail_Detailed(t *testing.T) {
+// TestHandleProfileDetail_Detailed ...
+// Summary: TestHandleProfileDetail_Detailed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 	handler := app.handleProfileDetail(store)
 
@@ -485,7 +602,16 @@ func TestHandleProfileDetail_Detailed(t *testing.T) {
 	}
 }
 
-func TestHandleCollections_Detailed(t *testing.T) {
+// TestHandleCollections_Detailed ...
+// Summary: TestHandleCollections_Detailed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 	handler := app.handleCollections(store)
 
@@ -509,7 +635,16 @@ func TestHandleCollections_Detailed(t *testing.T) {
 	}
 }
 
-func TestHandleCollectionDetail_Detailed(t *testing.T) {
+// TestHandleCollectionDetail_Detailed ...
+// Summary: TestHandleCollectionDetail_Detailed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 	handler := app.handleCollectionDetail(store)
 
@@ -569,7 +704,16 @@ func TestHandleCollectionDetail_Detailed(t *testing.T) {
 	}
 }
 
-func TestHandleExecute_Detailed(t *testing.T) {
+// TestHandleExecute_Detailed ...
+// Summary: TestHandleExecute_Detailed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, _ := setupApiTestApp()
 	handler := app.handleExecute()
 
@@ -602,11 +746,38 @@ type mockResource struct {
 	content string
 }
 
-func (m *mockResource) Resource() *mcp.Resource {
+// Resource ...
+// Summary: Resource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return &mcp.Resource{URI: m.uri}
 }
-func (m *mockResource) Service() string { return "mock" }
-func (m *mockResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
+// Service ...
+// Summary: Service
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Read ...
+// Summary: Read
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return &mcp.ReadResourceResult{
 		Contents: []*mcp.ResourceContents{
 			{
@@ -617,19 +788,64 @@ func (m *mockResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error
 		},
 	}, nil
 }
-func (m *mockResource) Subscribe(ctx context.Context) error { return nil }
+// Subscribe ...
+// Summary: Subscribe
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
 // Mock Prompt
 type mockPrompt struct {
 	name string
 }
 
-func (m *mockPrompt) Prompt() *mcp.Prompt {
+// Prompt ...
+// Summary: Prompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return &mcp.Prompt{Name: m.name}
 }
-func (m *mockPrompt) Service() string                        { return "mock" }
-func (m *mockPrompt) Definition() *configv1.PromptDefinition { return nil }
-func (m *mockPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
+// Service ...
+// Summary: Service
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Definition ...
+// Summary: Definition
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Get ...
+// Summary: Get
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return &mcp.GetPromptResult{
 		Messages: []*mcp.PromptMessage{
 			{
@@ -642,7 +858,16 @@ func (m *mockPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPro
 	}, nil
 }
 
-func TestHandleResourceRead(t *testing.T) {
+// TestHandleResourceRead ...
+// Summary: TestHandleResourceRead
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	app := NewApplication()
 	app.fs = fs
@@ -699,7 +924,16 @@ func TestHandleResourceRead(t *testing.T) {
 	})
 }
 
-func TestHandlePromptExecute(t *testing.T) {
+// TestHandlePromptExecute ...
+// Summary: TestHandlePromptExecute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	app := NewApplication()
 	app.fs = fs
@@ -759,7 +993,16 @@ func TestHandlePromptExecute(t *testing.T) {
 
 // Tests from api_bug_test.go
 
-func TestHandleProfiles_LargeBody(t *testing.T) {
+// TestHandleProfiles_LargeBody ...
+// Summary: TestHandleProfiles_LargeBody
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 
 	// Create a large body (> 1MB)
@@ -779,7 +1022,16 @@ func TestHandleProfiles_LargeBody(t *testing.T) {
 	}
 }
 
-func TestHandleProfileDetail_LargeBody(t *testing.T) {
+// TestHandleProfileDetail_LargeBody ...
+// Summary: TestHandleProfileDetail_LargeBody
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 
 	largeBody := make([]byte, 2*1024*1024) // 2MB
@@ -794,7 +1046,16 @@ func TestHandleProfileDetail_LargeBody(t *testing.T) {
 	}
 }
 
-func TestHandleSettings_LargeBody(t *testing.T) {
+// TestHandleSettings_LargeBody ...
+// Summary: TestHandleSettings_LargeBody
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 
 	largeBody := make([]byte, 2*1024*1024) // 2MB
@@ -809,7 +1070,16 @@ func TestHandleSettings_LargeBody(t *testing.T) {
 	}
 }
 
-func TestHandleCollections_LargeBody(t *testing.T) {
+// TestHandleCollections_LargeBody ...
+// Summary: TestHandleCollections_LargeBody
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 
 	largeBody := make([]byte, 2*1024*1024) // 2MB
@@ -824,7 +1094,16 @@ func TestHandleCollections_LargeBody(t *testing.T) {
 	}
 }
 
-func TestHandleCollectionDetail_LargeBody(t *testing.T) {
+// TestHandleCollectionDetail_LargeBody ...
+// Summary: TestHandleCollectionDetail_LargeBody
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 
 	largeBody := make([]byte, 2*1024*1024) // 2MB
@@ -839,7 +1118,16 @@ func TestHandleCollectionDetail_LargeBody(t *testing.T) {
 	}
 }
 
-func TestHandleSecrets_LargeBody(t *testing.T) {
+// TestHandleSecrets_LargeBody ...
+// Summary: TestHandleSecrets_LargeBody
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 
 	largeBody := make([]byte, 2*1024*1024) // 2MB
@@ -856,11 +1144,29 @@ func TestHandleSecrets_LargeBody(t *testing.T) {
 
 type errorReader struct{}
 
-func (e *errorReader) Read(p []byte) (n int, err error) {
+// Read ...
+// Summary: Read
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return 0, context.DeadlineExceeded
 }
 
-func TestHandleProfiles_ReadError(t *testing.T) {
+// TestHandleProfiles_ReadError ...
+// Summary: TestHandleProfiles_ReadError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 
 	req := httptest.NewRequest(http.MethodPost, "/profiles", &errorReader{})
@@ -876,26 +1182,63 @@ func TestHandleProfiles_ReadError(t *testing.T) {
 
 // Tests from api_error_test.go
 
-type MockServiceRegistry struct {
+// MockServiceRegistry ...
+// Summary: MockServiceRegistry
 	mock.Mock
 }
 
-func (m *MockServiceRegistry) RegisterService(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+// RegisterService ...
+// Summary: RegisterService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, serviceConfig)
 	return args.String(0), args.Get(1).([]*configv1.ToolDefinition), args.Get(2).([]*configv1.ResourceDefinition), args.Error(3)
 }
 
-func (m *MockServiceRegistry) UnregisterService(ctx context.Context, serviceName string) error {
+// UnregisterService ...
+// Summary: UnregisterService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, serviceName)
 	return args.Error(0)
 }
 
-func (m *MockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfig, error) {
+// GetAllServices ...
+// Summary: GetAllServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	return args.Get(0).([]*configv1.UpstreamServiceConfig), args.Error(1)
 }
 
-func (m *MockServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
+// GetServiceInfo ...
+// Summary: GetServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(serviceID)
 	if info := args.Get(0); info != nil {
 		return info.(*tool.ServiceInfo), args.Bool(1)
@@ -903,7 +1246,16 @@ func (m *MockServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInf
 	return nil, args.Bool(1)
 }
 
-func (m *MockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.UpstreamServiceConfig, bool) {
+// GetServiceConfig ...
+// Summary: GetServiceConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(serviceID)
 	if cfg := args.Get(0); cfg != nil {
 		return cfg.(*configv1.UpstreamServiceConfig), args.Bool(1)
@@ -911,12 +1263,30 @@ func (m *MockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.Upst
 	return nil, args.Bool(1)
 }
 
-func (m *MockServiceRegistry) GetServiceError(serviceID string) (string, bool) {
+// GetServiceError ...
+// Summary: GetServiceError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(serviceID)
 	return args.String(0), args.Bool(1)
 }
 
-func TestHandleServices_IncludesError(t *testing.T) {
+// TestHandleServices_IncludesError ...
+// Summary: TestHandleServices_IncludesError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	db, err := sqlite.NewDB(":memory:")
 	require.NoError(t, err)
 	defer db.Close()
@@ -982,7 +1352,16 @@ func TestHandleServices_IncludesError(t *testing.T) {
 
 // Tests from api_security_test.go
 
-func TestAPIHandler_SecurityValidation(t *testing.T) {
+// TestAPIHandler_SecurityValidation ...
+// Summary: TestAPIHandler_SecurityValidation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	store := memory.NewStore()
 	app := &Application{
 		ToolManager: tool.NewManager(nil),
@@ -1075,23 +1454,104 @@ func TestAPIHandler_SecurityValidation(t *testing.T) {
 
 type errorResource struct{}
 
-func (e *errorResource) Resource() *mcp.Resource { return &mcp.Resource{URI: "error://test"} }
-func (e *errorResource) Service() string         { return "test" }
-func (e *errorResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
+// Resource ...
+// Summary: Resource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Service ...
+// Summary: Service
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Read ...
+// Summary: Read
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, errors.New("read failed")
 }
-func (e *errorResource) Subscribe(ctx context.Context) error { return nil }
+// Subscribe ...
+// Summary: Subscribe
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
 type errorPrompt struct{}
 
-func (e *errorPrompt) Prompt() *mcp.Prompt                    { return &mcp.Prompt{Name: "error-prompt"} }
-func (e *errorPrompt) Service() string                        { return "test" }
-func (e *errorPrompt) Definition() *configv1.PromptDefinition { return nil }
-func (e *errorPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
+// Prompt ...
+// Summary: Prompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Service ...
+// Summary: Service
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Definition ...
+// Summary: Definition
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Get ...
+// Summary: Get
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, errors.New("get failed")
 }
 
-func TestHandleResourceReadError(t *testing.T) {
+// TestHandleResourceReadError ...
+// Summary: TestHandleResourceReadError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -1109,7 +1569,16 @@ func TestHandleResourceReadError(t *testing.T) {
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
 }
 
-func TestHandlePromptExecuteError(t *testing.T) {
+// TestHandlePromptExecuteError ...
+// Summary: TestHandlePromptExecuteError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -1131,7 +1600,16 @@ func stringPtr(s string) *string {
 	return &s
 }
 
-func TestHandleAuditExport(t *testing.T) {
+// TestHandleAuditExport ...
+// Summary: TestHandleAuditExport
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, _ := setupApiTestApp()
 	app.standardMiddlewares = &middleware.StandardMiddlewares{}
 
@@ -1185,7 +1663,16 @@ func TestHandleAuditExport(t *testing.T) {
 	assert.GreaterOrEqual(t, len(records), 2)
 }
 
-func TestHandleInitiateOAuth(t *testing.T) {
+// TestHandleInitiateOAuth ...
+// Summary: TestHandleInitiateOAuth
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	store := memory.NewStore()
 	am := auth.NewManager()
 	am.SetStorage(store)
@@ -1222,7 +1709,16 @@ func TestHandleInitiateOAuth(t *testing.T) {
 	})
 }
 
-func TestHandleLogsWS(t *testing.T) {
+// TestHandleLogsWS ...
+// Summary: TestHandleLogsWS
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := &Application{}
 	handler := app.handleLogsWS()
 	ts := httptest.NewServer(handler)
@@ -1242,7 +1738,16 @@ func TestHandleLogsWS(t *testing.T) {
 	assert.Equal(t, testMsg.Message, msg.Message)
 }
 
-func TestHandleSystemStatus(t *testing.T) {
+// TestHandleSystemStatus ...
+// Summary: TestHandleSystemStatus
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 	app.startTime = time.Now().Add(-10 * time.Second)
 	app.SettingsManager = NewGlobalSettingsManager("", nil, nil)
@@ -1259,7 +1764,16 @@ func TestHandleSystemStatus(t *testing.T) {
 
 // TestHandleTemplates removed in favor of api_templates_test.go
 
-func TestHandleUsers(t *testing.T) {
+// TestHandleUsers ...
+// Summary: TestHandleUsers
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 	app.fs = afero.NewMemMapFs()
 	app.AuthManager = auth.NewManager()
@@ -1283,7 +1797,16 @@ func TestHandleUsers(t *testing.T) {
 	})
 }
 
-func TestCreateUser_PasswordHashing(t *testing.T) {
+// TestCreateUser_PasswordHashing ...
+// Summary: TestCreateUser_PasswordHashing
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 	app.fs = afero.NewMemMapFs()
 	app.AuthManager = auth.NewManager()
@@ -1304,7 +1827,16 @@ func TestCreateUser_PasswordHashing(t *testing.T) {
 	assert.True(t, strings.HasPrefix(user.GetAuthentication().GetBasicAuth().GetPasswordHash(), "$2a$"))
 }
 
-func TestHandleUsers_Security_Redaction(t *testing.T) {
+// TestHandleUsers_Security_Redaction ...
+// Summary: TestHandleUsers_Security_Redaction
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 	app.fs = afero.NewMemMapFs()
 	app.AuthManager = auth.NewManager()
@@ -1335,7 +1867,16 @@ func TestHandleUsers_Security_Redaction(t *testing.T) {
 	})
 }
 
-func TestCheckURLReachability(t *testing.T) {
+// TestCheckURLReachability ...
+// Summary: TestCheckURLReachability
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Enable loopback for this test since we are testing reachability against a local test server.
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "true")
@@ -1347,7 +1888,16 @@ func TestCheckURLReachability(t *testing.T) {
 	assert.NoError(t, checkURLReachability(context.Background(), server.URL))
 }
 
-func TestHandleServiceValidate(t *testing.T) {
+// TestHandleServiceValidate ...
+// Summary: TestHandleServiceValidate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := &Application{}
 	httpSvc := &configv1.HttpUpstreamService{}
 	httpSvc.SetAddress("http://example.com")
@@ -1362,7 +1912,16 @@ func TestHandleServiceValidate(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
-func TestUploadFile_Security(t *testing.T) {
+// TestUploadFile_Security ...
+// Summary: TestUploadFile_Security
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 	t.Run("Reflected XSS", func(t *testing.T) {
 		body := &bytes.Buffer{}
@@ -1379,143 +1938,596 @@ func TestUploadFile_Security(t *testing.T) {
 	})
 }
 
-type TestMockTool struct {
+// TestMockTool ...
+// Summary: TestMockTool
 	toolDef *mcp_router_v1.Tool
 }
 
-func (m *TestMockTool) Tool() *mcp_router_v1.Tool { return m.toolDef }
-func (m *TestMockTool) MCPTool() *mcp.Tool        { return nil }
-func (m *TestMockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+// Tool ...
+// Summary: Tool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// MCPTool ...
+// Summary: MCPTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Execute ...
+// Summary: Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (m *TestMockTool) GetCacheConfig() *configv1.CacheConfig { return nil }
+// GetCacheConfig ...
+// Summary: GetCacheConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-type MockServiceStore struct {
+// MockServiceStore ...
+// Summary: MockServiceStore
 	services []*configv1.UpstreamServiceConfig
 }
 
-func (s *MockServiceStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
+// Load ...
+// Summary: Load
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (s *MockServiceStore) HasConfigSources() bool { return false }
-func (s *MockServiceStore) SaveService(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
+// HasConfigSources ...
+// Summary: HasConfigSources
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// SaveService ...
+// Summary: SaveService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
-func (s *MockServiceStore) GetService(ctx context.Context, name string) (*configv1.UpstreamServiceConfig, error) {
+// GetService ...
+// Summary: GetService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (s *MockServiceStore) ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
+// ListServices ...
+// Summary: ListServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return s.services, nil
 }
-func (s *MockServiceStore) DeleteService(ctx context.Context, name string) error { return nil }
-func (s *MockServiceStore) ListSecrets(ctx context.Context) ([]*configv1.Secret, error) {
+// DeleteService ...
+// Summary: DeleteService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ListSecrets ...
+// Summary: ListSecrets
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (s *MockServiceStore) SaveSecret(ctx context.Context, secret *configv1.Secret) error {
+// SaveSecret ...
+// Summary: SaveSecret
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
-func (s *MockServiceStore) GetSecret(ctx context.Context, id string) (*configv1.Secret, error) {
+// GetSecret ...
+// Summary: GetSecret
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (s *MockServiceStore) DeleteSecret(ctx context.Context, id string) error { return nil }
-func (s *MockServiceStore) ListProfiles(ctx context.Context) ([]*configv1.ProfileDefinition, error) {
+// DeleteSecret ...
+// Summary: DeleteSecret
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ListProfiles ...
+// Summary: ListProfiles
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (s *MockServiceStore) SaveProfile(ctx context.Context, p *configv1.ProfileDefinition) error {
+// SaveProfile ...
+// Summary: SaveProfile
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
-func (s *MockServiceStore) GetProfile(ctx context.Context, name string) (*configv1.ProfileDefinition, error) {
+// GetProfile ...
+// Summary: GetProfile
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (s *MockServiceStore) DeleteProfile(ctx context.Context, name string) error { return nil }
-func (s *MockServiceStore) ListServiceCollections(ctx context.Context) ([]*configv1.Collection, error) {
+// DeleteProfile ...
+// Summary: DeleteProfile
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ListServiceCollections ...
+// Summary: ListServiceCollections
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (s *MockServiceStore) SaveServiceCollection(ctx context.Context, c *configv1.Collection) error {
+// SaveServiceCollection ...
+// Summary: SaveServiceCollection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
-func (s *MockServiceStore) GetServiceCollection(ctx context.Context, name string) (*configv1.Collection, error) {
+// GetServiceCollection ...
+// Summary: GetServiceCollection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (s *MockServiceStore) DeleteServiceCollection(ctx context.Context, name string) error {
+// DeleteServiceCollection ...
+// Summary: DeleteServiceCollection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
-func (s *MockServiceStore) GetGlobalSettings(ctx context.Context) (*configv1.GlobalSettings, error) {
+// GetGlobalSettings ...
+// Summary: GetGlobalSettings
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (s *MockServiceStore) SaveGlobalSettings(ctx context.Context, gs *configv1.GlobalSettings) error {
+// SaveGlobalSettings ...
+// Summary: SaveGlobalSettings
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
-func (s *MockServiceStore) Close() error                                              { return nil }
-func (s *MockServiceStore) CreateUser(ctx context.Context, user *configv1.User) error { return nil }
-func (s *MockServiceStore) GetUser(ctx context.Context, id string) (*configv1.User, error) {
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// CreateUser ...
+// Summary: CreateUser
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// GetUser ...
+// Summary: GetUser
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (s *MockServiceStore) ListUsers(ctx context.Context) ([]*configv1.User, error)   { return nil, nil }
-func (s *MockServiceStore) UpdateUser(ctx context.Context, user *configv1.User) error { return nil }
-func (s *MockServiceStore) DeleteUser(ctx context.Context, id string) error           { return nil }
-func (s *MockServiceStore) SaveToken(ctx context.Context, token *configv1.UserToken) error {
+// ListUsers ...
+// Summary: ListUsers
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// UpdateUser ...
+// Summary: UpdateUser
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// DeleteUser ...
+// Summary: DeleteUser
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// SaveToken ...
+// Summary: SaveToken
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
-func (s *MockServiceStore) GetToken(ctx context.Context, userID, serviceID string) (*configv1.UserToken, error) {
+// GetToken ...
+// Summary: GetToken
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (s *MockServiceStore) DeleteToken(ctx context.Context, userID, serviceID string) error {
+// DeleteToken ...
+// Summary: DeleteToken
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
-func (s *MockServiceStore) ListCredentials(ctx context.Context) ([]*configv1.Credential, error) {
+// ListCredentials ...
+// Summary: ListCredentials
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (s *MockServiceStore) GetCredential(ctx context.Context, id string) (*configv1.Credential, error) {
+// GetCredential ...
+// Summary: GetCredential
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (s *MockServiceStore) SaveCredential(ctx context.Context, cred *configv1.Credential) error {
+// SaveCredential ...
+// Summary: SaveCredential
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
-func (s *MockServiceStore) DeleteCredential(ctx context.Context, id string) error { return nil }
-func (s *MockServiceStore) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTemplate, error) {
+// DeleteCredential ...
+// Summary: DeleteCredential
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ListServiceTemplates ...
+// Summary: ListServiceTemplates
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (s *MockServiceStore) GetServiceTemplate(ctx context.Context, id string) (*configv1.ServiceTemplate, error) {
+// GetServiceTemplate ...
+// Summary: GetServiceTemplate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (s *MockServiceStore) SaveServiceTemplate(ctx context.Context, tmpl *configv1.ServiceTemplate) error {
+// SaveServiceTemplate ...
+// Summary: SaveServiceTemplate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
-func (s *MockServiceStore) DeleteServiceTemplate(ctx context.Context, id string) error {
+// DeleteServiceTemplate ...
+// Summary: DeleteServiceTemplate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (s *MockServiceStore) SaveLog(ctx context.Context, entry *logging.LogEntry) error {
+// SaveLog ...
+// Summary: SaveLog
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (s *MockServiceStore) GetRecentLogs(ctx context.Context, limit int) ([]*logging.LogEntry, error) {
+// GetRecentLogs ...
+// Summary: GetRecentLogs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
 
-type TestMockServiceRegistry struct {
+// TestMockServiceRegistry ...
+// Summary: TestMockServiceRegistry
 	services []*configv1.UpstreamServiceConfig
 }
 
-func (m *TestMockServiceRegistry) RegisterService(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+// RegisterService ...
+// Summary: RegisterService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return "", nil, nil, nil
 }
-func (m *TestMockServiceRegistry) UnregisterService(ctx context.Context, serviceName string) error {
+// UnregisterService ...
+// Summary: UnregisterService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
-func (m *TestMockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfig, error) {
+// GetAllServices ...
+// Summary: GetAllServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.services, nil
 }
-func (m *TestMockServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
+// GetServiceInfo ...
+// Summary: GetServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, false
 }
-func (m *TestMockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.UpstreamServiceConfig, bool) {
+// GetServiceConfig ...
+// Summary: GetServiceConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, false
 }
-func (m *TestMockServiceRegistry) GetServiceError(serviceID string) (string, bool) { return "", false }
+// GetServiceError ...
+// Summary: GetServiceError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func TestHandleServices_ToolCount(t *testing.T) {
+// TestHandleServices_ToolCount ...
+// Summary: TestHandleServices_ToolCount
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	busProvider, _ := bus.NewProvider(nil)
 	tm := tool.NewManager(busProvider)
 
@@ -1563,7 +2575,16 @@ func TestHandleServices_ToolCount(t *testing.T) {
 	}
 }
 
-func TestSkillServiceServer(t *testing.T) {
+// TestSkillServiceServer ...
+// Summary: TestSkillServiceServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tempDir := t.TempDir()
 	manager, _ := skill.NewManager(tempDir)
 	server := NewSkillServiceServer(manager)
@@ -1596,7 +2617,16 @@ func TestSkillServiceServer(t *testing.T) {
 	})
 }
 
-func TestConfigDiffGeneration(t *testing.T) {
+// TestConfigDiffGeneration ...
+// Summary: TestConfigDiffGeneration
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 	fs := afero.NewMemMapFs()
 	ctx := context.Background()
@@ -1624,7 +2654,16 @@ upstream_services:
 	assert.Contains(t, app.configDiff, "invalid_indentation")
 }
 
-func TestSecretLeak(t *testing.T) {
+// TestSecretLeak ...
+// Summary: TestSecretLeak
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tempDir := t.TempDir()
 	dbPath := filepath.Join(tempDir, "test_secrets.db")
 	db, _ := sqlite.NewDB(dbPath)
@@ -1655,7 +2694,16 @@ func TestSecretLeak(t *testing.T) {
 	assert.Equal(t, "[REDACTED]", result["value"])
 }
 
-func TestReproduction_ProtocolCompliance(t *testing.T) {
+// TestReproduction_ProtocolCompliance ...
+// Summary: TestReproduction_ProtocolCompliance
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -1692,7 +2740,16 @@ func TestReproduction_ProtocolCompliance(t *testing.T) {
 	<-errChan
 }
 
-func TestHandleAuthTest(t *testing.T) {
+// TestHandleAuthTest ...
+// Summary: TestHandleAuthTest
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	store := memory.NewStore()
 	am := auth.NewManager()
 	am.SetStorage(store)
@@ -1734,7 +2791,16 @@ func TestHandleAuthTest(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
-func TestHandleSecretDetail_Reveal_HappyPath(t *testing.T) {
+// TestHandleSecretDetail_Reveal_HappyPath ...
+// Summary: TestHandleSecretDetail_Reveal_HappyPath
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 	handler := app.handleSecretDetail(store)
 
@@ -1756,7 +2822,16 @@ func TestHandleSecretDetail_Reveal_HappyPath(t *testing.T) {
 	}
 }
 
-func TestHandleSecretDetail_Reveal_MethodNotAllowed(t *testing.T) {
+// TestHandleSecretDetail_Reveal_MethodNotAllowed ...
+// Summary: TestHandleSecretDetail_Reveal_MethodNotAllowed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 	handler := app.handleSecretDetail(store)
 
@@ -1768,7 +2843,16 @@ func TestHandleSecretDetail_Reveal_MethodNotAllowed(t *testing.T) {
 	}
 }
 
-func TestHandleSecretDetail_Reveal_NotFound(t *testing.T) {
+// TestHandleSecretDetail_Reveal_NotFound ...
+// Summary: TestHandleSecretDetail_Reveal_NotFound
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 	handler := app.handleSecretDetail(store)
 
@@ -1780,7 +2864,16 @@ func TestHandleSecretDetail_Reveal_NotFound(t *testing.T) {
 	}
 }
 
-func TestHandleSecretDetail_Put_HappyPath(t *testing.T) {
+// TestHandleSecretDetail_Put_HappyPath ...
+// Summary: TestHandleSecretDetail_Put_HappyPath
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 	handler := app.handleSecretDetail(store)
 
@@ -1803,7 +2896,16 @@ func TestHandleSecretDetail_Put_HappyPath(t *testing.T) {
 	}
 }
 
-func TestHandleSecretDetail_Put_InvalidJSON(t *testing.T) {
+// TestHandleSecretDetail_Put_InvalidJSON ...
+// Summary: TestHandleSecretDetail_Put_InvalidJSON
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 	handler := app.handleSecretDetail(store)
 

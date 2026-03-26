@@ -18,11 +18,29 @@ type mockServerStream struct {
 	ctx context.Context
 }
 
-func (m *mockServerStream) Context() context.Context {
+// Context ...
+// Summary: Context
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.ctx
 }
 
-func TestWrappedServerStream_Context(t *testing.T) {
+// TestWrappedServerStream_Context ...
+// Summary: TestWrappedServerStream_Context
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	baseCtx := context.WithValue(context.Background(), "base", "value")
 	newCtx := context.WithValue(context.Background(), "new", "value")

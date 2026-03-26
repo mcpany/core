@@ -20,7 +20,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestHTTPTool_ExtraCoverage(t *testing.T) {
+// TestHTTPTool_ExtraCoverage ...
+// Summary: TestHTTPTool_ExtraCoverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 
 	t.Run("path traversal in path parameter", func(t *testing.T) {

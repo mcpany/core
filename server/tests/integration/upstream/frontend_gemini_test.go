@@ -14,7 +14,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGeminiCLIE2E_FrontendReact(t *testing.T) {
+// TestGeminiCLIE2E_FrontendReact ...
+// Summary: TestGeminiCLIE2E_FrontendReact
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	apiKey := os.Getenv("GEMINI_API_KEY")
 	// Check if apiKey is set, otherwise assume system is configured (as per user request)
 	if apiKey == "" {

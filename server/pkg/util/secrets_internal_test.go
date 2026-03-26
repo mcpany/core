@@ -17,7 +17,17 @@ import (
 
 // TestSafeSecretClient_SecurityDefaults verifies that the global safeSecretClient
 // is configured correctly for security (SSRF protection).
-func TestSafeSecretClient_SecurityDefaults(t *testing.T) {
+// TestSafeSecretClient_SecurityDefaults verifies that the global safeSecretClient
+// Summary: TestSafeSecretClient_SecurityDefaults
+// is configured correctly for security (SSRF protection).
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Verify Redirects are blocked
 	req, _ := http.NewRequest("GET", "http://example.com", nil)
 	// CheckRedirect should return an error to stop redirect
@@ -54,14 +64,32 @@ type mockTransport struct {
 	RoundTripFunc func(*http.Request) (*http.Response, error)
 }
 
-func (m *mockTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+// RoundTrip ...
+// Summary: RoundTrip
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.RoundTripFunc != nil {
 		return m.RoundTripFunc(req)
 	}
 	return nil, errors.New("mock transport not implemented")
 }
 
-func TestResolveSecret_NetworkFailures(t *testing.T) {
+// TestResolveSecret_NetworkFailures ...
+// Summary: TestResolveSecret_NetworkFailures
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Save original transport
 	originalTransport := safeSecretClient.Transport
 	defer func() { safeSecretClient.Transport = originalTransport }()
@@ -108,7 +136,16 @@ func TestResolveSecret_NetworkFailures(t *testing.T) {
 	})
 }
 
-func TestResolveSecret_ContextCancellation_Internal(t *testing.T) {
+// TestResolveSecret_ContextCancellation_Internal ...
+// Summary: TestResolveSecret_ContextCancellation_Internal
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Verify that context cancellation propagates to the request
 	originalTransport := safeSecretClient.Transport
 	defer func() { safeSecretClient.Transport = originalTransport }()

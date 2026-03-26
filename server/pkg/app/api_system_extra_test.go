@@ -13,7 +13,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestHandleSystemStatus_SecurityWarnings(t *testing.T) {
+// TestHandleSystemStatus_SecurityWarnings ...
+// Summary: TestHandleSystemStatus_SecurityWarnings
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("Warning when API Key missing", func(t *testing.T) {
 		app := NewApplication()
 		app.SettingsManager = NewGlobalSettingsManager("", nil, nil) // Empty API Key

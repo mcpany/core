@@ -20,11 +20,21 @@ import (
 )
 
 // MockTool is a mock implementation of the tool.Tool interface.
-type MockTool struct {
+// MockTool is a mock implementation of the tool.Tool interface.
+// Summary: MockTool
 	mock.Mock
 }
 
-func (m *MockTool) Tool() *v1.Tool {
+// Tool ...
+// Summary: Tool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	if args.Get(0) == nil {
 		return nil
@@ -32,7 +42,16 @@ func (m *MockTool) Tool() *v1.Tool {
 	return args.Get(0).(*v1.Tool)
 }
 
-func (m *MockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (interface{}, error) {
+// Execute ...
+// Summary: Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, req)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
@@ -40,7 +59,16 @@ func (m *MockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (int
 	return args.Get(0), args.Error(1)
 }
 
-func (m *MockTool) GetCacheConfig() *configv1.CacheConfig {
+// GetCacheConfig ...
+// Summary: GetCacheConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	if args.Get(0) == nil {
 		return nil
@@ -48,7 +76,16 @@ func (m *MockTool) GetCacheConfig() *configv1.CacheConfig {
 	return args.Get(0).(*configv1.CacheConfig)
 }
 
-func (m *MockTool) MCPTool() *mcp.Tool {
+// MCPTool ...
+// Summary: MCPTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	if args.Get(0) == nil {
 		return nil
@@ -56,7 +93,16 @@ func (m *MockTool) MCPTool() *mcp.Tool {
 	return args.Get(0).(*mcp.Tool)
 }
 
-func TestNewDynamicResource(t *testing.T) {
+// TestNewDynamicResource ...
+// Summary: TestNewDynamicResource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("successful creation", func(t *testing.T) {
 		def := configv1.ResourceDefinition_builder{
 			Uri:         proto.String("test-uri"),
@@ -94,7 +140,16 @@ func TestNewDynamicResource(t *testing.T) {
 	})
 }
 
-func TestDynamicResource_Read(t *testing.T) {
+// TestDynamicResource_Read ...
+// Summary: TestDynamicResource_Read
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	def := configv1.ResourceDefinition_builder{
 		Uri: proto.String("test-uri"),
 	}.Build()
@@ -189,7 +244,16 @@ func TestDynamicResource_Read(t *testing.T) {
 	})
 }
 
-func TestDynamicResource_Subscribe(t *testing.T) {
+// TestDynamicResource_Subscribe ...
+// Summary: TestDynamicResource_Subscribe
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	def := configv1.ResourceDefinition_builder{
 		Uri: proto.String("test-uri"),
 	}.Build()
@@ -202,7 +266,16 @@ func TestDynamicResource_Subscribe(t *testing.T) {
 	assert.Contains(t, err.Error(), "subscribing to dynamic resources is not yet implemented")
 }
 
-func TestDynamicResource_Service(t *testing.T) {
+// TestDynamicResource_Service ...
+// Summary: TestDynamicResource_Service
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	def := configv1.ResourceDefinition_builder{
 		Uri: proto.String("test-uri"),
 	}.Build()

@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestSentinelRCE_Python_Getattr_Bypass(t *testing.T) {
+// TestSentinelRCE_Python_Getattr_Bypass ...
+// Summary: TestSentinelRCE_Python_Getattr_Bypass
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. Configure a tool that uses python3 -c with input inside double quotes (eval)
 	// This simulates a tool where the developer wants to evaluate a python expression.
 	svc := configv1.CommandLineUpstreamService_builder{

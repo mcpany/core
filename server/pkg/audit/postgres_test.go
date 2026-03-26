@@ -12,7 +12,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestPostgresAuditStore_New(t *testing.T) {
+// TestPostgresAuditStore_New ...
+// Summary: TestPostgresAuditStore_New
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Mock DB
 	db, _, err := sqlmock.New()
 	if err != nil {
@@ -29,7 +38,16 @@ func TestPostgresAuditStore_New(t *testing.T) {
 	// For this exercise, we will test the methods Write and Verify by manually constructing the store with the mock DB.
 }
 
-func TestPostgresAuditStore_Write(t *testing.T) {
+// TestPostgresAuditStore_Write ...
+// Summary: TestPostgresAuditStore_Write
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	db, mock, err := sqlmock.New()
 	assert.NoError(t, err)
 	defer db.Close()
@@ -79,7 +97,16 @@ func TestPostgresAuditStore_Write(t *testing.T) {
 	assert.NoError(t, mock.ExpectationsWereMet())
 }
 
-func TestPostgresAuditStore_Verify_Valid(t *testing.T) {
+// TestPostgresAuditStore_Verify_Valid ...
+// Summary: TestPostgresAuditStore_Verify_Valid
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	db, mock, err := sqlmock.New()
 	assert.NoError(t, err)
 	defer db.Close()
@@ -112,7 +139,16 @@ func TestPostgresAuditStore_Verify_Valid(t *testing.T) {
 	assert.NoError(t, mock.ExpectationsWereMet())
 }
 
-func TestPostgresAuditStore_Verify_Tampered(t *testing.T) {
+// TestPostgresAuditStore_Verify_Tampered ...
+// Summary: TestPostgresAuditStore_Verify_Tampered
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	db, mock, err := sqlmock.New()
 	assert.NoError(t, err)
 	defer db.Close()
@@ -134,7 +170,16 @@ func TestPostgresAuditStore_Verify_Tampered(t *testing.T) {
 	assert.Contains(t, err.Error(), "hash mismatch")
 }
 
-func TestPostgresAuditStore_Verify_ChainBroken(t *testing.T) {
+// TestPostgresAuditStore_Verify_ChainBroken ...
+// Summary: TestPostgresAuditStore_Verify_ChainBroken
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	db, mock, err := sqlmock.New()
 	assert.NoError(t, err)
 	defer db.Close()
@@ -161,7 +206,16 @@ func TestPostgresAuditStore_Verify_ChainBroken(t *testing.T) {
 	assert.Contains(t, err.Error(), "prev_hash mismatch")
 }
 
-func TestPostgresAuditStore_New_Error(t *testing.T) {
+// TestPostgresAuditStore_New_Error ...
+// Summary: TestPostgresAuditStore_New_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Simple check for DSN validation
 	_, err := NewPostgresAuditStore("")
 	assert.Error(t, err)

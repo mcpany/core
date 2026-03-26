@@ -12,7 +12,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestHTTPSecurityHeadersMiddleware_API(t *testing.T) {
+// TestHTTPSecurityHeadersMiddleware_API ...
+// Summary: TestHTTPSecurityHeadersMiddleware_API
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	nextHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	})
@@ -40,7 +49,16 @@ func TestHTTPSecurityHeadersMiddleware_API(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 }
 
-func TestHTTPSecurityHeadersMiddleware_UI(t *testing.T) {
+// TestHTTPSecurityHeadersMiddleware_UI ...
+// Summary: TestHTTPSecurityHeadersMiddleware_UI
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	nextHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	})

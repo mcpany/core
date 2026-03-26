@@ -15,7 +15,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestHandleLogsWS_History(t *testing.T) {
+// TestHandleLogsWS_History ...
+// Summary: TestHandleLogsWS_History
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Backup and replace GlobalBroadcaster
 	originalBroadcaster := logging.GlobalBroadcaster
 	logging.GlobalBroadcaster = logging.NewBroadcaster()
@@ -50,7 +59,16 @@ func TestHandleLogsWS_History(t *testing.T) {
 	assert.Equal(t, historyMsg2.Message, msg2.Message)
 }
 
-func TestHandleLogsWS_Streaming(t *testing.T) {
+// TestHandleLogsWS_Streaming ...
+// Summary: TestHandleLogsWS_Streaming
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Backup and replace GlobalBroadcaster
 	originalBroadcaster := logging.GlobalBroadcaster
 	logging.GlobalBroadcaster = logging.NewBroadcaster()
@@ -110,7 +128,16 @@ Loop:
 	assert.Equal(t, newMsg.Message, msg.Message)
 }
 
-func TestHandleLogsWS_Concurrency(t *testing.T) {
+// TestHandleLogsWS_Concurrency ...
+// Summary: TestHandleLogsWS_Concurrency
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Backup and replace GlobalBroadcaster
 	originalBroadcaster := logging.GlobalBroadcaster
 	logging.GlobalBroadcaster = logging.NewBroadcaster()
@@ -185,7 +212,16 @@ SyncLoop:
 	}
 }
 
-func TestHandleLogsWS_Close(t *testing.T) {
+// TestHandleLogsWS_Close ...
+// Summary: TestHandleLogsWS_Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Backup and replace GlobalBroadcaster
 	originalBroadcaster := logging.GlobalBroadcaster
 	logging.GlobalBroadcaster = logging.NewBroadcaster()

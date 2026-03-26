@@ -34,7 +34,16 @@ func findMethodDescriptor(t *testing.T, serviceName, methodName string) protoref
 	return methodDesc
 }
 
-func TestNewGRPCTool(t *testing.T) {
+// TestNewGRPCTool ...
+// Summary: TestNewGRPCTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	pm := pool.NewManager()
 	serviceID := "test-service"
@@ -52,7 +61,16 @@ type mockWeatherServer struct {
 	getWeatherFunc func(ctx context.Context, req *weatherpb.GetWeatherRequest) (*weatherpb.GetWeatherResponse, error)
 }
 
-func (s *mockWeatherServer) GetWeather(ctx context.Context, req *weatherpb.GetWeatherRequest) (*weatherpb.GetWeatherResponse, error) {
+// GetWeather ...
+// Summary: GetWeather
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if s.getWeatherFunc != nil {
 		return s.getWeatherFunc(ctx, req)
 	}
@@ -92,20 +110,47 @@ type mockGrpcPool struct {
 	putFunc func(c *client.GrpcClientWrapper)
 }
 
-func (m *mockGrpcPool) Get(ctx context.Context) (*client.GrpcClientWrapper, error) {
+// Get ...
+// Summary: Get
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.getFunc != nil {
 		return m.getFunc(ctx)
 	}
 	return nil, nil
 }
 
-func (m *mockGrpcPool) Put(c *client.GrpcClientWrapper) {
+// Put ...
+// Summary: Put
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.putFunc != nil {
 		m.putFunc(c)
 	}
 }
 
-func TestGRPCTool_Execute(t *testing.T) {
+// TestGRPCTool_Execute ...
+// Summary: TestGRPCTool_Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	methodDesc := findMethodDescriptor(t, "WeatherService", "GetWeather")
 	toolProto := &v1.Tool{}

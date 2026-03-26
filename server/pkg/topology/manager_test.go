@@ -22,16 +22,35 @@ import (
 )
 
 // MockToolManager is a mock implementation of tool.ManagerInterface
-type MockToolManager struct {
+// MockToolManager is a mock implementation of tool.ManagerInterface
+// Summary: MockToolManager
 	mock.Mock
 }
 
-func (m *MockToolManager) AddTool(t tool.Tool) error {
+// AddTool ...
+// Summary: AddTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(t)
 	return args.Error(0)
 }
 
-func (m *MockToolManager) GetTool(name string) (tool.Tool, bool) {
+// GetTool ...
+// Summary: GetTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(name)
 	if t, ok := args.Get(0).(tool.Tool); ok {
 		return t, args.Bool(1)
@@ -39,21 +58,57 @@ func (m *MockToolManager) GetTool(name string) (tool.Tool, bool) {
 	return nil, args.Bool(1)
 }
 
-func (m *MockToolManager) ListTools() []tool.Tool {
+// ListTools ...
+// Summary: ListTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	return args.Get(0).([]tool.Tool)
 }
 
-func (m *MockToolManager) ListMCPTools() []*mcp_sdk.Tool {
+// ListMCPTools ...
+// Summary: ListMCPTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	return args.Get(0).([]*mcp_sdk.Tool)
 }
 
-func (m *MockToolManager) AddServiceInfo(id string, info *tool.ServiceInfo) {
+// AddServiceInfo ...
+// Summary: AddServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.Called(id, info)
 }
 
-func (m *MockToolManager) GetServiceInfo(id string) (*tool.ServiceInfo, bool) {
+// GetServiceInfo ...
+// Summary: GetServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(id)
 	if info, ok := args.Get(0).(*tool.ServiceInfo); ok {
 		return info, args.Bool(1)
@@ -61,55 +116,155 @@ func (m *MockToolManager) GetServiceInfo(id string) (*tool.ServiceInfo, bool) {
 	return nil, args.Bool(1)
 }
 
-func (m *MockToolManager) ClearToolsForService(serviceID string) {
+// ClearToolsForService ...
+// Summary: ClearToolsForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.Called(serviceID)
 }
 
-func (m *MockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+// ExecuteTool ...
+// Summary: ExecuteTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, req)
 	return args.Get(0), args.Error(1)
 }
 
-func (m *MockToolManager) SetMCPServer(mcpServer tool.MCPServerProvider) {
+// SetMCPServer ...
+// Summary: SetMCPServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.Called(mcpServer)
 }
 
-func (m *MockToolManager) AddMiddleware(middleware tool.ExecutionMiddleware) {
+// AddMiddleware ...
+// Summary: AddMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.Called(middleware)
 }
 
-func (m *MockToolManager) ListServices() []*tool.ServiceInfo {
+// ListServices ...
+// Summary: ListServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	return args.Get(0).([]*tool.ServiceInfo)
 }
 
-func (m *MockToolManager) SetProfiles(enabled []string, defs []*configv1.ProfileDefinition) {
+// SetProfiles ...
+// Summary: SetProfiles
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.Called(enabled, defs)
 }
 
-func (m *MockToolManager) IsServiceAllowed(serviceID, profileID string) bool {
+// IsServiceAllowed ...
+// Summary: IsServiceAllowed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return true
 }
 
-func (m *MockToolManager) ToolMatchesProfile(tool tool.Tool, profileID string) bool {
+// ToolMatchesProfile ...
+// Summary: ToolMatchesProfile
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return true
 }
 
-func (m *MockToolManager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
+// GetAllowedServiceIDs ...
+// Summary: GetAllowedServiceIDs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(profileID)
 	return args.Get(0).(map[string]bool), args.Bool(1)
 }
 
-func (m *MockToolManager) GetToolCountForService(serviceID string) int {
+// GetToolCountForService ...
+// Summary: GetToolCountForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return 0
 }
 
 // MockTool is a mock implementation of tool.Tool
-type MockTool struct {
+// MockTool is a mock implementation of tool.Tool
+// Summary: MockTool
 	mock.Mock
 }
 
-func (m *MockTool) Tool() *mcp_router_v1.Tool {
+// Tool ...
+// Summary: Tool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	if t, ok := args.Get(0).(*mcp_router_v1.Tool); ok {
 		return t
@@ -117,7 +272,16 @@ func (m *MockTool) Tool() *mcp_router_v1.Tool {
 	return nil
 }
 
-func (m *MockTool) MCPTool() *mcp_sdk.Tool {
+// MCPTool ...
+// Summary: MCPTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	if t, ok := args.Get(0).(*mcp_sdk.Tool); ok {
 		return t
@@ -125,12 +289,30 @@ func (m *MockTool) MCPTool() *mcp_sdk.Tool {
 	return nil
 }
 
-func (m *MockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+// Execute ...
+// Summary: Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, req)
 	return args.Get(0), args.Error(1)
 }
 
-func (m *MockTool) GetCacheConfig() *configv1.CacheConfig {
+// GetCacheConfig ...
+// Summary: GetCacheConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	if c, ok := args.Get(0).(*configv1.CacheConfig); ok {
 		return c
@@ -139,26 +321,63 @@ func (m *MockTool) GetCacheConfig() *configv1.CacheConfig {
 }
 
 // MockServiceRegistry is a mock implementation of serviceregistry.ServiceRegistryInterface
-type MockServiceRegistry struct {
+// MockServiceRegistry is a mock implementation of serviceregistry.ServiceRegistryInterface
+// Summary: MockServiceRegistry
 	mock.Mock
 }
 
-func (m *MockServiceRegistry) RegisterService(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+// RegisterService ...
+// Summary: RegisterService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, serviceConfig)
 	return args.String(0), args.Get(1).([]*configv1.ToolDefinition), args.Get(2).([]*configv1.ResourceDefinition), args.Error(3)
 }
 
-func (m *MockServiceRegistry) UnregisterService(ctx context.Context, serviceName string) error {
+// UnregisterService ...
+// Summary: UnregisterService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, serviceName)
 	return args.Error(0)
 }
 
-func (m *MockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfig, error) {
+// GetAllServices ...
+// Summary: GetAllServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	return args.Get(0).([]*configv1.UpstreamServiceConfig), args.Error(1)
 }
 
-func (m *MockServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
+// GetServiceInfo ...
+// Summary: GetServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(serviceID)
 	if info, ok := args.Get(0).(*tool.ServiceInfo); ok {
 		return info, args.Bool(1)
@@ -166,7 +385,16 @@ func (m *MockServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInf
 	return nil, args.Bool(1)
 }
 
-func (m *MockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.UpstreamServiceConfig, bool) {
+// GetServiceConfig ...
+// Summary: GetServiceConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(serviceID)
 	if config, ok := args.Get(0).(*configv1.UpstreamServiceConfig); ok {
 		return config, args.Bool(1)
@@ -174,12 +402,30 @@ func (m *MockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.Upst
 	return nil, args.Bool(1)
 }
 
-func (m *MockServiceRegistry) GetServiceError(serviceID string) (string, bool) {
+// GetServiceError ...
+// Summary: GetServiceError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(serviceID)
 	return args.String(0), args.Bool(1)
 }
 
-func TestManager_RecordActivity(t *testing.T) {
+// TestManager_RecordActivity ...
+// Summary: TestManager_RecordActivity
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)
 	m := NewManager(mockRegistry, mockTM)
@@ -232,7 +478,16 @@ func TestManager_RecordActivity(t *testing.T) {
 	assert.Equal(t, int64(300), session2.TotalBytes)
 }
 
-func TestManager_GetStats(t *testing.T) {
+// TestManager_GetStats ...
+// Summary: TestManager_GetStats
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)
 	m := NewManager(mockRegistry, mockTM)
@@ -253,7 +508,16 @@ func TestManager_GetStats(t *testing.T) {
 	assert.Equal(t, 0.5, stats.ErrorRate)
 }
 
-func TestManager_GetGraph(t *testing.T) {
+// TestManager_GetGraph ...
+// Summary: TestManager_GetGraph
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)
 	m := NewManager(mockRegistry, mockTM)
@@ -315,7 +579,16 @@ func TestManager_GetGraph(t *testing.T) {
 	assert.Equal(t, topologyv1.NodeType_NODE_TYPE_CLIENT, clientNode.GetType())
 }
 
-func TestManager_Middleware(t *testing.T) {
+// TestManager_Middleware ...
+// Summary: TestManager_Middleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)
 	m := NewManager(mockRegistry, mockTM)
@@ -412,7 +685,16 @@ func TestManager_Middleware(t *testing.T) {
 	assert.Equal(t, int64(1), count)
 }
 
-func TestManager_GetGraph_InactiveService(t *testing.T) {
+// TestManager_GetGraph_InactiveService ...
+// Summary: TestManager_GetGraph_InactiveService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)
 	mockTM.On("ListTools").Return([]tool.Tool{})
@@ -438,7 +720,16 @@ func TestManager_GetGraph_InactiveService(t *testing.T) {
 	assert.Equal(t, topologyv1.NodeStatus_NODE_STATUS_INACTIVE, svcNode.GetStatus())
 }
 
-func TestManager_GetGraph_OldSession(t *testing.T) {
+// TestManager_GetGraph_OldSession ...
+// Summary: TestManager_GetGraph_OldSession
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)
 	mockTM.On("ListTools").Return([]tool.Tool{})
@@ -465,7 +756,16 @@ func TestManager_GetGraph_OldSession(t *testing.T) {
 	assert.Len(t, graph.GetClients(), 0)
 }
 
-func TestManager_GetTrafficHistory(t *testing.T) {
+// TestManager_GetTrafficHistory ...
+// Summary: TestManager_GetTrafficHistory
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)
 	m := NewManager(mockRegistry, mockTM)
@@ -493,7 +793,16 @@ func TestManager_GetTrafficHistory(t *testing.T) {
 	assert.Equal(t, int64(500), lastPoint.Bytes)
 }
 
-func TestManager_SeedTrafficHistory(t *testing.T) {
+// TestManager_SeedTrafficHistory ...
+// Summary: TestManager_SeedTrafficHistory
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)
 	m := NewManager(mockRegistry, mockTM)
@@ -520,7 +829,16 @@ func TestManager_SeedTrafficHistory(t *testing.T) {
 	assert.Equal(t, int64(300), seedSession.TotalBytes)
 }
 
-func TestManager_GetGraph_Metrics(t *testing.T) {
+// TestManager_GetGraph_Metrics ...
+// Summary: TestManager_GetGraph_Metrics
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)
 	mockTM.On("ListTools").Return([]tool.Tool{})

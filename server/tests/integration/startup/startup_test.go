@@ -20,7 +20,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestStartupWithFailingUpstream(t *testing.T) {
+// TestStartupWithFailingUpstream ...
+// Summary: TestStartupWithFailingUpstream
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Enable file config for this test
 	t.Setenv("MCPANY_ENABLE_FILE_CONFIG", "true")
 

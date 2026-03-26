@@ -18,7 +18,16 @@ import (
 func strPtr(s string) *string { return &s }
 func int64Ptr(i int64) *int64 { return &i }
 
-func TestStaticResource(t *testing.T) {
+// TestStaticResource ...
+// Summary: TestStaticResource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 
 	// Setup test server
@@ -133,7 +142,16 @@ func TestStaticResource(t *testing.T) {
 	})
 }
 
-func TestStaticResource_InlineContent(t *testing.T) {
+// TestStaticResource_InlineContent ...
+// Summary: TestStaticResource_InlineContent
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("TextContent", func(t *testing.T) {
 		textContent := "Hello, Inline World!"
 		uri := "internal://hello"

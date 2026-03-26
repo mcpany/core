@@ -31,7 +31,16 @@ func startMockGrpcServer(t *testing.T) *bufconn.Listener {
 	return lis
 }
 
-func TestGrpcPool_New(t *testing.T) {
+// TestGrpcPool_New ...
+// Summary: TestGrpcPool_New
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	lis := startMockGrpcServer(t)
 	dialer := func(_ context.Context, _ string) (net.Conn, error) {
 		return lis.Dial()
@@ -57,7 +66,16 @@ func TestGrpcPool_New(t *testing.T) {
 	assert.Equal(t, 1, p.Len())
 }
 
-func TestGrpcPool_New_MtlsFailure(t *testing.T) {
+// TestGrpcPool_New_MtlsFailure ...
+// Summary: TestGrpcPool_New_MtlsFailure
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// mTLS with missing files
 	configJSON := `{
 		"grpc_service": {"address": "127.0.0.1:50051"},
@@ -78,7 +96,16 @@ func TestGrpcPool_New_MtlsFailure(t *testing.T) {
 	assert.Nil(t, p)
 }
 
-func TestGrpcPool_New_InvalidTarget(t *testing.T) {
+// TestGrpcPool_New_InvalidTarget ...
+// Summary: TestGrpcPool_New_InvalidTarget
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	serviceConfig := configv1.UpstreamServiceConfig_builder{
 		GrpcService: configv1.GrpcUpstreamService_builder{
 			Address: proto.String(""), // Empty address
@@ -90,13 +117,31 @@ func TestGrpcPool_New_InvalidTarget(t *testing.T) {
 	require.Error(t, err)
 }
 
-func TestGrpcPool_New_NilConfig(t *testing.T) {
+// TestGrpcPool_New_NilConfig ...
+// Summary: TestGrpcPool_New_NilConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	_, err := NewGrpcPool(1, 1, 100, nil, nil, nil, false)
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "service config is nil")
 }
 
-func TestGrpcPool_Get_ContextCancelled(t *testing.T) {
+// TestGrpcPool_Get_ContextCancelled ...
+// Summary: TestGrpcPool_Get_ContextCancelled
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	lis := startMockGrpcServer(t)
 	dialer := func(_ context.Context, _ string) (net.Conn, error) {
 		return lis.Dial()
@@ -117,7 +162,16 @@ func TestGrpcPool_Get_ContextCancelled(t *testing.T) {
 	require.Error(t, err)
 }
 
-func TestGrpcPool_Close_StopsChecker(t *testing.T) {
+// TestGrpcPool_Close_StopsChecker ...
+// Summary: TestGrpcPool_Close_StopsChecker
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test verifies that Close() can be called multiple times without panic
 	// and ostensibly cleans up resources.
 	// Since we can't easily verify internal state of health.Checker without mocking,

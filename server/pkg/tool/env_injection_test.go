@@ -13,7 +13,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestEnvInjection_Repro(t *testing.T) {
+// TestEnvInjection_Repro ...
+// Summary: TestEnvInjection_Repro
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cmd := "env"
 	tool := createEnvCommandTool(cmd)
 	req := &ExecutionRequest{

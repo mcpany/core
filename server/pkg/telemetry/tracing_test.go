@@ -13,7 +13,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestInitTelemetry(t *testing.T) {
+// TestInitTelemetry ...
+// Summary: TestInitTelemetry
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cfg := config_v1.TelemetryConfig_builder{
 		TracesExporter: proto.String("stdout"),
 	}.Build()
@@ -39,7 +48,16 @@ func TestInitTelemetry(t *testing.T) {
 	}
 }
 
-func TestInitTelemetry_NoExporter(t *testing.T) {
+// TestInitTelemetry_NoExporter ...
+// Summary: TestInitTelemetry_NoExporter
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cfg := config_v1.TelemetryConfig_builder{
 		TracesExporter:  proto.String(""),
 		OtlpEndpoint:    proto.String(""),
@@ -55,7 +73,16 @@ func TestInitTelemetry_NoExporter(t *testing.T) {
 	}
 }
 
-func TestInitTelemetry_NilWriter(t *testing.T) {
+// TestInitTelemetry_NilWriter ...
+// Summary: TestInitTelemetry_NilWriter
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cfg := config_v1.TelemetryConfig_builder{
 		TracesExporter: proto.String("stdout"),
 	}.Build()
@@ -71,7 +98,16 @@ func TestInitTelemetry_NilWriter(t *testing.T) {
 	}
 }
 
-func TestInitTelemetry_AutoDetectOTLP(t *testing.T) {
+// TestInitTelemetry_AutoDetectOTLP ...
+// Summary: TestInitTelemetry_AutoDetectOTLP
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Set endpoint but no exporter type, should default to OTLP
 	cfg := config_v1.TelemetryConfig_builder{
 		TracesExporter: proto.String(""),
@@ -87,7 +123,16 @@ func TestInitTelemetry_AutoDetectOTLP(t *testing.T) {
 	}
 }
 
-func TestInitTelemetry_MetricsStdout(t *testing.T) {
+// TestInitTelemetry_MetricsStdout ...
+// Summary: TestInitTelemetry_MetricsStdout
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cfg := config_v1.TelemetryConfig_builder{
 		MetricsExporter: proto.String("stdout"),
 	}.Build()
@@ -112,7 +157,16 @@ func TestInitTelemetry_MetricsStdout(t *testing.T) {
 	}
 }
 
-func TestInitTelemetry_MetricsOTLP(t *testing.T) {
+// TestInitTelemetry_MetricsOTLP ...
+// Summary: TestInitTelemetry_MetricsOTLP
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cfg := config_v1.TelemetryConfig_builder{
 		MetricsExporter: proto.String("otlp"),
 		OtlpEndpoint:    proto.String("127.0.0.1:4318"),

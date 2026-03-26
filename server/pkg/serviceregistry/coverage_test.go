@@ -19,7 +19,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestStartHealthChecks(t *testing.T) {
+// TestStartHealthChecks ...
+// Summary: TestStartHealthChecks
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	healthCheckCalled := make(chan struct{}, 1)
 	f := &mockFactory{
 		newUpstreamFunc: func() (upstream.Upstream, error) {
@@ -64,7 +73,16 @@ func TestStartHealthChecks(t *testing.T) {
 	}
 }
 
-func TestGetServiceInfo_WithConfig(t *testing.T) {
+// TestGetServiceInfo_WithConfig ...
+// Summary: TestGetServiceInfo_WithConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	registry := New(nil, &mockToolManager{}, nil, nil, nil)
 
 	serviceID, _ := util.SanitizeServiceName("test-service")
@@ -92,7 +110,16 @@ func TestGetServiceInfo_WithConfig(t *testing.T) {
 	assert.Equal(t, "some error", retrievedInfo.Config.GetLastError())
 }
 
-func TestInjectRuntimeInfo_Fallback(t *testing.T) {
+// TestInjectRuntimeInfo_Fallback ...
+// Summary: TestInjectRuntimeInfo_Fallback
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	registry := New(nil, &mockToolManager{}, nil, nil, nil)
 
 	// Case 1: Config is nil

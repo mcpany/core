@@ -6,22 +6,67 @@ package mcpserver
 import "github.com/modelcontextprotocol/go-sdk/mcp"
 
 // GetRouter returns the server's router. This is for testing purposes only.
-func (s *Server) GetRouter() *Router {
+// GetRouter returns the server's router. This is for testing purposes only.
+// Summary: GetRouter
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return s.router
 }
 
-func (s *Server) RouterMiddleware(next mcp.MethodHandler) mcp.MethodHandler {
+// RouterMiddleware ...
+// Summary: RouterMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return s.routerMiddleware(next)
 }
 
-func (s *Server) ToolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodHandler {
+// ToolListFilteringMiddleware ...
+// Summary: ToolListFilteringMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return s.toolListFilteringMiddleware(next)
 }
 
-func (s *Server) ResourceListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodHandler {
+// ResourceListFilteringMiddleware ...
+// Summary: ResourceListFilteringMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return s.resourceListFilteringMiddleware(next)
 }
 
-func (s *Server) PromptListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodHandler {
+// PromptListFilteringMiddleware ...
+// Summary: PromptListFilteringMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return s.promptListFilteringMiddleware(next)
 }

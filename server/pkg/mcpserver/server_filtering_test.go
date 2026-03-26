@@ -32,19 +32,55 @@ type mockResource struct {
 	service string
 }
 
-func (m *mockResource) Resource() *mcp.Resource {
+// Resource ...
+// Summary: Resource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.res
 }
 
-func (m *mockResource) Service() string {
+// Service ...
+// Summary: Service
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.service
 }
 
-func (m *mockResource) Read(_ context.Context) (*mcp.ReadResourceResult, error) {
+// Read ...
+// Summary: Read
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
 
-func (m *mockResource) Subscribe(_ context.Context) error {
+// Subscribe ...
+// Summary: Subscribe
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
@@ -52,11 +88,29 @@ type mockResourceManager struct {
 	resources []resource.Resource
 }
 
-func (m *mockResourceManager) ListResources() []resource.Resource {
+// ListResources ...
+// Summary: ListResources
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.resources
 }
 
-func (m *mockResourceManager) GetResource(uri string) (resource.Resource, bool) {
+// GetResource ...
+// Summary: GetResource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	for _, r := range m.resources {
 		if r.Resource().URI == uri {
 			return r, true
@@ -65,13 +119,49 @@ func (m *mockResourceManager) GetResource(uri string) (resource.Resource, bool) 
 	return nil, false
 }
 
-func (m *mockResourceManager) AddResource(r resource.Resource) {
+// AddResource ...
+// Summary: AddResource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.resources = append(m.resources, r)
 }
 
-func (m *mockResourceManager) RemoveResource(_ string) {}
-func (m *mockResourceManager) OnListChanged(f func())  {}
-func (m *mockResourceManager) ClearResourcesForService(_ string) {
+// RemoveResource ...
+// Summary: RemoveResource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// OnListChanged ...
+// Summary: OnListChanged
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ClearResourcesForService ...
+// Summary: ClearResourcesForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 }
 
 type mockPrompt struct {
@@ -79,19 +169,55 @@ type mockPrompt struct {
 	service string
 }
 
-func (m *mockPrompt) Prompt() *mcp.Prompt {
+// Prompt ...
+// Summary: Prompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.p
 }
 
-func (m *mockPrompt) Service() string {
+// Service ...
+// Summary: Service
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.service
 }
 
-func (m *mockPrompt) Definition() *configv1.PromptDefinition {
+// Definition ...
+// Summary: Definition
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *mockPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
+// Get ...
+// Summary: Get
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
 
@@ -99,11 +225,29 @@ type mockPromptManager struct {
 	prompts []prompt.Prompt
 }
 
-func (m *mockPromptManager) ListPrompts() []prompt.Prompt {
+// ListPrompts ...
+// Summary: ListPrompts
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.prompts
 }
 
-func (m *mockPromptManager) GetPrompt(name string) (prompt.Prompt, bool) {
+// GetPrompt ...
+// Summary: GetPrompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	for _, p := range m.prompts {
 		if p.Prompt().Name == name {
 			return p, true
@@ -112,17 +256,62 @@ func (m *mockPromptManager) GetPrompt(name string) (prompt.Prompt, bool) {
 	return nil, false
 }
 
-func (m *mockPromptManager) AddPrompt(p prompt.Prompt) {
+// AddPrompt ...
+// Summary: AddPrompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.prompts = append(m.prompts, p)
 }
 
-func (m *mockPromptManager) UpdatePrompt(p prompt.Prompt) {
+// UpdatePrompt ...
+// Summary: UpdatePrompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.prompts = append(m.prompts, p)
 }
 
-func (m *mockPromptManager) RemovePrompt(_ string)                   {}
-func (m *mockPromptManager) SetMCPServer(_ prompt.MCPServerProvider) {}
-func (m *mockPromptManager) ClearPromptsForService(_ string)         {}
+// RemovePrompt ...
+// Summary: RemovePrompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// SetMCPServer ...
+// Summary: SetMCPServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ClearPromptsForService ...
+// Summary: ClearPromptsForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
 // reuse smartToolManager concept for GetServiceInfo
 type serviceInfoProviderToolManager struct {
@@ -130,26 +319,134 @@ type serviceInfoProviderToolManager struct {
 	services map[string]*tool.ServiceInfo
 }
 
-func (m *serviceInfoProviderToolManager) GetServiceInfo(id string) (*tool.ServiceInfo, bool) {
+// GetServiceInfo ...
+// Summary: GetServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	s, ok := m.services[id]
 	return s, ok
 }
 
 // Stubs
-func (m *serviceInfoProviderToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
-func (m *serviceInfoProviderToolManager) GetTool(_ string) (tool.Tool, bool)           { return nil, false }
-func (m *serviceInfoProviderToolManager) ListTools() []tool.Tool                       { return nil }
-func (m *serviceInfoProviderToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+// Stubs
+// Summary: AddServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// GetTool ...
+// Summary: GetTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ListTools ...
+// Summary: ListTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ExecuteTool ...
+// Summary: ExecuteTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (m *serviceInfoProviderToolManager) AddMiddleware(_ tool.ExecutionMiddleware)                {}
-func (m *serviceInfoProviderToolManager) SetMCPServer(_ tool.MCPServerProvider)                   {}
-func (m *serviceInfoProviderToolManager) AddTool(_ tool.Tool) error                               { return nil }
-func (m *serviceInfoProviderToolManager) ClearToolsForService(_ string)                           {}
-func (m *serviceInfoProviderToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
-func (m *serviceInfoProviderToolManager) IsServiceAllowed(_, _ string) bool                       { return true }
+// AddMiddleware ...
+// Summary: AddMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// SetMCPServer ...
+// Summary: SetMCPServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// AddTool ...
+// Summary: AddTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ClearToolsForService ...
+// Summary: ClearToolsForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// SetProfiles ...
+// Summary: SetProfiles
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// IsServiceAllowed ...
+// Summary: IsServiceAllowed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func (m *serviceInfoProviderToolManager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
+// GetAllowedServiceIDs ...
+// Summary: GetAllowedServiceIDs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Permissive for testing
 	return map[string]bool{
 		"global-service":  true,
@@ -158,7 +455,16 @@ func (m *serviceInfoProviderToolManager) GetAllowedServiceIDs(profileID string) 
 	}, true
 }
 
-func TestResourceListFilteringMiddleware(t *testing.T) {
+// TestResourceListFilteringMiddleware ...
+// Summary: TestResourceListFilteringMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup dependencies
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager, nil)
@@ -237,7 +543,16 @@ func TestResourceListFilteringMiddleware(t *testing.T) {
 	require.True(t, ok)
 }
 
-func TestPromptListFilteringMiddleware(t *testing.T) {
+// TestPromptListFilteringMiddleware ...
+// Summary: TestPromptListFilteringMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup dependencies
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager, nil)

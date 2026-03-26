@@ -13,7 +13,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestManager_Load_Parallel(t *testing.T) {
+// TestManager_Load_Parallel ...
+// Summary: TestManager_Load_Parallel
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	// Create many files to simulate load
 	count := 100
@@ -45,7 +54,16 @@ upstream_services:
 	assert.True(t, found["service-99"])
 }
 
-func TestManager_Load_Empty(t *testing.T) {
+// TestManager_Load_Empty ...
+// Summary: TestManager_Load_Empty
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	require.NoError(t, fs.MkdirAll("/catalog", 0755))
 	m := NewManager(fs, "/catalog")
@@ -57,7 +75,16 @@ func TestManager_Load_Empty(t *testing.T) {
 	assert.Empty(t, services)
 }
 
-func TestManager_Load_PartialFailure(t *testing.T) {
+// TestManager_Load_PartialFailure ...
+// Summary: TestManager_Load_PartialFailure
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// One file is valid, one is invalid YAML
 	fs := afero.NewMemMapFs()
 	require.NoError(t, afero.WriteFile(fs, "/catalog/valid.yaml", []byte(`

@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestLocalCommandTool_Execute_EnvInjection(t *testing.T) {
+// TestLocalCommandTool_Execute_EnvInjection ...
+// Summary: TestLocalCommandTool_Execute_EnvInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test demonstrates that environment variables are not sanitized for shell injection,
 	// allowing arbitrary code execution when the command is a shell script that expands the variable.
 

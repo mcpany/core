@@ -18,7 +18,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestS3Provider_Mock(t *testing.T) {
+// TestS3Provider_Mock ...
+// Summary: TestS3Provider_Mock
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Start a mock S3 server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		t.Logf("Mock S3 received: %s %s", r.Method, r.URL.Path)

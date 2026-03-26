@@ -23,7 +23,16 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-func TestServiceRetry(t *testing.T) {
+// TestServiceRetry ...
+// Summary: TestServiceRetry
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Get two separate ephemeral ports to avoid application/mock collisions
 	// Use 127.0.0.2 to avoid collisions with other local services and test SSRF bypass
 	l1, err := util.ListenWithRetry(context.Background(), "tcp", "127.0.0.2:0")
@@ -154,11 +163,21 @@ func TestServiceRetry(t *testing.T) {
 }
 
 // MockStorage implements storage.Storage for testing
-type MockStorage struct {
+// MockStorage implements storage.Storage for testing
+// Summary: MockStorage
 	mock.Mock
 }
 
-func (m *MockStorage) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
+// Load ...
+// Summary: Load
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
@@ -166,11 +185,29 @@ func (m *MockStorage) Load(ctx context.Context) (*configv1.McpAnyServerConfig, e
 	return args.Get(0).(*configv1.McpAnyServerConfig), args.Error(1)
 }
 
-func (m *MockStorage) HasConfigSources() bool {
+// HasConfigSources ...
+// Summary: HasConfigSources
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return true
 }
 
-func (m *MockStorage) ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
+// ListServices ...
+// Summary: ListServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
@@ -178,7 +215,16 @@ func (m *MockStorage) ListServices(ctx context.Context) ([]*configv1.UpstreamSer
 	return args.Get(0).([]*configv1.UpstreamServiceConfig), args.Error(1)
 }
 
-func (m *MockStorage) GetGlobalSettings(ctx context.Context) (*configv1.GlobalSettings, error) {
+// GetGlobalSettings ...
+// Summary: GetGlobalSettings
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
@@ -187,94 +233,418 @@ func (m *MockStorage) GetGlobalSettings(ctx context.Context) (*configv1.GlobalSe
 }
 
 // Other interface methods - stubbed to panic if called (unexpected) or return nil error
-func (m *MockStorage) Watch(ctx context.Context) (<-chan *configv1.McpAnyServerConfig, error) {
+// Other interface methods - stubbed to panic if called (unexpected) or return nil error
+// Summary: Watch
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil // Not used in this test
 }
-func (m *MockStorage) GetService(ctx context.Context, name string) (*configv1.UpstreamServiceConfig, error) {
+// GetService ...
+// Summary: GetService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	panic("unexpected call to GetService")
 }
-func (m *MockStorage) SaveService(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
+// SaveService ...
+// Summary: SaveService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
-func (m *MockStorage) DeleteService(ctx context.Context, name string) error {
+// DeleteService ...
+// Summary: DeleteService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
-func (m *MockStorage) ListSecrets(ctx context.Context) ([]*configv1.Secret, error) {
+// ListSecrets ...
+// Summary: ListSecrets
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (m *MockStorage) GetSecret(ctx context.Context, id string) (*configv1.Secret, error) {
+// GetSecret ...
+// Summary: GetSecret
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (m *MockStorage) SaveSecret(ctx context.Context, secret *configv1.Secret) error {
+// SaveSecret ...
+// Summary: SaveSecret
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
-func (m *MockStorage) DeleteSecret(ctx context.Context, id string) error {
+// DeleteSecret ...
+// Summary: DeleteSecret
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
-func (m *MockStorage) CreateUser(ctx context.Context, user *configv1.User) error { return nil }
-func (m *MockStorage) GetUser(ctx context.Context, id string) (*configv1.User, error) {
+// CreateUser ...
+// Summary: CreateUser
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// GetUser ...
+// Summary: GetUser
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (m *MockStorage) ListUsers(ctx context.Context) ([]*configv1.User, error)   { return nil, nil }
-func (m *MockStorage) UpdateUser(ctx context.Context, user *configv1.User) error { return nil }
-func (m *MockStorage) DeleteUser(ctx context.Context, id string) error           { return nil }
-func (m *MockStorage) ListProfiles(ctx context.Context) ([]*configv1.ProfileDefinition, error) {
+// ListUsers ...
+// Summary: ListUsers
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// UpdateUser ...
+// Summary: UpdateUser
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// DeleteUser ...
+// Summary: DeleteUser
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ListProfiles ...
+// Summary: ListProfiles
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (m *MockStorage) GetProfile(ctx context.Context, name string) (*configv1.ProfileDefinition, error) {
+// GetProfile ...
+// Summary: GetProfile
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (m *MockStorage) SaveProfile(ctx context.Context, profile *configv1.ProfileDefinition) error {
+// SaveProfile ...
+// Summary: SaveProfile
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
-func (m *MockStorage) DeleteProfile(ctx context.Context, name string) error { return nil }
-func (m *MockStorage) ListServiceCollections(ctx context.Context) ([]*configv1.Collection, error) {
+// DeleteProfile ...
+// Summary: DeleteProfile
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ListServiceCollections ...
+// Summary: ListServiceCollections
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (m *MockStorage) GetServiceCollection(ctx context.Context, name string) (*configv1.Collection, error) {
+// GetServiceCollection ...
+// Summary: GetServiceCollection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (m *MockStorage) SaveServiceCollection(ctx context.Context, collection *configv1.Collection) error {
+// SaveServiceCollection ...
+// Summary: SaveServiceCollection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
-func (m *MockStorage) DeleteServiceCollection(ctx context.Context, name string) error { return nil }
-func (m *MockStorage) SaveToken(ctx context.Context, token *configv1.UserToken) error { return nil }
-func (m *MockStorage) GetToken(ctx context.Context, userID, serviceID string) (*configv1.UserToken, error) {
+// DeleteServiceCollection ...
+// Summary: DeleteServiceCollection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// SaveToken ...
+// Summary: SaveToken
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// GetToken ...
+// Summary: GetToken
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (m *MockStorage) DeleteToken(ctx context.Context, userID, serviceID string) error { return nil }
-func (m *MockStorage) ListCredentials(ctx context.Context) ([]*configv1.Credential, error) {
+// DeleteToken ...
+// Summary: DeleteToken
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ListCredentials ...
+// Summary: ListCredentials
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (m *MockStorage) GetCredential(ctx context.Context, id string) (*configv1.Credential, error) {
+// GetCredential ...
+// Summary: GetCredential
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (m *MockStorage) SaveCredential(ctx context.Context, cred *configv1.Credential) error {
+// SaveCredential ...
+// Summary: SaveCredential
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
-func (m *MockStorage) DeleteCredential(ctx context.Context, id string) error { return nil }
-func (m *MockStorage) SaveGlobalSettings(ctx context.Context, settings *configv1.GlobalSettings) error {
+// DeleteCredential ...
+// Summary: DeleteCredential
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// SaveGlobalSettings ...
+// Summary: SaveGlobalSettings
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
-func (m *MockStorage) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTemplate, error) {
+// ListServiceTemplates ...
+// Summary: ListServiceTemplates
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (m *MockStorage) GetServiceTemplate(ctx context.Context, id string) (*configv1.ServiceTemplate, error) {
+// GetServiceTemplate ...
+// Summary: GetServiceTemplate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (m *MockStorage) SaveServiceTemplate(ctx context.Context, template *configv1.ServiceTemplate) error {
+// SaveServiceTemplate ...
+// Summary: SaveServiceTemplate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
-func (m *MockStorage) DeleteServiceTemplate(ctx context.Context, id string) error { return nil }
-func (m *MockStorage) Close() error {
+// DeleteServiceTemplate ...
+// Summary: DeleteServiceTemplate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	return args.Error(0)
 }
 
-func (m *MockStorage) SaveLog(ctx context.Context, entry *logging.LogEntry) error {
+// SaveLog ...
+// Summary: SaveLog
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *MockStorage) GetRecentLogs(ctx context.Context, limit int) ([]*logging.LogEntry, error) {
+// GetRecentLogs ...
+// Summary: GetRecentLogs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }

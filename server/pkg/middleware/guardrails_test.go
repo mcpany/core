@@ -13,7 +13,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGuardrailsMiddleware(t *testing.T) {
+// TestGuardrailsMiddleware ...
+// Summary: TestGuardrailsMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	gin.SetMode(gin.TestMode)
 
 	config := GuardrailsConfig{

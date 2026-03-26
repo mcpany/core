@@ -22,7 +22,16 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func TestHttpMethodToString(t *testing.T) {
+// TestHttpMethodToString ...
+// Summary: TestHttpMethodToString
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCases := []struct {
 		name          string
 		method        configv1.HttpCallDefinition_HttpMethod
@@ -81,7 +90,16 @@ func TestHttpMethodToString(t *testing.T) {
 	}
 }
 
-func TestHTTPUpstream_Register_InsecureSkipVerify(t *testing.T) {
+// TestHTTPUpstream_Register_InsecureSkipVerify ...
+// Summary: TestHTTPUpstream_Register_InsecureSkipVerify
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
 
 	// Create a test HTTPS server with a self-signed certificate
@@ -127,7 +145,16 @@ func TestHTTPUpstream_Register_InsecureSkipVerify(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestHTTPUpstream_Register_Disabled(t *testing.T) {
+// TestHTTPUpstream_Register_Disabled ...
+// Summary: TestHTTPUpstream_Register_Disabled
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
@@ -215,7 +242,16 @@ func TestHTTPUpstream_Register_Disabled(t *testing.T) {
 	assert.True(t, ok, "Enabled resource should be registered")
 }
 
-func TestDeterminismInToolNaming(t *testing.T) {
+// TestDeterminismInToolNaming ...
+// Summary: TestDeterminismInToolNaming
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
@@ -252,7 +288,16 @@ func TestDeterminismInToolNaming(t *testing.T) {
 	assert.Equal(t, "op_call2", discoveredTools[1].GetName())
 }
 
-func TestHTTPUpstream_Register_MissingToolName(t *testing.T) {
+// TestHTTPUpstream_Register_MissingToolName ...
+// Summary: TestHTTPUpstream_Register_MissingToolName
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
@@ -283,7 +328,16 @@ func TestHTTPUpstream_Register_MissingToolName(t *testing.T) {
 	assert.Len(t, tm.ListTools(), 1)
 }
 
-func TestHTTPUpstream_Register(t *testing.T) {
+// TestHTTPUpstream_Register ...
+// Summary: TestHTTPUpstream_Register
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("successful registration", func(t *testing.T) {
 		pm := pool.NewManager()
 		tm := tool.NewManager(nil)
@@ -572,7 +626,16 @@ func newMockToolManager() *mockToolManager {
 	}
 }
 
-func TestCreateAndRegisterHTTPTools_AddToolError(t *testing.T) {
+// TestCreateAndRegisterHTTPTools_AddToolError ...
+// Summary: TestCreateAndRegisterHTTPTools_AddToolError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	mockTm := newMockToolManager()
 	mockTm.addError = errors.New("failed to add tool")
@@ -608,7 +671,16 @@ func TestCreateAndRegisterHTTPTools_AddToolError(t *testing.T) {
 	assert.Empty(t, mockTm.ListTools(), "Tool manager should be empty if AddTool fails")
 }
 
-func TestHTTPUpstream_Register_WithReload(t *testing.T) {
+// TestHTTPUpstream_Register_WithReload ...
+// Summary: TestHTTPUpstream_Register_WithReload
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
@@ -668,7 +740,16 @@ func TestHTTPUpstream_Register_WithReload(t *testing.T) {
 	assert.False(t, ok)
 }
 
-func TestHTTPUpstream_Register_InvalidMethod(t *testing.T) {
+// TestHTTPUpstream_Register_InvalidMethod ...
+// Summary: TestHTTPUpstream_Register_InvalidMethod
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
@@ -703,7 +784,16 @@ type mockToolManager struct {
 	failOnClear bool
 }
 
-func (m *mockToolManager) AddTool(t tool.Tool) error {
+// AddTool ...
+// Summary: AddTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.addError != nil {
 		return m.addError
 	}
@@ -711,7 +801,16 @@ func (m *mockToolManager) AddTool(t tool.Tool) error {
 	return nil
 }
 
-func (m *mockToolManager) GetTool(name string) (tool.Tool, bool) {
+// GetTool ...
+// Summary: GetTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	for _, t := range m.addedTools {
 		// Simplified check: In a real scenario, you'd parse the name
 		// and check against the tool's actual name and service key.
@@ -725,15 +824,42 @@ func (m *mockToolManager) GetTool(name string) (tool.Tool, bool) {
 	return nil, false
 }
 
-func (m *mockToolManager) ListTools() []tool.Tool {
+// ListTools ...
+// Summary: ListTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.addedTools
 }
 
-func (m *mockToolManager) ListServices() []*tool.ServiceInfo {
+// ListServices ...
+// Summary: ListServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *mockToolManager) ClearToolsForService(serviceID string) {
+// ClearToolsForService ...
+// Summary: ClearToolsForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.failOnClear {
 		// To test error handling if clearing was to fail, although the
 		// current implementation does not return an error.
@@ -748,18 +874,72 @@ func (m *mockToolManager) ClearToolsForService(serviceID string) {
 	m.addedTools = remainingTools
 }
 
-func (m *mockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
-func (m *mockToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) {
+// AddServiceInfo ...
+// Summary: AddServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// GetServiceInfo ...
+// Summary: GetServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, false
 }
-func (m *mockToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
-func (m *mockToolManager) CallTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+// SetMCPServer ...
+// Summary: SetMCPServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// CallTool ...
+// Summary: CallTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, errors.New("not implemented")
 }
 
-func (m *mockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
+// SetProfiles ...
+// Summary: SetProfiles
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func TestHTTPUpstream_URLConstruction(t *testing.T) {
+// TestHTTPUpstream_URLConstruction ...
+// Summary: TestHTTPUpstream_URLConstruction
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCases := []struct {
 		name          string
 		address       string
@@ -859,7 +1039,16 @@ func TestHTTPUpstream_URLConstruction(t *testing.T) {
 	}
 }
 
-func TestHTTPUpstream_Register_Blocked(t *testing.T) {
+// TestHTTPUpstream_Register_Blocked ...
+// Summary: TestHTTPUpstream_Register_Blocked
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
@@ -895,7 +1084,16 @@ func TestHTTPUpstream_Register_Blocked(t *testing.T) {
 	assert.Equal(t, "allowed", discoveredTools[0].GetName())
 }
 
-func TestHTTPUpstream_Shutdown(t *testing.T) {
+// TestHTTPUpstream_Shutdown ...
+// Summary: TestHTTPUpstream_Shutdown
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	upstream := NewUpstream(pm)
 	// Just verify it doesn't panic
@@ -903,7 +1101,16 @@ func TestHTTPUpstream_Shutdown(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestHTTPUpstream_CheckHealth(t *testing.T) {
+// TestHTTPUpstream_CheckHealth ...
+// Summary: TestHTTPUpstream_CheckHealth
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	u := NewUpstream(pm)
 

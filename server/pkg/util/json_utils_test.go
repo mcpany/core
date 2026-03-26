@@ -7,7 +7,16 @@ import (
 	"testing"
 )
 
-func TestSkipString(t *testing.T) {
+// TestSkipString ...
+// Summary: TestSkipString
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		input    string

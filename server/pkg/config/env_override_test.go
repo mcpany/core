@@ -15,7 +15,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestEnvVarOverride(t *testing.T) {
+// TestEnvVarOverride ...
+// Summary: TestEnvVarOverride
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary config file
 	fs := afero.NewMemMapFs()
 	configContent := `
@@ -46,7 +55,16 @@ global_settings:
 	assert.Equal(t, "0.0.0.0:6000", cfg.GetGlobalSettings().GetMcpListenAddress())
 }
 
-func TestEnvVarInjectionWithoutConfig(t *testing.T) {
+// TestEnvVarInjectionWithoutConfig ...
+// Summary: TestEnvVarInjectionWithoutConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create an empty config file
 	fs := afero.NewMemMapFs()
 	// We need a valid YAML file that results in a map, typically {}
@@ -68,7 +86,16 @@ func TestEnvVarInjectionWithoutConfig(t *testing.T) {
 	assert.Equal(t, "0.0.0.0:7000", cfg.GetGlobalSettings().GetMcpListenAddress())
 }
 
-func TestEnvVarOverrideLowercase(t *testing.T) {
+// TestEnvVarOverrideLowercase ...
+// Summary: TestEnvVarOverrideLowercase
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary config file
 	fs := afero.NewMemMapFs()
 	configContent := `

@@ -15,7 +15,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestSkillResource_PathTraversal(t *testing.T) {
+// TestSkillResource_PathTraversal ...
+// Summary: TestSkillResource_PathTraversal
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup
 	tmpDir, err := os.MkdirTemp("", "skill-test")
 	require.NoError(t, err)

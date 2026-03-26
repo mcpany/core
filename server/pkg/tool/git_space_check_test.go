@@ -17,7 +17,16 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestGitSpaceInjectionRepro(t *testing.T) {
+// TestGitSpaceInjectionRepro ...
+// Summary: TestGitSpaceInjectionRepro
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test reproduces the issue where arguments with spaces are blocked for "git"
 	// even though git handles them safely.
 

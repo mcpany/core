@@ -10,7 +10,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRedactSecrets(t *testing.T) {
+// TestRedactSecrets ...
+// Summary: TestRedactSecrets
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		text     string
@@ -81,7 +90,16 @@ func TestRedactSecrets(t *testing.T) {
 	}
 }
 
-func TestRedactDSN(t *testing.T) {
+// TestRedactDSN ...
+// Summary: TestRedactDSN
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		dsn      string
@@ -147,7 +165,16 @@ func TestRedactDSN(t *testing.T) {
 	}
 }
 
-func TestRedactMap(t *testing.T) {
+// TestRedactMap ...
+// Summary: TestRedactMap
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		input    map[string]interface{}
@@ -203,7 +230,16 @@ func TestRedactMap(t *testing.T) {
 	}
 }
 
-func TestIsSensitiveKey(t *testing.T) {
+// TestIsSensitiveKey ...
+// Summary: TestIsSensitiveKey
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		key      string
@@ -267,7 +303,16 @@ func TestIsSensitiveKey(t *testing.T) {
 	}
 }
 
-func TestRedactJSON(t *testing.T) {
+// TestRedactJSON ...
+// Summary: TestRedactJSON
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		input    string

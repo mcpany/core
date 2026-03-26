@@ -14,7 +14,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestSeeder_Seed(t *testing.T) {
+// TestSeeder_Seed ...
+// Summary: TestSeeder_Seed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup mock store
 	store := memory.NewStore()
 

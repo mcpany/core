@@ -13,7 +13,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestToolHashCmd(t *testing.T) {
+// TestToolHashCmd ...
+// Summary: TestToolHashCmd
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tempDir := t.TempDir()
 
 	configContent := `

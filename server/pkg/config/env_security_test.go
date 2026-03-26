@@ -10,7 +10,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestExpand_RestrictedVar(t *testing.T) {
+// TestExpand_RestrictedVar ...
+// Summary: TestExpand_RestrictedVar
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup restricted variable
 	os.Setenv("MCPANY_SECRET_KEY", "super-secret")
 	defer os.Unsetenv("MCPANY_SECRET_KEY")
@@ -24,7 +33,16 @@ func TestExpand_RestrictedVar(t *testing.T) {
 	assert.Contains(t, err.Error(), "variable MCPANY_SECRET_KEY is restricted")
 }
 
-func TestExpand_AllowedVar(t *testing.T) {
+// TestExpand_AllowedVar ...
+// Summary: TestExpand_AllowedVar
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup allowed variable via Allowlist
 	os.Setenv("MCPANY_ALLOWED_ENV", "MCPANY_PUBLIC_*")
 	defer os.Unsetenv("MCPANY_ALLOWED_ENV")
@@ -40,7 +58,16 @@ func TestExpand_AllowedVar(t *testing.T) {
 	assert.Equal(t, "key: public-key", string(expanded))
 }
 
-func TestExpand_StrictMode(t *testing.T) {
+// TestExpand_StrictMode ...
+// Summary: TestExpand_StrictMode
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Enable Strict Mode
 	os.Setenv("MCPANY_STRICT_ENV_MODE", "true")
 	defer os.Unsetenv("MCPANY_STRICT_ENV_MODE")

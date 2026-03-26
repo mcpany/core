@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestLocalCommandTool_RubySyscallInjection(t *testing.T) {
+// TestLocalCommandTool_RubySyscallInjection ...
+// Summary: TestLocalCommandTool_RubySyscallInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test demonstrates RCE vulnerability in Ruby via syscall.
 	// We use 'ruby -e' with unquoted argument to bypass quote checks.
 	// Since Ruby is not a shell, spaces are allowed.

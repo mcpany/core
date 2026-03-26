@@ -12,13 +12,32 @@ import (
 )
 
 // MockTokenizer is a tokenizer that is neither SimpleTokenizer nor WordTokenizer.
-type MockTokenizer struct{}
+// MockTokenizer is a tokenizer that is neither SimpleTokenizer nor WordTokenizer.
+// Summary: MockTokenizer
 
-func (m *MockTokenizer) CountTokens(text string) (int, error) {
+// CountTokens ...
+// Summary: CountTokens
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return len(text), nil
 }
 
-func TestCountTokensInValue_GenericFallback(t *testing.T) {
+// TestCountTokensInValue_GenericFallback ...
+// Summary: TestCountTokensInValue_GenericFallback
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tok := &MockTokenizer{}
 
 	tests := []struct {
@@ -52,7 +71,16 @@ func TestCountTokensInValue_GenericFallback(t *testing.T) {
 	}
 }
 
-func TestWordTokenizer_Types(t *testing.T) {
+// TestWordTokenizer_Types ...
+// Summary: TestWordTokenizer_Types
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tok := tokenizer.NewWordTokenizer()
 	// WordTokenizer factor is 1.3. Primitive strings are short.
 	// "123" -> 1 word * 1.3 = 1.3 -> 1 token.
@@ -76,7 +104,16 @@ func TestWordTokenizer_Types(t *testing.T) {
 	}
 }
 
-func TestSimpleTokenizeInt_EdgeCases(t *testing.T) {
+// TestSimpleTokenizeInt_EdgeCases ...
+// Summary: TestSimpleTokenizeInt_EdgeCases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tok := tokenizer.NewSimpleTokenizer()
 
 	tests := []struct {

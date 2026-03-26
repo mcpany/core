@@ -7,7 +7,8 @@ import (
 	"testing"
 )
 
-type BenchStruct struct {
+// BenchStruct ...
+// Summary: BenchStruct
 	Name        string
 	Description string
 	Tags        []string
@@ -17,7 +18,16 @@ type BenchStruct struct {
 	Sub         *BenchStruct
 }
 
-func BenchmarkStructTokenization(b *testing.B) {
+// BenchmarkStructTokenization ...
+// Summary: BenchmarkStructTokenization
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t := NewSimpleTokenizer()
 
 	deep := &BenchStruct{
@@ -50,7 +60,16 @@ func BenchmarkStructTokenization(b *testing.B) {
 	}
 }
 
-func BenchmarkPrimitiveSliceTokenization(b *testing.B) {
+// BenchmarkPrimitiveSliceTokenization ...
+// Summary: BenchmarkPrimitiveSliceTokenization
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t := NewSimpleTokenizer()
 
 	// Create a large slice of ints

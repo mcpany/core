@@ -22,19 +22,38 @@ import (
 )
 
 // MockToolManager is a mock implementation of the ToolManagerInterface.
-type MockToolManager struct {
+// MockToolManager is a mock implementation of the ToolManagerInterface.
+// Summary: MockToolManager
 	mu      sync.Mutex
 	tools   map[string]tool.Tool
 	lastErr error
 }
 
-func NewMockToolManager() *MockToolManager {
+// NewMockToolManager ...
+// Summary: NewMockToolManager
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return &MockToolManager{
 		tools: make(map[string]tool.Tool),
 	}
 }
 
-func (m *MockToolManager) AddTool(t tool.Tool) error {
+// AddTool ...
+// Summary: AddTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	if m.lastErr != nil {
@@ -46,18 +65,45 @@ func (m *MockToolManager) AddTool(t tool.Tool) error {
 	return nil
 }
 
-func (m *MockToolManager) GetTool(name string) (tool.Tool, bool) {
+// GetTool ...
+// Summary: GetTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	t, ok := m.tools[name]
 	return t, ok
 }
 
-func (m *MockToolManager) IsServiceAllowed(serviceID, profileID string) bool {
+// IsServiceAllowed ...
+// Summary: IsServiceAllowed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return true
 }
 
-func (m *MockToolManager) ListTools() []tool.Tool {
+// ListTools ...
+// Summary: ListTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	tools := make([]tool.Tool, 0, len(m.tools))
@@ -67,11 +113,29 @@ func (m *MockToolManager) ListTools() []tool.Tool {
 	return tools
 }
 
-func (m *MockToolManager) ListMCPTools() []*mcp_sdk.Tool {
+// ListMCPTools ...
+// Summary: ListMCPTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *MockToolManager) ClearToolsForService(serviceID string) {
+// ClearToolsForService ...
+// Summary: ClearToolsForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	for name, t := range m.tools {
@@ -81,62 +145,198 @@ func (m *MockToolManager) ClearToolsForService(serviceID string) {
 	}
 }
 
-func (m *MockToolManager) SetMCPServer(_ tool.MCPServerProvider)                   {}
-func (m *MockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
-func (m *MockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo)            {}
-func (m *MockToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) {
+// SetMCPServer ...
+// Summary: SetMCPServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// SetProfiles ...
+// Summary: SetProfiles
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// AddServiceInfo ...
+// Summary: AddServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// GetServiceInfo ...
+// Summary: GetServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, false
 }
-func (m *MockToolManager) ListServices() []*tool.ServiceInfo {
+// ListServices ...
+// Summary: ListServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
-func (m *MockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (interface{}, error) {
+// ExecuteTool ...
+// Summary: ExecuteTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, errors.New("not implemented")
 }
-func (m *MockToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {}
-func (m *MockToolManager) ToolMatchesProfile(tool tool.Tool, profileID string) bool {
+// AddMiddleware ...
+// Summary: AddMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ToolMatchesProfile ...
+// Summary: ToolMatchesProfile
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return true
 }
-func (m *MockToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool) {
+// GetAllowedServiceIDs ...
+// Summary: GetAllowedServiceIDs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, true
 }
 
-func (m *MockToolManager) GetToolCountForService(serviceID string) int {
+// GetToolCountForService ...
+// Summary: GetToolCountForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return 0
 }
 
 // MockPromptManager is a mock implementation of the PromptManagerInterface.
-type MockPromptManager struct {
+// MockPromptManager is a mock implementation of the PromptManagerInterface.
+// Summary: MockPromptManager
 	mu      sync.Mutex
 	prompts map[string]prompt.Prompt
 }
 
-func NewMockPromptManager() *MockPromptManager {
+// NewMockPromptManager ...
+// Summary: NewMockPromptManager
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return &MockPromptManager{
 		prompts: make(map[string]prompt.Prompt),
 	}
 }
 
-func (m *MockPromptManager) AddPrompt(p prompt.Prompt) {
+// AddPrompt ...
+// Summary: AddPrompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.prompts[p.Prompt().Name] = p
 }
 
-func (m *MockPromptManager) UpdatePrompt(p prompt.Prompt) {
+// UpdatePrompt ...
+// Summary: UpdatePrompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.prompts[p.Prompt().Name] = p
 }
 
-func (m *MockPromptManager) GetPrompt(name string) (prompt.Prompt, bool) {
+// GetPrompt ...
+// Summary: GetPrompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	p, ok := m.prompts[name]
 	return p, ok
 }
 
-func (m *MockPromptManager) ListPrompts() []prompt.Prompt {
+// ListPrompts ...
+// Summary: ListPrompts
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	prompts := make([]prompt.Prompt, 0, len(m.prompts))
@@ -146,13 +346,40 @@ func (m *MockPromptManager) ListPrompts() []prompt.Prompt {
 	return prompts
 }
 
-func (m *MockPromptManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) {
+// GetServiceInfo ...
+// Summary: GetServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, false
 }
 
-func (m *MockPromptManager) SetMCPServer(_ prompt.MCPServerProvider) {}
+// SetMCPServer ...
+// Summary: SetMCPServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func (m *MockPromptManager) ClearPromptsForService(serviceID string) {
+// ClearPromptsForService ...
+// Summary: ClearPromptsForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	for name, p := range m.prompts {
@@ -163,33 +390,79 @@ func (m *MockPromptManager) ClearPromptsForService(serviceID string) {
 }
 
 // MockResourceManager is a mock implementation of the ResourceManagerInterface.
-type MockResourceManager struct {
+// MockResourceManager is a mock implementation of the ResourceManagerInterface.
+// Summary: MockResourceManager
 	mu        sync.Mutex
 	resources map[string]resource.Resource
 }
 
-func NewMockResourceManager() *MockResourceManager {
+// NewMockResourceManager ...
+// Summary: NewMockResourceManager
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return &MockResourceManager{
 		resources: make(map[string]resource.Resource),
 	}
 }
 
-func (m *MockResourceManager) AddResource(r resource.Resource) {
+// AddResource ...
+// Summary: AddResource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.resources[r.Resource().Name] = r
 }
 
-func (m *MockResourceManager) GetResource(name string) (resource.Resource, bool) {
+// GetResource ...
+// Summary: GetResource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	r, ok := m.resources[name]
 	return r, ok
 }
 
-func (m *MockResourceManager) RemoveResource(_ string) {}
+// RemoveResource ...
+// Summary: RemoveResource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func (m *MockResourceManager) ListResources() []resource.Resource {
+// ListResources ...
+// Summary: ListResources
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	resources := make([]resource.Resource, 0, len(m.resources))
@@ -199,9 +472,27 @@ func (m *MockResourceManager) ListResources() []resource.Resource {
 	return resources
 }
 
-func (m *MockResourceManager) OnListChanged(_ func()) {}
+// OnListChanged ...
+// Summary: OnListChanged
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func (m *MockResourceManager) ClearResourcesForService(serviceID string) {
+// ClearResourcesForService ...
+// Summary: ClearResourcesForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	for name, r := range m.resources {
@@ -211,14 +502,32 @@ func (m *MockResourceManager) ClearResourcesForService(serviceID string) {
 	}
 }
 
-func TestUpstream(t *testing.T) {
+// TestUpstream ...
+// Summary: TestUpstream
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	poolManager := pool.NewManager()
 	upstream := NewUpstream(poolManager)
 	require.NotNil(t, upstream)
 	assert.IsType(t, &Upstream{}, upstream)
 }
 
-func TestWebrtcUpstream_Shutdown(t *testing.T) {
+// TestWebrtcUpstream_Shutdown ...
+// Summary: TestWebrtcUpstream_Shutdown
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewUpstream(nil)
 	assert.NotNil(t, u)
 
@@ -226,7 +535,16 @@ func TestWebrtcUpstream_Shutdown(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestUpstream_Register(t *testing.T) {
+// TestUpstream_Register ...
+// Summary: TestUpstream_Register
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("successful registration", func(t *testing.T) {
 		toolManager := NewMockToolManager()
 		poolManager := pool.NewManager()
@@ -504,7 +822,16 @@ func TestUpstream_Register(t *testing.T) {
 	})
 }
 
-func TestUpstream_Register_ToolNameGeneration(t *testing.T) {
+// TestUpstream_Register_ToolNameGeneration ...
+// Summary: TestUpstream_Register_ToolNameGeneration
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	toolManager := NewMockToolManager()
 	poolManager := pool.NewManager()
 	var promptManager prompt.ManagerInterface
@@ -539,7 +866,16 @@ func TestUpstream_Register_ToolNameGeneration(t *testing.T) {
 	assert.Equal(t, util.SanitizeOperationID("A test description"), tools[0].Tool().GetName())
 }
 
-func TestUpstream_Register_CornerCases(t *testing.T) {
+// TestUpstream_Register_CornerCases ...
+// Summary: TestUpstream_Register_CornerCases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("disabled tool", func(t *testing.T) {
 		toolManager := NewMockToolManager()
 		poolManager := pool.NewManager()

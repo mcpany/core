@@ -16,7 +16,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestUpstreamServiceManager_LoadAndMergeServices(t *testing.T) {
+// TestUpstreamServiceManager_LoadAndMergeServices ...
+// Summary: TestUpstreamServiceManager_LoadAndMergeServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Local service definitions
 	localService1 := configv1.UpstreamServiceConfig_builder{
 		Name:    proto.String("service1"),
@@ -332,7 +341,16 @@ services:
 	}
 }
 
-func TestUpstreamServiceManager_Profiles_Overrides(t *testing.T) {
+// TestUpstreamServiceManager_Profiles_Overrides ...
+// Summary: TestUpstreamServiceManager_Profiles_Overrides
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Config with 2 services and profile definitions
 	config := func() *configv1.McpAnyServerConfig {
 		profDev := configv1.ProfileDefinition_builder{

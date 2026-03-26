@@ -11,7 +11,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestNewDBFromSQLDB(t *testing.T) {
+// TestNewDBFromSQLDB ...
+// Summary: TestNewDBFromSQLDB
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -30,7 +39,16 @@ func TestNewDBFromSQLDB(t *testing.T) {
 	require.NoError(t, mock.ExpectationsWereMet())
 }
 
-func TestNewDB_Error(t *testing.T) {
+// TestNewDB_Error ...
+// Summary: TestNewDB_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Without a running postgres, this should fail
 	_, err := NewDB("postgres://invalid:invalid@127.0.0.1:5432/invalid?sslmode=disable")
 	require.Error(t, err)

@@ -17,7 +17,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestTmpfsProvider(t *testing.T) {
+// TestTmpfsProvider ...
+// Summary: TestTmpfsProvider
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	p := NewTmpfsProvider()
 	require.NotNil(t, p)
 	fs := p.GetFs()
@@ -31,7 +40,16 @@ func TestTmpfsProvider(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestZipProvider(t *testing.T) {
+// TestZipProvider ...
+// Summary: TestZipProvider
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a dummy zip file
 	buf := new(bytes.Buffer)
 	w := zip.NewWriter(buf)
@@ -74,7 +92,16 @@ func TestZipProvider(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestSftpProvider_ResolvePath(t *testing.T) {
+// TestSftpProvider_ResolvePath ...
+// Summary: TestSftpProvider_ResolvePath
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	p := &SftpProvider{fs: &sftpFs{}}
 
 	path, err := p.ResolvePath("/some/path")

@@ -13,7 +13,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestCheckService_HTTP_Unreachable(t *testing.T) {
+// TestCheckService_HTTP_Unreachable ...
+// Summary: TestCheckService_HTTP_Unreachable
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a context
 	ctx := context.Background()
 
@@ -33,7 +42,16 @@ func TestCheckService_HTTP_Unreachable(t *testing.T) {
 	assert.Contains(t, result.Message, "Failed to connect")
 }
 
-func TestCheckService_HTTP_InvalidURL(t *testing.T) {
+// TestCheckService_HTTP_InvalidURL ...
+// Summary: TestCheckService_HTTP_InvalidURL
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	svc := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service"),

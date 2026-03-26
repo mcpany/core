@@ -17,7 +17,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestUpstreamService_MCP_Stdio_WithSetupCommandsInDocker(t *testing.T) {
+// TestUpstreamService_MCP_Stdio_WithSetupCommandsInDocker ...
+// Summary: TestUpstreamService_MCP_Stdio_WithSetupCommandsInDocker
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if !integration.IsDockerSocketAccessible() {
 		t.Skip("Docker socket not accessible, skipping test")
 	}

@@ -27,16 +27,35 @@ import (
 )
 
 // MockMCPClient is a mock for the mcp.Client interface
-type MockMCPClient struct {
+// MockMCPClient is a mock for the mcp.Client interface
+// Summary: MockMCPClient
 	mock.Mock
 }
 
-func (m *MockMCPClient) CallTool(ctx context.Context, req *mcp.CallToolParams) (*mcp.CallToolResult, error) {
+// CallTool ...
+// Summary: CallTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, req)
 	return args.Get(0).(*mcp.CallToolResult), args.Error(1)
 }
 
-func TestContextWithTool(t *testing.T) {
+// TestContextWithTool ...
+// Summary: TestContextWithTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	ctx := context.Background()
 	mockTool := new(MockTool)
@@ -49,7 +68,16 @@ func TestContextWithTool(t *testing.T) {
 	assert.False(t, ok)
 }
 
-func TestGRPCTool_Execute_PoolError(t *testing.T) {
+// TestGRPCTool_Execute_PoolError ...
+// Summary: TestGRPCTool_Execute_PoolError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	poolManager := pool.NewManager()
 	toolProto := &v1.Tool{}
@@ -62,7 +90,16 @@ func TestGRPCTool_Execute_PoolError(t *testing.T) {
 	assert.Contains(t, err.Error(), "no grpc pool found for service")
 }
 
-func TestHTTPTool_Execute_PoolError(t *testing.T) {
+// TestHTTPTool_Execute_PoolError ...
+// Summary: TestHTTPTool_Execute_PoolError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	poolManager := pool.NewManager()
 	toolProto := &v1.Tool{}
@@ -73,7 +110,16 @@ func TestHTTPTool_Execute_PoolError(t *testing.T) {
 	assert.Contains(t, err.Error(), "no http pool found for service")
 }
 
-func TestHTTPTool_Execute_InvalidFQN(t *testing.T) {
+// TestHTTPTool_Execute_InvalidFQN ...
+// Summary: TestHTTPTool_Execute_InvalidFQN
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	poolManager := pool.NewManager()
 	httpPool, _ := pool.New[*client.HTTPClientWrapper](func(_ context.Context) (*client.HTTPClientWrapper, error) {
@@ -88,7 +134,16 @@ func TestHTTPTool_Execute_InvalidFQN(t *testing.T) {
 	assert.Contains(t, err.Error(), "invalid http tool definition")
 }
 
-func TestHTTPTool_Execute_BadURL(t *testing.T) {
+// TestHTTPTool_Execute_BadURL ...
+// Summary: TestHTTPTool_Execute_BadURL
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	poolManager := pool.NewManager()
 	httpPool, _ := pool.New[*client.HTTPClientWrapper](func(_ context.Context) (*client.HTTPClientWrapper, error) {
@@ -102,7 +157,16 @@ func TestHTTPTool_Execute_BadURL(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestHTTPTool_Execute_InputTransformerError(t *testing.T) {
+// TestHTTPTool_Execute_InputTransformerError ...
+// Summary: TestHTTPTool_Execute_InputTransformerError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -126,7 +190,16 @@ func TestHTTPTool_Execute_InputTransformerError(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestHTTPTool_Execute_OutputTransformerError(t *testing.T) {
+// TestHTTPTool_Execute_OutputTransformerError ...
+// Summary: TestHTTPTool_Execute_OutputTransformerError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -151,7 +224,16 @@ func TestHTTPTool_Execute_OutputTransformerError(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestMCPTool_Execute_InputTransformerError(t *testing.T) {
+// TestMCPTool_Execute_InputTransformerError ...
+// Summary: TestMCPTool_Execute_InputTransformerError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	toolProto := &v1.Tool{}
 	callDef := &configv1.MCPCallDefinition{}
@@ -163,7 +245,16 @@ func TestMCPTool_Execute_InputTransformerError(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestMCPTool_Execute_OutputTransformerError(t *testing.T) {
+// TestMCPTool_Execute_OutputTransformerError ...
+// Summary: TestMCPTool_Execute_OutputTransformerError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	mockClient := new(MockMCPClient)
 	mockResult := &mcp.CallToolResult{
@@ -182,7 +273,16 @@ func TestMCPTool_Execute_OutputTransformerError(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestOpenAPITool_Execute_InputTransformerError(t *testing.T) {
+// TestOpenAPITool_Execute_InputTransformerError ...
+// Summary: TestOpenAPITool_Execute_InputTransformerError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -199,7 +299,16 @@ func TestOpenAPITool_Execute_InputTransformerError(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestOpenAPITool_Execute_OutputTransformerError(t *testing.T) {
+// TestOpenAPITool_Execute_OutputTransformerError ...
+// Summary: TestOpenAPITool_Execute_OutputTransformerError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -218,61 +327,154 @@ func TestOpenAPITool_Execute_OutputTransformerError(t *testing.T) {
 }
 
 // MockMethodDescriptor is a mock for protoreflect.MethodDescriptor
-type MockMethodDescriptor struct {
+// MockMethodDescriptor is a mock for protoreflect.MethodDescriptor
+// Summary: MockMethodDescriptor
 	mock.Mock
 	protoreflect.MethodDescriptor
 }
 
-func (m *MockMethodDescriptor) Input() protoreflect.MessageDescriptor {
+// Input ...
+// Summary: Input
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	return args.Get(0).(protoreflect.MessageDescriptor)
 }
 
-func (m *MockMethodDescriptor) Output() protoreflect.MessageDescriptor {
+// Output ...
+// Summary: Output
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	return args.Get(0).(protoreflect.MessageDescriptor)
 }
 
 // MockMessageDescriptor is a mock for protoreflect.MessageDescriptor
-type MockMessageDescriptor struct {
+// MockMessageDescriptor is a mock for protoreflect.MessageDescriptor
+// Summary: MockMessageDescriptor
 	mock.Mock
 	protoreflect.MessageDescriptor
 }
 
-func (m *MockMessageDescriptor) New() protoreflect.Message {
+// New ...
+// Summary: New
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return dynamicpb.NewMessage(m)
 }
 
-func (m *MockMessageDescriptor) Fields() protoreflect.FieldDescriptors {
+// Fields ...
+// Summary: Fields
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *MockMessageDescriptor) FullName() protoreflect.FullName {
+// FullName ...
+// Summary: FullName
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return "test.Message"
 }
 
-func (m *MockMessageDescriptor) RequiredNumbers() protoreflect.FieldNumbers {
+// RequiredNumbers ...
+// Summary: RequiredNumbers
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return &MockFieldNumbers{}
 }
 
 // MockFieldNumbers is a mock for protoreflect.FieldNumbers
-type MockFieldNumbers struct {
+// MockFieldNumbers is a mock for protoreflect.FieldNumbers
+// Summary: MockFieldNumbers
 	protoreflect.FieldNumbers
 }
 
-func (m *MockFieldNumbers) Len() int {
+// Len ...
+// Summary: Len
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return 0
 }
 
-func (m *MockFieldNumbers) Get(_ int) protoreflect.FieldNumber {
+// Get ...
+// Summary: Get
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	panic("should not be called")
 }
 
-func (m *MockFieldNumbers) Has(_ protoreflect.FieldNumber) bool {
+// Has ...
+// Summary: Has
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return false
 }
 
-func TestGRPCTool_Execute_Success(t *testing.T) {
+// TestGRPCTool_Execute_Success ...
+// Summary: TestGRPCTool_Execute_Success
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	poolManager := pool.NewManager()
 
@@ -301,31 +503,77 @@ func TestGRPCTool_Execute_Success(t *testing.T) {
 }
 
 // MockConn is a mock for client.Conn
-type MockConn struct {
+// MockConn is a mock for client.Conn
+// Summary: MockConn
 	mock.Mock
 }
 
-func (m *MockConn) Invoke(ctx context.Context, method string, args, reply interface{}, opts ...grpc.CallOption) error {
+// Invoke ...
+// Summary: Invoke
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	callArgs := m.Called(ctx, method, args, reply, opts)
 	return callArgs.Error(0)
 }
 
-func (m *MockConn) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+// NewStream ...
+// Summary: NewStream
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, desc, method, opts)
 	return args.Get(0).(grpc.ClientStream), args.Error(1)
 }
 
-func (m *MockConn) Close() error {
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	return args.Error(0)
 }
 
-func (m *MockConn) GetState() connectivity.State {
+// GetState ...
+// Summary: GetState
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	return args.Get(0).(connectivity.State)
 }
 
-func TestHTTPTool_Getters(t *testing.T) {
+// TestHTTPTool_Getters ...
+// Summary: TestHTTPTool_Getters
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	toolProto := &v1.Tool{}
 	toolProto.SetName("http-tool")
@@ -339,7 +587,16 @@ func TestHTTPTool_Getters(t *testing.T) {
 	assert.Equal(t, cacheConfig, httpTool.GetCacheConfig(), "GetCacheConfig() should return the correct cache config")
 }
 
-func TestMCPTool_Getters(t *testing.T) {
+// TestMCPTool_Getters ...
+// Summary: TestMCPTool_Getters
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	toolProto := &v1.Tool{}
 	toolProto.SetName("mcp-tool")
@@ -353,7 +610,16 @@ func TestMCPTool_Getters(t *testing.T) {
 	assert.Equal(t, cacheConfig, mcpTool.GetCacheConfig(), "GetCacheConfig() should return the correct cache config")
 }
 
-func TestOpenAPITool_Getters(t *testing.T) {
+// TestOpenAPITool_Getters ...
+// Summary: TestOpenAPITool_Getters
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	toolProto := &v1.Tool{}
 	toolProto.SetName("openapi-tool")
@@ -367,7 +633,16 @@ func TestOpenAPITool_Getters(t *testing.T) {
 	assert.Equal(t, cacheConfig, openapiTool.GetCacheConfig(), "GetCacheConfig() should return the correct cache config")
 }
 
-func TestGRPCTool_Getters(t *testing.T) {
+// TestGRPCTool_Getters ...
+// Summary: TestGRPCTool_Getters
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	toolProto := &v1.Tool{}
 	toolProto.SetName("grpc-tool")
@@ -383,7 +658,16 @@ func TestGRPCTool_Getters(t *testing.T) {
 	assert.Equal(t, cacheConfig, grpcTool.GetCacheConfig(), "GetCacheConfig() should return the correct cache config")
 }
 
-func TestWebsocketTool_Getters(t *testing.T) {
+// TestWebsocketTool_Getters ...
+// Summary: TestWebsocketTool_Getters
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	toolProto := &v1.Tool{}
 	toolProto.SetName("websocket-tool")
@@ -397,13 +681,31 @@ func TestWebsocketTool_Getters(t *testing.T) {
 	assert.Equal(t, cacheConfig, websocketTool.GetCacheConfig(), "GetCacheConfig() should return the correct cache config")
 }
 
-func TestOpenAPITool_GetCacheConfig(t *testing.T) {
+// TestOpenAPITool_GetCacheConfig ...
+// Summary: TestOpenAPITool_GetCacheConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tool := &OpenAPITool{}
 	assert.Nil(t, tool.GetCacheConfig(), "GetCacheConfig should return nil")
 }
 
-func TestOpenAPITool_Tool(t *testing.T) {
+// TestOpenAPITool_Tool ...
+// Summary: TestOpenAPITool_Tool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	toolProto := &v1.Tool{}
 	toolProto.SetName("test-tool")
@@ -411,7 +713,16 @@ func TestOpenAPITool_Tool(t *testing.T) {
 	assert.Equal(t, toolProto, tool.Tool(), "Tool() should return the tool proto")
 }
 
-func TestGRPCTool_Execute_UnmarshalError(t *testing.T) {
+// TestGRPCTool_Execute_UnmarshalError ...
+// Summary: TestGRPCTool_Execute_UnmarshalError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	poolManager := pool.NewManager()
 	mockConn := new(MockConn)
@@ -437,7 +748,16 @@ func TestGRPCTool_Execute_UnmarshalError(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to unmarshal tool inputs")
 }
 
-func TestGRPCTool_Execute_InvokeError(t *testing.T) {
+// TestGRPCTool_Execute_InvokeError ...
+// Summary: TestGRPCTool_Execute_InvokeError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	poolManager := pool.NewManager()
 	mockConn := new(MockConn)
@@ -464,7 +784,16 @@ func TestGRPCTool_Execute_InvokeError(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to invoke grpc method")
 }
 
-func TestOpenAPITool_Execute_Errors(t *testing.T) {
+// TestOpenAPITool_Execute_Errors ...
+// Summary: TestOpenAPITool_Execute_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	// Test Input Validation/Unmarshal Error if possible?
 	// Schema validation might be strict?
@@ -504,7 +833,16 @@ func TestOpenAPITool_Execute_Errors(t *testing.T) {
 	assert.NoError(t, err) // Matches current logic likely
 }
 
-func TestOpenAPITool_Execute_StatusError(t *testing.T) {
+// TestOpenAPITool_Execute_StatusError ...
+// Summary: TestOpenAPITool_Execute_StatusError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
@@ -522,7 +860,16 @@ func TestOpenAPITool_Execute_StatusError(t *testing.T) {
 	assert.Contains(t, err.Error(), "upstream OpenAPI request failed with status 404")
 }
 
-func TestHTTPTool_Execute_UnmarshalError(t *testing.T) {
+// TestHTTPTool_Execute_UnmarshalError ...
+// Summary: TestHTTPTool_Execute_UnmarshalError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	poolManager := pool.NewManager()
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
@@ -547,7 +894,16 @@ func TestHTTPTool_Execute_UnmarshalError(t *testing.T) {
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-func TestCheckForPathTraversal(t *testing.T) {
+// TestCheckForPathTraversal ...
+// Summary: TestCheckForPathTraversal
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tests := []struct {
 		input    string
@@ -585,7 +941,16 @@ func TestCheckForPathTraversal(t *testing.T) {
 	}
 }
 
-func TestManager_ListServices(t *testing.T) {
+// TestManager_ListServices ...
+// Summary: TestManager_ListServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tm := NewManager(nil)
 
@@ -608,7 +973,16 @@ func TestManager_ListServices(t *testing.T) {
 	assert.True(t, names["service-2"])
 }
 
-func TestCommandTool_Execute_PathTraversal_Args(t *testing.T) {
+// TestCommandTool_Execute_PathTraversal_Args ...
+// Summary: TestCommandTool_Execute_PathTraversal_Args
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	// Setup command tool with args injection vulnerability
 	toolProto := v1.Tool_builder{
@@ -642,7 +1016,16 @@ func TestCommandTool_Execute_PathTraversal_Args(t *testing.T) {
 	}
 }
 
-func TestCommandTool_Execute_PathTraversal_Env(t *testing.T) {
+// TestCommandTool_Execute_PathTraversal_Env ...
+// Summary: TestCommandTool_Execute_PathTraversal_Env
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	// Setup command tool with env injection vulnerability
 	inputSchema, _ := structpb.NewStruct(map[string]interface{}{

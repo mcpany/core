@@ -7,7 +7,16 @@ import (
 	"testing"
 )
 
-func TestSqlite3Injection(t *testing.T) {
+// TestSqlite3Injection ...
+// Summary: TestSqlite3Injection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// sqlite3 "SELECT * FROM users WHERE id={{id}}"
 	// id = "1 OR 1=1"
 	// Quote level 0 (Unquoted) because {{id}} is not inside quotes in the template "SELECT * FROM users WHERE id={{id}}"

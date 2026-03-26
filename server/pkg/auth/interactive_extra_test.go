@@ -17,7 +17,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestHandleOAuthCallbackExtra(t *testing.T) {
+// TestHandleOAuthCallbackExtra ...
+// Summary: TestHandleOAuthCallbackExtra
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup mock oauth2 server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/token" {
@@ -156,7 +165,16 @@ func TestHandleOAuthCallbackExtra(t *testing.T) {
 	})
 }
 
-func TestInitiateOAuthExtra(t *testing.T) {
+// TestInitiateOAuthExtra ...
+// Summary: TestInitiateOAuthExtra
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	store := memory.NewStore()
 	manager := NewManager()
 	manager.SetStorage(store)
@@ -201,7 +219,16 @@ func tokenWithExpiry(d time.Duration) *configv1.UserToken {
 	}.Build()
 }
 
-func TestOAuth2AuthenticateExtra(t *testing.T) {
+// TestOAuth2AuthenticateExtra ...
+// Summary: TestOAuth2AuthenticateExtra
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// We need to test OAuth2Authenticator.Authenticate
 	// It's in oauth.go
 

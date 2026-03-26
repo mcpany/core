@@ -9,7 +9,16 @@ import (
 	"testing"
 )
 
-func TestSecurity_PrettyPrint_RedactsSecrets(t *testing.T) {
+// TestSecurity_PrettyPrint_RedactsSecrets ...
+// Summary: TestSecurity_PrettyPrint_RedactsSecrets
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	// Create inputs with sensitive data
 	inputs := map[string]interface{}{

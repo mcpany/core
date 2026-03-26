@@ -14,7 +14,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestSQLiteVectorStore_Prune(t *testing.T) {
+// TestSQLiteVectorStore_Prune ...
+// Summary: TestSQLiteVectorStore_Prune
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary file for the database
 	tmpFile, err := os.CreateTemp("", "semantic_cache_test_*.db")
 	require.NoError(t, err)

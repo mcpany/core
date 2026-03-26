@@ -10,7 +10,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSanitizeID_Coverage(t *testing.T) {
+// TestSanitizeID_Coverage ...
+// Summary: TestSanitizeID_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. len(ids) == 0
 	res, err := SanitizeID([]string{}, false, 10, 8)
 	assert.NoError(t, err)
@@ -61,7 +70,16 @@ func TestSanitizeID_Coverage(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestReplaceURLPath_Coverage(t *testing.T) {
+// TestReplaceURLPath_Coverage ...
+// Summary: TestReplaceURLPath_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Nested braces / Unclosed braces
 	params := map[string]interface{}{
 		"key": "value",
@@ -85,7 +103,16 @@ func TestReplaceURLPath_Coverage(t *testing.T) {
 	assert.Equal(t, "a%2Fb", ReplaceURLQuery("{{slashed}}", params, nil))
 }
 
-func TestParseToolName_Coverage(t *testing.T) {
+// TestParseToolName_Coverage ...
+// Summary: TestParseToolName_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	s, tName, err := ParseToolName("service.tool")
 	assert.NoError(t, err)
 	assert.Equal(t, "service", s)
@@ -97,7 +124,16 @@ func TestParseToolName_Coverage(t *testing.T) {
 	assert.Equal(t, "toolOnly", tName)
 }
 
-func TestSanitizeOperationID_Coverage(t *testing.T) {
+// TestSanitizeOperationID_Coverage ...
+// Summary: TestSanitizeOperationID_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Clean
 	assert.Equal(t, "clean", SanitizeOperationID("clean"))
 
@@ -108,7 +144,16 @@ func TestSanitizeOperationID_Coverage(t *testing.T) {
 	assert.Contains(t, res, "_space")
 }
 
-func TestGetDockerCommand_Coverage(t *testing.T) {
+// TestGetDockerCommand_Coverage ...
+// Summary: TestGetDockerCommand_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("USE_SUDO_FOR_DOCKER", "true")
 	cmd, args := GetDockerCommand()
 	assert.Equal(t, "sudo", cmd)
@@ -120,7 +165,16 @@ func TestGetDockerCommand_Coverage(t *testing.T) {
 	assert.Empty(t, args)
 }
 
-func TestRandomFloat64_Coverage(t *testing.T) {
+// TestRandomFloat64_Coverage ...
+// Summary: TestRandomFloat64_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	f := RandomFloat64()
 	assert.GreaterOrEqual(t, f, 0.0)
 	assert.Less(t, f, 1.0)

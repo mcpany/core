@@ -27,7 +27,16 @@ type controlledMockFs struct {
 	openFileHooks []func(name string, flag int, perm os.FileMode) (afero.File, error)
 }
 
-func (m *controlledMockFs) Rename(oldname, newname string) error {
+// Rename ...
+// Summary: Rename
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if len(m.renameHooks) > 0 {
 		hook := m.renameHooks[0]
 		m.renameHooks = m.renameHooks[1:]
@@ -38,7 +47,16 @@ func (m *controlledMockFs) Rename(oldname, newname string) error {
 	return m.Fs.Rename(oldname, newname)
 }
 
-func (m *controlledMockFs) Chmod(name string, mode os.FileMode) error {
+// Chmod ...
+// Summary: Chmod
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if len(m.chmodHooks) > 0 {
 		hook := m.chmodHooks[0]
 		m.chmodHooks = m.chmodHooks[1:]
@@ -49,7 +67,16 @@ func (m *controlledMockFs) Chmod(name string, mode os.FileMode) error {
 	return m.Fs.Chmod(name, mode)
 }
 
-func (m *controlledMockFs) OpenFile(name string, flag int, perm os.FileMode) (afero.File, error) {
+// OpenFile ...
+// Summary: OpenFile
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if len(m.openFileHooks) > 0 {
 		hook := m.openFileHooks[0]
 		m.openFileHooks = m.openFileHooks[1:]
@@ -60,7 +87,16 @@ func (m *controlledMockFs) OpenFile(name string, flag int, perm os.FileMode) (af
 	return m.Fs.OpenFile(name, flag, perm)
 }
 
-func TestNewUpdater(t *testing.T) {
+// TestNewUpdater ...
+// Summary: TestNewUpdater
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("with nil http client", func(t *testing.T) {
 		updater := NewUpdater(nil, "")
 		assert.NotNil(t, updater.client)
@@ -87,7 +123,16 @@ func TestNewUpdater(t *testing.T) {
 	})
 }
 
-func TestCheckForUpdate(t *testing.T) {
+// TestCheckForUpdate ...
+// Summary: TestCheckForUpdate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("new version available", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			release := &github.RepositoryRelease{
@@ -137,7 +182,16 @@ func TestCheckForUpdate(t *testing.T) {
 	})
 }
 
-func TestUpdateTo_Success(t *testing.T) {
+// TestUpdateTo_Success ...
+// Summary: TestUpdateTo_Success
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	assetContent := "new binary content"
 	assetName := "server-linux-amd64"
 	assetHash := sha256.Sum256([]byte(assetContent))
@@ -183,7 +237,16 @@ func TestUpdateTo_Success(t *testing.T) {
 		assert.Equal(t, assetContent, string(content))
 	})
 }
-func TestUpdateTo_FailureScenarios(t *testing.T) {
+// TestUpdateTo_FailureScenarios ...
+// Summary: TestUpdateTo_FailureScenarios
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	assetContent := "new binary content"
 	assetName := "server-linux-amd64"
 	assetHash := sha256.Sum256([]byte(assetContent))
@@ -322,7 +385,16 @@ func TestUpdateTo_FailureScenarios(t *testing.T) {
 	})
 }
 
-func TestUpdateTo_MoreFailureScenarios(t *testing.T) {
+// TestUpdateTo_MoreFailureScenarios ...
+// Summary: TestUpdateTo_MoreFailureScenarios
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	assetContent := "new binary content"
 	assetName := "server-linux-amd64"
 	assetHash := sha256.Sum256([]byte(assetContent))
@@ -516,7 +588,16 @@ func TestUpdateTo_MoreFailureScenarios(t *testing.T) {
 	})
 }
 
-func TestParseChecksums(t *testing.T) {
+// TestParseChecksums ...
+// Summary: TestParseChecksums
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("valid checksums", func(t *testing.T) {
 		data := "hash1  file1\nhash2  file2\n"
 		checksums, err := parseChecksums(data)

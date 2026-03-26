@@ -14,7 +14,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestStartServer(t *testing.T) {
+// TestStartServer ...
+// Summary: TestStartServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Initialize the metrics system
 	err := Initialize()
 	require.NoError(t, err)
@@ -32,7 +41,16 @@ func TestStartServer(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 }
 
-func TestMetricsCollection(t *testing.T) {
+// TestMetricsCollection ...
+// Summary: TestMetricsCollection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Initialize the metrics system with an in-memory sink
 	sink := metrics.NewInmemSink(time.Second, 5*time.Second)
 	conf := metrics.DefaultConfig("mcpany")
@@ -53,7 +71,16 @@ func TestMetricsCollection(t *testing.T) {
 	assert.Contains(t, data[0].Samples, "mcpany.my_histogram")
 }
 
-func TestSetGauge(t *testing.T) {
+// TestSetGauge ...
+// Summary: TestSetGauge
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Re-init global to be safe or just call SetGauge.
 	// SetGauge uses metrics.Global(), so we need to ensure it's set.
 	// It is set by Initialize() or manually.
@@ -79,7 +106,16 @@ func TestSetGauge(t *testing.T) {
 	}
 }
 
-func TestMeasureSince(t *testing.T) {
+// TestMeasureSince ...
+// Summary: TestMeasureSince
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	sink := metrics.NewInmemSink(time.Second, 5*time.Second)
 	conf := metrics.DefaultConfig("mcpany")
 	conf.EnableHostname = false
@@ -91,7 +127,16 @@ func TestMeasureSince(t *testing.T) {
 	})
 }
 
-func TestIncrCounter(t *testing.T) {
+// TestIncrCounter ...
+// Summary: TestIncrCounter
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	sink := metrics.NewInmemSink(time.Second, 5*time.Second)
 	conf := metrics.DefaultConfig("mcpany")
 	conf.EnableHostname = false
@@ -103,7 +148,16 @@ func TestIncrCounter(t *testing.T) {
 	})
 }
 
-func TestStartServer_Real(t *testing.T) {
+// TestStartServer_Real ...
+// Summary: TestStartServer_Real
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test the actual StartServer function
 	// We use a random port
 	done := make(chan error)
@@ -121,12 +175,30 @@ func TestStartServer_Real(t *testing.T) {
 	}
 }
 
-func TestStartServer_Error(t *testing.T) {
+// TestStartServer_Error ...
+// Summary: TestStartServer_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	err := StartServer("invalid:address")
 	assert.Error(t, err)
 }
 
-func TestMetricsWrappers(t *testing.T) {
+// TestMetricsWrappers ...
+// Summary: TestMetricsWrappers
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Initialize to ensure sink is set up (though it might be already by other tests or init)
 	sink := metrics.NewInmemSink(time.Second, 5*time.Second)
 	conf := metrics.DefaultConfig("mcpany")
@@ -159,7 +231,16 @@ func TestMetricsWrappers(t *testing.T) {
 	})
 }
 
-func TestSetGauge_NoPanic(t *testing.T) {
+// TestSetGauge_NoPanic ...
+// Summary: TestSetGauge_NoPanic
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// The function signature is SetGauge(name string, val float32, labels ...string)
 	// It should NOT panic if labels are empty.
 	assert.NotPanics(t, func() {

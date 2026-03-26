@@ -28,21 +28,114 @@ type mockWriteOnlyConn struct {
 	w *io.PipeWriter
 }
 
-func (c *mockWriteOnlyConn) Write(p []byte) (int, error)        { return c.w.Write(p) }
-func (c *mockWriteOnlyConn) CloseWrite() error                  { return c.w.Close() }
-func (c *mockWriteOnlyConn) Close() error                       { return c.w.Close() }
-func (c *mockWriteOnlyConn) Read(_ []byte) (int, error)         { return 0, io.EOF }
-func (c *mockWriteOnlyConn) LocalAddr() net.Addr                { return &net.TCPAddr{} }
-func (c *mockWriteOnlyConn) RemoteAddr() net.Addr               { return &net.TCPAddr{} }
-func (c *mockWriteOnlyConn) SetDeadline(_ time.Time) error      { return nil }
-func (c *mockWriteOnlyConn) SetReadDeadline(_ time.Time) error  { return nil }
-func (c *mockWriteOnlyConn) SetWriteDeadline(_ time.Time) error { return nil }
+// Write ...
+// Summary: Write
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// CloseWrite ...
+// Summary: CloseWrite
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Read ...
+// Summary: Read
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// LocalAddr ...
+// Summary: LocalAddr
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// RemoteAddr ...
+// Summary: RemoteAddr
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// SetDeadline ...
+// Summary: SetDeadline
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// SetReadDeadline ...
+// Summary: SetReadDeadline
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// SetWriteDeadline ...
+// Summary: SetWriteDeadline
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
 // TestDockerExecutorWithStdIO_Mock exercises the full stdin→stdout round-trip
 // of dockerExecutor.ExecuteWithStdIO without requiring a real Docker daemon.
 // It is the canonical replacement for the real-Docker "Success" subtest that
 // is skipped due to DinD unreliability in CI.
-func TestDockerExecutorWithStdIO_Mock(t *testing.T) {
+// TestDockerExecutorWithStdIO_Mock exercises the full stdin→stdout round-trip
+// Summary: TestDockerExecutorWithStdIO_Mock
+// of dockerExecutor.ExecuteWithStdIO without requiring a real Docker daemon.
+// It is the canonical replacement for the real-Docker "Success" subtest that
+// is skipped due to DinD unreliability in CI.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("Success", func(t *testing.T) {
 		// stdinPR/stdinPW: written by the executor (via the closeWriter), read
 		// by the fake container goroutine below.
@@ -112,7 +205,16 @@ func TestDockerExecutorWithStdIO_Mock(t *testing.T) {
 	})
 }
 
-func TestDockerExecutorWithStdIO_ErrorPaths(t *testing.T) {
+// TestDockerExecutorWithStdIO_ErrorPaths ...
+// Summary: TestDockerExecutorWithStdIO_ErrorPaths
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("ExecuteWithStdIO_ContainerAttachError", func(t *testing.T) {
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")

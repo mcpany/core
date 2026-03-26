@@ -12,7 +12,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestFileStore_MergeStrategy(t *testing.T) {
+// TestFileStore_MergeStrategy ...
+// Summary: TestFileStore_MergeStrategy
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 
 	// Base config with one service and one profile
@@ -50,7 +59,16 @@ upstream_services:
 	assert.Equal(t, "prod", cfg.GetGlobalSettings().GetProfiles()[0])
 }
 
-func TestFileStore_MergeStrategy_DefaultExtend(t *testing.T) {
+// TestFileStore_MergeStrategy_DefaultExtend ...
+// Summary: TestFileStore_MergeStrategy_DefaultExtend
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 
 	// Base config

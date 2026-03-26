@@ -19,7 +19,16 @@ import (
 
 // --- LocalCommandTool Tests ---
 
-func TestLocalCommandTool_Execute_Echo(t *testing.T) {
+// TestLocalCommandTool_Execute_Echo ...
+// Summary: TestLocalCommandTool_Execute_Echo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	svc := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("echo"),
@@ -65,7 +74,16 @@ func TestLocalCommandTool_Execute_Echo(t *testing.T) {
 	assert.Equal(t, 0, resMap["return_code"])
 }
 
-func TestLocalCommandTool_Execute_JSON(t *testing.T) {
+// TestLocalCommandTool_Execute_JSON ...
+// Summary: TestLocalCommandTool_Execute_JSON
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	svc := configv1.CommandLineUpstreamService_builder{
 		Command:               proto.String("cat"), // cat echoes stdin to stdout
@@ -97,7 +115,16 @@ func TestLocalCommandTool_Execute_JSON(t *testing.T) {
 	assert.Equal(t, "value", resMap["key"])
 }
 
-func TestLocalCommandTool_Execute_Error(t *testing.T) {
+// TestLocalCommandTool_Execute_Error ...
+// Summary: TestLocalCommandTool_Execute_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	svc := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("false"),
@@ -124,7 +151,16 @@ func TestLocalCommandTool_Execute_Error(t *testing.T) {
 	assert.NotEqual(t, 0, resMap["return_code"])
 }
 
-func TestLocalCommandTool_Execute_NonExistent(t *testing.T) {
+// TestLocalCommandTool_Execute_NonExistent ...
+// Summary: TestLocalCommandTool_Execute_NonExistent
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	svc := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("nonexistentcommand_xyz"),
@@ -145,7 +181,16 @@ func TestLocalCommandTool_Execute_NonExistent(t *testing.T) {
 	assert.Contains(t, err.Error(), "executable file not found")
 }
 
-func TestLocalCommandTool_Execute_Timeout(t *testing.T) {
+// TestLocalCommandTool_Execute_Timeout ...
+// Summary: TestLocalCommandTool_Execute_Timeout
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	svc := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("sleep"),
@@ -176,7 +221,16 @@ func TestLocalCommandTool_Execute_Timeout(t *testing.T) {
 	}
 }
 
-func TestLocalCommandTool_Execute_InvalidArgs(t *testing.T) {
+// TestLocalCommandTool_Execute_InvalidArgs ...
+// Summary: TestLocalCommandTool_Execute_InvalidArgs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	svc := configv1.CommandLineUpstreamService_builder{Command: proto.String("echo")}.Build()
 	tool := NewLocalCommandTool(pb.Tool_builder{Name: proto.String("t")}.Build(), svc, configv1.CommandLineCallDefinition_builder{}.Build(), nil, "call-id")
@@ -192,7 +246,16 @@ func TestLocalCommandTool_Execute_InvalidArgs(t *testing.T) {
 
 // --- CommandTool Tests (using Local Executor implicitly) ---
 
-func TestCommandTool_Execute_Echo(t *testing.T) {
+// TestCommandTool_Execute_Echo ...
+// Summary: TestCommandTool_Execute_Echo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	svc := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("echo"),
@@ -237,7 +300,16 @@ func TestCommandTool_Execute_Echo(t *testing.T) {
 	assert.Equal(t, "hello-command-tool", resMap["stdout"])
 }
 
-func TestCommandTool_Execute_JSON(t *testing.T) {
+// TestCommandTool_Execute_JSON ...
+// Summary: TestCommandTool_Execute_JSON
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	svc := configv1.CommandLineUpstreamService_builder{
 		Command:               proto.String("cat"),
@@ -267,7 +339,16 @@ func TestCommandTool_Execute_JSON(t *testing.T) {
 	assert.Equal(t, "tool", resMap["cmd"])
 }
 
-func TestCommandTool_Execute_Error(t *testing.T) {
+// TestCommandTool_Execute_Error ...
+// Summary: TestCommandTool_Execute_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	svc := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("false"),
@@ -291,7 +372,16 @@ func TestCommandTool_Execute_Error(t *testing.T) {
 	assert.NotEqual(t, 0, resMap["return_code"])
 }
 
-func TestCommandTool_Execute_InvalidArgs(t *testing.T) {
+// TestCommandTool_Execute_InvalidArgs ...
+// Summary: TestCommandTool_Execute_InvalidArgs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	svc := configv1.CommandLineUpstreamService_builder{Command: proto.String("echo")}.Build()
 	tool := NewCommandTool(pb.Tool_builder{Name: proto.String("t")}.Build(), svc, configv1.CommandLineCallDefinition_builder{}.Build(), nil, "call-id")
@@ -305,7 +395,16 @@ func TestCommandTool_Execute_InvalidArgs(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestPrettyPrint(t *testing.T) {
+// TestPrettyPrint ...
+// Summary: TestPrettyPrint
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	assert.Equal(t, "", prettyPrint(nil, ""))
 	assert.Contains(t, prettyPrint([]byte{0, 1, 2}, "application/octet-stream"), "Binary Data")

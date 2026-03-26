@@ -12,7 +12,16 @@ import (
 	"testing"
 )
 
-func TestValidateConfigHandler(t *testing.T) {
+// TestValidateConfigHandler ...
+// Summary: TestValidateConfigHandler
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name           string
 		method         string

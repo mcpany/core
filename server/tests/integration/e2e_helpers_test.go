@@ -16,7 +16,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestCreateTempConfigFile(t *testing.T) {
+// TestCreateTempConfigFile ...
+// Summary: TestCreateTempConfigFile
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	// Create a dummy config
 	serviceName := "test-service"
@@ -32,7 +41,16 @@ func TestCreateTempConfigFile(t *testing.T) {
 	require.NoError(t, err, "Temp config file should exist")
 }
 
-func TestProjectRoot(t *testing.T) {
+// TestProjectRoot ...
+// Summary: TestProjectRoot
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	// Get the project root
 	root := ProjectRoot(t)
@@ -42,7 +60,16 @@ func TestProjectRoot(t *testing.T) {
 	require.NoError(t, err, "go.mod should exist in the project root")
 }
 
-func TestManagedProcess(t *testing.T) {
+// TestManagedProcess ...
+// Summary: TestManagedProcess
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	mp := NewManagedProcess(t, "echo", "echo", []string{"hello"}, nil)
 	require.NoError(t, mp.Start())
@@ -53,7 +80,16 @@ func TestManagedProcess(t *testing.T) {
 	mp.Stop()
 }
 
-func TestWaitForText(t *testing.T) {
+// TestWaitForText ...
+// Summary: TestWaitForText
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	mp := NewManagedProcess(t, "echo", "sh", []string{"-c", "sleep 0.1; echo hello"}, nil)
 	require.NoError(t, mp.Start())
@@ -61,7 +97,16 @@ func TestWaitForText(t *testing.T) {
 	mp.Stop()
 }
 
-func TestDockerHelpers(t *testing.T) {
+// TestDockerHelpers ...
+// Summary: TestDockerHelpers
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if os.Getenv("CI") == "true" || os.Getenv("GITHUB_ACTIONS") == "true" {
 		t.Log("Skipping TestDockerHelpers in CI environment (CI/GITHUB_ACTIONS=true)")
 		t.Skip("Skipping TestDockerHelpers in CI due to potential rate limiting/network issues")

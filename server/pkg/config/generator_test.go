@@ -10,7 +10,16 @@ import (
 	"testing"
 )
 
-func TestGenerator_Generate(t *testing.T) {
+// TestGenerator_Generate ...
+// Summary: TestGenerator_Generate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCases := []struct {
 		name      string
 		inputs    []string
@@ -205,7 +214,16 @@ func TestGenerator_Generate(t *testing.T) {
 	}
 }
 
-func TestNewGenerator(t *testing.T) {
+// TestNewGenerator ...
+// Summary: TestNewGenerator
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	g := NewGenerator()
 	if g == nil {
 		t.Fatal("NewGenerator() returned nil")
@@ -217,15 +235,42 @@ func TestNewGenerator(t *testing.T) {
 
 type errorReader struct{}
 
-func (r *errorReader) Read(_ []byte) (n int, err error) {
+// Read ...
+// Summary: Read
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return 0, fmt.Errorf("read error")
 }
 
-func (r *errorReader) ReadString(_ byte) (string, error) {
+// ReadString ...
+// Summary: ReadString
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return "", fmt.Errorf("read error")
 }
 
-func TestGenerator_Generate_Errors(t *testing.T) {
+// TestGenerator_Generate_Errors ...
+// Summary: TestGenerator_Generate_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("Prompt Error on Service Type", func(t *testing.T) {
 		g := &Generator{
 			Reader: bufio.NewReader(&errorReader{}),
@@ -330,7 +375,16 @@ func TestGenerator_Generate_Errors(t *testing.T) {
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-func TestGenerator_Prompt_Bug(t *testing.T) {
+// TestGenerator_Prompt_Bug ...
+// Summary: TestGenerator_Prompt_Bug
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Input without a trailing newline
 	input := "some input"
 	reader := bufio.NewReader(bytes.NewBufferString(input))

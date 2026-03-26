@@ -17,7 +17,16 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestLocalCommandTool_SSRF_Vulnerability(t *testing.T) {
+// TestLocalCommandTool_SSRF_Vulnerability ...
+// Summary: TestLocalCommandTool_SSRF_Vulnerability
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. Create a secret file
 	tmpDir := t.TempDir()
 	secretFile := filepath.Join(tmpDir, "secret.txt")

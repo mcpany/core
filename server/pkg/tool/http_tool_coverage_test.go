@@ -20,7 +20,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestHTTPTool_Execute_Coverage_Secrets(t *testing.T) {
+// TestHTTPTool_Execute_Coverage_Secrets ...
+// Summary: TestHTTPTool_Execute_Coverage_Secrets
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 
 	// Test secret resolution error
@@ -62,7 +71,16 @@ func TestHTTPTool_Execute_Coverage_Secrets(t *testing.T) {
 	})
 }
 
-func TestHTTPTool_Execute_Coverage_PathTraversal(t *testing.T) {
+// TestHTTPTool_Execute_Coverage_PathTraversal ...
+// Summary: TestHTTPTool_Execute_Coverage_PathTraversal
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 
 	poolManager := pool.NewManager()
@@ -97,7 +115,16 @@ func TestHTTPTool_Execute_Coverage_PathTraversal(t *testing.T) {
 	assert.Contains(t, err.Error(), "path traversal attempt detected")
 }
 
-func TestHTTPTool_Execute_Coverage_CallPolicy(t *testing.T) {
+// TestHTTPTool_Execute_Coverage_CallPolicy ...
+// Summary: TestHTTPTool_Execute_Coverage_CallPolicy
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 
 	poolManager := pool.NewManager()
@@ -139,7 +166,16 @@ func TestHTTPTool_Execute_Coverage_CallPolicy(t *testing.T) {
 	assert.Contains(t, err.Error(), "tool execution blocked by policy")
 }
 
-func TestHTTPTool_Execute_Coverage_DryRun(t *testing.T) {
+// TestHTTPTool_Execute_Coverage_DryRun ...
+// Summary: TestHTTPTool_Execute_Coverage_DryRun
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

@@ -16,7 +16,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestUpstreamServiceManager_LoadAndMergeCollection_GitHub(t *testing.T) {
+// TestUpstreamServiceManager_LoadAndMergeCollection_GitHub ...
+// Summary: TestUpstreamServiceManager_LoadAndMergeCollection_GitHub
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Mock GitHub API server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("DEBUG: Requested %s\n", r.URL.Path)
@@ -107,7 +116,16 @@ services:
 	assert.Contains(t, m.services, "github-service-1")
 }
 
-func TestUpstreamServiceManager_LoadAndMergeCollection_GitHub_Error(t *testing.T) {
+// TestUpstreamServiceManager_LoadAndMergeCollection_GitHub_Error ...
+// Summary: TestUpstreamServiceManager_LoadAndMergeCollection_GitHub_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewUpstreamServiceManager(nil)
 	m.newGitHub = func(_ context.Context, _ string) (*GitHub, error) {
 		return nil, fmt.Errorf("mock setup error")
@@ -124,7 +142,16 @@ func TestUpstreamServiceManager_LoadAndMergeCollection_GitHub_Error(t *testing.T
 	assert.Contains(t, err.Error(), "mock setup error")
 }
 
-func TestUpstreamServiceManager_LoadAndMergeCollection_GitHub_ListError(t *testing.T) {
+// TestUpstreamServiceManager_LoadAndMergeCollection_GitHub_ListError ...
+// Summary: TestUpstreamServiceManager_LoadAndMergeCollection_GitHub_ListError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		http.Error(w, "api error", http.StatusInternalServerError)
 	}))

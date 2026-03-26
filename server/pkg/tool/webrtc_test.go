@@ -21,11 +21,21 @@ import (
 )
 
 // MockAuthenticator is a mock implementation of the UpstreamAuthenticator interface.
-type MockAuthenticator struct {
+// MockAuthenticator is a mock implementation of the UpstreamAuthenticator interface.
+// Summary: MockAuthenticator
 	Header http.Header
 }
 
-func (m *MockAuthenticator) Authenticate(req *http.Request) error {
+// Authenticate ...
+// Summary: Authenticate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	for key, values := range m.Header {
 		for _, value := range values {
 			req.Header.Add(key, value)
@@ -34,7 +44,16 @@ func (m *MockAuthenticator) Authenticate(req *http.Request) error {
 	return nil
 }
 
-func TestNewWebrtcTool(t *testing.T) {
+// TestNewWebrtcTool ...
+// Summary: TestNewWebrtcTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	toolDef := &v1.Tool{}
 	toolDef.SetName("test-webrtc")
 	callDef := &configv1.WebrtcCallDefinition{}
@@ -45,13 +64,31 @@ func TestNewWebrtcTool(t *testing.T) {
 	assert.Equal(t, "service-key", wt.serviceID)
 }
 
-func TestWebrtcTool_Close(t *testing.T) {
+// TestWebrtcTool_Close ...
+// Summary: TestWebrtcTool_Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	wt, err := NewWebrtcTool(&v1.Tool{}, nil, "", nil, &configv1.WebrtcCallDefinition{})
 	require.NoError(t, err)
 	assert.NoError(t, wt.Close())
 }
 
-func TestWebrtcTool_PoolInteraction(t *testing.T) {
+// TestWebrtcTool_PoolInteraction ...
+// Summary: TestWebrtcTool_PoolInteraction
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
 	var wg sync.WaitGroup
 	wg.Add(2)
@@ -112,7 +149,16 @@ func TestWebrtcTool_PoolInteraction(t *testing.T) {
 	wg.Done()
 }
 
-func TestWebrtcTool_Execute_Success(t *testing.T) {
+// TestWebrtcTool_Execute_Success ...
+// Summary: TestWebrtcTool_Execute_Success
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
 	var wg sync.WaitGroup
 	wg.Add(1)
@@ -182,7 +228,16 @@ func TestWebrtcTool_Execute_Success(t *testing.T) {
 	assert.Equal(t, "hello", resultMap["message"])
 }
 
-func TestWebrtcTool_Execute_WithTransformers(t *testing.T) {
+// TestWebrtcTool_Execute_WithTransformers ...
+// Summary: TestWebrtcTool_Execute_WithTransformers
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
 	var wg sync.WaitGroup
 	wg.Add(1)
@@ -249,7 +304,16 @@ func TestWebrtcTool_Execute_WithTransformers(t *testing.T) {
 	assert.Equal(t, "output_world", resultMap["extracted_message"])
 }
 
-func TestWebrtcTool_Execute_WithAuth(t *testing.T) {
+// TestWebrtcTool_Execute_WithAuth ...
+// Summary: TestWebrtcTool_Execute_WithAuth
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
 	authHeader := "Bearer my-secret-token"
 	var wg sync.WaitGroup
@@ -308,7 +372,16 @@ func TestWebrtcTool_Execute_WithAuth(t *testing.T) {
 	_, _ = wt.Execute(context.Background(), req)
 }
 
-func TestWebrtcTool_Execute_SignalingFailure(t *testing.T) {
+// TestWebrtcTool_Execute_SignalingFailure ...
+// Summary: TestWebrtcTool_Execute_SignalingFailure
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
 	signalingServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		http.Error(w, "internal server error", http.StatusInternalServerError)
@@ -327,7 +400,16 @@ func TestWebrtcTool_Execute_SignalingFailure(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to decode answer")
 }
 
-func TestWebrtcTool_Execute_Timeout(t *testing.T) {
+// TestWebrtcTool_Execute_Timeout ...
+// Summary: TestWebrtcTool_Execute_Timeout
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
 	signalingServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		pc, err := webrtc.NewPeerConnection(webrtc.Configuration{})
@@ -369,7 +451,16 @@ func TestWebrtcTool_Execute_Timeout(t *testing.T) {
 	assert.Equal(t, context.DeadlineExceeded, err)
 }
 
-func TestWebrtcTool_GetCacheConfig(t *testing.T) {
+// TestWebrtcTool_GetCacheConfig ...
+// Summary: TestWebrtcTool_GetCacheConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	toolDef := &v1.Tool{}
 	cacheConfig := &configv1.CacheConfig{}
 	callDef := &configv1.WebrtcCallDefinition{}
@@ -379,7 +470,16 @@ func TestWebrtcTool_GetCacheConfig(t *testing.T) {
 	assert.Equal(t, cacheConfig, wt.GetCacheConfig())
 }
 
-func TestWebrtcTool_Execute_InvalidInputTemplate(t *testing.T) {
+// TestWebrtcTool_Execute_InvalidInputTemplate ...
+// Summary: TestWebrtcTool_Execute_InvalidInputTemplate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
 	toolDef := &v1.Tool{}
 	poolManager := pool.NewManager()
@@ -399,13 +499,31 @@ func TestWebrtcTool_Execute_InvalidInputTemplate(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to render input template")
 }
 
-func TestWebrtcTool_CloseMethod(t *testing.T) {
+// TestWebrtcTool_CloseMethod ...
+// Summary: TestWebrtcTool_CloseMethod
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	wt, err := NewWebrtcTool(&v1.Tool{}, nil, "", nil, &configv1.WebrtcCallDefinition{})
 	require.NoError(t, err)
 	assert.NoError(t, wt.Close())
 }
 
-func TestWebrtcTool_Execute_SecretResolutionError(t *testing.T) {
+// TestWebrtcTool_Execute_SecretResolutionError ...
+// Summary: TestWebrtcTool_Execute_SecretResolutionError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
 	toolDef := &v1.Tool{}
 	toolDef.SetName("test-webrtc-secret-err")
@@ -436,7 +554,16 @@ func TestWebrtcTool_Execute_SecretResolutionError(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to resolve secret for parameter")
 }
 
-func TestWebrtcTool_Execute_TemplateRenderError(t *testing.T) {
+// TestWebrtcTool_Execute_TemplateRenderError ...
+// Summary: TestWebrtcTool_Execute_TemplateRenderError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
 	toolDef := &v1.Tool{}
 	toolDef.SetName("test-webrtc-render-err")
@@ -464,7 +591,16 @@ func TestWebrtcTool_Execute_TemplateRenderError(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to render input template")
 }
 
-func TestWebrtcTool_Execute_SignalingHTTPError(t *testing.T) {
+// TestWebrtcTool_Execute_SignalingHTTPError ...
+// Summary: TestWebrtcTool_Execute_SignalingHTTPError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
 	toolDef := &v1.Tool{}
 	toolDef.SetName("test-webrtc-http-err")
@@ -488,7 +624,16 @@ func TestWebrtcTool_Execute_SignalingHTTPError(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to send offer to signaling server")
 }
 
-func TestWebrtcTool_Execute_SignalingJSONDecodeError(t *testing.T) {
+// TestWebrtcTool_Execute_SignalingJSONDecodeError ...
+// Summary: TestWebrtcTool_Execute_SignalingJSONDecodeError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
 	toolDef := &v1.Tool{}
 	toolDef.SetName("test-webrtc-json-err")
@@ -519,13 +664,32 @@ func TestWebrtcTool_Execute_SignalingJSONDecodeError(t *testing.T) {
 }
 
 // FailingAuthenticator always returns an error.
-type FailingAuthenticator struct{}
+// FailingAuthenticator always returns an error.
+// Summary: FailingAuthenticator
 
-func (f *FailingAuthenticator) Authenticate(req *http.Request) error {
+// Authenticate ...
+// Summary: Authenticate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return assert.AnError
 }
 
-func TestWebrtcTool_Execute_AuthFailure(t *testing.T) {
+// TestWebrtcTool_Execute_AuthFailure ...
+// Summary: TestWebrtcTool_Execute_AuthFailure
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
 	toolDef := &v1.Tool{}
 	toolDef.SetName("test-webrtc-auth-err")
@@ -556,7 +720,16 @@ func TestWebrtcTool_Execute_AuthFailure(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to authenticate request")
 }
 
-func TestWebrtcTool_Execute_ContextCancellation(t *testing.T) {
+// TestWebrtcTool_Execute_ContextCancellation ...
+// Summary: TestWebrtcTool_Execute_ContextCancellation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
 	toolDef := &v1.Tool{}
 	toolDef.SetName("test-webrtc-ctx-cancel")

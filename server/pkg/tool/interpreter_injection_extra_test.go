@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestSqlite3ShellInjection(t *testing.T) {
+// TestSqlite3ShellInjection ...
+// Summary: TestSqlite3ShellInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup sqlite3 tool
 	toolProto := v1.Tool_builder{
 		Name: proto.String("sqlite3"),
@@ -64,7 +73,16 @@ func TestSqlite3ShellInjection(t *testing.T) {
 	}
 }
 
-func TestGdbShellInjection(t *testing.T) {
+// TestGdbShellInjection ...
+// Summary: TestGdbShellInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup gdb tool
 	toolProto := v1.Tool_builder{
 		Name: proto.String("gdb"),
@@ -111,7 +129,16 @@ func TestGdbShellInjection(t *testing.T) {
 	}
 }
 
-func TestMysqlSystemInjection(t *testing.T) {
+// TestMysqlSystemInjection ...
+// Summary: TestMysqlSystemInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup mysql tool
 	toolProto := v1.Tool_builder{
 		Name: proto.String("mysql"),

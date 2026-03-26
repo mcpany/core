@@ -19,7 +19,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestUpstreamService_HTTP_WithAPIKeyAuth(t *testing.T) {
+// TestUpstreamService_HTTP_WithAPIKeyAuth ...
+// Summary: TestUpstreamService_HTTP_WithAPIKeyAuth
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCase := &framework.E2ETestCase{
 		Name:                "Authenticated HTTP Echo Server",
 		UpstreamServiceType: "http",
@@ -54,7 +63,16 @@ func TestUpstreamService_HTTP_WithAPIKeyAuth(t *testing.T) {
 	framework.RunE2ETest(t, testCase)
 }
 
-func TestUpstreamService_HTTP_WithIncorrectAPIKeyAuth(t *testing.T) {
+// TestUpstreamService_HTTP_WithIncorrectAPIKeyAuth ...
+// Summary: TestUpstreamService_HTTP_WithIncorrectAPIKeyAuth
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCase := &framework.E2ETestCase{
 		Name:                "Authenticated HTTP Echo Server with Incorrect API Key",
 		UpstreamServiceType: "http",

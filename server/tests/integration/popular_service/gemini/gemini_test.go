@@ -16,7 +16,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestUpstreamService_Gemini(t *testing.T) {
+// TestUpstreamService_Gemini ...
+// Summary: TestUpstreamService_Gemini
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if os.Getenv("GEMINI_API_KEY") == "" {
 		// t.Skip("Skipping test because GEMINI_API_KEY is not set")
 	}

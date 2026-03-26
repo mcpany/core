@@ -11,12 +11,30 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestOpenAPIProvider_Name(t *testing.T) {
+// TestOpenAPIProvider_Name ...
+// Summary: TestOpenAPIProvider_Name
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	provider := &OpenAPIProvider{}
 	assert.Equal(t, "openapi", provider.Name())
 }
 
-func TestOpenAPIProvider_Discover(t *testing.T) {
+// TestOpenAPIProvider_Discover ...
+// Summary: TestOpenAPIProvider_Discover
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	provider := &OpenAPIProvider{Endpoint: "http://localhost:8080/openapi.json"}
 
 	svcs, err := provider.Discover(context.Background())

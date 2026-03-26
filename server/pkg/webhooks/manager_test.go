@@ -10,7 +10,16 @@ import (
 	"testing"
 )
 
-func TestManager_CRUD(t *testing.T) {
+// TestManager_CRUD ...
+// Summary: TestManager_CRUD
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewManager()
 
 	w := &WebhookConfig{
@@ -45,7 +54,16 @@ func TestManager_CRUD(t *testing.T) {
 	}
 }
 
-func TestManager_TestWebhook(t *testing.T) {
+// TestManager_TestWebhook ...
+// Summary: TestManager_TestWebhook
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
@@ -71,7 +89,16 @@ func TestManager_TestWebhook(t *testing.T) {
 	}
 }
 
-func TestManager_TestWebhook_Failure(t *testing.T) {
+// TestManager_TestWebhook_Failure ...
+// Summary: TestManager_TestWebhook_Failure
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}))

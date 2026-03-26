@@ -16,7 +16,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestNewMilvusClient_Validation(t *testing.T) {
+// TestNewMilvusClient_Validation ...
+// Summary: TestNewMilvusClient_Validation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("Missing Address", func(t *testing.T) {
 		cfg := configv1.MilvusVectorDB_builder{
 			CollectionName: proto.String("coll"),
@@ -52,7 +61,16 @@ func TestNewMilvusClient_Validation(t *testing.T) {
 	})
 }
 
-func TestNewPineconeClient_Validation(t *testing.T) {
+// TestNewPineconeClient_Validation ...
+// Summary: TestNewPineconeClient_Validation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("Missing API Key", func(t *testing.T) {
 		cfg := configv1.PineconeVectorDB_builder{}.Build()
 		c, err := NewPineconeClient(cfg)
@@ -96,7 +114,16 @@ func TestNewPineconeClient_Validation(t *testing.T) {
 	})
 }
 
-func TestPineconeClient_Methods(t *testing.T) {
+// TestPineconeClient_Methods ...
+// Summary: TestPineconeClient_Methods
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Start a mock server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Verify Headers

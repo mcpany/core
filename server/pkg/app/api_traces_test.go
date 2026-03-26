@@ -56,7 +56,16 @@ func setupTracesTestApp(t *testing.T) (*Application, *middleware.AuditMiddleware
 	return app, auditMiddleware
 }
 
-func TestHandleTraces_Empty(t *testing.T) {
+// TestHandleTraces_Empty ...
+// Summary: TestHandleTraces_Empty
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, _ := setupTracesTestApp(t)
 
 	req := httptest.NewRequest("GET", "/traces", nil)
@@ -79,7 +88,16 @@ func TestHandleTraces_Empty(t *testing.T) {
 	}
 }
 
-func TestHandleTraces_WithData(t *testing.T) {
+// TestHandleTraces_WithData ...
+// Summary: TestHandleTraces_WithData
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, am := setupTracesTestApp(t)
 
 	// Inject an audit entry
@@ -129,7 +147,16 @@ func TestHandleTraces_WithData(t *testing.T) {
 	}
 }
 
-func TestHandleTracesWS(t *testing.T) {
+// TestHandleTracesWS ...
+// Summary: TestHandleTracesWS
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, am := setupTracesTestApp(t)
 
 	// Inject initial data
@@ -179,7 +206,16 @@ func TestHandleTracesWS(t *testing.T) {
 	}
 }
 
-func TestHandleTraces_DisabledAudit(t *testing.T) {
+// TestHandleTraces_DisabledAudit ...
+// Summary: TestHandleTraces_DisabledAudit
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup app with nil audit middleware
 	app := NewApplication()
 	app.standardMiddlewares = &middleware.StandardMiddlewares{
@@ -202,7 +238,16 @@ func TestHandleTraces_DisabledAudit(t *testing.T) {
 	}
 }
 
-func TestHandleTracesWS_DisabledAudit(t *testing.T) {
+// TestHandleTracesWS_DisabledAudit ...
+// Summary: TestHandleTracesWS_DisabledAudit
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup app with nil audit middleware
 	app := NewApplication()
 	app.standardMiddlewares = &middleware.StandardMiddlewares{

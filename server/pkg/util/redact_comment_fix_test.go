@@ -9,7 +9,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRedactJSON_NumberWithComment(t *testing.T) {
+// TestRedactJSON_NumberWithComment ...
+// Summary: TestRedactJSON_NumberWithComment
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// "secret" is a sensitive key in redact.go
 	input := []byte(`{
 		"secret": 123// this is a comment
@@ -24,7 +33,16 @@ func TestRedactJSON_NumberWithComment(t *testing.T) {
 	assert.Equal(t, string(expected), string(output))
 }
 
-func TestRedactJSON_NumberWithBlockComment(t *testing.T) {
+// TestRedactJSON_NumberWithBlockComment ...
+// Summary: TestRedactJSON_NumberWithBlockComment
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	input := []byte(`{
 		"secret": 123/* block comment */
 	}`)

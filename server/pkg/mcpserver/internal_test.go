@@ -13,7 +13,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestConvertMapToCallToolResult(t *testing.T) {
+// TestConvertMapToCallToolResult ...
+// Summary: TestConvertMapToCallToolResult
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name      string
 		input     map[string]any
@@ -247,7 +256,16 @@ func TestConvertMapToCallToolResult(t *testing.T) {
 	}
 }
 
-func TestSummarizeCallToolResult(t *testing.T) {
+// TestSummarizeCallToolResult ...
+// Summary: TestSummarizeCallToolResult
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	longText := strings.Repeat("a", 1000)
 	ctr := &mcp.CallToolResult{
 		IsError: true,
@@ -274,7 +292,16 @@ func TestSummarizeCallToolResult(t *testing.T) {
 	// But we covered the code path.
 }
 
-func TestLazyLogResult(t *testing.T) {
+// TestLazyLogResult ...
+// Summary: TestLazyLogResult
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test nil
 	val := LazyLogResult{Value: nil}.LogValue()
 	assert.Equal(t, "<nil>", val.String())

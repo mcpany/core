@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestRubySingleQuoteInjection(t *testing.T) {
+// TestRubySingleQuoteInjection ...
+// Summary: TestRubySingleQuoteInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test attempts to reproduce an RCE vulnerability where Ruby open("|cmd")
 	// can be injected into a SINGLE-quoted argument string.
 

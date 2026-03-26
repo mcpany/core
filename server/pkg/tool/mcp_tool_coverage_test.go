@@ -17,7 +17,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMCPTool_Execute_Coverage(t *testing.T) {
+// TestMCPTool_Execute_Coverage ...
+// Summary: TestMCPTool_Execute_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 
 	// Test result with no content

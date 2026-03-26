@@ -12,7 +12,16 @@ import (
 	"testing"
 )
 
-func TestNewHTTPEmbeddingProvider(t *testing.T) {
+// TestNewHTTPEmbeddingProvider ...
+// Summary: TestNewHTTPEmbeddingProvider
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name            string
 		url             string
@@ -49,7 +58,16 @@ func TestNewHTTPEmbeddingProvider(t *testing.T) {
 	}
 }
 
-func TestHTTPEmbeddingProvider_Embed(t *testing.T) {
+// TestHTTPEmbeddingProvider_Embed ...
+// Summary: TestHTTPEmbeddingProvider_Embed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name             string
 		headers          map[string]string

@@ -10,7 +10,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestScanForSensitiveKeys_LongInput(t *testing.T) {
+// TestScanForSensitiveKeys_LongInput ...
+// Summary: TestScanForSensitiveKeys_LongInput
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create an input longer than 128 bytes
 	// sensitiveKeys include "password"
 
@@ -34,7 +43,16 @@ func TestScanForSensitiveKeys_LongInput(t *testing.T) {
 	assert.True(t, scanForSensitiveKeys([]byte(longSensitiveUpper), false))
 }
 
-func TestScanForSensitiveKeys_EdgeCases(t *testing.T) {
+// TestScanForSensitiveKeys_EdgeCases ...
+// Summary: TestScanForSensitiveKeys_EdgeCases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test checkPotentialMatch boundary conditions
 
 	// "auth" is a key. "author" is not (boundary check).

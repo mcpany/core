@@ -10,7 +10,16 @@ import (
 	"testing"
 )
 
-func TestValidateHandler_Allowed(t *testing.T) {
+// TestValidateHandler_Allowed ...
+// Summary: TestValidateHandler_Allowed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	reqData := WebhookRequest{
 		Kind:     1,
 		ToolName: "execute",
@@ -37,7 +46,16 @@ func TestValidateHandler_Allowed(t *testing.T) {
 	}
 }
 
-func TestValidateHandler_Denied(t *testing.T) {
+// TestValidateHandler_Denied ...
+// Summary: TestValidateHandler_Denied
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	reqData := WebhookRequest{
 		Kind:     1,
 		ToolName: "execute",

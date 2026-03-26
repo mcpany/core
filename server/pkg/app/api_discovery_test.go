@@ -19,19 +19,47 @@ import (
 )
 
 // MockProvider for testing
-type MockProvider struct {
+// MockProvider for testing
+// Summary: MockProvider
 	name string
 }
 
-func (m *MockProvider) Name() string { return m.name }
-func (m *MockProvider) Discover(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
+// Name ...
+// Summary: Name
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Discover ...
+// Summary: Discover
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	time.Sleep(10 * time.Millisecond) // Simulate work
 	return []*configv1.UpstreamServiceConfig{
 		configv1.UpstreamServiceConfig_builder{Name: proto.String("mock-service")}.Build(),
 	}, nil
 }
 
-func TestHandleDiscoveryStatus(t *testing.T) {
+// TestHandleDiscoveryStatus ...
+// Summary: TestHandleDiscoveryStatus
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 	app.DiscoveryManager = discovery.NewManager()
 	mockProvider := &MockProvider{name: "mock-provider"}
@@ -55,7 +83,16 @@ func TestHandleDiscoveryStatus(t *testing.T) {
 	assert.Equal(t, 1, statuses[0].DiscoveredCount)
 }
 
-func TestHandleDiscoveryTrigger(t *testing.T) {
+// TestHandleDiscoveryTrigger ...
+// Summary: TestHandleDiscoveryTrigger
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 	app.DiscoveryManager = discovery.NewManager()
 	mockProvider := &MockProvider{name: "mock-provider"}

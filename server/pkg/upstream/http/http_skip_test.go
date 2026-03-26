@@ -17,7 +17,16 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func TestHTTPUpstream_SkipDisabled(t *testing.T) {
+// TestHTTPUpstream_SkipDisabled ...
+// Summary: TestHTTPUpstream_SkipDisabled
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	rm := resource.NewManager()

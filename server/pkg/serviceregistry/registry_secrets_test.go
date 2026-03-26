@@ -23,16 +23,43 @@ type hunterMockUpstream struct {
 	upstream.Upstream
 }
 
-func (m *hunterMockUpstream) Register(_ context.Context, _ *configv1.UpstreamServiceConfig, _ tool.ManagerInterface, _ prompt.ManagerInterface, _ resource.ManagerInterface, _ bool) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+// Register ...
+// Summary: Register
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return "mock-service-key", nil, nil, nil
 }
-func (m *hunterMockUpstream) Shutdown(_ context.Context) error { return nil }
+// Shutdown ...
+// Summary: Shutdown
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
 type hunterMockFactory struct {
 	factory.Factory
 }
 
-func (m *hunterMockFactory) NewUpstream(_ *configv1.UpstreamServiceConfig) (upstream.Upstream, error) {
+// NewUpstream ...
+// Summary: NewUpstream
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return &hunterMockUpstream{}, nil
 }
 
@@ -40,19 +67,109 @@ type hunterMockToolManager struct {
 	tool.ManagerInterface
 }
 
-func (m *hunterMockToolManager) AddTool(_ tool.Tool) error             { return nil }
-func (m *hunterMockToolManager) ClearToolsForService(_ string)         {}
-func (m *hunterMockToolManager) GetTool(_ string) (tool.Tool, bool)    { return nil, false }
-func (m *hunterMockToolManager) ListTools() []tool.Tool                { return nil }
-func (m *hunterMockToolManager) ListServices() []*tool.ServiceInfo     { return nil }
-func (m *hunterMockToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
-func (m *hunterMockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+// AddTool ...
+// Summary: AddTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ClearToolsForService ...
+// Summary: ClearToolsForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// GetTool ...
+// Summary: GetTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ListTools ...
+// Summary: ListTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ListServices ...
+// Summary: ListServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// SetMCPServer ...
+// Summary: SetMCPServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ExecuteTool ...
+// Summary: ExecuteTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (m *hunterMockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
-func (m *hunterMockToolManager) GetToolCountForService(_ string) int                     { return 0 }
+// SetProfiles ...
+// Summary: SetProfiles
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// GetToolCountForService ...
+// Summary: GetToolCountForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func TestServiceRegistry_SecretsLeak(t *testing.T) {
+// TestServiceRegistry_SecretsLeak ...
+// Summary: TestServiceRegistry_SecretsLeak
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	f := &hunterMockFactory{}
 	tm := &hunterMockToolManager{}
 	registry := New(f, tm, prompt.NewManager(), resource.NewManager(), auth.NewManager())

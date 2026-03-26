@@ -11,13 +11,32 @@ import (
 )
 
 // GenericTokenizer implements Tokenizer but is neither Simple nor Word tokenizer.
-type GenericTokenizer struct{}
+// GenericTokenizer implements Tokenizer but is neither Simple nor Word tokenizer.
+// Summary: GenericTokenizer
 
-func (t *GenericTokenizer) CountTokens(text string) (int, error) {
+// CountTokens ...
+// Summary: CountTokens
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return len(text), nil
 }
 
-func TestCoverage_GenericTokenizer_Primitives(t *testing.T) {
+// TestCoverage_GenericTokenizer_Primitives ...
+// Summary: TestCoverage_GenericTokenizer_Primitives
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	gt := &GenericTokenizer{}
 
 	tests := []struct {
@@ -45,7 +64,16 @@ func TestCoverage_GenericTokenizer_Primitives(t *testing.T) {
 	}
 }
 
-func TestCoverage_WordTokenizer_FastPath_Slices(t *testing.T) {
+// TestCoverage_WordTokenizer_FastPath_Slices ...
+// Summary: TestCoverage_WordTokenizer_FastPath_Slices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Set Factor to 2.0, so primitiveCount becomes 2.
 	wt := NewWordTokenizer()
 	wt.Factor = 2.0
@@ -71,7 +99,16 @@ func TestCoverage_WordTokenizer_FastPath_Slices(t *testing.T) {
 	}
 }
 
-func TestCoverage_SimpleTokenizer_FastPath_Slices(t *testing.T) {
+// TestCoverage_SimpleTokenizer_FastPath_Slices ...
+// Summary: TestCoverage_SimpleTokenizer_FastPath_Slices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	st := NewSimpleTokenizer()
 
 	tests := []struct {
@@ -95,11 +132,30 @@ func TestCoverage_SimpleTokenizer_FastPath_Slices(t *testing.T) {
 	}
 }
 
-type CoverageStringerImpl struct{}
+// CoverageStringerImpl ...
+// Summary: CoverageStringerImpl
 
-func (s *CoverageStringerImpl) String() string { return "stringer" }
+// String ...
+// Summary: String
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func TestCoverage_Reflect_Stringer_Error(t *testing.T) {
+// TestCoverage_Reflect_Stringer_Error ...
+// Summary: TestCoverage_Reflect_Stringer_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	gt := &GenericTokenizer{}
 
 	// Test Stringer
@@ -114,7 +170,16 @@ func TestCoverage_Reflect_Stringer_Error(t *testing.T) {
 	assert.Equal(t, 5, c) // "error"
 }
 
-func TestCoverage_Reflect_Fallback_Chan(t *testing.T) {
+// TestCoverage_Reflect_Fallback_Chan ...
+// Summary: TestCoverage_Reflect_Fallback_Chan
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	gt := &GenericTokenizer{}
 	ch := make(chan int)
 

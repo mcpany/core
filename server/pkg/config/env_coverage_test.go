@@ -11,7 +11,16 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
-func TestConvertKind(t *testing.T) {
+// TestConvertKind ...
+// Summary: TestConvertKind
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Bool - Valid
 	res := convertKind(protoreflect.BoolKind, "true")
 	assert.Equal(t, true, res)
@@ -29,7 +38,16 @@ func TestConvertKind(t *testing.T) {
 	assert.Equal(t, "123", res)
 }
 
-func TestApplyEnvVars_Complex(t *testing.T) {
+// TestApplyEnvVars_Complex ...
+// Summary: TestApplyEnvVars_Complex
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test repeated message field with index
 	// MCPANY__UPSTREAM_SERVICES__0__NAME = "s1"
 
@@ -65,7 +83,16 @@ func TestApplyEnvVars_Complex(t *testing.T) {
 	assert.Equal(t, true, debugger["enabled"])
 }
 
-func TestResolveEnvValue_List_Mismatch(t *testing.T) {
+// TestResolveEnvValue_List_Mismatch ...
+// Summary: TestResolveEnvValue_List_Mismatch
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// MCPANY__GLOBAL_SETTINGS__ALLOWED_IPS__0__SUBFIELD = val
 	// allowed_ips is scalar string, cannot have subfield.
 
@@ -87,7 +114,16 @@ func TestResolveEnvValue_List_Mismatch(t *testing.T) {
 	assert.Equal(t, "val", idx0["subfield"])
 }
 
-func TestResolveEnvValue_CSV(t *testing.T) {
+// TestResolveEnvValue_CSV ...
+// Summary: TestResolveEnvValue_CSV
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// MCPANY__GLOBAL_SETTINGS__ALLOWED_IPS=1.1.1.1,2.2.2.2
 	environ := []string{
 		"MCPANY__GLOBAL_SETTINGS__ALLOWED_IPS=1.1.1.1,2.2.2.2",
@@ -107,7 +143,16 @@ func TestResolveEnvValue_CSV(t *testing.T) {
 	}
 }
 
-func TestFixTypes(t *testing.T) {
+// TestFixTypes ...
+// Summary: TestFixTypes
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Manually construct a map that mimics Env Var map structure (indices as keys)
 	// and run fixTypes to convert to slices.
 

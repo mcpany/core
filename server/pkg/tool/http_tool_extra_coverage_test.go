@@ -16,7 +16,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestHTTPTool_Execute_429(t *testing.T) {
+// TestHTTPTool_Execute_429 ...
+// Summary: TestHTTPTool_Execute_429
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 
 	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
@@ -30,7 +39,16 @@ func TestHTTPTool_Execute_429(t *testing.T) {
 	assert.Contains(t, err.Error(), "Too Many Requests")
 }
 
-func TestHTTPTool_Execute_UnsafeURL_Sequential(t *testing.T) {
+// TestHTTPTool_Execute_UnsafeURL_Sequential ...
+// Summary: TestHTTPTool_Execute_UnsafeURL_Sequential
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Restore IsSafeURL just for this test (mocked in TestMain of tool package)
 	// We mock it to fail for any URL to simulate unsafe URL.
 	// We don't need real logic, we just want to verify Execute handles the error.

@@ -15,7 +15,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestUpstreamService_MCP_StreamableHTTP(t *testing.T) {
+// TestUpstreamService_MCP_StreamableHTTP ...
+// Summary: TestUpstreamService_MCP_StreamableHTTP
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCase := &framework.E2ETestCase{
 		Name:                "everything server (Streamable HTTP)",
 		UpstreamServiceType: "streamablehttp",

@@ -12,7 +12,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestStore_YAML_Tab_Error(t *testing.T) {
+// TestStore_YAML_Tab_Error ...
+// Summary: TestStore_YAML_Tab_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	// Create a YAML file with a tab character
 	content := []byte("global_settings:\n\tlog_level: debug")
@@ -25,7 +34,16 @@ func TestStore_YAML_Tab_Error(t *testing.T) {
 	assert.Contains(t, err.Error(), "YAML files cannot contain tabs")
 }
 
-func TestStore_ClaudeDesktop_Error(t *testing.T) {
+// TestStore_ClaudeDesktop_Error ...
+// Summary: TestStore_ClaudeDesktop_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	content := []byte(`
 mcpServers:
@@ -41,7 +59,16 @@ mcpServers:
 	assert.Contains(t, err.Error(), "Claude Desktop configuration format")
 }
 
-func TestStore_Services_Alias_Error(t *testing.T) {
+// TestStore_Services_Alias_Error ...
+// Summary: TestStore_Services_Alias_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	content := []byte(`
 services:
@@ -56,7 +83,16 @@ services:
 	assert.Contains(t, err.Error(), "\"services\" is not a valid top-level key")
 }
 
-func TestStore_ServiceConfig_Wrapper_Error(t *testing.T) {
+// TestStore_ServiceConfig_Wrapper_Error ...
+// Summary: TestStore_ServiceConfig_Wrapper_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	content := []byte(`
 upstream_services:
@@ -74,7 +110,16 @@ upstream_services:
 	assert.Contains(t, err.Error(), "using 'service_config' as a wrapper key")
 }
 
-func TestStore_UnknownField_Suggestion(t *testing.T) {
+// TestStore_UnknownField_Suggestion ...
+// Summary: TestStore_UnknownField_Suggestion
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	content := []byte(`
 global_settings:
@@ -89,7 +134,16 @@ global_settings:
 	assert.Contains(t, err.Error(), "Did you mean \"mcp_listen_address\"?")
 }
 
-func TestStore_JSON_Error_Suggestions(t *testing.T) {
+// TestStore_JSON_Error_Suggestions ...
+// Summary: TestStore_JSON_Error_Suggestions
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	content := []byte(`{
 		"mcpServers": {}
@@ -103,7 +157,16 @@ func TestStore_JSON_Error_Suggestions(t *testing.T) {
 	assert.Contains(t, err.Error(), "Claude Desktop configuration format")
 }
 
-func TestStore_JSON_UnknownField(t *testing.T) {
+// TestStore_JSON_UnknownField ...
+// Summary: TestStore_JSON_UnknownField
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	content := []byte(`{
 		"global_settings": {

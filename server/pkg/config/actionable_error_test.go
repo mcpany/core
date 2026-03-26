@@ -11,7 +11,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestWrapActionableError(t *testing.T) {
+// TestWrapActionableError ...
+// Summary: TestWrapActionableError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("Wraps normal error", func(t *testing.T) {
 		baseErr := errors.New("base error")
 		err := WrapActionableError("context", baseErr)

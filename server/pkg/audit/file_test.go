@@ -16,7 +16,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestNewFileAuditStore_File(t *testing.T) {
+// TestNewFileAuditStore_File ...
+// Summary: TestNewFileAuditStore_File
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tmpDir := t.TempDir()
 	validation.SetAllowedPaths([]string{tmpDir})
 	defer validation.SetAllowedPaths(nil)
@@ -30,7 +39,16 @@ func TestNewFileAuditStore_File(t *testing.T) {
 	assert.Equal(t, logFile, store.file.Name())
 }
 
-func TestNewFileAuditStore_Stdout(t *testing.T) {
+// TestNewFileAuditStore_Stdout ...
+// Summary: TestNewFileAuditStore_Stdout
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	store, err := NewFileAuditStore("")
 	require.NoError(t, err)
 	defer store.Close()
@@ -38,7 +56,16 @@ func TestNewFileAuditStore_Stdout(t *testing.T) {
 	assert.Nil(t, store.file)
 }
 
-func TestNewFileAuditStore_Error(t *testing.T) {
+// TestNewFileAuditStore_Error ...
+// Summary: TestNewFileAuditStore_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Try to open a file in a non-existent directory to trigger error
 	_, err := NewFileAuditStore("/non/existent/dir/audit.log")
 	require.Error(t, err)
@@ -49,7 +76,16 @@ func TestNewFileAuditStore_Error(t *testing.T) {
 	assert.Contains(t, err.Error(), "path not allowed")
 }
 
-func TestFileAuditStore_Write_File(t *testing.T) {
+// TestFileAuditStore_Write_File ...
+// Summary: TestFileAuditStore_Write_File
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tmpDir := t.TempDir()
 	validation.SetAllowedPaths([]string{tmpDir})
 	defer validation.SetAllowedPaths(nil)
@@ -78,7 +114,16 @@ func TestFileAuditStore_Write_File(t *testing.T) {
 	assert.Equal(t, entry.Error, readEntry.Error)
 }
 
-func TestFileAuditStore_Write_Stdout(t *testing.T) {
+// TestFileAuditStore_Write_Stdout ...
+// Summary: TestFileAuditStore_Write_Stdout
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	store, err := NewFileAuditStore("")
 	require.NoError(t, err)
 	defer store.Close()
@@ -102,7 +147,16 @@ func TestFileAuditStore_Write_Stdout(t *testing.T) {
 	assert.Equal(t, entry.Error, readEntry.Error)
 }
 
-func TestFileAuditStore_Close(t *testing.T) {
+// TestFileAuditStore_Close ...
+// Summary: TestFileAuditStore_Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tmpDir := t.TempDir()
 	validation.SetAllowedPaths([]string{tmpDir})
 	defer validation.SetAllowedPaths(nil)
@@ -120,7 +174,16 @@ func TestFileAuditStore_Close(t *testing.T) {
 	assert.Error(t, err) // Expect error on second close if implementation just calls file.Close()
 }
 
-func TestFileAuditStore_Close_Stdout(t *testing.T) {
+// TestFileAuditStore_Close_Stdout ...
+// Summary: TestFileAuditStore_Close_Stdout
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	store, err := NewFileAuditStore("")
 	require.NoError(t, err)
 
@@ -128,7 +191,16 @@ func TestFileAuditStore_Close_Stdout(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestFileAuditStore_Read_Error(t *testing.T) {
+// TestFileAuditStore_Read_Error ...
+// Summary: TestFileAuditStore_Read_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	store, err := NewFileAuditStore("")
 	require.NoError(t, err)
 	defer store.Close()

@@ -14,7 +14,16 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func TestImportCmd(t *testing.T) {
+// TestImportCmd ...
+// Summary: TestImportCmd
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tempDir := t.TempDir()
 
 	validJSON := `{

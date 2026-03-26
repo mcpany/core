@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestPerlOpenInjection(t *testing.T) {
+// TestPerlOpenInjection ...
+// Summary: TestPerlOpenInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test attempts to reproduce an RCE vulnerability where Perl open("|cmd")
 	// can be injected into a SINGLE-quoted argument string.
 

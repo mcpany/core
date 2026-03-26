@@ -17,7 +17,16 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-func TestIsRetryable(t *testing.T) {
+// TestIsRetryable ...
+// Summary: TestIsRetryable
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCases := []struct {
 		name     string
 		err      error
@@ -62,7 +71,16 @@ func TestIsRetryable(t *testing.T) {
 	}
 }
 
-func TestUnaryClientInterceptor_MaxElapsedTime(t *testing.T) {
+// TestUnaryClientInterceptor_MaxElapsedTime ...
+// Summary: TestUnaryClientInterceptor_MaxElapsedTime
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	retries := int32(20)
 	retryConfig := configv1.RetryConfig_builder{
 		NumberOfRetries: &retries,
@@ -87,7 +105,16 @@ func TestUnaryClientInterceptor_MaxElapsedTime(t *testing.T) {
 	assert.InDelta(t, float64(100*time.Millisecond), float64(elapsed), float64(50*time.Millisecond))
 }
 
-func TestUnaryClientInterceptor_ContextCanceled(t *testing.T) {
+// TestUnaryClientInterceptor_ContextCanceled ...
+// Summary: TestUnaryClientInterceptor_ContextCanceled
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	retries := int32(1)
 	retryConfig := &configv1.RetryConfig_builder{
 		NumberOfRetries: &retries,
@@ -107,7 +134,16 @@ func TestUnaryClientInterceptor_ContextCanceled(t *testing.T) {
 	assert.Equal(t, context.Canceled, err)
 }
 
-func TestUnaryClientInterceptor_NoBaseBackoff(t *testing.T) {
+// TestUnaryClientInterceptor_NoBaseBackoff ...
+// Summary: TestUnaryClientInterceptor_NoBaseBackoff
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	retries := int32(1)
 	retryConfig := &configv1.RetryConfig_builder{
 		NumberOfRetries: &retries,

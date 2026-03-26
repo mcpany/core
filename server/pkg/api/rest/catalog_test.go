@@ -12,7 +12,16 @@ import (
 	"github.com/spf13/afero"
 )
 
-func TestNewCatalogServer(t *testing.T) {
+// TestNewCatalogServer ...
+// Summary: TestNewCatalogServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	manager := catalog.NewManager(fs, "/tmp/catalog")
 
@@ -27,7 +36,16 @@ func TestNewCatalogServer(t *testing.T) {
 	}
 }
 
-func TestCatalogServer_ListServices(t *testing.T) {
+// TestCatalogServer_ListServices ...
+// Summary: TestCatalogServer_ListServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup the mock file system and the catalog manager.
 	fs := afero.NewMemMapFs()
 

@@ -17,7 +17,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestPostgresStore(t *testing.T) {
+// TestPostgresStore ...
+// Summary: TestPostgresStore
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a new mock database
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
@@ -583,7 +592,16 @@ func TestPostgresStore(t *testing.T) {
 }
 
 // initSchema test
-func TestInitSchema(t *testing.T) {
+// initSchema test
+// Summary: TestInitSchema
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()

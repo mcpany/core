@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestBacktickInjection_Repro(t *testing.T) {
+// TestBacktickInjection_Repro ...
+// Summary: TestBacktickInjection_Repro
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Template: echo "`{{input}}`"
 	// This puts the input inside backticks, which are inside double quotes.
 	// analyzeQuoteContext should see this as Level 3 (Backtick) but likely sees Level 1 (Double).

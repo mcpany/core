@@ -14,7 +14,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestEnvVarOverrideArray(t *testing.T) {
+// TestEnvVarOverrideArray ...
+// Summary: TestEnvVarOverrideArray
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary config file
 	fs := afero.NewMemMapFs()
 	configContent := `

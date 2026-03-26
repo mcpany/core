@@ -10,7 +10,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestIsEnvVarAllowed(t *testing.T) {
+// TestIsEnvVarAllowed ...
+// Summary: TestIsEnvVarAllowed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Cleanup env after test
 	defer func() {
 		os.Unsetenv("MCPANY_ALLOWED_ENV")

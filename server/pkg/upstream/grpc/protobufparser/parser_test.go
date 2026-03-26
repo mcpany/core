@@ -29,17 +29,36 @@ import (
 const testProtoFilename = "test.proto"
 
 // MockServerReflectionStream is a mock implementation of the ServerReflection_ServerReflectionInfoClient
-type MockServerReflectionStream struct {
+// MockServerReflectionStream is a mock implementation of the ServerReflection_ServerReflectionInfoClient
+// Summary: MockServerReflectionStream
 	mock.Mock
 	grpc.ClientStream
 }
 
-func (m *MockServerReflectionStream) Send(req *reflectpb.ServerReflectionRequest) error {
+// Send ...
+// Summary: Send
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(req)
 	return args.Error(0)
 }
 
-func (m *MockServerReflectionStream) Recv() (*reflectpb.ServerReflectionResponse, error) {
+// Recv ...
+// Summary: Recv
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
@@ -47,12 +66,30 @@ func (m *MockServerReflectionStream) Recv() (*reflectpb.ServerReflectionResponse
 	return args.Get(0).(*reflectpb.ServerReflectionResponse), args.Error(1)
 }
 
-func (m *MockServerReflectionStream) CloseSend() error {
+// CloseSend ...
+// Summary: CloseSend
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	return args.Error(0)
 }
 
-func TestGetFileDescriptorByFilename(t *testing.T) {
+// TestGetFileDescriptorByFilename ...
+// Summary: TestGetFileDescriptorByFilename
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("successful retrieval", func(t *testing.T) {
 		mockStream := new(MockServerReflectionStream)
 		fdp := &descriptorpb.FileDescriptorProto{
@@ -196,7 +233,16 @@ func loadTestFileDescriptorSet(t *testing.T) *descriptorpb.FileDescriptorSet {
 	return fds
 }
 
-func TestExtractMcpDefinitions(t *testing.T) {
+// TestExtractMcpDefinitions ...
+// Summary: TestExtractMcpDefinitions
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fds := loadTestFileDescriptorSet(t)
 
 	t.Run("successful extraction", func(t *testing.T) {
@@ -257,7 +303,16 @@ func TestExtractMcpDefinitions(t *testing.T) {
 	})
 }
 
-func TestMcpField_Getters(t *testing.T) {
+// TestMcpField_Getters ...
+// Summary: TestMcpField_Getters
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	field := McpField{
 		Name:        "test_name",
 		Description: "test_description",
@@ -292,7 +347,16 @@ type mockReflectionServer struct {
 	stream      *mockReflectionServerStream
 }
 
-func (s *mockReflectionServer) ServerReflectionInfo(stream reflectpb.ServerReflection_ServerReflectionInfoServer) error {
+// ServerReflectionInfo ...
+// Summary: ServerReflectionInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	s.stream = &mockReflectionServerStream{stream}
 	close(s.streamReady)
 	<-stream.Context().Done()
@@ -304,7 +368,16 @@ type mockReflectionServerStream struct {
 	reflectpb.ServerReflection_ServerReflectionInfoServer
 }
 
-func TestParseProtoFromDefs_Extended(t *testing.T) {
+// TestParseProtoFromDefs_Extended ...
+// Summary: TestParseProtoFromDefs_Extended
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 
 	t.Run("error on non-existent file path", func(t *testing.T) {
@@ -403,7 +476,16 @@ func TestParseProtoFromDefs_Extended(t *testing.T) {
 	})
 }
 
-func TestParseProtoByReflection_Extended(t *testing.T) {
+// TestParseProtoByReflection_Extended ...
+// Summary: TestParseProtoByReflection_Extended
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	setupServer := func(t *testing.T) (*mockReflectionServer, *grpc.Server, net.Listener) {
 		server := &mockReflectionServer{streamReady: make(chan struct{})}
 		lis, err := net.Listen("tcp", "127.0.0.1:0")
@@ -534,7 +616,16 @@ func TestParseProtoByReflection_Extended(t *testing.T) {
 	})
 }
 
-func TestExtractMcpDefinitions_Extended(t *testing.T) {
+// TestExtractMcpDefinitions_Extended ...
+// Summary: TestExtractMcpDefinitions_Extended
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("extracts prompts and complex tools", func(t *testing.T) {
 		fds := &descriptorpb.FileDescriptorSet{
 			File: []*descriptorpb.FileDescriptorProto{

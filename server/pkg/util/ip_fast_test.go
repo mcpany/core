@@ -8,7 +8,16 @@ import (
 	"testing"
 )
 
-func TestIsPrivateNetworkIPv4_EdgeCases(t *testing.T) {
+// TestIsPrivateNetworkIPv4_EdgeCases ...
+// Summary: TestIsPrivateNetworkIPv4_EdgeCases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		ip       string

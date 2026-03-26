@@ -12,7 +12,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestBug_BrokenSymlinkTraversal(t *testing.T) {
+// TestBug_BrokenSymlinkTraversal ...
+// Summary: TestBug_BrokenSymlinkTraversal
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. Create root dir
 	rootDir := t.TempDir()
 

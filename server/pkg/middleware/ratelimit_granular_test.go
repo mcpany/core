@@ -18,11 +18,21 @@ import (
 )
 
 // MockToolManager for testing
-type MockToolManager struct {
+// MockToolManager for testing
+// Summary: MockToolManager
 	mock.Mock
 }
 
-func (m *MockToolManager) GetTool(name string) (tool.Tool, bool) {
+// GetTool ...
+// Summary: GetTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(name)
 	if t := args.Get(0); t != nil {
 		return t.(tool.Tool), args.Bool(1)
@@ -30,7 +40,16 @@ func (m *MockToolManager) GetTool(name string) (tool.Tool, bool) {
 	return nil, args.Bool(1)
 }
 
-func (m *MockToolManager) GetServiceInfo(id string) (*tool.ServiceInfo, bool) {
+// GetServiceInfo ...
+// Summary: GetServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(id)
 	if s := args.Get(0); s != nil {
 		return s.(*tool.ServiceInfo), args.Bool(1)
@@ -39,36 +58,190 @@ func (m *MockToolManager) GetServiceInfo(id string) (*tool.ServiceInfo, bool) {
 }
 
 // Implement other interface methods as no-ops or panics if needed
-func (m *MockToolManager) ListTools() []tool.Tool                       { return nil }
-func (m *MockToolManager) ListMCPTools() []*mcp.Tool                    { return nil }
-func (m *MockToolManager) AddTool(t tool.Tool) error                    { return nil }
-func (m *MockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
-func (m *MockToolManager) ClearToolsForService(_ string)                {}
-func (m *MockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+// Implement other interface methods as no-ops or panics if needed
+// Summary: ListTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ListMCPTools ...
+// Summary: ListMCPTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// AddTool ...
+// Summary: AddTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// AddServiceInfo ...
+// Summary: AddServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ClearToolsForService ...
+// Summary: ClearToolsForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ExecuteTool ...
+// Summary: ExecuteTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (m *MockToolManager) SetMCPServer(_ tool.MCPServerProvider)                    {}
-func (m *MockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition)  {}
-func (m *MockToolManager) IsServiceAllowed(serviceID, profileID string) bool        { return true }
-func (m *MockToolManager) AddMiddleware(_ tool.ExecutionMiddleware)                 {}
-func (m *MockToolManager) ToolMatchesProfile(tool tool.Tool, profileID string) bool { return true }
-func (m *MockToolManager) ListServices() []*tool.ServiceInfo                        { return nil }
+// SetMCPServer ...
+// Summary: SetMCPServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// SetProfiles ...
+// Summary: SetProfiles
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// IsServiceAllowed ...
+// Summary: IsServiceAllowed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// AddMiddleware ...
+// Summary: AddMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ToolMatchesProfile ...
+// Summary: ToolMatchesProfile
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ListServices ...
+// Summary: ListServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-type MockTool struct {
+// MockTool ...
+// Summary: MockTool
 	name      string
 	serviceID string
 }
 
-func (t *MockTool) Tool() *v1.Tool {
+// Tool ...
+// Summary: Tool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return v1.Tool_builder{Name: proto.String(t.name), ServiceId: proto.String(t.serviceID)}.Build()
 }
-func (t *MockTool) MCPTool() *mcp.Tool { return &mcp.Tool{Name: t.name} }
-func (t *MockTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+// MCPTool ...
+// Summary: MCPTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Execute ...
+// Summary: Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (t *MockTool) GetCacheConfig() *configv1.CacheConfig { return nil }
+// GetCacheConfig ...
+// Summary: GetCacheConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func TestRateLimitMiddleware_Granular(t *testing.T) {
+// TestRateLimitMiddleware_Granular ...
+// Summary: TestRateLimitMiddleware_Granular
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tm := &MockToolManager{}
 	mw := middleware.NewRateLimitMiddleware(tm)
 
@@ -124,7 +297,16 @@ func TestRateLimitMiddleware_Granular(t *testing.T) {
 	assert.Equal(t, "ok", res)
 }
 
-func TestRateLimitMiddleware_ServiceLimitFallback(t *testing.T) {
+// TestRateLimitMiddleware_ServiceLimitFallback ...
+// Summary: TestRateLimitMiddleware_ServiceLimitFallback
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tm := &MockToolManager{}
 	mw := middleware.NewRateLimitMiddleware(tm)
 
@@ -161,11 +343,29 @@ func TestRateLimitMiddleware_ServiceLimitFallback(t *testing.T) {
 	assert.Contains(t, err.Error(), "rate limit exceeded for service")
 }
 
-func (m *MockToolManager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
+// GetAllowedServiceIDs ...
+// Summary: GetAllowedServiceIDs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(profileID)
 	return args.Get(0).(map[string]bool), args.Bool(1)
 }
 
-func (m *MockToolManager) GetToolCountForService(serviceID string) int {
+// GetToolCountForService ...
+// Summary: GetToolCountForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return 0
 }

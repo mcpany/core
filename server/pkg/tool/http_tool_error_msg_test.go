@@ -15,7 +15,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestHTTPTool_Execute_ErrorMessagesWithBody(t *testing.T) {
+// TestHTTPTool_Execute_ErrorMessagesWithBody ...
+// Summary: TestHTTPTool_Execute_ErrorMessagesWithBody
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// We cannot use t.Parallel() because we are modifying environment variables
 	// t.Parallel()
 

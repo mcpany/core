@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestPostgresStore_Load_Errors(t *testing.T) {
+// TestPostgresStore_Load_Errors ...
+// Summary: TestPostgresStore_Load_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Load() runs 5 concurrent goroutines which makes sqlmock ordering non-deterministic.
 	// These tests exercise the same error-handling code paths through the sequential
 	// single-table methods that share the implementation with Load()'s goroutines.
@@ -70,7 +79,16 @@ func TestPostgresStore_Load_Errors(t *testing.T) {
 	})
 }
 
-func TestPostgresStore_GetService_Errors(t *testing.T) {
+// TestPostgresStore_GetService_Errors ...
+// Summary: TestPostgresStore_GetService_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -103,7 +121,16 @@ func TestPostgresStore_GetService_Errors(t *testing.T) {
 	})
 }
 
-func TestPostgresStore_GetGlobalSettings_Errors(t *testing.T) {
+// TestPostgresStore_GetGlobalSettings_Errors ...
+// Summary: TestPostgresStore_GetGlobalSettings_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -124,7 +151,16 @@ func TestPostgresStore_GetGlobalSettings_Errors(t *testing.T) {
 	})
 }
 
-func TestPostgresStore_SaveGlobalSettings_Errors(t *testing.T) {
+// TestPostgresStore_SaveGlobalSettings_Errors ...
+// Summary: TestPostgresStore_SaveGlobalSettings_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -142,7 +178,16 @@ func TestPostgresStore_SaveGlobalSettings_Errors(t *testing.T) {
 	})
 }
 
-func TestPostgresStore_User_Errors(t *testing.T) {
+// TestPostgresStore_User_Errors ...
+// Summary: TestPostgresStore_User_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -199,7 +244,16 @@ func TestPostgresStore_User_Errors(t *testing.T) {
 	})
 }
 
-func TestPostgresStore_Secret_Errors(t *testing.T) {
+// TestPostgresStore_Secret_Errors ...
+// Summary: TestPostgresStore_Secret_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -240,7 +294,16 @@ func TestPostgresStore_Secret_Errors(t *testing.T) {
 	})
 }
 
-func TestPostgresStore_Profile_Errors(t *testing.T) {
+// TestPostgresStore_Profile_Errors ...
+// Summary: TestPostgresStore_Profile_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -281,7 +344,16 @@ func TestPostgresStore_Profile_Errors(t *testing.T) {
 	})
 }
 
-func TestPostgresStore_Collection_Errors(t *testing.T) {
+// TestPostgresStore_Collection_Errors ...
+// Summary: TestPostgresStore_Collection_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -322,7 +394,16 @@ func TestPostgresStore_Collection_Errors(t *testing.T) {
 	})
 }
 
-func TestPostgresStore_Token_Errors(t *testing.T) {
+// TestPostgresStore_Token_Errors ...
+// Summary: TestPostgresStore_Token_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -350,12 +431,30 @@ func TestPostgresStore_Token_Errors(t *testing.T) {
 	})
 }
 
-func TestHasConfigSources(t *testing.T) {
+// TestHasConfigSources ...
+// Summary: TestHasConfigSources
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	store := NewStore(nil)
 	assert.True(t, store.HasConfigSources())
 }
 
-func TestNewDBFromSQLDB_PingError(t *testing.T) {
+// TestNewDBFromSQLDB_PingError ...
+// Summary: TestNewDBFromSQLDB_PingError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	db, mock, err := sqlmock.New(sqlmock.MonitorPingsOption(true))
 	require.NoError(t, err)
 	defer db.Close()
@@ -368,7 +467,16 @@ func TestNewDBFromSQLDB_PingError(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to ping db")
 }
 
-func TestNewDBFromSQLDB_SchemaError(t *testing.T) {
+// TestNewDBFromSQLDB_SchemaError ...
+// Summary: TestNewDBFromSQLDB_SchemaError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()

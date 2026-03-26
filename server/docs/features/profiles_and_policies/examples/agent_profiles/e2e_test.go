@@ -33,14 +33,32 @@ type headerTransport struct {
 	headers map[string]string
 }
 
-func (t *headerTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+// RoundTrip ...
+// Summary: RoundTrip
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	for k, v := range t.headers {
 		req.Header.Set(k, v)
 	}
 	return t.base.RoundTrip(req)
 }
 
-func TestAgentProfilesE2E(t *testing.T) {
+// TestAgentProfilesE2E ...
+// Summary: TestAgentProfilesE2E
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. Write config file
 	configContent := `
 global_settings:

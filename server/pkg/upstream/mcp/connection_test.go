@@ -14,7 +14,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestWithMCPClientSession(t *testing.T) {
+// TestWithMCPClientSession ...
+// Summary: TestWithMCPClientSession
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 
 	// Mock Connect function

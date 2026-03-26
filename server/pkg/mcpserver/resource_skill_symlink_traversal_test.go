@@ -15,7 +15,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestSkillResource_SymlinkTraversal(t *testing.T) {
+// TestSkillResource_SymlinkTraversal ...
+// Summary: TestSkillResource_SymlinkTraversal
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup
 	tmpDir, err := os.MkdirTemp("", "skill-symlink-test")
 	require.NoError(t, err)

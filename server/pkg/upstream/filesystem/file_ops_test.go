@@ -20,11 +20,29 @@ type mockFileOpsProvider struct {
 	resolveFunc func(string) (string, error)
 }
 
-func (m *mockFileOpsProvider) GetFs() afero.Fs {
+// GetFs ...
+// Summary: GetFs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.fs
 }
 
-func (m *mockFileOpsProvider) ResolvePath(virtualPath string) (string, error) {
+// ResolvePath ...
+// Summary: ResolvePath
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.resolveFunc != nil {
 		return m.resolveFunc(virtualPath)
 	}
@@ -32,11 +50,29 @@ func (m *mockFileOpsProvider) ResolvePath(virtualPath string) (string, error) {
 	return virtualPath, nil
 }
 
-func (m *mockFileOpsProvider) Close() error {
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func TestReadFileTool(t *testing.T) {
+// TestReadFileTool ...
+// Summary: TestReadFileTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	prov := &mockFileOpsProvider{fs: fs}
 
@@ -119,7 +155,16 @@ func TestReadFileTool(t *testing.T) {
 	})
 }
 
-func TestWriteFileTool(t *testing.T) {
+// TestWriteFileTool ...
+// Summary: TestWriteFileTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	prov := &mockFileOpsProvider{fs: fs}
 
@@ -188,7 +233,16 @@ func TestWriteFileTool(t *testing.T) {
 	})
 }
 
-func TestMoveFileTool(t *testing.T) {
+// TestMoveFileTool ...
+// Summary: TestMoveFileTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	prov := &mockFileOpsProvider{fs: fs}
 
@@ -244,7 +298,16 @@ func TestMoveFileTool(t *testing.T) {
 	})
 }
 
-func TestDeleteFileTool(t *testing.T) {
+// TestDeleteFileTool ...
+// Summary: TestDeleteFileTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	prov := &mockFileOpsProvider{fs: fs}
 
@@ -317,13 +380,31 @@ func TestDeleteFileTool(t *testing.T) {
 // We rely on file_ops_security_test.go for that.
 // But we can check that it doesn't crash on MemMapFs.
 
-func TestVerifyPathIntegrity_MemMapFs(t *testing.T) {
+// TestVerifyPathIntegrity_MemMapFs ...
+// Summary: TestVerifyPathIntegrity_MemMapFs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	err := verifyPathIntegrity(fs, "/any/path")
 	require.NoError(t, err)
 }
 
-func TestSafeWriteFile_MemMapFs_Simple(t *testing.T) {
+// TestSafeWriteFile_MemMapFs_Simple ...
+// Summary: TestSafeWriteFile_MemMapFs_Simple
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	err := safeWriteFile(fs, "/test.txt", []byte("data"), 0644)
 	require.NoError(t, err)

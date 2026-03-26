@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-func TestRetry(t *testing.T) {
+// TestRetry ...
+// Summary: TestRetry
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	t.Run("success_on_first_try", func(t *testing.T) {
 		var attempts int

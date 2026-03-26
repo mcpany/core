@@ -17,7 +17,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestSettings_StdioLogging(t *testing.T) {
+// TestSettings_StdioLogging ...
+// Summary: TestSettings_StdioLogging
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	viper.Reset()
 	fs := afero.NewMemMapFs()
 	cmd := &cobra.Command{}

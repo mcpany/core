@@ -37,11 +37,29 @@ type mockTool struct {
 	tool *v1.Tool
 }
 
-func (m *mockTool) Tool() *v1.Tool {
+// Tool ...
+// Summary: Tool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.tool
 }
 
-func (m *mockTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
+// Execute ...
+// Summary: Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Simulate work that takes a bit of time, allowing context cancellation to be tested.
 	select {
 	case <-time.After(50 * time.Millisecond):
@@ -51,16 +69,43 @@ func (m *mockTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, 
 	}
 }
 
-func (m *mockTool) GetCacheConfig() *configv1.CacheConfig {
+// GetCacheConfig ...
+// Summary: GetCacheConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *mockTool) MCPTool() *mcp.Tool {
+// MCPTool ...
+// Summary: MCPTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t, _ := tool.ConvertProtoToMCPTool(m.tool)
 	return t
 }
 
-func TestToolListFiltering(t *testing.T) {
+// TestToolListFiltering ...
+// Summary: TestToolListFiltering
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	poolManager := pool.NewManager()
 	f := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
@@ -145,7 +190,16 @@ func TestToolListFiltering(t *testing.T) {
 	assert.Equal(t, "builtin.mcp:list_roots", listResult.Tools[0].Name)
 }
 
-func TestToolListFilteringServiceId(t *testing.T) {
+// TestToolListFilteringServiceId ...
+// Summary: TestToolListFilteringServiceId
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	poolManager := pool.NewManager()
 	f := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
@@ -225,24 +279,69 @@ type mockErrorTool struct {
 	tool *v1.Tool
 }
 
-func (m *mockErrorTool) Tool() *v1.Tool {
+// Tool ...
+// Summary: Tool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.tool
 }
 
-func (m *mockErrorTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+// Execute ...
+// Summary: Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, errors.New("execution error")
 }
 
-func (m *mockErrorTool) GetCacheConfig() *configv1.CacheConfig {
+// GetCacheConfig ...
+// Summary: GetCacheConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *mockErrorTool) MCPTool() *mcp.Tool {
+// MCPTool ...
+// Summary: MCPTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t, _ := tool.ConvertProtoToMCPTool(m.tool)
 	return t
 }
 
-func TestServer_CallTool(t *testing.T) {
+// TestServer_CallTool ...
+// Summary: TestServer_CallTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	poolManager := pool.NewManager()
 	f := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
@@ -358,23 +457,68 @@ type testPrompt struct {
 	ServiceValue string
 }
 
-func (p *testPrompt) Prompt() *mcp.Prompt {
+// Prompt ...
+// Summary: Prompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return &mcp.Prompt{Name: p.NameValue}
 }
 
-func (p *testPrompt) Service() string {
+// Service ...
+// Summary: Service
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return p.ServiceValue
 }
 
-func (p *testPrompt) Definition() *configv1.PromptDefinition {
+// Definition ...
+// Summary: Definition
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (p *testPrompt) Get(_ context.Context, _ json.RawMessage) (*mcp.GetPromptResult, error) {
+// Get ...
+// Summary: Get
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return &mcp.GetPromptResult{}, nil
 }
 
-func TestServer_Prompts(t *testing.T) {
+// TestServer_Prompts ...
+// Summary: TestServer_Prompts
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	poolManager := pool.NewManager()
 	f := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
@@ -436,23 +580,68 @@ type testResource struct {
 	ServiceValue string
 }
 
-func (r *testResource) Resource() *mcp.Resource {
+// Resource ...
+// Summary: Resource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return &mcp.Resource{URI: r.URIValue}
 }
 
-func (r *testResource) Service() string {
+// Service ...
+// Summary: Service
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return r.ServiceValue
 }
 
-func (r *testResource) Read(_ context.Context) (*mcp.ReadResourceResult, error) {
+// Read ...
+// Summary: Read
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return &mcp.ReadResourceResult{}, nil
 }
 
-func (r *testResource) Subscribe(_ context.Context) error {
+// Subscribe ...
+// Summary: Subscribe
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func TestServer_Resources(t *testing.T) {
+// TestServer_Resources ...
+// Summary: TestServer_Resources
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	poolManager := pool.NewManager()
 	f := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
@@ -509,7 +698,16 @@ func TestServer_Resources(t *testing.T) {
 	})
 }
 
-func TestServer_Getters(t *testing.T) {
+// TestServer_Getters ...
+// Summary: TestServer_Getters
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	poolManager := pool.NewManager()
 	f := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
@@ -545,11 +743,29 @@ type mockToolManager struct {
 	clearToolsForServiceCalled bool
 }
 
-func (m *mockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {
+// AddServiceInfo ...
+// Summary: AddServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.addServiceInfoCalled = true
 }
 
-func (m *mockToolManager) GetTool(_ string) (tool.Tool, bool) {
+// GetTool ...
+// Summary: GetTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.getToolCalled = true
 	inputSchema, _ := structpb.NewStruct(map[string]interface{}{"type": "object"})
 	return &mockTool{tool: v1.Tool_builder{
@@ -558,46 +774,145 @@ func (m *mockToolManager) GetTool(_ string) (tool.Tool, bool) {
 	}.Build()}, true
 }
 
-func (m *mockToolManager) ListServices() []*tool.ServiceInfo {
+// ListServices ...
+// Summary: ListServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *mockToolManager) ListTools() []tool.Tool {
+// ListTools ...
+// Summary: ListTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.listToolsCalled = true
 	return []tool.Tool{}
 }
 
-func (m *mockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+// ExecuteTool ...
+// Summary: ExecuteTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.executeToolCalled = true
 	return nil, nil
 }
 
-func (m *mockToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {
+// AddMiddleware ...
+// Summary: AddMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 }
 
-func (m *mockToolManager) SetMCPServer(_ tool.MCPServerProvider) {
+// SetMCPServer ...
+// Summary: SetMCPServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.setMCPServerCalled = true
 }
 
-func (m *mockToolManager) AddTool(_ tool.Tool) error {
+// AddTool ...
+// Summary: AddTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.addToolCalled = true
 	return nil
 }
 
-func (m *mockToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) {
+// GetServiceInfo ...
+// Summary: GetServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.getServiceInfoCalled = true
 	return &tool.ServiceInfo{}, true
 }
 
-func (m *mockToolManager) ClearToolsForService(_ string) {
+// ClearToolsForService ...
+// Summary: ClearToolsForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.clearToolsForServiceCalled = true
 }
 
-func (m *mockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
+// SetProfiles ...
+// Summary: SetProfiles
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func (m *mockToolManager) IsServiceAllowed(_, _ string) bool { return true }
+// IsServiceAllowed ...
+// Summary: IsServiceAllowed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func TestServer_ToolManagerDelegation(t *testing.T) {
+// TestServer_ToolManagerDelegation ...
+// Summary: TestServer_ToolManagerDelegation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	poolManager := pool.NewManager()
 	f := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
@@ -640,7 +955,16 @@ func TestServer_ToolManagerDelegation(t *testing.T) {
 	assert.True(t, mockTM.clearToolsForServiceCalled)
 }
 
-func TestToolListFilteringIsAuthoritative(t *testing.T) {
+// TestToolListFilteringIsAuthoritative ...
+// Summary: TestToolListFilteringIsAuthoritative
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	poolManager := pool.NewManager()
 	f := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
@@ -712,7 +1036,16 @@ func TestToolListFilteringIsAuthoritative(t *testing.T) {
 	assert.True(t, found, "Pre-existing tool should be present")
 }
 
-func TestToolListFiltering_ErrorCase(t *testing.T) {
+// TestToolListFiltering_ErrorCase ...
+// Summary: TestToolListFiltering_ErrorCase
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	poolManager := pool.NewManager()
 	f := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
@@ -766,7 +1099,16 @@ func TestToolListFiltering_ErrorCase(t *testing.T) {
 	assert.Len(t, listResult.Tools, 2)
 }
 
-func TestToolListFilteringConversionError(t *testing.T) {
+// TestToolListFilteringConversionError ...
+// Summary: TestToolListFilteringConversionError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	poolManager := pool.NewManager()
 	f := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
@@ -839,7 +1181,16 @@ func TestToolListFilteringConversionError(t *testing.T) {
 	assert.Len(t, listResult.Tools, 1, "Only valid tools should be returned")
 }
 
-func TestServer_Reload(t *testing.T) {
+// TestServer_Reload ...
+// Summary: TestServer_Reload
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	poolManager := pool.NewManager()
 	f := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
@@ -880,7 +1231,16 @@ func TestServer_Reload(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestServer_MiddlewareHook(t *testing.T) {
+// TestServer_MiddlewareHook ...
+// Summary: TestServer_MiddlewareHook
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	poolManager := pool.NewManager()
 	f := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
@@ -908,7 +1268,16 @@ func TestServer_MiddlewareHook(t *testing.T) {
 	assert.True(t, hookCalled)
 }
 
-func TestServer_HandlerErrors(t *testing.T) {
+// TestServer_HandlerErrors ...
+// Summary: TestServer_HandlerErrors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	poolManager := pool.NewManager()
 	f := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
@@ -969,21 +1338,57 @@ type chameleonTool struct {
 	tool *v1.Tool
 }
 
-func (m *chameleonTool) Tool() *v1.Tool {
+// Tool ...
+// Summary: Tool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 	return m.tool
 }
 
-func (m *chameleonTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+// Execute ...
+// Summary: Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return "success", nil
 }
 
-func (m *chameleonTool) GetCacheConfig() *configv1.CacheConfig {
+// GetCacheConfig ...
+// Summary: GetCacheConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *chameleonTool) MCPTool() *mcp.Tool {
+// MCPTool ...
+// Summary: MCPTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 	t, _ := tool.ConvertProtoToMCPTool(m.tool)
@@ -1004,11 +1409,29 @@ type smartToolManager struct {
 	tools    []tool.Tool
 }
 
-func (m *smartToolManager) ListTools() []tool.Tool {
+// ListTools ...
+// Summary: ListTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.tools
 }
 
-func (m *smartToolManager) ListMCPTools() []*mcp.Tool {
+// ListMCPTools ...
+// Summary: ListMCPTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mcpTools := make([]*mcp.Tool, 0, len(m.tools))
 	for _, t := range m.tools {
 		if mt := t.MCPTool(); mt != nil {
@@ -1018,29 +1441,137 @@ func (m *smartToolManager) ListMCPTools() []*mcp.Tool {
 	return mcpTools
 }
 
-func (m *smartToolManager) ListServices() []*tool.ServiceInfo {
+// ListServices ...
+// Summary: ListServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *smartToolManager) GetServiceInfo(id string) (*tool.ServiceInfo, bool) {
+// GetServiceInfo ...
+// Summary: GetServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	s, ok := m.services[id]
 	return s, ok
 }
 
 // Stubs to satisfy interface
-func (m *smartToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
-func (m *smartToolManager) GetTool(_ string) (tool.Tool, bool)           { return nil, false }
-func (m *smartToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+// Stubs to satisfy interface
+// Summary: AddServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// GetTool ...
+// Summary: GetTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ExecuteTool ...
+// Summary: ExecuteTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil // Not used here
 }
-func (m *smartToolManager) AddMiddleware(_ tool.ExecutionMiddleware)                {}
-func (m *smartToolManager) SetMCPServer(_ tool.MCPServerProvider)                   {}
-func (m *smartToolManager) AddTool(_ tool.Tool) error                               { return nil }
-func (m *smartToolManager) ClearToolsForService(_ string)                           {}
-func (m *smartToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
-func (m *smartToolManager) IsServiceAllowed(_, _ string) bool                       { return true }
+// AddMiddleware ...
+// Summary: AddMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// SetMCPServer ...
+// Summary: SetMCPServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// AddTool ...
+// Summary: AddTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ClearToolsForService ...
+// Summary: ClearToolsForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// SetProfiles ...
+// Summary: SetProfiles
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// IsServiceAllowed ...
+// Summary: IsServiceAllowed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func (m *smartToolManager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
+// GetAllowedServiceIDs ...
+// Summary: GetAllowedServiceIDs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Permissive for testing
 	return map[string]bool{
 		"global-service":  true,
@@ -1049,7 +1580,16 @@ func (m *smartToolManager) GetAllowedServiceIDs(profileID string) (map[string]bo
 	}, true
 }
 
-func TestServer_MiddlewareChain(t *testing.T) {
+// TestServer_MiddlewareChain ...
+// Summary: TestServer_MiddlewareChain
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	poolManager := pool.NewManager()
 	f := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
@@ -1162,7 +1702,16 @@ func TestServer_MiddlewareChain(t *testing.T) {
 	require.True(t, ok)
 }
 
-func TestServer_RouterDispatch(t *testing.T) {
+// TestServer_RouterDispatch ...
+// Summary: TestServer_RouterDispatch
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	poolManager := pool.NewManager()
 	f := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()

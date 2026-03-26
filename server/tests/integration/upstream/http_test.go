@@ -18,7 +18,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestUpstreamService_HTTP(t *testing.T) {
+// TestUpstreamService_HTTP ...
+// Summary: TestUpstreamService_HTTP
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCase := &framework.E2ETestCase{
 		Name:                "HTTP Echo Server",
 		UpstreamServiceType: "http",
@@ -59,7 +68,16 @@ func TestUpstreamService_HTTP(t *testing.T) {
 	framework.RunE2ETest(t, testCase)
 }
 
-func TestUpstreamService_HTTPExample(t *testing.T) {
+// TestUpstreamService_HTTPExample ...
+// Summary: TestUpstreamService_HTTPExample
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
 

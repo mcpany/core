@@ -12,7 +12,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestJwksSigner(t *testing.T) {
+// TestJwksSigner ...
+// Summary: TestJwksSigner
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("newJwksSigner", func(t *testing.T) {
 		signer, err := newJwksSigner()
 		require.NoError(t, err)

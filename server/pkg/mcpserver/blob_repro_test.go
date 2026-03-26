@@ -26,7 +26,16 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestServer_CallTool_Blob_ByteSlice_Repro(t *testing.T) {
+// TestServer_CallTool_Blob_ByteSlice_Repro ...
+// Summary: TestServer_CallTool_Blob_ByteSlice_Repro
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()

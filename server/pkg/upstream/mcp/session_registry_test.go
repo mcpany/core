@@ -13,21 +13,49 @@ import (
 )
 
 // MockSession mocks the tool.Session interface.
-type MockSession struct {
+// MockSession mocks the tool.Session interface.
+// Summary: MockSession
 	mock.Mock
 }
 
-func (m *MockSession) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
+// CreateMessage ...
+// Summary: CreateMessage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, params)
 	return args.Get(0).(*mcp.CreateMessageResult), args.Error(1)
 }
 
-func (m *MockSession) ListRoots(ctx context.Context) (*mcp.ListRootsResult, error) {
+// ListRoots ...
+// Summary: ListRoots
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx)
 	return args.Get(0).(*mcp.ListRootsResult), args.Error(1)
 }
 
-func TestSessionRegistry(t *testing.T) {
+// TestSessionRegistry ...
+// Summary: TestSessionRegistry
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	registry := NewSessionRegistry()
 	mockDownstream := new(MockSession)
 	mockUpstream := &mcp.ServerSession{} // Using ServerSession as a dummy implementer of mcp.Session (interface check)

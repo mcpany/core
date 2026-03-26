@@ -16,7 +16,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestUpstreamService_Trello(t *testing.T) {
+// TestUpstreamService_Trello ...
+// Summary: TestUpstreamService_Trello
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if os.Getenv("TRELLO_API_KEY") == "" || os.Getenv("TRELLO_API_TOKEN") == "" || os.Getenv("TRELLO_API_KEY") == "dummy" {
 		// t.Skip("TRELLO_API_KEY or TRELLO_API_TOKEN not set")
 	}
@@ -61,7 +70,16 @@ func TestUpstreamService_Trello(t *testing.T) {
 	t.Log("INFO: E2E Test Scenario for Trello Server Completed Successfully!")
 }
 
-func TestUpstreamService_Miro(t *testing.T) {
+// TestUpstreamService_Miro ...
+// Summary: TestUpstreamService_Miro
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if os.Getenv("MIRO_API_TOKEN") == "" || os.Getenv("MIRO_API_TOKEN") == "dummy" {
 		// t.Skip("MIRO_API_TOKEN not set")
 	}
@@ -106,7 +124,16 @@ func TestUpstreamService_Miro(t *testing.T) {
 	t.Log("INFO: E2E Test Scenario for Miro Server Completed Successfully!")
 }
 
-func TestUpstreamService_Figma(t *testing.T) {
+// TestUpstreamService_Figma ...
+// Summary: TestUpstreamService_Figma
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if os.Getenv("FIGMA_API_TOKEN") == "" || os.Getenv("FIGMA_TEAM_ID") == "" || os.Getenv("FIGMA_API_TOKEN") == "dummy" {
 		// t.Skip("FIGMA_API_TOKEN or FIGMA_TEAM_ID not set")
 	}

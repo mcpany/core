@@ -8,7 +8,16 @@ import (
 	"testing"
 )
 
-func TestCoverage_WordTokenizer_DeadCode(t *testing.T) {
+// TestCoverage_WordTokenizer_DeadCode ...
+// Summary: TestCoverage_WordTokenizer_DeadCode
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	wt := NewWordTokenizer()
 	visited := make(map[uintptr]bool)
 	// Direct call to cover dead code in countRecursive
@@ -18,7 +27,16 @@ func TestCoverage_WordTokenizer_DeadCode(t *testing.T) {
 	assert.Equal(t, 1, c)
 }
 
-func TestCoverage_WordTokenizer_CountTokens_SmallFactor(t *testing.T) {
+// TestCoverage_WordTokenizer_CountTokens_SmallFactor ...
+// Summary: TestCoverage_WordTokenizer_CountTokens_SmallFactor
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	wt := &WordTokenizer{Factor: 0.1}
 	// "hello" -> 1 word. 1 * 0.1 = 0. Clamped to 1.
 	c, err := wt.CountTokens("hello")
@@ -26,7 +44,16 @@ func TestCoverage_WordTokenizer_CountTokens_SmallFactor(t *testing.T) {
 	assert.Equal(t, 1, c)
 }
 
-func TestCoverage_CountTokensInValueWord_SmallFactor(t *testing.T) {
+// TestCoverage_CountTokensInValueWord_SmallFactor ...
+// Summary: TestCoverage_CountTokensInValueWord_SmallFactor
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	wt := &WordTokenizer{Factor: 0.1}
 	// 123 -> 1 word.
 	c, err := CountTokensInValue(wt, 123)

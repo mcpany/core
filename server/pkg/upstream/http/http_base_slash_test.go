@@ -16,7 +16,16 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func TestHTTPUpstream_BaseURLSlashLogic(t *testing.T) {
+// TestHTTPUpstream_BaseURLSlashLogic ...
+// Summary: TestHTTPUpstream_BaseURLSlashLogic
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCases := []struct {
 		name         string
 		address      string

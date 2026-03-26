@@ -17,7 +17,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestAuthMiddleware_PromptsGet_ServiceAuth(t *testing.T) {
+// TestAuthMiddleware_PromptsGet_ServiceAuth ...
+// Summary: TestAuthMiddleware_PromptsGet_ServiceAuth
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup Auth Manager with:
 	// 1. Global API Key: "global-secret"
 	// 2. Service "secure" with API Key: "service-secret"

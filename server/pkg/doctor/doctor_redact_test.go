@@ -15,7 +15,16 @@ func stringPtr(s string) *string {
 	return &s
 }
 
-func TestCheckService_Redaction_Mailto_HTTP(t *testing.T) {
+// TestCheckService_Redaction_Mailto_HTTP ...
+// Summary: TestCheckService_Redaction_Mailto_HTTP
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This integration test verifies that the doctor check, which uses RedactDSN internally,
 	// does NOT redact mailto: links in error messages.
 	// This covers the flow: CheckService -> checkHTTPService -> checkURL -> RedactDSN.

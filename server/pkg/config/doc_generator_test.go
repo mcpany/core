@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestGenerateDocumentation(t *testing.T) {
+// TestGenerateDocumentation ...
+// Summary: TestGenerateDocumentation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	inputSchema, _ := structpb.NewStruct(map[string]interface{}{
 		"type": "object",
 		"properties": map[string]interface{}{

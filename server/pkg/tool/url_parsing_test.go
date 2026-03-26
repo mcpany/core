@@ -8,7 +8,16 @@ import (
 	"testing"
 )
 
-func TestParseURLSegments(t *testing.T) {
+// TestParseURLSegments ...
+// Summary: TestParseURLSegments
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		template string

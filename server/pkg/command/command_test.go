@@ -38,7 +38,16 @@ type muWriter struct {
 	mu *sync.Mutex
 }
 
-func (w *muWriter) Write(p []byte) (int, error) {
+// Write ...
+// Summary: Write
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	return w.w.Write(p)
@@ -94,7 +103,16 @@ func canConnectToDocker(t *testing.T) bool {
 	return true
 }
 
-func TestLocalExecutor(t *testing.T) {
+// TestLocalExecutor ...
+// Summary: TestLocalExecutor
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	t.Run("Success", func(t *testing.T) {
 		executor := NewExecutor(nil)
@@ -231,7 +249,16 @@ func TestLocalExecutor(t *testing.T) {
 	})
 }
 
-func TestDockerExecutor(t *testing.T) {
+// TestDockerExecutor ...
+// Summary: TestDockerExecutor
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if !canConnectToDocker(t) {
 		t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
 	}
@@ -395,7 +422,16 @@ func TestDockerExecutor(t *testing.T) {
 	})
 }
 
-func TestCombinedOutput(t *testing.T) {
+// TestCombinedOutput ...
+// Summary: TestCombinedOutput
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if !canConnectToDocker(t) {
 		t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
 	}
@@ -436,7 +472,16 @@ func TestCombinedOutput(t *testing.T) {
 	assert.Contains(t, output, "hello stderr")
 }
 
-func TestNewDockerExecutorSuccess(t *testing.T) {
+// TestNewDockerExecutorSuccess ...
+// Summary: TestNewDockerExecutorSuccess
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if !canConnectToDocker(t) {
 		t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
 	}
@@ -446,7 +491,16 @@ func TestNewDockerExecutorSuccess(t *testing.T) {
 	assert.NotNil(t, executor)
 }
 
-func TestNewExecutor(t *testing.T) {
+// TestNewExecutor ...
+// Summary: TestNewExecutor
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("WithContainer", func(t *testing.T) {
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
@@ -460,13 +514,31 @@ func TestNewExecutor(t *testing.T) {
 	})
 }
 
-func TestNewLocalExecutor(t *testing.T) {
+// TestNewLocalExecutor ...
+// Summary: TestNewLocalExecutor
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	executor := NewLocalExecutor()
 	assert.NotNil(t, executor)
 	assert.IsType(t, &localExecutor{}, executor)
 }
 
-func TestLocalExecutorWithStdIO(t *testing.T) {
+// TestLocalExecutorWithStdIO ...
+// Summary: TestLocalExecutorWithStdIO
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("Success", func(t *testing.T) {
 		executor := NewExecutor(nil)
 		stdin, stdout, stderr, exitCodeChan, err := executor.ExecuteWithStdIO(context.Background(), "cat", nil, "", nil)
@@ -651,7 +723,16 @@ func TestLocalExecutorWithStdIO(t *testing.T) {
 	})
 }
 
-func TestDockerExecutorWithStdIO(t *testing.T) {
+// TestDockerExecutorWithStdIO ...
+// Summary: TestDockerExecutorWithStdIO
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if !canConnectToDocker(t) {
 		t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
 	}
@@ -769,7 +850,16 @@ func TestDockerExecutorWithStdIO(t *testing.T) {
 	})
 }
 
-func TestDockerExecutor_Mocked(t *testing.T) {
+// TestDockerExecutor_Mocked ...
+// Summary: TestDockerExecutor_Mocked
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("Execute_Success", func(t *testing.T) {
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")

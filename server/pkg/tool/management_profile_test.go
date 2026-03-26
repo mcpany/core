@@ -12,7 +12,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestManager_Profiles(t *testing.T) {
+// TestManager_Profiles ...
+// Summary: TestManager_Profiles
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup
 	tm := NewManager(nil)
 
@@ -109,7 +118,16 @@ func TestManager_Profiles(t *testing.T) {
 }
 
 // Add test for isToolAllowed (internal method)
-func TestManager_IsToolAllowed_Indirect(t *testing.T) {
+// Add test for isToolAllowed (internal method)
+// Summary: TestManager_IsToolAllowed_Indirect
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tm := NewManager(nil)
 
 	p1 := configv1.ProfileDefinition_builder{
@@ -130,7 +148,16 @@ func TestManager_IsToolAllowed_Indirect(t *testing.T) {
 	assert.False(t, tm.isToolAllowed(t2))
 }
 
-func TestManager_GetTool_Inconsistent(t *testing.T) {
+// TestManager_GetTool_Inconsistent ...
+// Summary: TestManager_GetTool_Inconsistent
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tm := NewManager(nil)
 	// Manually corrupt the map (using implementation details)
 	tm.nameMap.Store("alias", "realID")
@@ -141,13 +168,31 @@ func TestManager_GetTool_Inconsistent(t *testing.T) {
 	assert.Nil(t, tool)
 }
 
-func TestIsSensitiveHeader(t *testing.T) {
+// TestIsSensitiveHeader ...
+// Summary: TestIsSensitiveHeader
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	assert.True(t, isSensitiveHeader("Authorization"))
 	assert.True(t, isSensitiveHeader("X-My-Token"))
 	assert.False(t, isSensitiveHeader("Content-Type"))
 }
 
-func TestManager_Profile_GranularToolDisabling(t *testing.T) {
+// TestManager_Profile_GranularToolDisabling ...
+// Summary: TestManager_Profile_GranularToolDisabling
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tm := NewManager(nil)
 
 	p1 := configv1.ProfileDefinition_builder{

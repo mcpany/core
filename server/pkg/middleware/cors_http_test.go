@@ -12,7 +12,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestHTTPCORSMiddleware(t *testing.T) {
+// TestHTTPCORSMiddleware ...
+// Summary: TestHTTPCORSMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name            string
 		allowedOrigins  []string

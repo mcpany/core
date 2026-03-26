@@ -12,7 +12,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestResolvePath_BrokenSymlink(t *testing.T) {
+// TestResolvePath_BrokenSymlink ...
+// Summary: TestResolvePath_BrokenSymlink
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	rootDir, err := os.MkdirTemp("", "fs_broken_symlink_test")
 	require.NoError(t, err)
 	defer os.RemoveAll(rootDir)
@@ -32,7 +41,16 @@ func TestResolvePath_BrokenSymlink(t *testing.T) {
 	assert.Contains(t, err.Error(), "broken symlink")
 }
 
-func TestResolvePath_PermissionDenied(t *testing.T) {
+// TestResolvePath_PermissionDenied ...
+// Summary: TestResolvePath_PermissionDenied
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if os.Getuid() == 0 {
 		t.Skip("Skipping permission denied test as root user")
 	}
@@ -94,7 +112,16 @@ func TestResolvePath_PermissionDenied(t *testing.T) {
 	assert.Contains(t, err.Error(), "permission denied")
 }
 
-func TestResolvePath_BestMatchEdgeCases(t *testing.T) {
+// TestResolvePath_BestMatchEdgeCases ...
+// Summary: TestResolvePath_BestMatchEdgeCases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	rootDir, err := os.MkdirTemp("", "fs_match_test")
 	require.NoError(t, err)
 	defer os.RemoveAll(rootDir)
@@ -133,14 +160,32 @@ func TestResolvePath_BestMatchEdgeCases(t *testing.T) {
 	assert.Equal(t, filepath.Join(dirA, "file.txt"), p3)
 }
 
-func TestResolvePath_NoRoots(t *testing.T) {
+// TestResolvePath_NoRoots ...
+// Summary: TestResolvePath_NoRoots
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	p := NewLocalProvider(nil, nil, nil, nil, 0)
 	_, err := p.ResolvePath("/anything")
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "no root paths defined")
 }
 
-func TestResolvePath_NoMatch(t *testing.T) {
+// TestResolvePath_NoMatch ...
+// Summary: TestResolvePath_NoMatch
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	rootPaths := map[string]string{"/data": "/tmp/data"}
 	p := NewLocalProvider(nil, rootPaths, nil, nil, 0)
 
@@ -149,7 +194,16 @@ func TestResolvePath_NoMatch(t *testing.T) {
 	assert.Contains(t, err.Error(), "not allowed")
 }
 
-func TestResolvePath_SymlinkLoop(t *testing.T) {
+// TestResolvePath_SymlinkLoop ...
+// Summary: TestResolvePath_SymlinkLoop
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// EvalSymlinks usually catches this and returns error, but let's verify.
 	rootDir, err := os.MkdirTemp("", "fs_loop_test")
 	require.NoError(t, err)
@@ -171,7 +225,16 @@ func TestResolvePath_SymlinkLoop(t *testing.T) {
 	// Error message comes from filepath.EvalSymlinks, typically "too many levels of symbolic links"
 }
 
-func TestResolvePath_ComplexGlobs(t *testing.T) {
+// TestResolvePath_ComplexGlobs ...
+// Summary: TestResolvePath_ComplexGlobs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	rootDir, err := os.MkdirTemp("", "fs_glob_test")
 	require.NoError(t, err)
 	defer os.RemoveAll(rootDir)

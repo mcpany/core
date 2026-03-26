@@ -12,7 +12,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestOAuth2Auth_Authenticate(t *testing.T) {
+// TestOAuth2Auth_Authenticate ...
+// Summary: TestOAuth2Auth_Authenticate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("InvalidTokenURL", func(t *testing.T) {
 		clientID := configv1.SecretValue_builder{
 			PlainText: proto.String("id"),

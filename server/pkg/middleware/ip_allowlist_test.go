@@ -12,7 +12,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestIPAllowlistMiddleware(t *testing.T) {
+// TestIPAllowlistMiddleware ...
+// Summary: TestIPAllowlistMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name           string
 		allowedIPs     []string
@@ -83,7 +92,16 @@ func TestIPAllowlistMiddleware(t *testing.T) {
 	}
 }
 
-func TestIPAllowlistMiddleware_InvalidConfig(t *testing.T) {
+// TestIPAllowlistMiddleware_InvalidConfig ...
+// Summary: TestIPAllowlistMiddleware_InvalidConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	_, err := NewIPAllowlistMiddleware([]string{"invalid-ip"})
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "invalid IP or CIDR")

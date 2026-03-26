@@ -16,7 +16,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestHTTPTool_Execute_LargeResponse(t *testing.T) {
+// TestHTTPTool_Execute_LargeResponse ...
+// Summary: TestHTTPTool_Execute_LargeResponse
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Not parallel because we modify env vars
 	// t.Parallel()
 

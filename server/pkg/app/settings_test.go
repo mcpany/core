@@ -12,7 +12,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestNewGlobalSettingsManager(t *testing.T) {
+// TestNewGlobalSettingsManager ...
+// Summary: TestNewGlobalSettingsManager
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	apiKey := "test-key"
 	allowedIPs := []string{"127.0.0.1"}
 	allowedOrigins := []string{"example.com"}
@@ -24,14 +33,32 @@ func TestNewGlobalSettingsManager(t *testing.T) {
 	assert.Equal(t, allowedOrigins, m.GetAllowedOrigins())
 }
 
-func TestNewGlobalSettingsManager_Defaults(t *testing.T) {
+// TestNewGlobalSettingsManager_Defaults ...
+// Summary: TestNewGlobalSettingsManager_Defaults
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewGlobalSettingsManager("", nil, nil)
 	assert.Empty(t, m.GetAPIKey())
 	assert.Nil(t, m.GetAllowedIPs())                   // It stores what we give it. nil -> nil
 	assert.Equal(t, []string{}, m.GetAllowedOrigins()) // logic says if allowedOrigins == nil, make it []string{}
 }
 
-func TestGlobalSettingsManager_Update(t *testing.T) {
+// TestGlobalSettingsManager_Update ...
+// Summary: TestGlobalSettingsManager_Update
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewGlobalSettingsManager("initial-key", nil, nil)
 
 	// Case 1: Explicit API Key overrides Config
@@ -76,7 +103,16 @@ func TestGlobalSettingsManager_Update(t *testing.T) {
 	assert.Empty(t, m.GetAllowedOrigins())
 }
 
-func TestGlobalSettingsManager_Concurrency(t *testing.T) {
+// TestGlobalSettingsManager_Concurrency ...
+// Summary: TestGlobalSettingsManager_Concurrency
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewGlobalSettingsManager("initial", nil, nil)
 	var wg sync.WaitGroup
 

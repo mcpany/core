@@ -18,7 +18,16 @@ func ptr(s string) *string {
 	return &s
 }
 
-func TestLinter_Run_PlainTextSecrets(t *testing.T) {
+// TestLinter_Run_PlainTextSecrets ...
+// Summary: TestLinter_Run_PlainTextSecrets
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cfg := configv1.McpAnyServerConfig_builder{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
 			configv1.UpstreamServiceConfig_builder{
@@ -52,7 +61,16 @@ func TestLinter_Run_PlainTextSecrets(t *testing.T) {
 	assert.True(t, found, "Expected warning about plain text secret")
 }
 
-func TestLinter_Run_ShellInjection(t *testing.T) {
+// TestLinter_Run_ShellInjection ...
+// Summary: TestLinter_Run_ShellInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cfg := configv1.McpAnyServerConfig_builder{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
 			configv1.UpstreamServiceConfig_builder{
@@ -78,7 +96,16 @@ func TestLinter_Run_ShellInjection(t *testing.T) {
 	assert.True(t, found, "Expected warning about shell injection")
 }
 
-func TestLinter_Run_InsecureHTTP(t *testing.T) {
+// TestLinter_Run_InsecureHTTP ...
+// Summary: TestLinter_Run_InsecureHTTP
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cfg := configv1.McpAnyServerConfig_builder{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
 			configv1.UpstreamServiceConfig_builder{
@@ -104,7 +131,16 @@ func TestLinter_Run_InsecureHTTP(t *testing.T) {
 	assert.True(t, found, "Expected warning about insecure HTTP")
 }
 
-func TestLinter_Run_CacheTTL(t *testing.T) {
+// TestLinter_Run_CacheTTL ...
+// Summary: TestLinter_Run_CacheTTL
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cfg := configv1.McpAnyServerConfig_builder{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
 			configv1.UpstreamServiceConfig_builder{

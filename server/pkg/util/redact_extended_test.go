@@ -8,7 +8,16 @@ import (
 	"testing"
 )
 
-func TestRedactJSONFast_EdgeCases(t *testing.T) {
+// TestRedactJSONFast_EdgeCases ...
+// Summary: TestRedactJSONFast_EdgeCases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		input    string
@@ -183,7 +192,16 @@ func makeLargeString(n int) string {
 	return string(b)
 }
 
-func TestBytesToString(t *testing.T) {
+// TestBytesToString ...
+// Summary: TestBytesToString
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	b := []byte("hello")
 	s := BytesToString(b)
 	assert.Equal(t, "hello", s)

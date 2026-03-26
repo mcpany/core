@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestServiceTemplates(t *testing.T) {
+// TestServiceTemplates ...
+// Summary: TestServiceTemplates
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup logic replicated from store_test.go to ensure isolation
 	tmpDir, err := os.MkdirTemp("", "mcpany-test-templates-*")
 	if err != nil {

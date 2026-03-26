@@ -16,7 +16,16 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func TestHTTPUpstream_URLConstruction_SpaceBug(t *testing.T) {
+// TestHTTPUpstream_URLConstruction_SpaceBug ...
+// Summary: TestHTTPUpstream_URLConstruction_SpaceBug
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test verifies that endpoint paths with spaces in query parameters
 	// do NOT cause tool initialization failure due to strings.Fields splitting.
 

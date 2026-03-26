@@ -16,7 +16,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestPostgresStore_ServiceTemplates(t *testing.T) {
+// TestPostgresStore_ServiceTemplates ...
+// Summary: TestPostgresStore_ServiceTemplates
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a new mock database
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)

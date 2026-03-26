@@ -12,7 +12,16 @@ import (
 	"testing"
 )
 
-func TestValidateConfigHandler_EnvIsolation(t *testing.T) {
+// TestValidateConfigHandler_EnvIsolation ...
+// Summary: TestValidateConfigHandler_EnvIsolation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup: Set an environment variable that overrides a config value
 	envVar := "MCPANY__GLOBAL_SETTINGS__LOG_LEVEL"
 	// LOG_LEVEL_DEBUG is a valid enum value

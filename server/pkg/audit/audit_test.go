@@ -16,7 +16,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestPostgresAuditStore_Close(t *testing.T) {
+// TestPostgresAuditStore_Close ...
+// Summary: TestPostgresAuditStore_Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a mock DB
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
@@ -33,13 +42,31 @@ func TestPostgresAuditStore_Close(t *testing.T) {
 	require.NoError(t, mock.ExpectationsWereMet())
 }
 
-func TestWebhookAuditStore_Close(t *testing.T) {
+// TestWebhookAuditStore_Close ...
+// Summary: TestWebhookAuditStore_Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	store := &WebhookAuditStore{}
 	err := store.Close()
 	require.NoError(t, err)
 }
 
-func TestWebhookAuditStore_Write(t *testing.T) {
+// TestWebhookAuditStore_Write ...
+// Summary: TestWebhookAuditStore_Write
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup a mock server
 	done := make(chan struct{})
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -70,7 +97,16 @@ func TestWebhookAuditStore_Write(t *testing.T) {
 	}
 }
 
-func TestWebhookAuditStore_Write_Error(t *testing.T) {
+// TestWebhookAuditStore_Write_Error ...
+// Summary: TestWebhookAuditStore_Write_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Webhook Write is now async, so it won't return errors from the server.
 	// We just verify it doesn't panic and we can close it.
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

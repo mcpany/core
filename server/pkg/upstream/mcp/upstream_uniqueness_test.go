@@ -9,7 +9,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewUpstream_Uniqueness(t *testing.T) {
+// TestNewUpstream_Uniqueness ...
+// Summary: TestNewUpstream_Uniqueness
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u1 := NewUpstream(nil)
 	u2 := NewUpstream(nil)
 

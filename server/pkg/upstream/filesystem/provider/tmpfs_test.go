@@ -12,7 +12,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestTmpfsProvider_Usage(t *testing.T) {
+// TestTmpfsProvider_Usage ...
+// Summary: TestTmpfsProvider_Usage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	p := NewTmpfsProvider()
 	defer p.Close()
 
@@ -45,7 +54,16 @@ func TestTmpfsProvider_Usage(t *testing.T) {
 	assert.Equal(t, "b", resolved)
 }
 
-func TestTmpfsProvider_Isolation(t *testing.T) {
+// TestTmpfsProvider_Isolation ...
+// Summary: TestTmpfsProvider_Isolation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	p1 := NewTmpfsProvider()
 	defer p1.Close()
 

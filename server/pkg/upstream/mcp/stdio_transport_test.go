@@ -14,7 +14,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestStdioTransport_CaptureStderr(t *testing.T) {
+// TestStdioTransport_CaptureStderr ...
+// Summary: TestStdioTransport_CaptureStderr
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -35,7 +44,16 @@ func TestStdioTransport_CaptureStderr(t *testing.T) {
 	assert.Contains(t, err.Error(), "something went wrong")
 }
 
-func TestStdioTransport_CaptureStderr_EarlyExit(t *testing.T) {
+// TestStdioTransport_CaptureStderr_EarlyExit ...
+// Summary: TestStdioTransport_CaptureStderr_EarlyExit
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Tests the case where the process exits immediately but maybe without stderr or with minimal
 	// This mirrors the "ls /nonexistent" case
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -58,7 +76,16 @@ func TestStdioTransport_CaptureStderr_EarlyExit(t *testing.T) {
 	assert.True(t, strings.Contains(err.Error(), "No such file") || strings.Contains(err.Error(), "ls:"), "Error should contain stderr output from ls")
 }
 
-func TestStdioTransport_Success(t *testing.T) {
+// TestStdioTransport_Success ...
+// Summary: TestStdioTransport_Success
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 

@@ -26,17 +26,36 @@ import (
 )
 
 // MockServiceRegistry is a manual mock for ServiceRegistryInterface
-type MockServiceRegistry struct {
+// MockServiceRegistry is a manual mock for ServiceRegistryInterface
+// Summary: MockServiceRegistry
 	serviceregistry.ServiceRegistryInterface
 	services []*configv1.UpstreamServiceConfig
 	errors   map[string]string
 }
 
-func (m *MockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfig, error) {
+// GetAllServices ...
+// Summary: GetAllServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.services, nil
 }
 
-func (m *MockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.UpstreamServiceConfig, bool) {
+// GetServiceConfig ...
+// Summary: GetServiceConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	for _, s := range m.services {
 		if s.GetId() == serviceID {
 			return s, true
@@ -45,27 +64,64 @@ func (m *MockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.Upst
 	return nil, false
 }
 
-func (m *MockServiceRegistry) GetServiceError(serviceID string) (string, bool) {
+// GetServiceError ...
+// Summary: GetServiceError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	err, ok := m.errors[serviceID]
 	return err, ok
 }
 
 // MockDiscoveryProvider is a manual mock for discovery.Provider
-type MockDiscoveryProvider struct {
+// MockDiscoveryProvider is a manual mock for discovery.Provider
+// Summary: MockDiscoveryProvider
 	name     string
 	services []*configv1.UpstreamServiceConfig
 	err      error
 }
 
-func (m *MockDiscoveryProvider) Name() string {
+// Name ...
+// Summary: Name
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.name
 }
 
-func (m *MockDiscoveryProvider) Discover(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
+// Discover ...
+// Summary: Discover
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.services, m.err
 }
 
-func TestNewServer(t *testing.T) {
+// TestNewServer ...
+// Summary: TestNewServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -77,7 +133,16 @@ func TestNewServer(t *testing.T) {
 	assert.NotNil(t, s)
 }
 
-func TestServer_UserManagement(t *testing.T) {
+// TestServer_UserManagement ...
+// Summary: TestServer_UserManagement
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -140,7 +205,16 @@ func TestServer_UserManagement(t *testing.T) {
 	assert.Equal(t, codes.NotFound, status.Code(err))
 }
 
-func TestServer_ServiceManagement(t *testing.T) {
+// TestServer_ServiceManagement ...
+// Summary: TestServer_ServiceManagement
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -199,7 +273,16 @@ func TestServer_ServiceManagement(t *testing.T) {
 	assert.Equal(t, codes.NotFound, status.Code(err))
 }
 
-func TestServer_ToolManagement(t *testing.T) {
+// TestServer_ToolManagement ...
+// Summary: TestServer_ToolManagement
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -236,7 +319,16 @@ func TestServer_ToolManagement(t *testing.T) {
 	assert.Equal(t, codes.NotFound, status.Code(err))
 }
 
-func TestServer_ClearCache(t *testing.T) {
+// TestServer_ClearCache ...
+// Summary: TestServer_ClearCache
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -264,42 +356,96 @@ type mockStorage struct {
 	deleteUserErr error
 }
 
-func (m *mockStorage) CreateUser(ctx context.Context, user *configv1.User) error {
+// CreateUser ...
+// Summary: CreateUser
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.createUserErr != nil {
 		return m.createUserErr
 	}
 	return m.Store.CreateUser(ctx, user)
 }
 
-func (m *mockStorage) GetUser(ctx context.Context, id string) (*configv1.User, error) {
+// GetUser ...
+// Summary: GetUser
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.getUserErr != nil {
 		return nil, m.getUserErr
 	}
 	return m.Store.GetUser(ctx, id)
 }
 
-func (m *mockStorage) ListUsers(ctx context.Context) ([]*configv1.User, error) {
+// ListUsers ...
+// Summary: ListUsers
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.listUsersErr != nil {
 		return nil, m.listUsersErr
 	}
 	return m.Store.ListUsers(ctx)
 }
 
-func (m *mockStorage) UpdateUser(ctx context.Context, user *configv1.User) error {
+// UpdateUser ...
+// Summary: UpdateUser
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.updateUserErr != nil {
 		return m.updateUserErr
 	}
 	return m.Store.UpdateUser(ctx, user)
 }
 
-func (m *mockStorage) DeleteUser(ctx context.Context, id string) error {
+// DeleteUser ...
+// Summary: DeleteUser
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.deleteUserErr != nil {
 		return m.deleteUserErr
 	}
 	return m.Store.DeleteUser(ctx, id)
 }
 
-func TestServer_UserManagement_Errors(t *testing.T) {
+// TestServer_UserManagement_Errors ...
+// Summary: TestServer_UserManagement_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -350,7 +496,16 @@ func TestServer_UserManagement_Errors(t *testing.T) {
 	ms.deleteUserErr = nil
 }
 
-func TestServer_UserManagement_PasswordHashing(t *testing.T) {
+// TestServer_UserManagement_PasswordHashing ...
+// Summary: TestServer_UserManagement_PasswordHashing
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -384,7 +539,16 @@ func TestServer_UserManagement_PasswordHashing(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to hash password")
 }
 
-func TestServer_ServiceManagement_Errors(t *testing.T) {
+// TestServer_ServiceManagement_Errors ...
+// Summary: TestServer_ServiceManagement_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -405,7 +569,16 @@ func TestServer_ServiceManagement_Errors(t *testing.T) {
 	assert.Equal(t, codes.Internal, status.Code(err))
 }
 
-func TestServer_GetDiscoveryStatus(t *testing.T) {
+// TestServer_GetDiscoveryStatus ...
+// Summary: TestServer_GetDiscoveryStatus
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -448,14 +621,24 @@ func TestServer_GetDiscoveryStatus(t *testing.T) {
 }
 
 // MockAuditStore is a manual mock for audit.Store
-type MockAuditStore struct {
+// MockAuditStore is a manual mock for audit.Store
+// Summary: MockAuditStore
 	entries  []audit.Entry
 	readErr  error
 	writeErr error
 	closeErr error
 }
 
-func (m *MockAuditStore) Write(ctx context.Context, entry audit.Entry) error {
+// Write ...
+// Summary: Write
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.writeErr != nil {
 		return m.writeErr
 	}
@@ -463,7 +646,16 @@ func (m *MockAuditStore) Write(ctx context.Context, entry audit.Entry) error {
 	return nil
 }
 
-func (m *MockAuditStore) Read(ctx context.Context, filter audit.Filter) ([]audit.Entry, error) {
+// Read ...
+// Summary: Read
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.readErr != nil {
 		return nil, m.readErr
 	}
@@ -471,11 +663,29 @@ func (m *MockAuditStore) Read(ctx context.Context, filter audit.Filter) ([]audit
 	return m.entries, nil
 }
 
-func (m *MockAuditStore) Close() error {
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.closeErr
 }
 
-func TestServer_ListAuditLogs(t *testing.T) {
+// TestServer_ListAuditLogs ...
+// Summary: TestServer_ListAuditLogs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -539,7 +749,16 @@ func TestServer_ListAuditLogs(t *testing.T) {
 	assert.Equal(t, codes.InvalidArgument, status.Code(err))
 }
 
-func TestServer_ListServices_Fallback(t *testing.T) {
+// TestServer_ListServices_Fallback ...
+// Summary: TestServer_ListServices_Fallback
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 

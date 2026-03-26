@@ -29,7 +29,16 @@ func waitForEntries(t *testing.T, d *Debugger, count int) []DebugEntry {
 	return entries
 }
 
-func TestDebuggerMiddleware(t *testing.T) {
+// TestDebuggerMiddleware ...
+// Summary: TestDebuggerMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	debugger := NewDebugger(10)
 	defer debugger.Close()
 
@@ -62,7 +71,16 @@ func TestDebuggerMiddleware(t *testing.T) {
 	assert.Len(t, entries, 10) // Should only keep last 10
 }
 
-func TestDebuggerBodyCapture(t *testing.T) {
+// TestDebuggerBodyCapture ...
+// Summary: TestDebuggerBodyCapture
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	debugger := NewDebugger(10)
 	defer debugger.Close()
 
@@ -90,7 +108,16 @@ func TestDebuggerBodyCapture(t *testing.T) {
 	assert.JSONEq(t, string(payloadBytes), entries[0].ResponseBody)
 }
 
-func TestDebuggerLargeBodyTruncation(t *testing.T) {
+// TestDebuggerLargeBodyTruncation ...
+// Summary: TestDebuggerLargeBodyTruncation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	debugger := NewDebugger(10)
 	defer debugger.Close()
 	debugger.maxBodySize = 10 // Very small limit for testing

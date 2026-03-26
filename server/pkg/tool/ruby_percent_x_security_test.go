@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestLocalCommandTool_RubyPercentX_Injection(t *testing.T) {
+// TestLocalCommandTool_RubyPercentX_Injection ...
+// Summary: TestLocalCommandTool_RubyPercentX_Injection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test demonstrates that Ruby %x execution is BLOCKED
 	// inside Unquoted arguments passed to ruby -e.
 
@@ -72,7 +81,16 @@ func TestLocalCommandTool_RubyPercentX_Injection(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestLocalCommandTool_RubyPercentX_NestedShell_Injection(t *testing.T) {
+// TestLocalCommandTool_RubyPercentX_NestedShell_Injection ...
+// Summary: TestLocalCommandTool_RubyPercentX_NestedShell_Injection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test demonstrates that Ruby %x execution is BLOCKED
 	// when nested inside a shell command, even if quotes appear in the template.
 	// bash -c "ruby -e '{{input}}'"

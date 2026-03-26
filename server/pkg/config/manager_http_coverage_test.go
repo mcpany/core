@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestLoadFromURL_Success(t *testing.T) {
+// TestLoadFromURL_Success ...
+// Summary: TestLoadFromURL_Success
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`{"services": [{"name": "s1", "http_service": {"address": "http://127.0.0.1"}}]}`))
@@ -33,7 +42,16 @@ func TestLoadFromURL_Success(t *testing.T) {
 	assert.Len(t, m.services, 1)
 }
 
-func TestLoadFromURL_Auth(t *testing.T) {
+// TestLoadFromURL_Auth ...
+// Summary: TestLoadFromURL_Auth
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Authorization") != "Bearer token" {
 			w.WriteHeader(http.StatusUnauthorized)
@@ -61,7 +79,16 @@ func TestLoadFromURL_Auth(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestLoadFromURL_Error(t *testing.T) {
+// TestLoadFromURL_Error ...
+// Summary: TestLoadFromURL_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}))
@@ -76,7 +103,16 @@ func TestLoadFromURL_Error(t *testing.T) {
 	assert.Contains(t, err.Error(), "status code 500")
 }
 
-func TestLoadFromURL_RequestFail(t *testing.T) {
+// TestLoadFromURL_RequestFail ...
+// Summary: TestLoadFromURL_RequestFail
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewUpstreamServiceManager(nil)
 	collection := configv1.Collection_builder{Name: proto.String("test")}.Build()
 
@@ -85,7 +121,16 @@ func TestLoadFromURL_RequestFail(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestLoadFromURL_BadAuth(t *testing.T) {
+// TestLoadFromURL_BadAuth ...
+// Summary: TestLoadFromURL_BadAuth
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewUpstreamServiceManager(nil)
 	// Env var that doesn't exist
 	collection := configv1.Collection_builder{

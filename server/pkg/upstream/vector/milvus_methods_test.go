@@ -16,7 +16,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestMilvusClient_Query(t *testing.T) {
+// TestMilvusClient_Query ...
+// Summary: TestMilvusClient_Query
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mock := &mockMilvusClient{}
 	config := configv1.MilvusVectorDB_builder{
 		Address:        proto.String("127.0.0.1:19530"),
@@ -71,7 +80,16 @@ func TestMilvusClient_Query(t *testing.T) {
 	assert.Equal(t, float32(0.9), matches[0]["score"])
 }
 
-func TestMilvusClient_Query_Errors(t *testing.T) {
+// TestMilvusClient_Query_Errors ...
+// Summary: TestMilvusClient_Query_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	config := configv1.MilvusVectorDB_builder{
 		Address:        proto.String("localhost:19530"),
@@ -147,7 +165,16 @@ func TestMilvusClient_Query_Errors(t *testing.T) {
 	})
 }
 
-func TestMilvusClient_Upsert(t *testing.T) {
+// TestMilvusClient_Upsert ...
+// Summary: TestMilvusClient_Upsert
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mock := &mockMilvusClient{}
 	config := configv1.MilvusVectorDB_builder{
 		Address:        proto.String("127.0.0.1:19530"),
@@ -187,7 +214,16 @@ func TestMilvusClient_Upsert(t *testing.T) {
 	assert.Equal(t, int64(1), res["upserted_count"])
 }
 
-func TestMilvusClient_Upsert_Errors(t *testing.T) {
+// TestMilvusClient_Upsert_Errors ...
+// Summary: TestMilvusClient_Upsert_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	config := configv1.MilvusVectorDB_builder{
 		Address:        proto.String("localhost:19530"),
@@ -243,7 +279,16 @@ func TestMilvusClient_Upsert_Errors(t *testing.T) {
 	})
 }
 
-func TestMilvusClient_Delete(t *testing.T) {
+// TestMilvusClient_Delete ...
+// Summary: TestMilvusClient_Delete
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mock := &mockMilvusClient{}
 	config := configv1.MilvusVectorDB_builder{
 		Address:        proto.String("127.0.0.1:19530"),
@@ -277,7 +322,16 @@ func TestMilvusClient_Delete(t *testing.T) {
 	assert.Equal(t, true, res["success"])
 }
 
-func TestMilvusClient_Delete_Errors(t *testing.T) {
+// TestMilvusClient_Delete_Errors ...
+// Summary: TestMilvusClient_Delete_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	config := configv1.MilvusVectorDB_builder{
 		Address:        proto.String("localhost:19530"),
@@ -337,7 +391,16 @@ func TestMilvusClient_Delete_Errors(t *testing.T) {
 	})
 }
 
-func TestMilvusClient_DescribeIndexStats(t *testing.T) {
+// TestMilvusClient_DescribeIndexStats ...
+// Summary: TestMilvusClient_DescribeIndexStats
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mock := &mockMilvusClient{}
 	config := configv1.MilvusVectorDB_builder{
 		Address:        proto.String("127.0.0.1:19530"),

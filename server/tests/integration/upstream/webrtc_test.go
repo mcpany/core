@@ -13,7 +13,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestUpstreamService_Webrtc(t *testing.T) {
+// TestUpstreamService_Webrtc ...
+// Summary: TestUpstreamService_Webrtc
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	gemini := framework.NewGeminiCLI(t)
 	gemini.Install()
 

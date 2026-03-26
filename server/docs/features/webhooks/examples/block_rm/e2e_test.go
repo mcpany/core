@@ -27,7 +27,16 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestBlockRmE2E_Binary(t *testing.T) {
+// TestBlockRmE2E_Binary ...
+// Summary: TestBlockRmE2E_Binary
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. Build Webhook Server Binary
 	tempDir := t.TempDir()
 	binaryPath := filepath.Join(tempDir, "block_rm_server")

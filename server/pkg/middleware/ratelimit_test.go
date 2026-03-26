@@ -30,20 +30,56 @@ type rateLimitMockTool struct {
 	mock.Mock
 }
 
-func (m *rateLimitMockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+// Execute ...
+// Summary: Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, req)
 	return args.Get(0), args.Error(1)
 }
 
-func (m *rateLimitMockTool) Tool() *v1.Tool {
+// Tool ...
+// Summary: Tool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.toolProto
 }
 
-func (m *rateLimitMockTool) GetCacheConfig() *configv1.CacheConfig {
+// GetCacheConfig ...
+// Summary: GetCacheConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *rateLimitMockTool) MCPTool() *mcp.Tool {
+// MCPTool ...
+// Summary: MCPTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t, _ := tool.ConvertProtoToMCPTool(m.toolProto)
 	return t
 }
@@ -53,7 +89,16 @@ type rateLimitMockToolManager struct {
 	mock.Mock
 }
 
-func (m *rateLimitMockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
+// GetServiceInfo ...
+// Summary: GetServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(serviceID)
 	if args.Get(0) == nil {
 		return nil, args.Bool(1)
@@ -61,7 +106,16 @@ func (m *rateLimitMockToolManager) GetServiceInfo(serviceID string) (*tool.Servi
 	return args.Get(0).(*tool.ServiceInfo), args.Bool(1)
 }
 
-func (m *rateLimitMockToolManager) GetTool(toolName string) (tool.Tool, bool) {
+// GetTool ...
+// Summary: GetTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(toolName)
 	if args.Get(0) == nil {
 		return nil, args.Bool(1)
@@ -69,19 +123,55 @@ func (m *rateLimitMockToolManager) GetTool(toolName string) (tool.Tool, bool) {
 	return args.Get(0).(tool.Tool), args.Bool(1)
 }
 
-func (m *rateLimitMockToolManager) ListServices() []*tool.ServiceInfo {
+// ListServices ...
+// Summary: ListServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *rateLimitMockToolManager) IsServiceAllowed(serviceID, profileID string) bool {
+// IsServiceAllowed ...
+// Summary: IsServiceAllowed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return true
 }
 
-func (m *rateLimitMockToolManager) GetToolCountForService(serviceID string) int {
+// GetToolCountForService ...
+// Summary: GetToolCountForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return 0
 }
 
-func TestRateLimitMiddleware(t *testing.T) {
+// TestRateLimitMiddleware ...
+// Summary: TestRateLimitMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	const successResult = "success"
 	t.Run("rate limit allowed", func(t *testing.T) {
 		mockToolManager := &rateLimitMockToolManager{}
@@ -456,7 +546,16 @@ func TestRateLimitMiddleware(t *testing.T) {
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-func TestRateLimitMiddleware_Partitioning(t *testing.T) {
+// TestRateLimitMiddleware_Partitioning ...
+// Summary: TestRateLimitMiddleware_Partitioning
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	const successResult = "success"
 
 	setupMiddleware := func(keyBy configv1.RateLimitConfig_KeyBy) (*middleware.RateLimitMiddleware, *rateLimitMockToolManager, *rateLimitMockTool) {

@@ -17,7 +17,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestDatadogAuditStore(t *testing.T) {
+// TestDatadogAuditStore ...
+// Summary: TestDatadogAuditStore
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var receivedCount int32
 	received := make(chan struct{}, 10)
 
@@ -80,7 +89,16 @@ func TestDatadogAuditStore(t *testing.T) {
 	assert.Equal(t, int32(1), atomic.LoadInt32(&receivedCount))
 }
 
-func TestDatadogAuditStore_Batch(t *testing.T) {
+// TestDatadogAuditStore_Batch ...
+// Summary: TestDatadogAuditStore_Batch
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var totalReceived int32
 	done := make(chan struct{}, 10)
 
@@ -114,7 +132,16 @@ func TestDatadogAuditStore_Batch(t *testing.T) {
 	assert.Equal(t, int32(5), atomic.LoadInt32(&totalReceived))
 }
 
-func TestDatadogAuditStore_Read(t *testing.T) {
+// TestDatadogAuditStore_Read ...
+// Summary: TestDatadogAuditStore_Read
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	store := NewDatadogAuditStore(nil)
 	entries, err := store.Read(context.Background(), Filter{})
 	assert.Error(t, err)

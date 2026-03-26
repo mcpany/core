@@ -13,7 +13,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestWatcher_RelativePath(t *testing.T) {
+// TestWatcher_RelativePath ...
+// Summary: TestWatcher_RelativePath
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary file to watch in the current directory (to allow relative path usage)
 	// We need to be careful not to leave garbage.
 	// We can use os.MkdirTemp
@@ -55,7 +64,16 @@ func TestWatcher_RelativePath(t *testing.T) {
 	}
 }
 
-func TestWatcher_Debounce(t *testing.T) {
+// TestWatcher_Debounce ...
+// Summary: TestWatcher_Debounce
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tmpDir, err := os.MkdirTemp("", "watcher_debounce_test")
 	require.NoError(t, err)
 	defer os.RemoveAll(tmpDir)

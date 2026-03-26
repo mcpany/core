@@ -26,7 +26,17 @@ import (
 
 // TestHandleListServices_ToolCountInjection tests the tool count injection logic in handleListServices.
 // It covers the lines where tool count is calculated and injected into the response.
-func TestHandleListServices_ToolCountInjection(t *testing.T) {
+// TestHandleListServices_ToolCountInjection tests the tool count injection logic in handleListServices.
+// Summary: TestHandleListServices_ToolCountInjection
+// It covers the lines where tool count is calculated and injected into the response.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 
 	// Mock ServiceRegistry to return success
@@ -80,7 +90,16 @@ func TestHandleListServices_ToolCountInjection(t *testing.T) {
 	}
 }
 
-func TestHandleCreateService_Validation(t *testing.T) {
+// TestHandleCreateService_Validation ...
+// Summary: TestHandleCreateService_Validation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 	handler := app.handleServices(store)
 
@@ -100,7 +119,16 @@ func TestHandleCreateService_Validation(t *testing.T) {
 	assert.Contains(t, w.Body.String(), "invalid service configuration")
 }
 
-func TestHandleCreateService_Unsafe_NonAdmin(t *testing.T) {
+// TestHandleCreateService_Unsafe_NonAdmin ...
+// Summary: TestHandleCreateService_Unsafe_NonAdmin
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 	handler := app.handleServices(store)
 
@@ -123,7 +151,16 @@ func TestHandleCreateService_Unsafe_NonAdmin(t *testing.T) {
 	assert.Equal(t, http.StatusForbidden, w.Code)
 }
 
-func TestHandleServiceValidate_Connectivity(t *testing.T) {
+// TestHandleServiceValidate_Connectivity ...
+// Summary: TestHandleServiceValidate_Connectivity
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Enable loopback for reachability checks
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "true")
@@ -253,7 +290,16 @@ func TestHandleServiceValidate_Connectivity(t *testing.T) {
 	})
 }
 
-func TestHandleServiceDetail_Update_Unsafe_NonAdmin(t *testing.T) {
+// TestHandleServiceDetail_Update_Unsafe_NonAdmin ...
+// Summary: TestHandleServiceDetail_Update_Unsafe_NonAdmin
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 	handler := app.handleServiceDetail(store)
 
@@ -280,26 +326,54 @@ func TestHandleServiceDetail_Update_Unsafe_NonAdmin(t *testing.T) {
 }
 
 // MockStorage for failing SaveService
-type MockStorage struct {
+// MockStorage for failing SaveService
+// Summary: MockStorage
 	storage.Storage // Embed interface to fallback
 	failSave        bool
 }
 
-func (m *MockStorage) SaveService(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
+// SaveService ...
+// Summary: SaveService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.failSave {
 		return errors.New("save failed")
 	}
 	return m.Storage.SaveService(ctx, service)
 }
 
-func (m *MockStorage) SaveSecret(ctx context.Context, secret *configv1.Secret) error {
+// SaveSecret ...
+// Summary: SaveSecret
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.failSave {
 		return errors.New("save failed")
 	}
 	return m.Storage.SaveSecret(ctx, secret)
 }
 
-func TestHandleCreateService_SaveError(t *testing.T) {
+// TestHandleCreateService_SaveError ...
+// Summary: TestHandleCreateService_SaveError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 	mockStore := &MockStorage{Storage: store, failSave: true}
 	handler := app.handleServices(mockStore)
@@ -318,7 +392,16 @@ func TestHandleCreateService_SaveError(t *testing.T) {
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
 }
 
-func TestHandleSecrets_SaveError(t *testing.T) {
+// TestHandleSecrets_SaveError ...
+// Summary: TestHandleSecrets_SaveError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 	mockStore := &MockStorage{Storage: store, failSave: true}
 	handler := app.handleSecrets(mockStore)
@@ -336,7 +419,16 @@ func TestHandleSecrets_SaveError(t *testing.T) {
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
 }
 
-func TestHandleServiceRestart_Error(t *testing.T) {
+// TestHandleServiceRestart_Error ...
+// Summary: TestHandleServiceRestart_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// To test reload failure, we can corrupt the config file in the fs.
 	fs := afero.NewMemMapFs()
 	app := NewApplication()

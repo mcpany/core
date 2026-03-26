@@ -15,7 +15,16 @@ func httpMethodPtr(v configv1.HttpCallDefinition_HttpMethod) *configv1.HttpCallD
 	return &v
 }
 
-func TestStripSecretsFromService_Coverage(t *testing.T) {
+// TestStripSecretsFromService_Coverage ...
+// Summary: TestStripSecretsFromService_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test stripping secrets from various service types to ensure 100% coverage of switch cases
 
 	// 1. GrpcService
@@ -131,7 +140,16 @@ func TestStripSecretsFromService_Coverage(t *testing.T) {
 	StripSecretsFromCollection(nil)
 }
 
-func TestStripSecretsFromFilesystem_Coverage(t *testing.T) {
+// TestStripSecretsFromFilesystem_Coverage ...
+// Summary: TestStripSecretsFromFilesystem_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// S3
 	s3Svc := configv1.UpstreamServiceConfig_builder{
 		FilesystemService: configv1.FilesystemUpstreamService_builder{
@@ -157,7 +175,16 @@ func TestStripSecretsFromFilesystem_Coverage(t *testing.T) {
 	assert.Equal(t, "", sftpSvc.GetFilesystemService().GetSftp().GetPassword())
 }
 
-func TestStripSecretsFromVector_Coverage(t *testing.T) {
+// TestStripSecretsFromVector_Coverage ...
+// Summary: TestStripSecretsFromVector_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Pinecone
 	pinecone := configv1.UpstreamServiceConfig_builder{
 		VectorService: configv1.VectorUpstreamService_builder{
@@ -183,7 +210,16 @@ func TestStripSecretsFromVector_Coverage(t *testing.T) {
 	assert.Equal(t, "", milvus.GetVectorService().GetMilvus().GetPassword())
 }
 
-func TestHydrateSecrets_Coverage(t *testing.T) {
+// TestHydrateSecrets_Coverage ...
+// Summary: TestHydrateSecrets_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	secrets := map[string]*configv1.SecretValue{
 		"MY_SECRET": configv1.SecretValue_builder{PlainText: proto.String("resolved")}.Build(),
 	}
@@ -254,7 +290,16 @@ func TestHydrateSecrets_Coverage(t *testing.T) {
 	HydrateSecretsInService(svc, nil)
 }
 
-func TestStripSecretsFromAuth_Coverage(t *testing.T) {
+// TestStripSecretsFromAuth_Coverage ...
+// Summary: TestStripSecretsFromAuth_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. API Key with Verification Value
 	auth := configv1.Authentication_builder{
 		ApiKey: configv1.APIKeyAuth_builder{

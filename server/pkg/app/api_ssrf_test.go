@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func TestServiceValidateSSRF(t *testing.T) {
+// TestServiceValidateSSRF ...
+// Summary: TestServiceValidateSSRF
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "")
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "")
 	t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "")

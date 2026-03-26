@@ -20,7 +20,16 @@ func boolPtr(b bool) *bool {
 	return &b
 }
 
-func TestCacheControl(t *testing.T) {
+// TestCacheControl ...
+// Summary: TestCacheControl
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 
 	// Test default missing
@@ -36,7 +45,16 @@ func TestCacheControl(t *testing.T) {
 	assert.Equal(t, ActionAllow, got.Action)
 }
 
-func TestTool_MCPTool_Method(t *testing.T) {
+// TestTool_MCPTool_Method ...
+// Summary: TestTool_MCPTool_Method
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test HTTPTool.MCPTool()
 	t.Run("HTTPTool", func(t *testing.T) {
 		toolDef := pb.Tool_builder{
@@ -184,7 +202,16 @@ func TestTool_MCPTool_Method(t *testing.T) {
 	})
 }
 
-func TestTool_GetCacheConfig(t *testing.T) {
+// TestTool_GetCacheConfig ...
+// Summary: TestTool_GetCacheConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("HTTPTool", func(t *testing.T) {
 		cacheCfg := configv1.CacheConfig_builder{IsEnabled: proto.Bool(true)}.Build()
 		ht := NewHTTPTool(
@@ -281,7 +308,16 @@ func TestTool_GetCacheConfig(t *testing.T) {
 	})
 }
 
-func TestManager_GetTool_NotFound(t *testing.T) {
+// TestManager_GetTool_NotFound ...
+// Summary: TestManager_GetTool_NotFound
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This covers the !ok path in GetTool
 	// Although simple, it ensures coverage
 	m := NewManager(nil)
@@ -290,7 +326,16 @@ func TestManager_GetTool_NotFound(t *testing.T) {
 	assert.Nil(t, tool)
 }
 
-func TestWebrtcTool_Close_And_ExecuteWithoutPool(t *testing.T) {
+// TestWebrtcTool_Close_And_ExecuteWithoutPool ...
+// Summary: TestWebrtcTool_Close_And_ExecuteWithoutPool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Set env to disable STUN for faster/safer test
 	os.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
 	defer os.Unsetenv("MCPANY_WEBRTC_DISABLE_STUN")

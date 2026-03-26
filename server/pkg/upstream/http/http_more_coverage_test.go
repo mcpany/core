@@ -17,7 +17,16 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func TestHTTPUpstream_Register_CallPolicyCompileError(t *testing.T) {
+// TestHTTPUpstream_Register_CallPolicyCompileError ...
+// Summary: TestHTTPUpstream_Register_CallPolicyCompileError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
@@ -52,7 +61,16 @@ func TestHTTPUpstream_Register_CallPolicyCompileError(t *testing.T) {
 	assert.Empty(t, tm.ListTools())
 }
 
-func TestHTTPUpstream_Register_UnsupportedMethod(t *testing.T) {
+// TestHTTPUpstream_Register_UnsupportedMethod ...
+// Summary: TestHTTPUpstream_Register_UnsupportedMethod
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
@@ -77,7 +95,16 @@ func TestHTTPUpstream_Register_UnsupportedMethod(t *testing.T) {
 	assert.Len(t, discoveredTools, 0)
 }
 
-func TestHTTPUpstream_Register_DoubleSlashParseFailure(t *testing.T) {
+// TestHTTPUpstream_Register_DoubleSlashParseFailure ...
+// Summary: TestHTTPUpstream_Register_DoubleSlashParseFailure
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
@@ -126,7 +153,16 @@ func TestHTTPUpstream_Register_DoubleSlashParseFailure(t *testing.T) {
 	}
 }
 
-func TestHTTPUpstream_Register_InputSchema_PropertiesNotStruct(t *testing.T) {
+// TestHTTPUpstream_Register_InputSchema_PropertiesNotStruct ...
+// Summary: TestHTTPUpstream_Register_InputSchema_PropertiesNotStruct
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
@@ -175,7 +211,16 @@ func TestHTTPUpstream_Register_InputSchema_PropertiesNotStruct(t *testing.T) {
 	assert.Contains(t, props, "auto_prop")
 }
 
-func TestNewHTTPPool_PoolNewError(t *testing.T) {
+// TestNewHTTPPool_PoolNewError ...
+// Summary: TestNewHTTPPool_PoolNewError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	configJSON := `{
 		"http_service": {
 			"tls_config": {}
@@ -189,7 +234,16 @@ func TestNewHTTPPool_PoolNewError(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestHTTPUpstream_Register_EmptyAddress(t *testing.T) {
+// TestHTTPUpstream_Register_EmptyAddress ...
+// Summary: TestHTTPUpstream_Register_EmptyAddress
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
@@ -208,7 +262,16 @@ func TestHTTPUpstream_Register_EmptyAddress(t *testing.T) {
 	assert.Contains(t, err.Error(), "http service address is required")
 }
 
-func TestHTTPUpstream_Register_DoubleSlashPath(t *testing.T) {
+// TestHTTPUpstream_Register_DoubleSlashPath ...
+// Summary: TestHTTPUpstream_Register_DoubleSlashPath
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
@@ -243,7 +306,16 @@ func TestHTTPUpstream_Register_DoubleSlashPath(t *testing.T) {
 	assert.Contains(t, fqn, "http://127.0.0.1//foo/bar")
 }
 
-func TestHTTPUpstream_Register_ExplicitInputSchema_Merging(t *testing.T) {
+// TestHTTPUpstream_Register_ExplicitInputSchema_Merging ...
+// Summary: TestHTTPUpstream_Register_ExplicitInputSchema_Merging
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
@@ -309,7 +381,16 @@ func TestHTTPUpstream_Register_ExplicitInputSchema_Merging(t *testing.T) {
 	assert.Contains(t, reqNames, "auto_prop")
 }
 
-func TestHTTPUpstream_Register_EndpointParseFailure(t *testing.T) {
+// TestHTTPUpstream_Register_EndpointParseFailure ...
+// Summary: TestHTTPUpstream_Register_EndpointParseFailure
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
@@ -343,7 +424,16 @@ func TestHTTPUpstream_Register_EndpointParseFailure(t *testing.T) {
 	assert.Len(t, discoveredTools, 0)
 }
 
-func TestHTTPUpstream_Register_BaseURLParseFailure(t *testing.T) {
+// TestHTTPUpstream_Register_BaseURLParseFailure ...
+// Summary: TestHTTPUpstream_Register_BaseURLParseFailure
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Register checks ParseRequestURI.
 	// createAndRegisterHTTPTools checks Parse.
 	// If ParseRequestURI passes but Parse fails?
@@ -352,7 +442,16 @@ func TestHTTPUpstream_Register_BaseURLParseFailure(t *testing.T) {
 	// Usually it's the other way around.
 }
 
-func TestHTTPPool_Close_Error(t *testing.T) {
+// TestHTTPPool_Close_Error ...
+// Summary: TestHTTPPool_Close_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockErr := assert.AnError
 	mp := &mockPool{closeErr: mockErr}
 	hp := &httpPool{Pool: mp}
@@ -361,7 +460,16 @@ func TestHTTPPool_Close_Error(t *testing.T) {
 	assert.ErrorIs(t, err, mockErr)
 }
 
-func TestHTTPPool_Close_Success(t *testing.T) {
+// TestHTTPPool_Close_Success ...
+// Summary: TestHTTPPool_Close_Success
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mp := &mockPool{}
 	// We need a transport to close
 	tr := &http.Transport{}
@@ -376,13 +484,31 @@ type mockPool struct {
 	closeErr error
 }
 
-func (m *mockPool) Close() error {
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.closeErr
 }
 
 // We need to access client package for HTTPClientWrapper, which is imported.
 
-func TestNewHTTPPool_MTLS_CertError(t *testing.T) {
+// TestNewHTTPPool_MTLS_CertError ...
+// Summary: TestNewHTTPPool_MTLS_CertError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	configJSON := `{
 		"upstream_auth": {
 			"mtls": {

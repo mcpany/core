@@ -19,7 +19,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestHTTPTool_Bug_DroppedParameter(t *testing.T) {
+// TestHTTPTool_Bug_DroppedParameter ...
+// Summary: TestHTTPTool_Bug_DroppedParameter
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

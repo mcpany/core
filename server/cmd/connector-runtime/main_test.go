@@ -9,7 +9,16 @@ import (
 	"time"
 )
 
-func TestRun(t *testing.T) {
+// TestRun ...
+// Summary: TestRun
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name    string
 		args    []string

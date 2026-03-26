@@ -8,7 +8,16 @@ import (
 	"testing"
 )
 
-func TestRedactFast_Coverage(t *testing.T) {
+// TestRedactFast_Coverage ...
+// Summary: TestRedactFast_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. skipLiteral at end of input
 	t.Run("skipLiteral_EndOfInput", func(t *testing.T) {
 		input := []byte("true")

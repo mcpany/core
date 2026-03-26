@@ -26,20 +26,56 @@ type callPolicyMockTool struct {
 	mock.Mock
 }
 
-func (m *callPolicyMockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+// Execute ...
+// Summary: Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, req)
 	return args.Get(0), args.Error(1)
 }
 
-func (m *callPolicyMockTool) Tool() *v1.Tool {
+// Tool ...
+// Summary: Tool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.toolProto
 }
 
-func (m *callPolicyMockTool) GetCacheConfig() *configv1.CacheConfig {
+// GetCacheConfig ...
+// Summary: GetCacheConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *callPolicyMockTool) MCPTool() *mcp.Tool {
+// MCPTool ...
+// Summary: MCPTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t, _ := tool.ConvertProtoToMCPTool(m.toolProto)
 	return t
 }
@@ -49,7 +85,16 @@ type callPolicyMockToolManager struct {
 	mock.Mock
 }
 
-func (m *callPolicyMockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
+// GetServiceInfo ...
+// Summary: GetServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(serviceID)
 	if args.Get(0) == nil {
 		return nil, args.Bool(1)
@@ -57,7 +102,16 @@ func (m *callPolicyMockToolManager) GetServiceInfo(serviceID string) (*tool.Serv
 	return args.Get(0).(*tool.ServiceInfo), args.Bool(1)
 }
 
-func (m *callPolicyMockToolManager) GetTool(toolName string) (tool.Tool, bool) {
+// GetTool ...
+// Summary: GetTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(toolName)
 	if args.Get(0) == nil {
 		return nil, args.Bool(1)
@@ -65,15 +119,42 @@ func (m *callPolicyMockToolManager) GetTool(toolName string) (tool.Tool, bool) {
 	return args.Get(0).(tool.Tool), args.Bool(1)
 }
 
-func (m *callPolicyMockToolManager) ListServices() []*tool.ServiceInfo {
+// ListServices ...
+// Summary: ListServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *callPolicyMockToolManager) GetToolCountForService(serviceID string) int {
+// GetToolCountForService ...
+// Summary: GetToolCountForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return 0
 }
 
-func TestCallPolicyMiddleware(t *testing.T) {
+// TestCallPolicyMiddleware ...
+// Summary: TestCallPolicyMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	const successResult = "success"
 
 	setup := func(policies []*configv1.CallPolicy) (*middleware.CallPolicyMiddleware, *callPolicyMockToolManager, *callPolicyMockTool) {

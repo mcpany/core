@@ -25,7 +25,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMergeStrategyAndFiltering(t *testing.T) {
+// TestMergeStrategyAndFiltering ...
+// Summary: TestMergeStrategyAndFiltering
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_ENABLE_FILE_CONFIG", "true")
 	// Create a temporary directory for config
 	tmpDir := t.TempDir()

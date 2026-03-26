@@ -10,7 +10,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestLogLevel_CaseSensitivity(t *testing.T) {
+// TestLogLevel_CaseSensitivity ...
+// Summary: TestLogLevel_CaseSensitivity
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Note: We use the global settings instance here as the Settings struct
 	// is designed as a singleton. In a real scenario, we should ensure tests
 	// run sequentially or mock the settings if possible to avoid side effects.

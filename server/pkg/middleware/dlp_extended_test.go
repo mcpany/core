@@ -16,7 +16,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestDLPMiddleware_GetPrompt(t *testing.T) {
+// TestDLPMiddleware_GetPrompt ...
+// Summary: TestDLPMiddleware_GetPrompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	config := configv1.DLPConfig_builder{
 		Enabled: proto.Bool(true),
 	}.Build()
@@ -70,7 +79,16 @@ func TestDLPMiddleware_GetPrompt(t *testing.T) {
 	assert.Equal(t, "Here is the email: ***REDACTED***", textContent.Text)
 }
 
-func TestDLPMiddleware_ReadResource(t *testing.T) {
+// TestDLPMiddleware_ReadResource ...
+// Summary: TestDLPMiddleware_ReadResource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	config := configv1.DLPConfig_builder{
 		Enabled: proto.Bool(true),
 	}.Build()

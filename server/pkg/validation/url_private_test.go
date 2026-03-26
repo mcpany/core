@@ -8,7 +8,16 @@ import (
 	"testing"
 )
 
-func TestIsSafeURL_PrivateIPs(t *testing.T) {
+// TestIsSafeURL_PrivateIPs ...
+// Summary: TestIsSafeURL_PrivateIPs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	os.Unsetenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
 
 	tests := []struct {

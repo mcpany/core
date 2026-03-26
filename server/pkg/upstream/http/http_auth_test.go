@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func TestHTTPUpstream_InvalidAuth(t *testing.T) {
+// TestHTTPUpstream_InvalidAuth ...
+// Summary: TestHTTPUpstream_InvalidAuth
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)

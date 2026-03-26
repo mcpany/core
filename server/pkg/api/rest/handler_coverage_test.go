@@ -12,7 +12,16 @@ import (
 	"testing"
 )
 
-func TestValidateConfigHandler_Coverage(t *testing.T) {
+// TestValidateConfigHandler_Coverage ...
+// Summary: TestValidateConfigHandler_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name           string
 		body           string

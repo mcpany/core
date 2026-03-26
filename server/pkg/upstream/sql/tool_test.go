@@ -19,7 +19,16 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-func TestTool_Execute(t *testing.T) {
+// TestTool_Execute ...
+// Summary: TestTool_Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()

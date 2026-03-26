@@ -12,7 +12,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestValidate_McpBundleConnection_Security(t *testing.T) {
+// TestValidate_McpBundleConnection_Security ...
+// Summary: TestValidate_McpBundleConnection_Security
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("invalid bundle connection - insecure path with ..", func(t *testing.T) {
 		cfg := func() *configv1.McpAnyServerConfig {
 			svc := configv1.UpstreamServiceConfig_builder{

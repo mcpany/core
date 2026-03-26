@@ -9,7 +9,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNormalizeHTTPMethod(t *testing.T) {
+// TestNormalizeHTTPMethod ...
+// Summary: TestNormalizeHTTPMethod
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		input    string
 		expected string

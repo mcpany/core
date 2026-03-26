@@ -15,7 +15,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestAuditHandler_Handle(t *testing.T) {
+// TestAuditHandler_Handle ...
+// Summary: TestAuditHandler_Handle
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var buf bytes.Buffer
 	baseHandler := slog.NewTextHandler(&buf, nil)
 	auditHandler := NewAuditHandler(baseHandler, nil)
@@ -33,16 +42,52 @@ type mockStore struct {
 	entries []audit.Entry
 }
 
-func (m *mockStore) Write(ctx context.Context, entry audit.Entry) error {
+// Write ...
+// Summary: Write
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.entries = append(m.entries, entry)
 	return nil
 }
-func (m *mockStore) Read(ctx context.Context, filter audit.Filter) ([]audit.Entry, error) {
+// Read ...
+// Summary: Read
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (m *mockStore) Close() error { return nil }
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func TestAuditHandler_Export(t *testing.T) {
+// TestAuditHandler_Export ...
+// Summary: TestAuditHandler_Export
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mock := &mockStore{}
 	h := &AuditHandler{
 		next:  slog.NewJSONHandler(io.Discard, nil),

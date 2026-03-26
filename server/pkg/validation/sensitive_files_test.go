@@ -9,7 +9,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestIsSensitivePath_Hardened(t *testing.T) {
+// TestIsSensitivePath_Hardened ...
+// Summary: TestIsSensitivePath_Hardened
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name    string
 		path    string

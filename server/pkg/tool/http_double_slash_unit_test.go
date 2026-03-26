@@ -18,7 +18,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestHTTPTool_Execute_DoubleSlashPreservation(t *testing.T) {
+// TestHTTPTool_Execute_DoubleSlashPreservation ...
+// Summary: TestHTTPTool_Execute_DoubleSlashPreservation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
 
 	// Handler that asserts the path received
@@ -58,7 +67,16 @@ func TestHTTPTool_Execute_DoubleSlashPreservation(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestHTTPTool_Execute_DoubleSlashRootPreservation(t *testing.T) {
+// TestHTTPTool_Execute_DoubleSlashRootPreservation ...
+// Summary: TestHTTPTool_Execute_DoubleSlashRootPreservation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
 
 	// Handler that asserts the path received

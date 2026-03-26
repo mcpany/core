@@ -33,11 +33,29 @@ type featureSamplingTool struct {
 	tool *v1.Tool
 }
 
-func (m *featureSamplingTool) Tool() *v1.Tool {
+// Tool ...
+// Summary: Tool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.tool
 }
 
-func (m *featureSamplingTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
+// Execute ...
+// Summary: Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. Get Session/Sampler from context
 	sampler, ok := tool.GetSession(ctx)
 	if !ok {
@@ -67,16 +85,43 @@ func (m *featureSamplingTool) Execute(ctx context.Context, _ *tool.ExecutionRequ
 	return "unknown content type", nil
 }
 
-func (m *featureSamplingTool) GetCacheConfig() *configv1.CacheConfig {
+// GetCacheConfig ...
+// Summary: GetCacheConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *featureSamplingTool) MCPTool() *mcp.Tool {
+// MCPTool ...
+// Summary: MCPTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t, _ := tool.ConvertProtoToMCPTool(m.tool)
 	return t
 }
 
-func TestFeatureSamplingSupport(t *testing.T) {
+// TestFeatureSamplingSupport ...
+// Summary: TestFeatureSamplingSupport
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup Server Components
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager, nil)

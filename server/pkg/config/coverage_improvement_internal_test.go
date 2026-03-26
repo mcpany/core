@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestValidatorDirectoryExistsWithMock(t *testing.T) {
+// TestValidatorDirectoryExistsWithMock ...
+// Summary: TestValidatorDirectoryExistsWithMock
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Mock execLookPath
 	origLookPath := execLookPath
 	defer func() { execLookPath = origLookPath }()

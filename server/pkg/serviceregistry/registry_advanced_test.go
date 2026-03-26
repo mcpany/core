@@ -23,7 +23,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestServiceRegistry_ConcurrentAccess(t *testing.T) {
+// TestServiceRegistry_ConcurrentAccess ...
+// Summary: TestServiceRegistry_ConcurrentAccess
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	f := &mockFactory{
 		newUpstreamFunc: func() (upstream.Upstream, error) {
 			return &mockUpstream{
@@ -86,7 +95,16 @@ func TestServiceRegistry_ConcurrentAccess(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestServiceRegistry_RegisterService_Interrupted(t *testing.T) {
+// TestServiceRegistry_RegisterService_Interrupted ...
+// Summary: TestServiceRegistry_RegisterService_Interrupted
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test verifies that if UnregisterService is called while RegisterService is in progress (specifically during u.Register),
 	// the service is correctly cleaned up.
 
@@ -162,7 +180,16 @@ func TestServiceRegistry_RegisterService_Interrupted(t *testing.T) {
 	assert.False(t, ok)
 }
 
-func TestServiceRegistry_HealthCheckLoop(t *testing.T) {
+// TestServiceRegistry_HealthCheckLoop ...
+// Summary: TestServiceRegistry_HealthCheckLoop
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	healthErr := errors.New("simulated health error")
 	checkChan := make(chan struct{}, 1) // buffered to avoid blocking
 
@@ -217,7 +244,16 @@ func TestServiceRegistry_HealthCheckLoop(t *testing.T) {
 	}, 1*time.Second, 10*time.Millisecond)
 }
 
-func TestServiceRegistry_RuntimeInfo(t *testing.T) {
+// TestServiceRegistry_RuntimeInfo ...
+// Summary: TestServiceRegistry_RuntimeInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	f := &mockFactory{
 		newUpstreamFunc: func() (upstream.Upstream, error) {
 			return &mockUpstream{

@@ -19,7 +19,16 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func TestPathEncodingBug(t *testing.T) {
+// TestPathEncodingBug ...
+// Summary: TestPathEncodingBug
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
 
 	// Create a test server that checks the RequestURI
@@ -79,7 +88,16 @@ func TestPathEncodingBug(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestPathEncoding_SlashInParameter_WithTrailingSlash(t *testing.T) {
+// TestPathEncoding_SlashInParameter_WithTrailingSlash ...
+// Summary: TestPathEncoding_SlashInParameter_WithTrailingSlash
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
 
 	// Create a test server that checks the path

@@ -8,7 +8,16 @@ import (
 	"testing"
 )
 
-func TestExpand_DeepRecursion(t *testing.T) {
+// TestExpand_DeepRecursion ...
+// Summary: TestExpand_DeepRecursion
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a deeply nested variable expansion: ${M:${M:${M:...}}}
 	// This exercises the recursion in handleBracedVar -> expand -> handleBracedVar
 	depth := 200

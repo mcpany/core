@@ -15,7 +15,17 @@ import (
 
 // TestValidationWhitespaceChecks verifies that the validator detects trailing/leading whitespace
 // in various URL configuration fields.
-func TestValidationWhitespaceChecks(t *testing.T) {
+// TestValidationWhitespaceChecks verifies that the validator detects trailing/leading whitespace
+// Summary: TestValidationWhitespaceChecks
+// in various URL configuration fields.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	badURL := "http://example.com "
 	ctx := context.Background()
 

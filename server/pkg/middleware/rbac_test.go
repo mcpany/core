@@ -12,7 +12,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRBACMiddleware(t *testing.T) {
+// TestRBACMiddleware ...
+// Summary: TestRBACMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mw := NewRBACMiddleware()
 
 	t.Run("RequireRole success", func(t *testing.T) {

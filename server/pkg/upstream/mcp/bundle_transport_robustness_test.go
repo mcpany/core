@@ -36,56 +36,128 @@ type bundleMockDockerClient struct {
 	CloseFunc           func() error
 }
 
-func (m *bundleMockDockerClient) ImagePull(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error) {
+// ImagePull ...
+// Summary: ImagePull
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.ImagePullFunc != nil {
 		return m.ImagePullFunc(ctx, ref, options)
 	}
 	return io.NopCloser(strings.NewReader("")), nil
 }
 
-func (m *bundleMockDockerClient) ContainerCreate(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error) {
+// ContainerCreate ...
+// Summary: ContainerCreate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.ContainerCreateFunc != nil {
 		return m.ContainerCreateFunc(ctx, config, hostConfig, networkingConfig, platform, containerName)
 	}
 	return container.CreateResponse{ID: "mock-container-id"}, nil
 }
 
-func (m *bundleMockDockerClient) ContainerAttach(ctx context.Context, container string, options container.AttachOptions) (types.HijackedResponse, error) {
+// ContainerAttach ...
+// Summary: ContainerAttach
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.ContainerAttachFunc != nil {
 		return m.ContainerAttachFunc(ctx, container, options)
 	}
 	return types.HijackedResponse{}, nil
 }
 
-func (m *bundleMockDockerClient) ContainerStart(ctx context.Context, container string, options container.StartOptions) error {
+// ContainerStart ...
+// Summary: ContainerStart
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.ContainerStartFunc != nil {
 		return m.ContainerStartFunc(ctx, container, options)
 	}
 	return nil
 }
 
-func (m *bundleMockDockerClient) ContainerStop(ctx context.Context, containerID string, options container.StopOptions) error {
+// ContainerStop ...
+// Summary: ContainerStop
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.ContainerStopFunc != nil {
 		return m.ContainerStopFunc(ctx, containerID, options)
 	}
 	return nil
 }
 
-func (m *bundleMockDockerClient) ContainerRemove(ctx context.Context, containerID string, options container.RemoveOptions) error {
+// ContainerRemove ...
+// Summary: ContainerRemove
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.ContainerRemoveFunc != nil {
 		return m.ContainerRemoveFunc(ctx, containerID, options)
 	}
 	return nil
 }
 
-func (m *bundleMockDockerClient) Close() error {
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.CloseFunc != nil {
 		return m.CloseFunc()
 	}
 	return nil
 }
 
-func TestBundleDockerConn_Read_Robustness(t *testing.T) {
+// TestBundleDockerConn_Read_Robustness ...
+// Summary: TestBundleDockerConn_Read_Robustness
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	c1, c2 := net.Pipe()
 	defer func() { _ = c1.Close(); _ = c2.Close() }()
 
@@ -125,7 +197,16 @@ func TestBundleDockerConn_Read_Robustness(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to unmarshal message header")
 }
 
-func TestBundleDockerConn_Write_Robustness(t *testing.T) {
+// TestBundleDockerConn_Write_Robustness ...
+// Summary: TestBundleDockerConn_Write_Robustness
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	c1, c2 := net.Pipe()
 	defer func() { _ = c1.Close(); _ = c2.Close() }()
 
@@ -158,7 +239,16 @@ func TestBundleDockerConn_Write_Robustness(t *testing.T) {
 	assert.Equal(t, float64(999), raw["id"])
 }
 
-func TestBundleDockerTransport_Connect_Robustness(t *testing.T) {
+// TestBundleDockerTransport_Connect_Robustness ...
+// Summary: TestBundleDockerTransport_Connect_Robustness
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// No global variable swapping anymore!
 
 	transport := &BundleDockerTransport{
@@ -267,7 +357,16 @@ func TestBundleDockerTransport_Connect_Robustness(t *testing.T) {
 	})
 }
 
-func TestSetUnexportedID_Robustness(t *testing.T) {
+// TestSetUnexportedID_Robustness ...
+// Summary: TestSetUnexportedID_Robustness
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. Success case (mimicking SDK struct)
 	type ID struct {
 		value interface{} // unexported
@@ -309,7 +408,16 @@ func TestSetUnexportedID_Robustness(t *testing.T) {
 	})
 }
 
-func TestFixID_Robustness(t *testing.T) {
+// TestFixID_Robustness ...
+// Summary: TestFixID_Robustness
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		input    interface{}

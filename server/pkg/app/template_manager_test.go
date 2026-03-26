@@ -14,7 +14,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestNewTemplateManager_Seeded(t *testing.T) {
+// TestNewTemplateManager_Seeded ...
+// Summary: TestNewTemplateManager_Seeded
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tempDir := t.TempDir()
 	tm := NewTemplateManager(tempDir)
 	assert.NotNil(t, tm)
@@ -22,7 +31,16 @@ func TestNewTemplateManager_Seeded(t *testing.T) {
 	assert.Len(t, tm.ListTemplates(), len(BuiltinTemplates))
 }
 
-func TestSaveTemplate_New(t *testing.T) {
+// TestSaveTemplate_New ...
+// Summary: TestSaveTemplate_New
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tempDir := t.TempDir()
 	tm := NewTemplateManager(tempDir)
 	// Clear seeds for easier testing
@@ -47,7 +65,16 @@ func TestSaveTemplate_New(t *testing.T) {
 	assert.Contains(t, string(content), "Test Service")
 }
 
-func TestSaveTemplate_Update(t *testing.T) {
+// TestSaveTemplate_Update ...
+// Summary: TestSaveTemplate_Update
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tempDir := t.TempDir()
 	tm := NewTemplateManager(tempDir)
 	tm.templates = []*configv1.UpstreamServiceConfig{}
@@ -70,7 +97,16 @@ func TestSaveTemplate_Update(t *testing.T) {
 	assert.Equal(t, "1.0.1", list[0].GetVersion())
 }
 
-func TestSaveTemplate_Persistence(t *testing.T) {
+// TestSaveTemplate_Persistence ...
+// Summary: TestSaveTemplate_Persistence
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tempDir := t.TempDir()
 	tm1 := NewTemplateManager(tempDir)
 	tm1.templates = []*configv1.UpstreamServiceConfig{}
@@ -91,7 +127,16 @@ func TestSaveTemplate_Persistence(t *testing.T) {
 	assert.Equal(t, "Persistent Service", list[0].GetName())
 }
 
-func TestDeleteTemplate(t *testing.T) {
+// TestDeleteTemplate ...
+// Summary: TestDeleteTemplate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tempDir := t.TempDir()
 	tm := NewTemplateManager(tempDir)
 	tm.templates = []*configv1.UpstreamServiceConfig{}
@@ -122,7 +167,16 @@ func TestDeleteTemplate(t *testing.T) {
 	assert.Len(t, tm2.ListTemplates(), 1)
 }
 
-func TestDeleteTemplate_NotFound(t *testing.T) {
+// TestDeleteTemplate_NotFound ...
+// Summary: TestDeleteTemplate_NotFound
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tempDir := t.TempDir()
 	tm := NewTemplateManager(tempDir)
 	tm.templates = []*configv1.UpstreamServiceConfig{}
@@ -138,7 +192,16 @@ func TestDeleteTemplate_NotFound(t *testing.T) {
 	assert.Len(t, tm.ListTemplates(), 1)
 }
 
-func TestConcurrency_Safe(t *testing.T) {
+// TestConcurrency_Safe ...
+// Summary: TestConcurrency_Safe
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tempDir := t.TempDir()
 	tm := NewTemplateManager(tempDir)
 

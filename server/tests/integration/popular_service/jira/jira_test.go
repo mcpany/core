@@ -16,7 +16,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestUpstreamService_Jira(t *testing.T) {
+// TestUpstreamService_Jira ...
+// Summary: TestUpstreamService_Jira
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	jiraDomain := os.Getenv("JIRA_DOMAIN")
 	jiraUsername := os.Getenv("JIRA_USERNAME")
 	jiraPat := os.Getenv("JIRA_PAT")

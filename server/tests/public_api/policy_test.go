@@ -46,7 +46,16 @@ func mockMCPServerBinary(t *testing.T) string {
 	return outBin
 }
 
-func TestCallPolicy_Enforcement(t *testing.T) {
+// TestCallPolicy_Enforcement ...
+// Summary: TestCallPolicy_Enforcement
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockBin := mockMCPServerBinary(t)
 
 	// Case 1: Deny All

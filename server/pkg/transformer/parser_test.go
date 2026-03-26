@@ -10,7 +10,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestTextParser_ParseJSON(t *testing.T) {
+// TestTextParser_ParseJSON ...
+// Summary: TestTextParser_ParseJSON
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	parser := NewTextParser()
 	jsonInput := []byte(`{"person": {"name": "test", "age": 123}}`)
@@ -25,7 +34,16 @@ func TestTextParser_ParseJSON(t *testing.T) {
 	assert.Equal(t, float64(123), resMap["age"]) // jsonpath returns float64 for numbers
 }
 
-func TestTextParser_ParseInvalidJSON(t *testing.T) {
+// TestTextParser_ParseInvalidJSON ...
+// Summary: TestTextParser_ParseInvalidJSON
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	parser := NewTextParser()
 	jsonInput := []byte(`{"name": "test"`)
@@ -33,7 +51,16 @@ func TestTextParser_ParseInvalidJSON(t *testing.T) {
 	require.Error(t, err)
 }
 
-func TestTextParser_ParseXML(t *testing.T) {
+// TestTextParser_ParseXML ...
+// Summary: TestTextParser_ParseXML
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	parser := NewTextParser()
 	xmlInput := []byte(`<root><name>test</name><value>123</value></root>`)
@@ -48,7 +75,16 @@ func TestTextParser_ParseXML(t *testing.T) {
 	assert.Equal(t, "123", resMap["value"])
 }
 
-func TestTextParser_ParseText(t *testing.T) {
+// TestTextParser_ParseText ...
+// Summary: TestTextParser_ParseText
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	parser := NewTextParser()
 	textInput := []byte(`User ID: 12345, Name: John Doe`)
@@ -63,14 +99,32 @@ func TestTextParser_ParseText(t *testing.T) {
 	assert.Equal(t, "John Doe", resMap["name"])
 }
 
-func TestTextParser_UnsupportedType(t *testing.T) {
+// TestTextParser_UnsupportedType ...
+// Summary: TestTextParser_UnsupportedType
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	parser := NewTextParser()
 	_, err := parser.Parse("yaml", []byte{}, nil, "")
 	require.Error(t, err)
 }
 
-func TestTextParser_ParseJSON_ErrorCases(t *testing.T) {
+// TestTextParser_ParseJSON_ErrorCases ...
+// Summary: TestTextParser_ParseJSON_ErrorCases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	parser := NewTextParser()
 	jsonInput := []byte(`{"person": {"name": "test", "age": 123}}`)
@@ -90,7 +144,16 @@ func TestTextParser_ParseJSON_ErrorCases(t *testing.T) {
 	})
 }
 
-func TestTextParser_ParseXML_ErrorCases(t *testing.T) {
+// TestTextParser_ParseXML_ErrorCases ...
+// Summary: TestTextParser_ParseXML_ErrorCases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	parser := NewTextParser()
 	xmlInput := []byte(`<root><name>test</name><value>123</value></root>`)
@@ -102,7 +165,16 @@ func TestTextParser_ParseXML_ErrorCases(t *testing.T) {
 	})
 }
 
-func TestTextParser_Transform(t *testing.T) {
+// TestTextParser_Transform ...
+// Summary: TestTextParser_Transform
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	parser := NewTextParser()
 	data := map[string]any{
@@ -115,7 +187,16 @@ func TestTextParser_Transform(t *testing.T) {
 	assert.JSONEq(t, `{"name": "test", "age": 123}`, string(result))
 }
 
-func TestTextParser_ParseJSON_Complex(t *testing.T) {
+// TestTextParser_ParseJSON_Complex ...
+// Summary: TestTextParser_ParseJSON_Complex
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	parser := NewTextParser()
 	jsonInput := []byte(`{
@@ -143,7 +224,16 @@ func TestTextParser_ParseJSON_Complex(t *testing.T) {
 	assert.Equal(t, "test@example.com", resMap["firstContact"])
 }
 
-func TestTextParser_ParseXML_WithNamespaces(t *testing.T) {
+// TestTextParser_ParseXML_WithNamespaces ...
+// Summary: TestTextParser_ParseXML_WithNamespaces
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	parser := NewTextParser()
 	xmlInput := []byte(`
@@ -167,7 +257,16 @@ func TestTextParser_ParseXML_WithNamespaces(t *testing.T) {
 	assert.Equal(t, "Bananas", resMap["cell2"])
 }
 
-func TestTextParser_ParseText_Complex(t *testing.T) {
+// TestTextParser_ParseText_Complex ...
+// Summary: TestTextParser_ParseText_Complex
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	parser := NewTextParser()
 	textInput := []byte(`Event: "user_login", Status: "success", User-ID: "user-123@example.com"`)
@@ -184,7 +283,16 @@ func TestTextParser_ParseText_Complex(t *testing.T) {
 	assert.Equal(t, "user-123@example.com", resMap["email"])
 }
 
-func TestTextParser_ParseText_ErrorCases(t *testing.T) {
+// TestTextParser_ParseText_ErrorCases ...
+// Summary: TestTextParser_ParseText_ErrorCases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	parser := NewTextParser()
 	textInput := []byte(`User ID: 12345, Name: John Doe`)
@@ -196,7 +304,16 @@ func TestTextParser_ParseText_ErrorCases(t *testing.T) {
 	})
 }
 
-func TestTextParser_ParseJQ(t *testing.T) {
+// TestTextParser_ParseJQ ...
+// Summary: TestTextParser_ParseJQ
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	parser := NewTextParser()
 	jsonInput := []byte(`{

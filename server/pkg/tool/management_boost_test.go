@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestManager_ListMCPTools(t *testing.T) {
+// TestManager_ListMCPTools ...
+// Summary: TestManager_ListMCPTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewManager(nil)
 
 	svcConfig := configv1.UpstreamServiceConfig_builder{
@@ -54,7 +63,16 @@ func TestManager_ListMCPTools(t *testing.T) {
 	assert.Len(t, tools, 2)
 }
 
-func TestManager_ProfileMatching(t *testing.T) {
+// TestManager_ProfileMatching ...
+// Summary: TestManager_ProfileMatching
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewManager(nil)
 
 	svcConfig := configv1.UpstreamServiceConfig_builder{Id: proto.String("svc1")}.Build()
@@ -102,7 +120,16 @@ func TestManager_ProfileMatching(t *testing.T) {
 	assert.False(t, m.ToolMatchesProfile(tool2, "p1"))
 }
 
-func TestWebrtcTool_Coverage(t *testing.T) {
+// TestWebrtcTool_Coverage ...
+// Summary: TestWebrtcTool_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	toolDef := v1.Tool_builder{Name: proto.String("webrtc-tool")}.Build()
 	// CallDefinition is required or handled gracefully?
 	// We pass nil for callDef, which might panic in NewWebrtcTool if it accesses fields.

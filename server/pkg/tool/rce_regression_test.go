@@ -10,7 +10,18 @@ import (
 // TestRegression_RCE_ShellInjection verifies that nested command substitution attempts
 // inside double-quoted templates are correctly identified as strict/unquoted context,
 // thus preventing RCE payloads like `'); ls #`.
-func TestRegression_RCE_ShellInjection(t *testing.T) {
+// TestRegression_RCE_ShellInjection verifies that nested command substitution attempts
+// Summary: TestRegression_RCE_ShellInjection
+// inside double-quoted templates are correctly identified as strict/unquoted context,
+// thus preventing RCE payloads like `'); ls #`.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Payload that attempts to break out of single quotes inside $()
 	// Template: echo "$(echo '{{input}}')"
 	// This template uses Double Quotes, but contains $() which nests quotes.

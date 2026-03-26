@@ -17,26 +17,162 @@ import (
 )
 
 // MockToolManager is a simple mock for tool.ManagerInterface
-type MockToolManager struct{}
+// MockToolManager is a simple mock for tool.ManagerInterface
+// Summary: MockToolManager
 
-func (m *MockToolManager) AddTool(_ tool.Tool) error          { return nil }
-func (m *MockToolManager) GetTool(_ string) (tool.Tool, bool) { return nil, false }
-func (m *MockToolManager) ListTools() []tool.Tool             { return nil }
-func (m *MockToolManager) ListMCPTools() []*mcp.Tool          { return nil }
-func (m *MockToolManager) ClearToolsForService(_ string)      {}
-func (m *MockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+// AddTool ...
+// Summary: AddTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// GetTool ...
+// Summary: GetTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ListTools ...
+// Summary: ListTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ListMCPTools ...
+// Summary: ListMCPTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ClearToolsForService ...
+// Summary: ClearToolsForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ExecuteTool ...
+// Summary: ExecuteTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (m *MockToolManager) SetMCPServer(_ tool.MCPServerProvider)                    {}
-func (m *MockToolManager) AddMiddleware(_ tool.ExecutionMiddleware)                 {}
-func (m *MockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo)             {}
-func (m *MockToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool)        { return nil, false }
-func (m *MockToolManager) ListServices() []*tool.ServiceInfo                        { return nil }
-func (m *MockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition)  {}
-func (m *MockToolManager) IsServiceAllowed(serviceID, profileID string) bool        { return true }
-func (m *MockToolManager) ToolMatchesProfile(tool tool.Tool, profileID string) bool { return true }
+// SetMCPServer ...
+// Summary: SetMCPServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// AddMiddleware ...
+// Summary: AddMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// AddServiceInfo ...
+// Summary: AddServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// GetServiceInfo ...
+// Summary: GetServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ListServices ...
+// Summary: ListServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// SetProfiles ...
+// Summary: SetProfiles
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// IsServiceAllowed ...
+// Summary: IsServiceAllowed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ToolMatchesProfile ...
+// Summary: ToolMatchesProfile
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func TestUpstreamWorker_Stop(t *testing.T) {
+// TestUpstreamWorker_Stop ...
+// Summary: TestUpstreamWorker_Stop
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	globalTestLock.Lock()
 	defer globalTestLock.Unlock()
 
@@ -62,10 +198,28 @@ func TestUpstreamWorker_Stop(t *testing.T) {
 	assert.True(t, true)
 }
 
-func (m *MockToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool) {
+// GetAllowedServiceIDs ...
+// Summary: GetAllowedServiceIDs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, true
 }
 
-func (m *MockToolManager) GetToolCountForService(serviceID string) int {
+// GetToolCountForService ...
+// Summary: GetToolCountForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return 0
 }

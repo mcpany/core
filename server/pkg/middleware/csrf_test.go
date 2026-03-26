@@ -11,7 +11,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCSRFMiddleware(t *testing.T) {
+// TestCSRFMiddleware ...
+// Summary: TestCSRFMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	allowedOrigins := []string{"http://allowed.com", "http://localhost:3000"}
 	m := NewCSRFMiddleware(allowedOrigins)
 	handler := m.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -141,7 +150,16 @@ func TestCSRFMiddleware(t *testing.T) {
 	}
 }
 
-func TestCSRFMiddleware_EmptyConfig(t *testing.T) {
+// TestCSRFMiddleware_EmptyConfig ...
+// Summary: TestCSRFMiddleware_EmptyConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Initialize with empty allowed origins
 	m := NewCSRFMiddleware([]string{})
 	handler := m.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

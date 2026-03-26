@@ -12,7 +12,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestValidateLocalPath(t *testing.T) {
+// TestValidateLocalPath ...
+// Summary: TestValidateLocalPath
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary directory structure
 	rootDir, err := os.MkdirTemp("", "fs_validate_test")
 	require.NoError(t, err)
@@ -133,7 +142,16 @@ func TestValidateLocalPath(t *testing.T) {
 	}
 }
 
-func TestLocalProviderAccessControl(t *testing.T) {
+// TestLocalProviderAccessControl ...
+// Summary: TestLocalProviderAccessControl
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary directory structure
 	rootDir, err := os.MkdirTemp("", "fs_ac_test")
 	require.NoError(t, err)

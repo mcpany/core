@@ -91,7 +91,16 @@ func generateMTLSCerts(t *testing.T, dir string) {
 	writePEM(filepath.Join(dir, "client.key"), "RSA PRIVATE KEY", x509.MarshalPKCS1PrivateKey(clientKey))
 }
 
-func TestMTLSAuthentication(t *testing.T) {
+// TestMTLSAuthentication ...
+// Summary: TestMTLSAuthentication
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Generate TLS certificates programmatically so the test is hermetic and
 	// works in all environments (including Bazel sandboxes where cert symlinks
 	// resolve outside the server working-directory security check).

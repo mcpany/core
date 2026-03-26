@@ -11,11 +11,21 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type MockEmbeddingProvider struct {
+// MockEmbeddingProvider ...
+// Summary: MockEmbeddingProvider
 	embeddings map[string][]float32
 }
 
-func (m *MockEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
+// Embed ...
+// Summary: Embed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if val, ok := m.embeddings[text]; ok {
 		return val, nil
 	}
@@ -24,7 +34,16 @@ func (m *MockEmbeddingProvider) Embed(ctx context.Context, text string) ([]float
 	return []float32{0, 0, 0}, nil
 }
 
-func TestSemanticCache(t *testing.T) {
+// TestSemanticCache ...
+// Summary: TestSemanticCache
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	provider := &MockEmbeddingProvider{
 		embeddings: map[string][]float32{
 			"hello":   {1.0, 0.0, 0.0},
@@ -63,7 +82,16 @@ func TestSemanticCache(t *testing.T) {
 	assert.Nil(t, val)
 }
 
-func TestSemanticCache_Expiry(t *testing.T) {
+// TestSemanticCache_Expiry ...
+// Summary: TestSemanticCache_Expiry
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	provider := &MockEmbeddingProvider{
 		embeddings: map[string][]float32{
 			"hello": {1.0, 0.0, 0.0},

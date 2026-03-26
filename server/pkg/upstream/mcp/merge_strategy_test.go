@@ -18,7 +18,16 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestUpstream_Register_MergeStrategy(t *testing.T) {
+// TestUpstream_Register_MergeStrategy ...
+// Summary: TestUpstream_Register_MergeStrategy
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 
 	// Helper to create structpb.Struct

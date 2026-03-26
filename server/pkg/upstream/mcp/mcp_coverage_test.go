@@ -35,13 +35,31 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestUpstream_Shutdown(t *testing.T) {
+// TestUpstream_Shutdown ...
+// Summary: TestUpstream_Shutdown
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewUpstream(nil)
 	err := u.Shutdown(context.Background())
 	assert.NoError(t, err)
 }
 
-func TestTransportError(t *testing.T) {
+// TestTransportError ...
+// Summary: TestTransportError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	e := &transportError{
 		Code:    123,
 		Message: "test error",
@@ -50,7 +68,16 @@ func TestTransportError(t *testing.T) {
 	assert.Equal(t, "test error", e.Error())
 }
 
-func TestInferImage(t *testing.T) {
+// TestInferImage ...
+// Summary: TestInferImage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		serverType string
 		expected   string
@@ -76,20 +103,56 @@ type mockRWC struct {
 	written []byte
 }
 
-func (m *mockRWC) Write(p []byte) (n int, err error) {
+// Write ...
+// Summary: Write
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.written = append(m.written, p...)
 	return len(p), nil
 }
 
-func (m *mockRWC) Read(_ []byte) (n int, err error) {
+// Read ...
+// Summary: Read
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return 0, io.EOF
 }
 
-func (m *mockRWC) Close() error {
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func TestBundleDockerConn_Write(t *testing.T) {
+// TestBundleDockerConn_Write ...
+// Summary: TestBundleDockerConn_Write
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	rwc := &mockRWC{}
 	conn := &bundleDockerConn{
 		encoder: json.NewEncoder(rwc),
@@ -127,7 +190,16 @@ func TestBundleDockerConn_Write(t *testing.T) {
 	assert.Contains(t, string(rwc.written), `"id":456`)
 }
 
-func TestUnzipBundle(t *testing.T) {
+// TestUnzipBundle ...
+// Summary: TestUnzipBundle
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a zip file
 	tmpDir := t.TempDir()
 	zipPath := filepath.Join(tmpDir, "test.zip")
@@ -166,7 +238,16 @@ func TestUnzipBundle(t *testing.T) {
 	assert.Equal(t, "content2", string(c2))
 }
 
-func TestBundleDockerConn_Read_Error(t *testing.T) {
+// TestBundleDockerConn_Read_Error ...
+// Summary: TestBundleDockerConn_Read_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	rwc := &mockRWC{}
 	conn := &bundleDockerConn{
 		decoder: json.NewDecoder(rwc), // Empty reader, will return EOF
@@ -178,7 +259,16 @@ func TestBundleDockerConn_Read_Error(t *testing.T) {
 	assert.Error(t, err) // EOF
 }
 
-func TestAuthenticatedRoundTripper_Coverage(t *testing.T) {
+// TestAuthenticatedRoundTripper_Coverage ...
+// Summary: TestAuthenticatedRoundTripper_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test AuthenticatedRoundTripper
 	mockRT := &mockRTCoverage{
 		resp: &http.Response{
@@ -215,7 +305,16 @@ func TestAuthenticatedRoundTripper_Coverage(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to authenticate")
 }
 
-func TestUnzipBundle_ZipSlip(t *testing.T) {
+// TestUnzipBundle_ZipSlip ...
+// Summary: TestUnzipBundle_ZipSlip
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tmpDir := t.TempDir()
 	zipPath := filepath.Join(tmpDir, "slip.zip")
 	zipFile, err := os.Create(zipPath) //nolint:gosec
@@ -237,7 +336,16 @@ func TestUnzipBundle_ZipSlip(t *testing.T) {
 	assert.Contains(t, err.Error(), "illegal file path")
 }
 
-func TestUpstream_Register_Bundle_Error(t *testing.T) {
+// TestUpstream_Register_Bundle_Error ...
+// Summary: TestUpstream_Register_Bundle_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewUpstream(nil)
 	ctx := context.Background()
 	tm := &mockToolManagerCoverage{}
@@ -308,7 +416,16 @@ func TestUpstream_Register_Bundle_Error(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to decode manifest.json")
 }
 
-func TestUpstream_Register_Bundle_Success(t *testing.T) {
+// TestUpstream_Register_Bundle_Success ...
+// Summary: TestUpstream_Register_Bundle_Success
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewUpstream(nil)
 	ctx := context.Background()
 	tm := &mockToolManagerCoverage{}
@@ -372,7 +489,16 @@ func TestUpstream_Register_Bundle_Success(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestUpstream_Register_Bundle_Variants(t *testing.T) {
+// TestUpstream_Register_Bundle_Variants ...
+// Summary: TestUpstream_Register_Bundle_Variants
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewUpstream(nil)
 	ctx := context.Background()
 
@@ -435,7 +561,16 @@ func TestUpstream_Register_Bundle_Variants(t *testing.T) {
 	}
 }
 
-func TestUpstream_Register_Bundle_RealClient(t *testing.T) {
+// TestUpstream_Register_Bundle_RealClient ...
+// Summary: TestUpstream_Register_Bundle_RealClient
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test the path where mcp.NewClient is called (not mocked)
 	u := NewUpstream(nil)
 	ctx := context.Background()
@@ -482,7 +617,16 @@ func TestUpstream_Register_Bundle_RealClient(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestUpstream_Register_Bundle_UnknownType(t *testing.T) {
+// TestUpstream_Register_Bundle_UnknownType ...
+// Summary: TestUpstream_Register_Bundle_UnknownType
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewUpstream(nil)
 	ctx := context.Background()
 
@@ -508,7 +652,16 @@ func TestUpstream_Register_Bundle_UnknownType(t *testing.T) {
 	assert.Contains(t, err.Error(), "unable to infer container image")
 }
 
-func TestDockerTransport_Connect_Errors(t *testing.T) {
+// TestDockerTransport_Connect_Errors ...
+// Summary: TestDockerTransport_Connect_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	originalNewDockerClient := newDockerClient
 	defer func() { newDockerClient = originalNewDockerClient }()
 
@@ -601,7 +754,16 @@ func TestDockerTransport_Connect_Errors(t *testing.T) {
 	})
 }
 
-func TestRegister_DynamicResource_EdgeCases(t *testing.T) {
+// TestRegister_DynamicResource_EdgeCases ...
+// Summary: TestRegister_DynamicResource_EdgeCases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewUpstream(nil)
 	ctx := context.Background()
 	tm := &mockToolManagerCoverage{}
@@ -669,7 +831,16 @@ type mockRTCoverage struct {
 	err  error
 }
 
-func (m *mockRTCoverage) RoundTrip(_ *http.Request) (*http.Response, error) {
+// RoundTrip ...
+// Summary: RoundTrip
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.resp, m.err
 }
 
@@ -677,7 +848,16 @@ type mockAuthCoverage struct {
 	fail bool
 }
 
-func (m *mockAuthCoverage) Authenticate(req *http.Request) error {
+// Authenticate ...
+// Summary: Authenticate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.fail {
 		return context.DeadlineExceeded // some error
 	}
@@ -685,7 +865,16 @@ func (m *mockAuthCoverage) Authenticate(req *http.Request) error {
 	return nil
 }
 
-func TestStreamableHTTP_RoundTrip_Coverage(t *testing.T) {
+// TestStreamableHTTP_RoundTrip_Coverage ...
+// Summary: TestStreamableHTTP_RoundTrip_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tr := &StreamableHTTP{
 		Client: &http.Client{
 			Transport: &mockRTCoverage{
@@ -715,10 +904,46 @@ type mockToolManagerCoverage struct {
 	tool.ManagerInterface
 }
 
-func (m *mockToolManagerCoverage) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
-func (m *mockToolManagerCoverage) AddTool(_ tool.Tool) error                    { return nil }
-func (m *mockToolManagerCoverage) GetTool(_ string) (tool.Tool, bool)           { return nil, false }
-func (m *mockToolManagerCoverage) ListServices() []*tool.ServiceInfo            { return nil }
+// AddServiceInfo ...
+// Summary: AddServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// AddTool ...
+// Summary: AddTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// GetTool ...
+// Summary: GetTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ListServices ...
+// Summary: ListServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
 type mockPromptManagerCoverage struct {
 	prompt.ManagerInterface
@@ -728,14 +953,32 @@ type mockResourceManagerCoverage struct {
 	resources map[string]resource.Resource
 }
 
-func (m *mockResourceManagerCoverage) AddResource(r resource.Resource) {
+// AddResource ...
+// Summary: AddResource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.resources == nil {
 		m.resources = make(map[string]resource.Resource)
 	}
 	m.resources[r.Resource().URI] = r
 }
 
-func (m *mockResourceManagerCoverage) GetResource(uri string) (resource.Resource, bool) {
+// GetResource ...
+// Summary: GetResource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.resources == nil {
 		return nil, false
 	}
@@ -743,7 +986,16 @@ func (m *mockResourceManagerCoverage) GetResource(uri string) (resource.Resource
 	return r, ok
 }
 
-func TestUpstream_Register_Coverage(t *testing.T) {
+// TestUpstream_Register_Coverage ...
+// Summary: TestUpstream_Register_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Mocks
 	tm := &mockToolManagerCoverage{}
 	pm := &mockPromptManagerCoverage{}
@@ -824,7 +1076,16 @@ func TestUpstream_Register_Coverage(t *testing.T) {
 	assert.Contains(t, err.Error(), "list tools failed")
 }
 
-func TestBundleSlogWriter(t *testing.T) {
+// TestBundleSlogWriter ...
+// Summary: TestBundleSlogWriter
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	logger := logging.GetLogger()
 	w := &bundleSlogWriter{
 		log:   logger,
@@ -835,7 +1096,16 @@ func TestBundleSlogWriter(t *testing.T) {
 	assert.Equal(t, 8, n)
 }
 
-func TestBundleDockerConn_Read_Malformed(t *testing.T) {
+// TestBundleDockerConn_Read_Malformed ...
+// Summary: TestBundleDockerConn_Read_Malformed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	rwc := &mockRWC{}
 	conn := &bundleDockerConn{
 		decoder: json.NewDecoder(rwc),
@@ -860,7 +1130,16 @@ type mockSessionCoverage struct {
 	tools        *mcp.ListToolsResult
 }
 
-func (m *mockSessionCoverage) ListTools(_ context.Context, _ *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
+// ListTools ...
+// Summary: ListTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.tools != nil {
 		return m.tools, m.listToolsErr
 	}
@@ -869,26 +1148,89 @@ func (m *mockSessionCoverage) ListTools(_ context.Context, _ *mcp.ListToolsParam
 	}
 	return &mcp.ListToolsResult{}, nil
 }
-func (m *mockSessionCoverage) ListPrompts(_ context.Context, _ *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error) {
+// ListPrompts ...
+// Summary: ListPrompts
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return &mcp.ListPromptsResult{}, nil
 }
-func (m *mockSessionCoverage) ListResources(_ context.Context, _ *mcp.ListResourcesParams) (*mcp.ListResourcesResult, error) {
+// ListResources ...
+// Summary: ListResources
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return &mcp.ListResourcesResult{}, nil
 }
-func (m *mockSessionCoverage) GetPrompt(_ context.Context, _ *mcp.GetPromptParams) (*mcp.GetPromptResult, error) {
+// GetPrompt ...
+// Summary: GetPrompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (m *mockSessionCoverage) ReadResource(_ context.Context, _ *mcp.ReadResourceParams) (*mcp.ReadResourceResult, error) {
+// ReadResource ...
+// Summary: ReadResource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (m *mockSessionCoverage) CallTool(_ context.Context, _ *mcp.CallToolParams) (*mcp.CallToolResult, error) {
+// CallTool ...
+// Summary: CallTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (m *mockSessionCoverage) Close() error {
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func TestUnzipBundle_InvalidFile(t *testing.T) {
+// TestUnzipBundle_InvalidFile ...
+// Summary: TestUnzipBundle_InvalidFile
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a dummy non-zip file
 	tmpFile, err := os.CreateTemp("", "not-a-zip")
 	assert.NoError(t, err)

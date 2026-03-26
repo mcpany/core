@@ -8,7 +8,16 @@ import (
 	"testing"
 )
 
-func TestIsPrivateIP_Coverage(t *testing.T) {
+// TestIsPrivateIP_Coverage ...
+// Summary: TestIsPrivateIP_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 169.254.0.1 is link-local. IsPrivateIP checks linkLocalBlocks.
 	if !IsPrivateIP(net.ParseIP("169.254.0.1")) {
 		t.Error("169.254.0.1 should be private IP")

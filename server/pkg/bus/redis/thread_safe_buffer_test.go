@@ -9,24 +9,52 @@ import (
 )
 
 // ThreadSafeBuffer is a goroutine-safe bytes.Buffer
-type ThreadSafeBuffer struct {
+// ThreadSafeBuffer is a goroutine-safe bytes.Buffer
+// Summary: ThreadSafeBuffer
 	b bytes.Buffer
 	m sync.Mutex
 }
 
-func (b *ThreadSafeBuffer) Read(p []byte) (n int, err error) {
+// Read ...
+// Summary: Read
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	b.m.Lock()
 	defer b.m.Unlock()
 	return b.b.Read(p)
 }
 
-func (b *ThreadSafeBuffer) Write(p []byte) (n int, err error) {
+// Write ...
+// Summary: Write
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	b.m.Lock()
 	defer b.m.Unlock()
 	return b.b.Write(p)
 }
 
-func (b *ThreadSafeBuffer) String() string {
+// String ...
+// Summary: String
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	b.m.Lock()
 	defer b.m.Unlock()
 	return b.b.String()

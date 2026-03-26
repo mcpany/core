@@ -13,7 +13,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestLinter_Run_AllAuthTypes_PlainText(t *testing.T) {
+// TestLinter_Run_AllAuthTypes_PlainText ...
+// Summary: TestLinter_Run_AllAuthTypes_PlainText
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cfg := configv1.McpAnyServerConfig_builder{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
 			configv1.UpstreamServiceConfig_builder{
@@ -72,7 +81,16 @@ func TestLinter_Run_AllAuthTypes_PlainText(t *testing.T) {
 	assert.Equal(t, 4, count, "Expected 4 warnings about plain text secrets")
 }
 
-func TestLinter_Run_EnvVars_PlainText(t *testing.T) {
+// TestLinter_Run_EnvVars_PlainText ...
+// Summary: TestLinter_Run_EnvVars_PlainText
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cfg := configv1.McpAnyServerConfig_builder{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
 			configv1.UpstreamServiceConfig_builder{
@@ -124,7 +142,16 @@ func TestLinter_Run_EnvVars_PlainText(t *testing.T) {
 	assert.Equal(t, 4, count, "Expected 4 warnings about plain text secrets in env vars")
 }
 
-func TestLinter_Run_OtherInsecureHTTP(t *testing.T) {
+// TestLinter_Run_OtherInsecureHTTP ...
+// Summary: TestLinter_Run_OtherInsecureHTTP
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cfg := configv1.McpAnyServerConfig_builder{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
 			configv1.UpstreamServiceConfig_builder{
@@ -175,7 +202,16 @@ func TestLinter_Run_OtherInsecureHTTP(t *testing.T) {
 	assert.Equal(t, 3, count, "Expected 3 warnings about insecure HTTP")
 }
 
-func TestLinter_Run_ShellInjection_Extra(t *testing.T) {
+// TestLinter_Run_ShellInjection_Extra ...
+// Summary: TestLinter_Run_ShellInjection_Extra
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cfg := configv1.McpAnyServerConfig_builder{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
 			configv1.UpstreamServiceConfig_builder{

@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestValidate_InvalidJsonSchema(t *testing.T) {
+// TestValidate_InvalidJsonSchema ...
+// Summary: TestValidate_InvalidJsonSchema
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a schema that is syntactically correct protobuf, but semantically invalid JSON Schema
 	// e.g. "minimum" should be a number, but we give it a string "ten"
 	invalidSchema, err := structpb.NewStruct(map[string]interface{}{

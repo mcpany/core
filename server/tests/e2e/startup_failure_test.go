@@ -16,7 +16,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestStartup_FailsOnMalformedConfig(t *testing.T) {
+// TestStartup_FailsOnMalformedConfig ...
+// Summary: TestStartup_FailsOnMalformedConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a malformed config file
 	tmpDir := t.TempDir()
 	configPath := filepath.Join(tmpDir, "malformed.yaml")

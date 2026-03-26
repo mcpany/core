@@ -13,7 +13,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestValidateOIDCAuth(t *testing.T) {
+// TestValidateOIDCAuth ...
+// Summary: TestValidateOIDCAuth
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 
 	tests := []struct {
@@ -56,7 +65,16 @@ func TestValidateOIDCAuth(t *testing.T) {
 	}
 }
 
-func TestValidateTrustedHeaderAuth(t *testing.T) {
+// TestValidateTrustedHeaderAuth ...
+// Summary: TestValidateTrustedHeaderAuth
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name      string
 		th        *configv1.TrustedHeaderAuth
@@ -100,7 +118,16 @@ func TestValidateTrustedHeaderAuth(t *testing.T) {
 	}
 }
 
-func TestValidateOAuth2Auth_Coverage(t *testing.T) {
+// TestValidateOAuth2Auth_Coverage ...
+// Summary: TestValidateOAuth2Auth_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	os.Setenv("CLIENT_ID", "my-id")
 	os.Setenv("CLIENT_SECRET", "my-secret")

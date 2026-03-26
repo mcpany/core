@@ -16,7 +16,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestResolveSecret_RemoteContent_OAuth2(t *testing.T) {
+// TestResolveSecret_RemoteContent_OAuth2 ...
+// Summary: TestResolveSecret_RemoteContent_OAuth2
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_SECRETS", "true")
 
 	// 1. Mock Token Endpoint

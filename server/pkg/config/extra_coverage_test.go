@@ -20,7 +20,17 @@ import (
 
 // TestWrapActionableError_Nested covers the path where WrapActionableError
 // wraps an existing ActionableError.
-func TestWrapActionableError_Nested(t *testing.T) {
+// TestWrapActionableError_Nested covers the path where WrapActionableError
+// Summary: TestWrapActionableError_Nested
+// wraps an existing ActionableError.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	innerErr := &ActionableError{
 		Err:        errors.New("inner error"),
 		Suggestion: "fix inner",
@@ -41,7 +51,16 @@ func TestWrapActionableError_Nested(t *testing.T) {
 	assert.Contains(t, wrapped.Error(), "-> Fix: fix inner")
 }
 
-func TestActionableError_Unwrap(t *testing.T) {
+// TestActionableError_Unwrap ...
+// Summary: TestActionableError_Unwrap
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	baseErr := errors.New("base error")
 	ae := &ActionableError{Err: baseErr}
 	assert.Equal(t, baseErr, ae.Unwrap())
@@ -49,7 +68,16 @@ func TestActionableError_Unwrap(t *testing.T) {
 }
 
 // TestLoadServices_InvalidBinary covers the "unknown binary type" error path.
-func TestLoadServices_InvalidBinary(t *testing.T) {
+// TestLoadServices_InvalidBinary covers the "unknown binary type" error path.
+// Summary: TestLoadServices_InvalidBinary
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	store := NewFileStore(afero.NewMemMapFs(), []string{})
 	cfg, err := LoadServices(context.Background(), store, "unknown")
 	assert.Error(t, err)
@@ -58,7 +86,16 @@ func TestLoadServices_InvalidBinary(t *testing.T) {
 }
 
 // TestStore_SkipValidation_Logic verifies that SetSkipValidation works.
-func TestStore_SkipValidation_Logic(t *testing.T) {
+// TestStore_SkipValidation_Logic verifies that SetSkipValidation works.
+// Summary: TestStore_SkipValidation_Logic
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This tests the plumbing of SetSkipValidation from FileStore to yamlEngine.
 	fs := afero.NewMemMapFs()
 	configContent := `
@@ -77,7 +114,16 @@ global_settings:
 }
 
 // TestLoadResolvedConfig_Empty verifies LoadResolvedConfig when store returns empty.
-func TestLoadResolvedConfig_Empty(t *testing.T) {
+// TestLoadResolvedConfig_Empty verifies LoadResolvedConfig when store returns empty.
+// Summary: TestLoadResolvedConfig_Empty
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	// Empty file
 	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
@@ -92,7 +138,16 @@ func TestLoadResolvedConfig_Empty(t *testing.T) {
 }
 
 // TestLoadResolvedConfig_NoSources verifies default config when no sources.
-func TestLoadResolvedConfig_NoSources(t *testing.T) {
+// TestLoadResolvedConfig_NoSources verifies default config when no sources.
+// Summary: TestLoadResolvedConfig_NoSources
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	store := NewFileStore(afero.NewMemMapFs(), []string{})
 	cfg, err := LoadResolvedConfig(context.Background(), store)
 	require.NoError(t, err)
@@ -103,7 +158,16 @@ func TestLoadResolvedConfig_NoSources(t *testing.T) {
 }
 
 // TestLoadServices_ActionableError covers handling of ActionableError in LoadServices.
-func TestLoadServices_ActionableError(t *testing.T) {
+// TestLoadServices_ActionableError covers handling of ActionableError in LoadServices.
+// Summary: TestLoadServices_ActionableError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockErr := &ActionableError{
 		Err:        errors.New("mock error"),
 		Suggestion: "do something",
@@ -120,20 +184,48 @@ func TestLoadServices_ActionableError(t *testing.T) {
 	assert.Contains(t, err.Error(), "💡 Fix: do something")
 }
 
-type MockStoreForError struct {
+// MockStoreForError ...
+// Summary: MockStoreForError
 	err error
 }
 
-func (s *MockStoreForError) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
+// Load ...
+// Summary: Load
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, s.err
 }
 
-func (s *MockStoreForError) HasConfigSources() bool {
+// HasConfigSources ...
+// Summary: HasConfigSources
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return true
 }
 
 // TestValidate_DuplicateService covers duplicate service check in Validate.
-func TestValidate_DuplicateService(t *testing.T) {
+// TestValidate_DuplicateService covers duplicate service check in Validate.
+// Summary: TestValidate_DuplicateService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cfg := func() *configv1.McpAnyServerConfig {
 		svc1 := configv1.UpstreamServiceConfig_builder{
 			Name: proto.String("svc1"),
@@ -166,7 +258,16 @@ func TestValidate_DuplicateService(t *testing.T) {
 }
 
 // TestValidate_DuplicateUser covers duplicate user check.
-func TestValidate_DuplicateUser(t *testing.T) {
+// TestValidate_DuplicateUser covers duplicate user check.
+// Summary: TestValidate_DuplicateUser
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cfg := func() *configv1.McpAnyServerConfig {
 		u1 := configv1.User_builder{
 			Id: proto.String("u1"),
@@ -192,7 +293,16 @@ func TestValidate_DuplicateUser(t *testing.T) {
 	assert.True(t, found, "Expected duplicate user id error")
 }
 
-func TestUpstreamServiceManager_LoadFromURL_Success(t *testing.T) {
+// TestUpstreamServiceManager_LoadFromURL_Success ...
+// Summary: TestUpstreamServiceManager_LoadFromURL_Success
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprintln(w, `{"services": [{"name": "remote-service", "http_service": {"address": "http://remote.com"}}]}`)
@@ -219,7 +329,16 @@ func TestUpstreamServiceManager_LoadFromURL_Success(t *testing.T) {
 	assert.Equal(t, "remote-service", services[0].GetName())
 }
 
-func TestUpstreamServiceManager_LoadFromURL_Failure(t *testing.T) {
+// TestUpstreamServiceManager_LoadFromURL_Failure ...
+// Summary: TestUpstreamServiceManager_LoadFromURL_Failure
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}))

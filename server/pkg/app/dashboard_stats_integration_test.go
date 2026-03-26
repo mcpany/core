@@ -20,41 +20,105 @@ import (
 )
 
 // MockServiceRegistryForDashboard is a mock implementation of ServiceRegistryInterface.
-type MockServiceRegistryForDashboard struct {
+// MockServiceRegistryForDashboard is a mock implementation of ServiceRegistryInterface.
+// Summary: MockServiceRegistryForDashboard
 	mock.Mock
 }
 
-func (m *MockServiceRegistryForDashboard) RegisterService(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+// RegisterService ...
+// Summary: RegisterService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, serviceConfig)
 	return args.String(0), nil, nil, args.Error(3)
 }
 
-func (m *MockServiceRegistryForDashboard) UnregisterService(ctx context.Context, serviceName string) error {
+// UnregisterService ...
+// Summary: UnregisterService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, serviceName)
 	return args.Error(0)
 }
 
-func (m *MockServiceRegistryForDashboard) GetAllServices() ([]*configv1.UpstreamServiceConfig, error) {
+// GetAllServices ...
+// Summary: GetAllServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	return args.Get(0).([]*configv1.UpstreamServiceConfig), args.Error(1)
 }
 
-func (m *MockServiceRegistryForDashboard) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
+// GetServiceInfo ...
+// Summary: GetServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(serviceID)
 	return nil, args.Bool(1)
 }
 
-func (m *MockServiceRegistryForDashboard) GetServiceConfig(serviceID string) (*configv1.UpstreamServiceConfig, bool) {
+// GetServiceConfig ...
+// Summary: GetServiceConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(serviceID)
 	return nil, args.Bool(1)
 }
 
-func (m *MockServiceRegistryForDashboard) GetServiceError(serviceID string) (string, bool) {
+// GetServiceError ...
+// Summary: GetServiceError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(serviceID)
 	return args.String(0), args.Bool(1)
 }
 
-func TestHandleDashboardHealth_Integration(t *testing.T) {
+// TestHandleDashboardHealth_Integration ...
+// Summary: TestHandleDashboardHealth_Integration
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup TopologyManager
 	tm := topology.NewManager(nil, nil)
 	defer tm.Close()

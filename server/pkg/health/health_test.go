@@ -31,14 +31,32 @@ type mockHealthServer struct {
 	status grpc_health_v1.HealthCheckResponse_ServingStatus
 }
 
-func (s *mockHealthServer) Check(
+// Check ...
+// Summary: Check
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	_ context.Context,
 	_ *grpc_health_v1.HealthCheckRequest,
 ) (*grpc_health_v1.HealthCheckResponse, error) {
 	return &grpc_health_v1.HealthCheckResponse{Status: s.status}, nil
 }
 
-func (s *mockHealthServer) Watch(
+// Watch ...
+// Summary: Watch
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	_ *grpc_health_v1.HealthCheckRequest,
 	srv grpc_health_v1.Health_WatchServer,
 ) error {
@@ -57,7 +75,16 @@ func newMockGRPCHealthServer(t *testing.T, status grpc_health_v1.HealthCheckResp
 	return s, lis
 }
 
-func TestNewChecker(t *testing.T) {
+// TestNewChecker ...
+// Summary: TestNewChecker
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 
 	t.Run("NilConfig", func(t *testing.T) {
@@ -201,7 +228,16 @@ func TestNewChecker(t *testing.T) {
 	})
 }
 
-func TestFilesystemCheck(t *testing.T) {
+// TestFilesystemCheck ...
+// Summary: TestFilesystemCheck
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 
 	t.Run("Success", func(t *testing.T) {
@@ -249,7 +285,16 @@ func TestFilesystemCheck(t *testing.T) {
 	})
 }
 
-func TestCheckGRPCHealth(t *testing.T) {
+// TestCheckGRPCHealth ...
+// Summary: TestCheckGRPCHealth
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 
 	t.Run("Serving", func(t *testing.T) {
@@ -307,7 +352,16 @@ func TestCheckGRPCHealth(t *testing.T) {
 	})
 }
 
-func TestCheckConnection(t *testing.T) {
+// TestCheckConnection ...
+// Summary: TestCheckConnection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("ConnectionSuccess", func(t *testing.T) {
 		lis, err := net.Listen("tcp", "127.0.0.1:0")
 		assert.NoError(t, err)
@@ -328,7 +382,16 @@ func TestCheckConnection(t *testing.T) {
 	})
 }
 
-func TestCheckVariousServices(t *testing.T) {
+// TestCheckVariousServices ...
+// Summary: TestCheckVariousServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 
 	// Setup a simple listening server for connection checks
@@ -480,7 +543,16 @@ func TestCheckVariousServices(t *testing.T) {
 	}
 }
 
-func TestWebsocketCheck(t *testing.T) {
+// TestWebsocketCheck ...
+// Summary: TestWebsocketCheck
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 
 	t.Run("Success", func(t *testing.T) {
@@ -586,7 +658,16 @@ func TestWebsocketCheck(t *testing.T) {
 	})
 }
 
-func TestWebSocketHealthCheckBasic(t *testing.T) {
+// TestWebSocketHealthCheckBasic ...
+// Summary: TestWebSocketHealthCheckBasic
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 
 	// Mock WebSocket server
@@ -634,7 +715,16 @@ func TestWebSocketHealthCheckBasic(t *testing.T) {
 	})
 }
 
-func TestWebRTCHealthCheck(t *testing.T) {
+// TestWebRTCHealthCheck ...
+// Summary: TestWebRTCHealthCheck
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 
 	// Mock HTTP server for signaling
@@ -681,7 +771,16 @@ func TestWebRTCHealthCheck(t *testing.T) {
 	})
 }
 
-func TestCheckConnection_WithScheme(t *testing.T) {
+// TestCheckConnection_WithScheme ...
+// Summary: TestCheckConnection_WithScheme
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	defer func() { _ = lis.Close() }()
@@ -703,7 +802,16 @@ func TestCheckConnection_WithScheme(t *testing.T) {
 	assert.Error(t, err) // Should ensure it tries port 80
 }
 
-func TestHTTPCheck_BodyMismatch(t *testing.T) {
+// TestHTTPCheck_BodyMismatch ...
+// Summary: TestHTTPCheck_BodyMismatch
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("foo"))
@@ -722,7 +830,16 @@ func TestHTTPCheck_BodyMismatch(t *testing.T) {
 	assert.Contains(t, err.Error(), "health check response body does not contain expected string")
 }
 
-func TestGRPC_NoHealthCheck(t *testing.T) {
+// TestGRPC_NoHealthCheck ...
+// Summary: TestGRPC_NoHealthCheck
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Should fall back to checkConnection
 	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)

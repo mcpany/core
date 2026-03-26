@@ -22,7 +22,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestUpstreamService_GRPC(t *testing.T) {
+// TestUpstreamService_GRPC ...
+// Summary: TestUpstreamService_GRPC
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCase := &framework.E2ETestCase{
 		Name:                "gRPC Weather Server",
 		UpstreamServiceType: "grpc",
@@ -63,7 +72,16 @@ func TestUpstreamService_GRPC(t *testing.T) {
 	framework.RunE2ETest(t, testCase)
 }
 
-func TestUpstreamService_GRPCExample(t *testing.T) {
+// TestUpstreamService_GRPCExample ...
+// Summary: TestUpstreamService_GRPCExample
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
 

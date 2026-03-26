@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestSearchFiles_BugRepro(t *testing.T) {
+// TestSearchFiles_BugRepro ...
+// Summary: TestSearchFiles_BugRepro
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Configure the upstream with MemMapFs
 	config := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test_repro"),

@@ -17,7 +17,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestHandleUploadSkillAsset_PathDisclosure(t *testing.T) {
+// TestHandleUploadSkillAsset_PathDisclosure ...
+// Summary: TestHandleUploadSkillAsset_PathDisclosure
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a directory
 	tmpDir := t.TempDir()
 

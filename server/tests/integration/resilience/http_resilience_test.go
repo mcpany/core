@@ -20,7 +20,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestHTTPResilience(t *testing.T) {
+// TestHTTPResilience ...
+// Summary: TestHTTPResilience
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	t.Run("retry", func(t *testing.T) {
 		t.Parallel()

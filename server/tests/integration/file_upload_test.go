@@ -16,7 +16,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestFileUpload(t *testing.T) {
+// TestFileUpload ...
+// Summary: TestFileUpload
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Start the server with an explicit API key to ensure consistent behavior
 	apiKey := "test-upload-key"
 	server := StartInProcessMCPANYServer(t, "FileUploadTest", apiKey)

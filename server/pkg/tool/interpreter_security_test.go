@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestInterpreterSecurity(t *testing.T) {
+// TestInterpreterSecurity ...
+// Summary: TestInterpreterSecurity
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. Ruby Interpolation Injection
 	t.Run("Ruby_DoubleQuotes_Injection", func(t *testing.T) {
 		toolDef := (&pb.Tool_builder{

@@ -34,7 +34,16 @@ func setupTestApp() *Application {
 	return app
 }
 
-func TestCredentialCRUD(t *testing.T) {
+// TestCredentialCRUD ...
+// Summary: TestCredentialCRUD
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := setupTestApp()
 	ctx := context.Background()
 
@@ -122,7 +131,16 @@ func TestCredentialCRUD(t *testing.T) {
 	})
 }
 
-func TestAuthTestEndpoint(t *testing.T) {
+// TestAuthTestEndpoint ...
+// Summary: TestAuthTestEndpoint
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Allow loopback for this test since httptest.NewServer uses 127.0.0.1
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 
@@ -232,11 +250,29 @@ type failWriter struct {
 	http.ResponseWriter
 }
 
-func (fw *failWriter) Write([]byte) (int, error) {
+// Write ...
+// Summary: Write
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return 0, errors.New("write failed")
 }
 
-func TestWriteError(t *testing.T) {
+// TestWriteError ...
+// Summary: TestWriteError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("StatusNotFound", func(t *testing.T) {
 		w := httptest.NewRecorder()
 		writeError(w, errors.New("resource not found"))
@@ -264,7 +300,16 @@ func TestWriteError(t *testing.T) {
 	})
 }
 
-func TestWriteJSON(t *testing.T) {
+// TestWriteJSON ...
+// Summary: TestWriteJSON
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("ProtoMessage", func(t *testing.T) {
 		w := httptest.NewRecorder()
 		msg := configv1.Credential_builder{Id: proto.String("test-id")}.Build()
@@ -289,7 +334,16 @@ func TestWriteJSON(t *testing.T) {
 	})
 }
 
-func TestCredentialHandlers(t *testing.T) {
+// TestCredentialHandlers ...
+// Summary: TestCredentialHandlers
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	store := memory.NewStore()
 	app := &Application{Storage: store}
 
@@ -405,7 +459,16 @@ func TestCredentialHandlers(t *testing.T) {
 	})
 }
 
-func TestHandleCredentials_Security_Redaction(t *testing.T) {
+// TestHandleCredentials_Security_Redaction ...
+// Summary: TestHandleCredentials_Security_Redaction
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 	store := memory.NewStore()
 	app.Storage = store
@@ -442,7 +505,16 @@ func TestHandleCredentials_Security_Redaction(t *testing.T) {
 	})
 }
 
-func TestAuthTestEndpoint_SSRF(t *testing.T) {
+// TestAuthTestEndpoint_SSRF ...
+// Summary: TestAuthTestEndpoint_SSRF
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Ensure env vars are unset for this test to enforce strict SSRF protection
 	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "")
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "false")

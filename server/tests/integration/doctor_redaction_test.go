@@ -13,7 +13,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestDoctorRedaction_HTTP_URL_Leak(t *testing.T) {
+// TestDoctorRedaction_HTTP_URL_Leak ...
+// Summary: TestDoctorRedaction_HTTP_URL_Leak
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// configured URL triggers fallback regex (invalid scheme space) and has colon in password
 	urlStr := "post gres://user:pass:word@localhost:5432/db"
 

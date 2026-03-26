@@ -59,7 +59,16 @@ func createMockBundle(t *testing.T, path string) {
 	_, _ = mainPy.Write([]byte("print('hello')"))
 }
 
-func TestBundleCleanup(t *testing.T) {
+// TestBundleCleanup ...
+// Summary: TestBundleCleanup
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temp bundle file
 	tmpBundleDir, err := os.MkdirTemp("", "bundle-source")
 	assert.NoError(t, err)
@@ -111,30 +120,94 @@ func TestBundleCleanup(t *testing.T) {
 }
 
 // CleanupMockClientSession needed for interface satisfaction
-type CleanupMockClientSession struct{}
+// CleanupMockClientSession needed for interface satisfaction
+// Summary: CleanupMockClientSession
 
-func (m *CleanupMockClientSession) ListTools(_ context.Context, _ *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
+// ListTools ...
+// Summary: ListTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return &mcp.ListToolsResult{}, nil
 }
 
-func (m *CleanupMockClientSession) ListPrompts(_ context.Context, _ *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error) {
+// ListPrompts ...
+// Summary: ListPrompts
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return &mcp.ListPromptsResult{}, nil
 }
 
-func (m *CleanupMockClientSession) ListResources(_ context.Context, _ *mcp.ListResourcesParams) (*mcp.ListResourcesResult, error) {
+// ListResources ...
+// Summary: ListResources
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return &mcp.ListResourcesResult{}, nil
 }
 
-func (m *CleanupMockClientSession) GetPrompt(_ context.Context, _ *mcp.GetPromptParams) (*mcp.GetPromptResult, error) {
+// GetPrompt ...
+// Summary: GetPrompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
 
-func (m *CleanupMockClientSession) ReadResource(_ context.Context, _ *mcp.ReadResourceParams) (*mcp.ReadResourceResult, error) {
+// ReadResource ...
+// Summary: ReadResource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
 
-func (m *CleanupMockClientSession) CallTool(_ context.Context, _ *mcp.CallToolParams) (*mcp.CallToolResult, error) {
+// CallTool ...
+// Summary: CallTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
 
-func (m *CleanupMockClientSession) Close() error { return nil }
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.

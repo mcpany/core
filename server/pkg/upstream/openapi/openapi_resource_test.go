@@ -17,11 +17,21 @@ import (
 )
 
 // MockResourceManager is a mock of resource.ManagerInterface.
-type MockResourceManager struct {
+// MockResourceManager is a mock of resource.ManagerInterface.
+// Summary: MockResourceManager
 	mock.Mock
 }
 
-func (m *MockResourceManager) GetResource(uri string) (resource.Resource, bool) {
+// GetResource ...
+// Summary: GetResource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(uri)
 	if args.Get(0) == nil {
 		return nil, args.Bool(1)
@@ -29,28 +39,82 @@ func (m *MockResourceManager) GetResource(uri string) (resource.Resource, bool) 
 	return args.Get(0).(resource.Resource), args.Bool(1)
 }
 
-func (m *MockResourceManager) AddResource(r resource.Resource) {
+// AddResource ...
+// Summary: AddResource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.Called(r)
 }
 
-func (m *MockResourceManager) RemoveResource(uri string) {
+// RemoveResource ...
+// Summary: RemoveResource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.Called(uri)
 }
 
-func (m *MockResourceManager) ListResources() []resource.Resource {
+// ListResources ...
+// Summary: ListResources
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	return args.Get(0).([]resource.Resource)
 }
 
-func (m *MockResourceManager) OnListChanged(f func()) {
+// OnListChanged ...
+// Summary: OnListChanged
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.Called(f)
 }
 
-func (m *MockResourceManager) ClearResourcesForService(serviceID string) {
+// ClearResourcesForService ...
+// Summary: ClearResourcesForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.Called(serviceID)
 }
 
-func TestRegisterDynamicResources(t *testing.T) {
+// TestRegisterDynamicResources ...
+// Summary: TestRegisterDynamicResources
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewOpenAPIUpstream().(*OpenAPIUpstream)
 	serviceID := "test-service"
 
@@ -220,23 +284,60 @@ func TestRegisterDynamicResources(t *testing.T) {
 }
 
 // MockTool needs to implement tool.Tool
-type MockTool struct {
+// MockTool needs to implement tool.Tool
+// Summary: MockTool
 	mock.Mock
 }
 
-func (m *MockTool) Tool() *v1.Tool {
+// Tool ...
+// Summary: Tool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *MockTool) MCPTool() *mcp.Tool {
+// MCPTool ...
+// Summary: MCPTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *MockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+// Execute ...
+// Summary: Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, req)
 	return args.Get(0), args.Error(1)
 }
 
-func (m *MockTool) GetCacheConfig() *configv1.CacheConfig {
+// GetCacheConfig ...
+// Summary: GetCacheConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }

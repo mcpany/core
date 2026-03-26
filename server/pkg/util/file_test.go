@@ -10,7 +10,16 @@ import (
 	"testing"
 )
 
-func TestReadLastNLines(t *testing.T) {
+// TestReadLastNLines ...
+// Summary: TestReadLastNLines
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tmpDir := t.TempDir()
 	path := filepath.Join(tmpDir, "test.log")
 

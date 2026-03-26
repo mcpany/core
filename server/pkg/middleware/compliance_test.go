@@ -14,7 +14,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestJSONRPCComplianceMiddleware(t *testing.T) {
+// TestJSONRPCComplianceMiddleware ...
+// Summary: TestJSONRPCComplianceMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name           string
 		method         string

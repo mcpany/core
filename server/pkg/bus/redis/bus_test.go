@@ -37,7 +37,16 @@ func setupRedisIntegrationTest(t *testing.T) *redis.Client {
 	return client
 }
 
-func TestBus_Publish(t *testing.T) {
+// TestBus_Publish ...
+// Summary: TestBus_Publish
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	client, mock := redismock.NewClientMock()
 	bus := NewWithClient[string](client)
 
@@ -48,7 +57,16 @@ func TestBus_Publish(t *testing.T) {
 	assert.NoError(t, mock.ExpectationsWereMet())
 }
 
-func TestBus_Publish_MarshalError(t *testing.T) {
+// TestBus_Publish_MarshalError ...
+// Summary: TestBus_Publish_MarshalError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	client, _ := redismock.NewClientMock()
 	bus := NewWithClient[chan int](client)
 
@@ -57,7 +75,16 @@ func TestBus_Publish_MarshalError(t *testing.T) {
 	assert.IsType(t, &json.UnsupportedTypeError{}, err)
 }
 
-func TestBus_Publish_RedisError(t *testing.T) {
+// TestBus_Publish_RedisError ...
+// Summary: TestBus_Publish_RedisError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	client, mock := redismock.NewClientMock()
 	bus := NewWithClient[string](client)
 
@@ -69,7 +96,16 @@ func TestBus_Publish_RedisError(t *testing.T) {
 	assert.NoError(t, mock.ExpectationsWereMet())
 }
 
-func TestBus_Subscribe(t *testing.T) {
+// TestBus_Subscribe ...
+// Summary: TestBus_Subscribe
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "test-subscribe"
@@ -94,7 +130,16 @@ func TestBus_Subscribe(t *testing.T) {
 	wg.Wait()
 }
 
-func TestBus_SubscribeOnce_HandlerPanic(t *testing.T) {
+// TestBus_SubscribeOnce_HandlerPanic ...
+// Summary: TestBus_SubscribeOnce_HandlerPanic
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "handler-panic-topic"
@@ -119,7 +164,16 @@ func TestBus_SubscribeOnce_HandlerPanic(t *testing.T) {
 	wg.Wait()
 }
 
-func TestBus_MultipleUnsubCalls(t *testing.T) {
+// TestBus_MultipleUnsubCalls ...
+// Summary: TestBus_MultipleUnsubCalls
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	client, _ := redismock.NewClientMock()
 	bus := NewWithClient[string](client)
 
@@ -132,7 +186,16 @@ func TestBus_MultipleUnsubCalls(t *testing.T) {
 	assert.NotPanics(t, unsub)
 }
 
-func TestBus_SubscribeOnce_Correctness(t *testing.T) {
+// TestBus_SubscribeOnce_Correctness ...
+// Summary: TestBus_SubscribeOnce_Correctness
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "correctness-topic"
@@ -164,7 +227,16 @@ func TestBus_SubscribeOnce_Correctness(t *testing.T) {
 	mu.Unlock()
 }
 
-func TestBus_SubscribeOnce_ConcurrentPublish(t *testing.T) {
+// TestBus_SubscribeOnce_ConcurrentPublish ...
+// Summary: TestBus_SubscribeOnce_ConcurrentPublish
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "once-concurrent-publish"
@@ -202,7 +274,16 @@ func TestBus_SubscribeOnce_ConcurrentPublish(t *testing.T) {
 	// close(handlerCalled) - unsafe to close as handler might race if PubSubNumSub returned 0 prematurely
 }
 
-func TestBus_Subscribe_UnmarshalError(t *testing.T) {
+// TestBus_Subscribe_UnmarshalError ...
+// Summary: TestBus_Subscribe_UnmarshalError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 
@@ -237,7 +318,16 @@ func TestBus_Subscribe_UnmarshalError(t *testing.T) {
 	assert.Contains(t, logBuffer.String(), "Failed to unmarshal message")
 }
 
-func TestBus_Subscribe_NullPayload(t *testing.T) {
+// TestBus_Subscribe_NullPayload ...
+// Summary: TestBus_Subscribe_NullPayload
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[*string](client)
 	topic := "test-null-payload"
@@ -268,7 +358,20 @@ func TestBus_Subscribe_NullPayload(t *testing.T) {
 // known issue with the tool's ability to track coverage in goroutines,
 // especially in short-lived test scenarios. The test is valid and does
 // exercise the code path.
-func TestBus_SubscribeOnce(t *testing.T) {
+// TestBus_SubscribeOnce tests that a handler for a topic is only called once.
+// Summary: TestBus_SubscribeOnce
+// Note: Go's coverage tool may report 0% coverage for this function. This is a
+// known issue with the tool's ability to track coverage in goroutines,
+// especially in short-lived test scenarios. The test is valid and does
+// exercise the code path.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "test-subscribe-once"
@@ -320,7 +423,16 @@ func TestBus_SubscribeOnce(t *testing.T) {
 	}
 }
 
-func TestBus_SubscribeOnce_NilHandler(t *testing.T) {
+// TestBus_SubscribeOnce_NilHandler ...
+// Summary: TestBus_SubscribeOnce_NilHandler
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "test-nil-handler"
@@ -330,7 +442,16 @@ func TestBus_SubscribeOnce_NilHandler(t *testing.T) {
 	})
 }
 
-func TestBus_Unsubscribe(t *testing.T) {
+// TestBus_Unsubscribe ...
+// Summary: TestBus_Unsubscribe
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 
@@ -363,7 +484,16 @@ func TestBus_Unsubscribe(t *testing.T) {
 	}
 }
 
-func TestBus_New(t *testing.T) {
+// TestBus_New ...
+// Summary: TestBus_New
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	redisBus := bus_pb.RedisBus_builder{
 		Address:  proto.String("127.0.0.1:6379"),
 		Password: proto.String("password"),
@@ -379,7 +509,16 @@ func TestBus_New(t *testing.T) {
 	assert.Equal(t, 1, options.DB)
 }
 
-func TestBus_New_WithValidConfig(t *testing.T) {
+// TestBus_New_WithValidConfig ...
+// Summary: TestBus_New_WithValidConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	redisBus := bus_pb.RedisBus_builder{
 		Address:  proto.String("127.0.0.1:6380"),
 		Password: proto.String("testpassword"),
@@ -395,7 +534,16 @@ func TestBus_New_WithValidConfig(t *testing.T) {
 	assert.Equal(t, 2, options.DB)
 }
 
-func TestBus_New_NilConfig(t *testing.T) {
+// TestBus_New_NilConfig ...
+// Summary: TestBus_New_NilConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var bus *Bus[string]
 	assert.NotPanics(t, func() {
 		bus, _ = New[string](nil)
@@ -408,7 +556,16 @@ func TestBus_New_NilConfig(t *testing.T) {
 	assert.Equal(t, 0, options.DB)
 }
 
-func TestBus_New_PartialConfig(t *testing.T) {
+// TestBus_New_PartialConfig ...
+// Summary: TestBus_New_PartialConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	redisBus := bus_pb.RedisBus_builder{
 		Address: proto.String("127.0.0.1:6381"),
 	}.Build()
@@ -422,7 +579,16 @@ func TestBus_New_PartialConfig(t *testing.T) {
 	assert.Equal(t, 0, options.DB)
 }
 
-func TestBus_ConcurrentSubscribeAndUnsubscribe(t *testing.T) {
+// TestBus_ConcurrentSubscribeAndUnsubscribe ...
+// Summary: TestBus_ConcurrentSubscribeAndUnsubscribe
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "concurrent-topic"
@@ -445,7 +611,16 @@ func TestBus_ConcurrentSubscribeAndUnsubscribe(t *testing.T) {
 	wg.Wait()
 }
 
-func TestBus_Subscribe_NilHandler(t *testing.T) {
+// TestBus_Subscribe_NilHandler ...
+// Summary: TestBus_Subscribe_NilHandler
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "test-nil-handler"
@@ -455,7 +630,16 @@ func TestBus_Subscribe_NilHandler(t *testing.T) {
 	})
 }
 
-func TestBus_Subscribe_CloseSubscription(t *testing.T) {
+// TestBus_Subscribe_CloseSubscription ...
+// Summary: TestBus_Subscribe_CloseSubscription
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "test-close-subscription"
@@ -495,7 +679,16 @@ func TestBus_Subscribe_CloseSubscription(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 }
 
-func TestBus_SubscribeOnce_UnsubscribeBeforeMessage(t *testing.T) {
+// TestBus_SubscribeOnce_UnsubscribeBeforeMessage ...
+// Summary: TestBus_SubscribeOnce_UnsubscribeBeforeMessage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "once-unsubscribe-before-message"
@@ -529,7 +722,16 @@ func TestBus_SubscribeOnce_UnsubscribeBeforeMessage(t *testing.T) {
 	}
 }
 
-func TestBus_Subscribe_HandlerPanic(t *testing.T) {
+// TestBus_Subscribe_HandlerPanic ...
+// Summary: TestBus_Subscribe_HandlerPanic
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "test-subscribe-panic"
@@ -567,7 +769,16 @@ func TestBus_Subscribe_HandlerPanic(t *testing.T) {
 	assert.Len(t, handlerCalled, 0, "handler should have been called twice")
 }
 
-func TestBus_Subscribe_ContextCancellation(t *testing.T) {
+// TestBus_Subscribe_ContextCancellation ...
+// Summary: TestBus_Subscribe_ContextCancellation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "test-context-cancellation"
@@ -608,7 +819,16 @@ func TestBus_Subscribe_ContextCancellation(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 }
 
-func TestBus_Subscribe_AlreadyCancelledContext(t *testing.T) {
+// TestBus_Subscribe_AlreadyCancelledContext ...
+// Summary: TestBus_Subscribe_AlreadyCancelledContext
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "already-cancelled-context"
@@ -639,7 +859,16 @@ func TestBus_Subscribe_AlreadyCancelledContext(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 }
 
-func TestBus_PublishAndSubscribe(t *testing.T) {
+// TestBus_PublishAndSubscribe ...
+// Summary: TestBus_PublishAndSubscribe
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "test-publish-subscribe"
@@ -690,7 +919,16 @@ func TestBus_PublishAndSubscribe(t *testing.T) {
 	}
 }
 
-func TestBus_UnsubscribeFromHandler(t *testing.T) {
+// TestBus_UnsubscribeFromHandler ...
+// Summary: TestBus_UnsubscribeFromHandler
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "unsubscribe-from-handler"
@@ -730,7 +968,16 @@ func TestBus_UnsubscribeFromHandler(t *testing.T) {
 	}, 5*time.Second, 10*time.Millisecond, "subscriber did not disappear after unsubscribing from handler")
 }
 
-func TestBus_SubscribeOnce_CancelledContext(t *testing.T) {
+// TestBus_SubscribeOnce_CancelledContext ...
+// Summary: TestBus_SubscribeOnce_CancelledContext
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "once-cancelled-context"
@@ -771,7 +1018,16 @@ func TestBus_SubscribeOnce_CancelledContext(t *testing.T) {
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-func TestBus_Subscribe_ConcurrentSubscribers(t *testing.T) {
+// TestBus_Subscribe_ConcurrentSubscribers ...
+// Summary: TestBus_Subscribe_ConcurrentSubscribers
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// t.Skip("Skipping flaky concurrent subscribers test")
 	client := setupRedisIntegrationTest(t)
 	// Explicitly close client to avoid leaks if this test becomes sensitive or other tests run
@@ -816,7 +1072,16 @@ func TestBus_Subscribe_ConcurrentSubscribers(t *testing.T) {
 	}
 }
 
-func TestBus_SubscribeOnce_UnsubscribeFromHandler(t *testing.T) {
+// TestBus_SubscribeOnce_UnsubscribeFromHandler ...
+// Summary: TestBus_SubscribeOnce_UnsubscribeFromHandler
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "once-unsubscribe-from-handler"
@@ -854,7 +1119,16 @@ func TestBus_SubscribeOnce_UnsubscribeFromHandler(t *testing.T) {
 	}, 5*time.Second, 10*time.Millisecond, "subscriber did not disappear after unsubscribing from handler")
 }
 
-func TestBus_Subscribe_CloseClient(t *testing.T) {
+// TestBus_Subscribe_CloseClient ...
+// Summary: TestBus_Subscribe_CloseClient
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "test-close-client"
@@ -884,7 +1158,16 @@ func TestBus_Subscribe_CloseClient(t *testing.T) {
 
 }
 
-func TestBus_Subscribe_CloseClient_Race(t *testing.T) {
+// TestBus_Subscribe_CloseClient_Race ...
+// Summary: TestBus_Subscribe_CloseClient_Race
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "test-close-client-race"
@@ -907,7 +1190,16 @@ func TestBus_Subscribe_CloseClient_Race(t *testing.T) {
 	unsubOnce.Do(unsub)
 }
 
-func TestBus_Unsubscribe_Race(t *testing.T) {
+// TestBus_Unsubscribe_Race ...
+// Summary: TestBus_Unsubscribe_Race
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "test-unsubscribe-race"
@@ -927,7 +1219,16 @@ func TestBus_Unsubscribe_Race(t *testing.T) {
 	wg.Wait()
 }
 
-func TestBus_Subscribe_And_Unsubscribe_Race(t *testing.T) {
+// TestBus_Subscribe_And_Unsubscribe_Race ...
+// Summary: TestBus_Subscribe_And_Unsubscribe_Race
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "test-subscribe-and-unsubscribe-race"

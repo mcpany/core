@@ -31,35 +31,89 @@ func newMemoryHandler() *memoryHandler {
 	return mh
 }
 
-func (h *memoryHandler) Enabled(ctx context.Context, level slog.Level) bool {
+// Enabled ...
+// Summary: Enabled
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return h.h.Enabled(ctx, level)
 }
 
-func (h *memoryHandler) Handle(ctx context.Context, r slog.Record) error {
+// Handle ...
+// Summary: Handle
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	return h.h.Handle(ctx, r)
 }
 
-func (h *memoryHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
+// WithAttrs ...
+// Summary: WithAttrs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	return &memoryHandler{h: h.h.WithAttrs(attrs)}
 }
 
-func (h *memoryHandler) WithGroup(name string) slog.Handler {
+// WithGroup ...
+// Summary: WithGroup
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	return &memoryHandler{h: h.h.WithGroup(name)}
 }
 
-func (h *memoryHandler) String() string {
+// String ...
+// Summary: String
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	return h.buf.String()
 }
 
-func TestLoggingMiddleware(t *testing.T) {
+// TestLoggingMiddleware ...
+// Summary: TestLoggingMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mh := newMemoryHandler()
 	logger := slog.New(mh)
 

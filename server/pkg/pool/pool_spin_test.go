@@ -17,13 +17,40 @@ type mockUnhealthyClient struct {
 	checkCount *int32
 }
 
-func (m *mockUnhealthyClient) Close() error { return nil }
-func (m *mockUnhealthyClient) IsHealthy(ctx context.Context) bool {
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// IsHealthy ...
+// Summary: IsHealthy
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	atomic.AddInt32(m.checkCount, 1)
 	return false
 }
 
-func TestPoolGet_BusyLoop(t *testing.T) {
+// TestPoolGet_BusyLoop ...
+// Summary: TestPoolGet_BusyLoop
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test verifies if the pool enters a busy loop when clients are consistently unhealthy.
 	var checkCount int32
 

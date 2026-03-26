@@ -28,7 +28,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestSlogWriter(t *testing.T) {
+// TestSlogWriter ...
+// Summary: TestSlogWriter
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var buf bytes.Buffer
 	log := slog.New(slog.NewJSONHandler(&buf, nil))
 	writer := &slogWriter{log: log, level: slog.LevelInfo}
@@ -40,7 +49,16 @@ func TestSlogWriter(t *testing.T) {
 	assert.Contains(t, buf.String(), testMessage)
 }
 
-func TestDockerConn_SessionID(t *testing.T) {
+// TestDockerConn_SessionID ...
+// Summary: TestDockerConn_SessionID
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	conn := &dockerConn{}
 	assert.Equal(t, "docker-transport-session", conn.SessionID())
 }
@@ -49,11 +67,29 @@ type mockReadWriteCloser struct {
 	bytes.Buffer
 }
 
-func (m *mockReadWriteCloser) Close() error {
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func TestDockerConn_ReadWrite(t *testing.T) {
+// TestDockerConn_ReadWrite ...
+// Summary: TestDockerConn_ReadWrite
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	rwc := &mockReadWriteCloser{}
 	conn := &dockerConn{
@@ -79,7 +115,16 @@ func TestDockerConn_ReadWrite(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestDockerConn_Read_UnmarshalError(t *testing.T) {
+// TestDockerConn_Read_UnmarshalError ...
+// Summary: TestDockerConn_Read_UnmarshalError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 
 	t.Run("invalid header", func(t *testing.T) {
@@ -114,7 +159,16 @@ func TestDockerConn_Read_UnmarshalError(t *testing.T) {
 	})
 }
 
-func TestDockerTransport_Connect_ClientError(t *testing.T) {
+// TestDockerTransport_Connect_ClientError ...
+// Summary: TestDockerTransport_Connect_ClientError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	originalNewDockerClient := newDockerClient
 	newDockerClient = func(_ ...client.Opt) (dockerClient, error) {
 		return nil, fmt.Errorf("client error")
@@ -130,7 +184,16 @@ func TestDockerTransport_Connect_ClientError(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to create docker client")
 }
 
-func TestDockerTransport_Connect_ContainerCreateError(t *testing.T) {
+// TestDockerTransport_Connect_ContainerCreateError ...
+// Summary: TestDockerTransport_Connect_ContainerCreateError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	originalNewDockerClient := newDockerClient
 	newDockerClient = func(_ ...client.Opt) (dockerClient, error) {
 		return &mockDockerClient{
@@ -153,7 +216,16 @@ func TestDockerTransport_Connect_ContainerCreateError(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to create container")
 }
 
-func TestDockerTransport_Connect_ContainerAttachError(t *testing.T) {
+// TestDockerTransport_Connect_ContainerAttachError ...
+// Summary: TestDockerTransport_Connect_ContainerAttachError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	originalNewDockerClient := newDockerClient
 	newDockerClient = func(_ ...client.Opt) (dockerClient, error) {
 		return &mockDockerClient{
@@ -176,7 +248,16 @@ func TestDockerTransport_Connect_ContainerAttachError(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to attach to container")
 }
 
-func TestDockerTransport_Connect_ContainerStartError(t *testing.T) {
+// TestDockerTransport_Connect_ContainerStartError ...
+// Summary: TestDockerTransport_Connect_ContainerStartError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	originalNewDockerClient := newDockerClient
 	newDockerClient = func(_ ...client.Opt) (dockerClient, error) {
 		return &mockDockerClient{
@@ -199,7 +280,16 @@ func TestDockerTransport_Connect_ContainerStartError(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to start container")
 }
 
-func TestDockerTransport_Connect_Integration(t *testing.T) {
+// TestDockerTransport_Connect_Integration ...
+// Summary: TestDockerTransport_Connect_Integration
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test that Connect establishes a working MCP connection that can read a
 	// JSON-RPC response encoded as a Docker multiplexed stdout stream.
 	jsonPayload := `{"jsonrpc": "2.0", "id": "1", "result": "hello"}` + "\n"
@@ -266,7 +356,16 @@ func TestDockerTransport_Connect_Integration(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestDockerTransport_Connect_ImageNotFound(t *testing.T) {
+// TestDockerTransport_Connect_ImageNotFound ...
+// Summary: TestDockerTransport_Connect_ImageNotFound
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test that Connect returns an error when both ImagePull and ContainerCreate fail,
 	// which simulates a non-existent image scenario.
 	originalNewDockerClient := newDockerClient
@@ -293,7 +392,16 @@ func TestDockerTransport_Connect_ImageNotFound(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestDockerTransport_Connect_NoImage(t *testing.T) {
+// TestDockerTransport_Connect_NoImage ...
+// Summary: TestDockerTransport_Connect_NoImage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	stdioConfig := configv1.McpStdioConnection_builder{
 		Command: proto.String("echo"),
@@ -305,7 +413,16 @@ func TestDockerTransport_Connect_NoImage(t *testing.T) {
 	assert.Contains(t, err.Error(), "container_image must be specified")
 }
 
-func TestDockerReadWriteCloser_Close_Error(t *testing.T) {
+// TestDockerReadWriteCloser_Close_Error ...
+// Summary: TestDockerReadWriteCloser_Close_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var buf bytes.Buffer
 	logging.ForTestsOnlyResetLogger()
 	logging.Init(slog.LevelInfo, &buf, "")

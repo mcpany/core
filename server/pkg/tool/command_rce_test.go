@@ -13,7 +13,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestLocalCommandTool_RCE_Verification(t *testing.T) {
+// TestLocalCommandTool_RCE_Verification ...
+// Summary: TestLocalCommandTool_RCE_Verification
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	service := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("echo"), // echo is typically safe
 		Tools: []*configv1.ToolDefinition{

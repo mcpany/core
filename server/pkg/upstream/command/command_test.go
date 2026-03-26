@@ -33,7 +33,16 @@ func newMockToolManager() *mockToolManager {
 	}
 }
 
-func (m *mockToolManager) AddTool(t tool.Tool) error {
+// AddTool ...
+// Summary: AddTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.addError != nil {
 		return m.addError
 	}
@@ -45,17 +54,53 @@ func (m *mockToolManager) AddTool(t tool.Tool) error {
 	return nil
 }
 
-func (m *mockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+// ExecuteTool ...
+// Summary: ExecuteTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
 
-func (m *mockToolManager) SetMCPServer(_ tool.MCPServerProvider) {
+// SetMCPServer ...
+// Summary: SetMCPServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 }
 
-func (m *mockToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {
+// AddMiddleware ...
+// Summary: AddMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 }
 
-func (m *mockToolManager) GetTool(name string) (tool.Tool, bool) {
+// GetTool ...
+// Summary: GetTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.getError {
 		return nil, false
 	}
@@ -63,7 +108,16 @@ func (m *mockToolManager) GetTool(name string) (tool.Tool, bool) {
 	return t, ok
 }
 
-func (m *mockToolManager) ListTools() []tool.Tool {
+// ListTools ...
+// Summary: ListTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tools := make([]tool.Tool, 0, len(m.tools))
 	for _, t := range m.tools {
 		tools = append(tools, t)
@@ -71,15 +125,51 @@ func (m *mockToolManager) ListTools() []tool.Tool {
 	return tools
 }
 
-func (m *mockToolManager) ListServices() []*tool.ServiceInfo {
+// ListServices ...
+// Summary: ListServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *mockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
+// AddServiceInfo ...
+// Summary: AddServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func (m *mockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
+// SetProfiles ...
+// Summary: SetProfiles
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func TestNewStdioUpstream(t *testing.T) {
+// TestNewStdioUpstream ...
+// Summary: TestNewStdioUpstream
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewUpstream()
 	assert.NotNil(t, u)
 	_, ok := u.(*Upstream)
@@ -88,7 +178,16 @@ func TestNewStdioUpstream(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestStdioUpstream_Shutdown(t *testing.T) {
+// TestStdioUpstream_Shutdown ...
+// Summary: TestStdioUpstream_Shutdown
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewUpstream()
 	// Shutdown without register (checker is nil)
 	err := u.Shutdown(context.Background())
@@ -110,7 +209,16 @@ func TestStdioUpstream_Shutdown(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestStdioUpstream_Register(t *testing.T) {
+// TestStdioUpstream_Register ...
+// Summary: TestStdioUpstream_Register
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tm := newMockToolManager()
 	prm := prompt.NewManager()
 	rm := resource.NewManager()
@@ -344,7 +452,16 @@ func TestStdioUpstream_Register(t *testing.T) {
 	})
 }
 
-func TestStdioUpstream_Register_RequiredParams(t *testing.T) {
+// TestStdioUpstream_Register_RequiredParams ...
+// Summary: TestStdioUpstream_Register_RequiredParams
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tm := newMockToolManager()
 	prm := prompt.NewManager()
 	rm := resource.NewManager()
@@ -412,7 +529,16 @@ func TestStdioUpstream_Register_RequiredParams(t *testing.T) {
 	assert.True(t, found, "required_arg should be in the required list")
 }
 
-func TestStdioUpstream_Register_DynamicResourceErrors(t *testing.T) {
+// TestStdioUpstream_Register_DynamicResourceErrors ...
+// Summary: TestStdioUpstream_Register_DynamicResourceErrors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewUpstream()
 
 	t.Run("dynamic resource tool not found", func(t *testing.T) {
@@ -579,7 +705,16 @@ func TestStdioUpstream_Register_DynamicResourceErrors(t *testing.T) {
 	})
 }
 
-func TestStdioUpstream_Register_Coverage(t *testing.T) {
+// TestStdioUpstream_Register_Coverage ...
+// Summary: TestStdioUpstream_Register_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tm := newMockToolManager()
 	prm := prompt.NewManager()
 	rm := resource.NewManager()
@@ -647,7 +782,16 @@ func TestStdioUpstream_Register_Coverage(t *testing.T) {
 	assert.False(t, ok)
 }
 
-func TestStdioUpstream_Register_AnnotationsAndHints(t *testing.T) {
+// TestStdioUpstream_Register_AnnotationsAndHints ...
+// Summary: TestStdioUpstream_Register_AnnotationsAndHints
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tm := newMockToolManager()
 	prm := prompt.NewManager()
 	rm := resource.NewManager()

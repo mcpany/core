@@ -53,7 +53,16 @@ func createTestBundle(t *testing.T, dir string) string {
 	return bundlePath
 }
 
-func TestUpstream_Register_Bundle(t *testing.T) {
+// TestUpstream_Register_Bundle ...
+// Summary: TestUpstream_Register_Bundle
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tempDir := t.TempDir()
 	bundlePath := createTestBundle(t, tempDir)
 
@@ -108,7 +117,16 @@ func TestUpstream_Register_Bundle(t *testing.T) {
 	assert.Equal(t, filepath.Join(bundleBaseDir, serviceID), bd.Mounts[0].Source)
 }
 
-func TestUpstream_Register_Bundle_Failures(t *testing.T) {
+// TestUpstream_Register_Bundle_Failures ...
+// Summary: TestUpstream_Register_Bundle_Failures
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	upstream := NewUpstream(nil)
 	tm := tool.NewManager(nil)
 	pm := prompt.NewManager()
@@ -155,7 +173,16 @@ func TestUpstream_Register_Bundle_Failures(t *testing.T) {
 	})
 }
 
-func TestUpstream_Register_Bundle_Python(t *testing.T) {
+// TestUpstream_Register_Bundle_Python ...
+// Summary: TestUpstream_Register_Bundle_Python
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tempDir := t.TempDir()
 	bundlePath := filepath.Join(tempDir, "python.mcpb")
 	file, err := os.Create(bundlePath) //nolint:gosec

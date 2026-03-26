@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestSecurity_UsabilityBypass(t *testing.T) {
+// TestSecurity_UsabilityBypass ...
+// Summary: TestSecurity_UsabilityBypass
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup a Python tool
 	pythonService := (&configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("python"),

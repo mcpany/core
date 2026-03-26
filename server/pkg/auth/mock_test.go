@@ -11,7 +11,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMockUpstreamAuthenticator(t *testing.T) {
+// TestMockUpstreamAuthenticator ...
+// Summary: TestMockUpstreamAuthenticator
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("default_behavior", func(t *testing.T) {
 		mock := &MockUpstreamAuthenticator{}
 		req, _ := http.NewRequest("GET", "/", nil)

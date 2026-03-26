@@ -26,11 +26,29 @@ type mockTransport struct {
 	roundTripFunc func(req *http.Request) (*http.Response, error)
 }
 
-func (m *mockTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+// RoundTrip ...
+// Summary: RoundTrip
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.roundTripFunc(req)
 }
 
-func TestNewGcsProvider(t *testing.T) {
+// TestNewGcsProvider ...
+// Summary: TestNewGcsProvider
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("Nil Config", func(t *testing.T) {
 		_, err := NewGcsProvider(context.Background(), nil)
 		assert.Error(t, err)
@@ -55,7 +73,16 @@ func TestNewGcsProvider(t *testing.T) {
 	})
 }
 
-func TestGcsProvider_WithMockClient(t *testing.T) {
+// TestGcsProvider_WithMockClient ...
+// Summary: TestGcsProvider_WithMockClient
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Backup and restore newStorageClient
 	oldNewStorageClient := newStorageClient
 	defer func() { newStorageClient = oldNewStorageClient }()
@@ -101,7 +128,16 @@ func TestGcsProvider_WithMockClient(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestNewGcsProvider_ClientError(t *testing.T) {
+// TestNewGcsProvider_ClientError ...
+// Summary: TestNewGcsProvider_ClientError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Backup and restore newStorageClient
 	oldNewStorageClient := newStorageClient
 	defer func() { newStorageClient = oldNewStorageClient }()
@@ -120,7 +156,16 @@ func TestNewGcsProvider_ClientError(t *testing.T) {
 	assert.Contains(t, err.Error(), "mock error")
 }
 
-func TestGcsProvider_ResolvePath(t *testing.T) {
+// TestGcsProvider_ResolvePath ...
+// Summary: TestGcsProvider_ResolvePath
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// We can manually create a GcsProvider struct to test ResolvePath without needing valid creds
 	p := &GcsProvider{}
 
@@ -167,7 +212,16 @@ func TestGcsProvider_ResolvePath(t *testing.T) {
 	}
 }
 
-func TestGcsFileInfo(t *testing.T) {
+// TestGcsFileInfo ...
+// Summary: TestGcsFileInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fi := &gcsFileInfo{
 		name:    "test.txt",
 		size:    123,
@@ -190,7 +244,16 @@ func TestGcsFileInfo(t *testing.T) {
 	assert.True(t, dirFi.IsDir())
 }
 
-func TestGcsFs_Methods(t *testing.T) {
+// TestGcsFs_Methods ...
+// Summary: TestGcsFs_Methods
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var fs afero.Fs = &gcsFs{}
 	// Just verify it compiles and implements the interface
 	assert.NotNil(t, fs)
@@ -202,7 +265,16 @@ func TestGcsFs_Methods(t *testing.T) {
 	assert.NoError(t, fs.Chtimes("foo", time.Now(), time.Now()))
 }
 
-func TestGcsFile_Methods_Errors(t *testing.T) {
+// TestGcsFile_Methods_Errors ...
+// Summary: TestGcsFile_Methods_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	f := &gcsFile{}
 
 	_, err := f.Read([]byte{})

@@ -16,7 +16,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestLocalCommandTool_VimInjection_Prevention(t *testing.T) {
+// TestLocalCommandTool_VimInjection_Prevention ...
+// Summary: TestLocalCommandTool_VimInjection_Prevention
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	// This test verifies that editors like vim are treated as shells
 	// because they allow command execution.

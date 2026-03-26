@@ -17,29 +17,58 @@ import (
 )
 
 // SpyServiceRegistry captures calls
-type SpyServiceRegistry struct {
+// SpyServiceRegistry captures calls
+// Summary: SpyServiceRegistry
 	TestMockServiceRegistry
 	unregistered []string
 }
 
-func (m *SpyServiceRegistry) UnregisterService(ctx context.Context, serviceName string) error {
+// UnregisterService ...
+// Summary: UnregisterService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.unregistered = append(m.unregistered, serviceName)
 	return nil
 }
 
-type MockStoreWithGet struct {
+// MockStoreWithGet ...
+// Summary: MockStoreWithGet
 	MockServiceStore
 	service *configv1.UpstreamServiceConfig
 }
 
-func (m *MockStoreWithGet) GetService(ctx context.Context, name string) (*configv1.UpstreamServiceConfig, error) {
+// GetService ...
+// Summary: GetService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.service != nil && m.service.GetName() == name {
 		return m.service, nil
 	}
 	return nil, nil
 }
 
-func TestHandleServiceRestart_Success(t *testing.T) {
+// TestHandleServiceRestart_Success ...
+// Summary: TestHandleServiceRestart_Success
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 	app.fs = afero.NewMemMapFs()
 	app.configPaths = []string{}

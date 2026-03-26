@@ -9,7 +9,16 @@ import (
 	"testing"
 )
 
-func TestHunter_SimpleTokenizer_FloatOptimization_Bug(t *testing.T) {
+// TestHunter_SimpleTokenizer_FloatOptimization_Bug ...
+// Summary: TestHunter_SimpleTokenizer_FloatOptimization_Bug
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	st := NewSimpleTokenizer()
 
 	tests := []struct {
@@ -48,7 +57,16 @@ func TestHunter_SimpleTokenizer_FloatOptimization_Bug(t *testing.T) {
 	}
 }
 
-func TestHunter_SimpleTokenizer_FloatSliceOptimization_Bug(t *testing.T) {
+// TestHunter_SimpleTokenizer_FloatSliceOptimization_Bug ...
+// Summary: TestHunter_SimpleTokenizer_FloatSliceOptimization_Bug
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	st := NewSimpleTokenizer()
 
 	// A slice containing problematic floats

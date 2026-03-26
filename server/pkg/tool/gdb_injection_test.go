@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestLocalCommandTool_GDBInjection_Blocked(t *testing.T) {
+// TestLocalCommandTool_GDBInjection_Blocked ...
+// Summary: TestLocalCommandTool_GDBInjection_Blocked
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	// Define a tool that uses 'gdb', which IS in isShellCommand list.
 	inputSchema := &structpb.Struct{

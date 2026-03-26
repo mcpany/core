@@ -11,7 +11,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestResolveSecret_Extended(t *testing.T) {
+// TestResolveSecret_Extended ...
+// Summary: TestResolveSecret_Extended
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("RemoteContent_APIKey_Error", func(t *testing.T) {
 		// Create a secret that fails resolution
 		failSecret := configv1.SecretValue_builder{

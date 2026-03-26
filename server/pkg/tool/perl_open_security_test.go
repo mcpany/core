@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestLocalCommandTool_Perl_Open_Injection(t *testing.T) {
+// TestLocalCommandTool_Perl_Open_Injection ...
+// Summary: TestLocalCommandTool_Perl_Open_Injection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Vulnerability: Perl allows 'open' without parentheses, e.g. open FH, ">file"
 	// This might bypass checkInterpreterFunctionCalls which looks for open(
 

@@ -32,7 +32,16 @@ import (
 // Reuse mocks if possible, or define coverage specific ones
 // We need access to newDockerClient, so we are in the same package `mcp`.
 
-func TestDockerTransport_Connect_Success_Mock(t *testing.T) {
+// TestDockerTransport_Connect_Success_Mock ...
+// Summary: TestDockerTransport_Connect_Success_Mock
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	originalNewDockerClient := newDockerClient
 	defer func() { newDockerClient = originalNewDockerClient }()
 
@@ -90,7 +99,16 @@ func TestDockerTransport_Connect_Success_Mock(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestBundleDockerConn_Read_Fallback_Coverage(t *testing.T) {
+// TestBundleDockerConn_Read_Fallback_Coverage ...
+// Summary: TestBundleDockerConn_Read_Fallback_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test the fallback logic in Read where standard unmarshal fails
 	rwc := &mockRWCExtra{}
 	conn := &bundleDockerConn{
@@ -150,22 +168,58 @@ type mockRWCExtra struct {
 	readBuf *bytes.Buffer
 }
 
-func (m *mockRWCExtra) Write(p []byte) (n int, err error) { return len(p), nil }
-func (m *mockRWCExtra) Read(p []byte) (n int, err error) {
+// Write ...
+// Summary: Write
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// Read ...
+// Summary: Read
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.readBuf == nil {
 		return 0, io.EOF
 	}
 	return m.readBuf.Read(p)
 }
 
-func (m *mockRWCExtra) Close() error { return nil }
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
 type mockToolManagerExtra struct {
 	tool.ManagerInterface
 	tools map[string]tool.Tool
 }
 
-func (m *mockToolManagerExtra) GetTool(name string) (tool.Tool, bool) {
+// GetTool ...
+// Summary: GetTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.tools == nil {
 		return nil, false
 	}
@@ -173,13 +227,40 @@ func (m *mockToolManagerExtra) GetTool(name string) (tool.Tool, bool) {
 	return t, ok
 }
 
-func (m *mockToolManagerExtra) ListServices() []*tool.ServiceInfo {
+// ListServices ...
+// Summary: ListServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *mockToolManagerExtra) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
+// AddServiceInfo ...
+// Summary: AddServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func TestRegister_DynamicResource_Success(t *testing.T) {
+// TestRegister_DynamicResource_Success ...
+// Summary: TestRegister_DynamicResource_Success
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := &Upstream{}
 
 	// Config with 1 tool and 1 dynamic resource pointing to it
@@ -220,7 +301,16 @@ func TestRegister_DynamicResource_Success(t *testing.T) {
 	assert.Contains(t, rm.resources, "test://my-resource")
 }
 
-func TestUpstream_Register_Stdio_Success(t *testing.T) {
+// TestUpstream_Register_Stdio_Success ...
+// Summary: TestUpstream_Register_Stdio_Success
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := &Upstream{}
 	ctx := context.Background()
 	tm := &mockToolManagerCoverage{}

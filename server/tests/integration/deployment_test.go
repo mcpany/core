@@ -83,7 +83,16 @@ func dockerComposeDir(t *testing.T) string {
 	return filepath.Join(rootDir, "examples", "docker-compose-demo")
 }
 
-func TestDockerCompose(t *testing.T) {
+// TestDockerCompose ...
+// Summary: TestDockerCompose
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if !integration.IsDockerSocketAccessible() {
 		t.Skip("Docker socket not accessible, skipping TestDockerCompose.")
 	}
@@ -301,7 +310,16 @@ func TestDockerCompose(t *testing.T) {
 	}, 30*time.Second, 2*time.Second, "Failed to get a successful tool-call response from mcpany")
 }
 
-func TestHelmChart(t *testing.T) {
+// TestHelmChart ...
+// Summary: TestHelmChart
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if !commandExists("helm") {
 		t.Skip("helm command not found, skipping TestHelmChart.")
 	}
@@ -332,7 +350,16 @@ func TestHelmChart(t *testing.T) {
 	require.Contains(t, outputStr, "app.kubernetes.io/name: mcpany", "Rendered template should contain the app name label")
 }
 
-func TestK8sFullStack(t *testing.T) {
+// TestK8sFullStack ...
+// Summary: TestK8sFullStack
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if !commandExists("helm") {
 		t.Skip("helm command not found, skipping TestK8sFullStack.")
 	}

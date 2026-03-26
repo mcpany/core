@@ -17,36 +17,91 @@ import (
 )
 
 // MockClientSession is a mock implementation of the ClientSession interface
-type MockClientSession struct {
+// MockClientSession is a mock implementation of the ClientSession interface
+// Summary: MockClientSession
 	mock.Mock
 }
 
-func (m *MockClientSession) ListTools(ctx context.Context, params *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
+// ListTools ...
+// Summary: ListTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, params)
 	return args.Get(0).(*mcp.ListToolsResult), args.Error(1)
 }
 
-func (m *MockClientSession) ListPrompts(ctx context.Context, params *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error) {
+// ListPrompts ...
+// Summary: ListPrompts
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, params)
 	return args.Get(0).(*mcp.ListPromptsResult), args.Error(1)
 }
 
-func (m *MockClientSession) ListResources(ctx context.Context, params *mcp.ListResourcesParams) (*mcp.ListResourcesResult, error) {
+// ListResources ...
+// Summary: ListResources
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, params)
 	return args.Get(0).(*mcp.ListResourcesResult), args.Error(1)
 }
 
-func (m *MockClientSession) GetPrompt(ctx context.Context, params *mcp.GetPromptParams) (*mcp.GetPromptResult, error) {
+// GetPrompt ...
+// Summary: GetPrompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, params)
 	return args.Get(0).(*mcp.GetPromptResult), args.Error(1)
 }
 
-func (m *MockClientSession) ReadResource(ctx context.Context, params *mcp.ReadResourceParams) (*mcp.ReadResourceResult, error) {
+// ReadResource ...
+// Summary: ReadResource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, params)
 	return args.Get(0).(*mcp.ReadResourceResult), args.Error(1)
 }
 
-func (m *MockClientSession) CallTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
+// CallTool ...
+// Summary: CallTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, params)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
@@ -54,12 +109,30 @@ func (m *MockClientSession) CallTool(ctx context.Context, params *mcp.CallToolPa
 	return args.Get(0).(*mcp.CallToolResult), args.Error(1)
 }
 
-func (m *MockClientSession) Close() error {
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	return args.Error(0)
 }
 
-func TestMcpConnection_CallTool(t *testing.T) {
+// TestMcpConnection_CallTool ...
+// Summary: TestMcpConnection_CallTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	stdioConfig := configv1.McpStdioConnection_builder{}.Build()
 	stdioConfig.SetCommand("echo")
 	conn := &mcpConnection{
@@ -114,7 +187,16 @@ func TestMcpConnection_CallTool(t *testing.T) {
 	})
 }
 
-func TestSetTestingHooks(t *testing.T) {
+// TestSetTestingHooks ...
+// Summary: TestSetTestingHooks
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("SetNewClientImplForTesting", func(t *testing.T) {
 		var called bool
 		SetNewClientImplForTesting(func(_ *mcp.Client, _ *configv1.McpStdioConnection, _ string, _ *http.Client) client.MCPClient {
@@ -152,17 +234,44 @@ func TestSetTestingHooks(t *testing.T) {
 	})
 }
 
-func TestMcpPrompt_Service(t *testing.T) {
+// TestMcpPrompt_Service ...
+// Summary: TestMcpPrompt_Service
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	prompt := &mcpPrompt{service: "test-service"}
 	assert.Equal(t, "test-service", prompt.Service())
 }
 
-func TestMcpResource_Service(t *testing.T) {
+// TestMcpResource_Service ...
+// Summary: TestMcpResource_Service
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	resource := &mcpResource{service: "test-service"}
 	assert.Equal(t, "test-service", resource.Service())
 }
 
-func TestMcpResource_Subscribe(t *testing.T) {
+// TestMcpResource_Subscribe ...
+// Summary: TestMcpResource_Subscribe
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	resource := &mcpResource{}
 	err := resource.Subscribe(context.Background())
 	assert.Error(t, err)

@@ -10,7 +10,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewSQLiteAuditStore_ErrorCases(t *testing.T) {
+// TestNewSQLiteAuditStore_ErrorCases ...
+// Summary: TestNewSQLiteAuditStore_ErrorCases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("empty_path", func(t *testing.T) {
 		store, err := NewSQLiteAuditStore("")
 		assert.Error(t, err)

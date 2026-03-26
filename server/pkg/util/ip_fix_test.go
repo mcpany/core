@@ -9,7 +9,16 @@ import (
 	"testing"
 )
 
-func TestIsPrivateNetworkIP_LoopbackIPv6(t *testing.T) {
+// TestIsPrivateNetworkIP_LoopbackIPv6 ...
+// Summary: TestIsPrivateNetworkIP_LoopbackIPv6
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ip := net.ParseIP("::1")
 	if IsPrivateNetworkIP(ip) {
 		t.Errorf("IsPrivateNetworkIP(::1) = true; want false (loopback is not private network)")
@@ -20,7 +29,16 @@ type reproMockDialer struct {
 	called bool
 }
 
-func (m *reproMockDialer) DialContext(ctx context.Context, network, address string) (net.Conn, error) {
+// DialContext ...
+// Summary: DialContext
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.called = true
 	// Simulate success or failure doesn't matter, we just check if it was called.
 	// But returning nil conn might cause panic if caller uses it.
@@ -29,7 +47,16 @@ func (m *reproMockDialer) DialContext(ctx context.Context, network, address stri
 	return nil, nil
 }
 
-func TestSafeDialer_LoopbackIPv6_Allowed(t *testing.T) {
+// TestSafeDialer_LoopbackIPv6_Allowed ...
+// Summary: TestSafeDialer_LoopbackIPv6_Allowed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup SafeDialer with AllowLoopback=true, AllowPrivate=false
 	md := &reproMockDialer{}
 	dialer := &SafeDialer{

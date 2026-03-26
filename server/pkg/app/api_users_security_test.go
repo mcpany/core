@@ -18,7 +18,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestHandleUserDetail_IDOR_Reproduction(t *testing.T) {
+// TestHandleUserDetail_IDOR_Reproduction ...
+// Summary: TestHandleUserDetail_IDOR_Reproduction
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 	handler := app.handleUserDetail(store)
 
@@ -77,7 +86,16 @@ func TestHandleUserDetail_IDOR_Reproduction(t *testing.T) {
 	})
 }
 
-func TestHandleUserDetail_PrivilegeEscalation_Reproduction(t *testing.T) {
+// TestHandleUserDetail_PrivilegeEscalation_Reproduction ...
+// Summary: TestHandleUserDetail_PrivilegeEscalation_Reproduction
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app, store := setupApiTestApp()
 	handler := app.handleUserDetail(store)
 

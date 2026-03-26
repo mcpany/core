@@ -19,7 +19,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestOpenAPITool_ExtraCoverage(t *testing.T) {
+// TestOpenAPITool_ExtraCoverage ...
+// Summary: TestOpenAPITool_ExtraCoverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 
 	t.Run("POST with Input Template", func(t *testing.T) {

@@ -25,7 +25,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestBundleDockerTransport_Connect(t *testing.T) {
+// TestBundleDockerTransport_Connect ...
+// Summary: TestBundleDockerTransport_Connect
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	transport := &BundleDockerTransport{
 		Image:   "test-image",
 		Command: "test-cmd",
@@ -73,7 +82,16 @@ func TestBundleDockerTransport_Connect(t *testing.T) {
 	defer func() { _ = conn.Close() }()
 }
 
-func TestFixID(t *testing.T) {
+// TestFixID ...
+// Summary: TestFixID
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		input    interface{}
@@ -97,7 +115,16 @@ func TestFixID(t *testing.T) {
 	}
 }
 
-func TestSetUnexportedID(_ *testing.T) {
+// TestSetUnexportedID ...
+// Summary: TestSetUnexportedID
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	type TestID struct {
 		value any //nolint:unused // unexported
 	}
@@ -109,7 +136,16 @@ func TestSetUnexportedID(_ *testing.T) {
 	_ = fmt.Sprintf("%v", id)
 }
 
-func TestBundleDockerConn_ReadWrite(t *testing.T) {
+// TestBundleDockerConn_ReadWrite ...
+// Summary: TestBundleDockerConn_ReadWrite
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a pipe to simulate connection
 	c1, c2 := net.Pipe()
 	defer func() { _ = c1.Close() }()

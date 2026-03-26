@@ -36,56 +36,128 @@ type mockClientSession struct {
 	closeFunc         func() error
 }
 
-func (m *mockClientSession) ListTools(ctx context.Context, params *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
+// ListTools ...
+// Summary: ListTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.listToolsFunc != nil {
 		return m.listToolsFunc(ctx, params)
 	}
 	return &mcp.ListToolsResult{}, nil
 }
 
-func (m *mockClientSession) ListPrompts(ctx context.Context, params *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error) {
+// ListPrompts ...
+// Summary: ListPrompts
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.listPromptsFunc != nil {
 		return m.listPromptsFunc(ctx, params)
 	}
 	return &mcp.ListPromptsResult{}, nil
 }
 
-func (m *mockClientSession) ListResources(ctx context.Context, params *mcp.ListResourcesParams) (*mcp.ListResourcesResult, error) {
+// ListResources ...
+// Summary: ListResources
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.listResourcesFunc != nil {
 		return m.listResourcesFunc(ctx, params)
 	}
 	return &mcp.ListResourcesResult{}, nil
 }
 
-func (m *mockClientSession) GetPrompt(ctx context.Context, params *mcp.GetPromptParams) (*mcp.GetPromptResult, error) {
+// GetPrompt ...
+// Summary: GetPrompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.getPromptFunc != nil {
 		return m.getPromptFunc(ctx, params)
 	}
 	return nil, fmt.Errorf("not implemented")
 }
 
-func (m *mockClientSession) ReadResource(ctx context.Context, params *mcp.ReadResourceParams) (*mcp.ReadResourceResult, error) {
+// ReadResource ...
+// Summary: ReadResource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.readResourceFunc != nil {
 		return m.readResourceFunc(ctx, params)
 	}
 	return nil, fmt.Errorf("not implemented")
 }
 
-func (m *mockClientSession) CallTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
+// CallTool ...
+// Summary: CallTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.callToolFunc != nil {
 		return m.callToolFunc(ctx, params)
 	}
 	return nil, fmt.Errorf("not implemented")
 }
 
-func (m *mockClientSession) Close() error {
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.closeFunc != nil {
 		return m.closeFunc()
 	}
 	return nil
 }
 
-func TestMCPPrompt_Get(t *testing.T) {
+// TestMCPPrompt_Get ...
+// Summary: TestMCPPrompt_Get
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
@@ -135,7 +207,16 @@ func TestMCPPrompt_Get(t *testing.T) {
 	wg.Wait()
 }
 
-func TestMCPResource_Read(t *testing.T) {
+// TestMCPResource_Read ...
+// Summary: TestMCPResource_Read
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
@@ -184,7 +265,16 @@ func TestMCPResource_Read(t *testing.T) {
 	wg.Wait()
 }
 
-func TestUpstream_Register(t *testing.T) {
+// TestUpstream_Register ...
+// Summary: TestUpstream_Register
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 
 	t.Run("successful registration with stdio", func(t *testing.T) {
@@ -558,7 +648,16 @@ func TestUpstream_Register(t *testing.T) {
 	})
 }
 
-func TestAuthenticatedRoundTripper(t *testing.T) {
+// TestAuthenticatedRoundTripper ...
+// Summary: TestAuthenticatedRoundTripper
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	var authenticatorCalled bool
 	mockAuthenticator := &mockAuthenticator{
 		AuthenticateFunc: func(_ *http.Request) error {
@@ -582,7 +681,16 @@ func TestAuthenticatedRoundTripper(t *testing.T) {
 	assert.True(t, authenticatorCalled)
 }
 
-func TestUpstream_Register_HttpConnectionError(t *testing.T) {
+// TestUpstream_Register_HttpConnectionError ...
+// Summary: TestUpstream_Register_HttpConnectionError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewUpstream(nil)
 	ctx := context.Background()
 	serviceConfig := configv1.UpstreamServiceConfig_builder{
@@ -613,7 +721,16 @@ func TestUpstream_Register_HttpConnectionError(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestBuildCommandFromStdioConfig(t *testing.T) {
+// TestBuildCommandFromStdioConfig ...
+// Summary: TestBuildCommandFromStdioConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("simple command", func(t *testing.T) {
 		stdio := configv1.McpStdioConnection_builder{}.Build()
 		stdio.SetCommand("ls")
@@ -691,7 +808,16 @@ func TestBuildCommandFromStdioConfig(t *testing.T) {
 	})
 }
 
-func TestWithMCPClientSession_NoTransport(t *testing.T) {
+// TestWithMCPClientSession_NoTransport ...
+// Summary: TestWithMCPClientSession_NoTransport
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	conn := &mcpConnection{}
 	err := conn.withMCPClientSession(context.Background(), func(_ ClientSession) error {
 		return nil
@@ -700,7 +826,16 @@ func TestWithMCPClientSession_NoTransport(t *testing.T) {
 	assert.Contains(t, err.Error(), "mcp transport is not configured")
 }
 
-func TestUpstream_Register_HTTP_Integration(t *testing.T) {
+// TestUpstream_Register_HTTP_Integration ...
+// Summary: TestUpstream_Register_HTTP_Integration
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var req jsonrpc.Request
 		err := json.NewDecoder(r.Body).Decode(&req)
@@ -786,7 +921,16 @@ func TestUpstream_Register_HTTP_Integration(t *testing.T) {
 	assert.True(t, ok)
 }
 
-func TestUpstream_Register_StdioConnectionError(t *testing.T) {
+// TestUpstream_Register_StdioConnectionError ...
+// Summary: TestUpstream_Register_StdioConnectionError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewUpstream(nil)
 	ctx := context.Background()
 	serviceConfig := configv1.UpstreamServiceConfig_builder{
@@ -806,7 +950,16 @@ func TestUpstream_Register_StdioConnectionError(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestUpstream_Register_ListToolsError(t *testing.T) {
+// TestUpstream_Register_ListToolsError ...
+// Summary: TestUpstream_Register_ListToolsError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewUpstream(nil)
 	ctx := context.Background()
 	serviceConfig := configv1.UpstreamServiceConfig_builder{
@@ -832,7 +985,16 @@ func TestUpstream_Register_ListToolsError(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestUpstream_Register_ListPromptsError(t *testing.T) {
+// TestUpstream_Register_ListPromptsError ...
+// Summary: TestUpstream_Register_ListPromptsError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewUpstream(nil)
 	ctx := context.Background()
 	serviceConfig := configv1.UpstreamServiceConfig_builder{
@@ -861,7 +1023,16 @@ func TestUpstream_Register_ListPromptsError(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestMCPUpstream_Register_ListResourcesError(t *testing.T) {
+// TestMCPUpstream_Register_ListResourcesError ...
+// Summary: TestMCPUpstream_Register_ListResourcesError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewUpstream(nil)
 	ctx := context.Background()
 	serviceConfig := configv1.UpstreamServiceConfig_builder{
@@ -893,7 +1064,16 @@ func TestMCPUpstream_Register_ListResourcesError(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestMCPUpstream_Register_InvalidServiceConfig(t *testing.T) {
+// TestMCPUpstream_Register_InvalidServiceConfig ...
+// Summary: TestMCPUpstream_Register_InvalidServiceConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewUpstream(nil)
 	ctx := context.Background()
 	serviceConfig := configv1.UpstreamServiceConfig_builder{
@@ -904,7 +1084,16 @@ func TestMCPUpstream_Register_InvalidServiceConfig(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestStreamableHTTP_RoundTrip(t *testing.T) {
+// TestStreamableHTTP_RoundTrip ...
+// Summary: TestStreamableHTTP_RoundTrip
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = fmt.Fprint(w, "hello")
@@ -926,7 +1115,16 @@ func TestStreamableHTTP_RoundTrip(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 }
 
-func TestUpstream_Register_InvalidHTTPAddress(t *testing.T) {
+// TestUpstream_Register_InvalidHTTPAddress ...
+// Summary: TestUpstream_Register_InvalidHTTPAddress
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewUpstream(nil)
 	ctx := context.Background()
 	serviceConfig := configv1.UpstreamServiceConfig_builder{

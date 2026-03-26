@@ -10,7 +10,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestTextTemplate_Render(t *testing.T) {
+// TestTextTemplate_Render ...
+// Summary: TestTextTemplate_Render
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	templateString := "Hello, {{name}}! You are {{age}} years old."
 	tpl, err := NewTemplate(templateString, "{{", "}}")
@@ -26,14 +35,32 @@ func TestTextTemplate_Render(t *testing.T) {
 	assert.Equal(t, "Hello, World! You are 99 years old.", rendered)
 }
 
-func TestTextTemplate_InvalidTemplate(t *testing.T) {
+// TestTextTemplate_InvalidTemplate ...
+// Summary: TestTextTemplate_InvalidTemplate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	templateString := "Hello, {{name!"
 	_, err := NewTemplate(templateString, "{{", "}}")
 	require.Error(t, err)
 }
 
-func TestTextTemplate_MissingParameter(t *testing.T) {
+// TestTextTemplate_MissingParameter ...
+// Summary: TestTextTemplate_MissingParameter
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	templateString := "Hello, {{name}}!"
 	tpl, err := NewTemplate(templateString, "{{", "}}")
@@ -45,7 +72,16 @@ func TestTextTemplate_MissingParameter(t *testing.T) {
 	assert.Contains(t, err.Error(), "missing key")
 }
 
-func TestTextTemplate_MultiplePlaceholders(t *testing.T) {
+// TestTextTemplate_MultiplePlaceholders ...
+// Summary: TestTextTemplate_MultiplePlaceholders
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	templateString := "User: {{user}}, Role: {{role}}, ID: {{id}}"
 	tpl, err := NewTemplate(templateString, "{{", "}}")
@@ -61,7 +97,16 @@ func TestTextTemplate_MultiplePlaceholders(t *testing.T) {
 	assert.Equal(t, "User: admin, Role: administrator, ID: 123", rendered)
 }
 
-func TestTextTemplate_CustomDelimiters(t *testing.T) {
+// TestTextTemplate_CustomDelimiters ...
+// Summary: TestTextTemplate_CustomDelimiters
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	templateString := "Data: [=data=], Value: [=value=]"
 	tpl, err := NewTemplate(templateString, "[=", "=]")
@@ -76,7 +121,16 @@ func TestTextTemplate_CustomDelimiters(t *testing.T) {
 	assert.Equal(t, "Data: test-data, Value: 456", rendered)
 }
 
-func TestTextTemplate_EmptyTemplate(t *testing.T) {
+// TestTextTemplate_EmptyTemplate ...
+// Summary: TestTextTemplate_EmptyTemplate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	templateString := ""
 	tpl, err := NewTemplate(templateString, "{{", "}}")
@@ -88,7 +142,16 @@ func TestTextTemplate_EmptyTemplate(t *testing.T) {
 	assert.Equal(t, "", rendered)
 }
 
-func TestTextTemplate_JSONEscaping(t *testing.T) {
+// TestTextTemplate_JSONEscaping ...
+// Summary: TestTextTemplate_JSONEscaping
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	// JSON template
 	templateString := `{"key": "{{val}}"}`
@@ -108,7 +171,16 @@ func TestTextTemplate_JSONEscaping(t *testing.T) {
 	assert.Equal(t, expected, rendered)
 }
 
-func TestTextTemplate_JSONComplexTypes(t *testing.T) {
+// TestTextTemplate_JSONComplexTypes ...
+// Summary: TestTextTemplate_JSONComplexTypes
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	// JSON template expecting a value (not string)
 	templateString := `{"config": {{config}}}`
@@ -127,7 +199,16 @@ func TestTextTemplate_JSONComplexTypes(t *testing.T) {
 	assert.Equal(t, expected, rendered)
 }
 
-func TestTextTemplate_NonJSON(t *testing.T) {
+// TestTextTemplate_NonJSON ...
+// Summary: TestTextTemplate_NonJSON
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	// Text template (no JSON escaping)
 	templateString := `Value: {{val}}`
@@ -146,7 +227,16 @@ func TestTextTemplate_NonJSON(t *testing.T) {
 	assert.Equal(t, expected, rendered)
 }
 
-func TestTextTemplate_FalsePositives(t *testing.T) {
+// TestTextTemplate_FalsePositives ...
+// Summary: TestTextTemplate_FalsePositives
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 
 	// Case 1: Template starts with {{ (which starts with {)

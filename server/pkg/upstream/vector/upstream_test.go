@@ -16,31 +16,77 @@ import (
 )
 
 // MockVectorClient is a mock implementation of VectorClient
-type MockVectorClient struct {
+// MockVectorClient is a mock implementation of VectorClient
+// Summary: MockVectorClient
 	mock.Mock
 }
 
-func (m *MockVectorClient) Query(ctx context.Context, vector []float32, topK int64, filter map[string]interface{}, namespace string) (map[string]interface{}, error) {
+// Query ...
+// Summary: Query
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, vector, topK, filter, namespace)
 	return args.Get(0).(map[string]interface{}), args.Error(1)
 }
 
-func (m *MockVectorClient) Upsert(ctx context.Context, vectors []map[string]interface{}, namespace string) (map[string]interface{}, error) {
+// Upsert ...
+// Summary: Upsert
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, vectors, namespace)
 	return args.Get(0).(map[string]interface{}), args.Error(1)
 }
 
-func (m *MockVectorClient) Delete(ctx context.Context, ids []string, namespace string, filter map[string]interface{}) (map[string]interface{}, error) {
+// Delete ...
+// Summary: Delete
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, ids, namespace, filter)
 	return args.Get(0).(map[string]interface{}), args.Error(1)
 }
 
-func (m *MockVectorClient) DescribeIndexStats(ctx context.Context, filter map[string]interface{}) (map[string]interface{}, error) {
+// DescribeIndexStats ...
+// Summary: DescribeIndexStats
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx, filter)
 	return args.Get(0).(map[string]interface{}), args.Error(1)
 }
 
-func TestVectorTools(t *testing.T) {
+// TestVectorTools ...
+// Summary: TestVectorTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	upstream := &Upstream{}
 	mockClient := new(MockVectorClient)
 	tools := upstream.getTools(mockClient)
@@ -195,24 +241,61 @@ func TestVectorTools(t *testing.T) {
 }
 
 // MockToolManager is a simple mock for tool.ManagerInterface
-type MockToolManager struct {
+// MockToolManager is a simple mock for tool.ManagerInterface
+// Summary: MockToolManager
 	tool.ManagerInterface
 	mock.Mock
 }
 
-func (m *MockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
+// AddServiceInfo ...
+// Summary: AddServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.Called(serviceID, info)
 }
-func (m *MockToolManager) AddTool(t tool.Tool) error {
+// AddTool ...
+// Summary: AddTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(t)
 	return args.Error(0)
 }
 
-func (m *MockToolManager) ToolMatchesProfile(tool tool.Tool, profileID string) bool {
+// ToolMatchesProfile ...
+// Summary: ToolMatchesProfile
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return true
 }
 
-func TestRegister(t *testing.T) {
+// TestRegister ...
+// Summary: TestRegister
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test failure when config is nil
 	u := NewUpstream()
 	name := "test-vector"
@@ -273,7 +356,16 @@ func TestRegister(t *testing.T) {
 	assert.Contains(t, err.Error(), "creation failed")
 }
 
-func TestVectorCallable(t *testing.T) {
+// TestVectorCallable ...
+// Summary: TestVectorCallable
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	handler := func(ctx context.Context, args map[string]interface{}) (map[string]interface{}, error) {
 		return args, nil
 	}
@@ -286,11 +378,29 @@ func TestVectorCallable(t *testing.T) {
 	assert.Equal(t, req.Arguments, res)
 }
 
-func (m *MockToolManager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
+// GetAllowedServiceIDs ...
+// Summary: GetAllowedServiceIDs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(profileID)
 	return args.Get(0).(map[string]bool), args.Bool(1)
 }
 
-func (m *MockToolManager) GetToolCountForService(serviceID string) int {
+// GetToolCountForService ...
+// Summary: GetToolCountForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return 0
 }

@@ -10,7 +10,16 @@ import (
 	"testing"
 )
 
-func TestIsPrivateNetworkIP_Extended(t *testing.T) {
+// TestIsPrivateNetworkIP_Extended ...
+// Summary: TestIsPrivateNetworkIP_Extended
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		ip       string
 		expected bool
@@ -40,7 +49,16 @@ func TestIsPrivateNetworkIP_Extended(t *testing.T) {
 	}
 }
 
-func TestIsPrivateIP_Extended(t *testing.T) {
+// TestIsPrivateIP_Extended ...
+// Summary: TestIsPrivateIP_Extended
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		ip       string
 		expected bool
@@ -64,7 +82,16 @@ func TestIsPrivateIP_Extended(t *testing.T) {
 	}
 }
 
-func TestSafeDialer_CGNAT(t *testing.T) {
+// TestSafeDialer_CGNAT ...
+// Summary: TestSafeDialer_CGNAT
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	d := NewSafeDialer()
 	// d.AllowPrivate is false by default.
 

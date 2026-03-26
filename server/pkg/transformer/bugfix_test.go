@@ -10,7 +10,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestTransformer_ReproStringSlice(t *testing.T) {
+// TestTransformer_ReproStringSlice ...
+// Summary: TestTransformer_ReproStringSlice
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	transformer := NewTransformer()
 
 	templateStr := `{{join "," .items}}`
@@ -23,7 +32,16 @@ func TestTransformer_ReproStringSlice(t *testing.T) {
 	assert.Equal(t, "a,b,c", string(got))
 }
 
-func TestTransformer_ReproIntSlice(t *testing.T) {
+// TestTransformer_ReproIntSlice ...
+// Summary: TestTransformer_ReproIntSlice
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	transformer := NewTransformer()
 
 	templateStr := `{{join "," .items}}`
@@ -36,7 +54,16 @@ func TestTransformer_ReproIntSlice(t *testing.T) {
 	assert.Equal(t, "1,2,3", string(got))
 }
 
-func TestTransformer_JoinError(t *testing.T) {
+// TestTransformer_JoinError ...
+// Summary: TestTransformer_JoinError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	transformer := NewTransformer()
 
 	templateStr := `{{join "," .items}}`
@@ -50,7 +77,16 @@ func TestTransformer_JoinError(t *testing.T) {
 	assert.Nil(t, got)
 }
 
-func TestTransformer_JsonError(t *testing.T) {
+// TestTransformer_JsonError ...
+// Summary: TestTransformer_JsonError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	transformer := NewTransformer()
 
 	templateStr := `{{json .channel}}`

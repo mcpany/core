@@ -16,7 +16,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestStaticResource_Read_LimitOverflow(t *testing.T) {
+// TestStaticResource_Read_LimitOverflow ...
+// Summary: TestStaticResource_Read_LimitOverflow
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Enable loopback for testing
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 

@@ -13,7 +13,16 @@ import (
 	"github.com/mcpany/core/server/pkg/webhooks"
 )
 
-func TestHandleWebhooks(t *testing.T) {
+// TestHandleWebhooks ...
+// Summary: TestHandleWebhooks
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 	ts := httptest.NewServer(app.handleWebhooks())
 	defer ts.Close()
@@ -44,7 +53,16 @@ func TestHandleWebhooks(t *testing.T) {
 	}
 }
 
-func TestHandleWebhookDetail(t *testing.T) {
+// TestHandleWebhookDetail ...
+// Summary: TestHandleWebhookDetail
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 	// Pre-populate
 	w := &webhooks.WebhookConfig{

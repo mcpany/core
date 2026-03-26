@@ -16,7 +16,16 @@ import (
 )
 
 // TestHandleUploadSkillAsset_DoS verifies that the upload handler rejects overly large bodies.
-func TestHandleUploadSkillAsset_DoS(t *testing.T) {
+// TestHandleUploadSkillAsset_DoS verifies that the upload handler rejects overly large bodies.
+// Summary: TestHandleUploadSkillAsset_DoS
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	manager, _ := setupSkillManagerForHTTPTest(t)
 	app := &Application{
 		SkillManager: manager,
@@ -47,7 +56,16 @@ func TestHandleUploadSkillAsset_DoS(t *testing.T) {
 }
 
 // TestHandleUploadSkillAsset_PathParsing verifies robust path handling.
-func TestHandleUploadSkillAsset_PathParsing(t *testing.T) {
+// TestHandleUploadSkillAsset_PathParsing verifies robust path handling.
+// Summary: TestHandleUploadSkillAsset_PathParsing
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	manager, _ := setupSkillManagerForHTTPTest(t)
 	app := &Application{
 		SkillManager: manager,

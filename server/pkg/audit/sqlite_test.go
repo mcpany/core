@@ -18,7 +18,16 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-func TestEnsureColumn_Validation(t *testing.T) {
+// TestEnsureColumn_Validation ...
+// Summary: TestEnsureColumn_Validation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary database file
 	f, err := os.CreateTemp("", "audit_validation_*.db")
 	require.NoError(t, err)
@@ -54,7 +63,16 @@ func TestEnsureColumn_Validation(t *testing.T) {
 	assert.Contains(t, err.Error(), "invalid column name")
 }
 
-func TestSQLiteAuditStore(t *testing.T) {
+// TestSQLiteAuditStore ...
+// Summary: TestSQLiteAuditStore
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary database file
 	f, err := os.CreateTemp("", "audit_test_*.db")
 	require.NoError(t, err)
@@ -114,7 +132,16 @@ func TestSQLiteAuditStore(t *testing.T) {
 	assert.True(t, valid)
 }
 
-func TestSQLiteAuditStore_TamperEvident(t *testing.T) {
+// TestSQLiteAuditStore_TamperEvident ...
+// Summary: TestSQLiteAuditStore_TamperEvident
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary database file
 	f, err := os.CreateTemp("", "audit_tamper_*.db")
 	require.NoError(t, err)
@@ -172,7 +199,16 @@ func TestSQLiteAuditStore_TamperEvident(t *testing.T) {
 	}
 }
 
-func TestSQLiteAuditStore_Migration(t *testing.T) {
+// TestSQLiteAuditStore_Migration ...
+// Summary: TestSQLiteAuditStore_Migration
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary database file
 	f, err := os.CreateTemp("", "audit_migration_*.db")
 	require.NoError(t, err)
@@ -229,7 +265,16 @@ func TestSQLiteAuditStore_Migration(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestComputeHash_Collision(t *testing.T) {
+// TestComputeHash_Collision ...
+// Summary: TestComputeHash_Collision
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ts := time.Now().Format(time.RFC3339Nano)
 	prevHash := "0000000000000000000000000000000000000000000000000000000000000000"
 
@@ -246,7 +291,16 @@ func TestComputeHash_Collision(t *testing.T) {
 	// These are distinct JSON arrays, so hashes should differ.
 	assert.NotEqual(t, hash1, hash2, "Hash collision detected! Different inputs produced the same hash.")
 }
-func TestSQLiteAuditStore_BackwardCompatibility(t *testing.T) {
+// TestSQLiteAuditStore_BackwardCompatibility ...
+// Summary: TestSQLiteAuditStore_BackwardCompatibility
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary database file
 	f, err := os.CreateTemp("", "audit_compat_*.db")
 	require.NoError(t, err)
@@ -311,7 +365,16 @@ func TestSQLiteAuditStore_BackwardCompatibility(t *testing.T) {
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-func TestNewSQLiteAuditStore_EdgeCases(t *testing.T) {
+// TestNewSQLiteAuditStore_EdgeCases ...
+// Summary: TestNewSQLiteAuditStore_EdgeCases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Allow the temp path
 	validation.SetAllowedPaths([]string{os.TempDir()})
 	defer validation.SetAllowedPaths(nil)
@@ -352,7 +415,16 @@ func TestNewSQLiteAuditStore_EdgeCases(t *testing.T) {
 	})
 }
 
-func TestEnsureColumns_Failure(t *testing.T) {
+// TestEnsureColumns_Failure ...
+// Summary: TestEnsureColumns_Failure
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Allow the temp path
 	validation.SetAllowedPaths([]string{os.TempDir()})
 	defer validation.SetAllowedPaths(nil)
@@ -397,7 +469,16 @@ func TestEnsureColumns_Failure(t *testing.T) {
 	assert.Nil(t, store)
 }
 
-func TestSQLiteAuditStore_Write_Errors(t *testing.T) {
+// TestSQLiteAuditStore_Write_Errors ...
+// Summary: TestSQLiteAuditStore_Write_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	f, err := os.CreateTemp("", "audit_write_fail_*.db")
 	require.NoError(t, err)
 	dbPath := f.Name()
@@ -424,7 +505,16 @@ func TestSQLiteAuditStore_Write_Errors(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestSQLiteAuditStore_Verify_Errors(t *testing.T) {
+// TestSQLiteAuditStore_Verify_Errors ...
+// Summary: TestSQLiteAuditStore_Verify_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	f, err := os.CreateTemp("", "audit_verify_fail_*.db")
 	require.NoError(t, err)
 	dbPath := f.Name()
@@ -448,7 +538,16 @@ func TestSQLiteAuditStore_Verify_Errors(t *testing.T) {
 	assert.False(t, valid)
 }
 
-func TestSQLiteAuditStore_ComplexWrite(t *testing.T) {
+// TestSQLiteAuditStore_ComplexWrite ...
+// Summary: TestSQLiteAuditStore_ComplexWrite
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Tests writing with complex arguments and results (nil, non-nil, etc.)
 	f, err := os.CreateTemp("", "audit_complex_*.db")
 	require.NoError(t, err)
@@ -487,7 +586,16 @@ func TestSQLiteAuditStore_ComplexWrite(t *testing.T) {
 	assert.Equal(t, "{}", res)
 }
 
-func TestSQLiteAuditStore_IntegrityViolation_PrevHash(t *testing.T) {
+// TestSQLiteAuditStore_IntegrityViolation_PrevHash ...
+// Summary: TestSQLiteAuditStore_IntegrityViolation_PrevHash
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	f, err := os.CreateTemp("", "audit_integrity_*.db")
 	require.NoError(t, err)
 	dbPath := f.Name()
@@ -523,7 +631,16 @@ func TestSQLiteAuditStore_IntegrityViolation_PrevHash(t *testing.T) {
 	assert.Contains(t, err.Error(), "prev_hash mismatch")
 }
 
-func TestEnsureColumns_AlreadyExists(t *testing.T) {
+// TestEnsureColumns_AlreadyExists ...
+// Summary: TestEnsureColumns_AlreadyExists
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test that ensureColumns doesn't fail if columns already exist
 	f, err := os.CreateTemp("", "audit_exists_*.db")
 	require.NoError(t, err)
@@ -550,7 +667,16 @@ func TestEnsureColumns_AlreadyExists(t *testing.T) {
 	}
 }
 
-func TestSQLiteAuditStore_ConcurrentWrites(t *testing.T) {
+// TestSQLiteAuditStore_ConcurrentWrites ...
+// Summary: TestSQLiteAuditStore_ConcurrentWrites
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	f, err := os.CreateTemp("", "audit_concurrent_*.db")
 	require.NoError(t, err)
 	dbPath := f.Name()
@@ -588,7 +714,16 @@ func TestSQLiteAuditStore_ConcurrentWrites(t *testing.T) {
 	assert.True(t, valid)
 }
 
-func TestSQLiteAuditStore_Read(t *testing.T) {
+// TestSQLiteAuditStore_Read ...
+// Summary: TestSQLiteAuditStore_Read
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a temporary database file
 	f, err := os.CreateTemp("", "audit_read_*.db")
 	require.NoError(t, err)

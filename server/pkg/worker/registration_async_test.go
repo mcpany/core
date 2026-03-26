@@ -15,7 +15,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestServiceRegistrationWorker_Async(t *testing.T) {
+// TestServiceRegistrationWorker_Async ...
+// Summary: TestServiceRegistrationWorker_Async
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 

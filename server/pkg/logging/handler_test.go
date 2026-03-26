@@ -13,7 +13,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestBroadcastHandler_WithAttrs(t *testing.T) {
+// TestBroadcastHandler_WithAttrs ...
+// Summary: TestBroadcastHandler_WithAttrs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	b := NewBroadcaster()
 	h := NewBroadcastHandler(b, slog.LevelInfo)
 	ch := b.Subscribe()
@@ -42,7 +51,16 @@ func TestBroadcastHandler_WithAttrs(t *testing.T) {
 	}
 }
 
-func TestBroadcastHandler_WithGroup(t *testing.T) {
+// TestBroadcastHandler_WithGroup ...
+// Summary: TestBroadcastHandler_WithGroup
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	b := NewBroadcaster()
 	h := NewBroadcastHandler(b, slog.LevelInfo)
 	ch := b.Subscribe()
@@ -80,7 +98,16 @@ func TestBroadcastHandler_WithGroup(t *testing.T) {
 		t.Fatal("timeout waiting for broadcast")
 	}
 }
-func TestBroadcastHandler_SourcePriority(t *testing.T) {
+// TestBroadcastHandler_SourcePriority ...
+// Summary: TestBroadcastHandler_SourcePriority
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	b := NewBroadcaster()
 	h := NewBroadcastHandler(b, slog.LevelInfo)
 	ch := b.Subscribe()

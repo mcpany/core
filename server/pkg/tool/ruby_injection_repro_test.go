@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestLocalCommandTool_RubyInjection_Backtick(t *testing.T) {
+// TestLocalCommandTool_RubyInjection_Backtick ...
+// Summary: TestLocalCommandTool_RubyInjection_Backtick
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test demonstrates that Ruby interpolation #{...} is BLOCKED
 	// inside backticked arguments.
 
@@ -59,7 +68,16 @@ func TestLocalCommandTool_RubyInjection_Backtick(t *testing.T) {
 	assert.True(t, strings.Contains(err.Error(), "ruby interpolation injection detected"), "Expected ruby interpolation error, got: %v", err)
 }
 
-func TestLocalCommandTool_PHPInjection_Backtick(t *testing.T) {
+// TestLocalCommandTool_PHPInjection_Backtick ...
+// Summary: TestLocalCommandTool_PHPInjection_Backtick
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test demonstrates that PHP interpolation $... is BLOCKED
 	// inside backticked arguments.
 

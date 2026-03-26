@@ -35,7 +35,16 @@ func mockOIDCServer(t *testing.T) *httptest.Server {
 	return server
 }
 
-func TestValidateAuthentication_Extended(t *testing.T) {
+// TestValidateAuthentication_Extended ...
+// Summary: TestValidateAuthentication_Extended
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test OAuth2 invalid config (missing issuer)
 	t.Run("oauth2_missing_issuer", func(t *testing.T) {
 		config := configv1.Authentication_builder{
@@ -134,7 +143,16 @@ func TestValidateAuthentication_Extended(t *testing.T) {
 // TestContextHelpers is already in context_test.go, but we can add more specific cases or just skip it here.
 // I will remove it from here to avoid redeclaration.
 
-func TestNewManager_Accessors(t *testing.T) {
+// TestNewManager_Accessors ...
+// Summary: TestNewManager_Accessors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewManager()
 
 	// Users
@@ -151,7 +169,16 @@ func TestNewManager_Accessors(t *testing.T) {
 	m.SetStorage(nil)
 }
 
-func TestAPIKeyAuthenticator_Cookie(t *testing.T) {
+// TestAPIKeyAuthenticator_Cookie ...
+// Summary: TestAPIKeyAuthenticator_Cookie
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	config := configv1.APIKeyAuth_builder{
 		ParamName:         proto.String("auth_cookie"),
 		VerificationValue: proto.String("secret"),
@@ -180,7 +207,16 @@ func TestAPIKeyAuthenticator_Cookie(t *testing.T) {
 	})
 }
 
-func TestTrustedHeaderAuthenticator_NoValue(t *testing.T) {
+// TestTrustedHeaderAuthenticator_NoValue ...
+// Summary: TestTrustedHeaderAuthenticator_NoValue
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	config := configv1.TrustedHeaderAuth_builder{
 		HeaderName: proto.String("X-User"),
 		// HeaderValue empty -> any value ok
@@ -198,7 +234,16 @@ func TestTrustedHeaderAuthenticator_NoValue(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestManager_CheckBasicAuthWithUsers(t *testing.T) {
+// TestManager_CheckBasicAuthWithUsers ...
+// Summary: TestManager_CheckBasicAuthWithUsers
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	manager := NewManager()
 
 	password := "secret123"

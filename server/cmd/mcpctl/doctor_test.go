@@ -20,7 +20,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestDoctorRunner_Run_HappyPath(t *testing.T) {
+// TestDoctorRunner_Run_HappyPath ...
+// Summary: TestDoctorRunner_Run_HappyPath
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. Setup Mock Server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/health" {
@@ -97,7 +106,16 @@ spec:
 	assert.Contains(t, output, "redis: OK")
 }
 
-func TestDoctorRunner_Run_ServerDown(t *testing.T) {
+// TestDoctorRunner_Run_ServerDown ...
+// Summary: TestDoctorRunner_Run_ServerDown
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
 	server.Close() // Close immediately
 
@@ -122,7 +140,16 @@ func TestDoctorRunner_Run_ServerDown(t *testing.T) {
 	assert.Contains(t, output, "Could not connect to server")
 }
 
-func TestDoctorRunner_Run_DoctorEndpointFail(t *testing.T) {
+// TestDoctorRunner_Run_DoctorEndpointFail ...
+// Summary: TestDoctorRunner_Run_DoctorEndpointFail
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/health" {
 			w.WriteHeader(http.StatusOK)
@@ -158,7 +185,16 @@ func TestDoctorRunner_Run_DoctorEndpointFail(t *testing.T) {
 	assert.Contains(t, output, "Doctor endpoint returned status: 500 Internal Server Error")
 }
 
-func TestDoctorRunner_Run_DoctorDegraded(t *testing.T) {
+// TestDoctorRunner_Run_DoctorDegraded ...
+// Summary: TestDoctorRunner_Run_DoctorDegraded
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/health" {
 			w.WriteHeader(http.StatusOK)

@@ -14,7 +14,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestRedisBus_ExternalServer(t *testing.T) {
+// TestRedisBus_ExternalServer ...
+// Summary: TestRedisBus_ExternalServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	redisAddr, redisCleanup := StartRedisContainer(t)
 	defer redisCleanup()
 

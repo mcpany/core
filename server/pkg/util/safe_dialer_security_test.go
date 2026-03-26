@@ -15,7 +15,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestSafeDialer_Security(t *testing.T) {
+// TestSafeDialer_Security ...
+// Summary: TestSafeDialer_Security
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup common variables
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()

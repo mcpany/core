@@ -21,7 +21,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestOAuthFlow_Complete(t *testing.T) {
+// TestOAuthFlow_Complete ...
+// Summary: TestOAuthFlow_Complete
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 

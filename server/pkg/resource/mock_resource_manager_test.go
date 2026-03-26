@@ -9,7 +9,16 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-func TestMockManagerInterface(t *testing.T) {
+// TestMockManagerInterface ...
+// Summary: TestMockManagerInterface
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 

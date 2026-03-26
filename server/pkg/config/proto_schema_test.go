@@ -10,7 +10,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGenerateSchemaMapFromProto(t *testing.T) {
+// TestGenerateSchemaMapFromProto ...
+// Summary: TestGenerateSchemaMapFromProto
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cfg := configv1.McpAnyServerConfig_builder{}.Build()
 	schemaMap := GenerateSchemaMapFromProto(cfg.ProtoReflect())
 	assert.NotNil(t, schemaMap)
@@ -18,7 +27,16 @@ func TestGenerateSchemaMapFromProto(t *testing.T) {
 	assert.NotNil(t, schemaMap["$defs"])
 }
 
-func TestCompileSchema_Error(t *testing.T) {
+// TestCompileSchema_Error ...
+// Summary: TestCompileSchema_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Function values cannot be marshaled to JSON
 	badMap := map[string]interface{}{
 		"bad": func() {},
@@ -30,7 +48,16 @@ func TestCompileSchema_Error(t *testing.T) {
 	assert.Contains(t, err.Error(), "json: unsupported type")
 }
 
-func TestCompileSchema_InvalidSchema(t *testing.T) {
+// TestCompileSchema_InvalidSchema ...
+// Summary: TestCompileSchema_InvalidSchema
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Valid JSON but invalid schema ($id must be a string)
 	// This triggers AddResource parsing failure
 	badSchema := map[string]interface{}{

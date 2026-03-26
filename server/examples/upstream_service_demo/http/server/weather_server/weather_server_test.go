@@ -19,7 +19,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestHealthHandler(t *testing.T) {
+// TestHealthHandler ...
+// Summary: TestHealthHandler
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	req, err := http.NewRequest("GET", "/health", nil)
 	require.NoError(t, err)
 
@@ -32,7 +41,16 @@ func TestHealthHandler(t *testing.T) {
 	assert.Equal(t, "OK\n", rr.Body.String())
 }
 
-func TestWeatherHandler_GET(t *testing.T) {
+// TestWeatherHandler_GET ...
+// Summary: TestWeatherHandler_GET
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	req, err := http.NewRequest("GET", "/weather?location=london", nil)
 	require.NoError(t, err)
 
@@ -52,7 +70,16 @@ func TestWeatherHandler_GET(t *testing.T) {
 	assert.Equal(t, "Cloudy, 15°C", resp["weather"])
 }
 
-func TestWeatherHandler_POST(t *testing.T) {
+// TestWeatherHandler_POST ...
+// Summary: TestWeatherHandler_POST
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	reqBody := map[string]string{"location": "tokyo"}
 	jsonBody, err := json.Marshal(reqBody)
 	require.NoError(t, err)
@@ -77,7 +104,16 @@ func TestWeatherHandler_POST(t *testing.T) {
 	assert.Equal(t, "Rainy, 20°C", resp["weather"])
 }
 
-func TestWeatherHandler_POST_InvalidJSON(t *testing.T) {
+// TestWeatherHandler_POST_InvalidJSON ...
+// Summary: TestWeatherHandler_POST_InvalidJSON
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Send invalid JSON
 	req, err := http.NewRequest("POST", "/weather", strings.NewReader("{invalid_json"))
 	require.NoError(t, err)
@@ -92,7 +128,16 @@ func TestWeatherHandler_POST_InvalidJSON(t *testing.T) {
 	assert.Contains(t, rr.Body.String(), "Invalid request body")
 }
 
-func TestWeatherHandler_MissingLocation(t *testing.T) {
+// TestWeatherHandler_MissingLocation ...
+// Summary: TestWeatherHandler_MissingLocation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	req, err := http.NewRequest("GET", "/weather", nil)
 	require.NoError(t, err)
 
@@ -104,7 +149,16 @@ func TestWeatherHandler_MissingLocation(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, rr.Code)
 }
 
-func TestWeatherHandler_LocationNotFound(t *testing.T) {
+// TestWeatherHandler_LocationNotFound ...
+// Summary: TestWeatherHandler_LocationNotFound
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	req, err := http.NewRequest("GET", "/weather?location=paris", nil)
 	require.NoError(t, err)
 
@@ -116,7 +170,16 @@ func TestWeatherHandler_LocationNotFound(t *testing.T) {
 	assert.Equal(t, http.StatusNotFound, rr.Code)
 }
 
-func TestWeatherHandler_InvalidMethod(t *testing.T) {
+// TestWeatherHandler_InvalidMethod ...
+// Summary: TestWeatherHandler_InvalidMethod
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	req, err := http.NewRequest("PUT", "/weather", nil)
 	require.NoError(t, err)
 
@@ -128,7 +191,16 @@ func TestWeatherHandler_InvalidMethod(t *testing.T) {
 	assert.Equal(t, http.StatusMethodNotAllowed, rr.Code)
 }
 
-func TestWSHandler(t *testing.T) {
+// TestWSHandler ...
+// Summary: TestWSHandler
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	server := httptest.NewServer(http.HandlerFunc(wsHandler))
 	defer server.Close()
 
@@ -153,7 +225,16 @@ func TestWSHandler(t *testing.T) {
 	assert.Equal(t, "Sunny, 25°C", resp["weather"])
 }
 
-func TestWSHandler_LocationNotFound(t *testing.T) {
+// TestWSHandler_LocationNotFound ...
+// Summary: TestWSHandler_LocationNotFound
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	server := httptest.NewServer(http.HandlerFunc(wsHandler))
 	defer server.Close()
 
@@ -176,7 +257,16 @@ func TestWSHandler_LocationNotFound(t *testing.T) {
 	assert.Equal(t, "Location not found", resp["weather"])
 }
 
-func TestWSHandler_InvalidJSON(t *testing.T) {
+// TestWSHandler_InvalidJSON ...
+// Summary: TestWSHandler_InvalidJSON
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	server := httptest.NewServer(http.HandlerFunc(wsHandler))
 	defer server.Close()
 
@@ -202,7 +292,16 @@ func TestWSHandler_InvalidJSON(t *testing.T) {
 	require.Error(t, err)
 }
 
-func TestRun(t *testing.T) {
+// TestRun ...
+// Summary: TestRun
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Use port 0 to let OS pick a free port
 	args := []string{"weather-server", "-port", "0"}
 

@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestLocalCommandTool_Perl_RCE(t *testing.T) {
+// TestLocalCommandTool_Perl_RCE ...
+// Summary: TestLocalCommandTool_Perl_RCE
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tool := v1.Tool_builder{Name: proto.String("test-tool-perl")}.Build()
 	service := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("perl"),

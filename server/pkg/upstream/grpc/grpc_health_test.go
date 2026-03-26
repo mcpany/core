@@ -13,34 +13,89 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-type MockHealthChecker struct {
+// MockHealthChecker ...
+// Summary: MockHealthChecker
 	mock.Mock
 }
 
-func (m *MockHealthChecker) Start() {
+// Start ...
+// Summary: Start
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.Called()
 }
 
-func (m *MockHealthChecker) Stop() {
+// Stop ...
+// Summary: Stop
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.Called()
 }
 
-func (m *MockHealthChecker) Check(ctx context.Context) health.CheckerResult {
+// Check ...
+// Summary: Check
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called(ctx)
 	return args.Get(0).(health.CheckerResult)
 }
 
-func (m *MockHealthChecker) GetRunningPeriodicCheckCount() int {
+// GetRunningPeriodicCheckCount ...
+// Summary: GetRunningPeriodicCheckCount
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	return args.Int(0)
 }
 
-func (m *MockHealthChecker) IsStarted() bool {
+// IsStarted ...
+// Summary: IsStarted
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	args := m.Called()
 	return args.Bool(0)
 }
 
-func TestCheckHealth(t *testing.T) {
+// TestCheckHealth ...
+// Summary: TestCheckHealth
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("success", func(t *testing.T) {
 		mockChecker := new(MockHealthChecker)
 		u := &Upstream{

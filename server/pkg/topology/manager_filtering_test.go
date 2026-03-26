@@ -10,7 +10,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestManager_Filtering(t *testing.T) {
+// TestManager_Filtering ...
+// Summary: TestManager_Filtering
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)
 	m := NewManager(mockRegistry, mockTM)

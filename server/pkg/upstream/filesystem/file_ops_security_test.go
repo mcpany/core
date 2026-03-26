@@ -13,7 +13,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestSafeRename_TOCTOU_Mitigation(t *testing.T) {
+// TestSafeRename_TOCTOU_Mitigation ...
+// Summary: TestSafeRename_TOCTOU_Mitigation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup filesystem
 	baseDir := t.TempDir()
 	sourceDir := filepath.Join(baseDir, "source")
@@ -62,7 +71,16 @@ func TestSafeRename_TOCTOU_Mitigation(t *testing.T) {
 	assert.True(t, os.IsNotExist(err), "File should not be moved to sensitive directory")
 }
 
-func TestSafeRemove_TOCTOU_Mitigation(t *testing.T) {
+// TestSafeRemove_TOCTOU_Mitigation ...
+// Summary: TestSafeRemove_TOCTOU_Mitigation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup filesystem
 	baseDir := t.TempDir()
 	targetDir := filepath.Join(baseDir, "target")

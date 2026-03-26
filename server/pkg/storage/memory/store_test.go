@@ -12,7 +12,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestMemoryStore(t *testing.T) {
+// TestMemoryStore ...
+// Summary: TestMemoryStore
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	s := NewStore()
 	ctx := context.Background()
 

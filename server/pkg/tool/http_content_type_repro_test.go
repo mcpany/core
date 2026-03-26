@@ -18,7 +18,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestHTTPTool_ContentType_Set_For_JSON_Template(t *testing.T) {
+// TestHTTPTool_ContentType_Set_For_JSON_Template ...
+// Summary: TestHTTPTool_ContentType_Set_For_JSON_Template
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	expectedBody := `{"q": "test"}`
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		body, err := io.ReadAll(r.Body)

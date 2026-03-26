@@ -11,7 +11,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestStripSecretsFromAuth_OAuth2(t *testing.T) {
+// TestStripSecretsFromAuth_OAuth2 ...
+// Summary: TestStripSecretsFromAuth_OAuth2
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	auth := configv1.Authentication_builder{
 		Oauth2: configv1.OAuth2Auth_builder{
 			ClientId: configv1.SecretValue_builder{
@@ -35,7 +44,16 @@ func TestStripSecretsFromAuth_OAuth2(t *testing.T) {
 	assert.Empty(t, scrubbedOauth.GetClientSecret().GetPlainText(), "Plain text ClientSecret should be cleared")
 }
 
-func TestStripSecretsFromService_MoreTypes(t *testing.T) {
+// TestStripSecretsFromService_MoreTypes ...
+// Summary: TestStripSecretsFromService_MoreTypes
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// gRPC Service (currently no-op but need coverage)
 	grpcSvc := func() *configv1.UpstreamServiceConfig {
 		return configv1.UpstreamServiceConfig_builder{
@@ -59,7 +77,16 @@ func TestStripSecretsFromService_MoreTypes(t *testing.T) {
 	assert.Equal(t, "http://api.example.com", openapiSvc.GetOpenapiService().GetAddress())
 }
 
-func TestStripSecretsFromMcpService_Calls(t *testing.T) {
+// TestStripSecretsFromMcpService_Calls ...
+// Summary: TestStripSecretsFromMcpService_Calls
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mcpSvc := func() *configv1.UpstreamServiceConfig {
 		return configv1.UpstreamServiceConfig_builder{
 			McpService: configv1.McpUpstreamService_builder{

@@ -15,7 +15,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestUpstreamService_MCP_Stdio(t *testing.T) {
+// TestUpstreamService_MCP_Stdio ...
+// Summary: TestUpstreamService_MCP_Stdio
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCase := &framework.E2ETestCase{
 		Name:                "everything server (Stdio)",
 		UpstreamServiceType: "stdio",

@@ -16,7 +16,16 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func TestConfigLoading(t *testing.T) {
+// TestConfigLoading ...
+// Summary: TestConfigLoading
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCases := []struct {
 		name               string
 		configFile         string
@@ -82,7 +91,16 @@ func TestConfigLoading(t *testing.T) {
 	}
 }
 
-func TestDisabledHierarchyConfig(t *testing.T) {
+// TestDisabledHierarchyConfig ...
+// Summary: TestDisabledHierarchyConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	root, err := GetProjectRoot()
 	require.NoError(t, err)
 

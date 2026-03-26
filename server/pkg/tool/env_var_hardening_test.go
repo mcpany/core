@@ -7,7 +7,16 @@ import (
 	"testing"
 )
 
-func TestDangerousEnvVars(t *testing.T) {
+// TestDangerousEnvVars ...
+// Summary: TestDangerousEnvVars
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Vulnerability: Missing dangerous environment variables in blocklist.
 	// Specifically GCONV_PATH (glibc RCE) and SHELL/HOME (config/execution hijacking).
 

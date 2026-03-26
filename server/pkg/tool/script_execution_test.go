@@ -12,7 +12,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestShellInjection_ScriptExecution(t *testing.T) {
+// TestShellInjection_ScriptExecution ...
+// Summary: TestShellInjection_ScriptExecution
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Case: Script execution (Vulnerable if not detected as shell command)
 	t.Run("script_execution_should_be_protected", func(t *testing.T) {
 		cmd := "./myscript.sh" // Not in the static list, but is a script

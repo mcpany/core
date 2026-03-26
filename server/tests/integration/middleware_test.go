@@ -19,7 +19,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestCacheMiddleware_CacheHit(t *testing.T) {
+// TestCacheMiddleware_CacheHit ...
+// Summary: TestCacheMiddleware_CacheHit
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// // t.Skip("Skipping flaky test: tool registration times out intermittently.")
 	var requestCount int32
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
@@ -81,7 +90,16 @@ upstream_services:
 	assert.Equal(t, int32(1), atomic.LoadInt32(&requestCount), "Upstream service should have been called only once")
 }
 
-func TestCacheMiddleware_CacheExpires(t *testing.T) {
+// TestCacheMiddleware_CacheExpires ...
+// Summary: TestCacheMiddleware_CacheExpires
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// // t.Skip("Skipping flaky test: tool registration times out intermittently.")
 	var requestCount int32
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {

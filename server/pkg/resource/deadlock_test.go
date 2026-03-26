@@ -8,7 +8,16 @@ import (
 	"time"
 )
 
-func TestAddResourceDeadlock(t *testing.T) {
+// TestAddResourceDeadlock ...
+// Summary: TestAddResourceDeadlock
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m := NewManager()
 
 	// Channel to signal that the callback completed

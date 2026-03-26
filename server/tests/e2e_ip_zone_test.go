@@ -23,7 +23,16 @@ import (
 // Since we cannot easily spin up the full server in this test file due to deps,
 // we will verify the middleware behavior using httptest.
 
-func TestMiddlewareStripsZoneIndex(t *testing.T) {
+// TestMiddlewareStripsZoneIndex ...
+// Summary: TestMiddlewareStripsZoneIndex
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a dummy handler
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ip, ok := util.RemoteIPFromContext(r.Context())

@@ -9,6 +9,15 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestConsts(t *testing.T) {
+// TestConsts ...
+// Summary: TestConsts
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	assert.NotEmpty(t, HeaderMcpSessionID)
 }

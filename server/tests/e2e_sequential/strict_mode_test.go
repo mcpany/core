@@ -15,7 +15,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestStrictFlag(t *testing.T) {
+// TestStrictFlag ...
+// Summary: TestStrictFlag
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Locate the server binary
 	rootDir, err := os.Getwd()
 	require.NoError(t, err)

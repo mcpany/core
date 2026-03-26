@@ -15,7 +15,16 @@ import (
 	"sigs.k8s.io/yaml"
 )
 
-func TestRateLimitConfig(t *testing.T) {
+// TestRateLimitConfig ...
+// Summary: TestRateLimitConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	content, err := os.ReadFile("config.yaml")
 	require.NoError(t, err)
 

@@ -19,7 +19,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestRedactionInLogs(t *testing.T) {
+// TestRedactionInLogs ...
+// Summary: TestRedactionInLogs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Reset logger to capture output
 	logging.ForTestsOnlyResetLogger()
 

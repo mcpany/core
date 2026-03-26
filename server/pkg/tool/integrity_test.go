@@ -13,7 +13,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestToolIntegrityConfig(t *testing.T) {
+// TestToolIntegrityConfig ...
+// Summary: TestToolIntegrityConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	toolDef := configv1.ToolDefinition_builder{
 		Name:        proto.String("test-tool"),
 		Description: proto.String("A test tool"),
@@ -52,7 +61,16 @@ func TestToolIntegrityConfig(t *testing.T) {
 	require.Contains(t, err.Error(), "integrity check failed")
 }
 
-func TestVerifyConfigIntegrity(t *testing.T) {
+// TestVerifyConfigIntegrity ...
+// Summary: TestVerifyConfigIntegrity
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	toolDef := configv1.ToolDefinition_builder{
 		Name:        proto.String("config-test-tool"),
 		Description: proto.String("A config test tool"),

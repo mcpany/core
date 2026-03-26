@@ -16,7 +16,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRootCmd(t *testing.T) {
+// TestRootCmd ...
+// Summary: TestRootCmd
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	viper.Reset()
 	cmd := newRootCmd()
 	b := bytes.NewBufferString("")
@@ -27,7 +36,16 @@ func TestRootCmd(t *testing.T) {
 	assert.Contains(t, b.String(), "version dev")
 }
 
-func TestDoctorCmd_Offline(t *testing.T) {
+// TestDoctorCmd_Offline ...
+// Summary: TestDoctorCmd_Offline
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	viper.Reset()
 	cmd := newRootCmd()
 	b := bytes.NewBufferString("")
@@ -44,7 +62,16 @@ func TestDoctorCmd_Offline(t *testing.T) {
 	assert.Contains(t, b.String(), "FAILED")
 }
 
-func TestDoctorCmd_Online(t *testing.T) {
+// TestDoctorCmd_Online ...
+// Summary: TestDoctorCmd_Online
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	viper.Reset()
 	// Mock server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -76,7 +103,16 @@ func TestDoctorCmd_Online(t *testing.T) {
 	assert.Contains(t, b.String(), "internet: OK")
 }
 
-func TestDoctorCmd_AddressParsing(t *testing.T) {
+// TestDoctorCmd_AddressParsing ...
+// Summary: TestDoctorCmd_AddressParsing
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name string
 		arg  string
@@ -102,7 +138,16 @@ func TestDoctorCmd_AddressParsing(t *testing.T) {
 	}
 }
 
-func TestDoctorCmd_ServerErrors(t *testing.T) {
+// TestDoctorCmd_ServerErrors ...
+// Summary: TestDoctorCmd_ServerErrors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. Server returns 500 on health
 	t.Run("Health 500", func(t *testing.T) {
 		viper.Reset()

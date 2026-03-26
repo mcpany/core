@@ -11,7 +11,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetBus_NatsError(t *testing.T) {
+// TestGetBus_NatsError ...
+// Summary: TestGetBus_NatsError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Configure NATS with invalid URL to trigger error in GetBus
 	msgBus := bus.MessageBus_builder{}.Build()
 	natsBus := bus.NatsBus_builder{}.Build()
@@ -25,7 +34,16 @@ func TestGetBus_NatsError(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestGetBus_KafkaError(t *testing.T) {
+// TestGetBus_KafkaError ...
+// Summary: TestGetBus_KafkaError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	msgBus := bus.MessageBus_builder{}.Build()
 	kafkaBus := bus.KafkaBus_builder{}.Build()
 	// No brokers set
@@ -39,7 +57,16 @@ func TestGetBus_KafkaError(t *testing.T) {
 	assert.Contains(t, err.Error(), "kafka brokers are missing")
 }
 
-func TestGetBus_NatsSuccess(t *testing.T) {
+// TestGetBus_NatsSuccess ...
+// Summary: TestGetBus_NatsSuccess
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Configure NATS with empty URL to trigger embedded server
 	msgBus := bus.MessageBus_builder{}.Build()
 	natsBus := bus.NatsBus_builder{}.Build()
@@ -54,13 +81,31 @@ func TestGetBus_NatsSuccess(t *testing.T) {
 	assert.NotNil(t, bus)
 }
 
-func TestMessage_SetCorrelationID(t *testing.T) {
+// TestMessage_SetCorrelationID ...
+// Summary: TestMessage_SetCorrelationID
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	msg := &BaseMessage{CID: "old"}
 	msg.SetCorrelationID("new")
 	assert.Equal(t, "new", msg.CorrelationID())
 }
 
-func TestNewProvider_Default(t *testing.T) {
+// TestNewProvider_Default ...
+// Summary: TestNewProvider_Default
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test NewProvider with empty config (should default to InMemory)
 	provider, err := NewProvider(nil)
 	assert.NoError(t, err)
@@ -71,7 +116,16 @@ func TestNewProvider_Default(t *testing.T) {
 	assert.NotNil(t, bus)
 }
 
-func TestGetBus_Hook(t *testing.T) {
+// TestGetBus_Hook ...
+// Summary: TestGetBus_Hook
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	oldHook := GetBusHook
 	defer func() { GetBusHook = oldHook }()
 
@@ -85,7 +139,16 @@ func TestGetBus_Hook(t *testing.T) {
 	assert.Equal(t, "hook error", err.Error())
 }
 
-func TestGetBus_Hook_Success(t *testing.T) {
+// TestGetBus_Hook_Success ...
+// Summary: TestGetBus_Hook_Success
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	oldHook := GetBusHook
 	defer func() { GetBusHook = oldHook }()
 
@@ -100,7 +163,16 @@ func TestGetBus_Hook_Success(t *testing.T) {
 	assert.Equal(t, mockBus, bus)
 }
 
-func TestNewProvider_Hook(t *testing.T) {
+// TestNewProvider_Hook ...
+// Summary: TestNewProvider_Hook
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	oldHook := NewProviderHook
 	defer func() { NewProviderHook = oldHook }()
 

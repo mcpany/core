@@ -34,14 +34,32 @@ type mockUpstream struct {
 	shutdownFunc func() error
 }
 
-func (m *mockUpstream) Shutdown(_ context.Context) error {
+// Shutdown ...
+// Summary: Shutdown
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.shutdownFunc != nil {
 		return m.shutdownFunc()
 	}
 	return nil
 }
 
-func (m *mockUpstream) Register(_ context.Context, serviceConfig *configv1.UpstreamServiceConfig, _ tool.ManagerInterface, _ prompt.ManagerInterface, _ resource.ManagerInterface, _ bool) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+// Register ...
+// Summary: Register
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.registerFunc != nil {
 		return m.registerFunc(serviceConfig.GetName())
 	}
@@ -53,7 +71,16 @@ type mockFactory struct {
 	newUpstreamFunc func() (upstream.Upstream, error)
 }
 
-func (m *mockFactory) NewUpstream(_ *configv1.UpstreamServiceConfig) (upstream.Upstream, error) {
+// NewUpstream ...
+// Summary: NewUpstream
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.newUpstreamFunc != nil {
 		return m.newUpstreamFunc()
 	}
@@ -64,19 +91,109 @@ type mockToolManager struct {
 	tool.ManagerInterface
 }
 
-func (m *mockToolManager) AddTool(_ tool.Tool) error             { return nil }
-func (m *mockToolManager) ClearToolsForService(_ string)         {}
-func (m *mockToolManager) GetTool(_ string) (tool.Tool, bool)    { return nil, false }
-func (m *mockToolManager) ListTools() []tool.Tool                { return nil }
-func (m *mockToolManager) ListServices() []*tool.ServiceInfo     { return nil }
-func (m *mockToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
-func (m *mockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+// AddTool ...
+// Summary: AddTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ClearToolsForService ...
+// Summary: ClearToolsForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// GetTool ...
+// Summary: GetTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ListTools ...
+// Summary: ListTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ListServices ...
+// Summary: ListServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// SetMCPServer ...
+// Summary: SetMCPServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ExecuteTool ...
+// Summary: ExecuteTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (m *mockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
-func (m *mockToolManager) GetToolCountForService(_ string) int                     { return 0 }
+// SetProfiles ...
+// Summary: SetProfiles
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// GetToolCountForService ...
+// Summary: GetToolCountForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
-func TestNew(t *testing.T) {
+// TestNew ...
+// Summary: TestNew
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	f := factory.NewUpstreamServiceFactory(pm, nil)
 	tm := &mockToolManager{}
@@ -94,7 +211,16 @@ func TestNew(t *testing.T) {
 	assert.Equal(t, am, registry.authManager)
 }
 
-func TestServiceRegistry_RegisterAndGetService(t *testing.T) {
+// TestServiceRegistry_RegisterAndGetService ...
+// Summary: TestServiceRegistry_RegisterAndGetService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	f := &mockFactory{
 		newUpstreamFunc: func() (upstream.Upstream, error) {
 			return &mockUpstream{
@@ -174,7 +300,16 @@ func TestServiceRegistry_RegisterAndGetService(t *testing.T) {
 	})
 }
 
-func TestServiceRegistry_RegisterService_FactoryError(t *testing.T) {
+// TestServiceRegistry_RegisterService_FactoryError ...
+// Summary: TestServiceRegistry_RegisterService_FactoryError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	factoryErr := errors.New("factory error")
 	f := &mockFactory{
 		newUpstreamFunc: func() (upstream.Upstream, error) {
@@ -192,7 +327,16 @@ func TestServiceRegistry_RegisterService_FactoryError(t *testing.T) {
 	assert.Contains(t, err.Error(), factoryErr.Error())
 }
 
-func TestServiceRegistry_RegisterService_UpstreamError(t *testing.T) {
+// TestServiceRegistry_RegisterService_UpstreamError ...
+// Summary: TestServiceRegistry_RegisterService_UpstreamError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	upstreamErr := errors.New("upstream error")
 	f := &mockFactory{
 		newUpstreamFunc: func() (upstream.Upstream, error) {
@@ -213,7 +357,16 @@ func TestServiceRegistry_RegisterService_UpstreamError(t *testing.T) {
 	assert.Contains(t, err.Error(), upstreamErr.Error())
 }
 
-func TestServiceRegistry_RegisterService_DuplicateName(t *testing.T) {
+// TestServiceRegistry_RegisterService_DuplicateName ...
+// Summary: TestServiceRegistry_RegisterService_DuplicateName
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	f := &mockFactory{
 		newUpstreamFunc: func() (upstream.Upstream, error) {
 			return &mockUpstream{
@@ -243,7 +396,16 @@ func TestServiceRegistry_RegisterService_DuplicateName(t *testing.T) {
 	assert.ErrorIs(t, err, ErrServiceAlreadyRegistered)
 }
 
-func TestServiceRegistry_UnregisterService(t *testing.T) {
+// TestServiceRegistry_UnregisterService ...
+// Summary: TestServiceRegistry_UnregisterService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	f := &mockFactory{
 		newUpstreamFunc: func() (upstream.Upstream, error) {
 			return &mockUpstream{
@@ -290,7 +452,16 @@ func TestServiceRegistry_UnregisterService(t *testing.T) {
 	assert.Contains(t, err.Error(), `service "non-existent-service" (id: non-existent-service) not found`)
 }
 
-func TestServiceRegistry_Close(t *testing.T) {
+// TestServiceRegistry_Close ...
+// Summary: TestServiceRegistry_Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockUpstream := &mockUpstream{
 		registerFunc: func(serviceName string) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 			serviceID, err := util.SanitizeServiceName(serviceName)
@@ -335,7 +506,16 @@ func TestServiceRegistry_Close(t *testing.T) {
 	assert.Contains(t, err.Error(), "shutdown error")
 }
 
-func TestServiceRegistry_GetAllServices(t *testing.T) {
+// TestServiceRegistry_GetAllServices ...
+// Summary: TestServiceRegistry_GetAllServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	f := &mockFactory{
 		newUpstreamFunc: func() (upstream.Upstream, error) {
 			return &mockUpstream{
@@ -374,7 +554,16 @@ func TestServiceRegistry_GetAllServices(t *testing.T) {
 	assert.Len(t, services, 2)
 }
 
-func TestServiceRegistry_ServiceInfo(t *testing.T) {
+// TestServiceRegistry_ServiceInfo ...
+// Summary: TestServiceRegistry_ServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	registry := New(nil, nil, nil, nil, nil)
 
 	// Get non-existent service info
@@ -397,19 +586,55 @@ type mockTool struct {
 	tool *mcp_routerv1.Tool
 }
 
-func (m *mockTool) Tool() *mcp_routerv1.Tool {
+// Tool ...
+// Summary: Tool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.tool
 }
 
-func (m *mockTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+// Execute ...
+// Summary: Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
 
-func (m *mockTool) GetCacheConfig() *configv1.CacheConfig {
+// GetCacheConfig ...
+// Summary: GetCacheConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *mockTool) MCPTool() *mcp.Tool {
+// MCPTool ...
+// Summary: MCPTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t, _ := tool.ConvertProtoToMCPTool(m.tool)
 	return t
 }
@@ -426,14 +651,32 @@ func newThreadSafeToolManager() *threadSafeToolManager {
 	}
 }
 
-func (m *threadSafeToolManager) AddTool(t tool.Tool) error {
+// AddTool ...
+// Summary: AddTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.tools[t.Tool().GetName()] = t
 	return nil
 }
 
-func (m *threadSafeToolManager) ClearToolsForService(serviceID string) {
+// ClearToolsForService ...
+// Summary: ClearToolsForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	for name, t := range m.tools {
@@ -443,14 +686,32 @@ func (m *threadSafeToolManager) ClearToolsForService(serviceID string) {
 	}
 }
 
-func (m *threadSafeToolManager) GetTool(name string) (tool.Tool, bool) {
+// GetTool ...
+// Summary: GetTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 	t, ok := m.tools[name]
 	return t, ok
 }
 
-func (m *threadSafeToolManager) ListTools() []tool.Tool {
+// ListTools ...
+// Summary: ListTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 	tools := make([]tool.Tool, 0, len(m.tools))
@@ -460,7 +721,16 @@ func (m *threadSafeToolManager) ListTools() []tool.Tool {
 	return tools
 }
 
-func (m *threadSafeToolManager) GetToolCountForService(serviceID string) int {
+// GetToolCountForService ...
+// Summary: GetToolCountForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 	count := 0
@@ -472,7 +742,16 @@ func (m *threadSafeToolManager) GetToolCountForService(serviceID string) int {
 	return count
 }
 
-func TestServiceRegistry_RegisterService_DuplicateNameDoesNotClearExisting(t *testing.T) {
+// TestServiceRegistry_RegisterService_DuplicateNameDoesNotClearExisting ...
+// Summary: TestServiceRegistry_RegisterService_DuplicateNameDoesNotClearExisting
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	f := &mockFactory{
 		newUpstreamFunc: func() (upstream.Upstream, error) {
 			return &mockUpstream{
@@ -521,19 +800,55 @@ type mockPrompt struct {
 	serviceID string
 }
 
-func (m *mockPrompt) Prompt() *mcp.Prompt {
+// Prompt ...
+// Summary: Prompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.p
 }
 
-func (m *mockPrompt) Service() string {
+// Service ...
+// Summary: Service
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.serviceID
 }
 
-func (m *mockPrompt) Definition() *configv1.PromptDefinition {
+// Definition ...
+// Summary: Definition
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *mockPrompt) Get(_ context.Context, _ json.RawMessage) (*mcp.GetPromptResult, error) {
+// Get ...
+// Summary: Get
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
 
@@ -543,23 +858,68 @@ type mockResource struct {
 	serviceID string
 }
 
-func (m *mockResource) Resource() *mcp.Resource {
+// Resource ...
+// Summary: Resource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.r
 }
 
-func (m *mockResource) Service() string {
+// Service ...
+// Summary: Service
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.serviceID
 }
 
-func (m *mockResource) Read(_ context.Context) (*mcp.ReadResourceResult, error) {
+// Read ...
+// Summary: Read
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
 
-func (m *mockResource) Subscribe(_ context.Context) error {
+// Subscribe ...
+// Summary: Subscribe
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func TestServiceRegistry_UnregisterService_ClearsAllData(t *testing.T) {
+// TestServiceRegistry_UnregisterService_ClearsAllData ...
+// Summary: TestServiceRegistry_UnregisterService_ClearsAllData
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	f := &mockFactory{
 		newUpstreamFunc: func() (upstream.Upstream, error) {
 			return &mockUpstream{
@@ -603,7 +963,16 @@ func TestServiceRegistry_UnregisterService_ClearsAllData(t *testing.T) {
 	assert.Empty(t, rm.ListResources(), "Resources should be cleared after unregistration")
 }
 
-func TestServiceRegistry_UnregisterService_CallsShutdown(t *testing.T) {
+// TestServiceRegistry_UnregisterService_CallsShutdown ...
+// Summary: TestServiceRegistry_UnregisterService_CallsShutdown
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	shutdownCalled := false
 	f := &mockFactory{
 		newUpstreamFunc: func() (upstream.Upstream, error) {
@@ -637,7 +1006,16 @@ func TestServiceRegistry_UnregisterService_CallsShutdown(t *testing.T) {
 	assert.True(t, shutdownCalled, "Shutdown method should be called on unregister")
 }
 
-func TestGetServiceError(t *testing.T) {
+// TestGetServiceError ...
+// Summary: TestGetServiceError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	registry := New(nil, nil, nil, nil, nil)
 
 	// No error initially
@@ -655,7 +1033,16 @@ func TestGetServiceError(t *testing.T) {
 	assert.Equal(t, "some error", err)
 }
 
-func TestServiceRegistry_RegisterService_RetryFailed(t *testing.T) {
+// TestServiceRegistry_RegisterService_RetryFailed ...
+// Summary: TestServiceRegistry_RegisterService_RetryFailed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// First attempt fails
 	failFactory := &mockFactory{
 		newUpstreamFunc: func() (upstream.Upstream, error) {

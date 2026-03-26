@@ -11,7 +11,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRBACEnforcer_HasRole(t *testing.T) {
+// TestRBACEnforcer_HasRole ...
+// Summary: TestRBACEnforcer_HasRole
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	enforcer := NewRBACEnforcer()
 
 	t.Run("nil user", func(t *testing.T) {
@@ -40,7 +49,16 @@ func TestRBACEnforcer_HasRole(t *testing.T) {
 	})
 }
 
-func TestRBACEnforcer_HasAnyRole(t *testing.T) {
+// TestRBACEnforcer_HasAnyRole ...
+// Summary: TestRBACEnforcer_HasAnyRole
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	enforcer := NewRBACEnforcer()
 
 	t.Run("nil user", func(t *testing.T) {
@@ -69,7 +87,16 @@ func TestRBACEnforcer_HasAnyRole(t *testing.T) {
 	})
 }
 
-func TestContextWithRoles(t *testing.T) {
+// TestContextWithRoles ...
+// Summary: TestContextWithRoles
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	roles := []string{"admin", "user"}
 	ctxWithRoles := ContextWithRoles(ctx, roles)
@@ -82,7 +109,16 @@ func TestContextWithRoles(t *testing.T) {
 	assert.False(t, ok)
 }
 
-func TestRBACEnforcer_HasRoleInContext(t *testing.T) {
+// TestRBACEnforcer_HasRoleInContext ...
+// Summary: TestRBACEnforcer_HasRoleInContext
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	enforcer := NewRBACEnforcer()
 	ctx := context.Background()
 

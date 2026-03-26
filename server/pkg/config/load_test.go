@@ -29,7 +29,16 @@ func createTempConfigFile(t *testing.T, content string) string {
 }
 
 // TestLoadServices_ValidConfigs tests loading of various valid service configurations.
-func TestLoadServices_ValidConfigs(t *testing.T) {
+// TestLoadServices_ValidConfigs tests loading of various valid service configurations.
+// Summary: TestLoadServices_ValidConfigs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("Load from URL", func(t *testing.T) {
 		// Create a mock HTTP server to serve the config file
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
@@ -381,7 +390,16 @@ upstream_services: {
 	}
 }
 
-func TestDefaultUserHasProfileAccessWhenIdIsMissing(t *testing.T) {
+// TestDefaultUserHasProfileAccessWhenIdIsMissing ...
+// Summary: TestDefaultUserHasProfileAccessWhenIdIsMissing
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	content := `
 global_settings: {
     profiles: "dev"
@@ -415,7 +433,16 @@ upstream_services: {
 	assert.Contains(t, defaultUser.GetProfileIds(), "dev", "Default user should have access to 'dev' profile even if ID is not explicitly set")
 }
 
-func TestLoadServices_DefaultUser_ImplicitProfile(t *testing.T) {
+// TestLoadServices_DefaultUser_ImplicitProfile ...
+// Summary: TestLoadServices_DefaultUser_ImplicitProfile
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Configuration with one service that has NO explicit profiles.
 	// It should default to "default" profile.
 	// No users defined, so a default user should be created.
@@ -449,7 +476,16 @@ upstream_services: {
 	assert.Contains(t, defaultUser.GetProfileIds(), "default", "Default user should have access to 'default' profile")
 }
 
-func TestDefaultUser_ShouldNotAccessDisabledProfiles(t *testing.T) {
+// TestDefaultUser_ShouldNotAccessDisabledProfiles ...
+// Summary: TestDefaultUser_ShouldNotAccessDisabledProfiles
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	content := `
 global_settings: {
     profiles: ["enabled_profile"]
@@ -476,7 +512,16 @@ global_settings: {
 	assert.NotContains(t, defaultUser.GetProfileIds(), "disabled_profile", "Default user should not have access to disabled profiles")
 }
 
-func TestDefaultUser_UsesAPIKeyFromResolvedConfig(t *testing.T) {
+// TestDefaultUser_UsesAPIKeyFromResolvedConfig ...
+// Summary: TestDefaultUser_UsesAPIKeyFromResolvedConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	content := `
 global_settings: {
     api_key: "1234567890abcdef"

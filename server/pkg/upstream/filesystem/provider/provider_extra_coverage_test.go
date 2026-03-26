@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestNewZipProvider_FileNotFound(t *testing.T) {
+// TestNewZipProvider_FileNotFound ...
+// Summary: TestNewZipProvider_FileNotFound
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Use a path in the current directory to pass IsAllowedPath check
 	path := "non-existent-file.zip"
 	config := configv1.ZipFs_builder{
@@ -27,7 +36,16 @@ func TestNewZipProvider_FileNotFound(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to open zip file")
 }
 
-func TestNewSftpProvider_InvalidKeyFile(t *testing.T) {
+// TestNewSftpProvider_InvalidKeyFile ...
+// Summary: TestNewSftpProvider_InvalidKeyFile
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	config := configv1.SftpFs_builder{
 		Address:  proto.String("127.0.0.1:2222"),
 		Username: proto.String("user"),
@@ -39,7 +57,16 @@ func TestNewSftpProvider_InvalidKeyFile(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to read private key")
 }
 
-func TestSftpProvider_ConfigValidation(t *testing.T) {
+// TestSftpProvider_ConfigValidation ...
+// Summary: TestSftpProvider_ConfigValidation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test address formatting logic (implicit port 22)
 	// We can't easily inspect the internal addr variable in NewSftpProvider,
 	// but we can verify that it proceeds to Dial (and fails) rather than failing earlier.
@@ -66,7 +93,16 @@ func TestSftpProvider_ConfigValidation(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to parse private key")
 }
 
-func TestLocalProvider_ResolveNonExistentPath_EdgeCases(t *testing.T) {
+// TestLocalProvider_ResolveNonExistentPath_EdgeCases ...
+// Summary: TestLocalProvider_ResolveNonExistentPath_EdgeCases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup a temporary directory structure
 	tmpDir, err := os.MkdirTemp("", "local_provider_test")
 	require.NoError(t, err)
@@ -109,13 +145,31 @@ func TestLocalProvider_ResolveNonExistentPath_EdgeCases(t *testing.T) {
 	assert.Contains(t, err.Error(), "access denied: component broken is a broken symlink")
 }
 
-func TestNewGcsProvider_NilConfig(t *testing.T) {
+// TestNewGcsProvider_NilConfig ...
+// Summary: TestNewGcsProvider_NilConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	_, err := NewGcsProvider(context.Background(), nil)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "gcs config is nil")
 }
 
-func TestNewS3Provider_NilConfig(t *testing.T) {
+// TestNewS3Provider_NilConfig ...
+// Summary: TestNewS3Provider_NilConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// NewS3Provider doesn't check for nil config explicitly at start?
 	// Let's check s3.go source again.
 	// It says:

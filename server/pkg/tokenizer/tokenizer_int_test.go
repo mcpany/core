@@ -8,7 +8,16 @@ import (
 	"testing"
 )
 
-func TestSimpleTokenizeInt_EdgeCases(t *testing.T) {
+// TestSimpleTokenizeInt_EdgeCases ...
+// Summary: TestSimpleTokenizeInt_EdgeCases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []int{
 		0, 1, 9, 10, 99, 100, 999, 1000, 9999,
 		9999999,  // 7 digits -> 1
@@ -34,7 +43,16 @@ func TestSimpleTokenizeInt_EdgeCases(t *testing.T) {
 	}
 }
 
-func TestSimpleTokenizeInt64_EdgeCases(t *testing.T) {
+// TestSimpleTokenizeInt64_EdgeCases ...
+// Summary: TestSimpleTokenizeInt64_EdgeCases
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []int64{
 		0, 1, 9, 10, 99, 100, 999, 1000, 9999,
 		9999999,  // 7 digits -> 1

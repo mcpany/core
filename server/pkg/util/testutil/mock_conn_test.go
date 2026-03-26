@@ -16,31 +16,94 @@ type mockClientStream struct {
 	grpc.ClientStream
 }
 
-func (m *mockClientStream) Header() (metadata.MD, error) {
+// Header ...
+// Summary: Header
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
 
-func (m *mockClientStream) Trailer() metadata.MD {
+// Trailer ...
+// Summary: Trailer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *mockClientStream) CloseSend() error {
+// CloseSend ...
+// Summary: CloseSend
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *mockClientStream) Context() context.Context {
+// Context ...
+// Summary: Context
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return context.Background()
 }
 
-func (m *mockClientStream) SendMsg(_ interface{}) error {
+// SendMsg ...
+// Summary: SendMsg
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *mockClientStream) RecvMsg(_ interface{}) error {
+// RecvMsg ...
+// Summary: RecvMsg
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func TestMockClientConn(t *testing.T) {
+// TestMockClientConn ...
+// Summary: TestMockClientConn
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockConn := NewMockClientConn(t)
 	assert.NotNil(t, mockConn)
 

@@ -52,7 +52,16 @@ func fixIDOld(id interface{}) interface{} {
 }
 
 // Ensure fixIDOld behaves as expected
-func TestFixIDOld(t *testing.T) {
+// Ensure fixIDOld behaves as expected
+// Summary: TestFixIDOld
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	id := brokenID{value: 123}
 	res := fixIDOld(id)
 	if res != 123 {
@@ -60,7 +69,16 @@ func TestFixIDOld(t *testing.T) {
 	}
 }
 
-func BenchmarkFixID_RegexPath(b *testing.B) {
+// BenchmarkFixID_RegexPath ...
+// Summary: BenchmarkFixID_RegexPath
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	id := brokenID{value: 123}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -101,7 +119,16 @@ func fixIDOptimized(id interface{}) interface{} {
 	return id
 }
 
-func BenchmarkFixID_Optimized(b *testing.B) {
+// BenchmarkFixID_Optimized ...
+// Summary: BenchmarkFixID_Optimized
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	id := brokenID{value: 123}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -109,7 +136,16 @@ func BenchmarkFixID_Optimized(b *testing.B) {
 	}
 }
 
-func BenchmarkFixID_Reflection(b *testing.B) {
+// BenchmarkFixID_Reflection ...
+// Summary: BenchmarkFixID_Reflection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	id := brokenID{value: 123}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -117,7 +153,16 @@ func BenchmarkFixID_Reflection(b *testing.B) {
 	}
 }
 
-func TestFixIDReflection(t *testing.T) {
+// TestFixIDReflection ...
+// Summary: TestFixIDReflection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	id := brokenID{value: 123}
 	res := fixID(id)
 	if res != 123 {

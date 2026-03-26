@@ -13,7 +13,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestShellInjection_Regression(t *testing.T) {
+// TestShellInjection_Regression ...
+// Summary: TestShellInjection_Regression
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Case 1: python3 (Protected)
 	t.Run("python3_protected", func(t *testing.T) {
 		cmd := "python3"

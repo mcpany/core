@@ -18,7 +18,16 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-func TestHTTPPool_New(t *testing.T) {
+// TestHTTPPool_New ...
+// Summary: TestHTTPPool_New
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("valid config", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusOK)
@@ -51,7 +60,16 @@ func TestHTTPPool_New(t *testing.T) {
 	})
 }
 
-func TestHTTPPool_GetPut(t *testing.T) {
+// TestHTTPPool_GetPut ...
+// Summary: TestHTTPPool_GetPut
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
@@ -82,7 +100,16 @@ func TestHTTPPool_GetPut(t *testing.T) {
 	assert.Same(t, client, client2)
 }
 
-func TestHTTPPool_SharedClients(t *testing.T) {
+// TestHTTPPool_SharedClients ...
+// Summary: TestHTTPPool_SharedClients
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	p, err := NewHTTPPool(2, 2, 10, configv1.UpstreamServiceConfig_builder{}.Build())
 	require.NoError(t, err)
 	require.NotNil(t, p)
@@ -100,7 +127,16 @@ func TestHTTPPool_SharedClients(t *testing.T) {
 	assert.Same(t, client1.Client, client2.Client)
 }
 
-func TestHTTPPool_Close(t *testing.T) {
+// TestHTTPPool_Close ...
+// Summary: TestHTTPPool_Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	p, err := NewHTTPPool(1, 1, 10, configv1.UpstreamServiceConfig_builder{}.Build())
 	require.NoError(t, err)
 	require.NotNil(t, p)
@@ -112,7 +148,16 @@ func TestHTTPPool_Close(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestHTTPPool_PoolFull(t *testing.T) {
+// TestHTTPPool_PoolFull ...
+// Summary: TestHTTPPool_PoolFull
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	p, err := NewHTTPPool(1, 1, 1, configv1.UpstreamServiceConfig_builder{}.Build())
 	require.NoError(t, err)
 	require.NotNil(t, p)
@@ -128,7 +173,16 @@ func TestHTTPPool_PoolFull(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestHTTPPool_KeepAliveEnabled(t *testing.T) {
+// TestHTTPPool_KeepAliveEnabled ...
+// Summary: TestHTTPPool_KeepAliveEnabled
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	p, err := NewHTTPPool(1, 1, 10, configv1.UpstreamServiceConfig_builder{}.Build())
 	require.NoError(t, err)
 	require.NotNil(t, p)
@@ -149,7 +203,16 @@ func TestHTTPPool_KeepAliveEnabled(t *testing.T) {
 	}
 }
 
-func TestHTTPPool_TimeoutConfiguration(t *testing.T) {
+// TestHTTPPool_TimeoutConfiguration ...
+// Summary: TestHTTPPool_TimeoutConfiguration
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("default timeout", func(t *testing.T) {
 		p, err := NewHTTPPool(1, 1, 10, configv1.UpstreamServiceConfig_builder{}.Build())
 		require.NoError(t, err)

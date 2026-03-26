@@ -13,7 +13,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestServiceRegistrationWorker_Start_BusErrors(t *testing.T) {
+// TestServiceRegistrationWorker_Start_BusErrors ...
+// Summary: TestServiceRegistrationWorker_Start_BusErrors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name      string
 		failTopic string

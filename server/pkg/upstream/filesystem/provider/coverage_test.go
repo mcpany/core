@@ -20,7 +20,16 @@ import (
 )
 
 // --- GcsFs Unit Tests ---
-func TestGcsFs_Structure(t *testing.T) {
+// --- GcsFs Unit Tests ---
+// Summary: TestGcsFs_Structure
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// We cannot create a functional gcsFs without a real storage.Client,
 	// because Open/Create etc call client methods directly.
 	// However, we can test the methods that don't use the client, or fail gracefully.
@@ -64,7 +73,16 @@ func TestGcsFs_Structure(t *testing.T) {
 // Since SftpProvider uses a private sftpFs struct, and we can't easily mock the SFTP client...
 // But we can check ResolvePath and other non-network methods.
 
-func TestSftpProvider_Methods(t *testing.T) {
+// TestSftpProvider_Methods ...
+// Summary: TestSftpProvider_Methods
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	p := &SftpProvider{}
 	assert.NoError(t, p.Close()) // nil closer
 
@@ -77,7 +95,16 @@ func TestSftpProvider_Methods(t *testing.T) {
 }
 
 // --- ZipProvider Extra Tests ---
-func TestZipProvider_Methods(t *testing.T) {
+// --- ZipProvider Extra Tests ---
+// Summary: TestZipProvider_Methods
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a real zip file for testing
 	tempDir := t.TempDir()
 
@@ -112,7 +139,16 @@ func TestZipProvider_Methods(t *testing.T) {
 	assert.Equal(t, "bar", res)
 }
 
-func TestZipProvider_Errors(t *testing.T) {
+// TestZipProvider_Errors ...
+// Summary: TestZipProvider_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. File not found
 	cfg1 := configv1.ZipFs_builder{FilePath: proto.String("non_existent.zip")}.Build()
 	_, err := NewZipProvider(cfg1)
@@ -129,7 +165,16 @@ func TestZipProvider_Errors(t *testing.T) {
 }
 
 // --- TmpfsProvider Extra Tests ---
-func TestTmpfsProvider_Methods(t *testing.T) {
+// --- TmpfsProvider Extra Tests ---
+// Summary: TestTmpfsProvider_Methods
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	p := NewTmpfsProvider()
 	assert.NotNil(t, p.GetFs())
 
@@ -141,14 +186,32 @@ func TestTmpfsProvider_Methods(t *testing.T) {
 }
 
 // --- LocalProvider Extra Coverage ---
-func TestLocalProvider_Close(t *testing.T) {
+// --- LocalProvider Extra Coverage ---
+// Summary: TestLocalProvider_Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	p := &LocalProvider{}
 	assert.NoError(t, p.Close())
 	assert.Nil(t, p.GetFs())
 }
 
 // --- GcsFile Methods Error Checking ---
-func TestGcsFile_Methods(t *testing.T) {
+// --- GcsFile Methods Error Checking ---
+// Summary: TestGcsFile_Methods
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This covers the error paths when file is not properly opened
 	f := &gcsFile{}
 
@@ -171,7 +234,16 @@ func TestGcsFile_Methods(t *testing.T) {
 	assert.Equal(t, "", f.Name())
 }
 
-func TestGcsFs_FileCreation(t *testing.T) {
+// TestGcsFs_FileCreation ...
+// Summary: TestGcsFs_FileCreation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// We can't really test Create/Open without client, but we can verify the interface types
 	fs := &gcsFs{bucket: "b", ctx: context.Background()}
 	var _ afero.Fs = fs

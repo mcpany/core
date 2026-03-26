@@ -13,7 +13,16 @@ import (
 	"google.golang.org/protobuf/testing/protocmp"
 )
 
-func TestResolveProfile(t *testing.T) {
+// TestResolveProfile ...
+// Summary: TestResolveProfile
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	profiles := []*configv1.ProfileDefinition{
 		configv1.ProfileDefinition_builder{
 			Name: proto.String("root"),
@@ -148,7 +157,16 @@ func TestResolveProfile(t *testing.T) {
 	}
 }
 
-func TestResolveProfile_DiamondInheritance(t *testing.T) {
+// TestResolveProfile_DiamondInheritance ...
+// Summary: TestResolveProfile_DiamondInheritance
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	profiles := []*configv1.ProfileDefinition{
 		configv1.ProfileDefinition_builder{
 			Name: proto.String("base"),
@@ -201,7 +219,16 @@ func TestResolveProfile_DiamondInheritance(t *testing.T) {
 	}
 }
 
-func TestGetProfileDefinition(t *testing.T) {
+// TestGetProfileDefinition ...
+// Summary: TestGetProfileDefinition
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	profiles := []*configv1.ProfileDefinition{
 		configv1.ProfileDefinition_builder{
 			Name: proto.String("test-profile"),
@@ -225,7 +252,16 @@ func TestGetProfileDefinition(t *testing.T) {
 	}
 }
 
-func TestResolveProfile_Errors(t *testing.T) {
+// TestResolveProfile_Errors ...
+// Summary: TestResolveProfile_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name       string
 		profiles   []*configv1.ProfileDefinition

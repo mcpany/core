@@ -12,7 +12,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestReproduction_SilentFailure_BadConfig(t *testing.T) {
+// TestReproduction_SilentFailure_BadConfig ...
+// Summary: TestReproduction_SilentFailure_BadConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	// Create a malformed YAML file
 	_ = afero.WriteFile(fs, "bad.yaml", []byte("upstream_services:\n  - name: test\n    http_service:\n      address: http://127.0.0.1\n  indentation_error"), 0644)
@@ -30,7 +39,16 @@ func TestReproduction_SilentFailure_BadConfig(t *testing.T) {
 	assert.Empty(t, cfg.GetUpstreamServices(), "Config should be empty because the file failed to parse")
 }
 
-func TestReproduction_ClaudeConfig_HelpfulError(t *testing.T) {
+// TestReproduction_ClaudeConfig_HelpfulError ...
+// Summary: TestReproduction_ClaudeConfig_HelpfulError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	// Create a file mimicking Claude Desktop config
 	claudeConfig := `
@@ -59,7 +77,16 @@ func TestReproduction_ClaudeConfig_HelpfulError(t *testing.T) {
 	assert.True(t, strings.Contains(errStrict.Error(), "Did you mean \"upstream_services\"?"), "Error message should contain helpful hint")
 }
 
-func TestReproduction_Typo_UnknownField_HelpfulError(t *testing.T) {
+// TestReproduction_Typo_UnknownField_HelpfulError ...
+// Summary: TestReproduction_Typo_UnknownField_HelpfulError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	// Config with a typo: "target_address" instead of "address"
 	typoConfig := `
@@ -82,7 +109,16 @@ upstream_services:
 	t.Logf("Error: %v", err)
 }
 
-func TestReproduction_YamlSyntaxError_HelpfulMessage(t *testing.T) {
+// TestReproduction_YamlSyntaxError_HelpfulMessage ...
+// Summary: TestReproduction_YamlSyntaxError_HelpfulMessage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	fs := afero.NewMemMapFs()
 	// Config with indentation error
 	// "calls" is indented too far, making it look like it's inside "address" value (which is impossible)

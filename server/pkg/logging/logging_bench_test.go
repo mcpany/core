@@ -9,7 +9,16 @@ import (
 	"testing"
 )
 
-func BenchmarkLoggerAddSource(b *testing.B) {
+// BenchmarkLoggerAddSource ...
+// Summary: BenchmarkLoggerAddSource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	b.Run("WithAddSource", func(b *testing.B) {
 		h := slog.NewTextHandler(io.Discard, &slog.HandlerOptions{AddSource: true})
 		l := slog.New(h)

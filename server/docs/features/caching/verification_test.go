@@ -29,7 +29,16 @@ import (
 )
 
 // TestCachingConfig is a unit test for the configuration.
-func TestCachingConfig(t *testing.T) {
+// TestCachingConfig is a unit test for the configuration.
+// Summary: TestCachingConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Read the config.yaml file
 	content, err := os.ReadFile("config.yaml")
 	require.NoError(t, err)
@@ -53,7 +62,16 @@ func TestCachingConfig(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestCachingE2E(t *testing.T) {
+// TestCachingE2E ...
+// Summary: TestCachingE2E
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	metricsPort := 0 // Use 0 to let the OS assign a random available port
 	os.Setenv("MCPANY_METRICS_LISTEN_ADDRESS", fmt.Sprintf("127.0.0.1:%d", metricsPort))
 	defer os.Unsetenv("MCPANY_METRICS_LISTEN_ADDRESS")

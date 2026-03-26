@@ -11,7 +11,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestSanitizeUser(t *testing.T) {
+// TestSanitizeUser ...
+// Summary: TestSanitizeUser
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := configv1.User_builder{
 		Id: proto.String("user1"),
 		Authentication: configv1.Authentication_builder{
@@ -37,11 +46,29 @@ func TestSanitizeUser(t *testing.T) {
 	assert.Equal(t, "secret", u.GetAuthentication().GetBasicAuth().GetPassword().GetPlainText())
 }
 
-func TestSanitizeUser_Nil(t *testing.T) {
+// TestSanitizeUser_Nil ...
+// Summary: TestSanitizeUser_Nil
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	assert.Nil(t, SanitizeUser(nil))
 }
 
-func TestSanitizeCredential(t *testing.T) {
+// TestSanitizeCredential ...
+// Summary: TestSanitizeCredential
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	c := configv1.Credential_builder{
 		Id: proto.String("cred1"),
 		Authentication: configv1.Authentication_builder{
@@ -68,11 +95,29 @@ func TestSanitizeCredential(t *testing.T) {
 	assert.Equal(t, RedactedString, tok.GetRefreshToken())
 }
 
-func TestSanitizeCredential_Nil(t *testing.T) {
+// TestSanitizeCredential_Nil ...
+// Summary: TestSanitizeCredential_Nil
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	assert.Nil(t, SanitizeCredential(nil))
 }
 
-func TestSanitizeAuthentication_ApiKey(t *testing.T) {
+// TestSanitizeAuthentication_ApiKey ...
+// Summary: TestSanitizeAuthentication_ApiKey
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	a := configv1.Authentication_builder{
 		ApiKey: configv1.APIKeyAuth_builder{
 			Value: configv1.SecretValue_builder{
@@ -89,7 +134,16 @@ func TestSanitizeAuthentication_ApiKey(t *testing.T) {
 	assert.Equal(t, RedactedString, ak.GetVerificationValue())
 }
 
-func TestSanitizeAuthentication_Oauth2(t *testing.T) {
+// TestSanitizeAuthentication_Oauth2 ...
+// Summary: TestSanitizeAuthentication_Oauth2
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	a := configv1.Authentication_builder{
 		Oauth2: configv1.OAuth2Auth_builder{
 			ClientId: configv1.SecretValue_builder{
@@ -107,7 +161,16 @@ func TestSanitizeAuthentication_Oauth2(t *testing.T) {
 	assert.Equal(t, RedactedString, o.GetClientSecret().GetPlainText())
 }
 
-func TestSanitizeAuthentication_TrustedHeader(t *testing.T) {
+// TestSanitizeAuthentication_TrustedHeader ...
+// Summary: TestSanitizeAuthentication_TrustedHeader
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	a := configv1.Authentication_builder{
 		TrustedHeader: configv1.TrustedHeaderAuth_builder{
 			HeaderName:  proto.String("X-Auth"),
@@ -121,11 +184,29 @@ func TestSanitizeAuthentication_TrustedHeader(t *testing.T) {
 	assert.Equal(t, RedactedString, th.GetHeaderValue())
 }
 
-func TestSanitizeAuthentication_Nil(t *testing.T) {
+// TestSanitizeAuthentication_Nil ...
+// Summary: TestSanitizeAuthentication_Nil
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	assert.Nil(t, SanitizeAuthentication(nil))
 }
 
-func TestSanitizeSecretValue_RemoteContent(t *testing.T) {
+// TestSanitizeSecretValue_RemoteContent ...
+// Summary: TestSanitizeSecretValue_RemoteContent
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	s := configv1.SecretValue_builder{
 		RemoteContent: configv1.RemoteContent_builder{
 			HttpUrl: proto.String("http://example.com"),
@@ -144,7 +225,16 @@ func TestSanitizeSecretValue_RemoteContent(t *testing.T) {
 	assert.Equal(t, RedactedString, rc.GetAuth().GetBearerToken().GetToken().GetPlainText())
 }
 
-func TestSanitizeSecretValue_Vault(t *testing.T) {
+// TestSanitizeSecretValue_Vault ...
+// Summary: TestSanitizeSecretValue_Vault
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	s := configv1.SecretValue_builder{
 		Vault: configv1.VaultSecret_builder{
 			Path: proto.String("path"),

@@ -13,7 +13,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestLocalCommandTool_Python_Space_Issue(t *testing.T) {
+// TestLocalCommandTool_Python_Space_Issue ...
+// Summary: TestLocalCommandTool_Python_Space_Issue
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test demonstrates a usability issue where space is blocked in arguments
 	// for commands considered as shells/interpreters, even though exec.Command handles them safely.
 
@@ -68,7 +77,16 @@ func TestLocalCommandTool_Python_Space_Issue(t *testing.T) {
 	}
 }
 
-func TestLocalCommandTool_Python_Arg_Space_Issue(t *testing.T) {
+// TestLocalCommandTool_Python_Arg_Space_Issue ...
+// Summary: TestLocalCommandTool_Python_Arg_Space_Issue
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test uses python as a script runner
 
 	tool := configv1.ToolDefinition_builder{

@@ -16,7 +16,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestLocalCommandTool_SSRF_Prevention(t *testing.T) {
+// TestLocalCommandTool_SSRF_Prevention ...
+// Summary: TestLocalCommandTool_SSRF_Prevention
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Not Parallel because we modify global variable validation.IsSafeURL
 
 	// Mock IsSafeURL to fail for a specific unsafe URL, simulating the real behavior

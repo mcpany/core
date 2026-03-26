@@ -11,7 +11,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRecoveryMiddleware(t *testing.T) {
+// TestRecoveryMiddleware ...
+// Summary: TestRecoveryMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. Create a handler that panics
 	panickingHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		panic("something went wrong")
@@ -33,7 +42,16 @@ func TestRecoveryMiddleware(t *testing.T) {
 	assert.Equal(t, "Internal Server Error\n", w.Body.String())
 }
 
-func TestRecoveryWithCompliance(t *testing.T) {
+// TestRecoveryWithCompliance ...
+// Summary: TestRecoveryWithCompliance
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. Create a handler that panics
 	panickingHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		panic("something went wrong")

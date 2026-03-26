@@ -9,7 +9,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRedactJSON_Bug_CommentPrecededBySlash(t *testing.T) {
+// TestRedactJSON_Bug_CommentPrecededBySlash ...
+// Summary: TestRedactJSON_Bug_CommentPrecededBySlash
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// The bug: If a non-comment slash appears before a comment, the comment is not detected,
 	// and content inside the comment (like quotes) is processed as JSON.
 
@@ -30,7 +39,16 @@ func TestRedactJSON_Bug_CommentPrecededBySlash(t *testing.T) {
 	assert.Equal(t, string(expected), string(result))
 }
 
-func TestRedactJSON_Bug_BlockCommentPrecededBySlash(t *testing.T) {
+// TestRedactJSON_Bug_BlockCommentPrecededBySlash ...
+// Summary: TestRedactJSON_Bug_BlockCommentPrecededBySlash
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	input := []byte(`{
 		"a": 10 / 2, /* "password": "secret" */
 		"b": "value"
@@ -45,7 +63,16 @@ func TestRedactJSON_Bug_BlockCommentPrecededBySlash(t *testing.T) {
 	assert.Equal(t, string(expected), string(result))
 }
 
-func TestRedactJSON_MultipleSlashesBeforeComment(t *testing.T) {
+// TestRedactJSON_MultipleSlashesBeforeComment ...
+// Summary: TestRedactJSON_MultipleSlashesBeforeComment
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	input := []byte(`{
 		"a": 1 / 2 / 3, // "password": "secret"
 		"b": "value"
@@ -58,7 +85,16 @@ func TestRedactJSON_MultipleSlashesBeforeComment(t *testing.T) {
 	assert.Equal(t, string(expected), string(result))
 }
 
-func TestRedactJSON_ComplexCommentContent(t *testing.T) {
+// TestRedactJSON_ComplexCommentContent ...
+// Summary: TestRedactJSON_ComplexCommentContent
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	input := []byte(`{
 		"a": 1, // comment with "quotes" and / slashes and * stars
 		"password": "real_secret"
@@ -71,7 +107,16 @@ func TestRedactJSON_ComplexCommentContent(t *testing.T) {
 	assert.Equal(t, string(expected), string(result))
 }
 
-func TestRedactJSON_SlashAtEndOfSegment(t *testing.T) {
+// TestRedactJSON_SlashAtEndOfSegment ...
+// Summary: TestRedactJSON_SlashAtEndOfSegment
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Invalid JSON ending with slash, but followed by valid key.
 	// The parser splits by quotes.
 	// Segment between "a": 1 and "b": 2 contains /.
@@ -87,7 +132,16 @@ func TestRedactJSON_SlashAtEndOfSegment(t *testing.T) {
 	assert.Equal(t, string(expected), string(result))
 }
 
-func TestRedactJSON_MixedComments(t *testing.T) {
+// TestRedactJSON_MixedComments ...
+// Summary: TestRedactJSON_MixedComments
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	input := []byte(`{
 		"a": 1 /* block */ / 2 // line
 		, "password": "secret"

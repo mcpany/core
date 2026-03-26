@@ -9,7 +9,16 @@ import (
 	"testing"
 )
 
-func TestToString_FloatFormatting(t *testing.T) {
+// TestToString_FloatFormatting ...
+// Summary: TestToString_FloatFormatting
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		input    any
@@ -76,7 +85,16 @@ func TestToString_FloatFormatting(t *testing.T) {
 	}
 }
 
-func TestReplaceURLPath_FloatIntegration(t *testing.T) {
+// TestReplaceURLPath_FloatIntegration ...
+// Summary: TestReplaceURLPath_FloatIntegration
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	params := map[string]interface{}{
 		"id": float64(1000000),
 	}
@@ -88,7 +106,16 @@ func TestReplaceURLPath_FloatIntegration(t *testing.T) {
 	}
 }
 
-func TestToString_OtherTypes(t *testing.T) {
+// TestToString_OtherTypes ...
+// Summary: TestToString_OtherTypes
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		input    any
@@ -114,7 +141,16 @@ func TestToString_OtherTypes(t *testing.T) {
 	}
 }
 
-func TestToString_Float32_Overflow(t *testing.T) {
+// TestToString_Float32_Overflow ...
+// Summary: TestToString_Float32_Overflow
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 2^63 is representable in float32
 	var f float32 = float32(math.Pow(2, 63))
 

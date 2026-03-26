@@ -14,7 +14,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestLocalCommandTool_ArgumentInjection_Prevention(t *testing.T) {
+// TestLocalCommandTool_ArgumentInjection_Prevention ...
+// Summary: TestLocalCommandTool_ArgumentInjection_Prevention
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	// This test verifies that argument injection via placeholders is prevented.
 
@@ -80,7 +89,16 @@ func TestLocalCommandTool_ArgumentInjection_Prevention(t *testing.T) {
 	}
 }
 
-func TestLocalCommandTool_ShellInjection_Prevention(t *testing.T) {
+// TestLocalCommandTool_ShellInjection_Prevention ...
+// Summary: TestLocalCommandTool_ShellInjection_Prevention
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	// Test Case 1: Unquoted Placeholder (Vulnerable configuration)
 	t.Run("Unquoted Placeholder", func(t *testing.T) {
@@ -267,7 +285,16 @@ func TestLocalCommandTool_ShellInjection_Prevention(t *testing.T) {
 	})
 }
 
-func TestLocalCommandTool_Execute_PythonInjection(t *testing.T) {
+// TestLocalCommandTool_Execute_PythonInjection ...
+// Summary: TestLocalCommandTool_Execute_PythonInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test demonstrates that python is not currently treated as a shell command,
 	// allowing code injection via argument substitution.
 
@@ -315,7 +342,16 @@ func TestLocalCommandTool_Execute_PythonInjection(t *testing.T) {
 	}
 }
 
-func TestLocalCommandTool_ShellInjection_ControlChars(t *testing.T) {
+// TestLocalCommandTool_ShellInjection_ControlChars ...
+// Summary: TestLocalCommandTool_ShellInjection_ControlChars
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tool := v1.Tool_builder{
 		Name: proto.String("test-tool-shell-control"),

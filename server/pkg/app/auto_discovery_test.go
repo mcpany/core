@@ -17,7 +17,17 @@ import (
 
 // TestAutoDiscoveryStatus verifies that auto-discovery failure is recorded in the DiscoveryManager
 // and accessible via internal state (and thus via API if we were testing the full API stack).
-func TestAutoDiscoveryStatus(t *testing.T) {
+// TestAutoDiscoveryStatus verifies that auto-discovery failure is recorded in the DiscoveryManager
+// Summary: TestAutoDiscoveryStatus
+// and accessible via internal state (and thus via API if we were testing the full API stack).
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup logger capture to ensure we don't spam stdout, though we are not relying on logs primarily now.
 	logging.ForTestsOnlyResetLogger()
 	var buf ThreadSafeBuffer

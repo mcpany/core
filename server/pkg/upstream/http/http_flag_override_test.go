@@ -17,7 +17,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestHTTPUpstream_URLConstruction_FlagOverride(t *testing.T) {
+// TestHTTPUpstream_URLConstruction_FlagOverride ...
+// Summary: TestHTTPUpstream_URLConstruction_FlagOverride
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name        string
 		baseAddr    string

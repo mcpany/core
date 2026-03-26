@@ -13,7 +13,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestPerlInjection(t *testing.T) {
+// TestPerlInjection ...
+// Summary: TestPerlInjection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup the tool configuration
 	// We simulate a tool that runs a perl command with a double-quoted argument
 	cmdService := &configv1.CommandLineUpstreamService{}

@@ -16,7 +16,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestLogLevel_InvalidLevelWarning(t *testing.T) {
+// TestLogLevel_InvalidLevelWarning ...
+// Summary: TestLogLevel_InvalidLevelWarning
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	logging.ForTestsOnlyResetLogger()
 	var buf bytes.Buffer
 	logging.Init(slog.LevelInfo, &buf, "")
@@ -33,7 +42,16 @@ func TestLogLevel_InvalidLevelWarning(t *testing.T) {
 	assert.Contains(t, logs, "Invalid log level specified: 'invalid-level'. Defaulting to INFO.")
 }
 
-func TestBindFlags(t *testing.T) {
+// TestBindFlags ...
+// Summary: TestBindFlags
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cmd := &cobra.Command{}
 	BindFlags(cmd)
 
@@ -50,7 +68,16 @@ func TestBindFlags(t *testing.T) {
 	assert.True(t, viper.GetBool("stdio"))
 }
 
-func TestGRPCPortEnvVar(t *testing.T) {
+// TestGRPCPortEnvVar ...
+// Summary: TestGRPCPortEnvVar
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	viper.Reset() // Reset viper to avoid state leakage from other tests.
 	_ = os.Setenv("MCPANY_GRPC_PORT", "9090")
 	defer func() { _ = os.Unsetenv("MCPANY_GRPC_PORT") }()
@@ -61,7 +88,16 @@ func TestGRPCPortEnvVar(t *testing.T) {
 	assert.Equal(t, "9090", viper.GetString("grpc-port"))
 }
 
-func TestMCPListenAddress(t *testing.T) {
+// TestMCPListenAddress ...
+// Summary: TestMCPListenAddress
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		address  string
@@ -108,7 +144,16 @@ func TestMCPListenAddress(t *testing.T) {
 	}
 }
 
-func TestGlobalSettings(t *testing.T) {
+// TestGlobalSettings ...
+// Summary: TestGlobalSettings
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// To prevent test pollution, we reset viper and clear any environment variables
 	// that might affect the test.
 	viper.Reset()
@@ -147,7 +192,16 @@ func TestGlobalSettings(t *testing.T) {
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-func TestBindRootFlags_Comprehensive(t *testing.T) {
+// TestBindRootFlags_Comprehensive ...
+// Summary: TestBindRootFlags_Comprehensive
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	viper.Reset()
 	cmd := &cobra.Command{}
 	BindRootFlags(cmd)
@@ -237,7 +291,16 @@ func TestBindRootFlags_Comprehensive(t *testing.T) {
 	}
 }
 
-func TestBindServerFlags_Comprehensive(t *testing.T) {
+// TestBindServerFlags_Comprehensive ...
+// Summary: TestBindServerFlags_Comprehensive
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	viper.Reset()
 	cmd := &cobra.Command{}
 	// We must call BindRootFlags because it sets up AutomaticEnv and KeyReplacer!

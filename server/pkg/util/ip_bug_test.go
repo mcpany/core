@@ -8,7 +8,16 @@ import (
 	"testing"
 )
 
-func TestIsPrivateIP_IPv4Compatible(t *testing.T) {
+// TestIsPrivateIP_IPv4Compatible ...
+// Summary: TestIsPrivateIP_IPv4Compatible
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		ip       string
 		expected bool
@@ -32,7 +41,16 @@ func TestIsPrivateIP_IPv4Compatible(t *testing.T) {
 	}
 }
 
-func TestIsPrivateNetworkIP_IPv4Compatible(t *testing.T) {
+// TestIsPrivateNetworkIP_IPv4Compatible ...
+// Summary: TestIsPrivateNetworkIP_IPv4Compatible
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		ip       string
 		expected bool

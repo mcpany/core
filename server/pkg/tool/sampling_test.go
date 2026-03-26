@@ -12,15 +12,42 @@ import (
 
 type mockSession struct{}
 
-func (m *mockSession) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
+// CreateMessage ...
+// Summary: CreateMessage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
 
-func (m *mockSession) ListRoots(ctx context.Context) (*mcp.ListRootsResult, error) {
+// ListRoots ...
+// Summary: ListRoots
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
 
-func TestContextWithSession(t *testing.T) {
+// TestContextWithSession ...
+// Summary: TestContextWithSession
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	ctx := context.Background()
 	s := &mockSession{}
@@ -42,7 +69,16 @@ func TestContextWithSession(t *testing.T) {
 	}
 }
 
-func TestContextWithSampler_BackwardCompatibility(t *testing.T) {
+// TestContextWithSampler_BackwardCompatibility ...
+// Summary: TestContextWithSampler_BackwardCompatibility
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	ctx := context.Background()
 	s := &mockSession{}

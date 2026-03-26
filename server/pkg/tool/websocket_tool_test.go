@@ -25,7 +25,16 @@ const (
 	testServiceID = "test-service"
 )
 
-func TestNewWebsocketTool(t *testing.T) {
+// TestNewWebsocketTool ...
+// Summary: TestNewWebsocketTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	pm := pool.NewManager()
 	serviceID := testServiceID
@@ -56,29 +65,74 @@ type mockWebsocketPool struct {
 	putFunc func(c *client.WebsocketClientWrapper)
 }
 
-func (m *mockWebsocketPool) Get(ctx context.Context) (*client.WebsocketClientWrapper, error) {
+// Get ...
+// Summary: Get
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.getFunc != nil {
 		return m.getFunc(ctx)
 	}
 	return nil, errors.New("get not implemented")
 }
 
-func (m *mockWebsocketPool) Put(c *client.WebsocketClientWrapper) {
+// Put ...
+// Summary: Put
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.putFunc != nil {
 		m.putFunc(c)
 	}
 }
 
-func (m *mockWebsocketPool) Close() error {
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// No-op for mock
 	return nil
 }
 
-func (m *mockWebsocketPool) Len() int {
+// Len ...
+// Summary: Len
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return 0 // Or some mock value
 }
 
-func TestWebsocketTool_Execute(t *testing.T) {
+// TestWebsocketTool_Execute ...
+// Summary: TestWebsocketTool_Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	t.Run("successful execution", func(t *testing.T) {
 		server := mockWebsocketServer(t, func(w http.ResponseWriter, r *http.Request) {

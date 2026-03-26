@@ -14,7 +14,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestEnvVarConfigPath(t *testing.T) {
+// TestEnvVarConfigPath ...
+// Summary: TestEnvVarConfigPath
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Reset viper
 	viper.Reset()
 
@@ -40,7 +49,16 @@ func TestEnvVarConfigPath(t *testing.T) {
 	assert.Equal(t, []string{"env-config.yaml"}, val)
 }
 
-func TestEnvVarConfigPathMultiple(t *testing.T) {
+// TestEnvVarConfigPathMultiple ...
+// Summary: TestEnvVarConfigPathMultiple
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Reset viper
 	viper.Reset()
 
@@ -66,7 +84,16 @@ func TestEnvVarConfigPathMultiple(t *testing.T) {
 	assert.Equal(t, []string{"env-config1.yaml", "env-config2.yaml"}, val)
 }
 
-func TestEnvVarProfilesMultiple(t *testing.T) {
+// TestEnvVarProfilesMultiple ...
+// Summary: TestEnvVarProfilesMultiple
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Reset viper
 	viper.Reset()
 
@@ -90,7 +117,16 @@ func TestEnvVarProfilesMultiple(t *testing.T) {
 	assert.Equal(t, []string{"profile1", "profile2"}, val)
 }
 
-func TestEnvVarConfigPathWithSpaces(t *testing.T) {
+// TestEnvVarConfigPathWithSpaces ...
+// Summary: TestEnvVarConfigPathWithSpaces
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Reset viper
 	viper.Reset()
 

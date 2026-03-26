@@ -9,7 +9,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestParseToolName(t *testing.T) {
+// TestParseToolName ...
+// Summary: TestParseToolName
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	testCases := []struct {
 		name          string
@@ -75,7 +84,16 @@ func TestParseToolName(t *testing.T) {
 	}
 }
 
-func TestGetFullyQualifiedToolName(t *testing.T) {
+// TestGetFullyQualifiedToolName ...
+// Summary: TestGetFullyQualifiedToolName
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	serviceID := "test-service"
 	methodName := "test-method"

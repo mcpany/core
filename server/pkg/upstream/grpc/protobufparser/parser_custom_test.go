@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestParseProtoFromDefs(t *testing.T) {
+// TestParseProtoFromDefs ...
+// Summary: TestParseProtoFromDefs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("successful parsing with ProtoCollection", func(t *testing.T) {
 		// Create a temporary directory and a sample proto file
 		tempDir, err := os.MkdirTemp("", "test-proto-collection")
@@ -105,7 +114,16 @@ message TestResponse2 {
 	})
 }
 
-func TestProcessProtoCollection(t *testing.T) {
+// TestProcessProtoCollection ...
+// Summary: TestProcessProtoCollection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tempDir, err := os.MkdirTemp("", "proto-collection-*")
 	require.NoError(t, err)
 	defer func() { _ = os.RemoveAll(tempDir) }()
@@ -127,7 +145,16 @@ func TestProcessProtoCollection(t *testing.T) {
 	assert.Equal(t, filepath.Join(tempDir, "test.proto"), files[0])
 }
 
-func TestWriteProtoFile(t *testing.T) {
+// TestWriteProtoFile ...
+// Summary: TestWriteProtoFile
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tempDir, err := os.MkdirTemp("", "proto-file-*")
 	require.NoError(t, err)
 	defer func() { _ = os.RemoveAll(tempDir) }()

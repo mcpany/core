@@ -15,7 +15,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestResolveSecret_ContextCancellation(t *testing.T) {
+// TestResolveSecret_ContextCancellation ...
+// Summary: TestResolveSecret_ContextCancellation
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_SECRETS", "true")
 	// Start a test server that hangs to simulate slow response
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

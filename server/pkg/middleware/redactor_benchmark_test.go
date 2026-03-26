@@ -10,7 +10,16 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-func BenchmarkRedactor_RedactJSON(b *testing.B) {
+// BenchmarkRedactor_RedactJSON ...
+// Summary: BenchmarkRedactor_RedactJSON
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	enabled := true
 	cfg := configv1.DLPConfig_builder{
 		Enabled:        &enabled,
@@ -39,7 +48,16 @@ func BenchmarkRedactor_RedactJSON(b *testing.B) {
 	}
 }
 
-func BenchmarkRedactor_RedactJSON_NoCustomPatterns(b *testing.B) {
+// BenchmarkRedactor_RedactJSON_NoCustomPatterns ...
+// Summary: BenchmarkRedactor_RedactJSON_NoCustomPatterns
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	enabled := true
 	cfg := configv1.DLPConfig_builder{
 		Enabled: &enabled,
@@ -68,7 +86,16 @@ func BenchmarkRedactor_RedactJSON_NoCustomPatterns(b *testing.B) {
 	}
 }
 
-func BenchmarkRedactor_RedactJSON_NoCustomPatterns_Large(b *testing.B) {
+// BenchmarkRedactor_RedactJSON_NoCustomPatterns_Large ...
+// Summary: BenchmarkRedactor_RedactJSON_NoCustomPatterns_Large
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	enabled := true
 	cfg := configv1.DLPConfig_builder{
 		Enabled: &enabled,
@@ -97,7 +124,16 @@ func BenchmarkRedactor_RedactJSON_NoCustomPatterns_Large(b *testing.B) {
 	}
 }
 
-func BenchmarkRedactor_RedactJSON_AllSafe(b *testing.B) {
+// BenchmarkRedactor_RedactJSON_AllSafe ...
+// Summary: BenchmarkRedactor_RedactJSON_AllSafe
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	enabled := true
 	cfg := configv1.DLPConfig_builder{
 		Enabled: &enabled,
@@ -120,7 +156,16 @@ func BenchmarkRedactor_RedactJSON_AllSafe(b *testing.B) {
 	}
 }
 
-func BenchmarkRedactor_RedactJSON_Large(b *testing.B) {
+// BenchmarkRedactor_RedactJSON_Large ...
+// Summary: BenchmarkRedactor_RedactJSON_Large
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	enabled := true
 	cfg := configv1.DLPConfig_builder{
 		Enabled:        &enabled,

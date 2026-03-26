@@ -15,7 +15,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestStore_SSRF_Protection(t *testing.T) {
+// TestStore_SSRF_Protection ...
+// Summary: TestStore_SSRF_Protection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test confirms that the SSRF protection blocks access to 127.0.0.1.
 	// It relies on the default configuration of the secure http client.
 

@@ -13,7 +13,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestEnvVarTypoSuggestion(t *testing.T) {
+// TestEnvVarTypoSuggestion ...
+// Summary: TestEnvVarTypoSuggestion
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name           string
 		targetEnv      string
@@ -102,7 +111,16 @@ func TestEnvVarTypoSuggestion(t *testing.T) {
 	}
 }
 
-func TestFindSimilarEnvVar_Coverage(t *testing.T) {
+// TestFindSimilarEnvVar_Coverage ...
+// Summary: TestFindSimilarEnvVar_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Direct test for findSimilarEnvVar to ensure we hit branches like logic for empty parts or exact matches
 	// although exact match shouldn't happen in the main flow if os.LookupEnv returns false.
 

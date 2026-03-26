@@ -13,7 +13,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestToolManager_ExecuteTool_FuzzyMatch(t *testing.T) {
+// TestToolManager_ExecuteTool_FuzzyMatch ...
+// Summary: TestToolManager_ExecuteTool_FuzzyMatch
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tm := NewManager(nil)
 
@@ -43,7 +52,16 @@ func TestToolManager_ExecuteTool_FuzzyMatch(t *testing.T) {
 	assert.Contains(t, err.Error(), `did you mean "weather.get_weather"?`)
 }
 
-func TestToolManager_ExecuteTool_FuzzyMatch_NamespaceMissing(t *testing.T) {
+// TestToolManager_ExecuteTool_FuzzyMatch_NamespaceMissing ...
+// Summary: TestToolManager_ExecuteTool_FuzzyMatch_NamespaceMissing
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tm := NewManager(nil)
 
@@ -75,7 +93,16 @@ func TestToolManager_ExecuteTool_FuzzyMatch_NamespaceMissing(t *testing.T) {
 	assert.Contains(t, err.Error(), `did you mean "weather.get_forecast"?`, "Should suggest namespaced tool when namespace is missing")
 }
 
-func TestToolManager_ExecuteTool_FuzzyMatch_MultipleMatches(t *testing.T) {
+// TestToolManager_ExecuteTool_FuzzyMatch_MultipleMatches ...
+// Summary: TestToolManager_ExecuteTool_FuzzyMatch_MultipleMatches
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	tm := NewManager(nil)
 

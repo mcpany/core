@@ -7,7 +7,16 @@ import (
 	"testing"
 )
 
-func TestWalkJSONStrings(t *testing.T) {
+// TestWalkJSONStrings ...
+// Summary: TestWalkJSONStrings
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		input    string
@@ -189,7 +198,16 @@ func TestWalkJSONStrings(t *testing.T) {
 	}
 }
 
-func TestWalkJSONStrings_ZeroAlloc(t *testing.T) {
+// TestWalkJSONStrings_ZeroAlloc ...
+// Summary: TestWalkJSONStrings_ZeroAlloc
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	input := []byte(`{"key": "value"}`)
 	visitor := func(raw []byte) ([]byte, bool) {
 		return nil, false
@@ -200,7 +218,16 @@ func TestWalkJSONStrings_ZeroAlloc(t *testing.T) {
 	}
 }
 
-func TestWalkStandardJSONStrings(t *testing.T) {
+// TestWalkStandardJSONStrings ...
+// Summary: TestWalkStandardJSONStrings
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		input    string

@@ -9,7 +9,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSanitizeSchema_MissingTypeObject(t *testing.T) {
+// TestSanitizeSchema_MissingTypeObject ...
+// Summary: TestSanitizeSchema_MissingTypeObject
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Represents a schema that is missing "type": "object" but has "properties"
 	rawSchema := map[string]interface{}{
 		"properties": map[string]interface{}{
@@ -26,7 +35,16 @@ func TestSanitizeSchema_MissingTypeObject(t *testing.T) {
 	assert.Equal(t, "object", sanitizedMap["type"])
 }
 
-func TestSanitizeSchema_Recursive(t *testing.T) {
+// TestSanitizeSchema_Recursive ...
+// Summary: TestSanitizeSchema_Recursive
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Represents a schema that is missing "type": "object" but has "properties" nested
 	rawSchema := map[string]interface{}{
 		"type": "object",

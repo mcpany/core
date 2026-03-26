@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestCommandTool_ExtraCoverage(t *testing.T) {
+// TestCommandTool_ExtraCoverage ...
+// Summary: TestCommandTool_ExtraCoverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 
 	// 1. Path traversal in parameters

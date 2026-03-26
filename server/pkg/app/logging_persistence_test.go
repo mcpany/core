@@ -14,7 +14,16 @@ import (
 	"github.com/mcpany/core/server/pkg/storage/sqlite"
 )
 
-func TestLogPersistence_CatchUp(t *testing.T) {
+// TestLogPersistence_CatchUp ...
+// Summary: TestLogPersistence_CatchUp
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup Logger
 	logging.ForTestsOnlyResetLogger()
 	logging.Init(slog.LevelInfo, os.Stderr, "")
@@ -89,7 +98,16 @@ func TestLogPersistence_CatchUp(t *testing.T) {
 	}
 }
 
-func TestLogPersistence_Idempotency(t *testing.T) {
+// TestLogPersistence_Idempotency ...
+// Summary: TestLogPersistence_Idempotency
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup Logger
 	logging.ForTestsOnlyResetLogger()
 	logging.Init(slog.LevelInfo, os.Stderr, "")

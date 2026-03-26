@@ -14,7 +14,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestOllamaEmbeddingProvider_Embed(t *testing.T) {
+// TestOllamaEmbeddingProvider_Embed ...
+// Summary: TestOllamaEmbeddingProvider_Embed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup mock server
 	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Verify Request
@@ -49,7 +58,16 @@ func TestOllamaEmbeddingProvider_Embed(t *testing.T) {
 	assert.Equal(t, []float32{0.1, 0.2, 0.3}, embedding)
 }
 
-func TestOllamaEmbeddingProvider_Embed_Error(t *testing.T) {
+// TestOllamaEmbeddingProvider_Embed_Error ...
+// Summary: TestOllamaEmbeddingProvider_Embed_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Mock server returning 500
 	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -66,7 +84,16 @@ func TestOllamaEmbeddingProvider_Embed_Error(t *testing.T) {
 	assert.Nil(t, embedding)
 }
 
-func TestOllamaEmbeddingProvider_Embed_MalformedResponse(t *testing.T) {
+// TestOllamaEmbeddingProvider_Embed_MalformedResponse ...
+// Summary: TestOllamaEmbeddingProvider_Embed_MalformedResponse
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Mock server returning invalid JSON
 	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -83,7 +110,16 @@ func TestOllamaEmbeddingProvider_Embed_MalformedResponse(t *testing.T) {
 	assert.Nil(t, embedding)
 }
 
-func TestOllamaEmbeddingProvider_Embed_Empty(t *testing.T) {
+// TestOllamaEmbeddingProvider_Embed_Empty ...
+// Summary: TestOllamaEmbeddingProvider_Embed_Empty
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Mock server returning empty embedding
 	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		resp := ollamaEmbeddingResponse{
@@ -103,7 +139,16 @@ func TestOllamaEmbeddingProvider_Embed_Empty(t *testing.T) {
 	assert.Nil(t, embedding)
 }
 
-func TestOllamaEmbeddingProvider_Defaults(t *testing.T) {
+// TestOllamaEmbeddingProvider_Defaults ...
+// Summary: TestOllamaEmbeddingProvider_Defaults
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	provider := NewOllamaEmbeddingProvider("", "")
 	assert.Equal(t, "http://localhost:11434", provider.baseURL)
 	assert.Equal(t, "nomic-embed-text", provider.model)

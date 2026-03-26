@@ -8,7 +8,16 @@ import (
 	"testing"
 )
 
-func TestErrToolNotFound(t *testing.T) {
+// TestErrToolNotFound ...
+// Summary: TestErrToolNotFound
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	err := ErrToolNotFound
 	if err == nil {

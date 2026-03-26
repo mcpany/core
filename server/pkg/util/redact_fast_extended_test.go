@@ -9,7 +9,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRedactJSON_Fast_Extended(t *testing.T) {
+// TestRedactJSON_Fast_Extended ...
+// Summary: TestRedactJSON_Fast_Extended
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 
 	tests := []struct {
@@ -92,7 +101,16 @@ func TestRedactJSON_Fast_Extended(t *testing.T) {
 	}
 }
 
-func TestRedactJSON_KeyCheck(t *testing.T) {
+// TestRedactJSON_KeyCheck ...
+// Summary: TestRedactJSON_KeyCheck
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Cover the `if malformed { break }` logic in key parsing
 	t.Run("malformed key", func(t *testing.T) {
 		input := `{"unclosed key`

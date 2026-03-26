@@ -9,7 +9,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRedactJSON_InvalidJSON_NumberConsumingQuotes(t *testing.T) {
+// TestRedactJSON_InvalidJSON_NumberConsumingQuotes ...
+// Summary: TestRedactJSON_InvalidJSON_NumberConsumingQuotes
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Case 1: Number immediately followed by a quote starting a new key (missing comma)
 	// Input: {"password": 123"token": "value"}
 	// "password" is sensitive. Value is 123.
@@ -23,7 +32,16 @@ func TestRedactJSON_InvalidJSON_NumberConsumingQuotes(t *testing.T) {
 	assert.Equal(t, string(expected), string(actual), "Should not swallow subsequent keys when redacting a number followed by a quote")
 }
 
-func TestRedactJSON_InvalidJSON_NumberConsumingColon(t *testing.T) {
+// TestRedactJSON_InvalidJSON_NumberConsumingColon ...
+// Summary: TestRedactJSON_InvalidJSON_NumberConsumingColon
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Case 2: Number followed by colon (rare but possible in broken JSON)
 	// Input: {"password": 123:"token": "value"}
 	input := []byte(`{"password": 123:"token": "value"}`)

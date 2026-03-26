@@ -8,7 +8,16 @@ import (
 	"testing"
 )
 
-func TestScanForSensitiveKeys_LongInput_Hunter(t *testing.T) {
+// TestScanForSensitiveKeys_LongInput_Hunter ...
+// Summary: TestScanForSensitiveKeys_LongInput_Hunter
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Generate input > 128 bytes to trigger SIMD/long string optimization
 	// Use '.' as padding to avoid creating false word boundaries (e.g. "passwordz" or "passwordx").
 	padding := strings.Repeat(".", 200)
@@ -32,7 +41,16 @@ func TestScanForSensitiveKeys_LongInput_Hunter(t *testing.T) {
 	}
 }
 
-func TestUnescapeKeySmall_BufferTooSmall(t *testing.T) {
+// TestUnescapeKeySmall_BufferTooSmall ...
+// Summary: TestUnescapeKeySmall_BufferTooSmall
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	input := []byte("test")
 	buf := make([]byte, 2) // Smaller than input
 	_, ok := unescapeKeySmall(input, buf)
@@ -41,7 +59,16 @@ func TestUnescapeKeySmall_BufferTooSmall(t *testing.T) {
 	}
 }
 
-func TestUnescapeKeySmall_EOF_InsideEscape(t *testing.T) {
+// TestUnescapeKeySmall_EOF_InsideEscape ...
+// Summary: TestUnescapeKeySmall_EOF_InsideEscape
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	input := []byte("test\\") // Ends with backslash
 	buf := make([]byte, 10)
 	_, ok := unescapeKeySmall(input, buf)
@@ -50,7 +77,16 @@ func TestUnescapeKeySmall_EOF_InsideEscape(t *testing.T) {
 	}
 }
 
-func TestScanEscapedKeyForSensitive_Coverage(t *testing.T) {
+// TestScanEscapedKeyForSensitive_Coverage ...
+// Summary: TestScanEscapedKeyForSensitive_Coverage
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Trigger scanEscapedKeyForSensitive by using invalid escape that json.Unmarshal fails on
 	// \uZZZZ is invalid hex.
 
@@ -84,7 +120,16 @@ func TestScanEscapedKeyForSensitive_Coverage(t *testing.T) {
 	}
 }
 
-func TestScanEscapedKeyForSensitive_BufferFill(t *testing.T) {
+// TestScanEscapedKeyForSensitive_BufferFill ...
+// Summary: TestScanEscapedKeyForSensitive_BufferFill
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Force scanEscapedKeyForSensitive usage by making key very large
 	// maxUnescapeLimit is var, we can change it for test?
 	// It is unexported var in redact_fast.go.

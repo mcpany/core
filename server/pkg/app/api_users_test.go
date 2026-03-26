@@ -22,7 +22,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestHandleUsers_List(t *testing.T) {
+// TestHandleUsers_List ...
+// Summary: TestHandleUsers_List
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 	app.fs = afero.NewMemMapFs()
 	app.AuthManager = auth.NewManager()
@@ -54,7 +63,16 @@ func TestHandleUsers_List(t *testing.T) {
 	assert.Equal(t, "user1", u.GetId())
 }
 
-func TestHandleUserDetail(t *testing.T) {
+// TestHandleUserDetail ...
+// Summary: TestHandleUserDetail
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 	app.fs = afero.NewMemMapFs()
 	app.AuthManager = auth.NewManager()
@@ -146,7 +164,16 @@ func TestHandleUserDetail(t *testing.T) {
 	})
 }
 
-func TestHashUserPassword_Redaction(t *testing.T) {
+// TestHashUserPassword_Redaction ...
+// Summary: TestHashUserPassword_Redaction
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	app := NewApplication()
 	// Dummy store for testing
 	_ = app

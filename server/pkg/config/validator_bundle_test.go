@@ -12,7 +12,16 @@ import (
 	proto "google.golang.org/protobuf/proto"
 )
 
-func TestValidate_McpBundleConnection(t *testing.T) {
+// TestValidate_McpBundleConnection ...
+// Summary: TestValidate_McpBundleConnection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("valid bundle connection", func(t *testing.T) {
 		cfg := configv1.McpAnyServerConfig_builder{
 			UpstreamServices: []*configv1.UpstreamServiceConfig{

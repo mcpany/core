@@ -22,7 +22,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestFrontendReactCollection(t *testing.T) {
+// TestFrontendReactCollection ...
+// Summary: TestFrontendReactCollection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1. Load config
 	fs := afero.NewOsFs()
 	configPath := filepath.Join(findWorkspaceRoot(t), "marketplace", "upstream_service_collection", "frontend_react.yaml")

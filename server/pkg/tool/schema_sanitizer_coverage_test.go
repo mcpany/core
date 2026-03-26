@@ -10,7 +10,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestSanitizeJSONSchema_CircularReference_Safe(t *testing.T) {
+// TestSanitizeJSONSchema_CircularReference_Safe ...
+// Summary: TestSanitizeJSONSchema_CircularReference_Safe
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a circular reference
 	root := make(map[string]interface{})
 	child := make(map[string]interface{})
@@ -23,7 +32,16 @@ func TestSanitizeJSONSchema_CircularReference_Safe(t *testing.T) {
 	assert.Contains(t, err.Error(), "exceeds maximum recursion depth")
 }
 
-func TestSanitizeJSONSchema_ItemsArray(t *testing.T) {
+// TestSanitizeJSONSchema_ItemsArray ...
+// Summary: TestSanitizeJSONSchema_ItemsArray
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Schema with items as an array (tuple validation)
 	input := map[string]interface{}{
 		"type": "array",
@@ -57,7 +75,16 @@ func TestSanitizeJSONSchema_ItemsArray(t *testing.T) {
 	assert.Equal(t, "string", item1["type"])
 }
 
-func TestSanitizeJSONSchema_AdditionalProperties(t *testing.T) {
+// TestSanitizeJSONSchema_AdditionalProperties ...
+// Summary: TestSanitizeJSONSchema_AdditionalProperties
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	input := map[string]interface{}{
 		"type": "object",
 		"additionalProperties": map[string]interface{}{
@@ -79,7 +106,16 @@ func TestSanitizeJSONSchema_AdditionalProperties(t *testing.T) {
 	assert.Equal(t, "object", addProps["type"])
 }
 
-func TestSanitizeJSONSchema_Combinators(t *testing.T) {
+// TestSanitizeJSONSchema_Combinators ...
+// Summary: TestSanitizeJSONSchema_Combinators
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	input := map[string]interface{}{
 		"oneOf": []interface{}{
 			map[string]interface{}{
@@ -105,7 +141,16 @@ func TestSanitizeJSONSchema_Combinators(t *testing.T) {
 	assert.Equal(t, "object", opt0["type"])
 }
 
-func TestSanitizeJSONSchema_Definitions(t *testing.T) {
+// TestSanitizeJSONSchema_Definitions ...
+// Summary: TestSanitizeJSONSchema_Definitions
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	input := map[string]interface{}{
 		"$defs": map[string]interface{}{
 			"myType": map[string]interface{}{
@@ -137,7 +182,16 @@ func TestSanitizeJSONSchema_Definitions(t *testing.T) {
 	assert.Equal(t, "object", oldType["type"])
 }
 
-func TestSanitizeJSONSchema_DeepNesting(t *testing.T) {
+// TestSanitizeJSONSchema_DeepNesting ...
+// Summary: TestSanitizeJSONSchema_DeepNesting
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Build a deeply nested object
 	root := make(map[string]interface{})
 	current := root

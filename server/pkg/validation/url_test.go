@@ -11,7 +11,16 @@ import (
 	"testing"
 )
 
-func TestIsSafeURL(t *testing.T) {
+// TestIsSafeURL ...
+// Summary: TestIsSafeURL
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Ensure the bypass env var is not set for this test
 	originalEnv := os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
 	os.Unsetenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
@@ -101,7 +110,16 @@ func TestIsSafeURL(t *testing.T) {
 	}
 }
 
-func TestValidateIP(t *testing.T) {
+// TestValidateIP ...
+// Summary: TestValidateIP
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name          string
 		ip            string

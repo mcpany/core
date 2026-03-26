@@ -16,7 +16,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestNewSafeHTTPClient(t *testing.T) {
+// TestNewSafeHTTPClient ...
+// Summary: TestNewSafeHTTPClient
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test default behavior (blocking private/loopback)
 	client := util.NewSafeHTTPClient()
 	require.NotNil(t, client)
@@ -96,7 +105,16 @@ func TestNewSafeHTTPClient(t *testing.T) {
 	})
 }
 
-func TestSafeDialContext(t *testing.T) {
+// TestSafeDialContext ...
+// Summary: TestSafeDialContext
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// SafeDialContext is just a wrapper around NewSafeDialer().DialContext
 	// We verify that it blocks loopback by default.
 
@@ -109,7 +127,16 @@ func TestSafeDialContext(t *testing.T) {
 	assert.Contains(t, err.Error(), "ssrf attempt blocked")
 }
 
-func TestCheckConnection(t *testing.T) {
+// TestCheckConnection ...
+// Summary: TestCheckConnection
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
 
 	// Start a test server

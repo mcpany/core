@@ -37,7 +37,16 @@ type mockWeatherServer struct {
 	pb.UnimplementedWeatherServiceServer
 }
 
-func (s *mockWeatherServer) GetWeather(_ context.Context, _ *pb.GetWeatherRequest) (*pb.GetWeatherResponse, error) {
+// GetWeather ...
+// Summary: GetWeather
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return pb.GetWeatherResponse_builder{Weather: "sunny"}.Build(), nil
 }
 
@@ -57,7 +66,16 @@ func startMockServer(t *testing.T) (*grpc.Server, string) {
 	return s, lis.Addr().String()
 }
 
-func TestRegistrationServer_RegisterService(t *testing.T) {
+// TestRegistrationServer_RegisterService ...
+// Summary: TestRegistrationServer_RegisterService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -313,7 +331,16 @@ paths:
 	})
 }
 
-func TestListServices(t *testing.T) {
+// TestListServices ...
+// Summary: TestListServices
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -386,7 +413,16 @@ func TestListServices(t *testing.T) {
 	})
 }
 
-func TestRegistrationServer_Unimplemented(t *testing.T) {
+// TestRegistrationServer_Unimplemented ...
+// Summary: TestRegistrationServer_Unimplemented
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
@@ -425,12 +461,30 @@ func TestRegistrationServer_Unimplemented(t *testing.T) {
 	})
 }
 
-func TestNewRegistrationServer_NilBus(t *testing.T) {
+// TestNewRegistrationServer_NilBus ...
+// Summary: TestNewRegistrationServer_NilBus
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	_, err := NewRegistrationServer(nil, nil)
 	assert.Error(t, err)
 }
 
-func TestRegistrationServer_Timeouts(t *testing.T) {
+// TestRegistrationServer_Timeouts ...
+// Summary: TestRegistrationServer_Timeouts
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Millisecond)
 	defer cancel()
 
@@ -468,7 +522,16 @@ func TestRegistrationServer_Timeouts(t *testing.T) {
 	})
 }
 
-func TestGetService(t *testing.T) {
+// TestGetService ...
+// Summary: TestGetService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 

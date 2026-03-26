@@ -18,7 +18,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestUpstreamService_MCP_Playwright_Stdio(t *testing.T) {
+// TestUpstreamService_MCP_Playwright_Stdio ...
+// Summary: TestUpstreamService_MCP_Playwright_Stdio
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Use a real (non-symlinked) temp directory for npm install so that the
 	// server's path validation (which resolves symlinks) accepts it.
 	npmDir := t.TempDir()

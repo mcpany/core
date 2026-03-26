@@ -14,7 +14,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestOIDCProvider_HandleLogin_CookieSecurity(t *testing.T) {
+// TestOIDCProvider_HandleLogin_CookieSecurity ...
+// Summary: TestOIDCProvider_HandleLogin_CookieSecurity
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup
 	config := OIDCConfig{
 		Issuer:       "https://issuer.example.com",

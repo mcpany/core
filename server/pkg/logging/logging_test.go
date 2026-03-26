@@ -16,7 +16,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGetLogger(t *testing.T) {
+// TestGetLogger ...
+// Summary: TestGetLogger
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// The ResetLoggerForTests is crucial to ensure that the global logger can be
 	// re-initialized for each test case, preventing state leakage between tests.
 	ForTestsOnlyResetLogger()
@@ -35,7 +44,16 @@ func TestGetLogger(t *testing.T) {
 	assert.Contains(t, buf.String(), "msg=\"test message\"", "Logger should write the correct message")
 }
 
-func TestGetLogger_DefaultInitialization(t *testing.T) {
+// TestGetLogger_DefaultInitialization ...
+// Summary: TestGetLogger_DefaultInitialization
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Reset the logger to simulate the initial state of the application.
 	ForTestsOnlyResetLogger()
 
@@ -58,7 +76,16 @@ func TestGetLogger_DefaultInitialization(t *testing.T) {
 	assert.Empty(t, buf.String(), "Default logger should not log DEBUG messages")
 }
 
-func TestInit_Reconfiguration(t *testing.T) {
+// TestInit_Reconfiguration ...
+// Summary: TestInit_Reconfiguration
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Reset the logger to ensure a clean state for this test.
 	ForTestsOnlyResetLogger()
 
@@ -79,7 +106,16 @@ func TestInit_Reconfiguration(t *testing.T) {
 	assert.False(t, strings.Contains(buf1.String(), "second init"), "First logger should not receive logs after re-init")
 }
 
-func TestToSlogLevel(t *testing.T) {
+// TestToSlogLevel ...
+// Summary: TestToSlogLevel
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCases := []struct {
 		name     string
 		level    configv1.GlobalSettings_LogLevel
@@ -119,7 +155,16 @@ func TestToSlogLevel(t *testing.T) {
 	}
 }
 
-func TestBroadcaster(t *testing.T) {
+// TestBroadcaster ...
+// Summary: TestBroadcaster
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	b := NewBroadcaster()
 
 	// Test Subscribe
@@ -169,7 +214,16 @@ func TestBroadcaster(t *testing.T) {
 	assert.Len(t, b.subscribers, 0)
 }
 
-func TestBroadcastHandler(t *testing.T) {
+// TestBroadcastHandler ...
+// Summary: TestBroadcastHandler
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	b := NewBroadcaster()
 	h := NewBroadcastHandler(b, slog.LevelInfo)
 
@@ -209,7 +263,16 @@ func TestBroadcastHandler(t *testing.T) {
 	assert.NotNil(t, h3)
 }
 
-func TestBroadcastHandler_Enabled(t *testing.T) {
+// TestBroadcastHandler_Enabled ...
+// Summary: TestBroadcastHandler_Enabled
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	b := NewBroadcaster()
 	h := NewBroadcastHandler(b, slog.LevelWarn)
 
@@ -232,7 +295,16 @@ func TestBroadcastHandler_Enabled(t *testing.T) {
 	assert.False(t, hGroup.Enabled(context.Background(), slog.LevelInfo))
 }
 
-func TestTeeHandler(t *testing.T) {
+// TestTeeHandler ...
+// Summary: TestTeeHandler
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Mock handlers
 	h1 := &mockHandler{}
 	h2 := &mockHandler{}
@@ -275,24 +347,69 @@ type mockHandler struct {
 	handled bool
 }
 
-func (m *mockHandler) Enabled(ctx context.Context, level slog.Level) bool {
+// Enabled ...
+// Summary: Enabled
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.enabled
 }
 
-func (m *mockHandler) Handle(ctx context.Context, r slog.Record) error {
+// Handle ...
+// Summary: Handle
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.handled = true
 	return nil
 }
 
-func (m *mockHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
+// WithAttrs ...
+// Summary: WithAttrs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m
 }
 
-func (m *mockHandler) WithGroup(name string) slog.Handler {
+// WithGroup ...
+// Summary: WithGroup
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m
 }
 
-func TestRedaction(t *testing.T) {
+// TestRedaction ...
+// Summary: TestRedaction
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCases := []struct {
 		name     string
 		format   string

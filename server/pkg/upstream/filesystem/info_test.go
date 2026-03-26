@@ -16,30 +16,67 @@ import (
 )
 
 // MockProvider implements provider.Provider for testing purposes.
-type MockProvider struct {
+// MockProvider implements provider.Provider for testing purposes.
+// Summary: MockProvider
 	fs              afero.Fs
 	resolvePathFunc func(string) (string, error)
 }
 
-func (m *MockProvider) GetFs() afero.Fs {
+// GetFs ...
+// Summary: GetFs
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.fs != nil {
 		return m.fs
 	}
 	return afero.NewMemMapFs()
 }
 
-func (m *MockProvider) ResolvePath(virtualPath string) (string, error) {
+// ResolvePath ...
+// Summary: ResolvePath
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.resolvePathFunc != nil {
 		return m.resolvePathFunc(virtualPath)
 	}
 	return virtualPath, nil
 }
 
-func (m *MockProvider) Close() error {
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func TestListDirectoryTool(t *testing.T) {
+// TestListDirectoryTool ...
+// Summary: TestListDirectoryTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 
 	t.Run("Success", func(t *testing.T) {
@@ -136,7 +173,16 @@ func TestListDirectoryTool(t *testing.T) {
 	})
 }
 
-func TestGetFileInfoTool(t *testing.T) {
+// TestGetFileInfoTool ...
+// Summary: TestGetFileInfoTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	ctx := context.Background()
 
 	t.Run("Success_File", func(t *testing.T) {

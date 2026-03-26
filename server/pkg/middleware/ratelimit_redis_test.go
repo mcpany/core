@@ -17,7 +17,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestRedisLimiter(t *testing.T) {
+// TestRedisLimiter ...
+// Summary: TestRedisLimiter
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	db, mockRedis := redismock.NewClientMock()
 	middleware.SetRedisClientCreatorForTests(func(_ *redis.Options) *redis.Client {
 		return db

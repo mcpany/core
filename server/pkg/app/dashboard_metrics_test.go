@@ -16,7 +16,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestHandleDashboardMetrics_Trends(t *testing.T) {
+// TestHandleDashboardMetrics_Trends ...
+// Summary: TestHandleDashboardMetrics_Trends
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup TopologyManager
 	tm := topology.NewManager(nil, nil)
 	defer tm.Close()

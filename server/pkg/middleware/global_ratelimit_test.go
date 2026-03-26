@@ -17,7 +17,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestGlobalRateLimitMiddleware_Allow(t *testing.T) {
+// TestGlobalRateLimitMiddleware_Allow ...
+// Summary: TestGlobalRateLimitMiddleware_Allow
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup config: 10 RPS, Burst 10
 	cfg := configv1.RateLimitConfig_builder{
 		IsEnabled:         true,
@@ -45,7 +54,16 @@ func TestGlobalRateLimitMiddleware_Allow(t *testing.T) {
 	}
 }
 
-func TestGlobalRateLimitMiddleware_Block(t *testing.T) {
+// TestGlobalRateLimitMiddleware_Block ...
+// Summary: TestGlobalRateLimitMiddleware_Block
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup config: 1 RPS, Burst 1
 	cfg := configv1.RateLimitConfig_builder{
 		IsEnabled:         true,
@@ -75,7 +93,16 @@ func TestGlobalRateLimitMiddleware_Block(t *testing.T) {
 	assert.Nil(t, res)
 }
 
-func TestGlobalRateLimitMiddleware_Disabled(t *testing.T) {
+// TestGlobalRateLimitMiddleware_Disabled ...
+// Summary: TestGlobalRateLimitMiddleware_Disabled
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cfg := configv1.RateLimitConfig_builder{
 		IsEnabled:         false,
 		RequestsPerSecond: 1,
@@ -98,7 +125,16 @@ func TestGlobalRateLimitMiddleware_Disabled(t *testing.T) {
 	}
 }
 
-func TestGlobalRateLimitMiddleware_KeyByUserID(t *testing.T) {
+// TestGlobalRateLimitMiddleware_KeyByUserID ...
+// Summary: TestGlobalRateLimitMiddleware_KeyByUserID
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cfg := configv1.RateLimitConfig_builder{
 		IsEnabled:         true,
 		RequestsPerSecond: 1,
@@ -129,7 +165,16 @@ func TestGlobalRateLimitMiddleware_KeyByUserID(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestGlobalRateLimitMiddleware_KeyByGlobal(t *testing.T) {
+// TestGlobalRateLimitMiddleware_KeyByGlobal ...
+// Summary: TestGlobalRateLimitMiddleware_KeyByGlobal
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cfg := configv1.RateLimitConfig_builder{
 		IsEnabled:         true,
 		RequestsPerSecond: 1,
@@ -151,7 +196,16 @@ func TestGlobalRateLimitMiddleware_KeyByGlobal(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestGlobalRateLimitMiddleware_UpdateConfig(t *testing.T) {
+// TestGlobalRateLimitMiddleware_UpdateConfig ...
+// Summary: TestGlobalRateLimitMiddleware_UpdateConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cfg1 := configv1.RateLimitConfig_builder{
 		IsEnabled:         true,
 		RequestsPerSecond: 1,
@@ -173,7 +227,16 @@ func TestGlobalRateLimitMiddleware_UpdateConfig(t *testing.T) {
 	assert.Equal(t, cfg2, mw.config)
 }
 
-func TestGlobalRateLimitMiddleware_CalculateConfigHash(t *testing.T) {
+// TestGlobalRateLimitMiddleware_CalculateConfigHash ...
+// Summary: TestGlobalRateLimitMiddleware_CalculateConfigHash
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mw := NewGlobalRateLimitMiddleware(nil)
 
 	bus1 := bus.RedisBus_builder{
@@ -202,7 +265,16 @@ func TestGlobalRateLimitMiddleware_CalculateConfigHash(t *testing.T) {
 	assert.NotEqual(t, hash1, hash3, "different configs should produce different hashes")
 }
 
-func TestGlobalRateLimitMiddleware_GetPartitionKey(t *testing.T) {
+// TestGlobalRateLimitMiddleware_GetPartitionKey ...
+// Summary: TestGlobalRateLimitMiddleware_GetPartitionKey
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mw := NewGlobalRateLimitMiddleware(nil)
 
 	tests := []struct {
@@ -306,7 +378,16 @@ func TestGlobalRateLimitMiddleware_GetPartitionKey(t *testing.T) {
 	}
 }
 
-func TestGlobalRateLimitMiddleware_GetRedisClient(t *testing.T) {
+// TestGlobalRateLimitMiddleware_GetRedisClient ...
+// Summary: TestGlobalRateLimitMiddleware_GetRedisClient
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mw := NewGlobalRateLimitMiddleware(nil)
 
 	bus1 := bus.RedisBus_builder{
@@ -332,7 +413,16 @@ func TestGlobalRateLimitMiddleware_GetRedisClient(t *testing.T) {
 	assert.True(t, client1 != client2, "should create new client for different config")
 }
 
-func TestGlobalRateLimitMiddleware_GetLimiter(t *testing.T) {
+// TestGlobalRateLimitMiddleware_GetLimiter ...
+// Summary: TestGlobalRateLimitMiddleware_GetLimiter
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	cfg := configv1.RateLimitConfig_builder{
 		IsEnabled:         true,
 		RequestsPerSecond: 10,

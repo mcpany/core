@@ -7,7 +7,16 @@ import (
 	"testing"
 )
 
-func TestPython2Exec(t *testing.T) {
+// TestPython2Exec ...
+// Summary: TestPython2Exec
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Vulnerability: Python 2 allowed `exec "print(1)"` without parentheses.
 	// Our fix should block `exec` followed by space or quote.
 

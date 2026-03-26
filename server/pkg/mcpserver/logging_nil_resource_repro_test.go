@@ -14,7 +14,16 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-func TestLazyLogResult_PanicRepro(t *testing.T) {
+// TestLazyLogResult_PanicRepro ...
+// Summary: TestLazyLogResult_PanicRepro
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Reset logger to capture output
 	logging.ForTestsOnlyResetLogger()
 	var logBuffer bytes.Buffer

@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestHTTPTool_PrepareInputsAndURL_Redaction(t *testing.T) {
+// TestHTTPTool_PrepareInputsAndURL_Redaction ...
+// Summary: TestHTTPTool_PrepareInputsAndURL_Redaction
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Setup
 	secretValue := "super-secret-key"
 	paramName := "apiKey"

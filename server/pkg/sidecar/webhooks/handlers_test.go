@@ -15,7 +15,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMarkdownHandler(t *testing.T) {
+// TestMarkdownHandler ...
+// Summary: TestMarkdownHandler
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name           string
 		reqBody        map[string]any
@@ -75,7 +84,16 @@ func TestMarkdownHandler(t *testing.T) {
 	}
 }
 
-func TestTruncateHandler(t *testing.T) {
+// TestTruncateHandler ...
+// Summary: TestTruncateHandler
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name           string
 		queryParams    string
@@ -135,7 +153,16 @@ func TestTruncateHandler(t *testing.T) {
 	}
 }
 
-func TestPaginateHandler(t *testing.T) {
+// TestPaginateHandler ...
+// Summary: TestPaginateHandler
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name           string
 		queryParams    string
@@ -194,7 +221,16 @@ func TestPaginateHandler(t *testing.T) {
 		})
 	}
 }
-func TestMarkdownHandler_Errors(t *testing.T) {
+// TestMarkdownHandler_Errors ...
+// Summary: TestMarkdownHandler_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	handler := &MarkdownHandler{}
 
 	t.Run("Invalid Method", func(t *testing.T) {
@@ -229,7 +265,16 @@ func TestMarkdownHandler_Errors(t *testing.T) {
 	})
 }
 
-func TestTruncateHandler_Errors(t *testing.T) {
+// TestTruncateHandler_Errors ...
+// Summary: TestTruncateHandler_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	handler := &TruncateHandler{}
 
 	t.Run("Invalid Method", func(t *testing.T) {
@@ -240,7 +285,16 @@ func TestTruncateHandler_Errors(t *testing.T) {
 	})
 }
 
-func TestPaginateHandler_Errors(t *testing.T) {
+// TestPaginateHandler_Errors ...
+// Summary: TestPaginateHandler_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	handler := &PaginateHandler{}
 
 	t.Run("Invalid Method", func(t *testing.T) {
@@ -251,7 +305,16 @@ func TestPaginateHandler_Errors(t *testing.T) {
 	})
 }
 
-func TestMarkdownHandler_Complex(t *testing.T) {
+// TestMarkdownHandler_Complex ...
+// Summary: TestMarkdownHandler_Complex
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	handler := &MarkdownHandler{}
 	complexData := map[string]any{
 		"list": []any{
@@ -299,7 +362,16 @@ func TestMarkdownHandler_Complex(t *testing.T) {
 	assert.Equal(t, "**Bold**", nested["nested"])
 }
 
-func TestTruncateHandler_InvalidParam(t *testing.T) {
+// TestTruncateHandler_InvalidParam ...
+// Summary: TestTruncateHandler_InvalidParam
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	handler := &TruncateHandler{}
 
 	event := cloudevents.NewEvent()
@@ -338,7 +410,16 @@ func TestTruncateHandler_InvalidParam(t *testing.T) {
 	assert.Equal(t, "long string here", repl["text"])
 }
 
-func TestPaginateHandler_InvalidParam(t *testing.T) {
+// TestPaginateHandler_InvalidParam ...
+// Summary: TestPaginateHandler_InvalidParam
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	handler := &PaginateHandler{}
 
 	event := cloudevents.NewEvent()
@@ -377,7 +458,16 @@ func TestPaginateHandler_InvalidParam(t *testing.T) {
 	assert.Equal(t, expected, repl["text"])
 }
 
-func TestMarkdownHandler_NonString(t *testing.T) {
+// TestMarkdownHandler_NonString ...
+// Summary: TestMarkdownHandler_NonString
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	handler := &MarkdownHandler{}
 	event := cloudevents.NewEvent()
 	event.SetID("id")
@@ -413,7 +503,16 @@ func TestMarkdownHandler_NonString(t *testing.T) {
 	assert.Equal(t, 123.0, repl["val"])
 }
 
-func TestMarkdownHandler_NoOp(t *testing.T) {
+// TestMarkdownHandler_NoOp ...
+// Summary: TestMarkdownHandler_NoOp
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	handler := &MarkdownHandler{}
 	event := cloudevents.NewEvent()
 	event.SetID("id")
@@ -449,7 +548,16 @@ func TestMarkdownHandler_NoOp(t *testing.T) {
 	assert.Nil(t, respData["replacement_object"])
 }
 
-func TestTruncateHandler_Panic(t *testing.T) {
+// TestTruncateHandler_Panic ...
+// Summary: TestTruncateHandler_Panic
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	handler := &TruncateHandler{}
 
 	event := cloudevents.NewEvent()
@@ -479,7 +587,16 @@ func TestTruncateHandler_Panic(t *testing.T) {
 	}
 }
 
-func TestTruncateHandler_UpperBound(t *testing.T) {
+// TestTruncateHandler_UpperBound ...
+// Summary: TestTruncateHandler_UpperBound
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	handler := &TruncateHandler{}
 
 	event := cloudevents.NewEvent()
@@ -501,7 +618,16 @@ func TestTruncateHandler_UpperBound(t *testing.T) {
 	// We can't easily check the internal maxChars variable, but we can assume coverage is hit if we execute this path.
 }
 
-func TestPaginateHandler_Panic(t *testing.T) {
+// TestPaginateHandler_Panic ...
+// Summary: TestPaginateHandler_Panic
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	handler := &PaginateHandler{}
 
 	event := cloudevents.NewEvent()
@@ -532,7 +658,16 @@ func TestPaginateHandler_Panic(t *testing.T) {
 	}
 }
 
-func TestPaginateHandler_UpperBound(t *testing.T) {
+// TestPaginateHandler_UpperBound ...
+// Summary: TestPaginateHandler_UpperBound
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	handler := &PaginateHandler{}
 
 	event := cloudevents.NewEvent()
@@ -553,7 +688,16 @@ func TestPaginateHandler_UpperBound(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
-func TestPaginateHandler_LargeString(t *testing.T) {
+// TestPaginateHandler_LargeString ...
+// Summary: TestPaginateHandler_LargeString
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// ⚡ BOLT: Test case to verify correctness of large string pagination.
 	handler := &PaginateHandler{}
 

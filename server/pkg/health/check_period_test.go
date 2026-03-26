@@ -13,7 +13,16 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-func TestNewChecker_WithInterval(t *testing.T) {
+// TestNewChecker_WithInterval ...
+// Summary: TestNewChecker_WithInterval
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	config := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service"),
 		HttpService: configv1.HttpUpstreamService_builder{
@@ -39,7 +48,16 @@ func TestNewChecker_WithInterval(t *testing.T) {
 	}
 }
 
-func TestNewChecker_WithoutInterval(t *testing.T) {
+// TestNewChecker_WithoutInterval ...
+// Summary: TestNewChecker_WithoutInterval
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	config := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service-no-interval"),
 		HttpService: configv1.HttpUpstreamService_builder{

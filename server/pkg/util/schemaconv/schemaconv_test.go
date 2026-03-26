@@ -20,7 +20,16 @@ type mockConfigParameter struct {
 	schema *configv1.ParameterSchema
 }
 
-func (m *mockConfigParameter) GetSchema() *configv1.ParameterSchema {
+// GetSchema ...
+// Summary: GetSchema
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.schema
 }
 
@@ -31,23 +40,68 @@ type mockMcpFieldParameter struct {
 	isRepeated  bool
 }
 
-func (m *mockMcpFieldParameter) GetName() string {
+// GetName ...
+// Summary: GetName
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.name
 }
 
-func (m *mockMcpFieldParameter) GetDescription() string {
+// GetDescription ...
+// Summary: GetDescription
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.description
 }
 
-func (m *mockMcpFieldParameter) GetType() string {
+// GetType ...
+// Summary: GetType
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.typ
 }
 
-func (m *mockMcpFieldParameter) GetIsRepeated() bool {
+// GetIsRepeated ...
+// Summary: GetIsRepeated
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.isRepeated
 }
 
-func TestMcpFieldsToProtoProperties_Repeated(t *testing.T) {
+// TestMcpFieldsToProtoProperties_Repeated ...
+// Summary: TestMcpFieldsToProtoProperties_Repeated
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	params := []*mockMcpFieldParameter{
 		{
 			name:        "repeated_string",
@@ -75,7 +129,16 @@ func TestMcpFieldsToProtoProperties_Repeated(t *testing.T) {
 	assert.Equal(t, "string", items.Fields["type"].GetStringValue())
 }
 
-func TestConfigSchemaToProtoProperties(t *testing.T) {
+// TestConfigSchemaToProtoProperties ...
+// Summary: TestConfigSchemaToProtoProperties
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	stringType := configv1.ParameterType(configv1.ParameterType_value["STRING"])
 	intType := configv1.ParameterType(configv1.ParameterType_value["INTEGER"])
 	params := []*mockConfigParameter{
@@ -103,7 +166,16 @@ func TestConfigSchemaToProtoProperties(t *testing.T) {
 	assert.Equal(t, "an int param", s2.Fields["description"].GetStringValue())
 }
 
-func TestMcpFieldsToProtoProperties(t *testing.T) {
+// TestMcpFieldsToProtoProperties ...
+// Summary: TestMcpFieldsToProtoProperties
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCases := []struct {
 		name         string
 		typ          string
@@ -158,27 +230,81 @@ type mockFieldDescriptor struct {
 	enumDesc    protoreflect.EnumDescriptor
 }
 
-func (m *mockFieldDescriptor) Kind() protoreflect.Kind {
+// Kind ...
+// Summary: Kind
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.kind
 }
 
-func (m *mockFieldDescriptor) Message() protoreflect.MessageDescriptor {
+// Message ...
+// Summary: Message
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.message
 }
 
-func (m *mockFieldDescriptor) Enum() protoreflect.EnumDescriptor {
+// Enum ...
+// Summary: Enum
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.enumDesc
 }
 
-func (m *mockFieldDescriptor) Name() protoreflect.Name {
+// Name ...
+// Summary: Name
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return protoreflect.Name(m.name)
 }
 
-func (m *mockFieldDescriptor) Cardinality() protoreflect.Cardinality {
+// Cardinality ...
+// Summary: Cardinality
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.cardinality
 }
 
-func (m *mockFieldDescriptor) IsList() bool {
+// IsList ...
+// Summary: IsList
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Maps are repeated on wire but IsList() usually returns false for maps in higher level abstractions
 	// but protoreflect says IsList() returns true if Cardinality is Repeated.
 	// HOWEVER, for Map fields, IsMap() is true, and IsList() might be false depending on implementation?
@@ -192,15 +318,42 @@ func (m *mockFieldDescriptor) IsList() bool {
 	return m.cardinality == protoreflect.Repeated
 }
 
-func (m *mockFieldDescriptor) IsMap() bool {
+// IsMap ...
+// Summary: IsMap
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.isMap
 }
 
-func (m *mockFieldDescriptor) MapKey() protoreflect.FieldDescriptor {
+// MapKey ...
+// Summary: MapKey
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.mapKey
 }
 
-func (m *mockFieldDescriptor) MapValue() protoreflect.FieldDescriptor {
+// MapValue ...
+// Summary: MapValue
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.mapValue
 }
 
@@ -210,7 +363,16 @@ type mockEnumDescriptor struct {
 	values protoreflect.EnumValueDescriptors
 }
 
-func (m *mockEnumDescriptor) Values() protoreflect.EnumValueDescriptors {
+// Values ...
+// Summary: Values
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.values
 }
 
@@ -220,11 +382,29 @@ type mockEnumValueDescriptors struct {
 	values []protoreflect.EnumValueDescriptor
 }
 
-func (m *mockEnumValueDescriptors) Len() int {
+// Len ...
+// Summary: Len
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return len(m.values)
 }
 
-func (m *mockEnumValueDescriptors) Get(i int) protoreflect.EnumValueDescriptor {
+// Get ...
+// Summary: Get
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.values[i]
 }
 
@@ -234,7 +414,16 @@ type mockEnumValueDescriptor struct {
 	name string
 }
 
-func (m *mockEnumValueDescriptor) Name() protoreflect.Name {
+// Name ...
+// Summary: Name
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return protoreflect.Name(m.name)
 }
 
@@ -244,11 +433,29 @@ type mockFieldDescriptors struct {
 	fields []protoreflect.FieldDescriptor
 }
 
-func (m *mockFieldDescriptors) Len() int {
+// Len ...
+// Summary: Len
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return len(m.fields)
 }
 
-func (m *mockFieldDescriptors) Get(i int) protoreflect.FieldDescriptor {
+// Get ...
+// Summary: Get
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.fields[i]
 }
 
@@ -258,7 +465,16 @@ type mockMessageDescriptor struct {
 	fields protoreflect.FieldDescriptors
 }
 
-func (m *mockMessageDescriptor) Fields() protoreflect.FieldDescriptors {
+// Fields ...
+// Summary: Fields
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.fields
 }
 
@@ -269,15 +485,42 @@ type mockMethodDescriptor struct {
 	output protoreflect.MessageDescriptor
 }
 
-func (m *mockMethodDescriptor) Input() protoreflect.MessageDescriptor {
+// Input ...
+// Summary: Input
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.input
 }
 
-func (m *mockMethodDescriptor) Output() protoreflect.MessageDescriptor {
+// Output ...
+// Summary: Output
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.output
 }
 
-func TestMethodDescriptorToProtoProperties(t *testing.T) {
+// TestMethodDescriptorToProtoProperties ...
+// Summary: TestMethodDescriptorToProtoProperties
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("with real proto", func(t *testing.T) {
 		fileDesc := weatherv1.File_proto_examples_weather_v1_weather_proto
 		require.NotNil(t, fileDesc)
@@ -369,7 +612,16 @@ func TestMethodDescriptorToProtoProperties(t *testing.T) {
 	})
 }
 
-func TestMethodOutputDescriptorToProtoProperties(t *testing.T) {
+// TestMethodOutputDescriptorToProtoProperties ...
+// Summary: TestMethodOutputDescriptorToProtoProperties
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("with real proto", func(t *testing.T) {
 		fileDesc := weatherv1.File_proto_examples_weather_v1_weather_proto
 		require.NotNil(t, fileDesc)
@@ -430,7 +682,16 @@ func TestMethodOutputDescriptorToProtoProperties(t *testing.T) {
 	})
 }
 
-func TestMethodDescriptorToProtoProperties_MessageKind(t *testing.T) {
+// TestMethodDescriptorToProtoProperties_MessageKind ...
+// Summary: TestMethodDescriptorToProtoProperties_MessageKind
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Nested message descriptor
 	nestedMsg := &mockMessageDescriptor{
 		fields: &mockFieldDescriptors{
@@ -473,7 +734,16 @@ func TestMethodDescriptorToProtoProperties_MessageKind(t *testing.T) {
 	assert.Contains(t, nestedProps.Fields, "nested_field")
 }
 
-func TestMethodDescriptorToProtoProperties_Enum(t *testing.T) {
+// TestMethodDescriptorToProtoProperties_Enum ...
+// Summary: TestMethodDescriptorToProtoProperties_Enum
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create an enum descriptor with values
 	enumDesc := &mockEnumDescriptor{
 		values: &mockEnumValueDescriptors{
@@ -525,7 +795,16 @@ func TestMethodDescriptorToProtoProperties_Enum(t *testing.T) {
 	assert.ElementsMatch(t, []string{"VAL_A", "VAL_B", "VAL_C"}, vals)
 }
 
-func TestMethodDescriptorToProtoProperties_Repeated(t *testing.T) {
+// TestMethodDescriptorToProtoProperties_Repeated ...
+// Summary: TestMethodDescriptorToProtoProperties_Repeated
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This test covers the missing test case due to copy-paste error in the original test file
 	mockMethod := &mockMethodDescriptor{
 		input: &mockMessageDescriptor{
@@ -556,7 +835,16 @@ func TestMethodDescriptorToProtoProperties_Repeated(t *testing.T) {
 	assert.Equal(t, "string", items.Fields["type"].GetStringValue())
 }
 
-func TestFieldsToProperties_RecursionLimit(t *testing.T) {
+// TestFieldsToProperties_RecursionLimit ...
+// Summary: TestFieldsToProperties_RecursionLimit
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a recursive message structure
 	// recursiveMsg -> field "next" (MessageKind) -> recursiveMsg
 	recursiveMsg := &mockMessageDescriptor{}
@@ -581,7 +869,16 @@ func TestFieldsToProperties_RecursionLimit(t *testing.T) {
 	assert.True(t, strings.Contains(err.Error(), "recursion depth limit reached"))
 }
 
-func TestFieldsToProperties_Map(t *testing.T) {
+// TestFieldsToProperties_Map ...
+// Summary: TestFieldsToProperties_Map
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Map field: map<string, int32> labels = 1;
 	// This should be converted to an object with additionalProperties of type integer
 
@@ -637,7 +934,16 @@ func TestFieldsToProperties_Map(t *testing.T) {
 	assert.NotContains(t, s.Fields, "properties")
 }
 
-func TestConfigSchemaToProtoProperties_DefaultValue(t *testing.T) {
+// TestConfigSchemaToProtoProperties_DefaultValue ...
+// Summary: TestConfigSchemaToProtoProperties_DefaultValue
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	stringType := configv1.ParameterType(configv1.ParameterType_value["STRING"])
 	defaultValue, err := structpb.NewValue("default-value")
 	require.NoError(t, err)
@@ -666,7 +972,16 @@ func TestConfigSchemaToProtoProperties_DefaultValue(t *testing.T) {
 	assert.Equal(t, "default-value", defVal.GetStringValue())
 }
 
-func TestConfigSchemaToProtoProperties_InvalidType(t *testing.T) {
+// TestConfigSchemaToProtoProperties_InvalidType ...
+// Summary: TestConfigSchemaToProtoProperties_InvalidType
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 999 is likely an invalid type
 	invalidType := configv1.ParameterType(999)
 	params := []*mockConfigParameter{
@@ -691,7 +1006,16 @@ func TestConfigSchemaToProtoProperties_InvalidType(t *testing.T) {
 	assert.Equal(t, "string", s.Fields["type"].GetStringValue())
 }
 
-func TestFieldsToProperties_MapRecursionLimit(t *testing.T) {
+// TestFieldsToProperties_MapRecursionLimit ...
+// Summary: TestFieldsToProperties_MapRecursionLimit
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Trigger error at line 56: fieldToSchema fails because of recursion depth in map value
 
 	// Create a recursive message structure

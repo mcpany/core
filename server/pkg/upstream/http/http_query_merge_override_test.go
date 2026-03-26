@@ -15,7 +15,16 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func TestHTTPUpstream_QueryMerge_InvalidBaseParam_Override(t *testing.T) {
+// TestHTTPUpstream_QueryMerge_InvalidBaseParam_Override ...
+// Summary: TestHTTPUpstream_QueryMerge_InvalidBaseParam_Override
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)

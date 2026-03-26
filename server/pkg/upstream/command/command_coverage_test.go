@@ -15,13 +15,31 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestUpstream_Shutdown(t *testing.T) {
+// TestUpstream_Shutdown ...
+// Summary: TestUpstream_Shutdown
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewUpstream()
 	err := u.Shutdown(context.Background())
 	assert.NoError(t, err)
 }
 
-func TestUpstream_Register_DisabledItems(t *testing.T) {
+// TestUpstream_Register_DisabledItems ...
+// Summary: TestUpstream_Register_DisabledItems
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewUpstream()
 	tm := newMockToolManager()
 	prm := prompt.NewManager()
@@ -53,7 +71,16 @@ func TestUpstream_Register_DisabledItems(t *testing.T) {
 	assert.Empty(t, rm.ListResources())
 }
 
-func TestUpstream_Register_DynamicResourceErrors(t *testing.T) {
+// TestUpstream_Register_DynamicResourceErrors ...
+// Summary: TestUpstream_Register_DynamicResourceErrors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	u := NewUpstream()
 	tm := newMockToolManager()
 	prm := prompt.NewManager()
@@ -85,6 +112,15 @@ func TestUpstream_Register_DynamicResourceErrors(t *testing.T) {
 	assert.Empty(t, rm.ListResources())
 }
 
-func TestUpstream_Register_DisabledPrompt(_ *testing.T) {
+// TestUpstream_Register_DisabledPrompt ...
+// Summary: TestUpstream_Register_DisabledPrompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Covered in DisabledItems
 }

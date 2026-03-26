@@ -9,7 +9,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestPrettyPrint_XMLRedaction(t *testing.T) {
+// TestPrettyPrint_XMLRedaction ...
+// Summary: TestPrettyPrint_XMLRedaction
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		input    string

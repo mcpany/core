@@ -19,14 +19,32 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestNewWithClient(t *testing.T) {
+// TestNewWithClient ...
+// Summary: TestNewWithClient
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	db, _ := redismock.NewClientMock()
 	b := redis.NewWithClient[any](db)
 	require.NotNil(t, b)
 }
 
-func TestBus_Close(t *testing.T) {
+// TestBus_Close ...
+// Summary: TestBus_Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 
 	t.Run("should close the client and pubsubs successfully", func(t *testing.T) {
@@ -41,7 +59,16 @@ func TestBus_Close(t *testing.T) {
 	})
 }
 
-func TestBus_Publish(t *testing.T) {
+// TestBus_Publish ...
+// Summary: TestBus_Publish
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 
 	type testCase struct {
@@ -104,7 +131,16 @@ func TestBus_Publish(t *testing.T) {
 	})
 }
 
-func TestBus_Subscribe(t *testing.T) {
+// TestBus_Subscribe ...
+// Summary: TestBus_Subscribe
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	db, _ := redismock.NewClientMock()
 	b := redis.NewWithClient[string](db)
@@ -117,7 +153,16 @@ func TestBus_Subscribe(t *testing.T) {
 	})
 }
 
-func TestBus_SubscribeOnce(t *testing.T) {
+// TestBus_SubscribeOnce ...
+// Summary: TestBus_SubscribeOnce
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	db, _ := redismock.NewClientMock()
 	b := redis.NewWithClient[string](db)
@@ -130,7 +175,16 @@ func TestBus_SubscribeOnce(t *testing.T) {
 	})
 }
 
-func TestBus_SubscribeOnce_Success(t *testing.T) {
+// TestBus_SubscribeOnce_Success ...
+// Summary: TestBus_SubscribeOnce_Success
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	client, _ := redismock.NewClientMock()
 	bus := redis.NewWithClient[string](client)
@@ -142,7 +196,16 @@ func TestBus_SubscribeOnce_Success(t *testing.T) {
 	_ = bus.SubscribeOnce(context.Background(), "test-topic", handler)
 }
 
-func TestBus_Subscribe_Miniredis(t *testing.T) {
+// TestBus_Subscribe_Miniredis ...
+// Summary: TestBus_Subscribe_Miniredis
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Start miniredis
 	mr, err := miniredis.Run()
 	require.NoError(t, err)

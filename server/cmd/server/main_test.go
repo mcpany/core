@@ -45,7 +45,16 @@ type mockRunner struct {
 	capturedShutdownTimeout  time.Duration
 }
 
-func (m *mockRunner) Run(opts app.RunOptions) error {
+// Run ...
+// Summary: Run
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.called = true
 	m.capturedStdio = opts.Stdio
 	m.capturedMcpListenAddress = opts.JSONRPCPort
@@ -55,15 +64,42 @@ func (m *mockRunner) Run(opts app.RunOptions) error {
 	return nil
 }
 
-func (m *mockRunner) ReloadConfig(_ context.Context, _ afero.Fs, _ []string) error {
+// ReloadConfig ...
+// Summary: ReloadConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *mockRunner) RunHealthServer(_ string) error {
+// RunHealthServer ...
+// Summary: RunHealthServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func TestHealthCmd(t *testing.T) {
+// TestHealthCmd ...
+// Summary: TestHealthCmd
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	viper.Reset()
 	// Start a mock HTTP server on a random port using httptest
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
@@ -83,7 +119,16 @@ func TestHealthCmd(t *testing.T) {
 	assert.NoError(t, err, "Health check should pass when server is running on custom port")
 }
 
-func TestHealthCmdWithCustomPort(t *testing.T) {
+// TestHealthCmdWithCustomPort ...
+// Summary: TestHealthCmdWithCustomPort
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	viper.Reset()
 	// Start a mock HTTP server on a random port using httptest
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
@@ -103,7 +148,16 @@ func TestHealthCmdWithCustomPort(t *testing.T) {
 	assert.NoError(t, err, "Health check should pass when server is running on custom port")
 }
 
-func TestRootCmd(t *testing.T) {
+// TestRootCmd ...
+// Summary: TestRootCmd
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	viper.Reset()
 	mock := &mockRunner{}
 	originalRunner := appRunner
@@ -140,7 +194,16 @@ func TestRootCmd(t *testing.T) {
 	assert.Equal(t, 10*time.Second, mock.capturedShutdownTimeout, "shutdown-timeout should be captured")
 }
 
-func TestVersionCmd(t *testing.T) {
+// TestVersionCmd ...
+// Summary: TestVersionCmd
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	viper.Reset()
 	originalStdout := os.Stdout
 	r, w, _ := os.Pipe()
@@ -174,7 +237,17 @@ func TestVersionCmd(t *testing.T) {
 
 // This test is for the main function, which is not easily testable.
 // We can, however, test the command execution.
-func TestMainExecution(t *testing.T) {
+// This test is for the main function, which is not easily testable.
+// Summary: TestMainExecution
+// We can, however, test the command execution.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	viper.Reset()
 	// This is a bit of a meta-test. We're just making sure that calling main()
 	// doesn't panic. We can't really inspect the output without more refactoring.
@@ -189,7 +262,16 @@ func TestMainExecution(t *testing.T) {
 	})
 }
 
-func TestHealthCmdFlagPrecedence(t *testing.T) {
+// TestHealthCmdFlagPrecedence ...
+// Summary: TestHealthCmdFlagPrecedence
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	viper.Reset()
 	// Start a mock HTTP server on a random port using httptest
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
@@ -229,7 +311,16 @@ func findFreePort(t *testing.T) int {
 	return l.Addr().(*net.TCPAddr).Port
 }
 
-func TestGracefulShutdown(t *testing.T) {
+// TestGracefulShutdown ...
+// Summary: TestGracefulShutdown
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if os.Getenv("GO_TEST_GRACEFUL_SHUTDOWN") == "1" {
 		// Create a temporary log file to capture output and find the port
 		logFile, err := os.CreateTemp("", "mcpany-shutdown-test-*.log")
@@ -349,7 +440,16 @@ func TestGracefulShutdown(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestConfigValidateCmd(t *testing.T) {
+// TestConfigValidateCmd ...
+// Summary: TestConfigValidateCmd
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	viper.Reset()
 	port := findFreePort(t)
 	// Create a temporary valid config file
@@ -453,7 +553,16 @@ upstream_services:
 	}
 }
 
-func TestConfigGenerateCmd(t *testing.T) {
+// TestConfigGenerateCmd ...
+// Summary: TestConfigGenerateCmd
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	viper.Reset()
 	originalStdout := os.Stdout
 	originalStdin := os.Stdin
@@ -510,7 +619,16 @@ func TestConfigGenerateCmd(t *testing.T) {
 	assert.Contains(t, output, "name: \"my-service\"")
 }
 
-func TestDocCmd(t *testing.T) {
+// TestDocCmd ...
+// Summary: TestDocCmd
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	viper.Reset()
 	// Create a temporary valid config file
 	// Create a temporary valid config file
@@ -564,7 +682,16 @@ upstream_services:
 	assert.Contains(t, output, "my-service.my-tool")
 }
 
-func TestUpdateCmd(t *testing.T) {
+// TestUpdateCmd ...
+// Summary: TestUpdateCmd
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	viper.Reset()
 	// Mock GitHub API
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -605,7 +732,16 @@ func TestUpdateCmd(t *testing.T) {
 	assert.Contains(t, string(out), "You are already running the latest version.")
 }
 
-func TestConfigSchemaCmd(t *testing.T) {
+// TestConfigSchemaCmd ...
+// Summary: TestConfigSchemaCmd
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	viper.Reset()
 
 	rootCmd := newRootCmd()
@@ -622,7 +758,16 @@ func TestConfigSchemaCmd(t *testing.T) {
 	assert.Contains(t, output, "mcpany.config.v1.McpAnyServerConfig")
 }
 
-func TestConfigCheckCmd(t *testing.T) {
+// TestConfigCheckCmd ...
+// Summary: TestConfigCheckCmd
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	viper.Reset()
 	// Create a temporary valid config file
 	validConfigFile, err := os.CreateTemp("", "valid-config-*.yaml")

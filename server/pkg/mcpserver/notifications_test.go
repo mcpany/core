@@ -23,7 +23,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestResourceListNotification(t *testing.T) {
+// TestResourceListNotification ...
+// Summary: TestResourceListNotification
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()

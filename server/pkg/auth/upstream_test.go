@@ -17,7 +17,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestNewUpstreamAuthenticator(t *testing.T) {
+// TestNewUpstreamAuthenticator ...
+// Summary: TestNewUpstreamAuthenticator
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Run("NilConfig", func(t *testing.T) {
 		auth, err := NewUpstreamAuthenticator(nil)
 		assert.NoError(t, err)
@@ -236,7 +245,16 @@ func TestNewUpstreamAuthenticator(t *testing.T) {
 	})
 }
 
-func TestAPIKeyAuth_Authenticate(t *testing.T) {
+// TestAPIKeyAuth_Authenticate ...
+// Summary: TestAPIKeyAuth_Authenticate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	secret := configv1.SecretValue_builder{
 		PlainText: proto.String("secret-key"),
 	}.Build()
@@ -279,7 +297,16 @@ func TestAPIKeyAuth_Authenticate(t *testing.T) {
 	})
 }
 
-func TestBearerTokenAuth_Authenticate(t *testing.T) {
+// TestBearerTokenAuth_Authenticate ...
+// Summary: TestBearerTokenAuth_Authenticate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	secret := configv1.SecretValue_builder{
 		PlainText: proto.String("secret-token"),
 	}.Build()
@@ -292,7 +319,16 @@ func TestBearerTokenAuth_Authenticate(t *testing.T) {
 	assert.Equal(t, "Bearer secret-token", req.Header.Get("Authorization"))
 }
 
-func TestBasicAuth_Authenticate(t *testing.T) {
+// TestBasicAuth_Authenticate ...
+// Summary: TestBasicAuth_Authenticate
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	secret := configv1.SecretValue_builder{
 		PlainText: proto.String("testpassword"),
 	}.Build()
@@ -309,7 +345,16 @@ func TestBasicAuth_Authenticate(t *testing.T) {
 	assert.Equal(t, "testpassword", pass)
 }
 
-func TestAPIKeyAuth_Authenticate_Error(t *testing.T) {
+// TestAPIKeyAuth_Authenticate_Error ...
+// Summary: TestAPIKeyAuth_Authenticate_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	auth := &APIKeyAuth{
 		ParamName: "X-Custom-Auth",
 		Value:     nil,
@@ -319,7 +364,16 @@ func TestAPIKeyAuth_Authenticate_Error(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestBearerTokenAuth_Authenticate_Error(t *testing.T) {
+// TestBearerTokenAuth_Authenticate_Error ...
+// Summary: TestBearerTokenAuth_Authenticate_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	auth := &BearerTokenAuth{
 		Token: nil,
 	}
@@ -328,7 +382,16 @@ func TestBearerTokenAuth_Authenticate_Error(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestBasicAuth_Authenticate_Error(t *testing.T) {
+// TestBasicAuth_Authenticate_Error ...
+// Summary: TestBasicAuth_Authenticate_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	auth := &BasicAuth{
 		Username: "testuser",
 		Password: nil,
@@ -338,7 +401,16 @@ func TestBasicAuth_Authenticate_Error(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestOAuth2Auth_Authenticate_Errors(t *testing.T) {
+// TestOAuth2Auth_Authenticate_Errors ...
+// Summary: TestOAuth2Auth_Authenticate_Errors
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	clientID := configv1.SecretValue_builder{
 		PlainText: proto.String("id"),
 	}.Build()

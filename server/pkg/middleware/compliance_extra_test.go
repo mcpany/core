@@ -12,7 +12,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestJSONRPCComplianceMiddleware_LargeResponse(t *testing.T) {
+// TestJSONRPCComplianceMiddleware_LargeResponse ...
+// Summary: TestJSONRPCComplianceMiddleware_LargeResponse
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a large response > 32KB
 	largeData := strings.Repeat("a", maxErrorBufferSize+100)
 
@@ -37,7 +46,16 @@ func TestJSONRPCComplianceMiddleware_LargeResponse(t *testing.T) {
 	assert.NotContains(t, res.Header.Get("Content-Type"), "application/json")
 }
 
-func TestJSONRPCComplianceMiddleware_Flush(t *testing.T) {
+// TestJSONRPCComplianceMiddleware_Flush ...
+// Summary: TestJSONRPCComplianceMiddleware_Flush
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	handler := func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("part1"))
@@ -65,11 +83,29 @@ type mockFlusherResponseWriter struct {
 	flushed bool
 }
 
-func (m *mockFlusherResponseWriter) Flush() {
+// Flush ...
+// Summary: Flush
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	m.flushed = true
 }
 
-func TestJSONRPCComplianceMiddleware_Flush_PassThrough(t *testing.T) {
+// TestJSONRPCComplianceMiddleware_Flush_PassThrough ...
+// Summary: TestJSONRPCComplianceMiddleware_Flush_PassThrough
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	rec := httptest.NewRecorder()
 	mockWriter := &mockFlusherResponseWriter{ResponseWriter: rec}
 

@@ -10,26 +10,55 @@ import (
 )
 
 // MockSafeDialerResolver implements IPResolver
-type MockSafeDialerResolver struct {
+// MockSafeDialerResolver implements IPResolver
+// Summary: MockSafeDialerResolver
 	ips []net.IP
 	err error
 }
 
-func (m *MockSafeDialerResolver) LookupIP(ctx context.Context, network, host string) ([]net.IP, error) {
+// LookupIP ...
+// Summary: LookupIP
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.ips, m.err
 }
 
 // MockSafeDialerDialer implements NetDialer
-type MockSafeDialerDialer struct {
+// MockSafeDialerDialer implements NetDialer
+// Summary: MockSafeDialerDialer
 	conn net.Conn
 	err  error
 }
 
-func (m *MockSafeDialerDialer) DialContext(ctx context.Context, network, address string) (net.Conn, error) {
+// DialContext ...
+// Summary: DialContext
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.conn, m.err
 }
 
-func TestSafeDialer_UnspecifiedAddress_Bypass(t *testing.T) {
+// TestSafeDialer_UnspecifiedAddress_Bypass ...
+// Summary: TestSafeDialer_UnspecifiedAddress_Bypass
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Scenario: AllowPrivate=true, AllowLoopback=false.
 	// Dialing 0.0.0.0 (Unspecified) should be blocked because it resolves to localhost.
 
@@ -56,7 +85,16 @@ func TestSafeDialer_UnspecifiedAddress_Bypass(t *testing.T) {
 	}
 }
 
-func TestSafeDialer_UnspecifiedAddress_Allowed(t *testing.T) {
+// TestSafeDialer_UnspecifiedAddress_Allowed ...
+// Summary: TestSafeDialer_UnspecifiedAddress_Allowed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Scenario: AllowPrivate=true, AllowLoopback=true.
 	// Dialing 0.0.0.0 should be allowed.
 
@@ -80,7 +118,16 @@ func TestSafeDialer_UnspecifiedAddress_Allowed(t *testing.T) {
 	}
 }
 
-func TestSafeDialer_UnspecifiedIPv6_Bypass(t *testing.T) {
+// TestSafeDialer_UnspecifiedIPv6_Bypass ...
+// Summary: TestSafeDialer_UnspecifiedIPv6_Bypass
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Scenario: AllowPrivate=true, AllowLoopback=false.
 	// Dialing :: (Unspecified IPv6) should be blocked.
 

@@ -18,7 +18,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func BenchmarkHTTPToolExecute_LoggingOverhead(b *testing.B) {
+// BenchmarkHTTPToolExecute_LoggingOverhead ...
+// Summary: BenchmarkHTTPToolExecute_LoggingOverhead
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This benchmark measures the overhead of logging when debug is disabled.
 	// Reset logger and set to INFO to disable DEBUG logs
 	logging.ForTestsOnlyResetLogger()

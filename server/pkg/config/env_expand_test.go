@@ -12,7 +12,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMissingEnvVar(t *testing.T) {
+// TestMissingEnvVar ...
+// Summary: TestMissingEnvVar
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a mock filesystem
 	fs := afero.NewMemMapFs()
 	configContent := `
@@ -41,7 +50,16 @@ upstream_services:
 	}
 }
 
-func TestMissingEnvVar_Ignored(t *testing.T) {
+// TestMissingEnvVar_Ignored ...
+// Summary: TestMissingEnvVar_Ignored
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Create a mock filesystem
 	fs := afero.NewMemMapFs()
 	configContent := `

@@ -15,7 +15,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestUpstreamService_OpenAPI_WithAPIKeyAuth(t *testing.T) {
+// TestUpstreamService_OpenAPI_WithAPIKeyAuth ...
+// Summary: TestUpstreamService_OpenAPI_WithAPIKeyAuth
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	testCase := &framework.E2ETestCase{
 		Name:                "Authenticated OpenAPI Echo Server",
 		UpstreamServiceType: "openapi",

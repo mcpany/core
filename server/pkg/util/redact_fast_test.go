@@ -10,7 +10,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRedactJSONFast(t *testing.T) {
+// TestRedactJSONFast ...
+// Summary: TestRedactJSONFast
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		input    string
@@ -258,7 +267,16 @@ func TestRedactJSONFast(t *testing.T) {
 }
 
 // TestUnescapeKeySmall tests the internal unescapeKeySmall function
-func TestUnescapeKeySmall(t *testing.T) {
+// TestUnescapeKeySmall tests the internal unescapeKeySmall function
+// Summary: TestUnescapeKeySmall
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// This requires a buffer
 	buf := make([]byte, 1024)
 
@@ -302,7 +320,16 @@ func TestUnescapeKeySmall(t *testing.T) {
 	}
 }
 
-func TestSkipJSONValue(t *testing.T) {
+// TestSkipJSONValue ...
+// Summary: TestSkipJSONValue
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	tests := []struct {
 		name     string
 		input    string
@@ -332,7 +359,16 @@ func TestSkipJSONValue(t *testing.T) {
 	}
 }
 
-func TestRedactFastLimits(t *testing.T) {
+// TestRedactFastLimits ...
+// Summary: TestRedactFastLimits
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test large key exceeding stack limit but handled by unescape
 	// unescapeStackLimit is 256
 

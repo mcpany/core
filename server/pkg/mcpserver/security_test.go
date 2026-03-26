@@ -29,7 +29,16 @@ type mockSecurityToolManager struct {
 	tool.Manager
 }
 
-func (m *mockSecurityToolManager) IsServiceAllowed(serviceID, profileID string) bool {
+// IsServiceAllowed ...
+// Summary: IsServiceAllowed
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if serviceID == "restricted-service" && profileID == "restricted-user" {
 		return false
 	}
@@ -37,37 +46,145 @@ func (m *mockSecurityToolManager) IsServiceAllowed(serviceID, profileID string) 
 }
 
 // Stubs for other methods
-func (m *mockSecurityToolManager) AddTool(_ tool.Tool) error             { return nil }
-func (m *mockSecurityToolManager) ListTools() []tool.Tool                { return nil }
-func (m *mockSecurityToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
-func (m *mockSecurityToolManager) GetTool(_ string) (tool.Tool, bool)    { return nil, false }
-func (m *mockSecurityToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) {
+// Stubs for other methods
+// Summary: AddTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ListTools ...
+// Summary: ListTools
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// SetMCPServer ...
+// Summary: SetMCPServer
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// GetTool ...
+// Summary: GetTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// GetServiceInfo ...
+// Summary: GetServiceInfo
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, false
 }
-func (m *mockSecurityToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+// ExecuteTool ...
+// Summary: ExecuteTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil, nil
 }
-func (m *mockSecurityToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {}
-func (m *mockSecurityToolManager) ClearToolsForService(_ string)            {}
+// AddMiddleware ...
+// Summary: AddMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
+// ClearToolsForService ...
+// Summary: ClearToolsForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 
 type mockSecurityPrompt struct {
 	p         *mcp.Prompt
 	serviceID string
 }
 
-func (m *mockSecurityPrompt) Prompt() *mcp.Prompt {
+// Prompt ...
+// Summary: Prompt
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.p
 }
 
-func (m *mockSecurityPrompt) Service() string {
+// Service ...
+// Summary: Service
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.serviceID
 }
 
-func (m *mockSecurityPrompt) Definition() *configv1.PromptDefinition {
+// Definition ...
+// Summary: Definition
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *mockSecurityPrompt) Get(_ context.Context, _ json.RawMessage) (*mcp.GetPromptResult, error) {
+// Get ...
+// Summary: Get
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return &mcp.GetPromptResult{}, nil
 }
 
@@ -76,15 +193,42 @@ type mockSecurityResource struct {
 	serviceID string
 }
 
-func (m *mockSecurityResource) Resource() *mcp.Resource {
+// Resource ...
+// Summary: Resource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.r
 }
 
-func (m *mockSecurityResource) Service() string {
+// Service ...
+// Summary: Service
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.serviceID
 }
 
-func (m *mockSecurityResource) Read(_ context.Context) (*mcp.ReadResourceResult, error) {
+// Read ...
+// Summary: Read
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return &mcp.ReadResourceResult{
 		Contents: []*mcp.ResourceContents{
 			{
@@ -95,11 +239,29 @@ func (m *mockSecurityResource) Read(_ context.Context) (*mcp.ReadResourceResult,
 	}, nil
 }
 
-func (m *mockSecurityResource) Subscribe(_ context.Context) error {
+// Subscribe ...
+// Summary: Subscribe
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func TestAuthorizationBypass(t *testing.T) {
+// TestAuthorizationBypass ...
+// Summary: TestAuthorizationBypass
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()

@@ -20,30 +20,84 @@ type mockResource struct {
 	subscribeErr error
 }
 
-func (r *mockResource) Resource() *mcp.Resource {
+// Resource ...
+// Summary: Resource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return &mcp.Resource{URI: r.uri}
 }
 
-func (r *mockResource) Service() string {
+// Service ...
+// Summary: Service
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return r.service
 }
 
-func (r *mockResource) Read(_ context.Context) (*mcp.ReadResourceResult, error) {
+// Read ...
+// Summary: Read
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return &mcp.ReadResourceResult{}, nil
 }
 
-func (r *mockResource) Subscribe(_ context.Context) error {
+// Subscribe ...
+// Summary: Subscribe
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return r.subscribeErr
 }
 
-func TestNewResourceManager(t *testing.T) {
+// TestNewResourceManager ...
+// Summary: TestNewResourceManager
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	rm := NewManager()
 	assert.NotNil(t, rm)
 	assert.NotNil(t, rm.resources)
 }
 
-func TestResourceManager_AddGetListRemoveResource(t *testing.T) {
+// TestResourceManager_AddGetListRemoveResource ...
+// Summary: TestResourceManager_AddGetListRemoveResource
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	rm := NewManager()
 	resource1 := &mockResource{uri: "resource://one", service: "service1"}
@@ -82,7 +136,16 @@ func TestResourceManager_AddGetListRemoveResource(t *testing.T) {
 	assert.Len(t, rm.ListResources(), 1)
 }
 
-func TestResourceManager_OnListChanged(t *testing.T) {
+// TestResourceManager_OnListChanged ...
+// Summary: TestResourceManager_OnListChanged
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	rm := NewManager()
 	var changedCount int
@@ -103,7 +166,16 @@ func TestResourceManager_OnListChanged(t *testing.T) {
 	assert.Equal(t, 2, changedCount, "OnListChanged should not be called for non-existent resource removal")
 }
 
-func TestResourceManager_Subscribe(t *testing.T) {
+// TestResourceManager_Subscribe ...
+// Summary: TestResourceManager_Subscribe
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	rm := NewManager()
 
@@ -130,7 +202,16 @@ func TestResourceManager_Subscribe(t *testing.T) {
 	})
 }
 
-func TestResourceManager_ClearResourcesForService(t *testing.T) {
+// TestResourceManager_ClearResourcesForService ...
+// Summary: TestResourceManager_ClearResourcesForService
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	rm := NewManager()
 

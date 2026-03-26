@@ -11,7 +11,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDynamicLevel(t *testing.T) {
+// TestDynamicLevel ...
+// Summary: TestDynamicLevel
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Reset global state for test
 	ForTestsOnlyResetLogger()
 

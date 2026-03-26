@@ -20,12 +20,22 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-type MockAuditStore struct {
+// MockAuditStore ...
+// Summary: MockAuditStore
 	Entries []audit.Entry
 	Err     error
 }
 
-func (m *MockAuditStore) Write(ctx context.Context, entry audit.Entry) error {
+// Write ...
+// Summary: Write
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.Err != nil {
 		return m.Err
 	}
@@ -33,18 +43,45 @@ func (m *MockAuditStore) Write(ctx context.Context, entry audit.Entry) error {
 	return nil
 }
 
-func (m *MockAuditStore) Read(ctx context.Context, filter audit.Filter) ([]audit.Entry, error) {
+// Read ...
+// Summary: Read
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	if m.Err != nil {
 		return nil, m.Err
 	}
 	return m.Entries, nil
 }
 
-func (m *MockAuditStore) Close() error {
+// Close ...
+// Summary: Close
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func TestNewAuditMiddleware(t *testing.T) {
+// TestNewAuditMiddleware ...
+// Summary: TestNewAuditMiddleware
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Test disabled
 	cfg := configv1.AuditConfig_builder{Enabled: proto.Bool(false)}.Build()
 	mw, err := NewAuditMiddleware(cfg)
@@ -72,7 +109,16 @@ func TestNewAuditMiddleware(t *testing.T) {
 	defer mw.Close()
 }
 
-func TestAuditMiddleware_Execute(t *testing.T) {
+// TestAuditMiddleware_Execute ...
+// Summary: TestAuditMiddleware_Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockStore := &MockAuditStore{}
 	cfg := configv1.AuditConfig_builder{
 		Enabled:      proto.Bool(true),
@@ -104,7 +150,16 @@ func TestAuditMiddleware_Execute(t *testing.T) {
 	assert.Equal(t, "success", entry.Result)
 }
 
-func TestAuditMiddleware_Execute_Disabled(t *testing.T) {
+// TestAuditMiddleware_Execute_Disabled ...
+// Summary: TestAuditMiddleware_Execute_Disabled
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockStore := &MockAuditStore{}
 	cfg := configv1.AuditConfig_builder{Enabled: proto.Bool(false)}.Build()
 	mw, err := NewAuditMiddleware(cfg)
@@ -124,7 +179,16 @@ func TestAuditMiddleware_Execute_Disabled(t *testing.T) {
 	assert.Empty(t, mockStore.Entries)
 }
 
-func TestAuditMiddleware_Execute_Error(t *testing.T) {
+// TestAuditMiddleware_Execute_Error ...
+// Summary: TestAuditMiddleware_Execute_Error
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockStore := &MockAuditStore{}
 	cfg := configv1.AuditConfig_builder{Enabled: proto.Bool(true)}.Build()
 	mw, err := NewAuditMiddleware(cfg)
@@ -146,7 +210,16 @@ func TestAuditMiddleware_Execute_Error(t *testing.T) {
 	assert.Equal(t, "execution failed", mockStore.Entries[0].Error)
 }
 
-func TestAuditMiddleware_Execute_Redaction(t *testing.T) {
+// TestAuditMiddleware_Execute_Redaction ...
+// Summary: TestAuditMiddleware_Execute_Redaction
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockStore := &MockAuditStore{}
 	cfg := configv1.AuditConfig_builder{
 		Enabled:      proto.Bool(true),
@@ -191,7 +264,16 @@ func TestAuditMiddleware_Execute_Redaction(t *testing.T) {
 	assert.NotNil(t, entry.Result)
 }
 
-func TestAuditMiddleware_UpdateConfig(t *testing.T) {
+// TestAuditMiddleware_UpdateConfig ...
+// Summary: TestAuditMiddleware_UpdateConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockStore := &MockAuditStore{}
 	cfg := configv1.AuditConfig_builder{Enabled: proto.Bool(true)}.Build()
 	mw, err := NewAuditMiddleware(cfg)
@@ -227,7 +309,16 @@ func TestAuditMiddleware_UpdateConfig(t *testing.T) {
 	assert.Len(t, mockStore.Entries, 1)
 }
 
-func TestAuditMiddleware_Read(t *testing.T) {
+// TestAuditMiddleware_Read ...
+// Summary: TestAuditMiddleware_Read
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockStore := &MockAuditStore{
 		Entries: []audit.Entry{
 			{ToolName: "t1", Timestamp: time.Now()},
@@ -244,7 +335,16 @@ func TestAuditMiddleware_Read(t *testing.T) {
 	assert.Equal(t, "t1", entries[0].ToolName)
 }
 
-func TestAuditMiddleware_WriteError(t *testing.T) {
+// TestAuditMiddleware_WriteError ...
+// Summary: TestAuditMiddleware_WriteError
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	mockStore := &MockAuditStore{
 		Err: errors.New("write error"),
 	}

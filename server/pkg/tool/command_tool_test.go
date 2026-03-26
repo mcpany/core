@@ -68,7 +68,16 @@ func newJSONCommandTool(command string, callDef *configv1.CommandLineCallDefinit
 	)
 }
 
-func TestCommandTool_Execute(t *testing.T) {
+// TestCommandTool_Execute ...
+// Summary: TestCommandTool_Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 
 	t.Run("successful execution", func(t *testing.T) {
@@ -268,7 +277,16 @@ func bazelJSonechoBinary(t *testing.T) string {
 	return ""
 }
 
-func TestCommandTool_GetCacheConfig(t *testing.T) {
+// TestCommandTool_GetCacheConfig ...
+// Summary: TestCommandTool_GetCacheConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	cacheConfig := configv1.CacheConfig_builder{}.Build()
 	callDef := configv1.CommandLineCallDefinition_builder{}.Build()
@@ -277,7 +295,16 @@ func TestCommandTool_GetCacheConfig(t *testing.T) {
 	assert.Equal(t, cacheConfig, cmdTool.GetCacheConfig())
 }
 
-func TestCommandTool_Tool(t *testing.T) {
+// TestCommandTool_Tool ...
+// Summary: TestCommandTool_Tool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Parallel()
 	toolProto := v1.Tool_builder{
 		Name: proto.String("test-tool"),

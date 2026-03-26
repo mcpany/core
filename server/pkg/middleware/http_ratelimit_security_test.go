@@ -11,7 +11,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestHTTPRateLimitMiddleware_Security_Bypass(t *testing.T) {
+// TestHTTPRateLimitMiddleware_Security_Bypass ...
+// Summary: TestHTTPRateLimitMiddleware_Security_Bypass
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// 1 RPS, burst 1, Trust Proxy Enabled
 	limiter := NewHTTPRateLimitMiddleware(1, 1, WithTrustProxy(true))
 	handler := limiter.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

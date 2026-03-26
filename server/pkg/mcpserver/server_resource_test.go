@@ -36,7 +36,16 @@ type mockResourceTool struct {
 	result map[string]any
 }
 
-func (m *mockResourceTool) Tool() *v1.Tool {
+// Tool ...
+// Summary: Tool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return v1.Tool_builder{
 		Name:      proto.String(m.name),
 		ServiceId: proto.String("test-service"),
@@ -51,20 +60,56 @@ func (m *mockResourceTool) Tool() *v1.Tool {
 	}.Build()
 }
 
-func (m *mockResourceTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+// Execute ...
+// Summary: Execute
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return m.result, nil
 }
 
-func (m *mockResourceTool) GetCacheConfig() *configv1.CacheConfig {
+// GetCacheConfig ...
+// Summary: GetCacheConfig
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	return nil
 }
 
-func (m *mockResourceTool) MCPTool() *mcp.Tool {
+// MCPTool ...
+// Summary: MCPTool
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t, _ := tool.ConvertProtoToMCPTool(m.Tool())
 	return t
 }
 
-func TestServer_CallTool_ResourceResult(t *testing.T) {
+// TestServer_CallTool_ResourceResult ...
+// Summary: TestServer_CallTool_ResourceResult
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	t.Log("Starting TestServer_CallTool_ResourceResult")
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager, nil)
@@ -276,7 +321,16 @@ func TestServer_CallTool_ResourceResult(t *testing.T) {
 	})
 }
 
-func TestServer_CallTool_Logging(t *testing.T) {
+// TestServer_CallTool_Logging ...
+// Summary: TestServer_CallTool_Logging
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 	// Reset logger to capture output
 	logging.ForTestsOnlyResetLogger()
 	var buf bytes.Buffer
