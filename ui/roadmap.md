@@ -2,19 +2,12 @@
 
 ## Status: Active Development
 
-#### Upcoming (2026-05-30 Evolution) [2026-05-30]
+### Upcoming (2026-05-30 Evolution) [2026-05-30]
 
 - [ ] **[P0] Intent Hierarchy Inspector**: Visual debugger for verifying
-  state fragment priorities and lineage-based shadowing alerts. (Added:
-  2026-05-30)
+  state fragment priorities. (Added: 2026-05-30)
 - [ ] **[P0] KNS Isolation Monitor**: Real-time status indicator for
-  micro-VM sandboxed tool executions and PoI headers. (Added: 2026-05-30)
-- [ ] **[P0] Mission Anchor Manager**: UI for defining and pinning
-  immutable mission-root constraints across teammate teams. (Added:
-  2026-05-30)
-- [ ] **[P1] ZK-Capability Discovery Viewer**: Security dashboard for
-  reviewing hardware-attested, masked agent capabilities (ZKCD). (Added:
-  2026-05-30)
+  micro-VM sandboxed tool executions. (Added: 2026-05-30)
 
 
 ### Universal Agent Bus (New Strategic Priorities)

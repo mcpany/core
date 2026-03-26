@@ -53,6 +53,3 @@ attack vector in subagent swarms.
 
 **Architecture Adjustment:** CSAD will now verify tool call semantics against
 the authoritative Intent Hierarchy before behavioral scoring.
-
-**Security Impact:** Prevents "low-and-slow" semantic probes from hijacking the
-mission root.
