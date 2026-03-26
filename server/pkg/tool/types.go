@@ -1845,8 +1845,8 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	for paramName, paramValue := range inputs {
 		if t.parameterDefs[paramName] == "path" {
 			valStr := util.ToString(paramValue)
-			if strings.Contains(valStr, "../") || strings.Contains(valStr, "..\\") {
-				return nil, fmt.Errorf("path traversal attempt detected in parameter %q", paramName)
+			if err := checkForPathTraversal(valStr); err != nil {
+				return nil, fmt.Errorf("path traversal attempt detected in parameter %q: %w", paramName, err)
 			}
 			reqURL = strings.ReplaceAll(reqURL, "{{"+paramName+"}}", url.PathEscape(valStr))
 			delete(inputs, paramName)
