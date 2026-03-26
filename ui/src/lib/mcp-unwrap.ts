@@ -78,21 +78,22 @@ export function unwrapMcpResult(result: any): any {
 export function deepParseJson(obj: any): any {
     if (typeof obj === 'string') {
         try {
-            const parsed = JSON.parse(obj);
+            // Use a while loop to handle arbitrarily deep stringified JSON payloads
+            let current = obj;
+            let parsed = JSON.parse(current);
+
+            while (typeof parsed === 'string' && parsed !== current) {
+                try {
+                    const innerParsed = JSON.parse(parsed);
+                    current = parsed;
+                    parsed = innerParsed;
+                } catch {
+                    break;
+                }
+            }
+
             if (typeof parsed === 'object' && parsed !== null) {
                 return deepParseJson(parsed);
-            }
-            // Only recurse for strings if the parsed string is still valid JSON
-            // and it is different from the original string.
-            // But if it's a primitive string (e.g. "just a string"), we shouldn't return parsed,
-            // we should return obj to match previous behavior unless it's double escaped JSON.
-            if (typeof parsed === 'string' && parsed !== obj) {
-                 try {
-                     const innerParsed = JSON.parse(parsed);
-                     if (typeof innerParsed === 'object' && innerParsed !== null) {
-                          return deepParseJson(parsed);
-                     }
-                 } catch (_e) {}
             }
         } catch (_e) {
             // Not a JSON string
