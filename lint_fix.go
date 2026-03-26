@@ -2,36 +2,40 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
-	"strings"
+	"go/ast"
+	"go/parser"
+	"go/token"
 )
 
 func main() {
-    b, err := ioutil.ReadFile("server/pkg/app/api.go")
-    if err != nil {
-        panic(err)
-    }
-    content := string(b)
+	fset := token.NewFileSet()
+	f, err := parser.ParseFile(fset, "server/pkg/app/api.go", nil, parser.ParseComments)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
-    // Add nolint annotations
-    lines := strings.Split(content, "\n")
-    for i, line := range lines {
-        if strings.Contains(line, "_, _ = w.Write") {
-            if !strings.Contains(line, "//nolint:errcheck") {
-                lines[i] = line + " //nolint:errcheck"
-            }
+    ast.Inspect(f, func(n ast.Node) bool {
+        if funcDecl, ok := n.(*ast.FuncDecl); ok && funcDecl.Name.Name == "handleTools" {
+            ast.Inspect(funcDecl.Body, func(n ast.Node) bool {
+                if assign, ok := n.(*ast.AssignStmt); ok {
+                    if len(assign.Lhs) == 2 {
+                        for _, lhs := range assign.Lhs {
+                            if ident, ok := lhs.(*ast.Ident); ok {
+                                if ident.Name == "_" {
+                                    if call, ok := assign.Rhs[0].(*ast.CallExpr); ok {
+                                        if sel, ok := call.Fun.(*ast.SelectorExpr); ok {
+                                            fmt.Printf("Ignoring return value of %s at %s\n", sel.Sel.Name, fset.Position(assign.Pos()))
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                return true
+            })
         }
-        if strings.Contains(line, "_ = json.NewEncoder(w).Encode") {
-            if !strings.Contains(line, "//nolint:errcheck") {
-                lines[i] = line + " //nolint:errcheck"
-            }
-        }
-    }
-
-    content = strings.Join(lines, "\n")
-    err = ioutil.WriteFile("server/pkg/app/api.go", []byte(content), 0644)
-    if err != nil {
-        panic(err)
-    }
-    fmt.Println("Done replacing.")
+        return true
+    })
 }
