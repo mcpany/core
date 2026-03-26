@@ -195,7 +195,7 @@ export function RequestPreview({ call, tool, serviceName, onExecute, executionRe
                     </div>
                     <div className="flex-1 overflow-auto p-0">
                         {executionResult ? (
-                            <JsonView data={executionResult} smartTable={true} className="border-0 bg-transparent" />
+                            <JsonView data={executionResult} className="border-0 bg-transparent" />
                         ) : (
                             <div className="h-full flex items-center justify-center text-muted-foreground text-xs italic p-4 text-center">
                                 {isExecuting ? "Executing..." : "Run the tool to see results here."}

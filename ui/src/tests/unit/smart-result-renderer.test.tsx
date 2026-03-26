@@ -28,7 +28,7 @@ describe('SmartResultRenderer', () => {
         fireEvent.click(jsonButton);
 
         // Table header should disappear (queryByText returns null if not found)
-        expect(screen.queryAllByRole('columnheader', { name: 'id' }).length).toBe(0);
+        expect(screen.queryByText('id')).toBeNull();
 
         // Switch back to Table
         fireEvent.click(tableButton);

@@ -60,7 +60,7 @@ export function VariableInspector({ selectedNode, onClose }: VariableInspectorPr
 
             <div>
                 <h4 className="text-xs font-semibold mb-2 text-muted-foreground">Data (Variables)</h4>
-                <JsonView data={selectedNode.data} smartTable={true} />
+                <JsonView data={selectedNode.data} />
             </div>
         </div>
       </CardContent>
