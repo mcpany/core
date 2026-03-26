@@ -131,7 +131,6 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/profiles/", a.handleProfileDetail(store))
 
 	// Stacks (Aliases for Collections with YAML support)
-	mux.HandleFunc("/stacks/", a.handleStackConfig(store))
 
 	mux.HandleFunc("/collections", a.handleCollections(store))
 	mux.HandleFunc("/collections/", a.handleCollectionDetail(store))
