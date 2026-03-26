@@ -1062,9 +1062,15 @@ MCP Any will act as the authoritative hub for policy distribution. We will
 provide the infrastructure for real-time (sub-10ms) synchronization of
 security guardrails across disparate frameworks (OpenClaw, Claude, Gemini).
 - **Reasoning Noise-Injection (RNI)**: To neutralize RPE side-channel attacks,
-MCP Any will implement RNI. Th is layer will inject hardware-attested timing
+MCP Any will implement RNI. This layer will inject hardware-attested timing
 jitter into inter-agent communication channels, preventing timing-based
 reconstruction of sensitive prompts.
 - **Hardware-Locked Snapshot Compression**: Leveraging Gemini CLI's HLCC, we
-will implement TPM-signed context snapshots. Th is allows secure, verifiable
+will implement TPM-signed context snapshots. This allows secure, verifiable
 state transfer between cloud-sandboxed agents and local specialist teammates.
+
+## Strategic Evolution: [2026-06-18]
+### The Active Entropy Controller
+- **Context Monitoring:** Moving from passive context inheritance to an **Active Entropy Controller (CEC)** model. MCP Any will monitor "Reasoning Noise" in agent chains to prevent semantic drift.
+- **Mesh-Wide Policy Synchronization (MPS):** Standardizing sub-10ms "Policy Heartbeats" across teammate swarms to ensure zero-lag mission alignment.
+- **Reasoning Noise-Injection (RNI):** Mitigating "Reasoning-Path Echo" (RPE) side-channels by injecting hardware-attested timing jitter into inter-agent transport channels.
