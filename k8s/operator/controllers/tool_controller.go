@@ -14,9 +14,9 @@ import (
 	mcpanyv1alpha1 "github.com/mcpany/core/operator/api/v1alpha1"
 )
 
-// ToolReconciler reconciles a Tool object.
+// ToolReconciler toolReconciler represents a tool reconciler.
 //
-// Summary: Controller for reconciling Tool resources.
+// Summary: ToolReconciler represents a tool reconciler.
 type ToolReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme

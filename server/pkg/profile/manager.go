@@ -12,9 +12,9 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// Manager handles the lifecycle and resolution of profiles.
+// Manager manager represents a manager.
 //
-// Summary: Manages profile definitions and resolution.
+// Summary: Manager represents a manager.
 type Manager struct {
 	mu       sync.RWMutex
 	profiles map[string]*configv1.ProfileDefinition
@@ -37,12 +37,21 @@ func NewManager(profiles []*configv1.ProfileDefinition) *Manager {
 	return m
 }
 
-// Update updates the profile definitions managed by the manager.
+// Update updates the .
 //
-// Summary: Updates the stored profile definitions.
+// Summary: Updates the .
 //
-// Parameters: - None.
-//   - profiles: []*configv1.ProfileDefinition. The new list of profiles.
+// Parameters:
+//   - profiles ([]*configv1.ProfileDefinition): The profiles.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) Update(profiles []*configv1.ProfileDefinition) {
 	newProfiles := make(map[string]*configv1.ProfileDefinition)
 	for _, p := range profiles {

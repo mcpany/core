@@ -14,9 +14,9 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// PostgresVectorStore implements VectorStore using PostgreSQL and pgvector.
+// PostgresVectorStore postgresVectorStore represents a postgres vector store.
 //
-// Summary: Provides vector storage capabilities using a PostgreSQL database with the pgvector extension.
+// Summary: PostgresVectorStore represents a postgres vector store.
 type PostgresVectorStore struct {
 	db *sql.DB
 }
@@ -226,16 +226,22 @@ func (s *PostgresVectorStore) Search(ctx context.Context, key string, query []fl
 	return result, similarity, true
 }
 
-// Prune removes expired entries.
+// Prune prune prune.
 //
-// Summary: Deletes expired cache entries from the database.
+// Summary: Prune prune.
 //
-// Parameters: - None.
-//   - ctx: context.Context. The context for the database operation.
-//   - key: string. Optional key to restrict pruning to a specific cache key. If empty, prunes all expired entries.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - key (string): The key.
 //
-// Side Effects: - None.
-//   - Deletes rows from the 'semantic_cache_entries' table.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (s *PostgresVectorStore) Prune(ctx context.Context, key string) {
 	query := "DELETE FROM semantic_cache_entries WHERE expires_at <= $1"
 	args := []interface{}{time.Now()}
@@ -248,15 +254,21 @@ func (s *PostgresVectorStore) Prune(ctx context.Context, key string) {
 	_, _ = s.db.ExecContext(ctx, query, args...)
 }
 
-// Close closes the database connection.
+// Close close close.
 //
-// Summary: Closes the underlying PostgreSQL database connection.
+// Summary: Close close.
 //
-// Returns: - None.
-//   - error: An error if closing the connection fails.
+// Parameters:
+//   - None.
 //
-// Side Effects: - None.
-//   - Closes the DB connection.
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (s *PostgresVectorStore) Close() error {
 	return s.db.Close()
 }

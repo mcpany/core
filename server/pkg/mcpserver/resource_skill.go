@@ -20,12 +20,9 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// SkillResource adapts a Skill (or its asset) to the Resource interface.
+// SkillResource skillResource represents a skill resource.
 //
-// It provides a way to expose skill documentation and associated assets (like images or text files)
-// as MCP resources, making them accessible to clients.
-//
-// Summary: Represents a SkillResource.
+// Summary: SkillResource represents a skill resource.
 type SkillResource struct {
 	skill     *skill.Skill
 	assetPath string // Relative path to asset. If empty, represents the main SKILL.md

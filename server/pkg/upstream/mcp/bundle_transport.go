@@ -52,10 +52,9 @@ func (e *transportError) Error() string {
 	return e.Message
 }
 
-// BundleDockerTransport implements the mcp.Transport interface to connect to a service
-// running inside a Docker container from a bundle. It supports mounts and environment variables.
+// BundleDockerTransport bundleDockerTransport represents a bundle docker transport.
 //
-// Summary: Represents a BundleDockerTransport.
+// Summary: BundleDockerTransport represents a bundle docker transport.
 type BundleDockerTransport struct {
 	Image      string
 	Command    string

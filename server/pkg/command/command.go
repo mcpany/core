@@ -24,9 +24,9 @@ import (
 	"github.com/mcpany/core/server/pkg/validation"
 )
 
-// Executor is an interface for executing commands.
+// Executor executor represents a executor.
 //
-// Summary: Represents a Executor.
+// Summary: Executor represents a executor.
 type Executor interface {
 	// Execute executes a command and returns the stdout and stderr as streams.
 	//

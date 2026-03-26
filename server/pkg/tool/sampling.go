@@ -9,10 +9,9 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// Session defines the interface for tools to interact with the client session.
-// It includes capabilities like Sampling (CreateMessage) and Roots inspection.
+// Session session represents a session.
 //
-// Summary: Represents a Session.
+// Summary: Session represents a session.
 type Session interface {
 	// CreateMessage requests a message creation (sampling) from the client.
 	//

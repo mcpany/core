@@ -12,17 +12,17 @@ import (
 	"github.com/mcpany/core/server/pkg/util/passhash"
 )
 
-// LoginRequest is the request body for login.
+// LoginRequest loginRequest represents a login request.
 //
-// Summary: Represents a LoginRequest.
+// Summary: LoginRequest represents a login request.
 type LoginRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
-// LoginResponse is the response body for login.
+// LoginResponse loginResponse represents a login response.
 //
-// Summary: Represents a LoginResponse.
+// Summary: LoginResponse represents a login response.
 type LoginResponse struct {
 	Token string `json:"token"`
 }

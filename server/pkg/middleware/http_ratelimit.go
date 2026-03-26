@@ -15,9 +15,9 @@ import (
 	"golang.org/x/time/rate"
 )
 
-// HTTPRateLimitMiddleware provides global rate limiting for HTTP endpoints.
+// HTTPRateLimitMiddleware hTTPRateLimitMiddleware represents a http rate limit middleware.
 //
-// Summary: Middleware for rate limiting HTTP requests based on IP address.
+// Summary: HTTPRateLimitMiddleware represents a http rate limit middleware.
 type HTTPRateLimitMiddleware struct {
 	limiters   *ttlcache.Cache[string, *rate.Limiter]
 	rps        rate.Limit

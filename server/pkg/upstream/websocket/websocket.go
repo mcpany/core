@@ -30,11 +30,9 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// Upstream implements the upstream.Upstream interface for services that
-// are exposed via a WebSocket connection. It manages a connection pool and
-// registers tools based on the service configuration.
+// Upstream upstream represents a upstream.
 //
-// Summary: Represents a Upstream.
+// Summary: Upstream represents a upstream.
 type Upstream struct {
 	poolManager *pool.Manager
 	serviceID   string

@@ -21,9 +21,21 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-// TestE2ECaching tests the end-to-end caching functionality.
+// TestE2ECaching testE2ECaching test e2 e caching.
 //
-// t is the t.
+// Summary: TestE2ECaching test e2 e caching.
+//
+// Parameters:
+//   - t (*testing.T): The t.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func TestE2ECaching(t *testing.T) {
 	t.Parallel()
 	RunE2ETest(t, &E2ETestCase{
@@ -39,11 +51,21 @@ func TestE2ECaching(t *testing.T) {
 	})
 }
 
-// BuildCachingServer builds and starts a caching server for testing.
+// BuildCachingServer buildCachingServer build caching server.
 //
-// t is the t.
+// Summary: BuildCachingServer build caching server.
 //
-// Returns the result.
+// Parameters:
+//   - t (*testing.T): The t.
+//
+// Returns:
+//   - *integration.ManagedProcess: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func BuildCachingServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	proc := integration.NewManagedProcess(t, "http_caching_server", integration.MockBinary(t, "http_caching_server"), []string{"--port", fmt.Sprintf("%d", port)}, nil)
@@ -51,11 +73,23 @@ func BuildCachingServer(t *testing.T) *integration.ManagedProcess {
 	return proc
 }
 
-// RegisterCachingService registers the caching service with the MCP server.
+// RegisterCachingService registerCachingService register caching service.
 //
-// t is the t.
-// registrationClient is the registrationClient.
-// upstreamEndpoint is the upstreamEndpoint.
+// Summary: RegisterCachingService register caching service.
+//
+// Parameters:
+//   - t (*testing.T): The t.
+//   - registrationClient (apiv1.RegistrationServiceClient): The registration client.
+//   - upstreamEndpoint (string): The upstream endpoint.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func RegisterCachingService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	serviceID := "e2e_caching_server"
 	operationID := "get_data"
@@ -97,12 +131,22 @@ func protoString(value string) *string {
 	return &value
 }
 
-// NoOpMiddleware is a middleware that does nothing and calls the next handler.
+// NoOpMiddleware noOpMiddleware no op middleware.
 //
-// _ is an unused parameter.
-// next is the next.
+// Summary: NoOpMiddleware no op middleware.
 //
-// Returns the result.
+// Parameters:
+//   - _ (*testing.T): Unused parameter.
+//   - next (http.Handler): The next.
+//
+// Returns:
+//   - http.Handler: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NoOpMiddleware(_ *testing.T, next http.Handler) http.Handler {
 	return next
 }
@@ -134,11 +178,23 @@ func callTool(t *testing.T, session *mcp.ClientSession, toolName string) {
 	require.NoError(t, err)
 }
 
-// ValidateCaching validates that caching is working correctly.
+// ValidateCaching validateCaching validate caching.
 //
-// t is the t.
-// mcpanyEndpoint is the mcpanyEndpoint.
-// upstreamEndpoint is the upstreamEndpoint.
+// Summary: ValidateCaching validate caching.
+//
+// Parameters:
+//   - t (*testing.T): The t.
+//   - mcpanyEndpoint (unknown): The mcpany endpoint.
+//   - upstreamEndpoint (string): The upstream endpoint.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func ValidateCaching(t *testing.T, mcpanyEndpoint, upstreamEndpoint string) {
 	session := connectMCP(t, mcpanyEndpoint)
 

@@ -63,11 +63,9 @@ func (s Severity) String() string {
 	}
 }
 
-// Result represents a single linting finding.
+// Result result represents a result.
 //
-// It encapsulates all details about a detected issue, including its severity, location, and description.
-//
-// Summary: Represents a Result.
+// Summary: Result represents a result.
 type Result struct {
 	// Severity indicates how critical the finding is (Error, Warning, Info).
 	Severity Severity
@@ -108,11 +106,9 @@ func (r Result) String() string {
 	return fmt.Sprintf("[%s]%s%s: %s", r.Severity, serviceStr, pathStr, r.Message)
 }
 
-// Linter performs static analysis on the configuration.
+// Linter linter represents a linter.
 //
-// It holds the configuration to be analyzed and provides methods to execute various checks.
-//
-// Summary: Represents a Linter.
+// Summary: Linter represents a linter.
 type Linter struct {
 	cfg *configv1.McpAnyServerConfig
 }

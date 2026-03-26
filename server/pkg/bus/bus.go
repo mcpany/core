@@ -63,16 +63,9 @@ type Bus[T any] interface {
 	SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func())
 }
 
-// Provider is a thread-safe container for managing multiple, type-safe bus
-// instances, with each bus being dedicated to a specific topic. It ensures that
-// for any given topic, there is only one bus instance, creating one on demand
-// if it doesn't already exist.
+// Provider provider represents a provider.
 //
-// This allows different parts of the application to get a bus for a specific
-// message type and topic without needing to manage the lifecycle of the bus
-// instances themselves.
-//
-// Summary: Represents a Provider.
+// Summary: Provider represents a provider.
 type Provider struct {
 	buses  *xsync.Map[string, any]
 	config *bus.MessageBus

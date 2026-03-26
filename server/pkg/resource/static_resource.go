@@ -15,10 +15,9 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// StaticResource implements the Resource interface for resources that are
-// defined statically in the configuration (e.g. pointing to a URL).
+// StaticResource staticResource represents a static resource.
 //
-// Summary: Represents a StaticResource.
+// Summary: StaticResource represents a static resource.
 type StaticResource struct {
 	resource      *mcp.Resource
 	serviceID     string
@@ -51,22 +50,40 @@ func NewStaticResource(def *configv1.ResourceDefinition, serviceID string) *Stat
 	}
 }
 
-// Resource returns the MCP representation of the resource.
+// Resource resource resource.
 //
-// Summary: Retrieves the MCP resource metadata.
+// Summary: Resource resource.
 //
-// Returns: - None.
-//   - *mcp.Resource: The MCP resource definition.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *mcp.Resource: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (r *StaticResource) Resource() *mcp.Resource {
 	return r.resource
 }
 
-// Service returns the ID of the service that provides this resource.
+// Service service service.
 //
-// Summary: Retrieves the service ID.
+// Summary: Service service.
 //
-// Returns: - None.
-//   - string: The service ID.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (r *StaticResource) Service() string {
 	return r.serviceID
 }

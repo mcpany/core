@@ -23,10 +23,9 @@ import (
 	"github.com/mcpany/core/server/pkg/upstream/websocket"
 )
 
-// Factory defines the interface for a factory that creates upstream service
-// instances.
+// Factory factory represents a factory.
 //
-// Summary: Interface for creating upstream services.
+// Summary: Factory represents a factory.
 type Factory interface {
 	// NewUpstream creates a new upstream service instance based on the provided
 	// configuration.
@@ -42,11 +41,9 @@ type Factory interface {
 	NewUpstream(config *configv1.UpstreamServiceConfig) (upstream.Upstream, error)
 }
 
-// UpstreamServiceFactory is a concrete implementation of the Factory interface.
-// It creates different types of upstream services based on the service
-// configuration.
+// UpstreamServiceFactory upstreamServiceFactory represents a upstream service factory.
 //
-// Summary: Concrete factory for creating upstream services.
+// Summary: UpstreamServiceFactory represents a upstream service factory.
 type UpstreamServiceFactory struct {
 	poolManager    *pool.Manager
 	globalSettings *configv1.GlobalSettings

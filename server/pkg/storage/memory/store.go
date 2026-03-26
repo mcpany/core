@@ -22,9 +22,9 @@ type tokenKey struct {
 	serviceID string
 }
 
-// Store implements storage.Storage in memory.
+// Store store represents a store.
 //
-// Summary: A thread-safe, in-memory implementation of the Storage interface, primarily for testing.
+// Summary: Store represents a store.
 type Store struct {
 	mu                 sync.RWMutex
 	services           map[string]*configv1.UpstreamServiceConfig
@@ -39,15 +39,21 @@ type Store struct {
 	logs               []*logging.LogEntry
 }
 
-// NewStore creates a new memory store.
+// NewStore creates a new store.
 //
-// Summary: Initializes a new, empty in-memory store.
+// Summary: Creates a new store.
 //
-// Returns: - None.
-//   - *Store: A pointer to the initialized Store.
+// Parameters:
+//   - None.
 //
-// Side Effects: - None.
-//   - Allocates internal maps and slices.
+// Returns:
+//   - *Store: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewStore() *Store {
 	return &Store{
 		services:           make(map[string]*configv1.UpstreamServiceConfig),
@@ -314,22 +320,40 @@ func (s *Store) DeleteService(_ context.Context, name string) error {
 	return nil
 }
 
-// Close closes the underlying storage connection.
+// Close close close.
 //
-// Summary: No-op for in-memory store.
+// Summary: Close close.
 //
-// Returns: - None.
-//   - error: Always nil.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (s *Store) Close() error {
 	return nil
 }
 
-// HasConfigSources returns true if the store has configuration sources (e.g., file paths) configured.
+// HasConfigSources hasConfigSources has config sources.
 //
-// Summary: Indicates if the store supports config sources (always true for this mock).
+// Summary: HasConfigSources has config sources.
 //
-// Returns: - None.
-//   - bool: Always true.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - bool: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (s *Store) HasConfigSources() bool {
 	return true
 }

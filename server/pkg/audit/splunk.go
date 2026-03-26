@@ -23,9 +23,9 @@ const (
 	splunkBatchWait  = 1 * time.Second
 )
 
-// SplunkAuditStore sends audit logs to Splunk HTTP Event Collector.
+// SplunkAuditStore splunkAuditStore represents a splunk audit store.
 //
-// Summary: Asynchronous audit store that pushes logs to Splunk via HEC.
+// Summary: SplunkAuditStore represents a splunk audit store.
 type SplunkAuditStore struct {
 	config *configv1.SplunkConfig
 	client *http.Client
@@ -191,16 +191,21 @@ func (e *SplunkAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for splunk audit store")
 }
 
-// Close closes the queue and waits for workers to finish.
+// Close close close.
 //
-// Summary: Shuts down the Splunk audit store.
+// Summary: Close close.
 //
-// Returns: - None.
-//   - error: Always nil.
+// Parameters:
+//   - None.
 //
-// Side Effects: - None.
-//   - Closes channels.
-//   - Flushes pending batches.
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (e *SplunkAuditStore) Close() error {
 	if e.done != nil {
 		close(e.done)

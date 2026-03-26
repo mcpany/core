@@ -15,9 +15,9 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// TemplateManager manages the persistence and lifecycle of service templates.
+// TemplateManager templateManager represents a template manager.
 //
-// Summary: Represents a TemplateManager.
+// Summary: TemplateManager represents a template manager.
 type TemplateManager struct {
 	mu        sync.RWMutex
 	templates []*configv1.UpstreamServiceConfig
@@ -128,12 +128,21 @@ func (tm *TemplateManager) save() error {
 	return os.WriteFile(tm.filePath, data, 0600)
 }
 
-// ListTemplates returns a list of all stored templates.
+// ListTemplates retrieves a list of templates.
 //
-// Summary: Retrieves all managed templates.
+// Summary: Retrieves a list of templates.
 //
-// Returns: - None.
-//   - []*configv1.UpstreamServiceConfig: A list of templates.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []*configv1.UpstreamServiceConfig: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (tm *TemplateManager) ListTemplates() []*configv1.UpstreamServiceConfig {
 	tm.mu.RLock()
 	defer tm.mu.RUnlock()

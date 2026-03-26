@@ -78,12 +78,9 @@ var fastJSONNumber = jsoniter.Config{
 	UseNumber:              true,
 }.Froze()
 
-// Tool is the fundamental interface for any executable tool in the system.
+// Tool tool represents a tool.
 //
-// Summary: Interface for defining and executing tools.
-//
-// Each implementation represents a different type of underlying service
-// (e.g., gRPC, HTTP, command-line).
+// Summary: Tool represents a tool.
 type Tool interface {
 	// Tool returns the protobuf definition of the tool.
 	//
@@ -123,10 +120,9 @@ type Tool interface {
 	GetCacheConfig() *configv1.CacheConfig
 }
 
-// ServiceInfo holds metadata about a registered upstream service, including its
-// configuration and any associated protobuf file descriptors.
+// ServiceInfo serviceInfo represents a service info.
 //
-// Summary: Metadata for a registered service.
+// Summary: ServiceInfo represents a service info.
 type ServiceInfo struct {
 	// Name is the unique name of the service.
 	Name string
@@ -147,10 +143,9 @@ type ServiceInfo struct {
 	HealthStatus string
 }
 
-// ExecutionRequest represents a request to execute a specific tool, including
-// its name and input arguments as a raw JSON message.
+// ExecutionRequest executionRequest represents a execution request.
 //
-// Summary: Request payload for tool execution.
+// Summary: ExecutionRequest represents a execution request.
 type ExecutionRequest struct {
 	// ToolName is the name of the tool to be executed.
 	ToolName string `json:"name"`
@@ -168,11 +163,9 @@ type ExecutionRequest struct {
 	Tool Tool `json:"-"`
 }
 
-// ServiceRegistry defines an interface for a component that can look up tools
-// and service information. It is used for dependency injection to decouple
-// components from the main service registry.
+// ServiceRegistry serviceRegistry represents a service registry.
 //
-// Summary: Interface for tool and service lookup.
+// Summary: ServiceRegistry represents a service registry.
 type ServiceRegistry interface {
 	// GetTool retrieves a tool by name.
 	//
@@ -241,9 +234,9 @@ func GetFromContext(ctx context.Context) (Tool, bool) {
 	return t, ok
 }
 
-// Callable is an interface that represents a callable tool.
+// Callable callable represents a callable.
 //
-// Summary: Interface for executing a tool.
+// Summary: Callable represents a callable.
 type Callable interface {
 	// Call executes the callable with the given request.
 	//
@@ -281,9 +274,9 @@ const (
 	ActionDeleteCache Action = 3
 )
 
-// CacheControl is a mutable struct to pass cache control instructions via context.
+// CacheControl cacheControl represents a cache control.
 //
-// Summary: Context-based cache control instructions.
+// Summary: CacheControl represents a cache control.
 type CacheControl struct {
 	Action Action
 }
@@ -319,31 +312,27 @@ func GetCacheControl(ctx context.Context) (*CacheControl, bool) {
 	return cc, ok
 }
 
-// PreCallHook defines the interface for hooks executed before a tool call.
+// PreCallHook preCallHook represents a pre call hook.
 //
-// Summary: Interface for pre-execution hooks.
+// Summary: PreCallHook represents a pre call hook.
 type PreCallHook interface {
 	// ExecutePre runs the hook. It returns an action (Allow/Deny),
 	// a potentially modified request (or nil if unchanged), and an error.
 	ExecutePre(ctx context.Context, req *ExecutionRequest) (Action, *ExecutionRequest, error)
 }
 
-// PostCallHook defines the interface for hooks executed after a tool call.
+// PostCallHook postCallHook represents a post call hook.
 //
-// Summary: Interface for post-execution hooks.
+// Summary: PostCallHook represents a post call hook.
 type PostCallHook interface {
 	// ExecutePost runs the hook. It returns the potentially modified result
 	// (or original if unchanged) and an error.
 	ExecutePost(ctx context.Context, req *ExecutionRequest, result any) (any, error)
 }
 
-// GRPCTool implements the Tool interface for a tool that is exposed via a gRPC
-// endpoint.
+// GRPCTool gRPCTool represents a grpc tool.
 //
-// Summary: Tool implementation for gRPC services.
-//
-// It handles the marshalling of JSON inputs to protobuf messages and
-// invoking the gRPC method.
+// Summary: GRPCTool represents a grpc tool.
 type GRPCTool struct {
 	tool              *v1.Tool
 	mcpTool           *mcp.Tool
@@ -536,12 +525,9 @@ func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	return result, nil
 }
 
-// HTTPTool implements the Tool interface for a tool exposed via an HTTP endpoint.
+// HTTPTool hTTPTool represents a http tool.
 //
-// Summary: Tool implementation for HTTP services.
-//
-// It constructs and sends an HTTP request based on the tool definition and
-// input, handling parameter mapping, authentication, and transformations.
+// Summary: HTTPTool represents a http tool.
 type HTTPTool struct {
 	tool              *v1.Tool
 	mcpTool           *mcp.Tool
@@ -1362,13 +1348,9 @@ func (t *HTTPTool) processResponse(ctx context.Context, resp *http.Response) (an
 	return result, nil
 }
 
-// MCPTool implements the Tool interface for a tool that is exposed via another
-// MCP-compliant service.
+// MCPTool mCPTool represents a mcp tool.
 //
-// Summary: Tool implementation for proxying to MCP services.
-//
-// It acts as a proxy, forwarding the tool call to the
-// downstream MCP service.
+// Summary: MCPTool represents a mcp tool.
 type MCPTool struct {
 	tool                 *v1.Tool
 	mcpTool              *mcp.Tool
@@ -1625,13 +1607,9 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 	return resultMap, nil
 }
 
-// OpenAPITool implements the Tool interface for a tool defined in an OpenAPI
-// specification.
+// OpenAPITool openAPITool represents a open api tool.
 //
-// Summary: Tool implementation for OpenAPI services.
-//
-// It constructs and sends an HTTP request based on the OpenAPI
-// operation definition.
+// Summary: OpenAPITool represents a open api tool.
 type OpenAPITool struct {
 	tool                 *v1.Tool
 	mcpTool              *mcp.Tool
@@ -1945,12 +1923,9 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	return result, nil
 }
 
-// CommandTool implements the Tool interface for a tool that is executed as a
-// local command-line process.
+// CommandTool commandTool represents a command tool.
 //
-// Summary: Tool implementation for command-line services (via executor).
-//
-// It maps tool inputs to command-line arguments and environment variables.
+// Summary: CommandTool represents a command tool.
 type CommandTool struct {
 	tool            *v1.Tool
 	mcpTool         *mcp.Tool
@@ -2010,12 +1985,9 @@ func NewCommandTool(
 	return t
 }
 
-// LocalCommandTool implements the Tool interface for a tool that is executed as a
-// local command-line process.
+// LocalCommandTool localCommandTool represents a local command tool.
 //
-// Summary: Tool implementation for local command-line services.
-//
-// It maps tool inputs to command-line arguments and environment variables.
+// Summary: LocalCommandTool represents a local command tool.
 type LocalCommandTool struct {
 	tool           *v1.Tool
 	mcpTool        *mcp.Tool

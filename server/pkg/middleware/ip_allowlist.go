@@ -12,9 +12,9 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// IPAllowlistMiddleware restricts access to allowed IP addresses.
+// IPAllowlistMiddleware iPAllowlistMiddleware represents a ip allowlist middleware.
 //
-// Summary: Middleware that filters requests based on a list of allowed IP addresses or CIDRs.
+// Summary: IPAllowlistMiddleware represents a ip allowlist middleware.
 type IPAllowlistMiddleware struct {
 	mu            sync.RWMutex
 	allowedIPNets []*net.IPNet

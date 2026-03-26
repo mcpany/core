@@ -17,9 +17,9 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-// SQLiteAuditStore writes audit logs to a SQLite database.
+// SQLiteAuditStore sQLiteAuditStore represents a sq lite audit store.
 //
-// Summary: Stores audit logs in a local SQLite database with tamper-evident hashing.
+// Summary: SQLiteAuditStore represents a sq lite audit store.
 type SQLiteAuditStore struct {
 	db *sql.DB
 	mu sync.Mutex
@@ -281,7 +281,7 @@ func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, er
 		args = append(args, filter.Offset)
 	}
 
-	rows, err := s.db.QueryContext(ctx, query, args.....)
+	rows, err := s.db.QueryContext(ctx, query, args.........)
 	if err != nil {
 		return nil, err
 	}
@@ -377,15 +377,21 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 	return true, nil
 }
 
-// Close closes the database connection.
+// Close close close.
 //
-// Summary: Closes the SQLite database connection.
+// Summary: Close close.
 //
-// Returns: - None.
-//   - error: An error if closing fails.
+// Parameters:
+//   - None.
 //
-// Side Effects: - None.
-//   - Closes the DB connection.
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (s *SQLiteAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

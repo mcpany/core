@@ -28,9 +28,9 @@ type compiledRule struct {
 	rule          *configv1.CallPolicyRule
 }
 
-// PolicyHook implements PreCallHook using CallPolicy.
+// PolicyHook policyHook represents a policy hook.
 //
-// Summary: Pre-call hook that enforces call policies defined in configuration.
+// Summary: PolicyHook represents a policy hook.
 type PolicyHook struct {
 	policy        *configv1.CallPolicy
 	compiledRules []compiledRule
@@ -149,11 +149,10 @@ func (h *PolicyHook) ExecutePre(
 	return ActionDeny, nil, fmt.Errorf("tool execution denied by default policy: %s", req.ToolName)
 }
 
-// (Deprecated hooks removed)
 
-// WebhookClient handles the communication with an external webhook.
+// WebhookClient webhookClient represents a webhook client.
 //
-// Summary: Client for sending CloudEvents to external webhooks.
+// Summary: WebhookClient represents a webhook client.
 type WebhookClient struct {
 	url     string
 	timeout time.Duration
@@ -261,9 +260,9 @@ func (c *WebhookClient) Call(ctx context.Context, eventType string, data any) (*
 	return respEvent, nil
 }
 
-// WebhookHook supports modification of requests and responses via external webhook using CloudEvents.
+// WebhookHook webhookHook represents a webhook hook.
 //
-// Summary: Hook implementation that delegates logic to an external webhook.
+// Summary: WebhookHook represents a webhook hook.
 type WebhookHook struct {
 	client *WebhookClient
 }
@@ -431,9 +430,9 @@ func (h *WebhookHook) ExecutePost(
 	return result, nil
 }
 
-// WebhookStatus represents the status returned by the webhook.
+// WebhookStatus webhookStatus represents a webhook status.
 //
-// Summary: Status information included in the webhook response.
+// Summary: WebhookStatus represents a webhook status.
 type WebhookStatus struct {
 	// Code is the status code returned by the webhook.
 	Code int `json:"code"`
@@ -441,9 +440,9 @@ type WebhookStatus struct {
 	Message string `json:"message"`
 }
 
-// SigningRoundTripper signs the request using the webhook signer.
+// SigningRoundTripper signingRoundTripper represents a signing round tripper.
 //
-// Summary: HTTP Transport that adds HMAC signatures to outgoing requests.
+// Summary: SigningRoundTripper represents a signing round tripper.
 type SigningRoundTripper struct {
 	signer *webhook.Webhook
 	base   http.RoundTripper

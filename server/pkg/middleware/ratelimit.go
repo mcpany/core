@@ -28,10 +28,9 @@ import (
 // Pre-allocated to avoid allocation on every request.
 var metricRateLimitRequestsTotal = []string{"rate_limit", "requests_total"}
 
-// RateLimitMiddleware is a tool execution middleware that provides rate limiting
-// functionality for upstream services.
+// RateLimitMiddleware rateLimitMiddleware represents a rate limit middleware.
 //
-// Summary: Middleware for rate limiting tool execution.
+// Summary: RateLimitMiddleware represents a rate limit middleware.
 type RateLimitMiddleware struct {
 	toolManager tool.ManagerInterface
 	tokenizer   tokenizer.Tokenizer

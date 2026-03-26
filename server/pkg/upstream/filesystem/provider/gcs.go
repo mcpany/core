@@ -20,9 +20,9 @@ import (
 	"google.golang.org/api/iterator"
 )
 
-// GcsProvider provides access to files in a Google Cloud Storage bucket.
+// GcsProvider gcsProvider represents a gcs provider.
 //
-// Summary: Represents a GcsProvider.
+// Summary: GcsProvider represents a gcs provider.
 type GcsProvider struct {
 	fs     afero.Fs
 	client *storage.Client

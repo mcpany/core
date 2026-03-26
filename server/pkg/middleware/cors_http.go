@@ -10,10 +10,9 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// HTTPCORSMiddleware handles CORS for HTTP endpoints.
-// It is thread-safe and supports dynamic updates.
+// HTTPCORSMiddleware hTTPCORSMiddleware represents a httpcors middleware.
 //
-// Summary: Represents a HTTPCORSMiddleware.
+// Summary: HTTPCORSMiddleware represents a httpcors middleware.
 type HTTPCORSMiddleware struct {
 	mu              sync.RWMutex
 	allowedOrigins  map[string]struct{}
@@ -38,12 +37,21 @@ func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
 	return m
 }
 
-// Update updates the allowed origins.
+// Update updates the .
 //
-// Summary: Updates the allowed origins dynamically.
+// Summary: Updates the .
 //
-// Parameters: - None.
-//   - allowedOrigins ([]string): The new list of allowed origins.
+// Parameters:
+//   - allowedOrigins ([]string): The allowed origins.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *HTTPCORSMiddleware) Update(allowedOrigins []string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()

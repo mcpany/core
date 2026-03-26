@@ -127,23 +127,9 @@ func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 	_, _ = fmt.Fprintf(w, "File '%s' uploaded successfully (size: %d bytes)", html.EscapeString(safeFilename), written)
 }
 
-// RunOptions configuration for starting the MCP Any application.
+// RunOptions runOptions represents a run options.
 //
-// Summary: Options for configuring the application runtime.
-//
-// Fields:
-//   - Ctx: context.Context. The context for the application.
-//   - Fs: afero.Fs. The filesystem interface.
-//   - Stdio: bool. Whether to run in stdio mode (for CLI/one-off usage).
-//   - JSONRPCPort: string. The port for the JSON-RPC/HTTP server.
-//   - GRPCPort: string. The port for the gRPC registration server.
-//   - ConfigPaths: []string. Paths to configuration files.
-//   - APIKey: string. The master API key for the server.
-//   - ShutdownTimeout: time.Duration. The timeout for graceful shutdown.
-//   - TLSCert: string. Path to the TLS certificate file.
-//   - TLSKey: string. Path to the TLS private key file.
-//   - TLSClientCA: string. Path to the TLS client CA certificate file (for mTLS).
-//   - DBPath: string. Path to the SQLite database file.
+// Summary: RunOptions represents a run options.
 type RunOptions struct {
 	Ctx             context.Context
 	Fs              afero.Fs
@@ -159,9 +145,9 @@ type RunOptions struct {
 	DBPath          string
 }
 
-// Runner defines the interface for running the application.
+// Runner runner represents a runner.
 //
-// Summary: Interface for application execution and management.
+// Summary: Runner represents a runner.
 type Runner interface {
 	// Run starts the application with the given options.
 	//
@@ -188,29 +174,9 @@ type Runner interface {
 	ReloadConfig(ctx context.Context, fs afero.Fs, configPaths []string) error
 }
 
-// Application is the main application struct, holding the dependencies and logic for the MCP Any server.
+// Application application represents a application.
 //
-// Summary: The main application container.
-//
-// Fields:
-//   - PromptManager: prompt.ManagerInterface. Manages AI prompts.
-//   - ToolManager: tool.ManagerInterface. Manages tools and execution.
-//   - ResourceManager: resource.ManagerInterface. Manages resources (files, data).
-//   - ServiceRegistry: serviceregistry.ServiceRegistryInterface. Manages upstream service connections.
-//   - TopologyManager: *topology.Manager. Manages the topology of the server.
-//   - UpstreamFactory: factory.Factory. Creates upstream service clients.
-//   - Storage: storage.Storage. Persistent storage interface.
-//   - TemplateManager: *TemplateManager. Manages templates.
-//   - SkillManager: *skill.Manager. Manages agent skills.
-//   - AlertsManager: *alerts.Manager. Manages system alerts.
-//   - DiscoveryManager: *discovery.Manager. Manages auto-discovery of services.
-//   - SettingsManager: *GlobalSettingsManager. Manages dynamic global settings.
-//   - ProfileManager: *profile.Manager. Manages user profiles.
-//   - AuthManager: *auth.Manager. Manages authentication and authorization.
-//   - RegistrationRetryDelay: time.Duration. Delay between service registration retries.
-//   - MetricsGatherer: prometheus.Gatherer. Interface for gathering metrics.
-//   - BoundHTTPPort: atomic.Int32. The actual bound HTTP port.
-//   - BoundGRPCPort: atomic.Int32. The actual bound gRPC port.
+// Summary: Application represents a application.
 type Application struct {
 	runStdioModeFunc func(ctx context.Context, mcpSrv *mcpserver.Server) error
 	PromptManager    prompt.ManagerInterface
@@ -308,12 +274,21 @@ type statsCacheEntry struct {
 	ExpiresAt time.Time
 }
 
-// NewApplication creates a new Application with default dependencies.
+// NewApplication creates a new application.
 //
-// Summary: Initializes a new Application instance.
+// Summary: Creates a new application.
 //
-// Returns: - None.
-//   - (*Application): The initialized application.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *Application: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewApplication() *Application {
 	busProvider, _ := bus.NewProvider(nil)
 	return &Application{

@@ -14,9 +14,9 @@ import (
 	"github.com/mcpany/core/server/pkg/validation"
 )
 
-// FileAuditStore writes audit logs to a file or stdout.
+// FileAuditStore fileAuditStore represents a file audit store.
 //
-// Summary: Audit store implementation that appends newline-delimited JSON (NDJSON) to a file or standard output.
+// Summary: FileAuditStore represents a file audit store.
 type FileAuditStore struct {
 	mu   sync.Mutex
 	file *os.File
@@ -110,15 +110,21 @@ func (s *FileAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for file audit store")
 }
 
-// Close closes the file.
+// Close close close.
 //
-// Summary: Closes the underlying file handle if one exists.
+// Summary: Close close.
 //
-// Returns: - None.
-//   - error: An error if closing the file fails.
+// Parameters:
+//   - None.
 //
-// Side Effects: - None.
-//   - Closes the file descriptor.
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (s *FileAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

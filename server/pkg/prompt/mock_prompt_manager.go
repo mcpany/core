@@ -15,18 +15,18 @@ import (
 	gomock "go.uber.org/mock/gomock"
 )
 
-// MockManagerInterface is a mock of ManagerInterface interface.
+// MockManagerInterface mockManagerInterface represents a mock manager interface.
 //
-// Summary: Mock implementation of the Prompt Manager Interface for testing.
+// Summary: MockManagerInterface represents a mock manager interface.
 type MockManagerInterface struct {
 	ctrl     *gomock.Controller
 	recorder *MockManagerInterfaceMockRecorder
 	isgomock struct{}
 }
 
-// MockManagerInterfaceMockRecorder is the mock recorder for MockManagerInterface.
+// MockManagerInterfaceMockRecorder mockManagerInterfaceMockRecorder represents a mock manager interface mock recorder.
 //
-// Summary: Recorder for mock call expectations.
+// Summary: MockManagerInterfaceMockRecorder represents a mock manager interface mock recorder.
 type MockManagerInterfaceMockRecorder struct {
 	mock *MockManagerInterface
 }
@@ -46,22 +46,40 @@ func NewMockManagerInterface(ctrl *gomock.Controller) *MockManagerInterface {
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use.
+// EXPECT eXPECT expect.
 //
-// Summary: Returns the recorder for setting expectations.
+// Summary: EXPECT expect.
 //
-// Returns: - None.
-//   - *MockManagerInterfaceMockRecorder: The recorder.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *MockManagerInterfaceMockRecorder: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockManagerInterface) EXPECT() *MockManagerInterfaceMockRecorder {
 	return m.recorder
 }
 
-// AddPrompt mocks base method.
+// AddPrompt addPrompt add prompt.
 //
-// Summary: Mocks AddPrompt.
+// Summary: AddPrompt add prompt.
 //
-// Parameters: - None.
-//   - prompt: Prompt. The prompt to add.
+// Parameters:
+//   - prompt (Prompt): The prompt.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockManagerInterface) AddPrompt(prompt Prompt) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AddPrompt", prompt)
@@ -110,23 +128,41 @@ func (m *MockManagerInterface) Clear() {
 	m.ctrl.Call(m, "Clear")
 }
 
-// Clear indicates an expected call of Clear.
+// Clear clear clear.
 //
-// Summary: Records an expectation for Clear.
+// Summary: Clear clear.
 //
-// Returns: - None.
-//   - *gomock.Call: The mock call object.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *gomock.Call: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (mr *MockManagerInterfaceMockRecorder) Clear() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Clear", reflect.TypeOf((*MockManagerInterface)(nil).Clear))
 }
 
-// ClearPromptsForService mocks base method.
+// ClearPromptsForService clearPromptsForService clear prompts for service.
 //
-// Summary: Mocks ClearPromptsForService.
+// Summary: ClearPromptsForService clear prompts for service.
 //
-// Parameters: - None.
-//   - serviceID: string. The service ID.
+// Parameters:
+//   - serviceID (string): The service id.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockManagerInterface) ClearPromptsForService(serviceID string) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "ClearPromptsForService", serviceID)
@@ -178,12 +214,21 @@ func (mr *MockManagerInterfaceMockRecorder) GetPrompt(name any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPrompt", reflect.TypeOf((*MockManagerInterface)(nil).GetPrompt), name)
 }
 
-// ListPrompts mocks base method.
+// ListPrompts retrieves a list of prompts.
 //
-// Summary: Mocks ListPrompts.
+// Summary: Retrieves a list of prompts.
 //
-// Returns: - None.
-//   - []Prompt: A list of prompts.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []Prompt: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockManagerInterface) ListPrompts() []Prompt {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListPrompts")
@@ -191,23 +236,41 @@ func (m *MockManagerInterface) ListPrompts() []Prompt {
 	return ret0
 }
 
-// ListPrompts indicates an expected call of ListPrompts.
+// ListPrompts retrieves a list of prompts.
 //
-// Summary: Records an expectation for ListPrompts.
+// Summary: Retrieves a list of prompts.
 //
-// Returns: - None.
-//   - *gomock.Call: The mock call object.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *gomock.Call: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (mr *MockManagerInterfaceMockRecorder) ListPrompts() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPrompts", reflect.TypeOf((*MockManagerInterface)(nil).ListPrompts))
 }
 
-// SetMCPServer mocks base method.
+// SetMCPServer setMCPServer set mcp server.
 //
-// Summary: Mocks SetMCPServer.
+// Summary: SetMCPServer set mcp server.
 //
-// Parameters: - None.
-//   - mcpServer: MCPServerProvider. The MCP server provider.
+// Parameters:
+//   - mcpServer (MCPServerProvider): The mcp server.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockManagerInterface) SetMCPServer(mcpServer MCPServerProvider) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "SetMCPServer", mcpServer)
@@ -227,12 +290,21 @@ func (mr *MockManagerInterfaceMockRecorder) SetMCPServer(mcpServer any) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetMCPServer", reflect.TypeOf((*MockManagerInterface)(nil).SetMCPServer), mcpServer)
 }
 
-// UpdatePrompt mocks base method.
+// UpdatePrompt updates the prompt.
 //
-// Summary: Mocks UpdatePrompt.
+// Summary: Updates the prompt.
 //
-// Parameters: - None.
-//   - prompt: Prompt. The prompt to update.
+// Parameters:
+//   - prompt (Prompt): The prompt.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockManagerInterface) UpdatePrompt(prompt Prompt) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "UpdatePrompt", prompt)

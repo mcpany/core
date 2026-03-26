@@ -142,9 +142,9 @@ type compiledCallPolicyRule struct {
 	rule          *configv1.CallPolicyRule
 }
 
-// CompiledCallPolicy holds a compiled version of a call policy.
+// CompiledCallPolicy compiledCallPolicy represents a compiled call policy.
 //
-// Summary: Represents a pre-compiled call policy for efficient evaluation.
+// Summary: CompiledCallPolicy represents a compiled call policy.
 type CompiledCallPolicy struct {
 	policy        *configv1.CallPolicy
 	compiledRules []compiledCallPolicyRule

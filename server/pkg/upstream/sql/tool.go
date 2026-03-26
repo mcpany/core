@@ -22,9 +22,9 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// Tool implements the Tool interface for a tool that executes a SQL query.
+// Tool tool represents a tool.
 //
-// Summary: Represents a Tool.
+// Summary: Tool represents a tool.
 type Tool struct {
 	tool        *v1.Tool
 	mcpTool     *mcp.Tool

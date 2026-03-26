@@ -11,9 +11,9 @@ import (
 	"google.golang.org/grpc"
 )
 
-// MockClientConn is a mock implementation of grpc.ClientConnInterface for testing.
+// MockClientConn mockClientConn represents a mock client conn.
 //
-// Summary: Represents a MockClientConn.
+// Summary: MockClientConn represents a mock client conn.
 type MockClientConn struct {
 	grpc.ClientConnInterface
 	t       *testing.T

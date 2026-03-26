@@ -14,9 +14,9 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-// ContextOptimizer optimises the context size of responses.
+// ContextOptimizer contextOptimizer represents a context optimizer.
 //
-// Summary: Middleware that truncates excessively long string values in JSON responses to fit within a context window.
+// Summary: ContextOptimizer represents a context optimizer.
 type ContextOptimizer struct {
 	MaxChars int
 }
@@ -216,16 +216,21 @@ func (w *responseBuffer) Write(b []byte) (int, error) {
 	return w.ResponseWriter.Write(b)
 }
 
-// WriteHeader captures the status code and decides whether to buffer based on headers.
+// WriteHeader writeHeader write header.
 //
-// Summary: Writes the HTTP status code.
+// Summary: WriteHeader write header.
 //
-// Parameters: - None.
-//   - statusCode: int. The HTTP status code.
+// Parameters:
+//   - statusCode (int): The status code.
 //
-// Side Effects: - None.
-//   - Sets the internal status code.
-//   - Checks content-type headers to determine if buffering is needed.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (w *responseBuffer) WriteHeader(statusCode int) {
 	if w.wroteHeader {
 		return

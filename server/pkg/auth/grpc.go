@@ -12,11 +12,9 @@ import (
 	"google.golang.org/grpc/credentials"
 )
 
-// PerRPCCredentials adapts an UpstreamAuthenticator to the gRPC
-// credentials.PerRPCCredentials interface. It allows applying upstream
-// authentication headers to outgoing gRPC requests.
+// PerRPCCredentials perRPCCredentials represents a per rpc credentials.
 //
-// Summary: Represents a PerRPCCredentials.
+// Summary: PerRPCCredentials represents a per rpc credentials.
 type PerRPCCredentials struct {
 	authenticator UpstreamAuthenticator
 }

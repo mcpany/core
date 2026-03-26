@@ -9,9 +9,9 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 )
 
-// RedactingWriter is an io.Writer that redacts sensitive information from JSON logs.
+// RedactingWriter redactingWriter represents a redacting writer.
 //
-// Summary: Represents a RedactingWriter.
+// Summary: RedactingWriter represents a redacting writer.
 type RedactingWriter struct {
 	w io.Writer
 }

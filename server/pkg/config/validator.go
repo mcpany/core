@@ -79,9 +79,9 @@ var (
 	execLookPath = exec.LookPath
 )
 
-// ValidationError encapsulates a validation error for a specific service.
+// ValidationError validationError represents a validation error.
 //
-// Summary: Represents a configuration validation error.
+// Summary: ValidationError represents a validation error.
 type ValidationError struct {
 	ServiceName string
 	Err         error

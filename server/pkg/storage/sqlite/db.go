@@ -14,9 +14,9 @@ import (
 	_ "modernc.org/sqlite" // Register sqlite driver
 )
 
-// DB wraps the sql.DB connection.
+// DB dB represents a db.
 //
-// Summary: Represents a DB.
+// Summary: DB represents a db.
 type DB struct {
 	*sql.DB
 }

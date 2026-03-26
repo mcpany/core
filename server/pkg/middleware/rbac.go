@@ -11,19 +11,28 @@ import (
 	"github.com/mcpany/core/server/pkg/auth"
 )
 
-// RBACMiddleware provides middleware for Role-Based Access Control.
+// RBACMiddleware rBACMiddleware represents a rbac middleware.
 //
-// Summary: Middleware for enforcing role-based access control policies.
+// Summary: RBACMiddleware represents a rbac middleware.
 type RBACMiddleware struct {
 	enforcer *auth.RBACEnforcer
 }
 
-// NewRBACMiddleware creates a new RBACMiddleware.
+// NewRBACMiddleware creates a new rbac middleware.
 //
-// Summary: Initializes the RBAC middleware.
+// Summary: Creates a new rbac middleware.
 //
-// Returns: - None.
-//   - *RBACMiddleware: The initialized middleware.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *RBACMiddleware: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewRBACMiddleware() *RBACMiddleware {
 	return &RBACMiddleware{
 		enforcer: auth.NewRBACEnforcer(),

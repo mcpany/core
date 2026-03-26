@@ -16,9 +16,9 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-// SftpProvider provides access to files via SFTP.
+// SftpProvider sftpProvider represents a sftp provider.
 //
-// Summary: Represents a SftpProvider.
+// Summary: SftpProvider represents a sftp provider.
 type SftpProvider struct {
 	fs     afero.Fs
 	client *sftp.Client

@@ -15,9 +15,9 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// Registry manages available middlewares.
+// Registry registry represents a registry.
 //
-// Summary: Represents a Registry.
+// Summary: Registry represents a registry.
 type Registry struct {
 	mu           sync.RWMutex
 	factories    map[string]Factory
@@ -167,9 +167,9 @@ func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler)
 	return middlewares
 }
 
-// StandardMiddlewares holds the standard middlewares that might need to be updated.
+// StandardMiddlewares standardMiddlewares represents a standard middlewares.
 //
-// Summary: Represents a StandardMiddlewares.
+// Summary: StandardMiddlewares represents a standard middlewares.
 type StandardMiddlewares struct {
 	Audit            *AuditMiddleware
 	GlobalRateLimit  *GlobalRateLimitMiddleware

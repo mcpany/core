@@ -19,9 +19,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// DoctorRunner runs the doctor command checks.
+// DoctorRunner doctorRunner represents a doctor runner.
 //
-// Summary: Component to run system health diagnostics.
+// Summary: DoctorRunner represents a doctor runner.
 type DoctorRunner struct {
 	Out        io.Writer
 	Fs         afero.Fs

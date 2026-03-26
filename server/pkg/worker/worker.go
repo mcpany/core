@@ -13,17 +13,17 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// Config holds the configuration for the worker.
+// Config config represents a config.
 //
-// Summary: Configuration for worker pool.
+// Summary: Config represents a config.
 type Config struct {
 	MaxWorkers   int
 	MaxQueueSize int
 }
 
-// Worker is responsible for processing jobs from the bus.
+// Worker worker represents a worker.
 //
-// Summary: Processes background jobs.
+// Summary: Worker represents a worker.
 type Worker struct {
 	busProvider *bus.Provider
 	pond        pond.Pool
@@ -52,12 +52,21 @@ func New(busProvider *bus.Provider, cfg *Config) *Worker {
 	}
 }
 
-// Start starts the worker and its background tasks.
+// Start start start.
 //
-// Summary: Starts the worker processing loop.
+// Summary: Start start.
 //
-// Parameters: - None.
-//   - ctx: context.Context. The context for the worker.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (w *Worker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	go w.startToolExecutionWorker(ctx)

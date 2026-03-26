@@ -9,9 +9,9 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-// Timeout implements a timeout policy for operations.
+// Timeout timeout represents a timeout.
 //
-// Summary: Enforces a maximum duration for operations.
+// Summary: Timeout represents a timeout.
 type Timeout struct {
 	duration *durationpb.Duration
 }

@@ -21,13 +21,9 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// RegistrationServer implements the gRPC server for service registration.
+// RegistrationServer registrationServer represents a registration server.
 //
-// Summary: Handles gRPC requests for registering and managing upstream services.
-//
-// Side Effects: - None.
-//   - Publishes messages to the event bus.
-//   - Interacts with the authentication manager.
+// Summary: RegistrationServer represents a registration server.
 type RegistrationServer struct {
 	v1.UnimplementedRegistrationServiceServer
 	bus         *bus.Provider

@@ -17,11 +17,9 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-// Manager handles the loading and listing of catalog services.
+// Manager manager represents a manager.
 //
-// Summary: Manages the service catalog.
-//
-// It scans a specified directory for service configurations and provides access to them.
+// Summary: Manager represents a manager.
 type Manager struct {
 	mu          sync.RWMutex
 	fs          afero.Fs

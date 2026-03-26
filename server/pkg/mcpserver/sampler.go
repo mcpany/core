@@ -11,9 +11,9 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// MCPSession wraps an MCP session to provide client interaction capabilities like sampling and roots.
+// MCPSession mCPSession represents a mcp session.
 //
-// Summary: Provides a wrapper around the MCP server session to facilitate client interactions.
+// Summary: MCPSession represents a mcp session.
 type MCPSession struct {
 	session *mcp.ServerSession
 }

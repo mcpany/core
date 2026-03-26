@@ -17,10 +17,9 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// StdioTransport implements mcp.Transport for a local command,
-// capturing stderr to provide better error messages on failure.
+// StdioTransport stdioTransport represents a stdio transport.
 //
-// Summary: Represents a StdioTransport.
+// Summary: StdioTransport represents a stdio transport.
 type StdioTransport struct {
 	Command *exec.Cmd
 }

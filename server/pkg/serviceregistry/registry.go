@@ -29,12 +29,9 @@ import (
 // Summary: Represents a ErrServiceAlreadyRegistered.
 var ErrServiceAlreadyRegistered = errors.New("service already registered")
 
-// ServiceRegistryInterface defines the interface for a service registry.
+// ServiceRegistryInterface serviceRegistryInterface represents a service registry interface.
 //
-// It manages the registration, lifecycle, and discovery of upstream services
-// and their associated capabilities (tools, resources, prompts).
-//
-// Summary: Represents a ServiceRegistryInterface.
+// Summary: ServiceRegistryInterface represents a service registry interface.
 type ServiceRegistryInterface interface { //nolint:revive
 	// RegisterService registers a new upstream service based on the provided configuration.
 	//
@@ -101,12 +98,9 @@ type ServiceRegistryInterface interface { //nolint:revive
 	GetServiceError(serviceID string) (string, bool)
 }
 
-// ServiceRegistry is the concrete implementation of ServiceRegistryInterface.
+// ServiceRegistry serviceRegistry represents a service registry.
 //
-// It serves as the central hub for managing upstream services, coordinating
-// with tool, prompt, and resource managers.
-//
-// Summary: Represents a ServiceRegistry.
+// Summary: ServiceRegistry represents a service registry.
 type ServiceRegistry struct {
 	mu              sync.RWMutex
 	serviceConfigs  map[string]*config.UpstreamServiceConfig

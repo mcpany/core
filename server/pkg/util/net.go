@@ -18,11 +18,9 @@ import (
 	"time"
 )
 
-// IPResolver defines an interface for looking up IP addresses.
+// IPResolver iPResolver represents a ip resolver.
 //
-// Summary: Interface for IP address resolution.
-//
-// It matches the signature of net.Resolver.LookupIP.
+// Summary: IPResolver represents a ip resolver.
 type IPResolver interface {
 	// LookupIP looks up host using the local resolver.
 	//
@@ -39,11 +37,9 @@ type IPResolver interface {
 	LookupIP(ctx context.Context, network, host string) ([]net.IP, error)
 }
 
-// NetDialer defines an interface for dialing network connections.
+// NetDialer netDialer represents a net dialer.
 //
-// Summary: Interface for network dialing.
-//
-// It matches the signature of net.Dialer.DialContext.
+// Summary: NetDialer represents a net dialer.
 type NetDialer interface {
 	// DialContext connects to the address on the named network using the provided context.
 	//
@@ -60,9 +56,9 @@ type NetDialer interface {
 	DialContext(ctx context.Context, network, address string) (net.Conn, error)
 }
 
-// SafeDialer provides control over outbound connections to prevent Server-Side Request Forgery (SSRF).
+// SafeDialer safeDialer represents a safe dialer.
 //
-// Summary: Secure network dialer preventing SSRF.
+// Summary: SafeDialer represents a safe dialer.
 type SafeDialer struct {
 	// AllowLoopback allows connections to loopback addresses (127.0.0.1, ::1).
 	AllowLoopback bool
@@ -78,14 +74,21 @@ type SafeDialer struct {
 	Dialer NetDialer
 }
 
-// NewSafeDialer creates a new SafeDialer with strict default security settings.
+// NewSafeDialer creates a new safe dialer.
 //
-// Summary: Initializes a SafeDialer with secure defaults.
+// Summary: Creates a new safe dialer.
 //
-// By default, it blocks all non-public IP addresses (loopback, private, link-local).
+// Parameters:
+//   - None.
 //
-// Returns: - None.
-//   - (*SafeDialer): A new SafeDialer instance with restrictive defaults.
+// Returns:
+//   - *SafeDialer: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewSafeDialer() *SafeDialer {
 	return &SafeDialer{
 		AllowLoopback:  false,
@@ -186,19 +189,21 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 	return NewSafeDialer().DialContext(ctx, network, addr)
 }
 
-// NewSafeHTTPClient creates a new HTTP client configured to prevent SSRF attacks.
+// NewSafeHTTPClient creates a new safe http client.
 //
-// Summary: Creates a secure HTTP client.
+// Summary: Creates a new safe http client.
 //
-// It uses a custom Transport backed by SafeDialer.
+// Parameters:
+//   - None.
 //
-// Configuration is loaded from environment variables:
-//   - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS: Set to "true" to allow all local connections (loopback, private).
-//   - MCPANY_ALLOW_LOOPBACK_RESOURCES: Set to "true" to allow loopback connections.
-//   - MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES: Set to "true" to allow private network connections.
+// Returns:
+//   - *http.Client: The result.
 //
-// Returns: - None.
-//   - (*http.Client): A configured HTTP client.
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewSafeHTTPClient() *http.Client {
 	dialer := NewSafeDialer()
 	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {

@@ -12,9 +12,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// GuardrailsConfig defines patterns to block.
+// GuardrailsConfig guardrailsConfig represents a guardrails config.
 //
-// Summary: Configuration for the guardrails middleware.
+// Summary: GuardrailsConfig represents a guardrails config.
 type GuardrailsConfig struct {
 	BlockedPhrases []string
 }

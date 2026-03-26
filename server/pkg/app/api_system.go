@@ -13,9 +13,9 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// SystemStatusResponse represents the response from the system status API.
+// SystemStatusResponse systemStatusResponse represents a system status response.
 //
-// Summary: Represents a SystemStatusResponse.
+// Summary: SystemStatusResponse represents a system status response.
 type SystemStatusResponse struct {
 	UptimeSeconds     int64    `json:"uptime_seconds"`
 	ActiveConnections int32    `json:"active_connections"`

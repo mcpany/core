@@ -16,9 +16,9 @@ import (
 	"github.com/spf13/afero"
 )
 
-// S3Provider provides access to files in an S3 bucket.
+// S3Provider s3Provider represents a s3 provider.
 //
-// Summary: Represents a S3Provider.
+// Summary: S3Provider represents a s3 provider.
 type S3Provider struct {
 	fs afero.Fs
 }

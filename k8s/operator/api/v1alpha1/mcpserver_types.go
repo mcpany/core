@@ -7,11 +7,9 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// MCPServerSpec defines the desired state of MCPServer.
+// MCPServerSpec mCPServerSpec represents a mcp server spec.
 //
-// Summary: Specification for MCPServer resource.
-//
-// +kubebuilder:object:generate=true
+// Summary: MCPServerSpec represents a mcp server spec.
 type MCPServerSpec struct {
 	// Replicas is the number of replicas for the server
 	Replicas *int32 `json:"replicas,omitempty"`
@@ -24,22 +22,18 @@ type MCPServerSpec struct {
 	ConfigMap string `json:"configMap"`
 }
 
-// MCPServerStatus defines the observed state of MCPServer.
+// MCPServerStatus mCPServerStatus represents a mcp server status.
 //
-// Summary: Status of MCPServer resource.
-//
-// +kubebuilder:object:generate=true
+// Summary: MCPServerStatus represents a mcp server status.
 type MCPServerStatus struct {
 	// AvailableReplicas is the number of available replicas
 	AvailableReplicas int32 `json:"availableReplicas"`
 }
 
-// +kubebuilder:object:root=true
-// +kubebuilder:subresource:status
 
-// MCPServer is the Schema for the mcpservers API.
+// MCPServer mCPServer represents a mcp server.
 //
-// Summary: MCPServer resource definition.
+// Summary: MCPServer represents a mcp server.
 type MCPServer struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -48,11 +42,10 @@ type MCPServer struct {
 	Status MCPServerStatus `json:"status,omitempty"`
 }
 
-// +kubebuilder:object:root=true
 
-// MCPServerList contains a list of MCPServer.
+// MCPServerList mCPServerList represents a mcp server list.
 //
-// Summary: List of MCPServer resources.
+// Summary: MCPServerList represents a mcp server list.
 type MCPServerList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`

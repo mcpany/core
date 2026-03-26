@@ -18,12 +18,9 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// UpstreamAuthenticator defines the interface for authentication methods used
-// when communicating with upstream services. Each implementation is responsible
-// for modifying the HTTP request to include the necessary authentication
-// credentials.
+// UpstreamAuthenticator upstreamAuthenticator represents a upstream authenticator.
 //
-// Summary: Represents a UpstreamAuthenticator.
+// Summary: UpstreamAuthenticator represents a upstream authenticator.
 type UpstreamAuthenticator interface {
 	// Authenticate modifies the given HTTP request to add authentication
 	// information, such as headers or basic auth credentials.
@@ -137,10 +134,9 @@ func NewUpstreamAuthenticator(authConfig *configv1.Authentication) (UpstreamAuth
 	return nil, nil
 }
 
-// APIKeyAuth implements UpstreamAuthenticator for API key-based authentication.
-// It adds a specified header with a static API key value to the request.
+// APIKeyAuth aPIKeyAuth represents a api key auth.
 //
-// Summary: Represents a APIKeyAuth.
+// Summary: APIKeyAuth represents a api key auth.
 type APIKeyAuth struct {
 	ParamName string
 	Value     *configv1.SecretValue
@@ -192,10 +188,9 @@ func (a *APIKeyAuth) Authenticate(req *http.Request) error {
 	return nil
 }
 
-// BearerTokenAuth implements UpstreamAuthenticator for bearer token-based
-// authentication. It adds an "Authorization" header with a bearer token.
+// BearerTokenAuth bearerTokenAuth represents a bearer token auth.
 //
-// Summary: Represents a BearerTokenAuth.
+// Summary: BearerTokenAuth represents a bearer token auth.
 type BearerTokenAuth struct {
 	Token *configv1.SecretValue
 }
@@ -230,10 +225,9 @@ func (b *BearerTokenAuth) Authenticate(req *http.Request) error {
 	return nil
 }
 
-// BasicAuth implements UpstreamAuthenticator for basic HTTP authentication.
-// It adds an "Authorization" header with the username and password.
+// BasicAuth basicAuth represents a basic auth.
 //
-// Summary: Represents a BasicAuth.
+// Summary: BasicAuth represents a basic auth.
 type BasicAuth struct {
 	Username string
 	Password *configv1.SecretValue
@@ -269,9 +263,9 @@ func (b *BasicAuth) Authenticate(req *http.Request) error {
 	return nil
 }
 
-// OAuth2Auth implements UpstreamAuthenticator for OAuth2 client credentials flow.
+// OAuth2Auth oAuth2Auth represents a o auth2 auth.
 //
-// Summary: Represents a OAuth2Auth.
+// Summary: OAuth2Auth represents a o auth2 auth.
 type OAuth2Auth struct {
 	ClientID     *configv1.SecretValue
 	ClientSecret *configv1.SecretValue

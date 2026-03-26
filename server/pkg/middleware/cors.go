@@ -10,19 +10,21 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// CORSMiddleware creates an MCP middleware for handling Cross-Origin Resource
-// Sharing (CORS). It is intended to add the necessary CORS headers to outgoing
-// responses, allowing web browsers to securely make cross-origin requests to
-// the MCP server.
+// CORSMiddleware cORSMiddleware cors middleware.
 //
-// NOTE: This middleware is currently a placeholder for MCP-level (JSON-RPC)
-// interception and does not handle HTTP CORS headers.
-// HTTP CORS is handled by the dedicated HTTP middleware in cors_http.go.
+// Summary: CORSMiddleware cors middleware.
 //
-// Summary: Creates a placeholder MCP CORS middleware.
+// Parameters:
+//   - None.
 //
-// Returns: - None.
-//   - (mcp.Middleware): The middleware function.
+// Returns:
+//   - mcp.Middleware: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func CORSMiddleware() mcp.Middleware {
 	// Log a warning once when the middleware is created to inform the user.
 	// This helps avoid confusion if they expect this middleware to handle HTTP CORS.

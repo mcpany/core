@@ -55,13 +55,9 @@ var fastJSON = jsoniter.Config{
 // Summary: Represents a AddReceivingMiddlewareHook.
 var AddReceivingMiddlewareHook func(name string)
 
-// Server is the core of the MCP Any application.
+// Server server represents a server.
 //
-// It orchestrates the handling of MCP (Model Context Protocol) requests by managing various components such as
-// tools, prompts, resources, and services. It uses an internal router to delegate requests to the appropriate
-// handlers and communicates with backend workers via an event bus.
-//
-// Summary: Represents a Server.
+// Summary: Server represents a server.
 type Server struct {
 	server          *mcp.Server
 	router          *Router
@@ -1301,12 +1297,9 @@ func (l LazyRedact) LogValue() slog.Value {
 	return slog.StringValue(util.BytesToString(util.RedactJSON(l)))
 }
 
-// LazyLogResult wraps a tool execution result for efficient logging.
+// LazyLogResult lazyLogResult represents a lazy log result.
 //
-// It avoids expensive serialization of large payloads (e.g. images, huge text)
-// and lazily computes the string representation only when logging is enabled.
-//
-// Summary: Represents a LazyLogResult.
+// Summary: LazyLogResult represents a lazy log result.
 type LazyLogResult struct {
 	Value any
 }

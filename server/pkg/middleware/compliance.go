@@ -12,18 +12,18 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// JSONRPCError represents a JSON-RPC 2.0 error object.
+// JSONRPCError jSONRPCError represents a jsonrpc error.
 //
-// Summary: Represents a JSONRPCError.
+// Summary: JSONRPCError represents a jsonrpc error.
 type JSONRPCError struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
 	Data    any    `json:"data,omitempty"`
 }
 
-// JSONRPCResponse represents a JSON-RPC 2.0 response object.
+// JSONRPCResponse jSONRPCResponse represents a jsonrpc response.
 //
-// Summary: Represents a JSONRPCResponse.
+// Summary: JSONRPCResponse represents a jsonrpc response.
 type JSONRPCResponse struct {
 	JSONRPC string        `json:"jsonrpc"`
 	ID      any           `json:"id"`
@@ -95,22 +95,40 @@ type smartResponseWriter struct {
 	passThrough bool
 }
 
-// Header returns the header map that will be sent by WriteHeader.
+// Header header header.
 //
-// Summary: Returns the response headers.
+// Summary: Header header.
 //
-// Returns: - None.
-//   - http.Header: The header map.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - http.Header: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (w *smartResponseWriter) Header() http.Header {
 	return w.header
 }
 
-// WriteHeader sends an HTTP response header with the provided status code.
+// WriteHeader writeHeader write header.
 //
-// Summary: Writes the status code to the response.
+// Summary: WriteHeader write header.
 //
-// Parameters: - None.
-//   - code: int. The HTTP status code.
+// Parameters:
+//   - code (int): The code.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (w *smartResponseWriter) WriteHeader(code int) {
 	if w.committed {
 		return
@@ -179,13 +197,21 @@ func (w *smartResponseWriter) flushHeader() {
 	w.w.WriteHeader(w.statusCode)
 }
 
-// Flush implements http.Flusher to support streaming.
+// Flush flush flush.
 //
-// Summary: Flushes the response buffer to the client.
+// Summary: Flush flush.
 //
-// Returns: - None.
+// Parameters:
+//   - None.
 //
-//	None.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (w *smartResponseWriter) Flush() {
 	if w.passThrough {
 		if f, ok := w.w.(http.Flusher); ok {

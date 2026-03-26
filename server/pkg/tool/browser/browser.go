@@ -13,11 +13,9 @@ import (
 	"github.com/playwright-community/playwright-go"
 )
 
-// PageFetcher fetches the visible text content of a URL.
-// It is an interface so tests can inject a lightweight implementation without
-// requiring a real browser installation.
+// PageFetcher pageFetcher represents a page fetcher.
 //
-// Summary: Represents a PageFetcher.
+// Summary: PageFetcher represents a page fetcher.
 type PageFetcher interface {
 	// FetchText retrieves the text content of a URL.
 	//
@@ -39,19 +37,28 @@ type PageFetcher interface {
 	FetchText(ctx context.Context, url string) (string, error)
 }
 
-// Provider implements a basic browser automation tool.
+// Provider provider represents a provider.
 //
-// Summary: Tool provider for browsing web pages.
+// Summary: Provider represents a provider.
 type Provider struct {
 	fetcher PageFetcher // nil → default playwrightFetcher
 }
 
-// NewProvider creates a new Provider.
+// NewProvider creates a new provider.
 //
-// Summary: Initializes a new browser provider.
+// Summary: Creates a new provider.
 //
-// Returns: - None.
-//   - *Provider: The initialized provider.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *Provider: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewProvider() *Provider {
 	return &Provider{}
 }
@@ -86,12 +93,21 @@ func (b *Provider) BrowsePage(ctx context.Context, url string) (string, error) {
 	return strings.TrimSpace(content), nil
 }
 
-// ToolDefinition returns the MCP tool definition.
+// ToolDefinition toolDefinition tool definition.
 //
-// Summary: Defines the metadata for the browse_page tool.
+// Summary: ToolDefinition tool definition.
 //
-// Returns: - None.
-//   - map[string]interface{}: The JSON schema definition of the tool.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - map[string]interface: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (b *Provider) ToolDefinition() map[string]interface{} {
 	return map[string]interface{}{
 		"name":        "browse_page",

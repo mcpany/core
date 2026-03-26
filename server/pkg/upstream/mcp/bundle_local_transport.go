@@ -10,9 +10,9 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// BundleLocalTransport implements mcp.Transport for running a bundle locally via exec.
+// BundleLocalTransport bundleLocalTransport represents a bundle local transport.
 //
-// Summary: Represents a BundleLocalTransport.
+// Summary: BundleLocalTransport represents a bundle local transport.
 type BundleLocalTransport struct {
 	Command    string
 	Args       []string

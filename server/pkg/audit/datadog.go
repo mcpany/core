@@ -24,9 +24,9 @@ const (
 	datadogBatchWait  = 1 * time.Second
 )
 
-// DatadogAuditStore sends audit logs to Datadog.
+// DatadogAuditStore datadogAuditStore represents a datadog audit store.
 //
-// Summary: Asynchronous audit store that forwards logs to Datadog's API.
+// Summary: DatadogAuditStore represents a datadog audit store.
 type DatadogAuditStore struct {
 	config *configv1.DatadogConfig
 	client *http.Client
@@ -199,16 +199,21 @@ func (e *DatadogAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for datadog audit store")
 }
 
-// Close closes the queue and waits for workers to finish.
+// Close close close.
 //
-// Summary: Shuts down the Datadog audit store gracefully.
+// Summary: Close close.
 //
-// Returns: - None.
-//   - error: Always nil.
+// Parameters:
+//   - None.
 //
-// Side Effects: - None.
-//   - Closes internal channels.
-//   - Flushes pending logs.
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (e *DatadogAuditStore) Close() error {
 	if e.done != nil {
 		close(e.done)

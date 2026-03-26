@@ -18,9 +18,9 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// MockOAuth2Server serves as a mock OIDC/OAuth2 provider.
+// MockOAuth2Server mockOAuth2Server represents a mock o auth2 server.
 //
-// Summary: Represents a MockOAuth2Server.
+// Summary: MockOAuth2Server represents a mock o auth2 server.
 type MockOAuth2Server struct {
 	*httptest.Server
 	PrivateKey *rsa.PrivateKey

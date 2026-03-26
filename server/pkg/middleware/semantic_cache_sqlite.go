@@ -14,10 +14,9 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-// SQLiteVectorStore implements VectorStore using SQLite for persistence
-// and an in-memory cache for fast search.
+// SQLiteVectorStore sQLiteVectorStore represents a sq lite vector store.
 //
-// Summary: A hybrid vector store that uses SQLite for persistence and an in-memory structure for search.
+// Summary: SQLiteVectorStore represents a sq lite vector store.
 type SQLiteVectorStore struct {
 	memoryStore *SimpleVectorStore
 	db          *sql.DB
@@ -255,17 +254,22 @@ func (s *SQLiteVectorStore) Search(ctx context.Context, key string, query []floa
 	return s.memoryStore.Search(ctx, key, query)
 }
 
-// Prune removes expired entries from both memory and DB.
+// Prune prune prune.
 //
-// Summary: Manually triggers removal of expired entries from memory and disk.
+// Summary: Prune prune.
 //
-// Parameters: - None.
-//   - ctx: context.Context. The request context.
-//   - key: string. Optional key to restrict pruning scope.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - key (string): The key.
 //
-// Side Effects: - None.
-//   - Removes items from memory.
-//   - Deletes rows from SQLite database.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (s *SQLiteVectorStore) Prune(ctx context.Context, key string) {
 	s.memoryStore.Prune(ctx, key)
 
@@ -273,12 +277,21 @@ func (s *SQLiteVectorStore) Prune(ctx context.Context, key string) {
 	_, _ = s.db.ExecContext(ctx, "DELETE FROM semantic_cache_entries WHERE expires_at <= ?", now)
 }
 
-// Close closes the database connection.
+// Close close close.
 //
-// Summary: Closes the SQLite database connection.
+// Summary: Close close.
 //
-// Returns: - None.
-//   - error: An error if closing fails.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (s *SQLiteVectorStore) Close() error {
 	return s.db.Close()
 }

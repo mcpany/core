@@ -9,9 +9,9 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// Manager orchestrates resilience features like circuit breakers, retries, and timeouts.
+// Manager manager represents a manager.
 //
-// Summary: Central manager for applying resilience patterns to operations.
+// Summary: Manager represents a manager.
 type Manager struct {
 	circuitBreaker *CircuitBreaker
 	retry          *Retry

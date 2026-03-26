@@ -12,11 +12,9 @@ import (
 	"github.com/coreos/go-oidc/v3/oidc"
 )
 
-// OAuth2Authenticator implements the Authenticator interface for OAuth2-based
-// authentication using OpenID Connect (OIDC). It validates JWTs (JSON Web
-// Tokens) presented in the HTTP Authorization header.
+// OAuth2Authenticator oAuth2Authenticator represents a o auth2 authenticator.
 //
-// Summary: Represents a OAuth2Authenticator.
+// Summary: OAuth2Authenticator represents a o auth2 authenticator.
 type OAuth2Authenticator struct {
 	verifier  *oidc.IDTokenVerifier
 	audiences []string

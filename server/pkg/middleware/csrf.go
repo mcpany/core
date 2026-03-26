@@ -13,9 +13,9 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// CSRFMiddleware protects against Cross-Site Request Forgery attacks.
+// CSRFMiddleware cSRFMiddleware represents a csrf middleware.
 //
-// Summary: Middleware that blocks unauthorized cross-origin requests.
+// Summary: CSRFMiddleware represents a csrf middleware.
 type CSRFMiddleware struct {
 	allowedOrigins map[string]bool
 	mu             sync.RWMutex
@@ -41,15 +41,21 @@ func NewCSRFMiddleware(allowedOrigins []string) *CSRFMiddleware {
 	return m
 }
 
-// Update updates the allowed origins.
+// Update updates the .
 //
-// Summary: Updates the list of allowed origins at runtime.
+// Summary: Updates the .
 //
-// Parameters: - None.
-//   - origins: []string. The new list of allowed origins.
+// Parameters:
+//   - origins ([]string): The origins.
 //
-// Side Effects: - None.
-//   - Replaces the existing allowed origins map in a thread-safe manner.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *CSRFMiddleware) Update(origins []string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()

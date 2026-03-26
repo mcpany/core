@@ -34,25 +34,40 @@ func newBaseTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.Upstr
 	}, nil
 }
 
-// Tool returns the protobuf definition of the tool.
+// Tool tool tool.
 //
-// Summary: Retrieves the protobuf definition.
+// Summary: Tool tool.
 //
-// Returns: - None.
-//   - *v1.Tool: The protobuf tool definition.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *v1.Tool: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *baseTool) Tool() *v1.Tool {
 	return t.tool
 }
 
-// MCPTool returns the MCP tool definition.
+// MCPTool mCPTool mcp tool.
 //
-// Summary: Retrieves the MCP-compliant tool definition.
+// Summary: MCPTool mcp tool.
 //
-// Returns: - None.
-//   - *mcp.Tool: The MCP tool definition.
+// Parameters:
+//   - None.
 //
-// Side Effects: - None.
-//   - Lazily converts the proto definition to MCP format on first call.
+// Returns:
+//   - *mcp.Tool: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *baseTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -64,12 +79,21 @@ func (t *baseTool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
 
-// GetCacheConfig returns the cache configuration for the tool, or nil if caching is disabled.
+// GetCacheConfig retrieves the cache config.
 //
-// Summary: Retrieves the cache configuration (always nil for baseTool).
+// Summary: Retrieves the cache config.
 //
-// Returns: - None.
-//   - *configv1.CacheConfig: Always returns nil.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.CacheConfig: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *baseTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }

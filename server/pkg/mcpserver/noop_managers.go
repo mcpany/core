@@ -13,9 +13,9 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// NoOpToolManager is a no-op implementation of tool.ManagerInterface.
+// NoOpToolManager noOpToolManager represents a no op tool manager.
 //
-// Summary: A tool manager that does nothing.
+// Summary: NoOpToolManager represents a no op tool manager.
 type NoOpToolManager struct{}
 
 // AddTool implements tool.ManagerInterface.
@@ -232,9 +232,9 @@ func (m *NoOpToolManager) GetToolCountForService(_ string) int {
 	return 0
 }
 
-// NoOpPromptManager is a no-op implementation of prompt.ManagerInterface.
+// NoOpPromptManager noOpPromptManager represents a no op prompt manager.
 //
-// Summary: A prompt manager that does nothing.
+// Summary: NoOpPromptManager represents a no op prompt manager.
 type NoOpPromptManager struct{}
 
 // AddPrompt implements prompt.ManagerInterface.
@@ -319,9 +319,9 @@ func (m *NoOpPromptManager) ClearPromptsForService(_ string) {}
 //   - None.
 func (m *NoOpPromptManager) SetMCPServer(_ prompt.MCPServerProvider) {}
 
-// NoOpResourceManager is a no-op implementation of resource.ManagerInterface.
+// NoOpResourceManager noOpResourceManager represents a no op resource manager.
 //
-// Summary: A resource manager that does nothing.
+// Summary: NoOpResourceManager represents a no op resource manager.
 type NoOpResourceManager struct{}
 
 // GetResource implements resource.ManagerInterface.

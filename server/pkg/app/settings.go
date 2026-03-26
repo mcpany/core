@@ -10,10 +10,9 @@ import (
 	config_v1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// GlobalSettingsManager manages the global settings of the application in a thread-safe manner.
-// It allows for dynamic updates to configuration values that are used across the application.
+// GlobalSettingsManager globalSettingsManager represents a global settings manager.
 //
-// Summary: Represents a GlobalSettingsManager.
+// Summary: GlobalSettingsManager represents a global settings manager.
 type GlobalSettingsManager struct {
 	mu             sync.RWMutex
 	apiKey         atomic.Value // stores string
@@ -84,12 +83,21 @@ func (m *GlobalSettingsManager) Update(settings *config_v1.GlobalSettings, expli
 	m.allowedOrigins.Store(origins)
 }
 
-// GetAPIKey returns the current API key.
+// GetAPIKey retrieves the api key.
 //
-// Summary: Retrieves the active API key.
+// Summary: Retrieves the api key.
 //
-// Returns: - None.
-//   - string: The API key.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *GlobalSettingsManager) GetAPIKey() string {
 	val := m.apiKey.Load()
 	if val == nil {
@@ -98,12 +106,21 @@ func (m *GlobalSettingsManager) GetAPIKey() string {
 	return val.(string)
 }
 
-// GetAllowedIPs returns the current allowed IPs.
+// GetAllowedIPs retrieves the allowed i ps.
 //
-// Summary: Retrieves the list of allowed IP addresses.
+// Summary: Retrieves the allowed i ps.
 //
-// Returns: - None.
-//   - []string: A list of allowed IP CIDRs or addresses.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []string: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *GlobalSettingsManager) GetAllowedIPs() []string {
 	val := m.allowedIPs.Load()
 	if val == nil {
@@ -112,12 +129,21 @@ func (m *GlobalSettingsManager) GetAllowedIPs() []string {
 	return val.([]string)
 }
 
-// GetAllowedOrigins returns the current allowed origins.
+// GetAllowedOrigins retrieves the allowed origins.
 //
-// Summary: Retrieves the list of allowed CORS origins.
+// Summary: Retrieves the allowed origins.
 //
-// Returns: - None.
-//   - []string: A list of allowed origins.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []string: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *GlobalSettingsManager) GetAllowedOrigins() []string {
 	val := m.allowedOrigins.Load()
 	if val == nil {

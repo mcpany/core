@@ -11,9 +11,9 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// MockTool is a mock implementation of the Tool interface for testing purposes.
+// MockTool mockTool represents a mock tool.
 //
-// Summary: Mock tool for testing.
+// Summary: MockTool represents a mock tool.
 type MockTool struct {
 	ToolFunc           func() *v1.Tool
 	MCPToolFunc        func() *mcp.Tool
@@ -21,12 +21,21 @@ type MockTool struct {
 	GetCacheConfigFunc func() *configv1.CacheConfig
 }
 
-// Tool returns the protobuf definition of the mock tool.
+// Tool tool tool.
 //
-// Summary: Retrieves the mock tool definition.
+// Summary: Tool tool.
 //
-// Returns: - None.
-//   - *v1.Tool: The tool definition.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *v1.Tool: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockTool) Tool() *v1.Tool {
 	if m.ToolFunc != nil {
 		return m.ToolFunc()
@@ -34,12 +43,21 @@ func (m *MockTool) Tool() *v1.Tool {
 	return &v1.Tool{}
 }
 
-// MCPTool returns the MCP tool definition.
+// MCPTool mCPTool mcp tool.
 //
-// Summary: Retrieves the MCP tool definition.
+// Summary: MCPTool mcp tool.
 //
-// Returns: - None.
-//   - *mcp.Tool: The MCP tool definition.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *mcp.Tool: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockTool) MCPTool() *mcp.Tool {
 	if m.MCPToolFunc != nil {
 		return m.MCPToolFunc()
@@ -65,12 +83,21 @@ func (m *MockTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	return nil, nil
 }
 
-// GetCacheConfig calls the mock GetCacheConfigFunc if set, otherwise returns nil.
+// GetCacheConfig retrieves the cache config.
 //
-// Summary: Retrieves the cache configuration.
+// Summary: Retrieves the cache config.
 //
-// Returns: - None.
-//   - *configv1.CacheConfig: The cache configuration.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.CacheConfig: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockTool) GetCacheConfig() *configv1.CacheConfig {
 	if m.GetCacheConfigFunc != nil {
 		return m.GetCacheConfigFunc()

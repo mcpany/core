@@ -29,12 +29,9 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// Upstream implements the upstream.Upstream interface for filesystem services.
+// Upstream upstream represents a upstream.
 //
-// It provides tools for interacting with various filesystem backends (local,
-// S3, GCS, etc.) as defined in the service configuration.
-//
-// Summary: Represents a Upstream.
+// Summary: Upstream represents a upstream.
 type Upstream struct {
 	mu      sync.Mutex
 	closers []io.Closer

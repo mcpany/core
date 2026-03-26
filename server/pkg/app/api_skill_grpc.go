@@ -14,9 +14,9 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// SkillServiceServer implements the SkillService gRPC interface.
+// SkillServiceServer skillServiceServer represents a skill service server.
 //
-// Summary: Represents a SkillServiceServer.
+// Summary: SkillServiceServer represents a skill service server.
 type SkillServiceServer struct {
 	pb.UnimplementedSkillServiceServer
 	manager *skill.Manager

@@ -14,10 +14,9 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// DynamicResource implements the Resource interface for resources that are
-// fetched dynamically by executing a tool.
+// DynamicResource dynamicResource represents a dynamic resource.
 //
-// Summary: Represents a DynamicResource.
+// Summary: DynamicResource represents a dynamic resource.
 type DynamicResource struct {
 	resource *mcp.Resource
 	tool     tool.Tool
@@ -54,22 +53,40 @@ func NewDynamicResource(def *configv1.ResourceDefinition, t tool.Tool) (*Dynamic
 	}, nil
 }
 
-// Resource returns the MCP representation of the resource.
+// Resource resource resource.
 //
-// Summary: Retrieves the MCP resource metadata.
+// Summary: Resource resource.
 //
-// Returns: - None.
-//   - *mcp.Resource: The MCP resource definition.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *mcp.Resource: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (r *DynamicResource) Resource() *mcp.Resource {
 	return r.resource
 }
 
-// Service returns the ID of the service that provides this resource.
+// Service service service.
 //
-// Summary: Retrieves the service ID.
+// Summary: Service service.
 //
-// Returns: - None.
-//   - string: The service ID.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (r *DynamicResource) Service() string {
 	return r.tool.Tool().GetServiceId()
 }

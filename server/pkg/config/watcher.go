@@ -13,18 +13,9 @@ import (
 	"github.com/fsnotify/fsnotify"
 )
 
-// Watcher monitors configuration files for changes and triggers a reload.
+// Watcher watcher represents a watcher.
 //
-// Summary: A file system watcher for configuration reloading.
-//
-// It watches the parent directory of specified files to handle atomic saves (rename/move)
-// commonly used by text editors.
-//
-// Fields:
-//   - watcher (*fsnotify.Watcher): The underlying fsnotify watcher.
-//   - done (chan bool): Channel to signal shutdown.
-//   - mu (sync.Mutex): Mutex to protect concurrent access.
-//   - timer (*time.Timer): Timer for debouncing reload events.
+// Summary: Watcher represents a watcher.
 type Watcher struct {
 	watcher *fsnotify.Watcher
 	done    chan bool

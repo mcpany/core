@@ -8,13 +8,9 @@ import (
 	"fmt"
 )
 
-// ActionableError is an error that includes a suggestion for fixing the issue.
+// ActionableError actionableError represents a actionable error.
 //
-// Summary: An error type that pairs an underlying error with a user-facing suggestion.
-//
-// Fields:
-//   - Err: error. The original error that occurred.
-//   - Suggestion: string. A human-readable suggestion on how to resolve the error.
+// Summary: ActionableError represents a actionable error.
 type ActionableError struct {
 	Err        error
 	Suggestion string

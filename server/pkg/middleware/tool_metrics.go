@@ -82,9 +82,9 @@ var (
 	)
 )
 
-// ToolMetricsMiddleware provides detailed metrics for tool executions.
+// ToolMetricsMiddleware toolMetricsMiddleware represents a tool metrics middleware.
 //
-// Summary: Middleware that records Prometheus metrics for tool execution calls.
+// Summary: ToolMetricsMiddleware represents a tool metrics middleware.
 type ToolMetricsMiddleware struct {
 	tokenizer tokenizer.Tokenizer
 }

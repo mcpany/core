@@ -16,12 +16,9 @@ import (
 // Summary: Represents a ErrResourceNotFound.
 var ErrResourceNotFound = errors.New("resource not found")
 
-// Resource defines the interface for a resource that can be managed by the Manager.
+// Resource resource represents a resource.
 //
-// Summary: Interface for a managed resource.
-//
-// A resource represents a data source (e.g., a file, a database record) that can be
-// read by an MCP client.
+// Summary: Resource represents a resource.
 type Resource interface {
 	// Resource returns the MCP representation of the resource, which includes its metadata.
 	//
@@ -55,12 +52,9 @@ type Resource interface {
 	Subscribe(ctx context.Context) error
 }
 
-// ManagerInterface defines the interface for managing a collection of resources.
+// ManagerInterface managerInterface represents a manager interface.
 //
-// Summary: Interface for resource management.
-//
-// It provides methods for adding, removing, listing, and retrieving resources, as well
-// as managing callbacks for list changes.
+// Summary: ManagerInterface represents a manager interface.
 type ManagerInterface interface {
 	// GetResource retrieves a resource by its URI.
 	//
@@ -115,12 +109,9 @@ type ManagerInterface interface {
 	ClearResourcesForService(serviceID string)
 }
 
-// Manager is a thread-safe implementation of the ManagerInterface.
+// Manager manager represents a manager.
 //
-// Summary: Thread-safe resource manager implementation.
-//
-// It manages the lifecycle and retrieval of resources, providing thread-safe access
-// and efficient listing via caching.
+// Summary: Manager represents a manager.
 type Manager struct {
 	mu                sync.RWMutex
 	resources         map[string]Resource
@@ -128,12 +119,21 @@ type Manager struct {
 	cachedResources   []Resource
 }
 
-// NewManager creates and returns a new, empty Manager.
+// NewManager creates a new manager.
 //
-// Summary: Creates a new resource manager.
+// Summary: Creates a new manager.
 //
-// Returns: - None.
-//   - *Manager: A new Manager instance.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *Manager: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewManager() *Manager {
 	return &Manager{
 		resources: make(map[string]Resource),
@@ -215,15 +215,21 @@ func (rm *Manager) RemoveResource(uri string) {
 	}
 }
 
-// ListResources returns a slice containing all the resources currently registered in the manager.
+// ListResources retrieves a list of resources.
 //
-// Summary: Lists all managed resources.
+// Summary: Retrieves a list of resources.
 //
-// It uses a read-through cache (double-checked locking) to minimize allocation overhead
-// for frequent calls.
+// Parameters:
+//   - None.
 //
-// Returns: - None.
-//   - []Resource: A slice of currently registered resources.
+// Returns:
+//   - []Resource: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (rm *Manager) ListResources() []Resource {
 	// ⚡ Bolt: Use a read-through cache to avoid repeated map iteration and slice allocation.
 	// The cache is invalidated on any write operation (Add/Remove).

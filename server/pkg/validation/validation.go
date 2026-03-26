@@ -138,12 +138,21 @@ var (
 	allowedPaths []string
 )
 
-// SetAllowedPaths sets the list of allowed paths for file operations.
+// SetAllowedPaths setAllowedPaths set allowed paths.
 //
-// Summary: Sets the global allowed paths list.
+// Summary: SetAllowedPaths set allowed paths.
 //
-// Parameters: - None.
-//   - paths: []string. The list of allowed paths.
+// Parameters:
+//   - paths ([]string): The paths.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func SetAllowedPaths(paths []string) {
 	allowedPaths = paths
 }

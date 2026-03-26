@@ -254,12 +254,21 @@ func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T
 	return unsub
 }
 
-// Close closes the Kafka writer.
+// Close close close.
 //
-// Summary: Closes the Kafka connection.
+// Summary: Close close.
 //
-// Returns: - None.
-//   - error: An error if closing fails.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) Close() error {
 	return b.writer.Close()
 }

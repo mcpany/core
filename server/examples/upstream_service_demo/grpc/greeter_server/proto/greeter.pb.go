@@ -24,7 +24,9 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// The request message containing the user's name.
+// HelloRequest helloRequest represents a hello request.
+//
+// Summary: HelloRequest represents a hello request.
 type HelloRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -93,7 +95,22 @@ func (x *HelloRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use HelloRequest.ProtoReflect.Descriptor instead.
+// Descriptor executes Descriptor operation.
+//
+// Summary: Executes Descriptor operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []byte: The result.
+//   - []int: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (*HelloRequest) Descriptor() ([]byte, []int) {
 	return file_greeter_proto_rawDescGZIP(), []int{0}
 }
@@ -114,7 +131,9 @@ func (x *HelloRequest) GetName() string {
 	return ""
 }
 
-// The response message containing the greetings
+// HelloReply helloReply represents a hello reply.
+//
+// Summary: HelloReply represents a hello reply.
 type HelloReply struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Message       string                 `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
@@ -183,7 +202,22 @@ func (x *HelloReply) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use HelloReply.ProtoReflect.Descriptor instead.
+// Descriptor executes Descriptor operation.
+//
+// Summary: Executes Descriptor operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []byte: The result.
+//   - []int: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (*HelloReply) Descriptor() ([]byte, []int) {
 	return file_greeter_proto_rawDescGZIP(), []int{1}
 }

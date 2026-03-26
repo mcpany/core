@@ -9,9 +9,9 @@ import (
 	"github.com/spf13/afero"
 )
 
-// Provider defines the interface for a filesystem provider.
+// Provider provider represents a provider.
 //
-// Summary: Represents a Provider.
+// Summary: Provider represents a provider.
 type Provider interface {
 	io.Closer
 

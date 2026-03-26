@@ -7,12 +7,21 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// StripSecretsFromService removes sensitive information from the service configuration.
+// StripSecretsFromService stripSecretsFromService strip secrets from service.
 //
-// Summary: Removes sensitive information from service configuration.
+// Summary: StripSecretsFromService strip secrets from service.
 //
-// Parameters: - None.
-//   - svc (*configv1.UpstreamServiceConfig): The upstream service configuration to strip secrets from.
+// Parameters:
+//   - svc (*configv1.UpstreamServiceConfig): The svc.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 	if svc == nil {
 		return
@@ -61,12 +70,21 @@ func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 	}
 }
 
-// StripSecretsFromProfile removes sensitive information from the profile definition.
+// StripSecretsFromProfile stripSecretsFromProfile strip secrets from profile.
 //
-// Summary: Removes sensitive information from profile definition.
+// Summary: StripSecretsFromProfile strip secrets from profile.
 //
-// Parameters: - None.
-//   - profile (*configv1.ProfileDefinition): The profile definition to strip secrets from.
+// Parameters:
+//   - profile (*configv1.ProfileDefinition): The profile.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func StripSecretsFromProfile(profile *configv1.ProfileDefinition) {
 	if profile == nil {
 		return
@@ -76,12 +94,21 @@ func StripSecretsFromProfile(profile *configv1.ProfileDefinition) {
 	}
 }
 
-// StripSecretsFromCollection removes sensitive information from the service collection.
+// StripSecretsFromCollection stripSecretsFromCollection strip secrets from collection.
 //
-// Summary: Removes sensitive information from service collection.
+// Summary: StripSecretsFromCollection strip secrets from collection.
 //
-// Parameters: - None.
-//   - collection (*configv1.Collection): The service collection to strip secrets from.
+// Parameters:
+//   - collection (*configv1.Collection): The collection.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func StripSecretsFromCollection(collection *configv1.Collection) {
 	if collection == nil {
 		return
@@ -91,12 +118,21 @@ func StripSecretsFromCollection(collection *configv1.Collection) {
 	}
 }
 
-// StripSecretsFromAuth removes sensitive values from the authentication config.
+// StripSecretsFromAuth stripSecretsFromAuth strip secrets from auth.
 //
-// Summary: Removes sensitive values from authentication config.
+// Summary: StripSecretsFromAuth strip secrets from auth.
 //
-// Parameters: - None.
-//   - auth (*configv1.Authentication): The authentication configuration to strip secrets from.
+// Parameters:
+//   - auth (*configv1.Authentication): The auth.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func StripSecretsFromAuth(auth *configv1.Authentication) {
 	if auth == nil {
 		return
@@ -308,13 +344,22 @@ func scrubSecretValue(sv *configv1.SecretValue) {
 	}
 }
 
-// HydrateSecretsInService populates the service configuration with resolved secret values.
+// HydrateSecretsInService hydrateSecretsInService hydrate secrets in service.
 //
-// Summary: Populates service configuration with resolved secret values.
+// Summary: HydrateSecretsInService hydrate secrets in service.
 //
-// Parameters: - None.
-//   - svc (*configv1.UpstreamServiceConfig): The upstream service configuration to hydrate secrets into.
-//   - secrets (map[string]*configv1.SecretValue): A map of resolved secret values.
+// Parameters:
+//   - svc (*configv1.UpstreamServiceConfig): The svc.
+//   - secrets (map[string]*configv1.SecretValue): The secrets.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func HydrateSecretsInService(svc *configv1.UpstreamServiceConfig, secrets map[string]*configv1.SecretValue) {
 	if svc == nil || len(secrets) == 0 {
 		return

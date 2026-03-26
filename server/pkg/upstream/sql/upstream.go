@@ -22,9 +22,9 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 )
 
-// Upstream implements the upstream.Upstream interface for SQL databases.
+// Upstream upstream represents a upstream.
 //
-// Summary: Represents a Upstream.
+// Summary: Upstream represents a upstream.
 type Upstream struct {
 	db *sql.DB
 	mu sync.Mutex

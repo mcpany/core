@@ -7,15 +7,21 @@ import (
 	"os"
 )
 
-// CheckAuth performs health checks for authentication configuration.
+// CheckAuth checkAuth check auth.
 //
-// Summary: Validates the presence of critical API keys and OAuth configuration.
+// Summary: CheckAuth check auth.
 //
-// Returns: - None.
-//   - map[string]CheckResult: A map of check names to their results.
+// Parameters:
+//   - None.
 //
-// Side Effects: - None.
-//   - Reads environment variables.
+// Returns:
+//   - map[string]CheckResult: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func CheckAuth() map[string]CheckResult {
 	results := make(map[string]CheckResult)
 

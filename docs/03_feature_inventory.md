@@ -17,3 +17,9 @@
 - **Auto-Discovery Middleware**: Automatic skill mapping from external specs.
 - **VTD Engine (Verifiable Task Delegation)**: Reputation-based delegation brokering.
 - **A2UI Gateway**: Secure hosting for agent-generated interactive surfaces.
+
+## Strategic Evolution Features: 2026-06-18
+- **RIA Provider (Recursive Intent Attestation)**: [P0] Cryptographic multi-hop lineage.
+- **MCLB (Mesh Cognitive Load Balancer)**: [P0] Dynamic reasoning redistribution.
+- **IBET Manager (Intent-Bound Ephemeral Tunnels)**: [P1] Isolated inter-agent comms.
+- **CoC Lineage Tracker**: [P1] Tamper-proof hop ledger.

@@ -72,13 +72,21 @@ func New[T any](config *bus.NatsBus) (*Bus[T], error) {
 	}, nil
 }
 
-// Close closes the NATS bus connection and shuts down the embedded server if applicable.
+// Close close close.
 //
-// Summary: Closes the NATS connection.
+// Summary: Close close.
 //
-// Returns: - None.
+// Parameters:
+//   - None.
 //
-//	None.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) Close() {
 	if b.nc != nil {
 		b.nc.Close()

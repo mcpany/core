@@ -123,9 +123,9 @@ func ProfileIDFromContext(ctx context.Context) (string, bool) {
 	return val, ok
 }
 
-// Authenticator defines the interface for authentication mechanisms.
+// Authenticator authenticator represents a authenticator.
 //
-// Summary: Interface for authenticating HTTP requests.
+// Summary: Authenticator represents a authenticator.
 type Authenticator interface {
 	// Authenticate checks if a request is authenticated and returns the updated context.
 	//
@@ -141,9 +141,9 @@ type Authenticator interface {
 	Authenticate(ctx context.Context, r *http.Request) (context.Context, error)
 }
 
-// APIKeyAuthenticator provides an authentication mechanism based on a static API key.
+// APIKeyAuthenticator aPIKeyAuthenticator represents a api key authenticator.
 //
-// Summary: Authenticates requests using a static API key.
+// Summary: APIKeyAuthenticator represents a api key authenticator.
 type APIKeyAuthenticator struct {
 	ParamName string
 	In        configv1.APIKeyAuth_Location
@@ -203,9 +203,9 @@ func (a *APIKeyAuthenticator) Authenticate(ctx context.Context, r *http.Request)
 	return ctx, fmt.Errorf("unauthorized")
 }
 
-// BasicAuthenticator authenticates using HTTP Basic Auth and bcrypt password hashing.
+// BasicAuthenticator basicAuthenticator represents a basic authenticator.
 //
-// Summary: Authenticates requests using HTTP Basic Auth.
+// Summary: BasicAuthenticator represents a basic authenticator.
 type BasicAuthenticator struct {
 	PasswordHash string
 	Username     string
@@ -263,9 +263,9 @@ func (a *BasicAuthenticator) Authenticate(ctx context.Context, r *http.Request) 
 	return ctx, fmt.Errorf("unauthorized")
 }
 
-// TrustedHeaderAuthenticator authenticates using a trusted header.
+// TrustedHeaderAuthenticator trustedHeaderAuthenticator represents a trusted header authenticator.
 //
-// Summary: Authenticates requests based on the presence/value of a specific header.
+// Summary: TrustedHeaderAuthenticator represents a trusted header authenticator.
 type TrustedHeaderAuthenticator struct {
 	HeaderName  string
 	HeaderValue string // Optional: if empty, just checks presence
@@ -315,9 +315,9 @@ func (a *TrustedHeaderAuthenticator) Authenticate(ctx context.Context, r *http.R
 	return ctx, nil
 }
 
-// Manager oversees the authentication process for the server.
+// Manager manager represents a manager.
 //
-// Summary: Manages authentication strategies and user sessions.
+// Summary: Manager represents a manager.
 type Manager struct {
 	authenticators *xsync.Map[string, Authenticator]
 	apiKey         string
@@ -331,12 +331,21 @@ type Manager struct {
 	storage storage.Storage
 }
 
-// NewManager creates and initializes a new Manager with an empty authenticator registry.
+// NewManager creates a new manager.
 //
-// Summary: Initializes a new Authentication Manager.
+// Summary: Creates a new manager.
 //
-// Returns: - None.
-//   - *Manager: A new Manager instance.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *Manager: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewManager() *Manager {
 	return &Manager{
 		authenticators: xsync.NewMap[string, Authenticator](),
@@ -344,15 +353,21 @@ func NewManager() *Manager {
 	}
 }
 
-// SetUsers updates the list of active users.
+// SetUsers setUsers set users.
 //
-// Summary: Sets the configured users.
+// Summary: SetUsers set users.
 //
-// Parameters: - None.
-//   - users: []*configv1.User. The list of users.
+// Parameters:
+//   - users ([]*configv1.User): The users.
 //
-// Side Effects: - None.
-//   - Updates the internal user map.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (am *Manager) SetUsers(users []*configv1.User) {
 	am.usersMu.Lock()
 	defer am.usersMu.Unlock()
@@ -361,15 +376,21 @@ func (am *Manager) SetUsers(users []*configv1.User) {
 	}
 }
 
-// SetStorage sets the storage backend for the manager.
+// SetStorage setStorage set storage.
 //
-// Summary: Configures the storage backend.
+// Summary: SetStorage set storage.
 //
-// Parameters: - None.
-//   - s: storage.Storage. The storage implementation.
+// Parameters:
+//   - s (storage.Storage): The s.
 //
-// Side Effects: - None.
-//   - Updates the internal storage reference.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (am *Manager) SetStorage(s storage.Storage) {
 	am.mu.Lock()
 	defer am.mu.Unlock()
@@ -393,15 +414,21 @@ func (am *Manager) GetUser(id string) (*configv1.User, bool) {
 	return u, ok
 }
 
-// SetAPIKey sets the global API key for the server.
+// SetAPIKey setAPIKey set api key.
 //
-// Summary: Sets the global API key.
+// Summary: SetAPIKey set api key.
 //
-// Parameters: - None.
-//   - apiKey: string. The API key.
+// Parameters:
+//   - apiKey (string): The api key.
 //
-// Side Effects: - None.
-//   - Updates the internal API key.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (am *Manager) SetAPIKey(apiKey string) {
 	am.apiKey = apiKey
 }
@@ -502,15 +529,21 @@ func (am *Manager) GetAuthenticator(serviceID string) (Authenticator, bool) {
 	return am.authenticators.Load(serviceID)
 }
 
-// RemoveAuthenticator removes the authenticator for a given service ID.
+// RemoveAuthenticator removeAuthenticator remove authenticator.
 //
-// Summary: Removes an authenticator by service ID.
+// Summary: RemoveAuthenticator remove authenticator.
 //
-// Parameters: - None.
-//   - serviceID: string. The service ID.
+// Parameters:
+//   - serviceID (string): The service id.
 //
-// Side Effects: - None.
-//   - Removes an entry from the authenticators map.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (am *Manager) RemoveAuthenticator(serviceID string) {
 	am.authenticators.Delete(serviceID)
 }

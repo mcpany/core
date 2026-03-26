@@ -12,10 +12,9 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 )
 
-// CallPolicyMiddleware is a middleware that enforces call policies (allow/deny)
-// based on tool name and arguments.
+// CallPolicyMiddleware callPolicyMiddleware represents a call policy middleware.
 //
-// Summary: Middleware that evaluates and enforces security policies for tool executions.
+// Summary: CallPolicyMiddleware represents a call policy middleware.
 type CallPolicyMiddleware struct {
 	toolManager tool.ManagerInterface
 }

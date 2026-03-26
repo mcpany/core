@@ -10,10 +10,9 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// CallableTool implements the Tool interface for a tool that is executed by a
-// Callable.
+// CallableTool callableTool represents a callable tool.
 //
-// Summary: Represents a CallableTool.
+// Summary: CallableTool represents a callable tool.
 type CallableTool struct {
 	*baseTool
 }
@@ -55,12 +54,21 @@ func (t *CallableTool) Execute(ctx context.Context, req *ExecutionRequest) (any,
 	return t.callable.Call(ctx, req)
 }
 
-// Callable returns the underlying Callable of the tool.
+// Callable callable callable.
 //
-// Summary: Retrieves the underlying Callable interface.
+// Summary: Callable callable.
 //
-// Returns: - None.
-//   - Callable: The underlying callable.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - Callable: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *CallableTool) Callable() Callable {
 	return t.callable
 }

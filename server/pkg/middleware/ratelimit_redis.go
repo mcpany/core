@@ -14,25 +14,28 @@ import (
 
 var redisClientCreator = redis.NewClient
 
-// SetRedisClientCreatorForTests allows injecting a mock Redis client creator for testing purposes.
+// SetRedisClientCreatorForTests setRedisClientCreatorForTests set redis client creator for tests.
 //
-// Summary: Replaces the default Redis client creator with a mock for unit testing.
+// Summary: SetRedisClientCreatorForTests set redis client creator for tests.
 //
-// Parameters: - None.
-//   - creator: func(*redis.Options) *redis.Client. The factory function to create Redis clients.
+// Parameters:
+//   - creator func(opts *redis.Options) (*redis.Client): The creator func(opts *redis. options).
 //
-// Side Effects: - None.
-//   - Modifies the global redisClientCreator variable.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func SetRedisClientCreatorForTests(creator func(opts *redis.Options) *redis.Client) {
 	redisClientCreator = creator
 }
 
-// RedisLimiter implements a distributed rate limiter backed by Redis.
-// It uses a token bucket algorithm to enforce rate limits across multiple service instances,
-// ensuring that the configured Requests Per Second (RPS) and burst limits are respected
-// regardless of how many server replicas are running.
+// RedisLimiter redisLimiter represents a redis limiter.
 //
-// Summary: Distributed token bucket rate limiter using Redis.
+// Summary: RedisLimiter represents a redis limiter.
 type RedisLimiter struct {
 	client     *redis.Client
 	key        string
@@ -252,41 +255,61 @@ func (l *RedisLimiter) AllowN(ctx context.Context, n int) (bool, error) {
 	return res == 1, nil
 }
 
-// Update dynamically updates the rate limit configuration for the running limiter.
+// Update updates the .
 //
-// Summary: Updates the rate limit settings (RPS and burst).
+// Summary: Updates the .
 //
-// Parameters: - None.
-//   - rps: float64. The new requests per second limit.
-//   - burst: int. The new burst capacity.
+// Parameters:
+//   - rps (float64): The rps.
+//   - burst (int): The burst.
 //
-// Side Effects: - None.
-//   - Modifies the internal state of the limiter.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (l *RedisLimiter) Update(rps float64, burst int) {
 	l.rps = rps
 	l.burst = burst
 }
 
-// GetConfigHash returns a hash string representing the underlying Redis configuration.
-// This is used to detect configuration changes that might require a client reconnection.
+// GetConfigHash retrieves the config hash.
 //
-// Summary: Retrieves the hash of the current Redis configuration.
+// Summary: Retrieves the config hash.
 //
-// Returns: - None.
-//   - string: The configuration hash string.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (l *RedisLimiter) GetConfigHash() string {
 	return l.configHash
 }
 
-// Close terminates the Redis client connection and releases resources.
+// Close close close.
 //
-// Summary: Closes the Redis client connection.
+// Summary: Close close.
 //
-// Returns: - None.
-//   - error: An error if closing the client fails.
+// Parameters:
+//   - None.
 //
-// Side Effects: - None.
-//   - Closes the TCP connection to Redis.
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (l *RedisLimiter) Close() error {
 	return l.client.Close()
 }

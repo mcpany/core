@@ -31,11 +31,9 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// OpenAPIUpstream implements the upstream.Upstream interface for services that
-// are defined by an OpenAPI specification. It parses the spec, discovers the
-// available operations, and registers them as tools.
+// OpenAPIUpstream openAPIUpstream represents a open api upstream.
 //
-// Summary: Represents a OpenAPIUpstream.
+// Summary: OpenAPIUpstream represents a open api upstream.
 type OpenAPIUpstream struct { //nolint:revive
 	openapiCache *ttlcache.Cache[string, *openapi3.T]
 	httpClients  map[string]*http.Client

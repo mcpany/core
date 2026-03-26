@@ -21,11 +21,9 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// WebsocketTool implements the Tool interface for a tool exposed via a WebSocket
-// connection. It handles sending and receiving messages over a persistent
-// WebSocket connection managed by a connection pool.
+// WebsocketTool websocketTool represents a websocket tool.
 //
-// Summary: A tool implementation for WebSocket services.
+// Summary: WebsocketTool represents a websocket tool.
 type WebsocketTool struct {
 	tool              *v1.Tool
 	mcpTool           *mcp.Tool
@@ -71,22 +69,40 @@ func NewWebsocketTool(
 	}
 }
 
-// Tool returns the protobuf definition of the WebSocket tool.
+// Tool tool tool.
 //
-// Summary: Retrieves the underlying tool definition.
+// Summary: Tool tool.
 //
-// Returns: - None.
-//   - *v1.Tool: The tool definition.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *v1.Tool: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *WebsocketTool) Tool() *v1.Tool {
 	return t.tool
 }
 
-// MCPTool returns the MCP tool definition.
+// MCPTool mCPTool mcp tool.
 //
-// Summary: Retrieves the MCP-compatible tool definition.
+// Summary: MCPTool mcp tool.
 //
-// Returns: - None.
-//   - *mcp.Tool: The MCP tool definition.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *mcp.Tool: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *WebsocketTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -98,12 +114,21 @@ func (t *WebsocketTool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
 
-// GetCacheConfig returns the cache configuration for the WebSocket tool.
+// GetCacheConfig retrieves the cache config.
 //
-// Summary: Retrieves the cache configuration.
+// Summary: Retrieves the cache config.
 //
-// Returns: - None.
-//   - *configv1.CacheConfig: The cache configuration.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.CacheConfig: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }

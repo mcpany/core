@@ -12,11 +12,9 @@ import (
 	xsync "github.com/puzpuzpuz/xsync/v4"
 )
 
-// ManagerInterface defines the interface for a prompt manager.
+// ManagerInterface managerInterface represents a manager interface.
 //
-// It manages the lifecycle, registration, and retrieval of prompts within the system.
-//
-// Summary: Represents a ManagerInterface.
+// Summary: ManagerInterface represents a manager interface.
 type ManagerInterface interface {
 	// AddPrompt registers a new prompt.
 	//
@@ -59,11 +57,9 @@ type ManagerInterface interface {
 	SetMCPServer(mcpServer MCPServerProvider)
 }
 
-// Manager is a thread-safe manager for registering and retrieving prompts.
+// Manager manager represents a manager.
 //
-// It supports concurrent access and uses caching for efficient list operations.
-//
-// Summary: Represents a Manager.
+// Summary: Manager represents a manager.
 type Manager struct {
 	prompts       *xsync.Map[string, Prompt]
 	mcpServer     MCPServerProvider

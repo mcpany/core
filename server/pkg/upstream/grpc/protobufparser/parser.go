@@ -26,20 +26,18 @@ import (
 	mcpopt "github.com/mcpany/core/proto/mcp_options/v1"
 )
 
-// ParsedMcpAnnotations holds the structured data extracted from MCP
-// (Model Context Protocol) annotations within a set of protobuf files.
+// ParsedMcpAnnotations parsedMcpAnnotations represents a parsed mcp annotations.
 //
-// Summary: Represents ParsedMcpAnnotations.
+// Summary: ParsedMcpAnnotations represents a parsed mcp annotations.
 type ParsedMcpAnnotations struct {
 	Tools     []McpTool
 	Prompts   []McpPrompt
 	Resources []McpResource
 }
 
-// McpTool represents the information extracted from a gRPC method that has been
-// annotated as an MCP tool.
+// McpTool mcpTool represents a mcp tool.
 //
-// Summary: Represents McpTool.
+// Summary: McpTool represents a mcp tool.
 type McpTool struct {
 	Name            string
 	Description     string
@@ -56,10 +54,9 @@ type McpTool struct {
 	OpenWorldHint   bool
 }
 
-// McpField represents a field within a protobuf message, including its name,
-// description, type, and whether it is repeated.
+// McpField mcpField represents a mcp field.
 //
-// Summary: Represents McpField.
+// Summary: McpField represents a mcp field.
 type McpField struct {
 	Name        string
 	Description string
@@ -392,10 +389,9 @@ func writeProtoFile(protoFile *configv1.ProtoFile, tempDir string) (string, erro
 	return filePath, nil
 }
 
-// McpPrompt represents the information extracted from a gRPC method that has
-// been annotated as an MCP prompt.
+// McpPrompt mcpPrompt represents a mcp prompt.
 //
-// Summary: Represents McpPrompt.
+// Summary: McpPrompt represents a mcp prompt.
 type McpPrompt struct {
 	Name           string
 	Description    string
@@ -407,10 +403,9 @@ type McpPrompt struct {
 	ResponseType   string
 }
 
-// McpResource represents a protobuf message that has been annotated as an MCP
-// resource.
+// McpResource mcpResource represents a mcp resource.
 //
-// Summary: Represents McpResource.
+// Summary: McpResource represents a mcp resource.
 type McpResource struct {
 	Name        string
 	Description string

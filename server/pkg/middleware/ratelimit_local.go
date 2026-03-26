@@ -12,9 +12,9 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// LocalLimiter is an in-memory implementation of Limiter.
+// LocalLimiter localLimiter represents a local limiter.
 //
-// Summary: Rate limiter implementation using golang.org/x/time/rate.
+// Summary: LocalLimiter represents a local limiter.
 type LocalLimiter struct {
 	*rate.Limiter
 }
@@ -54,16 +54,22 @@ func (l *LocalLimiter) AllowN(_ context.Context, n int) (bool, error) {
 	return l.Limiter.AllowN(time.Now(), n), nil
 }
 
-// Update updates the limiter configuration.
+// Update updates the .
 //
-// Summary: Dynamically updates the rate limit and burst size.
+// Summary: Updates the .
 //
-// Parameters: - None.
-//   - rps: float64. The new requests per second limit.
-//   - burst: int. The new burst size.
+// Parameters:
+//   - rps (float64): The rps.
+//   - burst (int): The burst.
 //
-// Side Effects: - None.
-//   - Modifies the underlying rate.Limiter state.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (l *LocalLimiter) Update(rps float64, burst int) {
 	limit := rate.Limit(rps)
 	if l.Limit() != limit {
@@ -74,17 +80,26 @@ func (l *LocalLimiter) Update(rps float64, burst int) {
 	}
 }
 
-// LocalStrategy implements RateLimitStrategy for local in-memory rate limiting.
+// LocalStrategy localStrategy represents a local strategy.
 //
-// Summary: Strategy for creating local rate limiters.
+// Summary: LocalStrategy represents a local strategy.
 type LocalStrategy struct{}
 
-// NewLocalStrategy creates a new LocalStrategy.
+// NewLocalStrategy creates a new local strategy.
 //
-// Summary: Initializes a new LocalStrategy.
+// Summary: Creates a new local strategy.
 //
-// Returns: - None.
-//   - *LocalStrategy: The initialized strategy.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *LocalStrategy: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewLocalStrategy() *LocalStrategy {
 	return &LocalStrategy{}
 }

@@ -63,9 +63,9 @@ const (
 	labelStatus          = "status"
 )
 
-// ToolUsageStats represents usage statistics for a tool.
+// ToolUsageStats toolUsageStats represents a tool usage stats.
 //
-// Summary: Represents a ToolUsageStats.
+// Summary: ToolUsageStats represents a tool usage stats.
 type ToolUsageStats struct {
 	Name      string `json:"name"`
 	ServiceID string `json:"serviceId"`
@@ -211,9 +211,9 @@ func (a *Application) handleDebugSeedTraffic() http.HandlerFunc {
 	}
 }
 
-// ToolFailureStats represents failure statistics for a tool.
+// ToolFailureStats toolFailureStats represents a tool failure stats.
 //
-// Summary: Represents a ToolFailureStats.
+// Summary: ToolFailureStats represents a tool failure stats.
 type ToolFailureStats struct {
 	Name        string  `json:"name"`
 	ServiceID   string  `json:"serviceId"`
@@ -333,9 +333,9 @@ func (a *Application) handleDashboardToolFailures() http.HandlerFunc {
 	}
 }
 
-// ToolAnalytics represents detailed usage analytics for a tool.
+// ToolAnalytics toolAnalytics represents a tool analytics.
 //
-// Summary: Represents a ToolAnalytics.
+// Summary: ToolAnalytics represents a tool analytics.
 type ToolAnalytics struct {
 	Name        string  `json:"name"`
 	ServiceID   string  `json:"serviceId"`
@@ -449,17 +449,17 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 	}
 }
 
-// ServiceHealthResponse represents the response for the health dashboard.
+// ServiceHealthResponse serviceHealthResponse represents a service health response.
 //
-// Summary: Represents a ServiceHealthResponse.
+// Summary: ServiceHealthResponse represents a service health response.
 type ServiceHealthResponse struct {
 	Services []ServiceHealth                  `json:"services"`
 	History  map[string][]health.HistoryPoint `json:"history"`
 }
 
-// ServiceHealth represents the health status of a service.
+// ServiceHealth serviceHealth represents a service health.
 //
-// Summary: Represents a ServiceHealth.
+// Summary: ServiceHealth represents a service health.
 type ServiceHealth struct {
 	ID      string `json:"id"`
 	Name    string `json:"name"`

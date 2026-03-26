@@ -8,9 +8,9 @@ import (
 	"time"
 )
 
-// EmbeddingProvider defines the interface for fetching text embeddings.
+// EmbeddingProvider embeddingProvider represents a embedding provider.
 //
-// Summary: Interface for services that can generate vector embeddings from text.
+// Summary: EmbeddingProvider represents a embedding provider.
 type EmbeddingProvider interface {
 	// Embed generates an embedding vector for the given text.
 	//
@@ -24,9 +24,9 @@ type EmbeddingProvider interface {
 	Embed(ctx context.Context, text string) ([]float32, error)
 }
 
-// VectorStore defines the interface for storing and searching vectors.
+// VectorStore vectorStore represents a vector store.
 //
-// Summary: Interface for storage backends that support vector similarity search.
+// Summary: VectorStore represents a vector store.
 type VectorStore interface {
 	// Add adds a new entry to the vector store.
 	//
@@ -62,9 +62,9 @@ type VectorStore interface {
 	Prune(ctx context.Context, key string)
 }
 
-// SemanticCache implements a semantic cache using embeddings and cosine similarity.
+// SemanticCache semanticCache represents a semantic cache.
 //
-// Summary: A cache implementation that uses semantic similarity rather than exact key matching.
+// Summary: SemanticCache represents a semantic cache.
 type SemanticCache struct {
 	provider  EmbeddingProvider
 	store     VectorStore

@@ -28,9 +28,9 @@ var (
 	validNameRegex = regexp.MustCompile(`^[a-z0-9]([-a-z0-9]*[a-z0-9])?$`)
 )
 
-// Manager handles the storage and retrieval of skills.
+// Manager manager represents a manager.
 //
-// Summary: Represents a Manager.
+// Summary: Manager represents a manager.
 type Manager struct {
 	rootDir string
 	mu      sync.RWMutex

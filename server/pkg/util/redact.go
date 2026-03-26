@@ -602,10 +602,9 @@ func RedactDSN(dsn string) string {
 	return dsnPasswordRegex.ReplaceAllString(dsn, "$1"+redactedPlaceholder+"$3")
 }
 
-// SecretRedactor handles redaction of secrets from text.
-// It is optimized to pre-process the list of secrets once and reuse the configuration.
+// SecretRedactor secretRedactor represents a secret redactor.
 //
-// Summary: Optimized text redactor for known secrets.
+// Summary: SecretRedactor represents a secret redactor.
 type SecretRedactor struct {
 	replacer *strings.Replacer
 }

@@ -74,9 +74,9 @@ func RolesFromContext(ctx context.Context) ([]string, bool) {
 	return val, ok
 }
 
-// RBACEnforcer handles Role-Based Access Control checks.
+// RBACEnforcer rBACEnforcer represents a rbac enforcer.
 //
-// Summary: Represents a RBACEnforcer.
+// Summary: RBACEnforcer represents a rbac enforcer.
 type RBACEnforcer struct {
 }
 

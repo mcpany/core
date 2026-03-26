@@ -18,11 +18,9 @@ import (
 	"github.com/spf13/afero"
 )
 
-// Updater handles the self-update process.
+// Updater updater represents a updater.
 //
-// It manages checking for updates on GitHub and applying them to the local executable.
-//
-// Summary: Represents a Updater.
+// Summary: Updater represents a updater.
 type Updater struct {
 	client     *github.Client
 	httpClient *http.Client

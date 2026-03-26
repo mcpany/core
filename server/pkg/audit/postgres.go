@@ -14,9 +14,9 @@ import (
 	_ "github.com/lib/pq" // Register postgres driver
 )
 
-// PostgresAuditStore writes audit logs to a PostgreSQL database.
+// PostgresAuditStore postgresAuditStore represents a postgres audit store.
 //
-// Summary: Stores audit log entries in a PostgreSQL database with tamper-evident hashing.
+// Summary: PostgresAuditStore represents a postgres audit store.
 type PostgresAuditStore struct {
 	db *sql.DB
 	mu sync.Mutex
@@ -284,15 +284,21 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 	return true, nil
 }
 
-// Close closes the database connection.
+// Close close close.
 //
-// Summary: Closes the PostgreSQL database connection.
+// Summary: Close close.
 //
-// Returns: - None.
-//   - error: An error if closing fails.
+// Parameters:
+//   - None.
 //
-// Side Effects: - None.
-//   - Closes the DB connection.
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (s *PostgresAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

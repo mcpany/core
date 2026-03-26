@@ -30,9 +30,9 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// Engine defines the interface for configuration unmarshaling from different file formats.
+// Engine engine represents a engine.
 //
-// Summary: Abstraction for parsing configuration files into protobuf messages.
+// Summary: Engine represents a engine.
 type Engine interface {
 	// Unmarshal parses the given byte slice and populates the provided proto.Message.
 	//
@@ -47,9 +47,9 @@ type Engine interface {
 	Unmarshal(b []byte, v proto.Message) error
 }
 
-// StructuredEngine defines an interface for engines that can unmarshal directly from a map structure.
+// StructuredEngine structuredEngine represents a structured engine.
 //
-// Summary: Abstraction for parsing configurations from map structures, avoiding double parsing.
+// Summary: StructuredEngine represents a structured engine.
 type StructuredEngine interface {
 	Engine
 	// UnmarshalFromMap populates the provided proto.Message from a raw map.
@@ -66,9 +66,9 @@ type StructuredEngine interface {
 	UnmarshalFromMap(m map[string]interface{}, v proto.Message, originalBytes []byte) error
 }
 
-// ConfigurableEngine defines an interface for engines that support configuration options.
+// ConfigurableEngine configurableEngine represents a configurable engine.
 //
-// Summary: Interface for engines that can be configured (e.g. skip validation).
+// Summary: ConfigurableEngine represents a configurable engine.
 type ConfigurableEngine interface {
 	Engine
 	// SetSkipValidation sets whether to skip schema validation.
@@ -430,9 +430,9 @@ func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 	return nil
 }
 
-// Store defines the interface for loading MCP-X server configurations.
+// Store store represents a store.
 //
-// Summary: Abstraction for configuration sources.
+// Summary: Store represents a store.
 type Store interface {
 	// Load retrieves and returns the McpAnyServerConfig.
 	//
@@ -455,9 +455,9 @@ type Store interface {
 	HasConfigSources() bool
 }
 
-// ServiceStore extends Store to provide CRUD operations for UpstreamServices.
+// ServiceStore serviceStore represents a service store.
 //
-// Summary: Interface for stores that support managing individual services.
+// Summary: ServiceStore represents a service store.
 type ServiceStore interface {
 	Store
 	// SaveService saves or updates a service configuration.
@@ -711,9 +711,9 @@ func handleSimpleVar(b []byte, startIdx int, buf *bytes.Buffer, missingErrBuilde
 	return j - startIdx
 }
 
-// FileStore implements the `Store` interface for loading configurations from files.
+// FileStore fileStore represents a file store.
 //
-// Summary: Loads configurations from the filesystem.
+// Summary: FileStore represents a file store.
 type FileStore struct {
 	fs               afero.Fs
 	paths            []string
@@ -1313,9 +1313,9 @@ func findField(md protoreflect.MessageDescriptor, name string) protoreflect.Fiel
 	return nil
 }
 
-// MultiStore implements the Store interface for loading configurations from multiple stores.
+// MultiStore multiStore represents a multi store.
 //
-// Summary: Combines multiple stores into a single logical store.
+// Summary: MultiStore represents a multi store.
 type MultiStore struct {
 	stores []Store
 }

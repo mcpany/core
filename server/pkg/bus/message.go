@@ -10,11 +10,9 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// Message defines the interface that all messages exchanged on the event bus must
-// implement. It provides a standard way to manage correlation IDs for tracking
-// requests and their corresponding responses.
+// Message message represents a message.
 //
-// Summary: Represents a Message.
+// Summary: Message represents a message.
 type Message interface {
 	// CorrelationID returns the unique identifier used to correlate messages.
 	//
@@ -26,11 +24,9 @@ type Message interface {
 	SetCorrelationID(id string)
 }
 
-// BaseMessage provides a default implementation of the Message interface. It
-// includes a correlation ID field (`CID`) and can be embedded in other message
-// structs to provide a common mechanism for message tracking.
+// BaseMessage baseMessage represents a base message.
 //
-// Summary: Represents a BaseMessage.
+// Summary: BaseMessage represents a base message.
 type BaseMessage struct {
 	CID string `json:"cid"`
 }
@@ -91,23 +87,18 @@ func (m *BaseMessage) SetCorrelationID(id string) {
 	m.CID = id
 }
 
-// ServiceRegistrationRequest is a message sent to the bus to request the
-// registration of a new upstream service. It contains the service's
-// configuration and the context for the request.
+// ServiceRegistrationRequest serviceRegistrationRequest represents a service registration request.
 //
-// Summary: Represents a ServiceRegistrationRequest.
+// Summary: ServiceRegistrationRequest represents a service registration request.
 type ServiceRegistrationRequest struct {
 	BaseMessage
 	Context context.Context
 	Config  *configv1.UpstreamServiceConfig
 }
 
-// ServiceRegistrationResult is a message published in response to a
-// ServiceRegistrationRequest. It contains the outcome of the registration
-// process, including the generated service key, a list of any tools that were
-// discovered, or an error if the registration failed.
+// ServiceRegistrationResult serviceRegistrationResult represents a service registration result.
 //
-// Summary: Represents a ServiceRegistrationResult.
+// Summary: ServiceRegistrationResult represents a service registration result.
 type ServiceRegistrationResult struct {
 	BaseMessage
 	ServiceKey          string
@@ -116,11 +107,9 @@ type ServiceRegistrationResult struct {
 	Error               error
 }
 
-// ToolExecutionRequest is a message sent to the bus to request the execution of
-// a specific tool on an upstream service. It includes the name of the tool and
-// its inputs in raw JSON format.
+// ToolExecutionRequest toolExecutionRequest represents a tool execution request.
 //
-// Summary: Represents a ToolExecutionRequest.
+// Summary: ToolExecutionRequest represents a tool execution request.
 type ToolExecutionRequest struct {
 	BaseMessage
 	Context    context.Context
@@ -128,46 +117,42 @@ type ToolExecutionRequest struct {
 	ToolInputs json.RawMessage
 }
 
-// ToolExecutionResult is a message published in response to a
-// ToolExecutionRequest. It contains the result of the tool execution, in raw
-// JSON format, or an error if the execution failed.
+// ToolExecutionResult toolExecutionResult represents a tool execution result.
 //
-// Summary: Represents a ToolExecutionResult.
+// Summary: ToolExecutionResult represents a tool execution result.
 type ToolExecutionResult struct {
 	BaseMessage
 	Result json.RawMessage
 	Error  error
 }
 
-// ServiceListRequest is a message sent to the bus to request a list of all
-// registered services.
+// ServiceListRequest serviceListRequest represents a service list request.
 //
-// Summary: Represents a ServiceListRequest.
+// Summary: ServiceListRequest represents a service list request.
 type ServiceListRequest struct {
 	BaseMessage
 }
 
-// ServiceListResult is a message published in response to a
-// ServiceListRequest. It contains a list of all registered services.
+// ServiceListResult serviceListResult represents a service list result.
 //
-// Summary: Represents a ServiceListResult.
+// Summary: ServiceListResult represents a service list result.
 type ServiceListResult struct {
 	BaseMessage
 	Services []*configv1.UpstreamServiceConfig
 	Error    error
 }
 
-// ServiceGetRequest is a message sent to the bus to request a specific service.
+// ServiceGetRequest serviceGetRequest represents a service get request.
 //
-// Summary: Represents a ServiceGetRequest.
+// Summary: ServiceGetRequest represents a service get request.
 type ServiceGetRequest struct {
 	BaseMessage
 	ServiceName string
 }
 
-// ServiceGetResult is a message published in response to a ServiceGetRequest.
+// ServiceGetResult serviceGetResult represents a service get result.
 //
-// Summary: Represents a ServiceGetResult.
+// Summary: ServiceGetResult represents a service get result.
 type ServiceGetResult struct {
 	BaseMessage
 	Service *configv1.UpstreamServiceConfig

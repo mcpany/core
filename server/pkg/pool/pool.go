@@ -31,11 +31,9 @@ var (
 	retryBackoff = 100 * time.Millisecond
 )
 
-// ClosableClient defines the interface for clients that can be managed by the
-// connection pool. Implementations must provide methods for closing the
-// connection and checking its health.
+// ClosableClient closableClient represents a closable client.
 //
-// Summary: Interface for poolable clients.
+// Summary: ClosableClient represents a closable client.
 type ClosableClient interface {
 	// Close terminates the client's connection.
 	//
@@ -397,12 +395,21 @@ func (p *poolImpl[T]) isHealthySafe(ctx context.Context, client T) bool {
 	return healthy
 }
 
-// Put returns a client to the pool for reuse.
+// Put put put.
 //
-// Summary: Returns a client to the pool.
+// Summary: Put put.
 //
-// Parameters: - None.
-//   - client: T. The client to return.
+// Parameters:
+//   - client (T): The client.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (p *poolImpl[T]) Put(client T) {
 	v := reflect.ValueOf(client)
 	if !v.IsValid() || ((v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil()) {
@@ -444,12 +451,21 @@ func (p *poolImpl[T]) Put(client T) {
 	}
 }
 
-// Close shuts down the pool, closing all idle clients.
+// Close close close.
 //
-// Summary: Closes the pool.
+// Summary: Close close.
 //
-// Returns: - None.
-//   - error: Error if close fails (usually nil).
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (p *poolImpl[T]) Close() error {
 	// We use the mutex here to ensure that we don't close the channel multiple times
 	// or have races with other Close calls. Get/Put check p.closed via atomic which is fast.
@@ -480,19 +496,28 @@ func (p *poolImpl[T]) Close() error {
 	return nil
 }
 
-// Len returns the current number of idle clients in the pool.
+// Len len len.
 //
-// Summary: Returns idle client count.
+// Summary: Len len.
 //
-// Returns: - None.
-//   - int: Idle count.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - int: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (p *poolImpl[T]) Len() int {
 	return len(p.clients)
 }
 
-// UntypedPool defines a non-generic interface for a pool.
+// UntypedPool untypedPool represents a untyped pool.
 //
-// Summary: Interface for untyped pool management.
+// Summary: UntypedPool represents a untyped pool.
 type UntypedPool interface {
 	io.Closer
 	// Len returns the number of idle clients currently in the pool.
@@ -504,33 +529,51 @@ type UntypedPool interface {
 	Len() int
 }
 
-// Manager provides a way to manage multiple named connection pools.
+// Manager manager represents a manager.
 //
-// Summary: Manages a collection of pools.
+// Summary: Manager represents a manager.
 type Manager struct {
 	pools map[string]any
 	mu    sync.RWMutex
 }
 
-// NewManager creates and returns a new pool Manager.
+// NewManager creates a new manager.
 //
-// Summary: Initializes a new Pool Manager.
+// Summary: Creates a new manager.
 //
-// Returns: - None.
-//   - *Manager: The initialized manager.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *Manager: The result.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewManager() *Manager {
 	return &Manager{
 		pools: make(map[string]any),
 	}
 }
 
-// Register adds a new pool to the manager under a given name.
+// Register register register.
 //
-// Summary: Registers a pool by name.
+// Summary: Register register.
 //
-// Parameters: - None.
-//   - name: string. The pool name.
-//   - pool: any. The pool instance.
+// Parameters:
+//   - name (string): The name.
+//   - pool (any): The pool.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) Register(name string, pool any) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -546,12 +589,21 @@ func (m *Manager) Register(name string, pool any) {
 	m.pools[name] = pool
 }
 
-// Deregister closes and removes a pool from the manager.
+// Deregister deregister deregister.
 //
-// Summary: Removes a pool by name.
+// Summary: Deregister deregister.
 //
-// Parameters: - None.
-//   - name: string. The pool name.
+// Parameters:
+//   - name (string): The name.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) Deregister(name string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
