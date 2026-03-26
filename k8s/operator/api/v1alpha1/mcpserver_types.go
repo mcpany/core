@@ -9,27 +9,38 @@ import (
 )
 
 // MCPServerSpec defines the desired state of MCPServer.
+//
+// Summary: Specification for MCPServer resource.
+//
+// +kubebuilder:object:generate=true
 type MCPServerSpec struct {
-	// Image is the Docker image to run for the MCP Server.
-	Image string `json:"image" validate:"required"`
-	// Replicas is the number of desired instances of the MCP Server.
-	Replicas *int32 `json:"replicas"`
-	// ConfigMap is the name of the ConfigMap containing the MCP configuration.
+	// Replicas is the number of replicas for the server
+	Replicas *int32 `json:"replicas,omitempty"`
+	// Image is the container image to use
+	Image string `json:"image,omitempty"`
+	// ServiceType is the type of Kubernetes Service to expose (ClusterIP, LoadBalancer, NodePort)
+	ServiceType string `json:"serviceType,omitempty"`
+	// ConfigMap is the name of the ConfigMap containing config.yaml
+	// +kubebuilder:validation:Required
 	ConfigMap string `json:"configMap"`
-	// ServiceType is the Kubernetes ServiceType for the MCP Server.
-	ServiceType string `json:"serviceType"`
 }
 
 // MCPServerStatus defines the observed state of MCPServer.
+//
+// Summary: Status of MCPServer resource.
+//
+// +kubebuilder:object:generate=true
 type MCPServerStatus struct {
-	// AvailableReplicas is the number of available instances of the MCP Server.
+	// AvailableReplicas is the number of available replicas
 	AvailableReplicas int32 `json:"availableReplicas"`
 }
 
-//+kubebuilder:object:root=true
-//+kubebuilder:subresource:status
+// +kubebuilder:object:root=true
+// +kubebuilder:subresource:status
 
 // MCPServer is the Schema for the mcpservers API.
+//
+// Summary: MCPServer resource definition.
 type MCPServer struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -38,9 +49,11 @@ type MCPServer struct {
 	Status MCPServerStatus `json:"status,omitempty"`
 }
 
-//+kubebuilder:object:root=true
+// +kubebuilder:object:root=true
 
 // MCPServerList contains a list of MCPServer.
+//
+// Summary: List of MCPServer resources.
 type MCPServerList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`

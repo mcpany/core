@@ -9,25 +9,46 @@ import (
 )
 
 // ToolSpec defines the desired state of Tool.
+//
+// Summary: Specification for Tool resource.
+//
+// +kubebuilder:object:generate=true
 type ToolSpec struct {
-	// Name is the unique name of the tool.
-	Name string `json:"name" validate:"required"`
-	// Description is a human-readable description of what the tool does.
-	Description string `json:"description"`
-	// Command is the command used to execute the tool.
-	Command []string `json:"command"`
-	// Args are the arguments passed to the tool command.
-	Args []string `json:"args"`
+	// Type is the type of tool (e.g., "container", "binary", "script")
+	// +kubebuilder:validation:Enum=container;binary;script
+	Type string `json:"type"`
+
+	// Image is the container image to use (for type "container")
+	Image string `json:"image,omitempty"`
+
+	// Command is the command to run (for type "binary" or "script")
+	Command []string `json:"command,omitempty"`
+
+	// Args are the arguments to pass to the command
+	Args []string `json:"args,omitempty"`
+
+	// Content is the inline content (for type "script")
+	Content string `json:"content,omitempty"`
 }
 
 // ToolStatus defines the observed state of Tool.
+//
+// Summary: Status of Tool resource.
+//
+// +kubebuilder:object:generate=true
 type ToolStatus struct {
+	// Ready indicates if the tool is ready to be used
+	Ready bool `json:"ready"`
+	// Message provides details about the status
+	Message string `json:"message,omitempty"`
 }
 
-//+kubebuilder:object:root=true
-//+kubebuilder:subresource:status
+// +kubebuilder:object:root=true
+// +kubebuilder:subresource:status
 
 // Tool is the Schema for the tools API.
+//
+// Summary: Tool resource definition.
 type Tool struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -36,9 +57,11 @@ type Tool struct {
 	Status ToolStatus `json:"status,omitempty"`
 }
 
-//+kubebuilder:object:root=true
+// +kubebuilder:object:root=true
 
 // ToolList contains a list of Tool.
+//
+// Summary: List of Tool resources.
 type ToolList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`

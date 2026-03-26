@@ -16,7 +16,7 @@ func TestJSONRPCComplianceMiddleware_LargeResponse(t *testing.T) {
 	// Create a large response > 32KB
 	largeData := strings.Repeat("a", maxErrorBufferSize+100)
 
-	handler := func(w http.ResponseWriter, r *http.Request) {
+	handler := func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(largeData))
 	}
@@ -38,7 +38,7 @@ func TestJSONRPCComplianceMiddleware_LargeResponse(t *testing.T) {
 }
 
 func TestJSONRPCComplianceMiddleware_Flush(t *testing.T) {
-	handler := func(w http.ResponseWriter, r *http.Request) {
+	handler := func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("part1"))
 		if f, ok := w.(http.Flusher); ok {
@@ -73,7 +73,7 @@ func TestJSONRPCComplianceMiddleware_Flush_PassThrough(t *testing.T) {
 	rec := httptest.NewRecorder()
 	mockWriter := &mockFlusherResponseWriter{ResponseWriter: rec}
 
-	handler := func(w http.ResponseWriter, r *http.Request) {
+	handler := func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK) // Pass through because code < 400
 		if f, ok := w.(http.Flusher); ok {
 			f.Flush()

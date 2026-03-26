@@ -14,7 +14,7 @@ import (
 func TestHTTPRateLimitMiddleware_Security_Bypass(t *testing.T) {
 	// 1 RPS, burst 1, Trust Proxy Enabled
 	limiter := NewHTTPRateLimitMiddleware(1, 1, WithTrustProxy(true))
-	handler := limiter.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	handler := limiter.Handler(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
 

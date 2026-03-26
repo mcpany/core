@@ -27,7 +27,7 @@ func TestJSONRPCComplianceMiddleware(t *testing.T) {
 		{
 			name:   "Pass through non-POST request",
 			method: http.MethodGet,
-			handler: func(w http.ResponseWriter, r *http.Request) {
+			handler: func(w http.ResponseWriter, _ *http.Request) {
 				w.WriteHeader(http.StatusOK)
 				w.Write([]byte("ok"))
 			},
@@ -40,7 +40,7 @@ func TestJSONRPCComplianceMiddleware(t *testing.T) {
 			requestHeaders: map[string]string{
 				"Accept": "text/event-stream",
 			},
-			handler: func(w http.ResponseWriter, r *http.Request) {
+			handler: func(w http.ResponseWriter, _ *http.Request) {
 				w.WriteHeader(http.StatusOK)
 				w.Write([]byte("event: message\ndata: hello\n\n"))
 			},
@@ -50,7 +50,7 @@ func TestJSONRPCComplianceMiddleware(t *testing.T) {
 		{
 			name:   "Pass through successful JSON response",
 			method: http.MethodPost,
-			handler: func(w http.ResponseWriter, r *http.Request) {
+			handler: func(w http.ResponseWriter, _ *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
 				w.Write([]byte(`{"jsonrpc":"2.0","result":"ok","id":1}`))
@@ -61,7 +61,7 @@ func TestJSONRPCComplianceMiddleware(t *testing.T) {
 		{
 			name:   "Rewrite 400 Bad Request",
 			method: http.MethodPost,
-			handler: func(w http.ResponseWriter, r *http.Request) {
+			handler: func(w http.ResponseWriter, _ *http.Request) {
 				http.Error(w, "Bad Request", http.StatusBadRequest)
 			},
 			expectedStatus: http.StatusBadRequest,
@@ -76,7 +76,7 @@ func TestJSONRPCComplianceMiddleware(t *testing.T) {
 		{
 			name:   "Rewrite 404 Not Found (Method not found)",
 			method: http.MethodPost,
-			handler: func(w http.ResponseWriter, r *http.Request) {
+			handler: func(w http.ResponseWriter, _ *http.Request) {
 				http.Error(w, "Method not found", http.StatusNotFound)
 			},
 			expectedStatus: http.StatusNotFound,
@@ -91,7 +91,7 @@ func TestJSONRPCComplianceMiddleware(t *testing.T) {
 		{
 			name:   "Rewrite 500 Internal Server Error",
 			method: http.MethodPost,
-			handler: func(w http.ResponseWriter, r *http.Request) {
+			handler: func(w http.ResponseWriter, _ *http.Request) {
 				http.Error(w, "Something went wrong", http.StatusInternalServerError)
 			},
 			expectedStatus: http.StatusInternalServerError,
@@ -108,7 +108,7 @@ func TestJSONRPCComplianceMiddleware(t *testing.T) {
 		{
 			name:   "Do not rewrite JSON error response",
 			method: http.MethodPost,
-			handler: func(w http.ResponseWriter, r *http.Request) {
+			handler: func(w http.ResponseWriter, _ *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusBadRequest)
 				w.Write([]byte(`{"jsonrpc":"2.0","error":{"code":-32000,"message":"Custom error"},"id":1}`))
@@ -119,7 +119,7 @@ func TestJSONRPCComplianceMiddleware(t *testing.T) {
 		{
 			name:   "Rewrite Parse error",
 			method: http.MethodPost,
-			handler: func(w http.ResponseWriter, r *http.Request) {
+			handler: func(w http.ResponseWriter, _ *http.Request) {
 				http.Error(w, "Invalid character 'x' looking for beginning of value", http.StatusBadRequest)
 			},
 			expectedStatus: http.StatusBadRequest,
@@ -133,7 +133,7 @@ func TestJSONRPCComplianceMiddleware(t *testing.T) {
 		{
 			name:   "Rewrite Invalid params",
 			method: http.MethodPost,
-			handler: func(w http.ResponseWriter, r *http.Request) {
+			handler: func(w http.ResponseWriter, _ *http.Request) {
 				http.Error(w, "Invalid params: missing argument", http.StatusBadRequest)
 			},
 			expectedStatus: http.StatusBadRequest,

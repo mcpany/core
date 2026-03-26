@@ -33,7 +33,7 @@ func TestDebuggerMiddleware(t *testing.T) {
 	debugger := NewDebugger(10)
 	defer debugger.Close()
 
-	handler := debugger.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	handler := debugger.Handler(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
 
@@ -66,7 +66,7 @@ func TestDebuggerBodyCapture(t *testing.T) {
 	debugger := NewDebugger(10)
 	defer debugger.Close()
 
-	handler := debugger.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	handler := debugger.Handler(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		body, _ := io.ReadAll(r.Body)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -95,7 +95,7 @@ func TestDebuggerLargeBodyTruncation(t *testing.T) {
 	defer debugger.Close()
 	debugger.maxBodySize = 10 // Very small limit for testing
 
-	handler := debugger.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	handler := debugger.Handler(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		// Handler should still receive full body
 		body, _ := io.ReadAll(r.Body)
 		w.WriteHeader(http.StatusOK)

@@ -56,7 +56,7 @@ func TestHTTPEmbeddingProvider_Embed(t *testing.T) {
 		bodyTemplateStr  string
 		responseJSONPath string
 		input            string
-		mockHandler      func(w http.ResponseWriter, r *http.Request)
+		mockHandler      func(w http.ResponseWriter, _ *http.Request)
 		want             []float32
 		wantErr          bool
 		checkReq         func(r *http.Request) error // optional hook to check request
@@ -66,7 +66,7 @@ func TestHTTPEmbeddingProvider_Embed(t *testing.T) {
 			bodyTemplateStr:  `{"prompt": "{{.input}}"}`,
 			responseJSONPath: "$.embedding",
 			input:            "hello world",
-			mockHandler: func(w http.ResponseWriter, r *http.Request) {
+			mockHandler: func(w http.ResponseWriter, _ *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
 				_, _ = w.Write([]byte(`{"embedding": [0.1, 0.2, 0.3]}`))
@@ -80,7 +80,7 @@ func TestHTTPEmbeddingProvider_Embed(t *testing.T) {
 			bodyTemplateStr:  `{}`,
 			responseJSONPath: "$.data",
 			input:            "test",
-			mockHandler: func(w http.ResponseWriter, r *http.Request) {
+			mockHandler: func(w http.ResponseWriter, _ *http.Request) {
 				if r.Header.Get("X-Auth") != "secret" {
 					w.WriteHeader(http.StatusUnauthorized)
 					return
@@ -96,7 +96,7 @@ func TestHTTPEmbeddingProvider_Embed(t *testing.T) {
 			bodyTemplateStr:  `{{.missing}}`, // missing key usually just prints <no value> in Go templates unless Option("missingkey=error") is set.
 			responseJSONPath: "$.data",
 			input:            "test",
-			mockHandler: func(w http.ResponseWriter, r *http.Request) {
+			mockHandler: func(w http.ResponseWriter, _ *http.Request) {
 				w.WriteHeader(http.StatusOK)
 				_, _ = w.Write([]byte(`{"data": [0.0]}`))
 			},
@@ -108,7 +108,7 @@ func TestHTTPEmbeddingProvider_Embed(t *testing.T) {
 			bodyTemplateStr:  `{}`,
 			responseJSONPath: "$.data",
 			input:            "test",
-			mockHandler: func(w http.ResponseWriter, r *http.Request) {
+			mockHandler: func(w http.ResponseWriter, _ *http.Request) {
 				w.WriteHeader(http.StatusInternalServerError)
 				_, _ = w.Write([]byte(`internal error`))
 			},
@@ -120,7 +120,7 @@ func TestHTTPEmbeddingProvider_Embed(t *testing.T) {
 			bodyTemplateStr:  `{}`,
 			responseJSONPath: "$.data",
 			input:            "test",
-			mockHandler: func(w http.ResponseWriter, r *http.Request) {
+			mockHandler: func(w http.ResponseWriter, _ *http.Request) {
 				w.WriteHeader(http.StatusOK)
 				_, _ = w.Write([]byte(`{not valid json`))
 			},
@@ -132,7 +132,7 @@ func TestHTTPEmbeddingProvider_Embed(t *testing.T) {
 			bodyTemplateStr:  `{}`,
 			responseJSONPath: "$.missing",
 			input:            "test",
-			mockHandler: func(w http.ResponseWriter, r *http.Request) {
+			mockHandler: func(w http.ResponseWriter, _ *http.Request) {
 				w.WriteHeader(http.StatusOK)
 				_, _ = w.Write([]byte(`{"data": [1.0]}`))
 			},
@@ -144,7 +144,7 @@ func TestHTTPEmbeddingProvider_Embed(t *testing.T) {
 			bodyTemplateStr:  `{}`,
 			responseJSONPath: "$.data",
 			input:            "test",
-			mockHandler: func(w http.ResponseWriter, r *http.Request) {
+			mockHandler: func(w http.ResponseWriter, _ *http.Request) {
 				w.WriteHeader(http.StatusOK)
 				_, _ = w.Write([]byte(`{"data": "not an array"}`))
 			},
@@ -156,7 +156,7 @@ func TestHTTPEmbeddingProvider_Embed(t *testing.T) {
 			bodyTemplateStr:  `{}`,
 			responseJSONPath: "$.data",
 			input:            "test",
-			mockHandler: func(w http.ResponseWriter, r *http.Request) {
+			mockHandler: func(w http.ResponseWriter, _ *http.Request) {
 				w.WriteHeader(http.StatusOK)
 				_, _ = w.Write([]byte(`{"data": ["string", 1.0]}`))
 			},
@@ -168,7 +168,7 @@ func TestHTTPEmbeddingProvider_Embed(t *testing.T) {
 			bodyTemplateStr:  `{}`,
 			responseJSONPath: "$.data",
 			input:            "test",
-			mockHandler: func(w http.ResponseWriter, r *http.Request) {
+			mockHandler: func(w http.ResponseWriter, _ *http.Request) {
 				w.WriteHeader(http.StatusOK)
 				_, _ = w.Write([]byte(`{"data": []}`))
 			},
@@ -180,7 +180,7 @@ func TestHTTPEmbeddingProvider_Embed(t *testing.T) {
 			bodyTemplateStr:  `{"prompt": "{{.input}}"}`,
 			responseJSONPath: "$.data",
 			input:            "verify me",
-			mockHandler: func(w http.ResponseWriter, r *http.Request) {
+			mockHandler: func(w http.ResponseWriter, _ *http.Request) {
 				body, _ := io.ReadAll(r.Body)
 				if string(body) != `{"prompt": "verify me"}` {
 					w.WriteHeader(http.StatusBadRequest)

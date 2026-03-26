@@ -16,7 +16,7 @@ import (
 
 func TestOllamaEmbeddingProvider_Embed(t *testing.T) {
 	// Setup mock server
-	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		// Verify Request
 		assert.Equal(t, "POST", r.Method)
 		assert.Equal(t, "/api/embeddings", r.URL.Path)
@@ -51,7 +51,7 @@ func TestOllamaEmbeddingProvider_Embed(t *testing.T) {
 
 func TestOllamaEmbeddingProvider_Embed_Error(t *testing.T) {
 	// Mock server returning 500
-	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("internal server error"))
 	}))
@@ -68,7 +68,7 @@ func TestOllamaEmbeddingProvider_Embed_Error(t *testing.T) {
 
 func TestOllamaEmbeddingProvider_Embed_MalformedResponse(t *testing.T) {
 	// Mock server returning invalid JSON
-	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`{"embedding": [0.1, 0.2`)) // Incomplete JSON
 	}))
@@ -85,7 +85,7 @@ func TestOllamaEmbeddingProvider_Embed_MalformedResponse(t *testing.T) {
 
 func TestOllamaEmbeddingProvider_Embed_Empty(t *testing.T) {
 	// Mock server returning empty embedding
-	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		resp := ollamaEmbeddingResponse{
 			Embedding: []float32{},
 		}

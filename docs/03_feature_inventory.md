@@ -1278,8 +1278,3 @@
 ### Priority Shifts
 - **Active Intent-Deconstruction (AID) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **L7SIH** integration to counter high-entropy noise injection.
 - **Ephemeral Privilege Manager (EPM)**: (Re-affirmed P0) Evolving to act as the primary enforcement point for **ESE-compliant** environment scrubbing.
-
-## Strategic Evolution Updates: 2026-06-11
-### New Priority Features (P0/P1)
-- **Layer-7 Semantic Inspection Hub (L7SIH) [P0]:** Middleware to detect reasoning loops and semantic drift in multi-agent chains.
-- **Environment Sovereignty Enforcer (ESE) [P1]:** Dynamic scrubbing of environment variables and local context during agent-to-agent tool handoffs.
