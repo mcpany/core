@@ -48,7 +48,7 @@ func TestOperatorE2E(t *testing.T) {
 	// 3. Clean up existing cluster to ensure fresh state and free ports
 	if clusterExists(t, ctx, clusterName) {
 		t.Logf("Deleting existing cluster %s to ensure clean state...", clusterName)
-		runCommand(t, ctx, rootDir, "kind", "delete", "cluster", "--name", clusterName)
+		_ = runCommand(t, ctx, rootDir, "kind", "delete", "cluster", "--name", clusterName)
 	}
 
 	// 4. Get a free port for the host side of NodePort
