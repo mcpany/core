@@ -56,7 +56,8 @@ export function StepParameters() {
             updateConfig({
                 commandLineService: {
                     ...config.commandLineService,
-                    env
+                    env,
+                    args: config.commandLineService.args || []
                 }
             });
         }
@@ -78,7 +79,47 @@ export function StepParameters() {
             updateConfig({
                 commandLineService: {
                     ...config.commandLineService,
-                    env
+                    env,
+                    args: config.commandLineService.args || []
+                }
+            });
+        }
+    };
+
+    const args = config.commandLineService?.args || [];
+
+    const handleAddArg = () => {
+        if (config.commandLineService) {
+            updateConfig({
+                commandLineService: {
+                    ...config.commandLineService,
+                    args: [...args, ""]
+                }
+            });
+        }
+    };
+
+    const handleRemoveArg = (index: number) => {
+        if (config.commandLineService) {
+            const newArgs = [...args];
+            newArgs.splice(index, 1);
+            updateConfig({
+                commandLineService: {
+                    ...config.commandLineService,
+                    args: newArgs
+                }
+            });
+        }
+    };
+
+    const handleArgChange = (index: number, value: string) => {
+        if (config.commandLineService) {
+            const newArgs = [...args];
+            newArgs[index] = value;
+            updateConfig({
+                commandLineService: {
+                    ...config.commandLineService,
+                    args: newArgs
                 }
             });
         }
@@ -153,9 +194,29 @@ export function StepParameters() {
 
                  </div>
                  <div className="grid gap-2">
-                     <Label>Arguments (Space separated or JSON array coming soon)</Label>
-                     {/* For now just command string editing is easiest if we don't strictly separate args */}
-                     <p className="text-xs text-muted-foreground">Modify the command above to include arguments.</p>
+                     <div className="flex items-center justify-between">
+                         <Label>Arguments</Label>
+                         <Button size="sm" variant="outline" onClick={handleAddArg}>
+                             <Plus className="mr-2 h-4 w-4"/> Add Argument
+                         </Button>
+                     </div>
+                     <div className="space-y-2">
+                         {args.map((arg: string, index: number) => (
+                             <div key={index} className="flex items-center gap-2">
+                                 <Input
+                                     value={arg}
+                                     onChange={e => handleArgChange(index, e.target.value)}
+                                     placeholder={`Argument ${index + 1}`}
+                                 />
+                                 <Button variant="ghost" size="icon" onClick={() => handleRemoveArg(index)}>
+                                     <Trash2 className="h-4 w-4 text-destructive" />
+                                 </Button>
+                             </div>
+                         ))}
+                         {args.length === 0 && (
+                             <p className="text-xs text-muted-foreground italic">No arguments configured.</p>
+                         )}
+                     </div>
                  </div>
              </div>
         </div>
