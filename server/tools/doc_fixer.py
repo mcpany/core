@@ -14,11 +14,31 @@ def nice_name(name):
     # Split camelCase -> "camel case"
     # e.g. HTTPRateLimit -> HTTP Rate Limit
     # e.g. SaveUser -> Save User
+    """Converts CamelCase or snake_case function identifiers into human-readable strings for documentation.
+
+    Summary: Converts CamelCase or snake_case function identifiers into human-readable strings for documentation.
+
+    Parameters:
+      - name: The name of the Go symbol to convert.
+
+    Returns:
+      - str: The converted human-readable string.
+    """
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1 \2', name)
     s2 = re.sub('([a-z0-9])([A-Z])', r'\1 \2', s1)
     return s2.lower()
 
 def parse_params(param_str):
+    """Parses a Go function parameter string and extracts the variable names and their corresponding types.
+
+    Summary: Parses a Go function parameter string and extracts the variable names and their corresponding types.
+
+    Parameters:
+      - param_str: The raw string of parameters extracted from the Go function signature.
+
+    Returns:
+      - list: A list of (name, type) tuples representing the parameters.
+    """
     if not param_str:
         return []
     params = []
@@ -47,6 +67,16 @@ def parse_params(param_str):
     return parsed
 
 def parse_returns(return_str):
+    """Parses a Go function return string and extracts the list of returned types.
+
+    Summary: Parses a Go function return string and extracts the list of returned types.
+
+    Parameters:
+      - return_str: The raw string of return types extracted from the Go function signature.
+
+    Returns:
+      - list: A list of strings representing the return types.
+    """
     if not return_str:
         return []
     return_str = return_str.strip()
@@ -75,6 +105,20 @@ def parse_returns(return_str):
     return parsed
 
 def generate_doc(name, params, returns, receiver=None, is_type=False):
+    """Constructs a standardized, active-voice Go documentation block including parameters and return types.
+
+    Summary: Constructs a standardized, active-voice Go documentation block including parameters and return types.
+
+    Parameters:
+      - name: The name of the Go symbol to convert.
+      - params: A list of parsed parameters (name, type) tuples.
+      - returns: A list of parsed return type strings.
+      - receiver: The receiver object of a Go method, if applicable.
+      - is_type: A boolean flag indicating if the symbol is a type declaration.
+
+    Returns:
+      - list: A list of formatted docstring lines to be injected.
+    """
     nice = nice_name(name)
     summary = f"{name} {nice}."
 
@@ -148,6 +192,16 @@ def generate_doc(name, params, returns, receiver=None, is_type=False):
     return lines
 
 def process_file(filepath):
+    """Reads a Go source file and injects properly formatted docstrings above any undocumented exported symbols.
+
+    Summary: Reads a Go source file and injects properly formatted docstrings above any undocumented exported symbols.
+
+    Parameters:
+      - filepath: The path to the target source file.
+
+    Returns:
+      - None.
+    """
     with open(filepath, 'r') as f:
         lines = f.readlines()
 
@@ -220,6 +274,16 @@ def process_file(filepath):
         f.writelines(final_lines)
 
 def scan_dir(root_dir):
+    """Recursively traverses the provided directory to find and audit source files for documentation violations.
+
+    Summary: Recursively traverses the provided directory to find and audit source files for documentation violations.
+
+    Parameters:
+      - root_dir: The base directory to start the recursive scan.
+
+    Returns:
+      - int: The total number of documentation violations found in the directory.
+    """
     for root, dirs, files in os.walk(root_dir):
         for file in files:
             if file.endswith('.go') and not file.endswith('_test.go') and 'vendor' not in root:

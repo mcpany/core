@@ -12,11 +12,17 @@ import (
 )
 
 // Request represents a tool request.
+// Request represents the JSON payload structure expected by the tool.
+//
+// Summary: Defines the input structure for the my-tool CLI command.
 type Request struct {
 	Name string `json:"name"`
 }
 
 // Response represents a tool response.
+// Response represents the JSON structure returned by the tool.
+//
+// Summary: Defines the standard output format of the my-tool CLI command.
 type Response struct {
 	Message string `json:"message"`
 }

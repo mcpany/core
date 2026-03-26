@@ -14,6 +14,9 @@ import (
 )
 
 // WebhookRequest matches the data payload sent by mcpany
+// WebhookRequest defines the expected payload schema from an incoming webhook event.
+//
+// Summary: Represents the input data structure for processing a webhook event.
 type WebhookRequest struct {
 	Kind     int            `json:"kind"` // 1=PreCall, 2=PostCall
 	ToolName string         `json:"tool_name"`
@@ -21,6 +24,9 @@ type WebhookRequest struct {
 }
 
 // WebhookResponse matches the expected response data
+// WebhookResponse defines the schema returned to the webhook caller.
+//
+// Summary: Represents the result structure sent back after processing a webhook.
 type WebhookResponse struct {
 	ReplacementObject any `json:"replacement_object,omitempty"`
 }
@@ -116,4 +122,7 @@ func convertHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // StatusOK represents the HTTP 200 OK status code.
+// StatusOK is the standard string value indicating a successful webhook operation.
+//
+// Summary: Represents a successful webhook processing status.
 const StatusOK = 200

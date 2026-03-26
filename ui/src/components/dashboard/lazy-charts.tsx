@@ -36,27 +36,52 @@ const _LazyAuditLogWidget = lazy(() =>
   import("@/components/audit/audit-log-viewer").then((mod) => ({ default: mod.AuditLogViewer }))
 );
 
-/** LazyRequestVolumeChart with Suspense skeleton. */
+/**
+ * Renders the LazyRequestVolumeChart data as a graphical chart or visualization.
+ *
+ * @summary Renders the LazyRequestVolumeChart data as a graphical chart or visualization.
+ * @returns The resulting React element structure or data output.
+ */
 export const LazyRequestVolumeChart = (props: object) => (
   <Suspense fallback={<ChartSkeleton />}><_LazyRequestVolumeChart {...(props as any)} /></Suspense>
 );
 
-/** LazyRecentActivityWidget with Suspense skeleton. */
+/**
+ * Displays the targeted LazyRecentActivityWidget visualization module within a modular dashboard.
+ *
+ * @summary Displays the targeted LazyRecentActivityWidget visualization module within a modular dashboard.
+ * @returns The resulting React element structure or data output.
+ */
 export const LazyRecentActivityWidget = (props: object) => (
   <Suspense fallback={<ChartSkeleton />}><_LazyRecentActivityWidget {...(props as any)} /></Suspense>
 );
 
-/** LazyTopToolsWidget with Suspense skeleton. */
+/**
+ * Displays the targeted LazyTopToolsWidget visualization module within a modular dashboard.
+ *
+ * @summary Displays the targeted LazyTopToolsWidget visualization module within a modular dashboard.
+ * @returns The resulting React element structure or data output.
+ */
 export const LazyTopToolsWidget = (props: object) => (
   <Suspense fallback={<ChartSkeleton />}><_LazyTopToolsWidget {...(props as any)} /></Suspense>
 );
 
-/** LazyHealthHistoryChart with Suspense skeleton. */
+/**
+ * Renders the LazyHealthHistoryChart data as a graphical chart or visualization.
+ *
+ * @summary Renders the LazyHealthHistoryChart data as a graphical chart or visualization.
+ * @returns The resulting React element structure or data output.
+ */
 export const LazyHealthHistoryChart = (props: object) => (
   <Suspense fallback={<ChartSkeleton />}><_LazyHealthHistoryChart {...(props as any)} /></Suspense>
 );
 
-/** LazyAuditLogWidget with Suspense skeleton. */
+/**
+ * Displays the targeted LazyAuditLogWidget visualization module within a modular dashboard.
+ *
+ * @summary Displays the targeted LazyAuditLogWidget visualization module within a modular dashboard.
+ * @returns The resulting React element structure or data output.
+ */
 export const LazyAuditLogWidget = (props: object) => (
   <Suspense fallback={<ChartSkeleton />}><_LazyAuditLogWidget {...(props as any)} /></Suspense>
 );

@@ -19,6 +19,12 @@ import {
   Activity
 } from "lucide-react";
 
+/**
+ * Renders the UniversalAgentBusPage layout container, managing data fetching and presentation for the primary route.
+ *
+ * @summary Renders the UniversalAgentBusPage layout container, managing data fetching and presentation for the primary route.
+ * @returns The resulting React element structure.
+ */
 export default function UniversalAgentBusPage() {
   return (
     <div className="p-6 space-y-6">

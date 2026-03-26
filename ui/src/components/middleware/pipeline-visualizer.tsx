@@ -23,7 +23,12 @@ interface GlobalSettings {
     [key: string]: any;
 }
 
-/** PipelineVisualizer allows verifying and modifying the middleware pipeline order. */
+/**
+ * Renders the PipelineVisualizer React component, orchestrating internal state and external props to build the UI.
+ *
+ * @summary Renders the PipelineVisualizer React component, orchestrating internal state and external props to build the UI.
+ * @returns The resulting React element structure.
+ */
 export function PipelineVisualizer() {
     const [middlewares, setMiddlewares] = useState<Middleware[]>([]);
     const [settings, setSettings] = useState<GlobalSettings | null>(null);

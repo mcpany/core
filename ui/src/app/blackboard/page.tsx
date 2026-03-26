@@ -6,6 +6,12 @@
 import React from "react";
 import { BlackboardDashboard } from "@/components/blackboard/blackboard-dashboard";
 
+/**
+ * Renders the BlackboardPage layout container, managing data fetching and presentation for the primary route.
+ *
+ * @summary Renders the BlackboardPage layout container, managing data fetching and presentation for the primary route.
+ * @returns The resulting React element structure or data output, or void if executing a side effect.
+ */
 export default function BlackboardPage() {
     return (
         <div className="container py-6 space-y-6">

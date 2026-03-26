@@ -20,13 +20,17 @@ type server struct {
 	pb.UnimplementedGreeterServer
 }
 
-// SayHello implements greeter.GreeterServer
+// SayHello implements greeter.GreeterServer.
 //
-// ctx is the context for the request.
-// in is the request object.
+// Summary: Processes a greeting request and returns a personalized hello message.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx (context.Context): The execution context for the RPC call.
+//   - in (*pb.HelloRequest): The incoming request containing the name to greet.
+//
+// Returns:
+//   - *pb.HelloReply: The greeting response containing the formatted message.
+//   - error: Returns an error if the greeting process fails (though it currently never fails).
 func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
 	log.Printf("Received: %v", in.GetName())
 	return &pb.HelloReply{Message: "Hello " + in.GetName()}, nil

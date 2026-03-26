@@ -7,6 +7,12 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
+/**
+ * Assembles and displays the BlackboardDashboard interface with its corresponding data metrics and visual widgets.
+ *
+ * @summary Assembles and displays the BlackboardDashboard interface with its corresponding data metrics and visual widgets.
+ * @returns The resulting React element structure or data output, or void if executing a side effect.
+ */
 export function BlackboardDashboard() {
     const [keys, setKeys] = useState([
         { id: "1", agentId: "agent-a", key: "session_token", value: "abc-123", intent: "auth" },

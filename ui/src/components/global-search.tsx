@@ -41,6 +41,12 @@ import { useShortcut, useKeyboardShortcuts } from "@/contexts/keyboard-shortcuts
 import { KeyboardShortcutsDialog } from "@/components/keyboard-shortcuts-dialog"
 
 /** Reloads the current page. Extracted as a module-level function to allow test mocking. */
+/**
+ * Triggers a full browser reload to reset application state and fetch fresh data.
+ *
+ * @summary Triggers a full browser reload to reset application state and fetch fresh data.
+ * @returns The resulting React element structure or data output, or void if executing a side effect.
+ */
 export const reloadPage = () => window.location.reload();
 
 /**

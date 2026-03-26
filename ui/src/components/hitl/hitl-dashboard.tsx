@@ -7,6 +7,12 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
+/**
+ * Assembles and displays the HitlDashboard interface with its corresponding data metrics and visual widgets.
+ *
+ * @summary Assembles and displays the HitlDashboard interface with its corresponding data metrics and visual widgets.
+ * @returns The resulting React element structure or data output, or void if executing a side effect.
+ */
 export function HitlDashboard() {
     const [approvals, setApprovals] = useState([
         { id: "1", tool: "database.drop_table", intent: "Drop users table", status: "pending" }

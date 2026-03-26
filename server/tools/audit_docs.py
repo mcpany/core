@@ -19,24 +19,64 @@ VAR_CONST_PATTERN = re.compile(r'^(var|const)\s+([A-Z]\w*)\s+')
 # so we'll skip them for now or treat them simply if they are on one line.
 
 def has_summary(doc_lines):
+    """Evaluates whether the provided docstring block contains a 'Summary:' directive.
+
+    Summary: Evaluates whether the provided docstring block contains a 'Summary:' directive.
+
+    Parameters:
+      - doc_lines: A list of comment string lines extracted from the file.
+
+    Returns:
+      - bool: True if the condition is met, False otherwise.
+    """
     for line in doc_lines:
         if "Summary:" in line:
             return True
     return False
 
 def has_parameters(doc_lines):
+    """Evaluates whether the provided docstring block contains a 'Parameters:' directive.
+
+    Summary: Evaluates whether the provided docstring block contains a 'Parameters:' directive.
+
+    Parameters:
+      - doc_lines: A list of comment string lines extracted from the file.
+
+    Returns:
+      - bool: True if the condition is met, False otherwise.
+    """
     for line in doc_lines:
         if "Parameters:" in line:
             return True
     return False
 
 def has_returns(doc_lines):
+    """Evaluates whether the provided docstring block contains a 'Returns:' directive.
+
+    Summary: Evaluates whether the provided docstring block contains a 'Returns:' directive.
+
+    Parameters:
+      - doc_lines: A list of comment string lines extracted from the file.
+
+    Returns:
+      - bool: True if the condition is met, False otherwise.
+    """
     for line in doc_lines:
         if "Returns:" in line:
             return True
     return False
 
 def check_file(filepath):
+    """Scans the target file to determine if all its exported interfaces have the required docstrings.
+
+    Summary: Scans the target file to determine if all its exported interfaces have the required docstrings.
+
+    Parameters:
+      - filepath: The path to the target source file.
+
+    Returns:
+      - list: A list of tuples containing line numbers, symbols, and missing documentation reasons.
+    """
     with open(filepath, 'r') as f:
         lines = f.readlines()
 
@@ -115,6 +155,16 @@ def check_file(filepath):
     return missing
 
 def scan_dir(root_dir):
+    """Recursively traverses the provided directory to find and audit source files for documentation violations.
+
+    Summary: Recursively traverses the provided directory to find and audit source files for documentation violations.
+
+    Parameters:
+      - root_dir: The base directory to start the recursive scan.
+
+    Returns:
+      - int: The total number of documentation violations found in the directory.
+    """
     count = 0
     for root, dirs, files in os.walk(root_dir):
         if "vendor" in root or "node_modules" in root or "test" in root and "pkg" not in root:

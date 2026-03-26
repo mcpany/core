@@ -7,7 +7,12 @@
 
 import { PipelineVisualizer } from "@/components/middleware/pipeline-visualizer";
 
-/** MiddlewarePage renders the middleware pipeline visualization page. */
+/**
+ * Renders the MiddlewarePage layout container, managing data fetching and presentation for the primary route.
+ *
+ * @summary Renders the MiddlewarePage layout container, managing data fetching and presentation for the primary route.
+ * @returns The resulting React element structure.
+ */
 export default function MiddlewarePage() {
     return (
         <div className="flex-1 space-y-4 p-8 pt-6">

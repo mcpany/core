@@ -6,6 +6,12 @@
 import React from "react";
 import { HitlDashboard } from "@/components/hitl/hitl-dashboard";
 
+/**
+ * Renders the HitlPage layout container, managing data fetching and presentation for the primary route.
+ *
+ * @summary Renders the HitlPage layout container, managing data fetching and presentation for the primary route.
+ * @returns The resulting React element structure or data output, or void if executing a side effect.
+ */
 export default function HitlPage() {
     return (
         <div className="container py-6 space-y-6">
