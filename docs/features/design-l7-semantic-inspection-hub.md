@@ -3,28 +3,39 @@
 **Created:** 2026-06-11
 
 ## 1. Context and Scope
-Autonomous agent swarms (OpenClaw, CrewAI) often enter reasoning loops or execute tool calls that are syntactically valid but semantically dangerous. Existing Zero Trust models focus on tool identity; L7SIH focuses on reasoning intent.
+Multi-agent swarms frequently suffer from "Reasoning Entropy Exhaustion" (REE), where recursive subagent calls degrade the original intent, leading to hallucinations or infinite routing loops. MCP Any, as the gateway, is positioned to inspect the semantic intent of tool calls before they are executed or routed.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
-    * Trace reasoning lineage across multi-agent handoffs.
-    * Detect semantic loops (Reasoning Entropy Exhaustion).
-    * Provide a semantic policy engine for tool invocation.
+    * Detect and terminate infinite routing loops between meta-agents and subagents.
+    * Provide a "Reasoning Lineage" trace for every tool execution.
+    * Enforce semantic constraints on tool parameters based on the parent agent's security profile.
 * **Non-Goals:**
-    * Replacing the LLM's reasoning engine.
-    * Managing low-level network security (L3/L4).
+    * Replacing the reasoning engine of the connected LLMs.
+    * Implementing a general-purpose firewall (handled by ESE).
 
 ## 3. Critical User Journey (CUJ)
-* **User Persona:** Security Engineer for Agentic Workflows.
-* **Primary Goal:** Prevent an agent swarm from accidentally deleting a database due to a misinterpreted reasoning chain.
-* **Happy Path:**
-    1. Swarm initiates a task.
-    2. MCP Any captures the Reasoning Lineage.
-    3. L7SIH inspects the lineage against semantic policies.
-    4. Invocation is blocked if reasoning indicates unauthorized intent.
+* **User Persona:** Agent Swarm Architect
+* **Primary Goal:** Prevent a specialized subagent from "hallucinating" a loop that exhausts the API budget.
+* **The Happy Path (Tasks):**
+    1. Architect defines a "Reasoning TTL" (Time-To-Live) in the MCP config.
+    2. Subagent A calls Subagent B via MCP Any.
+    3. L7SIH increments the lineage counter and validates the semantic hash.
+    4. Routing loop is detected; L7SIH rejects the request with a `429 Semantic Loop` error.
 
 ## 4. Design & Architecture
-L7SIH sits between the Agent Framework and the MCP Servers, acting as a deep-packet inspection hub for LLM payloads.
+* **System Flow:**
+    `Agent -> [L7SIH Middleware] -> Adapter -> Local Tool`
+* **APIs / Interfaces:**
+    * `X-MCP-Reasoning-Lineage`: Header tracking the chain of thought ID.
+    * `X-MCP-Entropy-Threshold`: Configurable limit for semantic drift.
+
+## 5. Alternatives Considered
+* **Agent-side checks:** Rejected because subagents cannot be trusted to monitor their own entropy.
+
+## 6. Cross-Cutting Concerns
+* **Security (Zero Trust):** L7SIH ensures that a subagent cannot escalate its privileges by "looping" into a more powerful meta-agent's context.
+* **Observability:** Integrated with OpenTelemetry for real-time CoT (Chain of Thought) visualization.
 
 ## 7. Evolutionary Changelog
 * **2026-06-11:** Initial Document Creation.

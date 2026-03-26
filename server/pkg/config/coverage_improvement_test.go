@@ -117,7 +117,7 @@ func TestValidatorCoverageMore(t *testing.T) {
     assert.Contains(t, errs[0].Err.Error(), "at least 16 characters")
 
     // 4. HTTP Service Invalid Scheme
-    cfgHttp := configv1.McpAnyServerConfig_builder{
+    cfgHTTP := configv1.McpAnyServerConfig_builder{
         UpstreamServices: []*configv1.UpstreamServiceConfig{
             configv1.UpstreamServiceConfig_builder{
                 Name: proto.String("bad-http"),
@@ -127,7 +127,7 @@ func TestValidatorCoverageMore(t *testing.T) {
             }.Build(),
         },
     }.Build()
-    errs = config.Validate(ctx, cfgHttp, config.Server)
+    errs = config.Validate(ctx, cfgHTTP, config.Server)
     assert.NotEmpty(t, errs)
     assert.Contains(t, errs[0].Err.Error(), "invalid http address scheme")
 

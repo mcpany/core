@@ -20,12 +20,12 @@ import (
 func TestRedisStrategy(t *testing.T) {
 	// Setup mock creator
 	var createdClients []*redis.Client
-	middleware.SetRedisClientCreatorForTests(func(opts *redis.Options) *redis.Client {
+	middleware.SetRedisClientCreatorForTests(func(_ *redis.Options) *redis.Client {
 		db, _ := redismock.NewClientMock()
 		createdClients = append(createdClients, db)
 		return db
 	})
-	defer middleware.SetRedisClientCreatorForTests(func(opts *redis.Options) *redis.Client {
+	defer middleware.SetRedisClientCreatorForTests(func(_ *redis.Options) *redis.Client {
 		return redis.NewClient(opts)
 	})
 

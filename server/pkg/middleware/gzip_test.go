@@ -165,10 +165,7 @@ func TestGzipCompressionMiddleware(t *testing.T) {
 			if len(firstFlush) == 0 {
 				t.Error("Expected data to be written before flush")
 			}
-			// Check for Gzip magic bytes
-			if len(firstFlush) > 2 && firstFlush[0] == 0x1f && firstFlush[1] == 0x8b {
-				// Good
-			} else {
+			if !(firstFlush[0] == 0x1f && firstFlush[1] == 0x8b) {
 				t.Errorf("Expected gzip header in flushed data, got: %x", firstFlush)
 			}
 		}

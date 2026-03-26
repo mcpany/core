@@ -81,7 +81,7 @@ func (m *MockToolForCost) MCPTool() *github_com_modelcontextprotocol_go_sdk_mcp.
 func (m *MockToolForCost) GetCacheConfig() *configv1.CacheConfig                     { return nil }
 
 // Need dummy type for MCPTool return to satisfy interface
-type github_com_modelcontextprotocol_go_sdk_mcp_Tool struct{}
+type githubComModelcontextprotocolGoSdkMcpTool struct{}
 
 func TestRateLimitMiddleware_EstimateTokenCost(t *testing.T) {
 	// Default SimpleTokenizer (4 chars/token)
