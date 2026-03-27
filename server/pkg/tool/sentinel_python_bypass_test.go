@@ -16,7 +16,7 @@ import (
 
 func TestSentinelRCE_Python_Getattr_Bypass(t *testing.T) {
 	// 1. Configure a tool that uses python3 -c with input inside double quotes (eval)
-    // This simulates a tool where the developer wants to evaluate a python expression.
+	// This simulates a tool where the developer wants to evaluate a python expression.
 	svc := configv1.CommandLineUpstreamService_builder{
 		Command:          proto.String("python3"),
 		WorkingDirectory: proto.String("."),
@@ -51,7 +51,7 @@ func TestSentinelRCE_Python_Getattr_Bypass(t *testing.T) {
 	// - Uses string concatenation to hide "__import__"
 	// - Uses getattr to hide "system"
 	// - Uses __builtins__ to access __import__
-    // - Uses single quotes (allowed in Double Quoted context)
+	// - Uses single quotes (allowed in Double Quoted context)
 	payload := "getattr(__builtins__['__im'+'port__']('os'), 'sys'+'tem')('id')"
 
 	inputMap := map[string]interface{}{
@@ -72,7 +72,7 @@ func TestSentinelRCE_Python_Getattr_Bypass(t *testing.T) {
 		t.Log("Vulnerability confirmed: Payload was accepted!")
 		t.Fail()
 	} else {
-        t.Logf("Blocked with error: %v", err)
+		t.Logf("Blocked with error: %v", err)
 		assert.Contains(t, err.Error(), "injection detected", "Payload should be blocked")
 	}
 }

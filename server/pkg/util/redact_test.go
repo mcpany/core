@@ -169,7 +169,7 @@ func TestRedactMap(t *testing.T) {
 			expected: map[string]interface{}{"user": map[string]interface{}{"name": "Alice", "token": "[REDACTED]"}},
 		},
 		{
-			name:     "slice inside map with secrets",
+			name: "slice inside map with secrets",
 			input: map[string]interface{}{
 				"data": []interface{}{
 					map[string]interface{}{"id": 1, "secret": "one"},
@@ -304,47 +304,47 @@ func TestRedactJSON(t *testing.T) {
 			expected: `{this is not json}`,
 		},
 		// Whitespace and comments (supported by redactJSONFast)
-        {
-            name: "whitespace and comments",
-            input: `
+		{
+			name: "whitespace and comments",
+			input: `
             // comment before
             {
                 "password": "secret", // comment after
                 /* block comment */
                 "token": "123"
             }`,
-            expected: `
+			expected: `
             // comment before
             {
                 "password": "[REDACTED]", // comment after
                 /* block comment */
                 "token": "[REDACTED]"
             }`,
-        },
-        // Escaped quotes in keys and values
-        {
-            name: "escaped quotes",
-            input: `{"key\"with\"quotes": "value", "secret": "val\"ue"}`,
-            expected: `{"key\"with\"quotes": "value", "secret": "[REDACTED]"}`,
-        },
-        // Unicode escapes
-        {
-            name: "unicode escapes",
-            input: `{"\u0070\u0061\u0073\u0073\u0077\u006f\u0072\u0064": "secret"}`, // "password"
-            expected: `{"\u0070\u0061\u0073\u0073\u0077\u006f\u0072\u0064": "[REDACTED]"}`,
-        },
-        // Numbers and other types
-        {
-            name: "numbers and bools",
-            input: `{"secret": 12345, "token": true, "key": null}`,
-            expected: `{"secret": "[REDACTED]", "token": "[REDACTED]", "key": null}`,
-        },
+		},
+		// Escaped quotes in keys and values
+		{
+			name:     "escaped quotes",
+			input:    `{"key\"with\"quotes": "value", "secret": "val\"ue"}`,
+			expected: `{"key\"with\"quotes": "value", "secret": "[REDACTED]"}`,
+		},
+		// Unicode escapes
+		{
+			name:     "unicode escapes",
+			input:    `{"\u0070\u0061\u0073\u0073\u0077\u006f\u0072\u0064": "secret"}`, // "password"
+			expected: `{"\u0070\u0061\u0073\u0073\u0077\u006f\u0072\u0064": "[REDACTED]"}`,
+		},
+		// Numbers and other types
+		{
+			name:     "numbers and bools",
+			input:    `{"secret": 12345, "token": true, "key": null}`,
+			expected: `{"secret": "[REDACTED]", "token": "[REDACTED]", "key": null}`,
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result := util.RedactJSON([]byte(tt.input))
-            // Normalize spaces for comparison if needed, but RedactJSON should preserve exact bytes for non-redacted parts.
+			// Normalize spaces for comparison if needed, but RedactJSON should preserve exact bytes for non-redacted parts.
 			assert.Equal(t, tt.expected, string(result))
 		})
 	}

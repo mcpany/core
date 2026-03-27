@@ -17,8 +17,8 @@ func TestSimpleTokenizeInt_EdgeCases(t *testing.T) {
 		-999999,  // 7 chars -> 1
 		-1000000, // 8 chars -> 2
 		-9999999, // 8 chars -> 2
-        12345678,
-        -12345678,
+		12345678,
+		-12345678,
 	}
 
 	for _, n := range tests {
@@ -35,7 +35,7 @@ func TestSimpleTokenizeInt_EdgeCases(t *testing.T) {
 }
 
 func TestSimpleTokenizeInt64_EdgeCases(t *testing.T) {
-    tests := []int64{
+	tests := []int64{
 		0, 1, 9, 10, 99, 100, 999, 1000, 9999,
 		9999999,  // 7 digits -> 1
 		10000000, // 8 digits -> 2
@@ -43,8 +43,8 @@ func TestSimpleTokenizeInt64_EdgeCases(t *testing.T) {
 		-999999,  // 7 chars -> 1
 		-1000000, // 8 chars -> 2
 		-9999999, // 8 chars -> 2
-        12345678,
-        -12345678,
+		12345678,
+		-12345678,
 	}
 
 	for _, n := range tests {

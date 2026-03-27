@@ -74,7 +74,7 @@ func TestUpstreamService_GoogleCalendar(t *testing.T) {
 			Address: proto.String(mockServer.URL), // Point to mock server
 			Tools: []*configv1.ToolDefinition{
 				configv1.ToolDefinition_builder{
-					Name: proto.String("list_events"),
+					Name:   proto.String("list_events"),
 					CallId: proto.String("list_events"),
 				}.Build(),
 			},

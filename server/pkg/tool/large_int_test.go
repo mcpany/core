@@ -70,7 +70,7 @@ func TestLargeIntPrecisionLoss(t *testing.T) {
 	}.Build()
 
 	callDef := configv1.CommandLineCallDefinition_builder{
-		Args: []string{"{{id}}"},
+		Args:       []string{"{{id}}"},
 		Parameters: []*configv1.CommandLineParameterMapping{mapping},
 	}.Build()
 

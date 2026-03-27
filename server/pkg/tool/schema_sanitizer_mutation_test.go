@@ -18,9 +18,9 @@ func TestSanitizeJSONSchema_DoesNotMutateInput(t *testing.T) {
 		},
 	}
 
-    // Check initial state
-    _, hasType := rawSchema["type"]
-    assert.False(t, hasType)
+	// Check initial state
+	_, hasType := rawSchema["type"]
+	assert.False(t, hasType)
 
 	_, err := SanitizeJSONSchema(rawSchema)
 	assert.NoError(t, err)

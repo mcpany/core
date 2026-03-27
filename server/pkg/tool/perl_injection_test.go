@@ -31,7 +31,7 @@ func TestLocalCommandTool_Perl_RCE(t *testing.T) {
 
 	// Attempt RCE using qx// which uses safe characters
 	// print+qx/id/
-    // This payload contains NO spaces or other blocked characters.
+	// This payload contains NO spaces or other blocked characters.
 	reqAttack := &ExecutionRequest{
 		ToolName: "test-tool-perl",
 		Arguments: map[string]interface{}{
@@ -44,14 +44,14 @@ func TestLocalCommandTool_Perl_RCE(t *testing.T) {
 
 	// If err contains "shell injection detected", it means validation failed -> Secure.
 	if err != nil {
-        // If it fails with something else (e.g. executable not found), it means validation PASSED (Vulnerable)
-        // because "executable not found" is a runtime error, not a validation error.
+		// If it fails with something else (e.g. executable not found), it means validation PASSED (Vulnerable)
+		// because "executable not found" is a runtime error, not a validation error.
 		if assert.Contains(t, err.Error(), "shell injection detected") {
-             // Validation worked.
-        } else {
-             t.Logf("Validation passed (vulnerable), but execution failed: %v", err)
-             t.Fail()
-        }
+			// Validation worked.
+		} else {
+			t.Logf("Validation passed (vulnerable), but execution failed: %v", err)
+			t.Fail()
+		}
 	} else {
 		// Validation passed (vulnerable)
 		t.Log("Perl RCE payload was NOT blocked! (Execution succeeded)")

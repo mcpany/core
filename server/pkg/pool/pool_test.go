@@ -455,8 +455,8 @@ func TestPool_New_FactoryError(t *testing.T) {
 }
 
 func TestPool_New_DisableHealthCheck_WithUnhealthyClient(t *testing.T) {
-	factory := newMockClientFactory(false) // Creates unhealthy clients
-	p, err := New(factory, 1, 1, 1, 0, true)  // disableHealthCheck = true
+	factory := newMockClientFactory(false)   // Creates unhealthy clients
+	p, err := New(factory, 1, 1, 1, 0, true) // disableHealthCheck = true
 	require.NoError(t, err)
 	defer func() {
 		err := p.Close()
@@ -501,8 +501,8 @@ func TestPool_Get_FactoryError(t *testing.T) {
 }
 
 func TestPool_DisableHealthCheck(t *testing.T) {
-	factory := newMockClientFactory(false) // Creates unhealthy clients
-	p, err := New(factory, 1, 1, 1, 0, true)  // disableHealthCheck = true
+	factory := newMockClientFactory(false)   // Creates unhealthy clients
+	p, err := New(factory, 1, 1, 1, 0, true) // disableHealthCheck = true
 	require.NoError(t, err)
 	defer func() {
 		err := p.Close()

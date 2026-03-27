@@ -15,9 +15,9 @@ import (
 
 // WebhookRequest matches the data payload sent by mcpany
 type WebhookRequest struct {
-	Kind     int            `json:"kind"` // 1=PreCall, 2=PostCall
-	ToolName string         `json:"tool_name"`
-	Result   any            `json:"result"`
+	Kind     int    `json:"kind"` // 1=PreCall, 2=PostCall
+	ToolName string `json:"tool_name"`
+	Result   any    `json:"result"`
 }
 
 // WebhookResponse matches the expected response data
@@ -98,7 +98,7 @@ func convertHandler(w http.ResponseWriter, r *http.Request) {
 	respData := WebhookResponse{
 		ReplacementObject: map[string]string{
 			"content": markdown,
-			"format": "markdown",
+			"format":  "markdown",
 		},
 	}
 

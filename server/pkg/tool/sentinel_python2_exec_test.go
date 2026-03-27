@@ -28,6 +28,6 @@ func TestPython2Exec(t *testing.T) {
 	if err == nil {
 		t.Fatalf("Vulnerability confirmed: 'exec \"print(1)\"' passed validation in Single Quote context (Python). Error was nil.")
 	} else {
-        t.Logf("Blocked with error: %v", err)
-    }
+		t.Logf("Blocked with error: %v", err)
+	}
 }

@@ -35,7 +35,7 @@ func TestSedSandbox_Prevention(t *testing.T) {
 
 	// Payload: 1e date (Execute 'date')
 	req := &ExecutionRequest{
-		ToolName: "sed-tool",
+		ToolName:   "sed-tool",
 		ToolInputs: []byte(`{"script": "1e date"}`),
 	}
 
@@ -75,7 +75,7 @@ func TestSedSandbox_Prevention(t *testing.T) {
 
 	// Payload: w /tmp/pwned (Write file)
 	req = &ExecutionRequest{
-		ToolName: "sed-tool",
+		ToolName:   "sed-tool",
 		ToolInputs: []byte(`{"script": "w /tmp/pwned"}`),
 	}
 
@@ -123,7 +123,7 @@ func TestSedSandbox_ValidUsage(t *testing.T) {
 	// Maybe use 'version' command if sed has it as script? No.
 	// Use 'q' (quit).
 	req := &ExecutionRequest{
-		ToolName: "sed-tool",
+		ToolName:   "sed-tool",
 		ToolInputs: []byte(`{"script": "q"}`),
 	}
 

@@ -111,7 +111,7 @@ func TestBundleCleanup(t *testing.T) {
 }
 
 // CleanupMockClientSession needed for interface satisfaction
-type CleanupMockClientSession struct {}
+type CleanupMockClientSession struct{}
 
 func (m *CleanupMockClientSession) ListTools(_ context.Context, _ *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
 	return &mcp.ListToolsResult{}, nil
