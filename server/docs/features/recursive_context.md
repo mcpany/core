@@ -15,4 +15,4 @@ recursive_context:
 
 ## How it works
 
-When a subagent spawns, the protocol attaches an `X-MCP-Parent-Context-ID` header. The middleware automatically pulls the shared session state and makes it available to the new subagent, preventing "context loss" or the need to re-authenticate or re-initialize basic state variables.
+When a subagent spawns, the protocol attaches an `X-MCP-Parent-Context-ID` header. The middleware automatically pulls the shared session state and makes it available to the new subagent, preventing "context loss" or the need to re-authenticate or re-initialize basic state variables. The API exposes `/context/session/` endpoints and relies on the `X-MCP-Parent-Context-ID` header.
