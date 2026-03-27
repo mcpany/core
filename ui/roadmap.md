@@ -503,5 +503,6 @@
 - [ ] **[P0] Context Fragment Auditor**: UI for inspecting and approving sharded mailbox fragments flagged by the mesh-bound isolation engine. (Added: 2026-05-29)
 
 #### Upcoming (2026-07-08 Evolution)
-- [ ] **Attention Heatmap (SRM Integration)**: UI visualization of attention density and jitter distribution. (Added: 2026-07-08)
-- [ ] **Sovereign Context Dashboard**: Real-time monitoring of CSP v1.1 reasoning leases. (Added: 2026-07-08)
+- [ ] **[P0] Spectral Jitter Monitor**: (2026-07-08) Real-time visualization of timing jitter injected by the SRM.
+- [ ] **[P0] Handshake Portal Dashboard**: (2026-07-08) UI for reviewing and unmasking JIT-discovered agent schemas.
+- [ ] **[P1] Recursive Redaction Debugger**: (2026-07-08) Visualizer for CSP v1.1 state-ownership and redaction hooks.

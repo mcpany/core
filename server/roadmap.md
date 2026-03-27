@@ -615,6 +615,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] Zero-Knowledge Capability Proof (ZKCP)**: Prove skill possession without revealing sensitive implementation details. (Added: 2026-05-24)
 *   **[P0] Self-Correction Loop Arbiter**: Lifecycle monitor to prevent reasoning hijacking via self-correction drift. (Added: 2026-05-24)
 
+#### Upcoming (2026-07-08 Evolution)
+*   **[P0] Spectral Reasoning Mitigator (SRM)**: Implementation of reasoning-aware timing jitter and attention masking. (Added: 2026-07-08)
+*   **[P0] Handshake Portal Gateway**: Kernel-mediated JIT handshake portal for masked capability schemas. (Added: 2026-07-08)
+*   **[P1] CSP v1.1 Sidecar Adapter**: Authoritative support for recursive context redaction and ownership hooks. (Added: 2026-07-08)
+
 #### Upcoming (2026-05-25 Evolution)
 *   **[P0] Reasoning-Budget Firewall (RBF)**: Authoritative economic gatekeeper enforcing hardware-attested token/ARE budgets. (Added: 2026-05-25)
 *   **[P0] Asynchronous Mailbox Sharding (AMS)**: Upgrade for T2T bridge to host task-bound mailbox shards and eliminate coordination locks. (Added: 2026-05-25)
@@ -661,8 +666,3 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Cross-Mesh Command Sovereignty (CMCS) Provider**: Hardware-attested "Mesh Tokens" for inter-teammate mailbox validation in horizontal swarms. (Added: 2026-05-29)
 *   **[P0] Atomic Teammate Handshake (ATH) Gateway**: Mandatory identity exchange before teammate task delegation in horizontal teams. (Added: 2026-05-29)
 *   **[P0] Mesh-Bound Context Sovereignty Bridge**: Semantic fragment analysis across teammate boundaries for horizontal team stability. (Added: 2026-05-29)
-
-#### Upcoming (2026-07-08 Evolution)
-*   **[P0] Spectral Reasoning Mitigator (SRM)**: Implementation of reasoning jitter and temporal masking. (Added: 2026-07-08)
-*   **[P0] Handshake Portal Gateway**: High-speed cryptographic bridge for JIT inter-agent tool discovery. (Added: 2026-07-08)
-*   **[P1] Recursive Attention Masking**: Advanced cognitive security extension for masking non-mission noise. (Added: 2026-07-08)

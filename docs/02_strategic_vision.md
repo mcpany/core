@@ -879,8 +879,10 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Autonomous Task Reaper (ATR)**: Supporting the stability of horizontal meshes, MCP Any will implement the ATR. This service will monitor teammate liveness and reasoning monologues to proactively reclaim and re-auction "Ghost" tasks that remain locked in the mailbox after a teammate terminates.
 - **Hardware-Attested Identity Rotation (HAIR)**: To counter "Teammate Impersonation" in sharded meshes, we are mandating HAIR. Every inter-teammate request will be signed with a hardware-attested, session-bound identity token that rotates periodically, ensuring that a compromised subagent cannot "squat" on a mailbox shard.
 
----
-
 ## Strategic Evolution: [2026-07-08]
-### Pivot: Spectral Side-Channel Immunity
-Today's research into Spectral Reasoning vulnerabilities necessitates a shift in our Universal Agent Bus. MCP Any will no longer just facilitate context; it will **mask** it. We are introducing the **Spectral Reasoning Mitigator (SRM)** as a core infrastructure layer. This will decouple the *timing* of subagent reasoning from the *visibility* of state. By implementing "Reasoning Jitter" and "Temporal Attention Masking," we ensure that an observer cannot infer the internal state of a mission-root by observing the response latencies of its subagents.
+### Focus: Spectral Side-Channel Immunity & Recursive Sovereignty
+**Context**: The shift toward "Spectral Reasoning" side-channel attacks and the ratification of CSP v1.1 confirm that protecting reasoning *content* is no longer sufficient; we must protect the *temporality* and *lineage* of thought. Simultaneously, the rise of JIT Handshake Portals (Claude/Gemini) demands that capabilities remain invisible even during the discovery phase.
+**Strategic Pivot**:
+- **Spectral Reasoning Mitigator (SRM)**: MCP Any will implement "Reasoning Jitter" and "Temporal Attention Masking." This decouples mission-root state visibility from subagent reasoning latency, neutralizing timing-based side-channel probes.
+- **CSP v1.1 Recursive Redaction**: We are evolving the gateway logic to support recursive state-ownership. MCP Any will act as the authoritative sidecar broker, enforcing deep redaction hooks that persist across infinite delegation hops.
+- **Handshake Portal Gateway**: To support JIT discovery, we are introducing Handshake Portals. Agent capability schemas will remain cryptographically masked until a mission-bound handshake is completed via isolated, kernel-mediated transport.

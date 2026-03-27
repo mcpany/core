@@ -3,42 +3,44 @@
 **Created:** 2026-07-08
 
 ## 1. Context and Scope
-With the rise of Spectral Reasoning attacks, agent latency has become a side-channel for exfiltrating Mission-Root constraints. MCP Any must ensure that the time an agent spends reasoning does not leak information about the underlying security boundaries or state.
+Spectral Reasoning attacks utilize timing analysis of LLM reasoning monologues (ARE headers) to infer mission-root constraints, even when the final output is sanitized. MCP Any needs a defense that decouples reasoning latency from state visibility.
+
+The SRM provides "Reasoning Jitter" and "Temporal Attention Masking" to neutralize these side-channels.
 
 ## 2. Goals & Non-Goals
-* **Goals:**
-    * Decouple reasoning time from response latency.
-    * Mask attention patterns from subagents.
-    * Maintain sub-100ms coordination overhead despite jitter injection.
-* **Non-Goals:**
-    * Preventing all timing attacks (focus is on reasoning side-channels).
-    * Modifying the underlying LLM's reasoning engine.
+*   **Goals:**
+    *   Inject hardware-attested timing jitter into all mission-bound responses.
+    *   Mask attention-utilization metrics from subagent observation.
+    *   Maintain <5ms overhead for non-adversarial reasoning paths.
+*   **Non-Goals:**
+    *   Will NOT modify the core LLM reasoning weights.
+    *   Will NOT perform textual sanitization (handled by AID Hub).
 
 ## 3. Critical User Journey (CUJ)
-* **User Persona:** Secure Swarm Orchestrator
-* **Primary Goal:** Prevent a specialized "Code Auditor" subagent from probing "Project Security Rules" by observing how long the parent agent takes to validate tool calls.
-* **The Happy Path (Tasks):**
-    1. Orchestrator enables SRM in the gateway config.
-    2. Subagent issues a tool call that triggers a security check.
-    3. SRM calculates a reasoning jitter based on intent entropy.
-    4. Gateway holds the response for a calculated interval, normalizing the latency.
-    5. Subagent receives the result without knowing if the delay was due to "thinking" or jitter.
+*   **User Persona:** Enterprise Swarm Architect
+*   **Primary Goal:** Prevent a specialist subagent from inferring project-local secrets via reasoning latency.
+*   **The Happy Path (Tasks):**
+    1.  Architect enables `SRM_ENABLED` in global policy.
+    2.  Subagent executes a high-stakes reasoning loop.
+    3.  SRM intercepts the ARE headers and calculates a "Reasoning-Aware Jitter" profile.
+    4.  Response is held in a kernel-bound buffer and released according to the jitter profile.
+    5.  Attestation tokens are appended to the response to verify the defense was active.
 
 ## 4. Design & Architecture
-* **System Flow:**
-    `Subagent -> [JIT Handshake] -> SRM Middleware -> [Security Logic] -> Jitter Buffer -> Response`
-* **APIs / Interfaces:**
-    * New header: `x-mcp-srm-jitter-entropy`: Signals the risk level of the current reasoning trace.
-* **Data Storage/State:**
-    * Temporal Attention Masks are stored in the mission-root's secure enclave.
+*   **System Flow:**
+    `[Subagent] -> [ARE Headers] -> [SRM Jitter Engine] -> [Kernel Buffer] -> [MCP Any Gateway]`
+*   **APIs / Interfaces:**
+    *   `POST /v1/srm/jitter-profile`: Internal endpoint for profile calculation.
+    *   `GET /v1/srm/attestation/{session_id}`: Retrieve hardware-bound proof of mitigation.
+*   **Data Storage/State:**
+    *   Timing profiles are stored in ephemeral, kernel-locked memory.
 
 ## 5. Alternatives Considered
-* **Constant Latency:** Rejected due to extreme performance degradation.
-* **Random Jitter:** Rejected as it can be statistically filtered out by repeated probing. SRM uses "Reasoning-Aware Jitter."
+*   **Random Jitter:** Rejected due to statistical predictability; reasoning-aware jitter provides higher entropy against timing attacks.
 
 ## 6. Cross-Cutting Concerns
-* **Security (Zero Trust):** SRM is anchored to the hardware-attested mission root.
-* **Observability:** Latency logs are salted to prevent SRM's own metrics from becoming a side-channel.
+*   **Security (Zero Trust):** SRM profiles are cryptographically bound to the mission-root identity.
+*   **Observability:** SRM latency and jitter variance are exported via the Telemetry Sink.
 
 ## 7. Evolutionary Changelog
-* **2026-07-08:** Initial Document Creation.
+*   **2026-07-08:** Initial Document Creation.

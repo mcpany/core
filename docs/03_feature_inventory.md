@@ -1156,6 +1156,17 @@
 - **Autonomous Task Reaper (ATR)**: (P1) Stability service that monitors teammate liveness and reasoning monologues to reclaim and re-auction "Ghost" tasks.
 - **Hardware-Attested Identity Rotation (HAIR) Provider**: (P0) Security middleware mandating periodic, hardware-bound identity rotation for inter-teammate requests in sharded meshes.
 
+## Evolution: [2026-07-08] Updates
+
+### Proposed Additions
+- **Spectral Reasoning Mitigator (SRM)**: (P0) Security middleware that injects reasoning-aware jitter into ARE headers to neutralize side-channel timing attacks.
+- **Handshake Portal Gateway**: (P0) Discovery middleware mandating kernel-mediated handshakes before revealing agent capability schemas.
+- **Recursive Attention Masking (RAM)**: (P1) Cognitive security extension that cryptographically masks parent attention-utilization from subagent observation.
+
+### Priority Shifts
+- **CSP v1.0 Native Bridge**: (Evolved to CSP v1.1 Hub) Now elevated with the requirement for mandatory **Recursive Redaction** hooks.
+- **Side-Channel Timing Mitigator (SCTM)**: (Re-affirmed P0) Evolving into the **Spectral Reasoning Mitigator** for broader side-channel immunity.
+
 ### Priority Shifts
 - **Teammate Task-List Arbiter**: (Evolved to Lock-Free Mesh Arbiter) Now designated as the primary mechanism for lock-free horizontal coordination.
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (Evolved to Sharded Mailbox Sovereignty) Now elevated with mission-root intent anchoring.
@@ -1171,14 +1182,3 @@
 ### Priority Shifts
 - **Differential Context Guarding (DCG) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Mesh-Bound Sovereignty**.
 - **SMI Relay Provider**: (Re-affirmed P0) Evolving to act as the authoritative backend for the **Atomic Teammate Handshake (ATH)**.
-
-## Evolution: [2026-07-08] Updates
-
-### Proposed Additions
-- **Spectral Reasoning Mitigator (SRM)**: (P0) Core infrastructure layer that decouples reasoning latency from state access via Reasoning Jitter and Temporal Attention Masking.
-- **Handshake Portal Gateway**: (P0) High-speed cryptographic bridge for JIT inter-agent tool discovery, replacing static capability tokens.
-- **Recursive Attention Masking**: (P1) Advanced cognitive security extension for the HAAL middleware that automatically masks non-mission reasoning noise in deep swarms.
-
-### Priority Shifts
-- **Active Attention Enforcer (AAE)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Recursive Attention Masking** integration.
-- **Zero-Copy Memory Broker (ZCMB)**: (Re-affirmed P0) Designated as the primary integration point for the **SRM** temporal isolation.

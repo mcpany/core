@@ -1,16 +1,14 @@
 # Market Sync: 2026-07-08
 
-## 1. Ecosystem Shift: Spectral Reasoning Side-Channels
-A new class of vulnerability, **Spectral Reasoning**, has been identified in high-frequency agent meshes (OpenClaw, CrewAI). Attackers can infer "Mission-Root" constraints by measuring the timing variances in subagent reasoning cycles. If an agent pauses to "think" before a rejection, the latency leakage reveals the existence of hidden security boundaries.
+## Ecosystem Shift: Spectral Reasoning Attack Surfaces
+*   **Observation:** Recent exploits in OpenClaw subagent routing have shifted from direct injection to "Spectral Reasoning" side-channel attacks. Agents are being probed via timing analysis of their internal reasoning monologues (ARE headers).
+*   **Impact:** Mission-root constraints are being leaked even when the final tool output is sanitized.
+*   **Mitigation Trend:** Transition to "Reasoning Jitter" and "Temporal Attention Masking" to decouple mission-root visibility from subagent reasoning latency.
 
-## 2. Protocol Evolution: CSP v1.1 & JIT Handshake Portals
-* **Context Sovereignty Protocol (CSP) v1.1:** Introduced "Reasoning Leases." Agents now sign their chain-of-thought with temporal valid-until timestamps, preventing replay attacks on reasoning logs.
-* **JIT Handshake Portals:** Shift from static API keys to Just-In-Time cryptographic handshakes for inter-agent tool discovery.
+## Standard Shift: Context Sovereignty Protocol (CSP) v1.1
+*   **Observation:** The OpenClaw Foundation has ratified CSP v1.1, which mandates recursive redaction hooks for all shared context sidecars.
+*   **Gap in MCP Any:** Current gateway logic performs flat sanitization at the edge; it lacks the recursive state-ownership awareness required by the new standard.
 
-## 3. Emerging Pain Points
-* **Attention Fragmentation:** Swarms with >50 agents are experiencing "Attention Death," where context-inheritance overhead exceeds reasoning bandwidth.
-* **State Pollution:** Subagents are "leaking" ephemeral state into the global blackboard, causing hallucinations in subsequent task-loops.
-
-## 4. Key Findings Summary
-* **Timing is the new data:** Security must move beyond data-at-rest/motion to **latency-at-rest**.
-* **Zero Trust Discovery:** Local tool execution requires per-call attestation, not per-session.
+## New Pattern: JIT Handshake Portals
+*   **Observation:** Claude Code and Gemini CLI are moving toward "JIT Handshake Portals" for inter-agent discovery.
+*   **Trend:** Capabilities are cryptographically masked until a mission-bound handshake is completed via a local-only named pipe.
