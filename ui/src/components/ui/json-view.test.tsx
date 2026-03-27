@@ -30,11 +30,18 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
 }));
 
 describe('JsonView', () => {
-  it('renders JSON string correctly', () => {
+  it('renders JSON string correctly', async () => {
     const data = { key: 'value' };
     render(<JsonView data={data} />);
+
+    // Switch to Raw view to test raw syntax rendering
+    const jsonBtn = screen.getByText('Raw');
+    await act(async () => {
+      fireEvent.click(jsonBtn);
+    });
+
     // SyntaxHighlighter might break it up into spans, so we search for text parts
-    expect(screen.getByText(/"key"/)).toBeInTheDocument();
+    expect(await screen.findByText(/"key"/)).toBeInTheDocument();
     expect(screen.getByText(/"value"/)).toBeInTheDocument();
   });
 
@@ -43,12 +50,18 @@ describe('JsonView', () => {
     expect(screen.getByText('null')).toBeInTheDocument();
   });
 
-  it('copies to clipboard', () => {
+  it('copies to clipboard', async () => {
     const data = { foo: 'bar' };
     render(<JsonView data={data} />);
 
+    // Switch to Raw view which has the copy button for the entire JSON payload
+    const jsonBtn = screen.getByText('Raw');
+    await act(async () => {
+      fireEvent.click(jsonBtn);
+    });
+
     // The copy button is initially hidden (opacity 0) but present in DOM
-    const copyButton = screen.getByTitle('Copy JSON');
+    const copyButton = await screen.findByTitle('Copy JSON');
     fireEvent.click(copyButton);
 
     expect(mockWriteText).toHaveBeenCalledWith(JSON.stringify(data, null, 2));
@@ -78,7 +91,7 @@ describe('JsonView', () => {
     expect(await screen.findByText(/"Alice"/)).toBeInTheDocument();
   });
 
-  it('collapses long content', () => {
+  it('collapses long content', async () => {
       // We can't easily test visual height in jsdom, but we can check if the collapse button renders
       // and toggles state.
       const data = { key: 'very long content' };
@@ -86,29 +99,15 @@ describe('JsonView', () => {
 
       render(<JsonView data={data} maxHeight={100} />);
 
-      // The button "Show More" should be present if we force it?
-      // Wait, render logic says:
-      // const showCollapse = maxHeight > 0;
-      // ... {showCollapse && ( ... button ... )}
+      // The properties view doesn't have a collapse button by default because it's a flat table.
+      // We need to switch to "Raw" view first to test the collapse logic.
+      const jsonBtn = screen.getByText('Raw');
+      await act(async () => {
+        fireEvent.click(jsonBtn);
+      });
 
-      // So the button is ALWAYS rendered if maxHeight > 0?
-      // Yes, my implementation:
-      /*
-        {showCollapse && (
-            <div className="...">
-                <Button ...>
-                    {isExpanded ? ... : ...}
-                </Button>
-            </div>
-        )}
-      */
-      // Wait, checking my implementation:
-      // It renders the button unconditionally if showCollapse is true?
-      // Yes. It doesn't check if the content *actually* exceeds maxHeight.
-      // This is a known limitation I accepted in comments:
-      // "Calculate approximate lines to guess if we need expand button without rendering? Hard to do accurately."
-
-      expect(screen.getByText('Show More')).toBeInTheDocument();
+      // Now "Show More" should be present.
+      expect(await screen.findByText('Show More')).toBeInTheDocument();
 
       fireEvent.click(screen.getByText('Show More'));
       expect(screen.getByText('Show Less')).toBeInTheDocument();
