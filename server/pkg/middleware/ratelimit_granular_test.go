@@ -5,7 +5,6 @@ package middleware_test
 
 import (
 	"context"
-	"fmt"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -68,11 +67,6 @@ func (t *MockTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, er
 	return nil, nil
 }
 func (t *MockTool) GetCacheConfig() *configv1.CacheConfig { return nil }
-
-func (t *MockTool) IsStreaming() bool { return false }
-func (t *MockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
-	return nil, fmt.Errorf("mock tool does not support streaming execution")
-}
 
 func TestRateLimitMiddleware_Granular(t *testing.T) {
 	tm := &MockToolManager{}

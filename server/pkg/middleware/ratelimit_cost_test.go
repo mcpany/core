@@ -6,7 +6,6 @@ package middleware
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -80,11 +79,6 @@ func (m *MockToolForCost) Service() string {
 // Return concrete type instead of interface proxy
 func (m *MockToolForCost) MCPTool() *github_com_modelcontextprotocol_go_sdk_mcp.Tool { return nil }
 func (m *MockToolForCost) GetCacheConfig() *configv1.CacheConfig                     { return nil }
-
-func (m *MockToolForCost) IsStreaming() bool { return false }
-func (m *MockToolForCost) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
-	return nil, fmt.Errorf("mock tool does not support streaming execution")
-}
 
 // Need dummy type for MCPTool return to satisfy interface
 type github_com_modelcontextprotocol_go_sdk_mcp_Tool struct{}

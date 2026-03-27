@@ -5,7 +5,6 @@ package openapi
 
 import (
 	"context"
-	"fmt"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -240,12 +239,4 @@ func (m *MockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any
 
 func (m *MockTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
-}
-
-func (m *MockTool) IsStreaming() bool {
-	return false
-}
-
-func (m *MockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
-	return nil, fmt.Errorf("mock tool does not support streaming execution")
 }

@@ -177,8 +177,7 @@ func TestHTTPTool_Security_SSRF_Scheme(t *testing.T) {
 	assert.True(t,
 		strings.Contains(err.Error(), "unsafe url") ||
 		strings.Contains(err.Error(), "unsupported protocol scheme") ||
-		strings.Contains(err.Error(), "unsupported scheme") ||
-		strings.Contains(err.Error(), "failed to execute http request"),
+		strings.Contains(err.Error(), "unsupported scheme"),
 		"Error should indicate blocked scheme or invalid URL: %v", err)
 }
 
