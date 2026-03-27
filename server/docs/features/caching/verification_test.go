@@ -215,7 +215,7 @@ global_settings:
 			// 5. Test ClearCache
 			t.Logf("Connecting to gRPC endpoint: %s", serverInfo.GrpcRegistrationEndpoint)
 
-			conn, err := grpc.Dial(serverInfo.GrpcRegistrationEndpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
+			conn, err := grpc.NewClient(serverInfo.GrpcRegistrationEndpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
 			require.NoError(t, err)
 			defer conn.Close()
 

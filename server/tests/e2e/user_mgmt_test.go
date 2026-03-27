@@ -132,7 +132,7 @@ global_settings:
 	integration.WaitForHTTPHealth(t, httpUrl, 10*time.Second)
 
 	// Connect to gRPC Admin Service
-	conn, err := grpc.Dial(fmt.Sprintf("127.0.0.1:%d", grpcRegPort), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient(fmt.Sprintf("127.0.0.1:%d", grpcRegPort), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	require.NoError(t, err)
 	defer conn.Close()
 

@@ -5,6 +5,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -14,44 +15,37 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-const (
-	address     = "localhost:50051"
-	defaultName = "world"
-)
-
 func main() {
 	if err := run(); err != nil {
-		log.Fatalf("Fatal error: %v", err)
+		log.Fatal(err)
 	}
 }
 
 func run() error {
-	// Set up a connection to the server.
-	// Use NewClient instead of Dial to resolve lint warning SA1019.
-	conn, err := grpc.NewClient(address, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	port := os.Getenv("GRPC_PORT")
+	if port == "" {
+		port = "50051"
+	}
+	addr := fmt.Sprintf("localhost:%s", port)
+	conn, err := grpc.NewClient(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return err
 	}
 	defer func() {
-		if err := conn.Close(); err != nil {
-			log.Printf("failed to close connection: %v", err)
-		}
+		_ = conn.Close()
 	}()
-
 	c := pb.NewGreeterClient(conn)
 
-	// Contact the server and print out its response.
-	name := defaultName
+	name := "world"
 	if len(os.Args) > 1 {
 		name = os.Args[1]
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-
 	r, err := c.SayHello(ctx, &pb.HelloRequest{Name: name})
 	if err != nil {
 		return err
 	}
-	log.Printf("Greeting: %s", r.GetMessage())
+	fmt.Printf("Greeting: %s\n", r.GetMessage())
 	return nil
 }

@@ -1131,9 +1131,3 @@
 ### Priority Shifts
 - **Verifiable Task Delegation (VTD)**: (Re-affirmed P0) Now elevated as the primary solution for the "Approval Fatigue" scaling bottleneck.
 - **Pluggable Context Bridge**: (Re-affirmed P0) Expanded to support the new Standardized Context Sidecar Interface.
-
-## Strategic Update: [2026-05-31]
-*   **[NEW] Secure Agent Mesh (Docker-Bound):** Replaces HTTP-based IPC with isolated named pipes for inter-agent communication. (Priority: P0)
-*   **[NEW] Reflective Execution Validator:** Intercepts tool calls and validates signed reasoning traces before execution. (Priority: P1)
-*   **[NEW] Hardware-Locked Context Retrieval (HLCR):** Standard for agents to authenticate via secure enclaves. (Priority: P2)
-*   **[UPDATE] Intent-Based Rate Limiting:** Escalating rate limiting based on the signed reasoning complexity. (Upgraded from P3 to P1)

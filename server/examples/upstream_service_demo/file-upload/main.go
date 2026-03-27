@@ -13,6 +13,13 @@ import (
 )
 
 func main() {
+	if err := run(); err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to start server: %v\n", err)
+		os.Exit(1)
+	}
+}
+
+func run() error {
 	http.HandleFunc("/upload", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -49,8 +56,5 @@ func main() {
 		Addr:              ":8082",
 		ReadHeaderTimeout: 3 * time.Second,
 	}
-	if err := server.ListenAndServe(); err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to start server: %v\n", err)
-		os.Exit(1)
-	}
+	return server.ListenAndServe()
 }

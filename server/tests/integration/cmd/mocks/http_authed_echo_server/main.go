@@ -24,7 +24,6 @@ func run() error {
 	if addr == "" {
 		addr = ":0"
 	}
-	apiKey := os.Getenv("API_KEY")
 
 	ln, err := net.Listen("tcp", addr)
 	if err != nil {
@@ -34,21 +33,17 @@ func run() error {
 
 	fmt.Printf("LISTENING ON %s\n", ln.Addr().String())
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if apiKey != "" && r.Header.Get("X-API-Key") != apiKey {
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("X-API-Key") != "test-key" {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
-
-		body, err := io.ReadAll(r.Body)
-		if err != nil {
-			http.Error(w, "can't read body", http.StatusBadRequest)
-			return
-		}
+		body, _ := io.ReadAll(r.Body)
 		_, _ = w.Write(body)
 	})
 
 	server := &http.Server{
+		Handler:           handler,
 		ReadHeaderTimeout: 3 * time.Second,
 	}
 

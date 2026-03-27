@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package main implements a demo WebRTC client.
 package main
 
 import (
@@ -13,16 +12,20 @@ import (
 	"github.com/pion/webrtc/v3"
 )
 
-// Signal represents a WebRTC signal.
 type Signal struct {
 	Type    string `json:"type"`
 	Payload string `json:"payload"`
 }
 
 func main() {
+	if err := run(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func run() error {
 	var conn *websocket.Conn
 	var err error
-	// Retry connecting to the websocket server to avoid race conditions in tests.
 	for i := 0; i < 5; i++ {
 		conn, _, err = websocket.DefaultDialer.Dial("ws://localhost:8081/ws", nil)
 		if err == nil {
@@ -32,13 +35,9 @@ func main() {
 		time.Sleep(1 * time.Second)
 	}
 	if err != nil {
-		log.Fatalf("Failed to connect to websocket after multiple retries: %v", err)
+		return err
 	}
-	defer func() {
-		if err := conn.Close(); err != nil {
-			log.Printf("Failed to close connection: %v", err)
-		}
-	}()
+	defer func() { _ = conn.Close() }()
 
 	peerConnection, err := webrtc.NewPeerConnection(webrtc.Configuration{
 		ICEServers: []webrtc.ICEServer{
@@ -48,9 +47,9 @@ func main() {
 		},
 	})
 	if err != nil {
-		log.Printf("Failed to create peer connection: %v", err)
-		return
+		return err
 	}
+	defer func() { _ = peerConnection.Close() }()
 
 	peerConnection.OnDataChannel(func(d *webrtc.DataChannel) {
 		d.OnOpen(func() {
@@ -58,9 +57,7 @@ func main() {
 		})
 		d.OnMessage(func(msg webrtc.DataChannelMessage) {
 			log.Printf("Message from data channel: %s", string(msg.Data))
-			if err := d.SendText("Hello, back!"); err != nil {
-				log.Printf("Failed to send text: %v", err)
-			}
+			_ = d.SendText("Hello, back!")
 		})
 	})
 
@@ -68,14 +65,8 @@ func main() {
 		if c == nil {
 			return
 		}
-		payload, err := json.Marshal(c.ToJSON())
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		if err := conn.WriteJSON(Signal{Type: "candidate", Payload: string(payload)}); err != nil {
-			log.Printf("Failed to write candidate: %v", err)
-		}
+		payload, _ := json.Marshal(c.ToJSON())
+		_ = conn.WriteJSON(Signal{Type: "candidate", Payload: string(payload)})
 	})
 
 	go func() {
@@ -83,51 +74,26 @@ func main() {
 			var signal Signal
 			err := conn.ReadJSON(&signal)
 			if err != nil {
-				log.Println(err)
 				return
 			}
 
 			switch signal.Type {
 			case "offer":
 				var offer webrtc.SessionDescription
-				if err := json.Unmarshal([]byte(signal.Payload), &offer); err != nil {
-					log.Printf("Failed to unmarshal offer: %v", err)
-					return
-				}
-				if err := peerConnection.SetRemoteDescription(offer); err != nil {
-					log.Printf("Failed to set remote description: %v", err)
-					return
-				}
-				answer, err := peerConnection.CreateAnswer(nil)
-				if err != nil {
-					log.Printf("Failed to create answer: %v", err)
-					return
-				}
-				if err := peerConnection.SetLocalDescription(answer); err != nil {
-					log.Printf("Failed to set local description: %v", err)
-					return
-				}
-				payload, err := json.Marshal(answer)
-				if err != nil {
-					log.Printf("Failed to marshal answer: %v", err)
-					return
-				}
-				if err := conn.WriteJSON(Signal{Type: "answer", Payload: string(payload)}); err != nil {
-					log.Printf("Failed to write answer: %v", err)
-					return
-				}
+				_ = json.Unmarshal([]byte(signal.Payload), &offer)
+				_ = peerConnection.SetRemoteDescription(offer)
+				answer, _ := peerConnection.CreateAnswer(nil)
+				_ = peerConnection.SetLocalDescription(answer)
+				payload, _ := json.Marshal(answer)
+				_ = conn.WriteJSON(Signal{Type: "answer", Payload: string(payload)})
 			case "candidate":
 				var candidate webrtc.ICECandidateInit
-				if err := json.Unmarshal([]byte(signal.Payload), &candidate); err != nil {
-					log.Printf("Failed to unmarshal candidate: %v", err)
-					return
-				}
-				if err := peerConnection.AddICECandidate(candidate); err != nil {
-					log.Printf("Failed to add ice candidate: %v", err)
-				}
+				_ = json.Unmarshal([]byte(signal.Payload), &candidate)
+				_ = peerConnection.AddICECandidate(candidate)
 			}
 		}
 	}()
 
 	time.Sleep(5 * time.Second)
+	return nil
 }

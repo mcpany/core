@@ -1,11 +1,9 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package main implements an OpenAPI client demo.
 package main
 
 import (
-	"context"
 	"fmt"
 	"io"
 	"log"
@@ -13,21 +11,23 @@ import (
 )
 
 func main() {
-	req, err := http.NewRequestWithContext(context.Background(), "GET", "http://localhost:8080", nil)
-	if err != nil {
+	if err := run(); err != nil {
 		log.Fatal(err)
 	}
-	resp, err := http.DefaultClient.Do(req)
+}
+
+func run() error {
+	resp, err := http.Get("http://localhost:8080/weather/London")
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	defer func() { _ = resp.Body.Close() }()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Printf("failed to read body: %v", err)
-		return
+		return err
 	}
 
 	fmt.Println(string(body))
+	return nil
 }

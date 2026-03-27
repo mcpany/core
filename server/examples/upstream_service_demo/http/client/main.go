@@ -1,22 +1,14 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package main implements a demo HTTP client for the upstream service.
 package main
 
 import (
-	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
-	"time"
 )
-
-var client = &http.Client{
-	Timeout: 10 * time.Second,
-}
 
 func main() {
 	if err := run(); err != nil {
@@ -25,26 +17,17 @@ func main() {
 }
 
 func run() error {
-	req, err := http.NewRequestWithContext(context.Background(), "GET", "http://localhost:8080", nil)
+	resp, err := http.Get("http://localhost:8080/weather?city=London")
 	if err != nil {
-		return fmt.Errorf("failed to create request: %w", err)
-	}
-	resp, err := client.Do(req)
-	if err != nil {
-		return fmt.Errorf("failed to make request: %w", err)
+		return err
 	}
 	defer func() { _ = resp.Body.Close() }()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return fmt.Errorf("failed to read response body: %w", err)
+		return err
 	}
 
-	var result map[string]string
-	if err := json.Unmarshal(body, &result); err != nil {
-		return fmt.Errorf("failed to unmarshal response: %w", err)
-	}
-
-	fmt.Printf("Current time: %s, Timezone: %s\n", result["current_time"], result["timezone"])
+	fmt.Println(string(body))
 	return nil
 }

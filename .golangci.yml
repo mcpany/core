@@ -1,0 +1,46 @@
+run:
+  timeout: 10m
+  tests: false
+
+linters:
+  enable:
+    - bodyclose
+    - errcheck
+    - goconst
+    - gocritic
+    - gocyclo
+    - govet
+    - nolintlint
+    - revive
+    - gosec
+    - staticcheck
+    - tparallel
+    - unconvert
+    - unused
+    - misspell
+    - whitespace
+    - godot
+    - unparam
+    - nakedret
+    - dogsled
+    - asciicheck
+    - makezero
+    - nilerr
+    - noctx
+    - rowserrcheck
+    - sqlclosecheck
+    - wastedassign
+
+issues:
+  exclude-dirs:
+    - build
+    - vendor
+    - node_modules
+    - .cache
+  exclude-rules:
+    - path: "_test.go"
+      linters:
+        - "errcheck"
+  skip-files:
+    - '.*\.pb\.go$'
+    - '.*\.pb\.gw\.go$'
