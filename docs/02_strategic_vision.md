@@ -1,4 +1,4 @@
-<!-- markdownlint-disable-file -->
+<!-- markdownlint-disable -->
 # Strategic Vision: MCP Any
 
 ## Mission Statement
