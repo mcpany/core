@@ -94,6 +94,13 @@ func (m *AuditMiddleware) initializeStore(config *configv1.AuditConfig) error {
 			return fmt.Errorf("failed to initialize audit store: %w", err)
 		}
 		m.store = store
+	} else {
+		// Log that config was nil or disabled
+		if config == nil {
+			logging.GetLogger().Info("AuditMiddleware.initializeStore: config is nil")
+		} else {
+			logging.GetLogger().Info("AuditMiddleware.initializeStore: config.Enabled is false")
+		}
 	}
 	return nil
 }
