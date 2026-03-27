@@ -346,28 +346,18 @@ export function LogStream({
                         </Select>
 
                         <Filter className="h-4 w-4 text-muted-foreground ml-2" />
-                        <div className="flex bg-muted/20 p-0.5 rounded-md border ml-1 overflow-x-auto no-scrollbar">
-                            {['ALL', 'ERROR', 'WARN', 'INFO', 'DEBUG'].map((level) => (
-                                <Button
-                                    key={level}
-                                    variant="ghost"
-                                    size="sm"
-                                    className={cn(
-                                        "h-7 px-2.5 text-xs font-medium rounded-sm transition-all",
-                                        filterLevel === level
-                                            ? "bg-background shadow-sm text-foreground hover:bg-background"
-                                            : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
-                                        level === 'ERROR' && filterLevel === level ? "text-red-500" : "",
-                                        level === 'WARN' && filterLevel === level ? "text-yellow-500" : "",
-                                        level === 'INFO' && filterLevel === level ? "text-blue-500" : "",
-                                        level === 'DEBUG' && filterLevel === level ? "text-gray-400" : ""
-                                    )}
-                                    onClick={() => setFilterLevel(level)}
-                                >
-                                    {level === 'ALL' ? 'All' : level.charAt(0) + level.slice(1).toLowerCase()}
-                                </Button>
-                            ))}
-                        </div>
+                        <Select value={filterLevel} onValueChange={setFilterLevel}>
+                            <SelectTrigger className="w-[120px] bg-background">
+                                <SelectValue placeholder="Level" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="ALL">All Levels</SelectItem>
+                                <SelectItem value="INFO">Info</SelectItem>
+                                <SelectItem value="WARN">Warning</SelectItem>
+                                <SelectItem value="ERROR">Error</SelectItem>
+                                <SelectItem value="DEBUG">Debug</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
                 )}
              </div>
