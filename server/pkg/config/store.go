@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package config provides configuration management for MCP Any.
-// Package config provides configuration management for MCP Any.
 package config
 
 import (
@@ -213,7 +212,7 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 			if bytes.Contains(b, []byte("\t")) {
 				// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
 
-				return fmt.Errorf("failed to unmarshal yaml: %w\n\nhint: yaml files cannot contain tabs, please use spaces for indentation", err) //nolint:revive // Long user-facing error message
+				return fmt.Errorf("failed to unmarshal yaml: %w\n\nhint: yaml files cannot contain tabs. Please use spaces for indentation", err) //nolint:revive // Long user-facing error message
 			}
 		}
 		return fmt.Errorf("failed to unmarshal yaml: %w", err)
@@ -300,7 +299,7 @@ func (e *yamlEngine) unmarshalInternal(yamlMap map[string]interface{}, v proto.M
 		if strings.Contains(err.Error(), "unknown field \"mcpServers\"") {
 			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
 
-			return fmt.Errorf("%w\n\ndid you mean \"upstream_services\"? it looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure, see documentation for details", err) //nolint:revive // Long user-facing error message
+			return fmt.Errorf("%w\n\ndid you mean \"upstream_services\"? it looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure. See documentation for details", err) //nolint:revive // Long user-facing error message
 		}
 
 		// Detect if the user is using "services" which is a common alias for "upstream_services"
@@ -310,7 +309,7 @@ func (e *yamlEngine) unmarshalInternal(yamlMap map[string]interface{}, v proto.M
 			return fmt.Errorf("%w\n\ndid you mean \"upstream_services\"? \"services\" is not a valid top-level key", err) //nolint:revive // Long user-facing error message
 		}
 
-		// Detect invalid use of service_config wrapper(common mistake due to old docs)
+		// Detect invalid use of service_config wrapper (common mistake due to old docs)
 		if strings.Contains(err.Error(), "unknown field \"service_config\"") {
 			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
 
@@ -424,7 +423,7 @@ func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 		if strings.Contains(err.Error(), "unknown field \"mcpServers\"") {
 			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
 
-			return fmt.Errorf("%w\n\ndid you mean \"upstream_services\"? it looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure, see documentation for details", err) //nolint:revive // Long user-facing error message
+			return fmt.Errorf("%w\n\ndid you mean \"upstream_services\"? it looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure. See documentation for details", err) //nolint:revive // Long user-facing error message
 		}
 
 		// Detect if the user is using "services" which is a common alias for "upstream_services"
@@ -1628,7 +1627,7 @@ func (s *FileStore) loadOneConfig(ctx context.Context, path string) (*configv1.M
 		if !s.IgnoreMissingEnv {
 			return nil, WrapActionableError(fmt.Sprintf("failed to expand environment variables in %s", path), err)
 		}
-		logging.GetLogger().Warn("missing environment variables in config, proceeding with unexpanded values", "path", path, "error", err)
+		logging.GetLogger().Warn("Missing environment variables in config, proceeding with unexpanded values", "path", path, "error", err)
 	}
 
 	engine, err := NewEngine(path)

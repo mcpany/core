@@ -30,7 +30,7 @@ func TestAuthMiddleware_TypedNil_Panic(t *testing.T) {
 	handler := mw(nextHandler)
 
 	t.Run("tools/call with typed nil request", func(t *testing.T) {
-		var req *mcp.CallToolRequest // Typed nil
+		var req *mcp.CallToolRequest = nil // Typed nil
 		var iReq mcp.Request = req
 
 		// This should NOT panic
@@ -40,7 +40,7 @@ func TestAuthMiddleware_TypedNil_Panic(t *testing.T) {
 	})
 
 	t.Run("prompts/get with typed nil request", func(t *testing.T) {
-		var req *mcp.GetPromptRequest // Typed nil
+		var req *mcp.GetPromptRequest = nil // Typed nil
 		var iReq mcp.Request = req
 
 		// This should NOT panic

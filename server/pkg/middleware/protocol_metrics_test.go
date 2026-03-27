@@ -81,7 +81,6 @@ func TestPrometheusMetricsMiddleware(t *testing.T) {
 			}
 		}
 		if !found {
-			_ = found // check if metric was found
 			// It might be difficult to filter exactly with gatherer in simple test,
 			// let's rely on testutil.GatherAndCompare if we had the exact expected output.
 			// But since global state is shared, we just ensure it didn't panic and logic ran.
