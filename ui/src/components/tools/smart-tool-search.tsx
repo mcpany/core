@@ -27,6 +27,20 @@ interface SmartToolSearchProps {
 }
 
 /**
+ * Intent: Document SmartToolSearch
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * A search component that provides autocomplete for finding and selecting tools.
  * It also displays recently used tools for quick access.
  *

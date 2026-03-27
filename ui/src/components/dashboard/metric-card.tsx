@@ -16,6 +16,20 @@ interface MetricCardProps {
 }
 
 /**
+ * Intent: Document MetricCard
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * MetricCard.
  *
  * @param icon - The icon.

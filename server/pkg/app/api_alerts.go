@@ -160,6 +160,12 @@ func (a *Application) handleAlertDetail() http.HandlerFunc {
 			}
 			w.Header().Set("Content-Type", "application/json")
 			_ = json.NewEncoder(w).Encode(updated)
+		case http.MethodDelete:
+			if err := a.AlertsManager.DeleteAlert(id); err != nil {
+				http.NotFound(w, r)
+				return
+			}
+			w.WriteHeader(http.StatusNoContent)
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}

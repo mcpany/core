@@ -2,6 +2,10 @@
 # SPDX-License-Identifier: Apache-2.0
 
 global_settings:
+  audit:
+    enabled: true
+    storage_type: "STORAGE_TYPE_SQLITE"
+    output_path: "/tmp/mcpany_audit.db"
   allowed_origins:
     - "*"
   profile_definitions:

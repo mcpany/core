@@ -16,6 +16,20 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ServicePropertyCard } from "./service-property-card";
 
 /**
+ * Intent: Document ResourceDetail
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * ResourceDetail.
  *
  * @param resourceName - The resourceName.

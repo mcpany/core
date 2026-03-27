@@ -26,6 +26,20 @@ interface KeyboardShortcutsDialogProps {
 }
 
 /**
+ * Intent: Document KeyboardShortcutsDialog
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * A dialog that displays and allows customization of keyboard shortcuts.
  *
  * @param onOpenChange - The onOpenChange.

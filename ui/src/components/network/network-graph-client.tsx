@@ -110,6 +110,20 @@ const defaultEdgeOptions = {
 };
 
 /**
+ * Intent: Document NetworkGraphFlowProps
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Props for the NetworkGraphFlow component.
  */
 export interface NetworkGraphFlowProps {
@@ -120,6 +134,20 @@ export interface NetworkGraphFlowProps {
 }
 
 /**
+ * Intent: Document NetworkGraphFlow
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * NetworkGraphFlow component.
  * Renders the interactive network graph using ReactFlow.
  * @param props - The component props.
@@ -426,6 +454,20 @@ const MetricCard = React.memo(({ label, value, unit, intent = "neutral" }: { lab
 MetricCard.displayName = 'MetricCard';
 
 /**
+ * Intent: Document NetworkGraphClient
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * NetworkGraphClient component.
  * @returns The rendered component.
  */

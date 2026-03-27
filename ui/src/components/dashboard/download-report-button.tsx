@@ -10,6 +10,20 @@ import { useToast } from "@/hooks/use-toast";
 import { apiClient } from "@/lib/client";
 
 /**
+ * Intent: Document DownloadReportButton
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * A button component that fetches dashboard metrics and downloads them as a JSON report.
  * @returns The rendered component.
  */

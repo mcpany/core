@@ -201,10 +201,14 @@
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
 
+#### Upcoming (2026-07-08 Evolution)
+- [ ] **[P0] Mesh Identity Manager**: (2026-07-08) UI for reviewing and approving hardware-attested, mesh-resident agent identities.
+- [ ] **[P0] Service Mesh Topology Monitor**: (2026-07-08) Real-time visualization of authenticated inter-agent communication channels and mesh health.
+- [ ] **[P0] Cache Integrity Auditor**: (2026-07-08) Visual workspace for verifying cryptographic signatures of CI/CD build caches.
+- [ ] **[P0] Action-Chain Sovereignty Monitor**: (2026-07-08) Real-time visualization of automated workflow sequences and interdiction events.
+
 #### Upcoming (2026-07-07 Evolution)
-- [ ] **[P0] Cache Integrity Auditor**: (2026-07-07) Visual workspace for verifying cryptographic signatures of CI/CD build caches.
 - [ ] **[P1] Automated Remediation Tracer**: (2026-07-07) Verifiable audit trail viewer for AI-powered fix suggestions and SSDF compliance.
-- [ ] **[P0] Action-Chain Sovereignty Monitor**: (2026-07-07) Real-time visualization of automated workflow sequences and interdiction events.
 
 #### Upcoming (2026-03-20 Evolution)
 - [ ] **[P0] Mission Manifest Editor**: (2026-03-20) UI for defining and TPM-signing Hardware-Attested Mission Manifests (HAMM).
@@ -645,6 +649,12 @@
 - [ ] **[P0] Stylometric Mesh Dashboard**: (2026-06-24) Security workspace for visualizing stylometric consistency alerts and mimicry-attack heatmaps.
 - [ ] **[P0] Sharded Mailbox Hub Monitor**: (2026-06-24) Real-time visualization of lock-free teammate synchronization and CRDT conflict resolution.
 - [ ] **[P1] ZKD Discovery Portal**: (2026-06-24) Authorization workspace for reviewing and masking agent capability cards during the discovery phase.
+
+#### Upcoming (2026-03-26 Evolution)
+- [ ] **[P0] Action-Chain Sovereignty Monitor**: Real-time visualization of automated workflow sequences and interdiction events. (Added: 2026-03-26)
+- [ ] **[P0] Cache Integrity Auditor**: Visual workspace for verifying cryptographic signatures of CI/CD build caches. (Added: 2026-03-26)
+- [ ] **[P0] Metadata Sanitization Log**: Security dashboard for reviewing redacted coordination messages and metadata probes. (Added: 2026-03-26)
+- [ ] **[P1] Post-Quantum Status Widget**: Monitor for quantum-resistant handshake status and mesh integrity. (Added: 2026-03-26)
 
 #### Upcoming (2026-06-25 Evolution)
 - [ ] **[P0] Attention Heatmap Visualizer**: Real-time dashboard for monitoring reasoning-density and ADF-gated noise. (Added: 2026-06-25)

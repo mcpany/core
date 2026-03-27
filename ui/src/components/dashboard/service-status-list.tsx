@@ -16,6 +16,20 @@ import { apiClient } from "@/lib/client"
 import { UpstreamServiceConfig } from "@proto/config/v1/upstream_service"
 
 /**
+ * Intent: Document ServiceStatusList
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * ServiceStatusList component.
  * @returns The rendered component.
  */

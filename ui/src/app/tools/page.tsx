@@ -33,6 +33,20 @@ import {
 import { useToast } from "@/hooks/use-toast";
 
 /**
+ * Intent: Document ToolsPage
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * ToolsPage component.
  * @returns The rendered component.
  */
