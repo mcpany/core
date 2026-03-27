@@ -16,18 +16,18 @@ vi.mock('recharts', async () => {
     return {
         ...actual,
         ResponsiveContainer: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-        PieChart: ({ children }: { children: React.ReactNode }) => <div data-testid="pie-chart">{children}</div>,
-        Pie: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+        PieChart: ({ children }: any) => <div data-testid="pie-chart">{children}</div>,
+        Pie: ({ children }: any) => <div>{children}</div>,
         Cell: () => <div />,
         Tooltip: () => <div />,
-        AreaChart: () => <div data-testid="area-chart"></div>,
+        AreaChart: ({ children }: any) => <div data-testid="area-chart"></div>,
         Area: () => <div />,
         XAxis: () => <div />,
         YAxis: () => <div />,
         CartesianGrid: () => <div />,
-        BarChart: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+        BarChart: ({ children }: any) => <div>{children}</div>,
         Bar: () => <div />,
-        LineChart: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+        LineChart: ({ children }: any) => <div>{children}</div>,
         Line: () => <div />,
         Legend: () => <div />,
     };
@@ -60,19 +60,19 @@ describe('AnalyticsDashboard', () => {
         const user = userEvent.setup();
 
         // Mock API responses
-        (apiClient.getDashboardTraffic as unknown as import("vitest").Mock).mockResolvedValue([
+        (apiClient.getDashboardTraffic as any).mockResolvedValue([
             { time: "10:00", requests: 100, latency: 50, errors: 2 }
         ]);
-        (apiClient.getTopTools as unknown as import("vitest").Mock).mockResolvedValue([
+        (apiClient.getTopTools as any).mockResolvedValue([
             { name: "test_tool", count: 10 }
         ]);
-        (apiClient.listTools as unknown as import("vitest").Mock).mockResolvedValue({
+        (apiClient.listTools as any).mockResolvedValue({
             tools: [
                 { name: "heavy_tool", description: "A very heavy tool", serviceId: "service_a", inputSchema: { type: "object", properties: { huge: { type: "string" } } } },
                 { name: "light_tool", description: "Light", serviceId: "service_b", inputSchema: { type: "object" } }
             ]
         });
-        (apiClient.getToolUsage as unknown as import("vitest").Mock).mockResolvedValue([]);
+        (apiClient.getToolUsage as any).mockResolvedValue([]);
 
         render(<AnalyticsDashboard />);
 
@@ -110,9 +110,9 @@ describe('AnalyticsDashboard', () => {
         const user = userEvent.setup();
 
         // Mock API responses
-        (apiClient.getDashboardTraffic as unknown as import("vitest").Mock).mockResolvedValue([]);
-        (apiClient.getTopTools as unknown as import("vitest").Mock).mockResolvedValue([]);
-        (apiClient.listTools as unknown as import("vitest").Mock).mockResolvedValue({
+        (apiClient.getDashboardTraffic as any).mockResolvedValue([]);
+        (apiClient.getTopTools as any).mockResolvedValue([]);
+        (apiClient.listTools as any).mockResolvedValue({
             tools: [
                 {
                     name: "ghost_tool",
@@ -128,7 +128,7 @@ describe('AnalyticsDashboard', () => {
                 { name: "used_tool", description: "Used", serviceId: "service_b", inputSchema: { type: "object" } }
             ]
         });
-        (apiClient.getToolUsage as unknown as import("vitest").Mock).mockResolvedValue([
+        (apiClient.getToolUsage as any).mockResolvedValue([
             { name: "used_tool", serviceId: "service_b", totalCalls: 100, successRate: 100 },
             { name: "ghost_tool", serviceId: "service_a", totalCalls: 0, successRate: 0 }
         ]);
