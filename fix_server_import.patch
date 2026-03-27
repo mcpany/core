@@ -1,0 +1,9 @@
+--- server/pkg/app/server.go
++++ server/pkg/app/server.go
+@@ -25,7 +25,6 @@
+	"strings"
+	"sync"
+	"time"
+-
+-	pb_admin "github.com/mcpany/core/proto/admin/v1"
+ )
