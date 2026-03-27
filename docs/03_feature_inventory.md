@@ -1,6 +1,7 @@
 # Feature Inventory: MCP Any
 
 ## Current Backlog (P0/P1)
+
 - **Policy Firewall**: Rego/CEL based hooking for tool calls.
 - **HITL Middleware**: Suspension protocol for user approval flows.
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
@@ -9,6 +10,7 @@
 ## Evolution: [2026-05-30] Updates
 
 ### Proposed Additions
+
 - **Intent Hierarchy Enforcer (IHE)**: (P0) Authoritative security middleware
   that assigns "Authority Scores" to context fragments and blocks tool calls
   that conflict with higher-tier mission constraints.
@@ -24,7 +26,8 @@
 
 ## Evolution: [2026-05-23] Updates
 
-### Proposed Additions
+### Proposed Additions (v2)
+
 - **Federated Swarm Identity (FSI) Provider**: (P0) A local identity service
   that issues hardware-attested, cross-framework tokens for secure teammate
   verification in heterogeneous meshes.
@@ -40,7 +43,8 @@
 
 ## Evolution: [2026-05-24] Updates
 
-### Proposed Additions
+### Proposed Additions (v3)
+
 - **Active Negotiation Broker (ANB)**: (P0) Authoritative bidding bus for
   multi-agent auctions, utilizing hardware-attested Capability Cards to filter
   and validate bids locally.
@@ -55,14 +59,16 @@
   intent constraints.
 
 ### Priority Shifts
+
 - **Mailbox Integrity Middleware**: (Re-affirmed P0) Now elevated with the
   requirement for mandatory DCG to counter CVE-2026-39102.
 - **`TeammateTool` Orchestration Adapter**: (Re-affirmed P0) Evolving to
   support ANB-native task auctions.
 
-## Evolution: [2026-05-23] Updates
+## Evolution: [2026-05-23] Updates (v2)
 
-### Proposed Additions
+### Proposed Additions (v4)
+
 - **Local-Only WebSocket Auth (LOWA) Gateway**: (P0) A mandatory security layer
   for all local listeners that enforces session-bound authentication to
   neutralize "ClawJacked" style brute-force attacks.
@@ -76,7 +82,8 @@
   mandates hardware-attested handshakes before revealing agent capability cards
   in a mesh environment.
 
-### Priority Shifts
+### Priority Shifts (v2)
+
 - **Inter-Agent Mailbox Guard (IAMG)**: (Evolved to Mailbox Integrity
   Middleware) Now designated as a mandatory requirement for all mesh-based
   teammate coordination.
@@ -85,7 +92,8 @@
 
 ## Evolution: [2026-05-21] Updates
 
-### Proposed Additions
+### Proposed Additions (v5)
+
 - **Cognitive Load Shedding (CLS) Controller**: (P0) A high-speed stability
   middleware that dynamically throttles or revokes subagent capabilities based
   on real-time reasoning intensity and mission stability scores.
@@ -99,7 +107,8 @@
   for local, hardware-bound processing of sensitive PII context, providing
   only sanitized intent fragments to cloud providers.
 
-### Priority Shifts
+### Priority Shifts (v3)
+
 - **SRM Provider**: (Re-affirmed P0) Now elevated with the requirement for
   mandatory TRA to prevent context-switch hijacking.
 - **TeammateTool Orchestration Adapter**: (Re-affirmed P0) Evolving to support
@@ -107,7 +116,8 @@
 
 ## Evolution: [2026-05-20] Updates
 
-### Proposed Additions
+### Proposed Additions (v6)
+
 - **Policy-Bound Reasoning (PBR) Adapter**: (P0) Infrastructure for hosting
   and enforcing immutable "Policy Anchors" at the pre-reasoning layer,
   ensuring cross-framework cognitive governance.
@@ -118,7 +128,8 @@
   service utilizing hardware-attested multi-signature quorums to resolve
   conflicting swarm objectives.
 
-### Priority Shifts
+### Priority Shifts (v4)
+
 - **Semantic Integrity Bridge**: (Evolved to MIB) Now designated as the
   primary defense against multi-modal "Context Smuggling" exploits.
 - **Cognitive Truth Attestation Hub**: (Promoted to P0) Critical for providing
@@ -126,7 +137,8 @@
 
 ## Evolution: [2026-05-19] Updates
 
-### Proposed Additions
+### Proposed Additions (v7)
+
 - **Signed Reasoning Monologue (SRM) Provider**: (P0) A core security
   middleware that cryptographically binds internal monologues to hardware-
   attested sessions, neutralizing "Reasoning Hijacking."
@@ -140,7 +152,8 @@
   provides verifiable proof of reasoning integrity across heterogeneous agent
   swarms.
 
-### Priority Shifts
+### Priority Shifts (v5)
+
 - **Project-Local Snapshot (PLSS) Sync**: (Promoted to P0) Now critical for
   implementing HASS-compliant "Point-in-Time Integrity."
 - **PNTD Discovery Provider**: (Re-affirmed P0) Now designated as the
@@ -148,7 +161,8 @@
 
 ## Evolution: [2026-05-18] Updates
 
-### Proposed Additions
+### Proposed Additions (v8)
+
 - **Mission-Root Pinning (MRP) Middleware**: (P0) A transport-level security
   component that protects the "Mission Root" from context-window eviction
   during high-frequency "noise" injections (MRE defense).
@@ -161,7 +175,8 @@
 - **Intent-Weighted Context Summarizer**: (P1) Upgrade for the ContextEngine
   Adapter supporting RCE v2.0 logic for mission-anchored context compression.
 
-### Priority Shifts
+### Priority Shifts (v6)
+
 - **TeammateTool Orchestration Adapter**: (Re-affirmed P0) Now elevated with
   the requirement for "Multi-Agent Quorum" (MAQ) cross-framework coordination.
 - **Contextual Quorum (CQ) Hub**: (Promoted to P0) Critical for supporting the
@@ -169,7 +184,8 @@
 
 ## Evolution: [2026-05-17] Updates
 
-### Proposed Additions
+### Proposed Additions (v9)
+
 - **`TeammateTool` Orchestration Adapter**: (P0) Infrastructure for cross-
   framework "Agent Teams," facilitating Claude-style delegation and
   synchronization for heterogeneous swarms.
@@ -183,7 +199,8 @@
   ContextEngine Adapter to support the full OpenClaw v2026.3.7 lifecycle hooks
   for third-party context plugins.
 
-### Priority Shifts
+### Priority Shifts (v7)
+
 - **A2A Messaging Hub**: (Re-affirmed P0) Designated as the primary gateway
   for the new "Authenticated Agent Card Discovery."
 - **Isolated Named-Pipe Transport Middleware**: (Re-affirmed P0) Elevated with
@@ -191,7 +208,8 @@
 
 ## Evolution: [2026-05-16] Updates
 
-### Proposed Additions
+### Proposed Additions (v10)
+
 - **Reasoning Quorum Middleware**: (P0) Infrastructure for agents to reach a
   cryptographically bound quorum on non-deterministic reasoning outputs,
   neutralizing "Hallucination Variance."
@@ -205,7 +223,8 @@
   semantic deduplication of coordination messages between parallel agents
   sharing a mission root.
 
-### Priority Shifts
+### Priority Shifts (v8)
+
 - **Coordination Token Optimizer**: (Promoted to P0) Critical for neutralizing
   the overhead and "Team Ghosting" risks in parallel swarm coordination.
 - **Consensus Tool Validation Hub**: (Re-affirmed P0) Evolving to support the
@@ -213,7 +232,8 @@
 
 ## Evolution: [2026-05-15] Updates
 
-### Proposed Additions
+### Proposed Additions (v11)
+
 - **Consensus Tool Validation Hub**: (P0) Distributed security middleware
   requiring multi-agent signatures for high-risk tool calls and task
   delegations, neutralizing "Agentic Social Engineering."
@@ -227,7 +247,8 @@
   the PNTD Provider that provides cryptographic proof of the absolute absence
   of unauthorized hook execution during the discovery phase.
 
-### Priority Shifts
+### Priority Shifts (v9)
+
 - **Consensus Tool Validation Gateway**: (Re-affirmed P0) Designated as a
   mandatory requirement for all enterprise swarm deployments to counter
   machine-speed coercion.
@@ -236,7 +257,8 @@
 
 ## Evolution: [2026-05-14] Updates
 
-### Proposed Additions
+### Proposed Additions (v12)
+
 - **ContextEngine Lifecycle Adapter**: (P0) A native implementation of the
   OpenClaw v2026.3.7 ContextEngine lifecycle hooks, enabling MCP Any to act as
   a universal host for pluggable context plugins.
@@ -250,7 +272,8 @@
   middleware that acts as the authoritative collector for OpenClaw-RL v1.0
   reasoning traces and rollout tokens.
 
-### Priority Shifts
+### Priority Shifts (v10)
+
 - **Injection-Shielding Middleware**: (Re-affirmed P0) Designated as a
   mandatory prerequisite for all tool-driven code commits to counter high
   vulnerability rates in agent-generated PRs.
@@ -259,7 +282,8 @@
 
 ## Evolution: [2026-05-13] Updates
 
-### Proposed Additions
+### Proposed Additions (v13)
+
 - **Loopback Authentication Proxy**: (P0) A mandatory security interceptor for
   all local network ports that enforces origin-locked authentication,
   neutralizing "ClawdBot" style loopback hijacking.
@@ -270,7 +294,8 @@
   swarms that deduplicates and compresses coordination messages within the
   named-pipe bus to reduce token overhead.
 
-### Priority Shifts
+### Priority Shifts (v11)
+
 - **Isolated Named-Pipe Transport Middleware**: (Re-affirmed P0) Designated
   as the mandatory replacement for all local TCP/UDP coordination channels.
 - **Pre-Flight Sandbox Validator**: (Promoted to P0) Critical for integrating
@@ -278,7 +303,8 @@
 
 ## Evolution: [2026-05-12] Updates
 
-### Proposed Additions
+### Proposed Additions (v14)
+
 - **Isolated Named-Pipe Transport Middleware**: (P0) A high-performance inter-
   agent transport layer using Docker-bound named pipes (UNIX domain sockets)
   to eliminate local port exposure.
@@ -288,7 +314,8 @@
 - **Kernel-Resident Trace Scrubber**: (P1) Real-time semantic sanitization
   engine for binary state handoffs (BSH) within isolated named-pipe transports.
 
-### Priority Shifts
+### Priority Shifts (v12)
+
 - **Parallel Team Coordination Hub**: (Re-affirmed P0) Evolved to mandate the
   use of Isolated Named-Pipe Transport for all inter-teammate coordination.
 - **A2A Messaging Hub**: (Promoted to P0) Critical requirement for managing
@@ -296,7 +323,8 @@
 
 ## Evolution: [2026-05-11] Updates
 
-### Proposed Additions
+### Proposed Additions (v15)
+
 - **Parallel Team Coordination Hub**: (P0) High-speed coordination bus for
   Claude Code-style "Agent Teams," providing message passing and Snapshot-and-
   Merge state reconciliation for parallel branches.
@@ -307,7 +335,8 @@
   bridge for OpenClaw-RL v1.0, facilitating the export of reasoning traces
   and PRM evaluations.
 
-### Priority Shifts
+### Priority Shifts (v13)
+
 - **Discovery Sandbox Middleware**: (Re-affirmed P0) Evolved with the
   requirement for "Mandatory Discovery-Phase Isolation" to counter CVE-2026-0628.
 - **Shared KV Store (Blackboard)**: (Promoted to P0) Critical for implementing
@@ -315,7 +344,8 @@
 
 ## Evolution: [2026-05-10] Updates
 
-### Proposed Additions
+### Proposed Additions (v16)
+
 - **Discovery Sandbox Middleware**: (P0) A secure, ephemeral execution
   environment for MCP discovery commands (e.g., Gemini's `discoveryCommand`),
   preventing host-level "Ghost-Execution" exploits.
@@ -326,7 +356,8 @@
   bridge for OpenClaw-RL v1.0, facilitating the export of reasoning traces
   and PRM evaluations for background policy optimization.
 
-### Priority Shifts
+### Priority Shifts (v14)
+
 - **Deterministic Absence Proof (DAP) Generator**: (Promoted to P0) Critical
   for neutralizing CVE-2026-25725 style sandbox escapes in multi-agent
   environments.
@@ -336,7 +367,8 @@
 
 ## Evolution: [2026-05-09] Updates
 
-### Proposed Additions
+### Proposed Additions (v17)
+
 - **Cryptographic Lineage Validator**: (P0) A core security middleware that
   enforces mandatory parent-child token binding for all subagent spawns,
   neutralizing "Shadow Subagent" context contamination.
@@ -347,7 +379,8 @@
   consumes Gemini CLI `ARE` headers to dynamically prioritize token allocation
   for high-intensity reasoning.
 
-### Priority Shifts
+### Priority Shifts (v15)
+
 - **Deterministic Permission Guard (DPG)**: (Re-affirmed P0) Evolved with the
   requirement for "Per-Call Integrity" mapping to the CPCP standard.
 - **Recursive Depth-Limit Middleware**: (Promoted to P0) Critical for
@@ -355,7 +388,8 @@
 
 ## Evolution: [2026-05-08] Updates
 
-### Proposed Additions
+### Proposed Additions (v18)
+
 - **Context Sealed-Fragment Hub**: (P0) Implementation of "Active Fragment
   Sealing" to protect context shards from semantic side-channel exfiltration
   (defense against "EchoLeak").
@@ -366,7 +400,8 @@
   for OpenClaw-RL v1.0, facilitating high-frequency feedback collection for
   policy optimization.
 
-### Priority Shifts
+### Priority Shifts (v16)
+
 - **Distributed Supervisor Mesh (DSM) Orchestrator**: (Promoted to P0)
   Designated as a critical infrastructure requirement for the 2026 enterprise
   swarm pivot.
@@ -375,7 +410,8 @@
 
 ## Evolution: [2026-05-07] Updates
 
-### Proposed Additions
+### Proposed Additions (v19)
+
 - **Programmatic SDK Boundary Enforcer**: (P0) Mandatory security gating for
   SDK-driven agent interactions (e.g., OpenCode SDK), ensuring programmatic
   tool calls comply with Zero-Trust policies.
@@ -386,7 +422,8 @@
   Deadlocks" in autonomous swarms, applying mission-aligned fairness policies
   to break deadlocks without human intervention.
 
-### Priority Shifts
+### Priority Shifts (v17)
+
 - **Inter-Swarm Deadlock Detector**: (Promoted to P0) Critical for neutralizing
   resource exhaustion in autonomous production swarms.
 - **Hierarchical Intent Lease (HIL) Broker**: (Re-affirmed P0) Essential for
@@ -394,7 +431,8 @@
 
 ## Evolution: [2026-05-06] Updates
 
-### Proposed Additions
+### Proposed Additions (v20)
+
 - **Origin-Locked Agent Gateway**: (P0) A mandatory security layer for all
   local listeners that enforces `Origin`, `Sec-Fetch-Site`, and session-token
   binding to neutralize "ClawJacked" style hijacking.
@@ -405,7 +443,8 @@
   middleware that manages time-bound hardware-attested trust leases to reduce
   per-call attestation latency.
 
-### Priority Shifts
+### Priority Shifts (v18)
+
 - **Reasoning-Aware Memory Segmentation (RAMS) Hub**: (Re-affirmed P0) Evolved
   into the "Intent-Sealed Shards" model for default isolation.
 - **Same-Origin Policy (SOP) Enforcer**: (Promoted to P0) Designated as a
@@ -413,7 +452,8 @@
 
 ## Evolution: [2026-05-05] Updates
 
-### Proposed Additions
+### Proposed Additions (v21)
+
 - **Reasoning-Aware Memory Segmentation (RAMS) Hub**: (P0) A core extension
   for the Blackboard that provides cryptographically isolated "Intent-Sealed
   Shards" for subagents, neutralizing "Memory Smearing."
@@ -424,7 +464,8 @@
   facilitates multi-signature attestation of mission-root intents across
   heterogeneous agent swarms.
 
-### Priority Shifts
+### Priority Shifts (v19)
+
 - **Kernel-Bound FD Persistence**: (Evolved to HEPA) Upgraded with hardware
   enclave support for stronger path-resolution guarantees.
 - **Semantic Integrity Bridge**: (Promoted to P0) Critical requirement for
@@ -432,7 +473,8 @@
 
 ## Evolution: [2026-05-04] Updates
 
-### Proposed Additions
+### Proposed Additions (v22)
+
 - **Semantic Integrity Bridge**: (P0) A monitoring extension for the CQ Hub
   that utilizes "Intent Drift Detection" and SGC-aware analysis to prevent
   Recursive Intent Poisoning (RIP).
@@ -443,7 +485,8 @@
   synchronization between the agent reasoning loop and the secure user
   interface, enabling "Corrective Intent" injection.
 
-### Priority Shifts
+### Priority Shifts (v20)
+
 - **Depth-Aware Inode Pinning (DAIP)**: (Evolved to Kernel-Bound FD
   Persistence) Upgraded to handle FD-passing for stronger immutability
   guarantees.
@@ -452,7 +495,8 @@
 
 ## Evolution: [2026-05-03] Updates
 
-### Proposed Additions
+### Proposed Additions (v23)
+
 - **Deadlock-Resilient CQ Controller**: (P0) Advanced extension of the CQ Hub
   that performs "Wait-Graph Analysis" to identify and break circular
   attestation dependencies in multi-agent swarms.
@@ -463,7 +507,8 @@
   Shadow-FS that enforces mandatory depth-limit validation for recursive
   symlink tunnels, preventing host-region escapes.
 
-### Priority Shifts
+### Priority Shifts (v21)
+
 - **Inter-Swarm Deadlock Detector**: (Promoted to P0) Critical for preventing
   resource exhaustion in the face of malicious attestation loops.
 - **KLIP Enforcement**: (Evolved to DAIP) Now requires depth-aware validation
@@ -471,7 +516,8 @@
 
 ## Evolution: [2026-05-02] Updates
 
-### Proposed Additions
+### Proposed Additions (v24)
+
 - **Risk-Adaptive CQ Controller**: (P0) A dynamic policy engine for the CQ Hub
   that scales the quorum threshold (number of required signatures) based on
   real-time tool risk scores and reasoning confidence.
@@ -482,7 +528,8 @@
   identifies circular dependencies in multi-agent attestation chains and
   triggers automated resolution/timeouts.
 
-### Priority Shifts
+### Priority Shifts (v22)
+
 - **Project-Local Snapshot (PLSS) Sync**: (Promoted to P0) Now critical for
   implementing the Deterministic Sandbox Recovery (DSR) patterns standardized
   by Claude Code.
@@ -491,7 +538,8 @@
 
 ## Evolution: [2026-05-01] Updates
 
-### Proposed Additions
+### Proposed Additions (v25)
+
 - **Contextual Quorum (CQ) Hub**: (P0) Coordination service for multi-agent
   attestation, requiring a consensus of specialized subagents before high-risk
   tool execution.
@@ -502,7 +550,8 @@
   environment snapshotted recovery, enabling speculative agent actions with
   near-instant rollbacks.
 
-### Priority Shifts
+### Priority Shifts (v23)
+
 - **S2S Trust Broker**: (Promoted to P0) Critical for neutralizing negotiation
   overhead in maturing inter-swarm coordination.
 - **Consensus Tool Validation Hub**: (Re-affirmed P0) Evolving into the CQ Hub
@@ -510,7 +559,8 @@
 
 ## Evolution: [2026-04-30] Updates
 
-### Proposed Additions
+### Proposed Additions (v26)
+
 - **Mesh-Aware Blackboard Adaptor**: (P0) Transformation of the Shared KV
   Store into a graph-based intent mesh, enabling complex intent reconciliation
   for multi-agent swarms.
@@ -520,7 +570,8 @@
 - **UACO v3.0 S2S Trust Broker**: (P0) Multi-signature coordination service
   for Swarm-to-Swarm (S2S) task negotiation and identity management.
 
-### Priority Shifts
+### Priority Shifts (v24)
+
 - **Mesh-Aware Intelligence**: (Promoted to P0) Critical for reconciling
   conflicting intents in deep, heterogeneous swarms.
 - **KLIP Enforcement**: (Promoted to P0) Designated as the primary defense
@@ -528,7 +579,8 @@
 
 ## Evolution: [2026-04-29] Updates
 
-### Proposed Additions
+### Proposed Additions (v27)
+
 - **PII-Sovereign Context Scrubber**: (P0) Mandatory sanitization middleware
   for hybrid-cloud deployments, ensuring de-biometricization of context before
   cloud propagation.
@@ -539,7 +591,8 @@
   Shadow-FS that orchestrates multi-agent consensus for high-risk filesystem
   commits.
 
-### Priority Shifts
+### Priority Shifts (v25)
+
 - **De-biometricization Sanitizer**: (Promoted to P0) Critical for data
   sovereignty in hybrid reasoning loops.
 - **Ephemeral Privilege Manager (EPM)**: (Re-affirmed P0) Now elevated with
@@ -547,7 +600,8 @@
 
 ## Evolution: [2026-04-28] Updates
 
-### Proposed Additions
+### Proposed Additions (v28)
+
 - **Ephemeral Privilege Manager (EPM)**: (P0) Core security service that
   manages "Just-in-Time" privilege escalation for high-risk tools,
   neutralizing the "BoryptGrab" persistent access vector.
@@ -558,7 +612,8 @@
   biometric and PII data before it is propagated to external LLM providers,
   ensuring local data sovereignty.
 
-### Priority Shifts
+### Priority Shifts (v26)
+
 - **Semantic Risk HITL Arbiter**: (Promoted to P0) Upgrading the HITL
   Middleware with context-aware risk assessment to reduce user approval
   fatigue.
@@ -567,7 +622,8 @@
 
 ## Evolution: [2026-04-27] Updates
 
-### Proposed Additions
+### Proposed Additions (v29)
+
 - **LFTA ARL Middleware**: (P0) A high-priority security listener that ingests
   Attestation Revocation Lists from trust-roots to provide sub-millisecond
   revocation of compromised trust leases.
@@ -578,7 +634,8 @@
   OpenClaw v2026.3.9 pruning logic, dynamically shedding irrelevant cognitive
   anchors to prevent context bloat.
 
-### Priority Shifts
+### Priority Shifts (v27)
+
 - **Cognitive Anchor Manager**: (Re-affirmed P0) Now elevated with the
   requirement for "Smart Pruning" to support deep, long-running agent swarms.
 - **A2A Safety Proof Validator**: (Re-affirmed P0) Expanded to integrate with
@@ -586,7 +643,8 @@
 
 ## Evolution: [2026-04-26] Updates
 
-### Proposed Additions
+### Proposed Additions (v30)
+
 - **Multi-Hop Trust Relay**: (P0) Security middleware implementing LFTA v2.0
   multi-hop trust delegation, allowing attestation strength to persist across
   deep agent swarms.
@@ -597,7 +655,8 @@
   multi-agent task delegation, supporting rich user approvals for high-risk
   handoffs.
 
-### Priority Shifts
+### Priority Shifts (v28)
+
 - **A2A Session Persistence Middleware**: (Re-affirmed P0) Now integrates with
   the Multi-Hop Trust Relay for long-haul reasoning sessions.
 - **ContextEngine Plugin Adapter**: (Re-affirmed P0) Expanded to support
@@ -605,7 +664,8 @@
 
 ## Evolution: [2026-04-25] Updates
 
-### Proposed Additions
+### Proposed Additions (v31)
+
 - **A2A Session Persistence Middleware**: (P0) A core security service that
   manages token refresh and trust persistence for long-running A2A reasoning
   sessions, neutralizing "Session Decay."
@@ -613,7 +673,8 @@
   the Pre-Flight Sandbox Validator that enforces "Deterministic Absence
   Proofs" as a prerequisite for agent boot.
 
-### Priority Shifts
+### Priority Shifts (v29)
+
 - **ContextEngine Plugin Adapter**: (Re-affirmed P0) Now elevated to a
   critical requirement for supporting "Cognitive Anchoring" and "Context-
   Splicing" defense.
@@ -622,7 +683,8 @@
 
 ## Evolution: [2026-04-24] Updates
 
-### Proposed Additions
+### Proposed Additions (v32)
+
 - **A2A Authenticated Handshake Provider**: (P0) Native security middleware
   implementing Gemini CLI v0.33.0 style HTTP authentication for all agent-to-
   agent remote communications and card discovery.
@@ -633,7 +695,8 @@
   the A2A Messaging Hub that enforces "Auth-before-Discovery" for agent
   capabilities.
 
-### Priority Shifts
+### Priority Shifts (v30)
+
 - **A2A Messaging Hub**: (Re-affirmed P0) Now designated as the primary
   enforcement point for Authenticated Handshakes.
 - **OpenClaw ContextEngine Lifecycle Adapter**: (Re-affirmed P0) Evolving into
@@ -641,7 +704,8 @@
 
 ## Evolution: [2026-04-23] Updates
 
-### Proposed Additions
+### Proposed Additions (v33)
+
 - **OpenClaw ContextEngine Lifecycle Adapter**: (P0) A native middleware that
   implements OpenClaw's matured ContextEngine hooks, allowing MCP Any to act
   as the authoritative provider for context compression, summarization, and
@@ -653,7 +717,8 @@
   declarative A2UI manifests, providing bi-directional, origin-locked state
   synchronization between agents and the user interface.
 
-### Priority Shifts
+### Priority Shifts (v31)
+
 - **RL Telemetry Provider**: (Promoted to P0) Now essential for providing
   high-frequency feedback tokens to OpenClaw-RL asynchronous training loops.
 - **Deterministic Attestation Gateway**: (Re-affirmed P0) Expanded to include
@@ -661,7 +726,8 @@
 
 ## Evolution: [2026-04-22] Updates
 
-### Proposed Additions
+### Proposed Additions (v34)
+
 - **A2A Replay Guard**: (P0) Security middleware for the A2A Messaging Hub
   that enforces monotonic sequence nonces and session-bound validation to
   prevent task-proposal replay attacks.
@@ -672,7 +738,8 @@
   Context Compactor that supports Gemini-style `x-gemini-reasoning-effort`
   headers for dynamic compression ratios.
 
-### Priority Shifts
+### Priority Shifts (v32)
+
 - **Agent-Aware Blackboard Isolation**: (Re-affirmed P0) Expanded to support
   "Cognitive Sovereignty" via hardware-bound encryption for subagent
   monologues.
@@ -681,7 +748,8 @@
 
 ## Evolution: [2026-04-21] Updates
 
-### Proposed Additions
+### Proposed Additions (v35)
+
 - **A2UI Native Gateway**: (P0) Secure bridge for the Agent-to-User Interface
   protocol, allowing agents to surface sandboxed, interactive UI fragments.
 - **Deterministic Absence Proof (DAP) Provider**: (P0) Security service that
@@ -691,7 +759,8 @@
   first streaming that performs real-time context compaction for adaptive
   reasoning swarms.
 
-### Priority Shifts
+### Priority Shifts (v33)
+
 - **ASH Consensus Broker**: (Re-affirmed P0) Now integrates with the A2UI
   Native Gateway for interactive user-in-the-loop consensus voting.
 - **Deterministic Attestation Gateway**: (Re-affirmed P0) Expanded to include
@@ -699,7 +768,8 @@
 
 ## Evolution: [2026-04-20] Updates
 
-### Proposed Additions
+### Proposed Additions (v36)
+
 - **ASH Consensus Broker**: (P0) Coordination service facilitating swarm-wide
   voting on reasoning paths and state re-alignment for Autonomous Self-Healing.
 - **A2A Safety Proof Validator**: (P0) Mandatory validation layer for the A2A
@@ -709,7 +779,8 @@
   binds tool capabilities to a multi-factor token comprising cryptographically
   verified origin and Ghost Shell behavioral profile.
 
-### Priority Shifts
+### Priority Shifts (v34)
+
 - **Blackboard Versioning Hub**: (Re-affirmed P0) Now designated as the
   authoritative state provider for ASH Consensus voting.
 - **Distributed Trust Lease Broker**: (Re-affirmed P0) Essential for sub-
@@ -717,7 +788,8 @@
 
 ## Evolution: [2026-04-19] Updates
 
-### Proposed Additions
+### Proposed Additions (v37)
+
 - **Distributed Trust Lease Broker**: (P0) A high-performance security utility
   implementing UACO v2.5 LFTA. Manages time-bound, hardware-attested trust
   leases to reduce per-call attestation latency.
@@ -731,7 +803,8 @@
   atomic checkpoints and swarm-wide rollbacks, facilitating autonomous self-
   healing.
 
-### Priority Shifts
+### Priority Shifts (v35)
+
 - **Atomic State Rollback Middleware**: Promoted to **P0**. Now a critical
   dependency for OpenClaw v2.8 ASH compliance.
 - **Resident Integrity Monitor (RIM)**: (Re-affirmed P0) Expanded to act as
@@ -739,7 +812,8 @@
 
 ## Evolution: [2026-04-18] Updates
 
-### Proposed Additions
+### Proposed Additions (v38)
+
 - **Foundation Governance Adapter**: (P1) A bridge and translation layer that
   implements the OpenClaw Foundation's neutral governance protocols for cross-
   framework agent coordination.
@@ -750,7 +824,8 @@
   allows agents in a swarm to verify the persistence of their execution
   environment via a centralized hardware-bound proof.
 
-### Priority Shifts
+### Priority Shifts (v36)
+
 - **Resident Integrity Monitor (RIM)**: (Re-affirmed P0) Now elevated to the
   primary mechanism for supporting "Continuous Sandbox Persistence Proofs."
 - **LFTA Trust Lease Manager**: Promoted to **P0**. Essential for scaling
@@ -758,7 +833,8 @@
 
 ## Evolution: [2026-04-17] Updates
 
-### Proposed Additions
+### Proposed Additions (v39)
+
 - **LFTA Trust Lease Manager**: (P1) A performance-optimizing security
   middleware that manages "Trust Leases" for high-frequency agent tool calls,
   reducing hardware attestation overhead while maintaining mission integrity.
@@ -769,7 +845,8 @@
   performs recursive deconstruction and validation of "Boundary Expansion"
   requests to block "Intent Smuggling" attempts.
 
-### Priority Shifts
+### Priority Shifts (v37)
+
 - **Resident Integrity Monitor (RIM)**: Promoted to **P0**. Now a critical
   requirement for "Sandbox Persistence Proofs" and continuous hardware-bound
   security.
@@ -778,7 +855,8 @@
 
 ## Evolution: [2026-04-14] Updates
 
-### Proposed Additions
+### Proposed Additions (v40)
+
 - **Context Sidecar Adapter**: (P1) Middleware that synchronizes state with
   external Context Engines (like OpenClaw v2026.3.7) via their native plugin
   interfaces, ensuring consistent "Intent-Bound" context across frameworks.
@@ -789,7 +867,8 @@
   Manifest to require hardware-bound (TPM) signatures for all project-local
   hooks and settings, neutralizing "Cloned Repository" attack vectors.
 
-### Priority Shifts
+### Priority Shifts (v38)
+
 - **A2A Messaging Hub**: (Re-affirmed P0) Expanded to include native support
   for the Delegation Attestation Layer.
 - **Settings Injection Guard**: (Re-affirmed P0) Now mandates TPM-bound
@@ -797,7 +876,8 @@
 
 ## Evolution: [2026-04-12] Updates
 
-### Proposed Additions
+### Proposed Additions (v41)
+
 - **A2A Messaging Hub**: (P0) Native messaging hub for the A2A protocol,
   facilitating secure task delegation and coordination between disparate
   frameworks with integrated Zero-Trust policy enforcement.
@@ -808,7 +888,8 @@
   Attestation Gateway to provide signed proofs of the absence of sensitive/
   malicious files in the project environment.
 
-### Priority Shifts
+### Priority Shifts (v39)
+
 - **Deterministic Attestation Gateway**: (Re-affirmed P0) Expanded to include
   Non-Existence Proofs as a mandatory "Deterministic Boot" prerequisite.
 - **A2A Interoperability Layer**: (Re-affirmed P0) Transitioning from a bridge
@@ -816,7 +897,8 @@
 
 ## Evolution: [2026-04-11] Updates
 
-### Proposed Additions
+### Proposed Additions (v42)
+
 - **A2A Interoperability Layer**: (P0) Native messaging hub implementation for
   the Agent2Agent (A2A) protocol, facilitating secure task delegation and
   coordination between disparate frameworks.
@@ -827,7 +909,8 @@
   emerging context propagation standards to ensure rich, structured contextual
   data flows securely across the agentic lifecycle.
 
-### Priority Shifts
+### Priority Shifts (v40)
+
 - **Tool Metadata Sanitizer**: Promoted to **P0**. Urgent requirement to
   address CVE-2026-45201.
 - **DCA Negotiation Guard**: (Re-affirmed P0) Expanded to support the new
@@ -835,7 +918,8 @@
 
 ## Evolution: [2026-04-13] Updates
 
-### Proposed Additions
+### Proposed Additions (v43)
+
 - **CLAW-10 Compliance Mapper**: (P1) Middleware that maps MCP Any's internal
   security state to the CLAW-10 Enterprise Evaluation Matrix for automated
   compliance reporting.
@@ -843,7 +927,8 @@
   and signs "Environment Integrity Manifests" to fulfill deterministic boot
   requirements for high-security agent environments.
 
-### Priority Shifts
+### Priority Shifts (v41)
+
 - **A2A Messaging Hub**: (Re-affirmed P0) Evolving to support the finalized
   Linux Foundation open governance model for inter-agent task brokering.
 - **Settings Injection Guard**: (Re-affirmed P0) Promoted as the primary
@@ -852,7 +937,8 @@
 
 ## Evolution: [2026-04-16] Updates
 
-### Proposed Additions
+### Proposed Additions (v44)
+
 - **Reactive Intent Gateway (RIG)**: (P0) Security middleware that mediates
   agent "Boundary Expansion" requests, validating them against the Root
   Mission Intent to prevent Intent Smuggling.
@@ -863,7 +949,8 @@
   standardized interface for swarm state reconciliation, leveraging MAQ for
   authoritative "Truth Brokering."
 
-### Priority Shifts
+### Priority Shifts (v42)
+
 - **Deterministic Attestation Gateway**: (Re-affirmed P0) Expanded to support
   the new Resident Integrity Monitor for continuous lifecycle protection.
 - **TPM-Bound Configuration Boot**: (Re-affirmed P0) Now considered the
@@ -871,7 +958,8 @@
 
 ## Evolution: [2026-04-15] Updates
 
-### Proposed Additions
+### Proposed Additions (v45)
+
 - **Standardized Context Sidecar Interface**: (P1) A core API and "Context
   Bus" that allows MCP Any to host and bridge framework-specific context
   strategies across different agent frameworks.
@@ -882,7 +970,8 @@
   Delegation Attestation Layer that executes low-risk A2A handoffs without
   manual approval.
 
-### Priority Shifts
+### Priority Shifts (v43)
+
 - **Verifiable Task Delegation (VTD)**: (Re-affirmed P0) Now elevated as the
   primary solution for the "Approval Fatigue" scaling bottleneck.
 - **Pluggable Context Bridge**: (Re-affirmed P0) Expanded to support the new
@@ -890,7 +979,8 @@
 
 ## Evolution: [2026-05-25] Updates
 
-### Proposed Additions
+### Proposed Additions (v46)
+
 - **Reasoning-Budget Firewall (RBF)**: (P0) Authoritative economic gatekeeper
   that enforces strictly scoped, hardware-attested token and ARE budgets for
   subagents to prevent Reasoning-Budget Hijacking.
@@ -904,7 +994,8 @@
   for the T2T Bridge mandating hardware-attested, session-bound tokens for
   every mailbox request.
 
-### Priority Shifts
+### Priority Shifts (v44)
+
 - **Teammate-to-Teammate (T2T) Encryption Bridge**: (Re-affirmed P0) Now
   elevated with the requirement for AMS to support high-density parallel swarms.
 - **Reasoning-Effort Quota Controller**: (Evolved to Reasoning-Budget
@@ -912,7 +1003,8 @@
 
 ## Evolution: [2026-05-26] Updates
 
-### Proposed Additions
+### Proposed Additions (v47)
+
 - **Foundation Governance Sync**: (P0) Neutral coordination middleware for
   cross-framework agent coordination, implementing OpenClaw Foundation standards.
 - **Asynchronous Mailbox Sharding (AMS) Middleware**: (P0) Scaling extension
@@ -922,7 +1014,8 @@
   mandating hardware-bound encryption for subagent reasoning monologues to
   ensure cognitive privacy.
 
-### Priority Shifts
+### Priority Shifts (v45)
+
 - **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the
   requirement for Intent-Scoped ARE Enforcement to counter subagent spoofing.
 - **T2T Encryption Bridge**: (Re-affirmed P0) Designated as the primary
@@ -930,7 +1023,8 @@
 
 ## Evolution: [2026-05-27] Updates
 
-### Proposed Additions
+### Proposed Additions (v48)
+
 - **Sovereign Mesh Identity (SMI) Relay**: (P0) Federated identity service
   that provides hardware-attested identity fragments that persist across local
   and multi-cloud environments.
@@ -943,7 +1037,8 @@
 - **Cross-Mission Budget Continuity Provider**: (P1) Resource management
   service allowing reasoning budgets to be reconciled across mission phases.
 
-### Priority Shifts
+### Priority Shifts (v46)
+
 - **Federated Swarm Identity (FSI) Provider**: (Re-affirmed P0) Evolving to
   act as the authoritative "SMI Relay" for cross-cloud agent swarms.
 - **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the
@@ -951,7 +1046,8 @@
 
 ## Evolution: [2026-05-28] Updates
 
-### Proposed Additions
+### Proposed Additions (v49)
+
 - **Command Traceability Provider (CTP)**: (P0) Authoritative security
   middleware that issues cryptographically signed "Chain of Command" tokens.
 - **Autonomous PR Integrity Gate (APRIG)**: (P0) Multi-agent security quorum
@@ -962,7 +1058,8 @@
 - **Reasoning-Effort Attribution Middleware**: (P1) Resource management
   service that cryptographically attributes token and compute usage.
 
-### Priority Shifts
+### Priority Shifts (v47)
+
 - **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the
   requirement for mandatory Reasoning-Effort Attribution.
 - **Consensus Tool Validation Hub**: (Re-affirmed P0) Evolving to support the
@@ -970,7 +1067,8 @@
 
 ## Evolution: [2026-05-29] Updates
 
-### Proposed Additions
+### Proposed Additions (v50)
+
 - **Collective Swarm Anomaly Detection (CSAD) Hub**: (P0) Advanced security
   middleware that performs cross-agent behavioral analysis to detect "Hivenet"
   swarm attacks.
@@ -983,15 +1081,17 @@
   DCG middleware that performs semantic fragment analysis across teammate
   boundaries.
 
-### Priority Shifts
+### Priority Shifts (v48)
+
 - **Differential Context Guarding (DCG) Middleware**: (Re-affirmed P0) Now
   elevated with the requirement for Mesh-Bound Sovereignty.
 - **SMI Relay Provider**: (Re-affirmed P0) Evolving to act as the
   authoritative backend for the ATH.
 
-## Evolution: [2026-05-30] Updates
+## Evolution: [2026-05-30] Updates (v2)
 
-### Proposed Additions
+### Proposed Additions (v51)
+
 - **Intent Hierarchy Enforcer (IHE)**: (P0) Authoritative security middleware
   that assigns "Authority Scores" to context fragments and blocks tool calls
   that conflict with higher-tier mission constraints.
