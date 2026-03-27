@@ -595,3 +595,7 @@
 ### Upcoming (Updated 2026-06-18)
 - [P0] Per-Agent Sovereignty Visualization
 - [P1] Real-time Inter-Agent Logic-Path Monitoring
+
+### Upcoming (Updated 2026-06-18)
+- [P0] Per-Agent Sovereignty Visualization
+- [P1] Real-time Inter-Agent Logic-Path Monitoring

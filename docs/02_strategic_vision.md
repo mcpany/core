@@ -1047,3 +1047,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ## Strategic Evolution: 2026-06-18
 Transitioning from simple tool-proxying to **Logic-Path Interdiction**. Introduced the Logic-Sovereignty Validator (LSV) to intercept "Logic Bombs" in agent-generated code before local execution.
+
+## Strategic Evolution: 2026-06-18
+Transitioning from simple tool-proxying to **Logic-Path Interdiction**. Introduced the Logic-Sovereignty Validator (LSV) to intercept "Logic Bombs" in agent-generated code before local execution.
