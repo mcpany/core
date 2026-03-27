@@ -38,13 +38,11 @@ jobs:
              sudo apt-get install -y python3-pip python3-venv shellcheck
              curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
              chmod 700 get_helm.sh
-             sudo HELM_INSTALL_DIR=/usr/local/bin bash ./get_helm.sh
+             sudo HELM_INSTALL_DIR=/usr/local/bin ./get_helm.sh
              export PATH=$PATH:/usr/local/bin
              python3 -m venv venv
              . venv/bin/activate
              pip install pre-commit
-             which helm
-             helm version
       - run:
           name: Install Node.js
           command: |
@@ -52,8 +50,8 @@ jobs:
             sudo apt-get install -y nodejs
       - restore_cache:
           keys:
-            - v7-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
-            - v7-lint-
+            - v8-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
+            - v8-lint-
       - run:
           name: Prepare Environment
           command: make prepare
@@ -65,7 +63,7 @@ jobs:
             export PATH=$PWD/build/env/bin:/usr/local/bin:$PATH
             make lint
       - save_cache:
-          key: v7-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
+          key: v8-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
           paths:
             - "build/env/bin"
             - "build/.cache"

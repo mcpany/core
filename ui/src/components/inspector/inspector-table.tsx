@@ -210,8 +210,15 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
               ),
               TableHead: TableHeader,
               TableBody: TableBody,
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              TableRow: ({ item, context, ...props }: any) => (
+              TableRow: ({
+                item,
+                context,
+                ...props
+              }: {
+                item: VisibleRow;
+                context: { onClick: (t: Trace) => void };
+                [key: string]: unknown;
+              }) => (
                 <TableRow
                   {...props}
                   className="cursor-pointer hover:bg-muted/50"
