@@ -653,3 +653,8 @@
 - [ ] **[P0] Adaptive Reasoning Monitor**: Real-time visualization of `x-gemini-reasoning-effort` levels and dynamic compaction efficiency. (Added: 2026-04-22)
 
 - [ ] **[P1] Encrypted Monologue Explorer**: Secure UI fragment for user-authorized decryption and review of subagent reasoning. (Added: 2026-04-22)
+
+#### Upcoming (2026-05-10 Evolution)
+- [ ] **[P0] CLA Integrity Dashboard**: Real-time visualization of kernel-level environment attestation events and blocked configuration injections. (Added: 2026-05-10)
+- [ ] **[P0] Mission-Root Intent Navigator**: Visual debugger for tracking cryptographically signed mission manifests across multi-agent swarms. (Added: 2026-05-10)
+- [ ] **[P1] Reasoning-Effort (ARE) Heatmap**: Analytics dashboard for visualizing computational intensity signaled via ARE headers across connected agents. (Added: 2026-05-10)
