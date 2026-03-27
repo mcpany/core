@@ -11,11 +11,25 @@ import { AlertCircle, CheckCircle2, AlertTriangle, Activity, Loader2 } from "luc
 import { apiClient } from "@/lib/client";
 
 /**
+ * Intent: Document AlertStats
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * AlertStats component.
  * @returns The rendered component.
  */
 export function AlertStats() {
-  const [stats, setStats] = useState<{ activeCritical: number, activeWarning: number, mttr: string, totalToday: number } | null>(null);
+  const [stats, setStats] = useState<{ activeCritical: number, activeWarning: number, mttr: string, totalToday: number, activeCriticalTrend?: string, activeWarningTrend?: string, mttrTrend?: string, totalTodayTrend?: string } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -54,7 +68,7 @@ export function AlertStats() {
         <CardContent>
           <div className="text-2xl font-bold text-red-500">{stats.activeCritical}</div>
           <p className="text-xs text-muted-foreground">
-            +1 since last hour
+            {stats.activeCriticalTrend || "+1 since last hour"}
           </p>
         </CardContent>
       </Card>
@@ -66,7 +80,7 @@ export function AlertStats() {
         <CardContent>
           <div className="text-2xl font-bold text-yellow-500">{stats.activeWarning}</div>
           <p className="text-xs text-muted-foreground">
-            -2 since last hour
+            {stats.activeWarningTrend || "-2 since last hour"}
           </p>
         </CardContent>
       </Card>
@@ -78,7 +92,7 @@ export function AlertStats() {
         <CardContent>
           <div className="text-2xl font-bold">{stats.mttr}</div>
           <p className="text-xs text-muted-foreground">
-            -2m from yesterday
+            {stats.mttrTrend || "-2m from yesterday"}
           </p>
         </CardContent>
       </Card>
@@ -90,7 +104,7 @@ export function AlertStats() {
         <CardContent>
           <div className="text-2xl font-bold">{stats.totalToday}</div>
           <p className="text-xs text-muted-foreground">
-            +12% from average
+            {stats.totalTodayTrend || "+12% from average"}
           </p>
         </CardContent>
       </Card>

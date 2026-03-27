@@ -6,6 +6,20 @@
 import data from './placeholder-images.json';
 
 /**
+ * Intent: Document ImagePlaceholder
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * ImagePlaceholder type definition.
  */
 export type ImagePlaceholder = {
@@ -16,6 +30,20 @@ export type ImagePlaceholder = {
 };
 
 /**
+ * Intent: Document PlaceHolderImages
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * The PlaceHolderImages const.
  */
 export const PlaceHolderImages: ImagePlaceholder[] = data.placeholderImages;

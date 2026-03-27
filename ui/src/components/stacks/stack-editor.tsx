@@ -28,6 +28,20 @@ interface StackEditorProps {
 }
 
 /**
+ * Intent: Document StackEditor
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * StackEditor component for editing stack configurations with visual feedback.
  *
  * @param props - Component properties

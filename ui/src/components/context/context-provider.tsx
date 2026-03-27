@@ -30,6 +30,20 @@ interface ContextState {
 const ContextContext = createContext<ContextState | undefined>(undefined);
 
 /**
+ * Intent: Document ContextProvider
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * ContextProvider component that manages the application context state.
  * It provides tools, services, and simulation capabilities to its children.
  *
@@ -134,6 +148,20 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
 }
 
 /**
+ * Intent: Document useRecursiveContext
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Hook to access the context state from any component within the provider.
  * Throws an error if used outside of a ContextProvider.
  *

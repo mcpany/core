@@ -19,6 +19,20 @@ interface SparklineProps {
 
 // ⚡ Bolt Optimization: Memoized to prevent re-renders when parent updates (e.g. selection) but chart data is stable.
 /**
+ * Intent: Document Sparkline
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Sparkline component.
  * @param props - The component props.
  * @param props.data - The data to display.

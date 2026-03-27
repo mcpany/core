@@ -35,6 +35,20 @@ interface WebhookConfig {
 }
 
 /**
+ * Intent: Document WebhooksPage
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * WebhooksPage component.
  * @returns The rendered component.
  */

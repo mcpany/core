@@ -6,6 +6,20 @@
 import { useEffect, useRef } from 'react';
 
 /**
+ * Intent: Document usePolling
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * usePolling is a hook to poll a callback at a specified interval.
  * It automatically stops polling when the document is hidden and resumes when visible.
  *

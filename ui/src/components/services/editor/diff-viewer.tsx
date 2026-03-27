@@ -16,6 +16,20 @@ interface DiffViewerProps {
 }
 
 /**
+ * Intent: Document DiffViewer
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * DiffViewer component for comparing configurations (YAML/JSON).
  * Uses Monaco Diff Editor.
  *

@@ -6,6 +6,20 @@
 import { Trace } from "@/types/trace";
 
 /**
+ * Intent: Document Diagnostic
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Diagnostic represents a finding from the trace analysis, indicating an error or warning.
  */
 export interface Diagnostic {
@@ -20,6 +34,20 @@ export interface Diagnostic {
 }
 
 /**
+ * Intent: Document analyzeTrace
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Analyzes a trace for common errors and returns a list of diagnostics.
  *
  * This function inspects the trace status and error messages to identify

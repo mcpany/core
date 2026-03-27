@@ -19,6 +19,20 @@ import { ArrowLeft, Download, Terminal } from "lucide-react";
 import { Link } from 'react-router-dom';
 
 /**
+ * Intent: Document ExternalMarketplacePage
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * ExternalMarketplacePage component.
  * @param props - The component props.
  * @param props.params - The params property.

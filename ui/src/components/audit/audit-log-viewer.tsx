@@ -43,6 +43,20 @@ interface AuditLogEntry {
 }
 
 /**
+ * Intent: Document AuditLogViewer
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * AuditLogViewer component.
  * Displays a table of audit logs with filtering capabilities and detailed view.
  *
@@ -62,12 +76,17 @@ export function AuditLogViewer() {
     const [startDate, setStartDate] = useState<Date | undefined>(undefined);
     const [endDate, setEndDate] = useState<Date | undefined>(undefined);
 
+    // Pagination
+    const [page, setPage] = useState(0);
+    const limit = 50;
+    const [hasMore, setHasMore] = useState(false);
+
     const fetchLogs = useCallback(async () => {
         setLoading(true);
         try {
             const filters: any = {
-                limit: 50,
-                offset: 0
+                limit: limit,
+                offset: page * limit
             };
             if (toolName) filters.tool_name = toolName;
             if (userId) filters.user_id = userId;
@@ -84,17 +103,27 @@ export function AuditLogViewer() {
             // Wait, looking at `admin.proto`:
             // string tool_name = 2;
             // In JSON it will be `toolName`.
-            setLogs(res.entries || []);
+            const newLogs = res.entries || [];
+            setLogs(newLogs);
+            setHasMore(newLogs.length === limit);
         } catch (e) {
             console.error("Failed to fetch audit logs", e);
         } finally {
             setLoading(false);
         }
-    }, [toolName, userId, startDate, endDate]);
+    }, [toolName, userId, startDate, endDate, page]);
 
     useEffect(() => {
         fetchLogs();
     }, [fetchLogs]);
+
+    const handleFilter = () => {
+        if (page === 0) {
+            fetchLogs();
+        } else {
+            setPage(0);
+        }
+    };
 
     const handleExport = async () => {
         setExporting(true);
@@ -211,7 +240,7 @@ export function AuditLogViewer() {
                                 {exporting ? <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
                                 Export CSV
                             </Button>
-                            <Button onClick={fetchLogs} disabled={loading}>
+                            <Button onClick={handleFilter} disabled={loading}>
                                 {loading ? <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> : <Search className="mr-2 h-4 w-4" />}
                                 Filter
                             </Button>
@@ -270,6 +299,29 @@ export function AuditLogViewer() {
                         </TableBody>
                     </Table>
                 </CardContent>
+                <div className="flex items-center justify-between px-4 py-3 border-t bg-muted/10">
+                    <div className="text-sm text-muted-foreground">
+                        Showing {logs.length > 0 ? page * limit + 1 : 0} to {page * limit + logs.length} entries
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPage(p => Math.max(0, p - 1))}
+                            disabled={page === 0 || loading}
+                        >
+                            Previous
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPage(p => p + 1)}
+                            disabled={!hasMore || loading}
+                        >
+                            Next
+                        </Button>
+                    </div>
+                </div>
             </Card>
 
             <Dialog open={!!selectedLog} onOpenChange={(open) => !open && setSelectedLog(null)}>

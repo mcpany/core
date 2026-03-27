@@ -6,6 +6,20 @@
 import { AgentFlow } from "@/components/visualizer/agent-flow";
 
 /**
+ * Intent: Document VisualizerPage
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * VisualizerPage is the main page for the Agent Flow visualizer.
  * @returns The VisualizerPage component.
  */

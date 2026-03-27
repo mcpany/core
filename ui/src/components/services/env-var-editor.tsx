@@ -28,6 +28,20 @@ interface EnvVarEditorProps {
 }
 
 /**
+ * Intent: Document EnvVarEditor
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * EnvVarEditor.
  *
  * @param onChange - The onChange.

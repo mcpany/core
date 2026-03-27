@@ -5,6 +5,20 @@ import { apiClient } from './client';
 import { Skill } from '@proto/config/v1/skill';
 
 /**
+ * Intent: Document SkillService
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * SkillService provides methods to interact with the backend Skills API.
  * It handles listing, getting, creating, updating, and deleting skills.
  * It delegates to the centralized apiClient to ensure authentication consistency.

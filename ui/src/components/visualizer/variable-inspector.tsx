@@ -17,6 +17,20 @@ interface VariableInspectorProps {
 }
 
 /**
+ * Intent: Document VariableInspector
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * VariableInspector displays details and state of the selected node.
  * @param props - The component props.
  * @param props.selectedNode - The currently selected node.
