@@ -12,21 +12,6 @@ import (
 )
 
 // handleDiscoveryStatus returns the status of auto-discovery providers.
-//
-// Summary: Returns discovery status.
-//
-// Parameters:
-//   - w (http.ResponseWriter): The response writer.
-//   - r (*http.Request): The HTTP request.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - Writes HTTP errors on failure.
-//
-// Side Effects:
-//   - None.
 func (a *Application) handleDiscoveryStatus(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -46,21 +31,6 @@ func (a *Application) handleDiscoveryStatus(w http.ResponseWriter, r *http.Reque
 }
 
 // handleDiscoveryTrigger triggers a new auto-discovery run.
-//
-// Summary: Triggers discovery.
-//
-// Parameters:
-//   - w (http.ResponseWriter): The response writer.
-//   - r (*http.Request): The HTTP request.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - Writes HTTP errors on failure.
-//
-// Side Effects:
-//   - Starts async discovery process.
 func (a *Application) handleDiscoveryTrigger(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)

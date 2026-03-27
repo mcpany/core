@@ -42,7 +42,5 @@ go_test(
         "//server/pkg/audit",
         "@com_github_stretchr_testify//assert",
         "@com_github_stretchr_testify//require",
-        "@com_github_stretchr_testify//mock",
-        "//server/pkg/validation",
     ],
 )

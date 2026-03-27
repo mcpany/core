@@ -1,6 +1,6 @@
 # Webhooks
 
-**Status:** Implemented
+**Status:** Config-Driven (UI Planned)
 
 ## Goal
 
@@ -8,15 +8,7 @@ Intercept and modify tool executions. Webhooks utilize CloudEvents for a standar
 
 ## Configuration
 
-Webhooks can be configured both via the UI dashboard and `config.yaml` under each upstream service as `pre_call_hooks` and `post_call_hooks`.
-
-### UI Dashboard
-
-Navigate to `/webhooks` to access the Webhooks management console. Here you can:
-- **Add Webhooks**: Create new webhooks by providing a Payload URL.
-- **Status Management**: Instantly enable or disable specific webhooks via toggle switches.
-- **Testing**: Trigger test events (`/api/v1/webhooks/:id/test`) to verify connectivity and validate payloads.
-- **Delete Webhooks**: Remove unused or obsolete webhooks from your configuration.
+Webhooks are currently configured via `config.yaml` under each upstream service as `pre_call_hooks` and `post_call_hooks`. The UI dashboard at `/webhooks` provides a preview of future management capabilities but is not yet fully functional for creating or modifying these hooks.
 
 ### YAML Example
 

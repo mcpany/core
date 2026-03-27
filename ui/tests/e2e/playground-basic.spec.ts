@@ -5,11 +5,44 @@
 
 import { test, expect } from '@playwright/test';
 
-test.describe.skip('Playground Basic Verification', () => {
-  test.skip('should execute calculator tool and verify output', async ({ page }) => {
+test.describe('Playground Basic Verification', () => {
+  test('should execute calculator tool and verify output', async ({ page }) => {
     // Mock the tools API
+    await page.route('**/api/v1/tools', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          tools: [
+            {
+              name: 'calculator',
+              description: 'A simple calculator',
+              inputSchema: {
+                type: 'object',
+                properties: {
+                  operation: { type: 'string', enum: ['add', 'subtract'] },
+                  a: { type: 'number' },
+                  b: { type: 'number' }
+                },
+                required: ['operation', 'a', 'b']
+              }
+            }
+          ]
+        })
+      });
+    });
 
     // Mock the execute API
+    await page.route('**/api/v1/execute', async (route) => {
+        const body = JSON.parse(route.request().postData() || '{}');
+        await route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({
+                content: [{ type: "text", text: `Result: ${body.arguments.a + body.arguments.b}` }]
+            })
+        });
+    });
 
     // Navigate to playground
     await page.goto('/playground');

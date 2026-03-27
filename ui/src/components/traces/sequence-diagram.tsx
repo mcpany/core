@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { RichResultViewer } from "@/components/tools/rich-result-viewer";
 import { Badge } from "@/components/ui/badge";
-import { User, Cpu, Terminal, Globe, Database, ArrowRight, ArrowLeft, Clock, MessageSquare } from "lucide-react";
+import { User, Cpu, Terminal, Globe, Database, ArrowRight, ArrowLeft, Clock } from "lucide-react";
 
 interface SequenceDiagramProps {
   trace: Trace;
@@ -26,7 +26,7 @@ interface SequenceDiagramProps {
 interface Actor {
   id: string;
   label: string;
-  type: 'user' | 'core' | 'tool' | 'service' | 'resource' | 'prompt';
+  type: 'user' | 'core' | 'tool' | 'service' | 'resource';
   icon: React.ElementType;
 }
 
@@ -90,9 +90,6 @@ export function SequenceDiagram({ trace }: SequenceDiagramProps) {
             } else if (span.type === 'resource') {
                 type = 'resource';
                 icon = Database;
-            } else if (span.type === 'prompt') {
-                type = 'prompt';
-                icon = MessageSquare;
             }
 
             actorMap.set(id, { id, label, type, icon });
@@ -225,7 +222,6 @@ export function SequenceDiagram({ trace }: SequenceDiagramProps) {
                                     actor.type === 'user' ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border-blue-200 dark:border-blue-800" :
                                     actor.type === 'core' ? "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 border-purple-200 dark:border-purple-800" :
                                     actor.type === 'tool' ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border-amber-200 dark:border-amber-800" :
-                                    actor.type === 'prompt' ? "bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400 border-pink-200 dark:border-pink-800" :
                                     "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400 border-slate-200 dark:border-slate-700"
                                 )}>
                                     <actor.icon className="w-4 h-4" />

@@ -31,24 +31,6 @@ func (m *mockTool) MCPTool() *mcp.Tool {
 	return nil // Not needed for ExecuteTool tests unless mcp server integration is involved
 }
 
-func (m *mockTool) IsStreaming() bool {
-	return false
-}
-
-func (m *mockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
-	ch := make(chan any, 1)
-	go func() {
-		defer close(ch)
-		res, err := m.Execute(ctx, req)
-		if err != nil {
-			ch <- err
-		} else {
-			ch <- res
-		}
-	}()
-	return ch, nil
-}
-
 func (m *mockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	if m.executeFunc != nil {
 		return m.executeFunc(ctx, req)

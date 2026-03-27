@@ -60,15 +60,6 @@ func (m *MockToolManagerForCost) ToolMatchesProfile(tool tool.Tool, profileID st
 }
 
 // MockToolForCost is a mock for tool.Tool
-
-func (m *MockToolForCost) IsStreaming() bool {
-	return false
-}
-
-func (m *MockToolForCost) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
-	return nil, nil
-}
-
 type MockToolForCost struct {
 	mock.Mock
 }

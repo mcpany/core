@@ -14,21 +14,6 @@ import (
 )
 
 // handleGetUserPreferences retrieves the preferences for the authenticated user.
-//
-// Summary: Retrieves user preferences.
-//
-// Parameters:
-//   - w (http.ResponseWriter): The response writer.
-//   - r (*http.Request): The HTTP request.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - Writes HTTP errors on failure.
-//
-// Side Effects:
-//   - None.
 func (a *Application) handleGetUserPreferences(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	userID, ok := auth.UserFromContext(ctx)
@@ -62,21 +47,6 @@ func (a *Application) handleGetUserPreferences(w http.ResponseWriter, r *http.Re
 }
 
 // handleUpdateUserPreferences updates the preferences for the authenticated user.
-//
-// Summary: Updates user preferences.
-//
-// Parameters:
-//   - w (http.ResponseWriter): The response writer.
-//   - r (*http.Request): The HTTP request.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - Writes HTTP errors on failure.
-//
-// Side Effects:
-//   - None.
 func (a *Application) handleUpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	userID, ok := auth.UserFromContext(ctx)

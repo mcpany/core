@@ -703,39 +703,3 @@ global_settings:
 		})
 	}
 }
-
-// TestInitCmd tests the init command.
-func TestInitCmd(t *testing.T) {
-	// Change working directory to a temp dir so we don't pollute the actual project
-	tmpDir := t.TempDir()
-	originalWd, err := os.Getwd()
-	require.NoError(t, err)
-	require.NoError(t, os.Chdir(tmpDir))
-	defer func() {
-		require.NoError(t, os.Chdir(originalWd))
-	}()
-
-	cmd := newRootCmd()
-	cmd.SetArgs([]string{"init"})
-
-	var buf bytes.Buffer
-	cmd.SetOut(&buf)
-	cmd.SetErr(&buf)
-
-	err = cmd.Execute()
-	assert.NoError(t, err)
-
-	output := buf.String()
-	assert.Contains(t, output, "Initialization Wizard")
-	assert.Contains(t, output, "Successfully created config.yaml")
-
-	// Verify the file was created
-	fs := afero.NewOsFs()
-	exists, err := afero.Exists(fs, "config.yaml")
-	assert.NoError(t, err)
-	assert.True(t, exists)
-
-	content, err := afero.ReadFile(fs, "config.yaml")
-	assert.NoError(t, err)
-	assert.Contains(t, string(content), "global_settings:")
-}

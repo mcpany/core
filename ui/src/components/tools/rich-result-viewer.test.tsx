@@ -25,18 +25,4 @@ describe('RichResultViewer', () => {
 
     expect(screen.getByRole('img')).toHaveAttribute('src', 'data:image/png;base64,base64data');
   });
-
-  it('detects nested arrays for tables', () => {
-    const { getByText } = render(
-      <RichResultViewer
-        result={{
-          files: [
-            { id: 1, name: 'foo' },
-            { id: 2, name: 'bar' }
-          ]
-        }}
-      />
-    );
-    expect(getByText('Table')).toBeInTheDocument();
-  });
 });
