@@ -59,7 +59,7 @@ jobs:
             rm -rf .cache build/.cache/pre-commit ~/.cache/pre-commit
             cd server && pre-commit clean --config ../.pre-commit-config.yaml || true
             cd ..
-            pre-commit clean || true
+            pre-commit run --all-files || true
             export PATH=$PWD/build/env/bin:$PATH
             make lint
       - save_cache:
