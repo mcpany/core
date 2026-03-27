@@ -223,7 +223,7 @@ func runfilesWorkspaceName() string {
 
 func runfilesRoots() []string {
 	workspace := runfilesWorkspaceName()
-	var roots []string //nolint:prealloc
+	roots := make([]string, 0, 2)
 	for _, base := range []string{os.Getenv("TEST_SRCDIR"), os.Getenv("RUNFILES_DIR")} {
 		if base == "" {
 			continue
@@ -271,8 +271,7 @@ func isServerProjectRoot(dir string) bool {
 func symlinkIfPresent(src, dst string) error {
 	_, err := os.Stat(src)
 	if err != nil {
-		//nolint:nilerr
-		return nil
+		return nil //nolint:nilerr
 	}
 	return os.Symlink(src, dst)
 }
@@ -751,72 +750,6 @@ func EnsureServerImageLoaded(t *testing.T) {
 		t.Fatalf("Failed to load Bazel-built server image: %v\n%s", err, string(out))
 	}
 	t.Logf("mcpany/server image loaded: %s", strings.TrimSpace(string(out)))
-}
-
-// EnsureHTTPEchoServerImageLoaded ensures that the mcpany/http-echo-server:latest
-// Docker image is available for tests. When running under Bazel, it loads the image
-// from the Bazel-built oci_load runfile. Outside Bazel it is a no-op.
-func EnsureHTTPEchoServerImageLoaded(t *testing.T) {
-	t.Helper()
-	runfilesDir := os.Getenv("RUNFILES_DIR")
-	if runfilesDir == "" {
-		runfilesDir = os.Getenv("TEST_SRCDIR")
-	}
-	if runfilesDir == "" {
-		return
-	}
-	loader := filepath.Join(runfilesDir, "_main", "server", "tests", "integration", "cmd", "mocks", "http_echo_server", "http_echo_server_tarball.sh")
-	if _, err := os.Stat(loader); err != nil {
-		t.Logf("Bazel http_echo_server_tarball.sh not found at %s (skipping image load): %v", loader, err)
-		return
-	}
-	t.Logf("Loading Bazel-built mcpany/http-echo-server image via %s", loader)
-	cmd := exec.Command(loader)
-	env := append([]string{}, os.Environ()...)
-	env = append(env,
-		"RUNFILES_DIR="+runfilesDir,
-		"TEST_SRCDIR="+runfilesDir,
-		"TEST_WORKSPACE=_main",
-	)
-	cmd.Env = env
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		t.Fatalf("Failed to load Bazel-built http-echo-server image: %v\n%s", err, string(out))
-	}
-	t.Logf("mcpany/http-echo-server image loaded: %s", strings.TrimSpace(string(out)))
-}
-
-// EnsureCowsayServerImageLoaded ensures that the mcpany/e2e-cowsay-server:latest
-// Docker image is available for tests. When running under Bazel, it loads the image
-// from the Bazel-built oci_load runfile. Outside Bazel it is a no-op.
-func EnsureCowsayServerImageLoaded(t *testing.T) {
-	t.Helper()
-	runfilesDir := os.Getenv("RUNFILES_DIR")
-	if runfilesDir == "" {
-		runfilesDir = os.Getenv("TEST_SRCDIR")
-	}
-	if runfilesDir == "" {
-		return
-	}
-	loader := filepath.Join(runfilesDir, "_main", "server", "tests", "integration", "cmd", "mocks", "python_cowsay_server", "cowsay_server_tarball.sh")
-	if _, err := os.Stat(loader); err != nil {
-		t.Logf("Bazel cowsay_server_tarball.sh not found at %s (skipping image load): %v", loader, err)
-		return
-	}
-	t.Logf("Loading Bazel-built mcpany/e2e-cowsay-server image via %s", loader)
-	cmd := exec.Command(loader)
-	env := append([]string{}, os.Environ()...)
-	env = append(env,
-		"RUNFILES_DIR="+runfilesDir,
-		"TEST_SRCDIR="+runfilesDir,
-		"TEST_WORKSPACE=_main",
-	)
-	cmd.Env = env
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		t.Fatalf("Failed to load Bazel-built cowsay-server image: %v\n%s", err, string(out))
-	}
-	t.Logf("mcpany/e2e-cowsay-server image loaded: %s", strings.TrimSpace(string(out)))
 }
 
 // IsDockerSocketAccessible checks if the Docker daemon is accessible.
