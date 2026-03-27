@@ -83,3 +83,9 @@ hardware-attested mission-root intent.
 ## 7. Evolutionary Changelog
 
 * **2026-06-19:** Initial Document Creation.
+
+### Update: 2026-06-21 - Addressing Handshake Hijacking
+**Context:** Today's research revealed "Handshake Hijacking" (Ghost-Riding) where identity tokens are stolen after attestation but before task execution.
+**Architecture Adjustment:** * Mandatory integration with **Continuous Attestation Pulse (CAP)**.
+* HAIL tokens now require periodic re-attestation via the CAP heartbeat to remain valid for tool delegation.
+**Security Impact:** Prevents long-lived session hijacking and ensures instruction provenance is continuously verified.
