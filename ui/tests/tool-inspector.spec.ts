@@ -18,9 +18,9 @@ test('Tools page loads and inspector opens', async ({ page }) => {
             source: 'configured',
             serviceId: 'weather-service',
             inputSchema: {
-               type: "object",
+               type: 'object',
                properties: {
-                 location: { type: "string" }
+                 location: { type: 'string' }
                }
             }
           }
@@ -53,7 +53,7 @@ test('Tools page loads and inspector opens', async ({ page }) => {
   // Click the JSON trigger inside the schema content
   await schemaPanel.getByRole('tab', { name: 'JSON' }).click();
 
-  // The schema content from mock: { type: "object", properties: { location: { type: "string" } } }
+  // The schema content from mock: { type: 'object', properties: { location: { type: 'string' } } }
   // We check for "location" property in the JSON view
   await expect(page.locator('pre').filter({ hasText: /"location"/ })).toBeVisible();
   await expect(page.locator('pre').filter({ hasText: /"type": "object"/ })).toBeVisible();
