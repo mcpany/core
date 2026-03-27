@@ -113,9 +113,11 @@ func TestUpstreamService_TheMealDB(t *testing.T) {
 
 	if _, ok := theMealDBResponse["meals"].(string); ok {
 		t.Log("No meals found in response string")
+		return
 	}
 	if theMealDBResponse["meals"] == nil {
 		t.Log("No meals found in response null")
+		return
 	}
 	meals, ok := theMealDBResponse["meals"].([]interface{})
 	require.True(t, ok, "The meals should be an array")

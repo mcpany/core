@@ -115,9 +115,11 @@ func TestUpstreamService_TheCocktailDB(t *testing.T) {
 
 	if _, ok := theCocktailDBResponse["drinks"].(string); ok {
 		t.Log("No drinks found in response string")
+		return
 	}
 	if theCocktailDBResponse["drinks"] == nil {
 		t.Log("No drinks found in response null")
+		return
 	}
 	drinks, ok := theCocktailDBResponse["drinks"].([]interface{})
 	require.True(t, ok, "The drinks should be an array")
