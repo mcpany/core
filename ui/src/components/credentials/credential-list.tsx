@@ -27,6 +27,20 @@ import { Plus, Trash, Key, Lock, Globe, ExternalLink } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 /**
+ * Intent: Document CredentialList
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * CredentialList component.
  * @returns The rendered component.
  */

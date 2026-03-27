@@ -62,3 +62,19 @@ The AMS Middleware solves this by sharding the inter-agent mailbox based on the 
 
 ## 7. Evolutionary Changelog
 * **2026-03-20:** Initial Document Creation.
+
+### Update: 2026-03-22 - Lock-Free Mesh Coordination
+**Context:** Today's market sync reveals that horizontal Agent Teams are hitting a performance ceiling due to synchronous "Mailbox Locks" when synchronizing shared task lists.
+**Architecture Adjustment:**
+* Deprecating global synchronization locks in Section 4.
+* Introducing **Lock-Free Coordination** utilizing Conflict-Free Replicated Data Types (CRDTs) for shard-level state synchronization.
+* Implementing atomic "Task Claiming" via optimistic concurrency control (OCC) to ensure strict single-agent assignment without global wait-states.
+**Security Impact:** Reduces the risk of "Coordinated DoS" where a single lagging teammate stalls the entire mesh coordination bus.
+
+### Update: 2026-06-27 - CRDT-Native Mailbox Sharding
+**Context:** As teammate meshes scale beyond 10+ parallel agents, even optimistic locks on shards are causing "Coordination Stall" (2s+ latency).
+**Architecture Adjustment:**
+* **CRDT-Native Shards**: Transitioning from OCC to full CRDT-native mailbox shards (OR-Set with LWW-Register per task).
+* **State Streaming**: Utilizing the BSH (Binary State Handoff) gateway to stream delta-CRDT updates instead of full-state syncs.
+* **Deterministic Tie-Breaking**: Hardware-attested identity priority is now the primary tie-breaker for concurrent task claims, eliminating the need for any back-and-forth lock negotiation.
+**Security Impact:** Prevents "Mailbox Splicing" (CVE-2026-81042) by mandating that every CRDT mutation be signed with an IFA token.

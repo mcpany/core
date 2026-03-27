@@ -47,21 +47,42 @@ func (m *MockTool) MCPTool() *mcp.Tool {
 	return nil
 }
 
-// Execute calls the mock ExecuteFunc if set, otherwise returns nil.
+// IsStreaming returns whether the mock tool supports streaming.
 //
-// Summary: Executes the mock tool.
+// Summary: Checks if the mock tool supports streaming.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - bool: Always returns false.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+func (m *MockTool) IsStreaming() bool {
+	return false
+}
+
+// StreamExecute executes the mock tool in streaming mode.
+//
+// Summary: Executes the mock tool in streaming mode.
 //
 // Parameters:
 //   - ctx: context.Context. The execution context.
 //   - req: *ExecutionRequest. The execution request.
 //
 // Returns:
-//   - any: The execution result.
-//   - error: An error if execution fails.
-func (m *MockTool) IsStreaming() bool {
-	return false
-}
-
+//   - <-chan any: A channel that emits the result or error.
+//   - error: Always nil for the mock tool.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Executes the mock tool logic asynchronously.
 func (m *MockTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -76,6 +97,23 @@ func (m *MockTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 	return ch, nil
 }
 
+// Execute calls the mock ExecuteFunc if set, otherwise returns nil.
+//
+// Summary: Executes the mock tool.
+//
+// Parameters:
+//   - ctx: context.Context. The execution context.
+//   - req: *ExecutionRequest. The execution request.
+//
+// Returns:
+//   - any: The execution result.
+//   - error: An error if execution fails.
+//
+// Errors:
+//   - Returns the error returned by the underlying mock ExecuteFunc.
+//
+// Side Effects:
+//   - Calls the underlying mock ExecuteFunc.
 func (m *MockTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if m.ExecuteFunc != nil {
 		return m.ExecuteFunc(ctx, req)

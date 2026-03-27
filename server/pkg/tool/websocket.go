@@ -122,6 +122,7 @@ func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
+//
 // IsStreaming returns true if the tool supports streaming.
 //
 // Summary: Checks if the tool supports streaming execution.
@@ -157,6 +158,28 @@ func (t *WebsocketTool) StreamExecute(ctx context.Context, req *ExecutionRequest
 	return ch, nil
 }
 
+// Execute executes the WebSocket tool.
+//
+// Summary: Executes the WebSocket request and waits for a response.
+//
+// Parameters:
+//   - ctx (context.Context): The context for execution.
+//   - req (*ExecutionRequest): The request parameters.
+//
+// Returns:
+//   - any: The response from the WebSocket.
+//   - error: An error if the WebSocket communication fails.
+//
+// Errors:
+//   - Returns an error if the websocket pool is not found.
+//   - Returns an error if getting a connection from the pool fails.
+//   - Returns an error if marshalling the inputs fails.
+//   - Returns an error if secret resolution fails.
+//   - Returns an error if input transformation fails.
+//   - Returns an error if sending or reading a message fails.
+//
+// Side Effects:
+//   - Makes a WebSocket network call.
 func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	wsPool, ok := pool.Get[*client.WebsocketClientWrapper](t.poolManager, t.serviceID)
 	if !ok {

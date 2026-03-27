@@ -80,3 +80,10 @@ The Active Reasoning Interdiction (ARI) Hub evolves the existing validator into 
 * The ARI Hub will now mandate **Lineage-Bound Context Verification**. Every context fragment ingested from project-local files must be cryptographically bound to a verified user attestation.
 * Implementing **Attention-Driver Analysis** in the Semantic Consistency Engine to detect when "Injected Context" is the primary driver for high-risk tool proposals.
 **Security Impact:** Prevents "Invisible" instructions from project-local files from hijacking the agent's reasoning loop.
+
+### Update: 2026-06-29 - ARI v2: Reasoning-Provenance Integration
+**Context:** The disclosure of Logic-Grafting (Zero-Day) attacks and the introduction of `x-gemini-provenance` headers demand a move from fragment-level to reasoning-step-level interdiction.
+**Architecture Adjustment:**
+* Integrating the **Reasoning Provenance Validator** into the Hash-Chain Validator in Section 4.
+* Upgrading the Semantic Consistency Engine to perform **Step-Level Provenance Checks**, ensuring that every internal reasoning step in a fragment is cryptographically signed and hash-chained.
+**Security Impact:** Prevents subagents from "grafting" malicious reasoning steps inside a seemingly valid fragment, providing 100% visibility into the cognitive path.

@@ -14,6 +14,20 @@ interface StackVisualizerProps {
 }
 
 /**
+ * Intent: Document StackVisualizer
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * StackVisualizer.
  *
  * @param { yamlContent - The { yamlContent.

@@ -11,6 +11,20 @@ import { CreateRuleDialog } from "@/components/alerts/create-rule-dialog";
 import { WebhookDialog } from "@/components/alerts/webhook-dialog";
 
 /**
+ * Intent: Document AlertsPage
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * AlertsPage component.
  * @returns The rendered component.
  */
