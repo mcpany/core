@@ -67,10 +67,6 @@ go_deps.module_override(
 # For now, let's let Gazelle handle it.
 use_repo(
     go_deps,
-    "org_golang_google_genproto_googleapis_api",
-    "io_k8s_sigs_controller_runtime",
-    "io_k8s_apimachinery",
-    "io_k8s_api",
     "com_github_alexliesenfeld_health",
     "com_github_alicebob_miniredis_v2",
     "com_github_alitto_pond_v2",
