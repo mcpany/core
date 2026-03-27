@@ -66,3 +66,38 @@ func TestBrowserProvider(t *testing.T) {
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "url is required")
 }
+
+// Test with mocked fetcher returning error
+func TestBrowsePage_FetcherError(t *testing.T) {
+	p := &Provider{fetcher: &errorPageFetcher{}}
+	_, err := p.BrowsePage(context.Background(), "http://example.com")
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "simulated fetch error")
+}
+
+type errorPageFetcher struct{}
+
+func (e *errorPageFetcher) FetchText(ctx context.Context, url string) (string, error) {
+	return "", fmt.Errorf("simulated fetch error")
+}
+
+// Test coverage for nil fetcher fallback
+func TestBrowsePage_NilFetcher(t *testing.T) {
+	// We test error condition because we can't reliably test playwrightFetcher without headless browser
+	p := NewProvider() // Has nil fetcher
+	// Provide invalid URL to trigger an error early before launching full playwright if possible,
+	// actually we just want to hit the fallback code block.
+	// Since playwright won't be able to launch or navigate to an invalid url scheme, we just check if it fails with URL error
+	_, err := p.BrowsePage(context.Background(), "invalid-scheme://this-is-not-real")
+	// As long as we hit the playwrightFetcher code path, it's covered.
+	assert.Error(t, err)
+}
+
+// We will attempt to run playwright if available, else we mock/skip
+func TestPlaywrightFetcher_Failure(t *testing.T) {
+	// Let's test playwright fetcher failing
+	// If playwright is not installed, it returns "could not start playwright" error immediately.
+	f := &playwrightFetcher{}
+	_, err := f.FetchText(context.Background(), "invalid-url")
+	assert.Error(t, err)
+}

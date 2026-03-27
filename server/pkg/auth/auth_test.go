@@ -47,8 +47,8 @@ func TestNewAPIKeyAuthenticator(t *testing.T) {
 
 func TestAPIKeyAuthenticator(t *testing.T) {
 	config := configv1.APIKeyAuth_builder{
-		ParamName: proto.String("X-API-Key"),
-		VerificationValue:  proto.String("secret-key"),
+		ParamName:         proto.String("X-API-Key"),
+		VerificationValue: proto.String("secret-key"),
 	}.Build()
 
 	authenticator := NewAPIKeyAuthenticator(config)
@@ -82,8 +82,8 @@ func TestAuthManager(t *testing.T) {
 	require.NotNil(t, authManager)
 
 	config := configv1.APIKeyAuth_builder{
-		ParamName: proto.String("X-API-Key"),
-		VerificationValue:  proto.String("secret-key"),
+		ParamName:         proto.String("X-API-Key"),
+		VerificationValue: proto.String("secret-key"),
 	}.Build()
 	apiKeyAuth := NewAPIKeyAuthenticator(config)
 
@@ -310,9 +310,9 @@ func TestAddOAuth2Authenticator(t *testing.T) {
 
 func TestAPIKeyAuthenticator_Query(t *testing.T) {
 	config := configv1.APIKeyAuth_builder{
-		ParamName: proto.String("api_key"),
-		VerificationValue:  proto.String("secret"),
-		In:        configv1.APIKeyAuth_QUERY.Enum(),
+		ParamName:         proto.String("api_key"),
+		VerificationValue: proto.String("secret"),
+		In:                configv1.APIKeyAuth_QUERY.Enum(),
 	}.Build()
 
 	authenticator := NewAPIKeyAuthenticator(config)
@@ -330,22 +330,22 @@ func TestAPIKeyAuthenticator_Query(t *testing.T) {
 		assert.Error(t, err)
 	})
 
-		t.Run("authentication_with_configured_username", func(t *testing.T) {
-			password := "secret123"
-			hashed, _ := passhash.Password(password)
-			configWithUser := configv1.BasicAuth_builder{
-				Username:     proto.String("admin"),
-				PasswordHash: proto.String(hashed),
-			}.Build()
-			authWithUser := NewBasicAuthenticator(configWithUser)
-			require.NotNil(t, authWithUser)
+	t.Run("authentication_with_configured_username", func(t *testing.T) {
+		password := "secret123"
+		hashed, _ := passhash.Password(password)
+		configWithUser := configv1.BasicAuth_builder{
+			Username:     proto.String("admin"),
+			PasswordHash: proto.String(hashed),
+		}.Build()
+		authWithUser := NewBasicAuthenticator(configWithUser)
+		require.NotNil(t, authWithUser)
 
-			t.Run("correct_username", func(t *testing.T) {
-				req := httptest.NewRequest("GET", "/", nil)
-				req.SetBasicAuth("admin", password)
-				_, err := authWithUser.Authenticate(context.Background(), req)
-				assert.NoError(t, err)
-			})
+		t.Run("correct_username", func(t *testing.T) {
+			req := httptest.NewRequest("GET", "/", nil)
+			req.SetBasicAuth("admin", password)
+			_, err := authWithUser.Authenticate(context.Background(), req)
+			assert.NoError(t, err)
+		})
 
 		t.Run("wrong_username", func(t *testing.T) {
 			req := httptest.NewRequest("GET", "/", nil)

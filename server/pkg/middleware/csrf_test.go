@@ -169,7 +169,7 @@ func TestCSRFMiddleware_EmptyConfig(t *testing.T) {
 			expectedStatus: http.StatusForbidden,
 		},
 		{
-			name: "External Origin Blocked",
+			name:   "External Origin Blocked",
 			method: http.MethodPost,
 			headers: map[string]string{
 				"Origin": "http://external.com",

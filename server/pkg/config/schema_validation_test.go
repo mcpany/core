@@ -25,7 +25,7 @@ func TestValidateConfigAgainstSchema(t *testing.T) {
 			},
 		},
 		"collections": []interface{}{},
-		"users":                        []interface{}{},
+		"users":       []interface{}{},
 	}
 
 	err := ValidateConfigAgainstSchema(validConfig)

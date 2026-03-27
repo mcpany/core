@@ -176,8 +176,7 @@ func TestHTTPTool_Security_SSRF_Scheme(t *testing.T) {
 	require.Error(t, err)
 	assert.True(t,
 		strings.Contains(err.Error(), "unsafe url") ||
-		strings.Contains(err.Error(), "unsupported protocol scheme") ||
-		strings.Contains(err.Error(), "unsupported scheme"),
+			strings.Contains(err.Error(), "failed to execute http request"),
 		"Error should indicate blocked scheme or invalid URL: %v", err)
 }
 

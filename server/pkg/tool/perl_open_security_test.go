@@ -80,7 +80,7 @@ func TestLocalCommandTool_Perl_Open_Injection(t *testing.T) {
 			inputBytes, _ := json.Marshal(inputMap)
 
 			req := &ExecutionRequest{
-				ToolName: "perl-tool",
+				ToolName:   "perl-tool",
 				ToolInputs: inputBytes,
 			}
 

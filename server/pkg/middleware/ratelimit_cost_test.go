@@ -41,15 +41,17 @@ func (m *MockToolManagerForCost) GetServiceInfo(id string) (*tool.ServiceInfo, b
 	return args.Get(0).(*tool.ServiceInfo), args.Bool(1)
 }
 
-func (m *MockToolManagerForCost) ListTools() []tool.Tool                           { return nil }
-func (m *MockToolManagerForCost) ListMCPTools() []*github_com_modelcontextprotocol_go_sdk_mcp.Tool { return nil }
-func (m *MockToolManagerForCost) AddTool(t tool.Tool) error                        { return nil }
+func (m *MockToolManagerForCost) ListTools() []tool.Tool { return nil }
+func (m *MockToolManagerForCost) ListMCPTools() []*github_com_modelcontextprotocol_go_sdk_mcp.Tool {
+	return nil
+}
+func (m *MockToolManagerForCost) AddTool(t tool.Tool) error                    { return nil }
 func (m *MockToolManagerForCost) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
 func (m *MockToolManagerForCost) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	return nil, nil
 }
-func (m *MockToolManagerForCost) SetMCPServer(_ tool.MCPServerProvider)  {}
-func (m *MockToolManagerForCost) ClearToolsForService(_ string) {}
+func (m *MockToolManagerForCost) SetMCPServer(_ tool.MCPServerProvider) {}
+func (m *MockToolManagerForCost) ClearToolsForService(_ string)         {}
 func (m *MockToolManagerForCost) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {
 }
 func (m *MockToolManagerForCost) IsServiceAllowed(serviceID, profileID string) bool { return true }
@@ -60,6 +62,15 @@ func (m *MockToolManagerForCost) ToolMatchesProfile(tool tool.Tool, profileID st
 }
 
 // MockToolForCost is a mock for tool.Tool
+
+func (m *MockToolForCost) IsStreaming() bool {
+	return false
+}
+
+func (m *MockToolForCost) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, nil
+}
+
 type MockToolForCost struct {
 	mock.Mock
 }
@@ -223,7 +234,7 @@ func TestRateLimitMiddleware_AllowN(t *testing.T) {
 	}.Build()
 
 	mockManager.On("GetServiceInfo", serviceID).Return(&tool.ServiceInfo{
-		Name: "Test Service",
+		Name:   "Test Service",
 		Config: svcConfig,
 	}, true)
 

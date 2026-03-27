@@ -4,8 +4,8 @@
 package util
 
 import (
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestRedactSlice_MultipleDirty(t *testing.T) {

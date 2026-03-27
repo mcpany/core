@@ -86,10 +86,10 @@ func TestSimpleTokenizeInt_EdgeCases(t *testing.T) {
 	}{
 		{"zero", 0, 1},
 		{"zero_int64", int64(0), 1},
-		{"negative_small", -5, 1}, // "-5" -> 2 chars -> 1 token
+		{"negative_small", -5, 1},     // "-5" -> 2 chars -> 1 token
 		{"negative_large", -12345, 1}, // "-12345" -> 6 chars -> 1.5 -> 1 token? No, 6/4 = 1.
-		{"min_int", math.MinInt, 5}, // "-9223372036854775808" -> 20 chars -> 5 tokens
-		{"max_int", math.MaxInt, 4}, // "9223372036854775807" -> 19 chars -> 4.75 -> 4 tokens
+		{"min_int", math.MinInt, 5},   // "-9223372036854775808" -> 20 chars -> 5 tokens
+		{"max_int", math.MaxInt, 4},   // "9223372036854775807" -> 19 chars -> 4.75 -> 4 tokens
 		{"min_int64", int64(math.MinInt64), 5},
 	}
 

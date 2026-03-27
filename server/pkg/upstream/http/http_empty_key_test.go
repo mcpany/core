@@ -18,10 +18,10 @@ import (
 
 func TestHTTPUpstream_URLConstruction_EmptyKeyBug(t *testing.T) {
 	testCases := []struct {
-		name          string
-		address       string
-		endpointPath  string
-		expectedFqn   string
+		name         string
+		address      string
+		endpointPath string
+		expectedFqn  string
 	}{
 		{
 			name:         "empty key in base and endpoint should not duplicate",

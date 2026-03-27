@@ -9,9 +9,9 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -30,6 +30,24 @@ func (m *MockTool) Tool() *v1.Tool {
 		return nil
 	}
 	return args.Get(0).(*v1.Tool)
+}
+
+func (m *MockTool) IsStreaming() bool {
+	return false
+}
+
+func (m *MockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	ch := make(chan any, 1)
+	go func() {
+		defer close(ch)
+		res, err := m.Execute(ctx, req)
+		if err != nil {
+			ch <- err
+		} else {
+			ch <- res
+		}
+	}()
+	return ch, nil
 }
 
 func (m *MockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (interface{}, error) {

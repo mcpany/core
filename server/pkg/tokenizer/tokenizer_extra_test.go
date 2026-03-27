@@ -4,8 +4,8 @@
 package tokenizer
 
 import (
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestCoverage_WordTokenizer_DeadCode(t *testing.T) {

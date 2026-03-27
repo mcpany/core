@@ -167,30 +167,30 @@ func TestImportCmd(t *testing.T) {
 		assert.Equal(t, "value 2", conn.Env["ENV_VAR_2"])
 	})
 
-    t.Run("Missing Argument", func(t *testing.T) {
-        cmd := newRootCmd()
-        b := bytes.NewBufferString("")
-        cmd.SetOut(b)
-        cmd.SetArgs([]string{"import"})
-        err := cmd.Execute()
-        assert.Error(t, err)
-        assert.Contains(t, err.Error(), "accepts 1 arg(s), received 0")
-    })
+	t.Run("Missing Argument", func(t *testing.T) {
+		cmd := newRootCmd()
+		b := bytes.NewBufferString("")
+		cmd.SetOut(b)
+		cmd.SetArgs([]string{"import"})
+		err := cmd.Execute()
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "accepts 1 arg(s), received 0")
+	})
 
-    t.Run("Invalid Output Path", func(t *testing.T) {
-        // Create a directory where the file should be to trigger error (or use an invalid path like /root/foo)
-        // Using a directory as file path usually fails.
-        badPath := filepath.Join(tempDir, "bad_dir")
-        err := os.Mkdir(badPath, 0755)
-        require.NoError(t, err)
+	t.Run("Invalid Output Path", func(t *testing.T) {
+		// Create a directory where the file should be to trigger error (or use an invalid path like /root/foo)
+		// Using a directory as file path usually fails.
+		badPath := filepath.Join(tempDir, "bad_dir")
+		err := os.Mkdir(badPath, 0755)
+		require.NoError(t, err)
 
-        cmd := newRootCmd()
+		cmd := newRootCmd()
 		b := bytes.NewBufferString("")
 		cmd.SetOut(b)
 		cmd.SetArgs([]string{"import", validJSONPath, "-o", badPath})
 		err = cmd.Execute()
 		assert.Error(t, err)
-        // Error message depends on OS, but usually "is a directory" or "access denied"
-        // Just checking error exists is enough for coverage.
-    })
+		// Error message depends on OS, but usually "is a directory" or "access denied"
+		// Just checking error exists is enough for coverage.
+	})
 }

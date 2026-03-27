@@ -25,6 +25,14 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+func (m *rateLimitMockTool) IsStreaming() bool {
+	return false
+}
+
+func (m *rateLimitMockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, nil
+}
+
 type rateLimitMockTool struct {
 	toolProto *v1.Tool
 	mock.Mock

@@ -21,6 +21,14 @@ import (
 // Helper to handle builders or direct structs
 // Since we had issues with builders, we use direct structs.
 
+func (m *callPolicyMockTool) IsStreaming() bool {
+	return false
+}
+
+func (m *callPolicyMockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, nil
+}
+
 type callPolicyMockTool struct {
 	toolProto *v1.Tool
 	mock.Mock
@@ -90,8 +98,8 @@ func TestCallPolicyMiddleware(t *testing.T) {
 		svcConfig := &configv1.UpstreamServiceConfig{}
 		svcConfig.SetCallPolicies(policies)
 		serviceInfo := &tool.ServiceInfo{
-			Name: "test-service",
-			Config: svcConfig,
+			Name:             "test-service",
+			Config:           svcConfig,
 			CompiledPolicies: compiledPolicies,
 		}
 

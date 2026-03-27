@@ -10,9 +10,9 @@ import (
 	"testing"
 	"time"
 
+	bustypes "github.com/mcpany/core/proto/bus"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/bus/redis"
-	bustypes "github.com/mcpany/core/proto/bus"
 	goredis "github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -195,10 +195,10 @@ func TestRedisBus_Integration_Concurrent(t *testing.T) {
 	var receivedMessages [][]string
 	var mu sync.Mutex
 
-    receivedMessages = make([][]string, numSubscribers)
-    for i := 0; i < numSubscribers; i++ {
-        receivedMessages[i] = make([]string, 0, numMessages)
-    }
+	receivedMessages = make([][]string, numSubscribers)
+	for i := 0; i < numSubscribers; i++ {
+		receivedMessages[i] = make([]string, 0, numMessages)
+	}
 
 	for i := 0; i < numSubscribers; i++ {
 		go func(subIdx int) {
