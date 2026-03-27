@@ -630,6 +630,15 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-07-08]
+### Focus: Zero-Trust Agent Identity & Mesh Coordination Sovereignty
+**Context**: The rapid transition from simple LLM calls to fully autonomous, multi-agent service meshes confirms that **Identity** must now be mesh-resident and **Authentication** must be zero-trust. The proliferation of Non-Human Identities (NHI) and the complexity of horizontal teammate coordination demand that the "Universal Agent Bus" move beyond simple bridging to active **Identity Minting** and **Mesh-Bound Sovereignty**.
+**Strategic Pivot**:
+- **Zero-Trust Agent Identity Hub**: MCP Any will evolve to act as the authoritative issuer of hardware-attested, mesh-resident identity tokens for all connected agents. This ensures that every inter-agent interaction is authenticated and linked to a verified mission root.
+- **Autonomous Service Mesh Gateway**: Supporting the efficiency of horizontal swarms, we are introducing a Mesh Gateway. This service will provide secure, authenticated transport and discovery for inter-agent communication, ensuring that capabilities are only visible to authorized peers within the mesh.
+- **Mesh-Resident Handshake Attestation**: To counter "Coordination Hijacking," we are mandating hardware-attested handshakes for all inter-agent coordination. No state fragment or task delegation will be accepted unless it is cryptographically bound to a verified mesh-resident identity.
+- **Non-Human Identity (NHI) Lifecycle Governance**: We are implementing automated lifecycle governance for NHIs. Identities will be task-bound and automatically revoked upon mission completion, neutralizing the risk of "Identity Squatting" by rogue subagents.
+
 ## Strategic Evolution: [2026-03-24]
 ### Focus: Relational Intent Integrity & Binary State Efficiency
 **Context**: Today's findings emphasize that the "Identity-Only" security model is failing against "Context-Mirroring" (CVE-2026-34015). Simultaneously, the "Token Storm" crisis in deep swarms (OpenClaw v2.4) proves that JSON is no longer a viable transport for inter-agent state.
@@ -1359,3 +1368,9 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **CI/CD Cache Integrity Guard (CCIG)**: To neutralize "Agentic Social Engineering" in build pipelines, we are mandating CCIG. All agent-accessible caches must be cryptographically signed, ensuring that poisoned metadata cannot compromise the mission-root supply chain.
 - **Post-Quantum Mesh Handshake (PQMH)**: Supporting the NIST FIPS 203/204/205 standards, we are introducing PQMH. All inter-agent and node-to-node communications will transition to post-quantum resistant algorithms to ensure long-term mesh integrity.
 - **Metadata Sanitization Gateway (MSG)**: To counter instruction injection via external metadata (GitHub issues, Slack messages), MCP Any will implement MSG. This layer will perform real-time semantic sanitization of all ingested metadata before it reaches the agent's reasoning loop.
+
+## Strategic Evolution: 2026-06-05
+As agent swarms transition to fully autonomous instruction-splicing models, MCP Any must move from a tool-proxy to an **Active Intent Mediator**. Our focus for H2 2026 shifts to:
+* **Recursive Accountability Trackers (RAT):** Mandatory hardware-bound tracking of capability delegation depth.
+* **Hardware-Attested Intent Lineage (HAIL):** Integrating TPM-backed counters into the transport layer to ensure every tool call is rooted in a user-signed mission intent.
+* **Intent-Splicing Defense:** Real-time semantic deconstruction of inter-agent coordination messages to block malicious sub-instruction injection.

@@ -8,6 +8,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 
 /**
+ * Intent: Document BlackboardDashboard
+ *
+ * Params:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
  * BlackboardDashboard component for managing shared blackboard keys.
  *
  * Summary: Displays a list of shared agent blackboard variables.

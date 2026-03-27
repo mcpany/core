@@ -14,6 +14,20 @@ import { ActiveIntentAlignmentWidget } from "@/components/dashboard/active-inten
 import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse, Zap, Share2, ClipboardCheck } from "lucide-react";
 
 /**
+ * Intent: Document WidgetSize
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Defines the possible sizes for a dashboard widget.
  * - full: Takes up the full width (12 columns).
  * - two-thirds: Takes up 2/3 of the width (8 columns).
@@ -23,6 +37,20 @@ import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse
 export type WidgetSize = "full" | "half" | "third" | "two-thirds";
 
 /**
+ * Intent: Document WidgetDefinition
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Defines the metadata and component for a dashboard widget.
  */
 export interface WidgetDefinition {
@@ -41,6 +69,20 @@ export interface WidgetDefinition {
 }
 
 /**
+ * Intent: Document WIDGET_DEFINITIONS
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Registry of all available dashboard widgets.
  * This list determines what widgets are available to add to the dashboard.
  */
@@ -144,6 +186,20 @@ export const WIDGET_DEFINITIONS: WidgetDefinition[] = [
 ];
 
 /**
+ * Intent: Document getWidgetDefinition
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Retrieves a widget definition by its type.
  *
  * @param type - The widget type identifier.

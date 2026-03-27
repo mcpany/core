@@ -11,6 +11,20 @@ import { usePolling } from "@/hooks/use-polling";
 export type { ServiceHealth, HealthHistoryPoint };
 
 /**
+ * Intent: Document ServiceHistory
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * ServiceHistory maps service IDs to their list of historical health points.
  */
 export interface ServiceHistory {
@@ -18,6 +32,20 @@ export interface ServiceHistory {
 }
 
 /**
+ * Intent: Document useServiceHealthHistory
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * useServiceHealthHistory is a hook that fetches and maintains the health history of services.
  * It polls the backend API for health data (which now includes server-side history).
  *

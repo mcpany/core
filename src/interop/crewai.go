@@ -7,7 +7,7 @@ import (
 
 // CrewAIAdapter implements the AgentFramework interface for CrewAI.
 //
-// Summary: Provides the implementation for interacting with the CrewAI framework via the universal adapter hub.
+// Intent: Provides the implementation for interacting with the CrewAI framework via the universal adapter hub.
 //
 // Parameters:
 //   - None.
@@ -27,7 +27,7 @@ type CrewAIAdapter struct {
 
 // NewCrewAIAdapter creates a new CrewAIAdapter instance.
 //
-// Summary: Instantiates and initializes a new adapter for CrewAI with its predefined capabilities.
+// Intent: Instantiates and initializes a new adapter for CrewAI with its predefined capabilities.
 //
 // Parameters:
 //   - None.
@@ -52,7 +52,7 @@ func NewCrewAIAdapter() *CrewAIAdapter {
 
 // Name returns the identifier of the agent framework.
 //
-// Summary: Provides the unique identifier for the CrewAI adapter.
+// Intent: Provides the unique identifier for the CrewAI adapter.
 //
 // Parameters:
 //   - None.
@@ -71,7 +71,7 @@ func (a *CrewAIAdapter) Name() string {
 
 // HandleTask translates and executes a universal task on the CrewAI framework.
 //
-// Summary: Simulates executing a task using the delegated role mechanisms within the CrewAI framework.
+// Intent: Simulates executing a task using the delegated role mechanisms within the CrewAI framework.
 //
 // Parameters:
 //   - ctx (context.Context): The context for execution, used to handle cancellation and timeouts.
@@ -113,7 +113,7 @@ func (a *CrewAIAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult
 
 // SupportsCapability checks if the framework provides a requested capability.
 //
-// Summary: Checks the internal capabilities map to see if the given intent is supported by CrewAI.
+// Intent: Checks the internal capabilities map to see if the given intent is supported by CrewAI.
 //
 // Parameters:
 //   - capability (string): The capability or intent name to check.
@@ -132,7 +132,7 @@ func (a *CrewAIAdapter) SupportsCapability(capability string) bool {
 
 // SyncMemoryShard synchronizes a hardware-attested multimodal memory shard with the CrewAI framework.
 //
-// Summary: Provides a unified way to distribute intent-pinned context to CrewAI's subagents.
+// Intent: Provides a unified way to distribute intent-pinned context to CrewAI's subagents.
 //
 // Parameters:
 //   - ctx (context.Context): The context for controlling cancellation and timeouts.

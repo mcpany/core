@@ -29,6 +29,20 @@ const loginSchema = z.object({
 type LoginValues = z.infer<typeof loginSchema>;
 
 /**
+ * Intent: Document LoginPage
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * LoginPage component.
  * @returns The rendered component.
  */

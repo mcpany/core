@@ -170,6 +170,20 @@ function WaterfallItem({
 
 
 /**
+ * Intent: Document TraceDetail
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * TraceDetail.
  *
  * @param { trace - The { trace.
