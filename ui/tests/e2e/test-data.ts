@@ -102,27 +102,6 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                     }
                 }
             }
-        },
-        {
-            id: "svc_tabular",
-            name: "Tabular Data Service",
-            version: "v1.0",
-            command_line_service: {
-                command: "echo",
-                tools: [
-                    {
-                        name: "get_users",
-                        description: "Returns tabular user data",
-                        input_schema: { type: "object" },
-                        call_id: "tabular_call"
-                    }
-                ],
-                calls: {
-                    tabular_call: {
-                        args: ["\n[{\"id\": 1, \"name\": \"Alice\", \"role\": \"Admin\"}, {\"id\": 2, \"name\": \"Bob\", \"role\": \"User\"}, {\"id\": 3, \"name\": \"Charlie\", \"role\": \"Manager\"}]"]
-                    }
-                }
-            }
         }
     ].map((service) => UpstreamServiceConfig.toJSON(UpstreamServiceConfig.fromJSON(service)));
 

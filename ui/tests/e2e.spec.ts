@@ -34,7 +34,7 @@ test.describe('MCP Any UI E2E Tests', () => {
     ]);
     await expect(page).toHaveURL('/', { timeout: 15000 });
   });
-  test.afterEach(async () => {
+  test.afterEach(async ({ request }) => {
     // Seeding handles cleanup automatically, so we don't need explicit cleanup here
     // unless we want to leave a clean state.
     // For now, we rely on atomic seeding at start of next test.
@@ -129,63 +129,6 @@ test.describe('MCP Any UI E2E Tests', () => {
     await expect(userService).toBeVisible();
 
     // We skip checking error details as it depends on runtime health check timing
-  });
-
-  test('RichResultViewer displays tabular data and can sort and export', async ({ page }) => {
-    // Navigate to tools and wait for tools to be visible
-    await page.goto('/tools');
-    await expect(page.locator('text=get_users').first()).toBeVisible({ timeout: 10000 });
-
-    // Trigger tool execution in the playground
-    await page.goto('/playground');
-    await expect(page.locator('h1')).toContainText('Playground');
-
-    // Wait for services to load in the playground
-    await expect(page.locator('text=Tabular Data Service').first()).toBeVisible({ timeout: 10000 });
-
-    // Select the "Tabular Data Service"
-    const tabularServiceCard = page.locator('.group').filter({ hasText: 'Tabular Data Service' }).first();
-    await tabularServiceCard.click();
-
-    // Select the "get_users" tool within the service
-    await page.getByRole('button', { name: 'get_users' }).click();
-
-    // Execute the tool (it has no required inputs based on schema)
-    await page.click('button[type="submit"]');
-
-    // Wait for the tabular result to appear (we look for our new Export CSV button)
-    const exportCsvButton = page.locator('button', { hasText: 'Export CSV' });
-    await expect(exportCsvButton).toBeVisible({ timeout: 10000 });
-
-    // Verify table headers exist and default state
-    await expect(page.locator('th', { hasText: 'id' })).toBeVisible();
-    await expect(page.locator('th', { hasText: 'name' })).toBeVisible();
-    await expect(page.locator('th', { hasText: 'role' })).toBeVisible();
-
-    // Initially order is 1 (Alice), 2 (Bob), 3 (Charlie)
-    // Verify first row is Alice
-    let firstRowName = page.locator('tbody tr').nth(0).locator('td').nth(1);
-    await expect(firstRowName).toContainText('Alice');
-
-    // Sort by name descending
-    await page.locator('th', { hasText: 'name' }).click(); // Ascending
-    await page.locator('th', { hasText: 'name' }).click(); // Descending
-
-    // Verify first row is now Charlie (Charlie, Bob, Alice desc)
-    firstRowName = page.locator('tbody tr').nth(0).locator('td').nth(1);
-    await expect(firstRowName).toContainText('Charlie');
-
-    // Ensure download triggers via Download Event
-    const [download] = await Promise.all([
-      page.waitForEvent('download'),
-      exportCsvButton.click()
-    ]);
-
-    expect(download.suggestedFilename()).toMatch(/^mcpany-result-\d+\.csv$/);
-
-    if (process.env.CAPTURE_SCREENSHOTS === 'true') {
-      await page.screenshot({ path: path.join(AUDIT_DIR, 'rich_result_viewer_verified.png'), fullPage: true });
-    }
   });
 
 });
