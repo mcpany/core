@@ -68,3 +68,4 @@ repos:
             - "ui/package.json"
             - -s=only
 # test cache miss 4
+test cache miss 6
