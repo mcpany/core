@@ -1546,19 +1546,3 @@
 
 - **Hardware-Attested Attention Locking (HAAL)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Mission-Root Attention Locking**.
 - **Teammate-to-Teammate (T2T) Encryption Bridge**: (Re-affirmed P0) Evolving to act as the primary integration point for the **TIT Broker**.
-
-
-
-## Evolution: [2026-06-18] Updates
-
-### Proposed Additions
-
-- **Attention-Boundary Governance (ABG) Hub**: (P0) Authoritative attention gatekeeper performing real-time structural analysis of the LLM context window to detect Attention-Splicing.
-- **Teammate Integrity Token (TIT) Broker**: (P0) Security service issuing hardware-attested, session-bound integrity tokens for inter-teammate state mutations.
-- **Predictive State Purging (PSP) Adapter**: (P1) Efficiency middleware for the Speculative Branching Guard that prunes shards before they flood the attention window.
-- **Mission-Root Attention Locking**: (P0) Advanced extension for the HAAL provider mandating zero-tier attention locking for primary mission intents.
-
-### Priority Shifts
-
-- **Hardware-Attested Attention Locking (HAAL)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Mission-Root Attention Locking**.
-- **Teammate-to-Teammate (T2T) Encryption Bridge**: (Re-affirmed P0) Evolving to act as the primary integration point for the **TIT Broker**.

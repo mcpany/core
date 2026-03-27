@@ -17,8 +17,8 @@ go_library(
         "//proto/config/v1:config",
         "//server/pkg/tool",
         "//server/pkg/util",
-        "@com_github_modelcontextprotocol_go_sdk//mcp",
-        "@org_uber_go_mock//gomock",
+        "@com_github_modelcontextprotocol_go_sdk//mcp:go_default_library",
+        "@org_uber_go_mock//gomock:go_default_library",
     ],
 )
 
@@ -38,11 +38,11 @@ go_test(
         "//proto/config/v1:config",
         "//proto/mcp_router/v1:mcp_router",
         "//server/pkg/tool",
-        "@com_github_modelcontextprotocol_go_sdk//mcp",
-        "@com_github_stretchr_testify//assert",
-        "@com_github_stretchr_testify//mock",
-        "@com_github_stretchr_testify//require",
+        "@com_github_modelcontextprotocol_go_sdk//mcp:go_default_library",
+        "@com_github_stretchr_testify//assert:go_default_library",
+        "@com_github_stretchr_testify//mock:go_default_library",
+        "@com_github_stretchr_testify//require:go_default_library",
         "@org_golang_google_protobuf//proto",
-        "@org_uber_go_mock//gomock",
+        "@org_uber_go_mock//gomock:go_default_library",
     ],
 )

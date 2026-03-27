@@ -10,7 +10,7 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//server/pkg/logging",
-        "@com_github_samber_lo//:lo",
+        "@com_github_samber_lo//:go_default_library",
     ],
 )
 
@@ -25,7 +25,7 @@ go_test(
     ],
     embed = [":pool"],
     deps = [
-        "@com_github_stretchr_testify//assert",
-        "@com_github_stretchr_testify//require",
+        "@com_github_stretchr_testify//assert:go_default_library",
+        "@com_github_stretchr_testify//require:go_default_library",
     ],
 )

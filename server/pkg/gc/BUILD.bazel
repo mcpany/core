@@ -16,7 +16,7 @@ go_test(
     srcs = ["worker_test.go"],
     embed = [":gc"],
     deps = [
-        "@com_github_stretchr_testify//assert",
-        "@com_github_stretchr_testify//require",
+        "@com_github_stretchr_testify//assert:go_default_library",
+        "@com_github_stretchr_testify//require:go_default_library",
     ],
 )

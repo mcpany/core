@@ -8,7 +8,7 @@ go_library(
     srcs = ["main.go"],
     importpath = "github.com/mcpany/core/server/tests/integration/cmd/mocks/websocket_echo_server",
     visibility = ["//visibility:private"],
-    deps = ["@com_github_gorilla_websocket//:websocket"],
+    deps = ["@com_github_gorilla_websocket//:go_default_library"],
 )
 
 go_binary(

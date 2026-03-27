@@ -20,8 +20,8 @@ go_library(
     deps = [
         "//proto/config/v1:config",
         "//server/pkg/validation",
-        "@com_github_lib_pq//:pq",
-        "@org_modernc_sqlite//:sqlite",
+        "@com_github_lib_pq//:go_default_library",
+        "@org_modernc_sqlite//:go_default_library",
     ],
 )
 
@@ -42,9 +42,9 @@ go_test(
     deps = [
         "//proto/config/v1:config",
         "//server/pkg/validation",
-        "@com_github_data_dog_go_sqlmock//:go-sqlmock",
-        "@com_github_stretchr_testify//assert",
-        "@com_github_stretchr_testify//require",
-        "@org_modernc_sqlite//:sqlite",
+        "@com_github_data_dog_go_sqlmock//:go_default_library",
+        "@com_github_stretchr_testify//assert:go_default_library",
+        "@com_github_stretchr_testify//require:go_default_library",
+        "@org_modernc_sqlite//:go_default_library",
     ],
 )

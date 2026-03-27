@@ -5,7 +5,7 @@ go_library(
     srcs = ["server.go"],
     importpath = "github.com/mcpany/core/server/examples/upstream_service_demo/graphql/server",
     visibility = ["//visibility:private"],
-    deps = ["@com_github_graphql_go_graphql//:graphql"],
+    deps = ["@com_github_graphql_go_graphql//:go_default_library"],
 )
 
 go_binary(

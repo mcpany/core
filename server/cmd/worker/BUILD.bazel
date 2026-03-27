@@ -56,7 +56,7 @@ go_test(
     embed = [":worker_lib"],
     deps = [
         "//proto/bus",
-        "@com_github_stretchr_testify//assert",
-        "@com_github_stretchr_testify//suite",
+        "@com_github_stretchr_testify//assert:go_default_library",
+        "@com_github_stretchr_testify//suite:go_default_library",
     ],
 )

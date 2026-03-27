@@ -17,7 +17,7 @@ go_library(
         "//proto/config/v1:config",
         "//server/pkg/catalog",
         "//server/pkg/config",
-        "@in_gopkg_yaml_v3//:yaml_v3",
+        "@in_gopkg_yaml_v3//:go_default_library",
     ],
 )
 
@@ -38,7 +38,7 @@ go_test(
     deps = [
         "//proto/api/v1:api",
         "//server/pkg/catalog",
-        "@com_github_spf13_afero//:afero",
-        "@com_github_stretchr_testify//assert",
+        "@com_github_spf13_afero//:go_default_library",
+        "@com_github_stretchr_testify//assert:go_default_library",
     ],
 )

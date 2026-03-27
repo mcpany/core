@@ -67,13 +67,19 @@ func validateConfig(t *testing.T, configPath string) {
 
 	// Load services
 	// The second argument "server" matches what the CLI uses for validation context if any
-	_, loadErr := config.LoadServices(context.Background(), store, "server")
+	configs, loadErr := config.LoadServices(context.Background(), store, "server")
 	if loadErr != nil {
 		// Some configs might require env vars which validly fail if missing.
 		// However, LoadServices typically parses the YAML/Proto.
 		// If it fails due to missing env vars that are required for *parsing* (if any), that might be acceptable if we can detect it.
 		// But usually configs placeholders are just strings unless they are used in a way that breaks parsing.
 		t.Errorf("failed to load services from %s: %v", configPath, loadErr)
+		return
+	}
+
+	// Validate services
+	if validateErr := configs.Validate(); validateErr != nil {
+		t.Errorf("validation failed for %s: %v", configPath, validateErr)
 	}
 }
 

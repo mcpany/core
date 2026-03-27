@@ -15,9 +15,9 @@ go_library(
         "//proto/config/v1:config",
         "//server/pkg/util",
         "//server/pkg/validation",
-        "@com_github_go_sql_driver_mysql//:mysql",
-        "@com_github_lib_pq//:pq",
-        "@org_modernc_sqlite//:sqlite",
+        "@com_github_go_sql_driver_mysql//:go_default_library",
+        "@com_github_lib_pq//:go_default_library",
+        "@org_modernc_sqlite//:go_default_library",
     ],
 )
 
@@ -34,8 +34,8 @@ go_test(
     embed = [":doctor"],
     deps = [
         "//proto/config/v1:config",
-        "@com_github_stretchr_testify//assert",
-        "@com_github_stretchr_testify//require",
+        "@com_github_stretchr_testify//assert:go_default_library",
+        "@com_github_stretchr_testify//require:go_default_library",
         "@org_golang_google_protobuf//proto",
     ],
 )

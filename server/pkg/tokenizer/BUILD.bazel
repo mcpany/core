@@ -29,5 +29,5 @@ go_test(
         "tokenizer_types_test.go",
     ],
     embed = [":tokenizer"],
-    deps = ["@com_github_stretchr_testify//assert"],
+    deps = ["@com_github_stretchr_testify//assert:go_default_library"],
 )

@@ -15,5 +15,5 @@ go_test(
     name = "passhash_test",
     srcs = ["hash_test.go"],
     embed = [":passhash"],
-    deps = ["@com_github_stretchr_testify//assert"],
+    deps = ["@com_github_stretchr_testify//assert:go_default_library"],
 )

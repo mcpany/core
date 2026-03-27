@@ -25,6 +25,6 @@ go_test(
         "//server/pkg/prompt",
         "//server/pkg/resource",
         "//server/pkg/tool",
-        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//assert:go_default_library",
     ],
 )

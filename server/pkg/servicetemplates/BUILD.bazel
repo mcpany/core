@@ -11,7 +11,7 @@ go_library(
     deps = [
         "//proto/config/v1:config",
         "//server/pkg/storage",
-        "@in_gopkg_yaml_v3//:yaml_v3",
+        "@in_gopkg_yaml_v3//:go_default_library",
         "@org_golang_google_protobuf//proto",
     ],
 )
@@ -22,7 +22,7 @@ go_test(
     embed = [":servicetemplates"],
     deps = [
         "//server/pkg/storage/memory",
-        "@com_github_stretchr_testify//assert",
-        "@com_github_stretchr_testify//require",
+        "@com_github_stretchr_testify//assert:go_default_library",
+        "@com_github_stretchr_testify//require:go_default_library",
     ],
 )

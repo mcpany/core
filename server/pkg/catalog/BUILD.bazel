@@ -11,7 +11,7 @@ go_library(
     deps = [
         "//proto/config/v1:config",
         "//server/pkg/config",
-        "@com_github_spf13_afero//:afero",
+        "@com_github_spf13_afero//:go_default_library",
         "@org_golang_x_sync//errgroup",
     ],
 )
@@ -21,8 +21,8 @@ go_test(
     srcs = ["manager_test.go"],
     embed = [":catalog"],
     deps = [
-        "@com_github_spf13_afero//:afero",
-        "@com_github_stretchr_testify//assert",
-        "@com_github_stretchr_testify//require",
+        "@com_github_spf13_afero//:go_default_library",
+        "@com_github_stretchr_testify//assert:go_default_library",
+        "@com_github_stretchr_testify//require:go_default_library",
     ],
 )

@@ -20,6 +20,6 @@ go_test(
     embed = [":memory"],
     deps = [
         "//server/pkg/logging",
-        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//assert:go_default_library",
     ],
 )

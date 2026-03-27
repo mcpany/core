@@ -18,7 +18,7 @@ go_library(
         "//server/pkg/logging",
         "//server/pkg/serviceregistry",
         "//server/pkg/tool",
-        "@com_github_modelcontextprotocol_go_sdk//mcp",
+        "@com_github_modelcontextprotocol_go_sdk//mcp:go_default_library",
     ],
 )
 
@@ -38,10 +38,10 @@ go_test(
         "//server/pkg/auth",
         "//server/pkg/consts",
         "//server/pkg/tool",
-        "@com_github_modelcontextprotocol_go_sdk//mcp",
-        "@com_github_stretchr_testify//assert",
-        "@com_github_stretchr_testify//mock",
-        "@com_github_stretchr_testify//require",
+        "@com_github_modelcontextprotocol_go_sdk//mcp:go_default_library",
+        "@com_github_stretchr_testify//assert:go_default_library",
+        "@com_github_stretchr_testify//mock:go_default_library",
+        "@com_github_stretchr_testify//require:go_default_library",
         "@org_golang_google_protobuf//proto",
     ],
 )

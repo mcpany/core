@@ -17,5 +17,5 @@ go_test(
     name = "appconsts_test",
     srcs = ["appconsts_test.go"],
     embed = [":appconsts"],
-    deps = ["@com_github_stretchr_testify//assert"],
+    deps = ["@com_github_stretchr_testify//assert:go_default_library"],
 )
