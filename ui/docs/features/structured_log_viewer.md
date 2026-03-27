@@ -17,4 +17,4 @@ The **Structured Log Viewer** enhances the logging experience in MCP Any by auto
 
 ## Screenshot
 
-![Structured Log Viewer](../screenshots/structured_log_viewer.png)
+![Structured Log Viewer](../screenshots/logs.png)

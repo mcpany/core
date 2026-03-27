@@ -9,7 +9,7 @@
  */
 
 import { GrpcWebImpl, RegistrationServiceClientImpl } from '@proto/api/v1/registration';
-import { UpstreamServiceConfig as BaseUpstreamServiceConfig, HttpUpstreamService, ServiceProvenance } from '@proto/config/v1/upstream_service';
+import { UpstreamServiceConfig as BaseUpstreamServiceConfig, HttpUpstreamService, CommandLineUpstreamService, ServiceProvenance } from '@proto/config/v1/upstream_service';
 import { ProfileDefinition } from '@proto/config/v1/config';
 import { ToolDefinition } from '@proto/config/v1/tool';
 import { ResourceDefinition } from '@proto/config/v1/resource';
@@ -21,7 +21,7 @@ import { BrowserHeaders } from 'browser-headers';
 /**
  * Extended UpstreamServiceConfig to include runtime error information.
  */
-export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, 'lastError' | 'toolCount'> {
+export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, 'lastError' | 'toolCount' | 'commandLineService'> {
     /**
      * The last error message encountered by the service, if any.
      */
@@ -38,11 +38,16 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
      * Optional template ID if this config was loaded from a template.
      */
     templateId?: string;
+
+    /**
+     * Overridden to properly support the latest CommandLineUpstreamService structure with args array
+     */
+    commandLineService?: CommandLineUpstreamService | any | undefined;
 }
 
 // Re-export generated types
-export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition, ServiceProvenance };
-export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '../../../proto/api/v1/registration';
+export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition, ServiceProvenance, CommandLineUpstreamService };
+export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '@proto/api/v1/registration';
 
 /**
  * ServiceTemplate defines a template for an upstream service.
@@ -126,7 +131,14 @@ const rpc = new GrpcWebImpl(getBaseUrl(), {
 });
 const registrationClient = new RegistrationServiceClientImpl(rpc);
 
-const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
+/**
+ * Fetches data with authentication headers attached.
+ *
+ * @param input The request info or URL.
+ * @param init The request initialization options.
+ * @returns The response from the fetch request.
+ */
+export const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
     const headers = new Headers(init?.headers);
     // Inject Authorization header from localStorage if available
     if (typeof window !== 'undefined') {
@@ -349,6 +361,15 @@ const getMetadata = () => {
  * API Client for interacting with the MCP Any server.
  */
 export const apiClient = {
+    /**
+     * Retrieves the current active intent alignment status.
+     * @returns A promise that resolves to an array of SubagentStatus.
+     */
+    getActiveIntentAlignment: async () => {
+        const res = await fetchWithAuth('/api/v1/alignment/status');
+        if (!res.ok) throw new Error('Failed to fetch intent alignment status');
+        return res.json();
+    },
     // Services (Migrated to gRPC)
 
     /**
@@ -554,6 +575,7 @@ export const apiClient = {
         if (config.commandLineService) {
             payload.command_line_service = {
                 command: config.commandLineService.command,
+                args: config.commandLineService.args || [],
                 working_directory: config.commandLineService.workingDirectory,
                 environment: config.commandLineService.env,
                 env: config.commandLineService.env
@@ -665,6 +687,7 @@ export const apiClient = {
         if (config.commandLineService) {
             payload.command_line_service = {
                 command: config.commandLineService.command,
+                args: config.commandLineService.args || [],
                 working_directory: config.commandLineService.workingDirectory,
             };
         }
@@ -793,6 +816,7 @@ export const apiClient = {
         if (config.commandLineService) {
             payload.command_line_service = {
                 command: config.commandLineService.command,
+                args: config.commandLineService.args || [],
                 working_directory: config.commandLineService.workingDirectory,
                 env: config.commandLineService.env,
                 container_environment: config.commandLineService.containerEnvironment, // Include this if needed
@@ -1815,10 +1839,29 @@ export const apiClient = {
      *
      * Side Effects: Makes a GET request to /api/v1/alerts/stats.
      */
-    getAlertStats: async (): Promise<{ activeCritical: number, activeWarning: number, mttr: string, totalToday: number }> => {
+    getAlertStats: async (): Promise<{ activeCritical: number, activeWarning: number, mttr: string, totalToday: number, activeCriticalTrend?: string, activeWarningTrend?: string, mttrTrend?: string, totalTodayTrend?: string }> => {
         const res = await fetchWithAuth('/api/v1/alerts/stats');
         if (!res.ok) throw new Error('Failed to fetch alert stats');
         return res.json();
+    },
+
+    /**
+     * Deletes an alert.
+     *
+     * Summary: Deletes an alert.
+     *
+     * @param id - The ID of the alert to delete.
+     * @returns A promise that resolves when the alert is deleted.
+     * @throws {Error} If deletion fails.
+     *
+     * Side Effects: Makes a DELETE request to /api/v1/alerts/:id.
+     */
+    deleteAlert: async (id: string) => {
+        const res = await fetchWithAuth(`/api/v1/alerts/${id}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete alert');
+        return {};
     },
 
     /**
