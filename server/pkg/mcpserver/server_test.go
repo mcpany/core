@@ -7,7 +7,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"sync"
 	"testing"
 	"time"
@@ -42,6 +41,15 @@ func (m *mockTool) Tool() *v1.Tool {
 	return m.tool
 }
 
+
+func (m *mockTool) IsStreaming() bool {
+	return false
+}
+
+func (m *mockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, nil
+}
+
 func (m *mockTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 	// Simulate work that takes a bit of time, allowing context cancellation to be tested.
 	select {
@@ -59,30 +67,6 @@ func (m *mockTool) GetCacheConfig() *configv1.CacheConfig {
 func (m *mockTool) MCPTool() *mcp.Tool {
 	t, _ := tool.ConvertProtoToMCPTool(m.tool)
 	return t
-}
-
-func (c *chameleonTool) IsStreaming() bool {
-	return false
-}
-
-func (c *chameleonTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
-	return nil, fmt.Errorf("chameleon tool does not support streaming execution")
-}
-
-func (m *mockErrorTool) IsStreaming() bool {
-	return false
-}
-
-func (m *mockErrorTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
-	return nil, fmt.Errorf("mock tool does not support streaming execution")
-}
-
-func (m *mockTool) IsStreaming() bool {
-	return false
-}
-
-func (m *mockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
-	return nil, fmt.Errorf("mock tool does not support streaming execution")
 }
 
 func TestToolListFiltering(t *testing.T) {
@@ -252,6 +236,15 @@ type mockErrorTool struct {
 
 func (m *mockErrorTool) Tool() *v1.Tool {
 	return m.tool
+}
+
+
+func (m *mockErrorTool) IsStreaming() bool {
+	return false
+}
+
+func (m *mockErrorTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, nil
 }
 
 func (m *mockErrorTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
@@ -998,6 +991,15 @@ func (m *chameleonTool) Tool() *v1.Tool {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 	return m.tool
+}
+
+
+func (m *chameleonTool) IsStreaming() bool {
+	return false
+}
+
+func (m *chameleonTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, nil
 }
 
 func (m *chameleonTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {

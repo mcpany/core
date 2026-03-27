@@ -5,7 +5,6 @@ package topology
 
 import (
 	"context"
-	"fmt"
 	"testing"
 	"time"
 
@@ -106,6 +105,15 @@ func (m *MockToolManager) GetToolCountForService(serviceID string) int {
 }
 
 // MockTool is a mock implementation of tool.Tool
+
+func (m *MockTool) IsStreaming() bool {
+	return false
+}
+
+func (m *MockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, nil
+}
+
 type MockTool struct {
 	mock.Mock
 }
@@ -116,14 +124,6 @@ func (m *MockTool) Tool() *mcp_router_v1.Tool {
 		return t
 	}
 	return nil
-}
-
-func (m *MockTool) IsStreaming() bool {
-	return false
-}
-
-func (m *MockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
-	return nil, fmt.Errorf("mock tool does not support streaming execution")
 }
 
 func (m *MockTool) MCPTool() *mcp_sdk.Tool {

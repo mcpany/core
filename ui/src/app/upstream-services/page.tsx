@@ -25,6 +25,7 @@ import { ServiceEditor } from "@/components/services/editor/service-editor";
 import { ServiceTemplateSelector } from "@/components/services/service-template-selector";
 import { ServiceTemplate } from "@/lib/templates";
 import { BulkServiceImport } from "@/components/services/bulk-service-import";
+import { RegisterServiceDialog } from "@/components/register-service-dialog";
 import {
     Dialog,
     DialogContent,
@@ -39,6 +40,20 @@ import { applyTemplateFields } from "@/lib/template-utils";
 
 
 /**
+ * Intent: Document ServicesPage
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * ServicesPage component.
  * @returns The rendered component.
  */
@@ -195,12 +210,6 @@ export default function ServicesPage() {
       setSelectedService(service);
       setIsSheetOpen(true);
   }, []);
-
-  const openNew = () => {
-      setSelectedService(null);
-      setConfiguringTemplate(null);
-      setIsSheetOpen(true);
-  };
 
   const initServiceFromConfig = (config: Partial<UpstreamServiceConfig>) => {
       // Deep copy config to avoid mutating template
@@ -435,9 +444,10 @@ export default function ServicesPage() {
                     />
                 </DialogContent>
             </Dialog>
-            <Button onClick={openNew}>
-                <Plus className="mr-2 h-4 w-4" /> Add Service
-            </Button>
+            <RegisterServiceDialog
+                onSuccess={fetchServices}
+                trigger={<Button><Plus className="mr-2 h-4 w-4" /> Add Service</Button>}
+            />
         </div>
       </div>
 

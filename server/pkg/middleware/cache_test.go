@@ -5,7 +5,6 @@ package middleware_test
 
 import (
 	"context"
-	"fmt"
 	"testing"
 	"time"
 
@@ -28,6 +27,15 @@ const (
 )
 
 // mockTool is a mock implementation of the tool.Tool interface for testing.
+
+func (m *mockTool) IsStreaming() bool {
+	return false
+}
+
+func (m *mockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, nil
+}
+
 type mockTool struct {
 	tool         *v1.Tool
 	executeCount int
@@ -50,14 +58,6 @@ func (m *mockTool) GetCacheConfig() *configv1.CacheConfig {
 func (m *mockTool) MCPTool() *mcp.Tool {
 	t, _ := tool.ConvertProtoToMCPTool(m.tool)
 	return t
-}
-
-func (m *mockTool) IsStreaming() bool {
-	return false
-}
-
-func (m *mockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
-	return nil, fmt.Errorf("mock tool does not support streaming execution")
 }
 
 // mockToolManager is a mock implementation of the tool.ManagerInterface.

@@ -717,6 +717,7 @@ func (a *Application) Run(opts RunOptions) error {
 		cfg.GetGlobalSettings().GetContextOptimizer(),
 		cfg.GetGlobalSettings().GetDebugger(),
 		cfg.GetGlobalSettings().GetSmartRecovery(),
+		nil,
 	)
 	if err != nil {
 		workerCancel()
@@ -1986,6 +1987,7 @@ func (a *Application) runServerMode(
 	mux.Handle("/healthz", healthHandler)
 	mux.Handle("/health", healthHandler)
 	mux.Handle("/metrics", authMiddleware(metrics.Handler()))
+	mux.Handle("/api/v1/alignment/status", authMiddleware(a.handleActiveIntentAlignment()))
 	mux.Handle("/upload", authMiddleware(http.HandlerFunc(a.uploadFile)))
 
 	// OIDC Routes
@@ -2238,11 +2240,7 @@ func (a *Application) runServerMode(
 	}
 	v1.RegisterRegistrationServiceServer(grpcServer, registrationServer)
 
-	var auditMiddleware *middleware.AuditMiddleware
-	if standardMiddlewares != nil {
-		auditMiddleware = standardMiddlewares.Audit
-	}
-	adminServer := admin.NewServer(cachingMiddleware, a.ToolManager, serviceRegistry, store, a.DiscoveryManager, auditMiddleware)
+	adminServer := admin.NewServer(cachingMiddleware, a.ToolManager, serviceRegistry, store, a.DiscoveryManager, a.GetAuditMiddleware)
 	pb_admin.RegisterAdminServiceServer(grpcServer, adminServer)
 
 	// Register Skill Service
@@ -2627,6 +2625,17 @@ func startGrpcServer(
 		<-shutdownComplete
 		serverLog.Info("Server shut down.")
 	}()
+}
+
+
+// GetAuditMiddleware returns the current audit middleware
+func (a *Application) GetAuditMiddleware() *middleware.AuditMiddleware {
+	a.configMu.Lock()
+	defer a.configMu.Unlock()
+	if a.standardMiddlewares != nil {
+		return a.standardMiddlewares.Audit
+	}
+	return nil
 }
 
 // wrapBindError checks if the error is a port conflict and returns a user-friendly error message.

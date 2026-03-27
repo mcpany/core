@@ -18,6 +18,20 @@ const formatUptime = (seconds: number) => {
 }
 
 /**
+ * Intent: Document SystemHealthCard
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * SystemHealthCard component.
  * @returns The rendered component.
  */

@@ -1387,18 +1387,19 @@ type TestMockTool struct {
 
 func (m *TestMockTool) Tool() *mcp_router_v1.Tool { return m.toolDef }
 func (m *TestMockTool) MCPTool() *mcp.Tool        { return nil }
-func (m *TestMockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-	return nil, nil
-}
-func (m *TestMockTool) GetCacheConfig() *configv1.CacheConfig { return nil }
 
 func (m *TestMockTool) IsStreaming() bool {
 	return false
 }
 
 func (m *TestMockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
-	return nil, fmt.Errorf("mock tool does not support streaming execution")
+	return nil, nil
 }
+
+func (m *TestMockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+	return nil, nil
+}
+func (m *TestMockTool) GetCacheConfig() *configv1.CacheConfig { return nil }
 
 type MockServiceStore struct {
 	services []*configv1.UpstreamServiceConfig

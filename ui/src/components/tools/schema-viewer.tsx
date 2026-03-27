@@ -12,6 +12,20 @@ import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 /**
+ * Intent: Document Schema
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Schema represents a JSON Schema object used for defining tool input parameters.
  */
 export interface Schema {
@@ -71,6 +85,20 @@ const TypeBadge = ({ type, format }: { type?: string | string[], format?: string
 };
 
 /**
+ * Intent: Document SchemaViewer
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * SchemaViewer component.
  * @param props - The component props.
  * @param props.schema - The schema definition.

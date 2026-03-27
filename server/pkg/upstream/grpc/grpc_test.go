@@ -6,7 +6,6 @@ package grpc
 import (
 	"context"
 	"errors"
-	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -1079,6 +1078,15 @@ func TestGRPCUpstream_Register_DisabledTool_Reflection(t *testing.T) {
 	assert.NotContains(t, toolNames, "GetWeather")
 }
 
+
+func (m *simpleMockTool) IsStreaming() bool {
+	return false
+}
+
+func (m *simpleMockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, nil
+}
+
 type simpleMockTool struct {
 	t *routerv1.Tool
 }
@@ -1098,14 +1106,6 @@ func (s *simpleMockTool) GetCacheConfig() *configv1.CacheConfig {
 func (s *simpleMockTool) MCPTool() *mcp.Tool {
 	t, _ := tool.ConvertProtoToMCPTool(s.t)
 	return t
-}
-
-func (s *simpleMockTool) IsStreaming() bool {
-	return false
-}
-
-func (s *simpleMockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
-	return nil, fmt.Errorf("mock tool does not support streaming execution")
 }
 
 type MockPromptManager struct {

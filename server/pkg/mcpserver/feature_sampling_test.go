@@ -6,7 +6,6 @@ package mcpserver_test
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"testing"
 
 	"github.com/mcpany/core/server/pkg/auth"
@@ -36,6 +35,15 @@ type featureSamplingTool struct {
 
 func (m *featureSamplingTool) Tool() *v1.Tool {
 	return m.tool
+}
+
+
+func (m *featureSamplingTool) IsStreaming() bool {
+	return false
+}
+
+func (m *featureSamplingTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, nil
 }
 
 func (m *featureSamplingTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
@@ -75,14 +83,6 @@ func (m *featureSamplingTool) GetCacheConfig() *configv1.CacheConfig {
 func (m *featureSamplingTool) MCPTool() *mcp.Tool {
 	t, _ := tool.ConvertProtoToMCPTool(m.tool)
 	return t
-}
-
-func (m *featureSamplingTool) IsStreaming() bool {
-	return false
-}
-
-func (m *featureSamplingTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
-	return nil, fmt.Errorf("mock tool does not support streaming execution")
 }
 
 func TestFeatureSamplingSupport(t *testing.T) {

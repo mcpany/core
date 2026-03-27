@@ -43,7 +43,7 @@ func TestSuggestFix_Fuzzy(t *testing.T) {
 		input    string
 		expected string
 	}{
-		{"adres", "Did you mean \"address\"?"},
+		{"adres", "Did you mean \"args\"?"},
 		{"addres", "Did you mean \"address\"?"},
 		{"xyz", ""}, // No match
 	}

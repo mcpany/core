@@ -15,6 +15,20 @@ import { Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 /**
+ * Intent: Document UsersPage
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * UsersPage component.
  * @returns The rendered component.
  */

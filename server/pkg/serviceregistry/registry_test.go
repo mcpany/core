@@ -7,7 +7,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"sync"
 	"testing"
 
@@ -394,6 +393,15 @@ func TestServiceRegistry_ServiceInfo(t *testing.T) {
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+
+func (m *mockTool) IsStreaming() bool {
+	return false
+}
+
+func (m *mockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, nil
+}
+
 type mockTool struct {
 	tool *mcp_routerv1.Tool
 }
@@ -413,14 +421,6 @@ func (m *mockTool) GetCacheConfig() *configv1.CacheConfig {
 func (m *mockTool) MCPTool() *mcp.Tool {
 	t, _ := tool.ConvertProtoToMCPTool(m.tool)
 	return t
-}
-
-func (m *mockTool) IsStreaming() bool {
-	return false
-}
-
-func (m *mockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
-	return nil, fmt.Errorf("mock tool does not support streaming execution")
 }
 
 type threadSafeToolManager struct {

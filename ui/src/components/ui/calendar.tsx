@@ -10,6 +10,20 @@ import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 
 /**
+ * Intent: Document CalendarProps
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * CalendarProps type definition.
  */
 export type CalendarProps = React.ComponentProps<typeof DayPicker>

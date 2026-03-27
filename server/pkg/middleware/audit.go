@@ -94,6 +94,13 @@ func (m *AuditMiddleware) initializeStore(config *configv1.AuditConfig) error {
 			return fmt.Errorf("failed to initialize audit store: %w", err)
 		}
 		m.store = store
+	} else {
+		// Log that config was nil or disabled
+		if config == nil {
+			logging.GetLogger().Info("AuditMiddleware.initializeStore: config is nil")
+		} else {
+			logging.GetLogger().Info("AuditMiddleware.initializeStore: config.Enabled is false")
+		}
 	}
 	return nil
 }
@@ -312,10 +319,25 @@ func (m *AuditMiddleware) ClearHistory() {
 	}
 }
 
+// Broadcast manually broadcasts an audit entry, used primarily for test seeding.
+//
+// Summary: Broadcasts an audit entry.
+//
+// Parameters:
+//   - entry (audit.Entry): The audit entry to broadcast.
+func (m *AuditMiddleware) Broadcast(entry audit.Entry) {
+	if m.broadcaster != nil {
+		m.broadcaster.Broadcast(entry)
+	}
+}
+
 // SubscribeWithHistory returns a channel that will receive broadcast messages,
 // and the current history of messages.
 //
 // Summary: Subscribes to audit events with history.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
 //   - chan any: A channel receiving new audit entries.

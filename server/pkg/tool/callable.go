@@ -5,7 +5,6 @@ package tool
 
 import (
 	"context"
-	"errors"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -66,10 +65,42 @@ func (t *CallableTool) Callable() Callable {
 	return t.callable
 }
 
+// IsStreaming returns true if the underlying callable supports streaming.
+//
+// Summary: Checks if the tool supports streaming execution.
+//
+// Returns:
+//   - bool: True if streaming is supported.
 func (t *CallableTool) IsStreaming() bool {
-	return false
+	_, ok := t.callable.(StreamingCallable)
+	return ok
 }
 
+// StreamExecute handles the streaming execution of the tool.
+//
+// Summary: Executes the underlying callable in streaming mode.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - req: *ExecutionRequest. The request object containing parameters.
+//
+// Returns:
+//   - <-chan any: A channel that emits streaming results.
+//   - error: An error if the operation fails or streaming is not supported.
 func (t *CallableTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
-	return nil, errors.New("callable tool does not support streaming execution")
+	if sc, ok := t.callable.(StreamingCallable); ok {
+		return sc.StreamCall(ctx, req)
+	}
+	// Fallback to non-streaming execution and push to a single-item channel
+	ch := make(chan any, 1)
+	go func() {
+		defer close(ch)
+		res, err := t.Execute(ctx, req)
+		if err != nil {
+			ch <- err
+		} else {
+			ch <- res
+		}
+	}()
+	return ch, nil
 }

@@ -6,7 +6,6 @@ package middleware_test
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -21,6 +20,15 @@ import (
 
 // Helper to handle builders or direct structs
 // Since we had issues with builders, we use direct structs.
+
+
+func (m *callPolicyMockTool) IsStreaming() bool {
+	return false
+}
+
+func (m *callPolicyMockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	return nil, nil
+}
 
 type callPolicyMockTool struct {
 	toolProto *v1.Tool
@@ -43,14 +51,6 @@ func (m *callPolicyMockTool) GetCacheConfig() *configv1.CacheConfig {
 func (m *callPolicyMockTool) MCPTool() *mcp.Tool {
 	t, _ := tool.ConvertProtoToMCPTool(m.toolProto)
 	return t
-}
-
-func (m *callPolicyMockTool) IsStreaming() bool {
-	return false
-}
-
-func (m *callPolicyMockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
-	return nil, fmt.Errorf("mock tool does not support streaming execution")
 }
 
 type callPolicyMockToolManager struct {
