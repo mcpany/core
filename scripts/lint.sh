@@ -129,8 +129,8 @@ fi
 # is a Bazel-native project. If the binary is not in runfiles, skip gracefully.
 
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
-    cd server && GOVERSION=1.26 GOTOOLCHAIN=go1.26.1 GOMEMLIMIT=2048MiB "$GOLANGCI_LINT_BIN" run --timeout 20m --fix \
-        ./cmd/... ./pkg/... ./tests/... ./examples/...
+    GOWORK=off GOVERSION=1.24 GOMEMLIMIT=2048MiB "$GOLANGCI_LINT_BIN" run --go 1.24 --timeout 20m --fix \
+        ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
     echo "    golangci-lint OK."
 else
     echo "    Warning: golangci-lint not found (skipping Go linting)."
