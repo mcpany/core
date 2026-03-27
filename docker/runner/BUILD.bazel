@@ -1,8 +1,5 @@
-# Copyright 2026 Author(s) of MCP Any
-# SPDX-License-Identifier: Apache-2.0
-
-load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
 load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
 
 pkg_tar(
     name = "bazelisk_tar",
@@ -10,8 +7,8 @@ pkg_tar(
         "@rules_go//go/platform:linux_amd64": ["@bazelisk_linux_amd64//file:bazelisk"],
         "@rules_go//go/platform:linux_arm64": ["@bazelisk_linux_arm64//file:bazelisk"],
     }),
-    mode = "0755",
     package_dir = "/usr/local/bin",
+    mode = "0755",
 )
 
 oci_image(

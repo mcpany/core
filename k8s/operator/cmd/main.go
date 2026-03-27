@@ -18,8 +18,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	mcpv1alpha1 "github.com/mcpany/core/k8s/operator/api/v1alpha1"
-	"github.com/mcpany/core/k8s/operator/controllers"
+	mcpv1alpha1 "github.com/mcpany/core/operator/api/v1alpha1"
+	"github.com/mcpany/core/operator/controllers"
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	//+kubebuilder:scaffold:imports
 )

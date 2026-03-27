@@ -11,7 +11,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	mcpanyv1alpha1 "github.com/mcpany/core/k8s/operator/api/v1alpha1"
+	mcpanyv1alpha1 "github.com/mcpany/core/operator/api/v1alpha1"
 )
 
 // ToolReconciler reconciles a Tool object.
@@ -45,7 +45,7 @@ type ToolReconciler struct {
 func (r *ToolReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
 
-	// Logic for tool reconciliation goes here.
+	// TODO(user): your logic here
 
 	return ctrl.Result{}, nil
 }
