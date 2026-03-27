@@ -150,8 +150,12 @@ func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 //   - http.HandlerFunc: The HTTP handler function.
 func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id := strings.TrimPrefix(r.URL.Path, "/users/")
-		if id == "" {
+		// Securely extract the ID from the URL path
+		// Remove trailing slash if present to avoid empty ID
+		path := strings.TrimSuffix(r.URL.Path, "/")
+		parts := strings.Split(path, "/")
+		id := parts[len(parts)-1]
+		if id == "" || id == "users" {
 			http.Error(w, "id required", http.StatusBadRequest)
 			return
 		}
