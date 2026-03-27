@@ -313,11 +313,6 @@ func (m *AuditMiddleware) ClearHistory() {
 }
 
 // Broadcast manually broadcasts an audit entry, used primarily for test seeding.
-//
-// Summary: Broadcasts an audit entry.
-//
-// Parameters:
-//   - entry (audit.Entry): The audit entry to broadcast.
 func (m *AuditMiddleware) Broadcast(entry audit.Entry) {
 	if m.broadcaster != nil {
 		m.broadcaster.Broadcast(entry)

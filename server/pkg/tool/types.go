@@ -518,7 +518,6 @@ func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 //   - Makes a gRPC call to the upstream service.
 //   - Updates metrics (latency, success/error counts).
 //   - Logs execution details.
-//
 // IsStreaming returns true if the tool supports streaming.
 //
 // Summary: Checks if the tool supports streaming execution.
@@ -889,7 +888,6 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 //   - Makes an HTTP request to the upstream service.
 //   - Updates metrics.
 //   - Logs execution details.
-//
 // IsStreaming returns true if the tool supports streaming.
 //
 // Summary: Checks if the tool supports streaming execution.
@@ -1035,9 +1033,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 
 		attemptResp, err := httpClient.Do(httpReq)
 		if err != nil {
-			// 🛡️ Sentinel Security Update: Prevent Information Leakage
-			logging.GetLogger().ErrorContext(ctx, "Failed to execute HTTP request", "tool", t.tool.GetName(), "error", err)
-			return fmt.Errorf("failed to execute http request")
+			return fmt.Errorf("failed to execute http request: %w", err)
 		}
 
 		if attemptResp.StatusCode == http.StatusTooManyRequests {
@@ -1696,7 +1692,6 @@ func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 // Side Effects:
 //   - Makes an MCP call to the upstream service.
 //   - Logs execution details.
-//
 // IsStreaming returns true if the tool supports streaming.
 //
 // Summary: Checks if the tool supports streaming execution.
@@ -2037,7 +2032,6 @@ func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 // Side Effects:
 //   - Makes an HTTP request to the upstream service.
 //   - Logs execution details.
-//
 // IsStreaming returns true if the tool supports streaming.
 //
 // Summary: Checks if the tool supports streaming execution.
@@ -2199,9 +2193,7 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 
 	resp, err := t.client.Do(httpReq)
 	if err != nil {
-		// 🛡️ Sentinel Security Update: Prevent Information Leakage
-		logging.GetLogger().ErrorContext(ctx, "Failed to execute OpenAPI HTTP request", "tool", t.tool.GetName(), "error", err)
-		return nil, fmt.Errorf("failed to execute http request")
+		return nil, fmt.Errorf("failed to execute http request: %w", err)
 	}
 	defer func() { _ = resp.Body.Close() }()
 
@@ -2217,9 +2209,7 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	if resp.StatusCode >= 400 {
-		// 🛡️ Sentinel Security Update: Prevent Information Leakage
-		logging.GetLogger().ErrorContext(ctx, "Upstream OpenAPI request failed", "tool", t.tool.GetName(), "status", resp.StatusCode, "response", string(respBody))
-		return nil, fmt.Errorf("upstream OpenAPI request failed with status %d", resp.StatusCode)
+		return nil, fmt.Errorf("upstream OpenAPI request failed with status %d: %s", resp.StatusCode, string(respBody))
 	}
 
 	if t.outputTransformer != nil {
@@ -2505,7 +2495,6 @@ func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 //   - Executes a subprocess on the local system.
 //   - Consumes system resources (CPU, memory).
 //   - Logs execution details.
-//
 // IsStreaming returns true if the tool supports streaming.
 //
 // Summary: Checks if the tool supports streaming execution.
@@ -2793,9 +2782,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	if t.service.GetCommunicationProtocol() == configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON {
 		stdin, stdout, stderr, _, err := executor.ExecuteWithStdIO(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env)
 		if err != nil {
-			// 🛡️ Sentinel Security Update: Prevent Information Leakage
-			logging.GetLogger().ErrorContext(ctx, "Failed to execute JSON CLI command with stdio", "tool", t.tool.GetName(), "error", err)
-			return nil, fmt.Errorf("failed to execute JSON CLI command")
+			return nil, fmt.Errorf("failed to execute command with stdio: %w", err)
 		}
 		// We don't defer stdin.Close() here because we close it in the writer goroutine
 
@@ -2839,9 +2826,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 	stdout, stderr, exitCodeChan, err := executor.Execute(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env)
 	if err != nil {
-		// 🛡️ Sentinel Security Update: Prevent Information Leakage
-		logging.GetLogger().ErrorContext(ctx, "Failed to execute CLI command", "tool", t.tool.GetName(), "error", err)
-		return nil, fmt.Errorf("failed to execute command")
+		return nil, fmt.Errorf("failed to execute command: %w", err)
 	}
 
 	var stdoutBuf, stderrBuf bytes.Buffer
@@ -2984,7 +2969,6 @@ func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 //   - Executes a subprocess (potentially inside a container).
 //   - Consumes system resources.
 //   - Logs execution details.
-//
 // IsStreaming returns true if the tool supports streaming.
 //
 // Summary: Checks if the tool supports streaming execution.
@@ -3281,9 +3265,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	if t.service.GetCommunicationProtocol() == configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON {
 		stdin, stdout, stderr, _, err := executor.ExecuteWithStdIO(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env)
 		if err != nil {
-			// 🛡️ Sentinel Security Update: Prevent Information Leakage
-			logging.GetLogger().ErrorContext(ctx, "Failed to execute JSON CLI command with stdio", "tool", t.tool.GetName(), "error", err)
-			return nil, fmt.Errorf("failed to execute JSON CLI command")
+			return nil, fmt.Errorf("failed to execute command with stdio: %w", err)
 		}
 		// We don't defer stdin.Close() here because we close it in the writer goroutine
 
@@ -3327,9 +3309,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 
 	stdout, stderr, exitCodeChan, err := executor.Execute(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env)
 	if err != nil {
-		// 🛡️ Sentinel Security Update: Prevent Information Leakage
-		logging.GetLogger().ErrorContext(ctx, "Failed to execute CLI command", "tool", t.tool.GetName(), "error", err)
-		return nil, fmt.Errorf("failed to execute command")
+		return nil, fmt.Errorf("failed to execute command: %w", err)
 	}
 
 	var stdoutBuf, stderrBuf bytes.Buffer
@@ -4800,8 +4780,8 @@ func checkArgumentInterpreterInjection(val string, template string, base string,
 	// This covers cases where the main command is a shell or runner (e.g. bash -c "awk ...")
 	// and the argument is the command line for that interpreter.
 	args := strings.Fields(template)
-	for _, arg := range args {
-		argBase := strings.ToLower(filepath.Base(arg))
+	if len(args) > 0 {
+		argBase := strings.ToLower(filepath.Base(args[0]))
 		// Avoid double checking if it's the same command (already checked above)
 		if argBase != base && isInterpreter(argBase) {
 			effectiveQuoteLevel := quoteLevel

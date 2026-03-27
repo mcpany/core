@@ -73,6 +73,47 @@ type AgentFramework interface {
 	// Side Effects:
 	//   - None.
 	SupportsCapability(capability string) bool
+
+	// SyncMemoryShard synchronizes a hardware-attested multimodal memory shard with the agent framework.
+	//
+	// Summary: Syncs a state shard with the framework, ensuring multimodal trace integrity.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for controlling cancellation and timeouts.
+	//   - shard (*MemoryShard): The multimodal memory shard to synchronize.
+	//
+	// Returns:
+	//   - error: An error if the shard synchronization fails or signature is invalid.
+	//
+	// Errors:
+	//   - Returns an error if the synchronization process fails.
+	//
+	// Side Effects:
+	//   - Modifies internal framework state by updating the contextual memory.
+	SyncMemoryShard(ctx context.Context, shard *MemoryShard) error
+}
+
+// MemoryShard represents a hardware-attested, intent-pinned memory fragment.
+//
+// Summary: A data structure that holds text context and an optional multimodal payload, with cryptographic lineage.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+type MemoryShard struct {
+	ShardID           string `json:"shard_id"`
+	Intent            string `json:"intent"`
+	TextContent       string `json:"text_content"`
+	MultimodalPayload []byte `json:"multimodal_payload,omitempty"`
+	Signature         string `json:"signature"`
 }
 
 // Task represents a universal task definition for the Agent Bus.

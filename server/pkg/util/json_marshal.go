@@ -64,5 +64,23 @@ func FastMarshalToString(v interface{}) (string, error) {
 //   - []byte: The marshaled byte slice.
 //   - error: An error if marshaling fails.
 func FastMarshal(v interface{}) ([]byte, error) {
-	return FastJSON.Marshal(v)
+
+	buf := bufferPool.Get().(*bytes.Buffer)
+	buf.Reset()
+	defer bufferPool.Put(buf)
+
+	stream := FastJSON.BorrowStream(buf)
+	defer FastJSON.ReturnStream(stream)
+
+	stream.WriteVal(v)
+	if stream.Error != nil {
+		return nil, stream.Error
+	}
+
+	stream.Flush()
+
+	// Create a copy of the bytes because the buffer will be reused
+	res := make([]byte, buf.Len())
+	copy(res, buf.Bytes())
+	return res, nil
 }
