@@ -123,7 +123,7 @@ fi
 # ---------------------------------------------------------------------------
 echo "==> Running golangci-lint..."
 if [[ -z "${GOLANGCI_LINT_BIN:-}" ]]; then
-    GOLANGCI_LINT_BIN="$(find_tool golangci-lint)"
+    GOLANGCI_LINT_BIN="${GOLANGCI_LINT_BIN:-$(find_tool golangci-lint)}"
 fi
 # No longer fall back to build/env/bin/ (local make-managed path) since this
 # is a Bazel-native project. If the binary is not in runfiles, skip gracefully.
