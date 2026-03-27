@@ -36,7 +36,7 @@ require (
 	github.com/go-jose/go-jose/v4 v4.1.3
 	github.com/go-redis/redismock/v9 v9.2.0
 	github.com/go-sql-driver/mysql v1.9.3
-	github.com/golang-jwt/jwt/v5 v5.2.2
+	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/google/go-cmp v0.7.0
 	github.com/google/go-github/v39 v39.2.0
 	github.com/google/jsonschema-go v0.3.0
