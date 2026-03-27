@@ -6,21 +6,7 @@
 import { test, expect } from '@playwright/test';
 
 test('dashboard layout persistence', async ({ page, request }) => {
-<<<<<<< HEAD
-  // 1. Initial Load
-  await page.goto('/');
-
-  // Wait for loading to finish
-  await expect(page.locator('.lucide-loader-circle.animate-spin').first()).not.toBeVisible();
-
-  // If dashboard is empty, we see "Your dashboard is empty"
-  // If defaults are loaded, we might see widgets.
-  // The test env might start fresh.
-
-  // Clear preferences via API first to ensure clean state
-=======
   // Clear preferences via API and localstorage first to ensure clean state
->>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
   await request.post('/api/v1/user/preferences', {
       data: { "dashboard-layout": "[]" }
   });
@@ -32,14 +18,10 @@ test('dashboard layout persistence', async ({ page, request }) => {
       localStorage.setItem('dashboard-layout', '[]');
   });
   await page.reload();
-<<<<<<< HEAD
-  await expect(page.locator('.lucide-loader-circle.animate-spin').first()).not.toBeVisible();
-=======
 
   // Wait for loading to finish
   await expect(page.locator('.lucide-loader2.animate-spin, .lucide-loader-2.animate-spin, .lucide-loader.animate-spin, .animate-spin').first()).not.toBeVisible();
 
->>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
   await expect(page.getByText('Your dashboard is empty')).toBeVisible();
 
   // 2. Add a widget
@@ -59,11 +41,7 @@ test('dashboard layout persistence', async ({ page, request }) => {
 
   // 5. Reload page
   await page.reload();
-<<<<<<< HEAD
-  await expect(page.locator('.lucide-loader-circle.animate-spin').first()).not.toBeVisible();
-=======
   await expect(page.locator('.lucide-loader2.animate-spin, .lucide-loader-2.animate-spin, .lucide-loader.animate-spin, .animate-spin').first()).not.toBeVisible();
->>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
 
   // 6. Verify widget persists
   await expect(page.getByText('Recent Activity').first()).toBeVisible();

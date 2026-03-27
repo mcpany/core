@@ -36,15 +36,6 @@ func (m *samplingTool) Tool() *v1.Tool {
 	return m.tool
 }
 
-
-func (m *samplingTool) IsStreaming() bool {
-	return false
-}
-
-func (m *samplingTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
-	return nil, nil
-}
-
 func (m *samplingTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 	sampler, ok := tool.GetSampler(ctx)
 	if !ok {
