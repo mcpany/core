@@ -1,0 +1,18 @@
+import json
+
+replies = [
+    {
+        "comment_id": "4139971026",
+        "reply": "I've fixed the lint errors by replacing the manual SQLite db initialization with `MockServiceStore`."
+    },
+    {
+        "comment_id": "4140053709",
+        "reply": "I've fixed the lint errors by replacing the manual SQLite db initialization with `MockServiceStore`."
+    },
+    {
+        "comment_id": "4140269320",
+        "reply": "I've fixed the lint errors by replacing the manual SQLite db initialization with `MockServiceStore`."
+    }
+]
+
+print(json.dumps(replies))

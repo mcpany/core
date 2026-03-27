@@ -1661,12 +1661,7 @@ func TestSecretLeak(t *testing.T) {
 }
 
 func TestHandleSecrets_RBAC_Enforcement(t *testing.T) {
-	tempDir := t.TempDir()
-	dbPath := filepath.Join(tempDir, "test_secrets_rbac.db")
-	db, _ := sqlite.NewDB(dbPath)
-	defer db.Close()
-	store := sqlite.NewStore(db)
-
+	store := &MockServiceStore{}
 	app := NewApplication()
 	app.fs = afero.NewMemMapFs()
 
@@ -1675,7 +1670,8 @@ func TestHandleSecrets_RBAC_Enforcement(t *testing.T) {
 	defer ts.Close()
 
 	// Try to get secrets without admin role
-	resp, _ := http.Get(ts.URL + "/secrets")
+	resp, err := http.Get(ts.URL + "/secrets")
+	require.NoError(t, err)
 	if resp != nil && resp.Body != nil {
 		defer resp.Body.Close()
 	}
