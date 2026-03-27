@@ -6,7 +6,6 @@ load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
 load("@rules_pkg//pkg:mappings.bzl", "pkg_attributes", "pkg_files")
 load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
 load("@rules_python//python:defs.bzl", "py_binary")
-load("@rules_python//python:packaging.bzl", "py_package")
 
 exports_files(["requirements_lock.txt"])
 
@@ -30,16 +29,13 @@ pkg_files(
 
 pkg_tar(
     name = "cowsay_server_layer",
-    srcs = [":cowsay_server_bin"],
-    include_runfiles = True,
-    package_dir = "/app",
-    strip_prefix = ".",
+    srcs = [":cowsay_server_binary_files"],
 )
 
 oci_image(
     name = "cowsay_server_image",
     base = "@python312_slim",
-    entrypoint = [],
+    entrypoint = ["/app/cowsay_server_bin"],
     tars = [":cowsay_server_layer"],
 )
 

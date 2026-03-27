@@ -19,7 +19,7 @@ import (
 
 // Mock Tool
 type mockTool struct {
-	toolDef     *v1.Tool
+	toolDef *v1.Tool
 	executeFunc func(ctx context.Context, req *tool.ExecutionRequest) (any, error)
 }
 
@@ -29,24 +29,6 @@ func (m *mockTool) Tool() *v1.Tool {
 
 func (m *mockTool) MCPTool() *mcp.Tool {
 	return nil // Not needed for ExecuteTool tests unless mcp server integration is involved
-}
-
-func (m *mockTool) IsStreaming() bool {
-	return false
-}
-
-func (m *mockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
-	ch := make(chan any, 1)
-	go func() {
-		defer close(ch)
-		res, err := m.Execute(ctx, req)
-		if err != nil {
-			ch <- err
-		} else {
-			ch <- res
-		}
-	}()
-	return ch, nil
 }
 
 func (m *mockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
@@ -271,7 +253,7 @@ func TestManager_ProfileFiltering_Coverage(t *testing.T) {
 		profile := configv1.ProfileDefinition_builder{
 			Name: proto.String("test-profile"),
 			ServiceConfig: map[string]*configv1.ProfileServiceConfig{
-				"allowed-svc":  configv1.ProfileServiceConfig_builder{Enabled: proto.Bool(true)}.Build(),
+				"allowed-svc": configv1.ProfileServiceConfig_builder{Enabled: proto.Bool(true)}.Build(),
 				"disabled-svc": configv1.ProfileServiceConfig_builder{Enabled: proto.Bool(false)}.Build(),
 			},
 		}.Build()

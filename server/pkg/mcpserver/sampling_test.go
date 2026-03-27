@@ -8,9 +8,6 @@ import (
 	"encoding/json"
 	"testing"
 
-	bus_pb "github.com/mcpany/core/proto/bus"
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/mcpserver"
@@ -21,6 +18,9 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream/factory"
 	"github.com/mcpany/core/server/pkg/util"
+	bus_pb "github.com/mcpany/core/proto/bus"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -36,14 +36,6 @@ func (m *samplingTool) Tool() *v1.Tool {
 	return m.tool
 }
 
-func (m *samplingTool) IsStreaming() bool {
-	return false
-}
-
-func (m *samplingTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
-	return nil, nil
-}
-
 func (m *samplingTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 	sampler, ok := tool.GetSampler(ctx)
 	if !ok {
@@ -53,7 +45,7 @@ func (m *samplingTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (a
 	res, err := sampler.CreateMessage(ctx, &mcp.CreateMessageParams{
 		Messages: []*mcp.SamplingMessage{
 			{
-				Role: "user",
+				Role:    "user",
 				Content: &mcp.TextContent{
 					Text: "hello",
 				},

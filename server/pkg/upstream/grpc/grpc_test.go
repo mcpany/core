@@ -861,7 +861,7 @@ message GetWeatherResponse {
 			ProtoDefinitions: []*configv1.ProtoDefinition{
 				configv1.ProtoDefinition_builder{
 					ProtoFile: configv1.ProtoFile_builder{
-						FileName:    proto.String("weather.proto"),
+						FileName: proto.String("weather.proto"),
 						FileContent: proto.String(weatherProto),
 					}.Build(),
 				}.Build(),
@@ -1076,14 +1076,6 @@ func TestGRPCUpstream_Register_DisabledTool_Reflection(t *testing.T) {
 		toolNames = append(toolNames, dt.GetName())
 	}
 	assert.NotContains(t, toolNames, "GetWeather")
-}
-
-func (m *simpleMockTool) IsStreaming() bool {
-	return false
-}
-
-func (m *simpleMockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
-	return nil, nil
 }
 
 type simpleMockTool struct {

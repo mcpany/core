@@ -51,15 +51,6 @@ func (m *MockResourceManager) ClearResourcesForService(serviceID string) {
 }
 
 // MockTool needs to implement tool.Tool
-
-func (m *MockTool) IsStreaming() bool {
-	return false
-}
-
-func (m *MockTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
-	return nil, nil
-}
-
 type MockTool struct {
 	mock.Mock
 }
@@ -284,7 +275,7 @@ func TestRegisterDynamicResources_Detailed(t *testing.T) {
 		grpcService := configv1.GrpcUpstreamService_builder{
 			Resources: []*configv1.ResourceDefinition{
 				configv1.ResourceDefinition_builder{
-					Name:    proto.String("myResource"),
+					Name: proto.String("myResource"),
 					Dynamic: configv1.DynamicResource_builder{
 						// Missing call definition
 					}.Build(),

@@ -61,10 +61,3 @@ FSI provides a local, hardware-attested "Identity Mint" that issues cross-framew
 
 ## 7. Evolutionary Changelog
 *   **2026-05-23:** Initial Document Creation.
-
-### Update: 2026-05-24 - Resolving Cross-Mesh Token Revocation
-**Context:** Today's market sync revealed "Negotiation Exhaustion" and "Bidding Deadlocks" in DTCB (Dynamic Task-Capability Bidding).
-**Architecture Adjustment:**
-*   **Revocation Propagation Middleware**: Adding a real-time "Broadcast Bus" for FSI token revocation.
-*   **Capability Masking Protocol**: Transitioning from cleartext "Capability Cards" to hardware-attested, ZK-ready skill proofs.
-**Security Impact:** Prevents a compromised agent from "shadowing" a high-trust capability after its FSI token has been revoked by a different framework's root authority.

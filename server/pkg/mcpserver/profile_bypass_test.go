@@ -39,14 +39,6 @@ func (m *mockBypassTool) MCPTool() *mcp.Tool {
 	return t
 }
 
-func (m *mockBypassTool) IsStreaming() bool {
-	return false
-}
-
-func (m *mockBypassTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
-	return nil, nil
-}
-
 func (m *mockBypassTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return "success", nil
 }
@@ -79,7 +71,7 @@ func TestServer_CallTool_ProfileBypass_Repro(t *testing.T) {
 	restrictedProfileID := "admin-profile"
 
 	serviceInfo := &tool.ServiceInfo{
-		Name:   restrictedServiceID,
+		Name: restrictedServiceID,
 		Config: configv1.UpstreamServiceConfig_builder{}.Build(),
 	}
 	tm.AddServiceInfo(restrictedServiceID, serviceInfo)
@@ -129,7 +121,7 @@ func TestServer_CallTool_ProfileBypass_Repro(t *testing.T) {
 	userCtx := auth.ContextWithProfileID(ctx, userProfileID)
 
 	execReq := &tool.ExecutionRequest{
-		ToolName:   restrictedServiceID + "." + "restricted-tool",
+		ToolName: restrictedServiceID + "." + "restricted-tool",
 		ToolInputs: []byte("{}"),
 	}
 

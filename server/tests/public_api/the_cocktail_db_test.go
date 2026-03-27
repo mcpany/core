@@ -10,9 +10,9 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/mcpany/core/server/pkg/util"
 	apiv1 "github.com/mcpany/core/proto/api/v1"
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
@@ -114,10 +114,10 @@ func TestUpstreamService_TheCocktailDB(t *testing.T) {
 	require.NoError(t, err, "Failed to unmarshal JSON response")
 
 	if _, ok := theCocktailDBResponse["drinks"].(string); ok {
-
+		// t.Skip("Skipping test, no drinks found in response")
 	}
 	if theCocktailDBResponse["drinks"] == nil {
-
+		// t.Skip("Skipping test, no drinks found in response")
 	}
 	drinks, ok := theCocktailDBResponse["drinks"].([]interface{})
 	require.True(t, ok, "The drinks should be an array")

@@ -28,24 +28,6 @@ type mockToolSimple struct {
 	serviceID   string
 }
 
-func (m *mockToolSimple) IsStreaming() bool {
-	return false
-}
-
-func (m *mockToolSimple) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
-	ch := make(chan any, 1)
-	go func() {
-		defer close(ch)
-		res, err := m.Execute(ctx, req)
-		if err != nil {
-			ch <- err
-		} else {
-			ch <- res
-		}
-	}()
-	return ch, nil
-}
-
 func (m *mockToolSimple) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if m.executeFunc != nil {
 		return m.executeFunc(ctx, req)
@@ -225,8 +207,8 @@ func TestManager_AddTool_WithMCPServer_Coverage(t *testing.T) {
 	// Coverage: OutputSchema
 	inputSchema, _ := structpb.NewStruct(map[string]interface{}{"type": "object"})
 	mt.toolDef = routerv1.Tool_builder{
-		Name:        proto.String("mock-tool"),
-		ServiceId:   proto.String("s1"),
+		Name:      proto.String("mock-tool"),
+		ServiceId: proto.String("s1"),
 		InputSchema: inputSchema,
 		OutputSchema: &structpb.Struct{Fields: map[string]*structpb.Value{
 			"type": {Kind: &structpb.Value_StringValue{StringValue: "object"}},

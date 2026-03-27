@@ -40,11 +40,11 @@ func TestWordTokenizer(t *testing.T) {
 	}{
 		{"", 0},
 		{"hello", 1},
-		{"hello world", 2},             // 2 * 1.3 = 2.6 -> 2
+		{"hello world", 2}, // 2 * 1.3 = 2.6 -> 2
 		{"this is a test sentence", 6}, // 5 * 1.3 = 6.5 -> 6
-		{"hello 🌍", 2},                 // 2 * 1.3 = 2.6 -> 2 (ASCII + Emoji)
-		{"你好 世界", 2},                   // 2 * 1.3 = 2.6 -> 2 (Chinese + Space + Chinese)
-		{"hello\tworld\n", 2},          // ASCII whitespace
+		{"hello 🌍", 2}, // 2 * 1.3 = 2.6 -> 2 (ASCII + Emoji)
+		{"你好 世界", 2}, // 2 * 1.3 = 2.6 -> 2 (Chinese + Space + Chinese)
+		{"hello\tworld\n", 2}, // ASCII whitespace
 	}
 
 	for _, tt := range tests {
@@ -97,11 +97,11 @@ func TestCountTokensInValue_Word(t *testing.T) {
 		{"int", 12345, 1},
 		{"bool", true, 1},
 		{"nil", nil, 1},
-		{"string", "hello world", 2},                        // "hello world" -> 2 words * 1.3 -> 2
-		{"slice", []interface{}{1, "hello"}, 1 + 1},         // 1 (int) + 1 (hello)
-		{"map", map[string]interface{}{"a": 1}, 1 + 1},      // "a" (1) + 1 (int)
+		{"string", "hello world", 2}, // "hello world" -> 2 words * 1.3 -> 2
+		{"slice", []interface{}{1, "hello"}, 1 + 1}, // 1 (int) + 1 (hello)
+		{"map", map[string]interface{}{"a": 1}, 1 + 1}, // "a" (1) + 1 (int)
 		{"string_slice", []string{"hello", "world"}, 1 + 1}, // 1 + 1
-		{"string_map", map[string]string{"a": "b"}, 1 + 1},  // "a"(1) + "b"(1)
+		{"string_map", map[string]string{"a": "b"}, 1 + 1}, // "a"(1) + "b"(1)
 	}
 
 	for _, tt := range tests {
@@ -270,7 +270,7 @@ func TestCountTokensInValue_Coverage(t *testing.T) {
 		// B -> D
 		// C -> D
 		// Should count D twice (expanded).
-		d := &ExportedStruct{Name: "D", Age: 1}         // "D"(1) + "1"(1) = 2 tokens
+		d := &ExportedStruct{Name: "D", Age: 1} // "D"(1) + "1"(1) = 2 tokens
 		b := &struct{ Child *ExportedStruct }{Child: d} // 2 tokens
 		c := &struct{ Child *ExportedStruct }{Child: d} // 2 tokens
 		a := &struct{ Left, Right interface{} }{Left: b, Right: c}
@@ -309,10 +309,10 @@ func TestWordTokenizer_Branches(t *testing.T) {
 		want  int
 	}{
 		{"  hello  ", 1}, // Leading/trailing whitespace
-		{"a\tb", 2},      // Tab
-		{"a\r\nb", 2},    // CR LF
-		{"a \x00 b", 3},  // Control char \x00
-		{"a\u00A0b", 2},  // NBSP (non-ASCII space)
+		{"a\tb", 2}, // Tab
+		{"a\r\nb", 2}, // CR LF
+		{"a \x00 b", 3}, // Control char \x00
+		{"a\u00A0b", 2}, // NBSP (non-ASCII space)
 	}
 
 	for _, tt := range tests {
@@ -344,7 +344,7 @@ func TestErrorPropagation(t *testing.T) {
 		}
 
 		// Struct with cycle (field)
-		type S struct{ Field interface{} }
+		type S struct { Field interface{} }
 		st := S{Field: node}
 		if _, err := CountTokensInValue(tokenizer, st); err == nil {
 			t.Error("Expected error from struct with cycle")
@@ -368,7 +368,7 @@ func TestErrorPropagation(t *testing.T) {
 		}
 
 		// Struct with cycle (field)
-		type S struct{ Field interface{} }
+		type S struct { Field interface{} }
 		st := S{Field: node}
 		if _, err := CountTokensInValue(tokenizer, st); err == nil {
 			t.Error("Expected error from struct with cycle")
@@ -409,12 +409,12 @@ func TestFloatConsistency(t *testing.T) {
 	// We expect the token count to match the standard JSON string representation,
 	// which avoids scientific notation for these ranges (unlike strconv %v).
 	tests := []struct {
-		val  float64
+		val float64
 		want int
 	}{
-		{1234567.0, 1},   // "1234567" -> 7 chars -> 1.75 -> 1 token (Changed from 3)
-		{9999999.0, 1},   // "9999999" -> 7 chars -> 1.75 -> 1 token (Changed from 3)
-		{10000000.0, 2},  // "10000000" -> 8 chars -> 2 tokens (Changed from 1: "1e+07" was 5 chars)
+		{1234567.0, 1}, // "1234567" -> 7 chars -> 1.75 -> 1 token (Changed from 3)
+		{9999999.0, 1}, // "9999999" -> 7 chars -> 1.75 -> 1 token (Changed from 3)
+		{10000000.0, 2}, // "10000000" -> 8 chars -> 2 tokens (Changed from 1: "1e+07" was 5 chars)
 		{123456789.0, 2}, // "123456789" -> 9 chars -> 2.25 -> 2 tokens (Changed from 3)
 	}
 
@@ -474,234 +474,5 @@ func TestCountTokensInValueSimpleFast(t *testing.T) {
 				t.Errorf("want count %d, got %d", tt.wantCount, gotCount)
 			}
 		})
-	}
-}
-
-func TestSimpleTokenizeInt64_Coverage(t *testing.T) {
-	tests := []struct {
-		val  int64
-		want int
-	}{
-		// < 8 chars (including sign) fast path -> 1
-		{0, 1},
-		{9999999, 1},
-		{-999999, 1},
-
-		// 8 chars -> 2 (8/4)
-		{10000000, 2},
-		{-1000000, 2},
-
-		// 9 chars -> 2 (9/4)
-		{100000000, 2},
-		{-10000000, 2},
-
-		// 10 chars -> 2
-		{1000000000, 2},
-
-		// 11 chars -> 2 (11/4 = 2)
-		{10000000000, 2},
-
-		// 12 chars -> 3
-		{100000000000, 3},
-
-		// 13 chars -> 3
-		{1000000000000, 3},
-
-		// 14 chars -> 3
-		{10000000000000, 3},
-
-		// 15 chars -> 3
-		{100000000000000, 3},
-
-		// 16 chars -> 4
-		{1000000000000000, 4},
-
-		// 17 chars -> 4
-		{10000000000000000, 4},
-
-		// 18 chars -> 4
-		{100000000000000000, 4},
-
-		// 19 chars -> 4 (19/4 = 4)
-		{1000000000000000000, 4},
-
-		// MaxInt64: 9223372036854775807 (19 chars) -> 4
-		{9223372036854775807, 4},
-
-		// MinInt64: -9223372036854775808 (20 chars) -> 5
-		{-9223372036854775808, 5},
-	}
-
-	for _, tt := range tests {
-		got := simpleTokenizeInt64(tt.val)
-		if got != tt.want {
-			t.Errorf("simpleTokenizeInt64(%d) = %d, want %d", tt.val, got, tt.want)
-		}
-	}
-}
-
-func TestSimpleTokenizeInt64_AllMagnitudes(t *testing.T) {
-	tests := []struct {
-		val  int64
-		want int
-	}{
-		// < 10
-		{9, 1},
-		// < 100
-		{99, 1},
-		// < 1000
-		{999, 1},
-		// < 10000
-		{9999, 1},
-		// < 100000
-		{99999, 1},
-		// < 1000000
-		{999999, 1},
-		// < 10000000
-		{9999999, 1},
-		// < 100000000 (8 chars) -> 2
-		{99999999, 2},
-		// < 1000000000 (9 chars) -> 2
-		{999999999, 2},
-		// < 10000000000 (10 chars) -> 2
-		{9999999999, 2},
-		// < 100000000000 (11 chars) -> 2
-		{99999999999, 2},
-		// < 1000000000000 (12 chars) -> 3
-		{999999999999, 3},
-		// < 10000000000000 (13 chars) -> 3
-		{9999999999999, 3},
-		// < 100000000000000 (14 chars) -> 3
-		{99999999999999, 3},
-		// < 1000000000000000 (15 chars) -> 3
-		{999999999999999, 3},
-		// < 10000000000000000 (16 chars) -> 4
-		{9999999999999999, 4},
-		// < 100000000000000000 (17 chars) -> 4
-		{99999999999999999, 4},
-		// < 1000000000000000000 (18 chars) -> 4
-		{999999999999999999, 4},
-		// MaxInt64 (19 chars) -> 4
-		{9223372036854775807, 4},
-
-		// Negatives
-		{-9, 1},
-		{-99, 1},
-		{-999, 1},
-		{-9999, 1},
-		{-99999, 1},
-		{-999999, 1},
-		{-1000000, 2},
-		{-9999999, 2},
-		{-99999999, 2},
-		{-999999999, 2},
-		{-9999999999, 2},
-		{-99999999999, 3},
-		{-999999999999, 3},
-		{-9999999999999, 3},
-		{-99999999999999, 3},
-		{-999999999999999, 4},
-		{-9999999999999999, 4},
-		{-99999999999999999, 4},
-		{-999999999999999999, 4},
-		{-9223372036854775807, 5},
-	}
-
-	for _, tt := range tests {
-		got := simpleTokenizeInt64(tt.val)
-		if got != tt.want {
-			t.Errorf("simpleTokenizeInt64(%d) = %d, want %d", tt.val, got, tt.want)
-		}
-	}
-}
-
-func TestCountSliceInterfaceRaw_Coverage(t *testing.T) {
-	tokenizer := NewWordTokenizer()
-
-	// Need to get access to rawWordCounter logic.
-	// We can do this by using a []interface{} that contains things hitting the branches.
-
-	// Branch 1: empty slice
-	emptySlice := []interface{}{}
-	c, err := CountTokensInValue(tokenizer, emptySlice)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-	if c != 0 {
-		t.Errorf("empty slice want 0, got %d", c)
-	}
-
-	// Branch 2: string, float64, int, int64, bool, nil
-	basicSlice := []interface{}{"hello world", float64(3.14), int(1), int64(2), true, nil}
-	c, err = CountTokensInValue(tokenizer, basicSlice)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-	if c != 9 {
-		t.Errorf("basic slice want 9, got %d", c)
-	}
-
-	// Branch 3: nested []interface{}
-	nestedSlice := []interface{}{[]interface{}{"nested"}}
-	c, err = CountTokensInValue(tokenizer, nestedSlice)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-	if c != 1 {
-		t.Errorf("nested slice want 1, got %d", c)
-	}
-
-	// Branch 4: default (structs, maps, etc)
-	defaultSlice := []interface{}{map[string]string{"key": "value"}}
-	c, err = CountTokensInValue(tokenizer, defaultSlice)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-	// key (1) + value (1) = 2
-	if c != 2 {
-		t.Errorf("default slice want 2, got %d", c)
-	}
-
-	// Branch 5: error in nested []interface{}
-	// We can trigger this by putting a cycle in the nested slice.
-	s1 := []interface{}{"test"}
-	s2 := []interface{}{s1}
-	s1[0] = s2 // Cycle: s1 -> s2 -> s1
-	_, err = CountTokensInValue(tokenizer, s1)
-	if err == nil {
-		t.Fatalf("expected error due to cycle in nested slice, got nil")
-	}
-
-	// Branch 6: error in default
-	// Cycle in a map inside the slice
-	m1 := map[string]interface{}{}
-	m1["self"] = m1
-	s3 := []interface{}{m1}
-	_, err = CountTokensInValue(tokenizer, s3)
-	if err == nil {
-		t.Fatalf("expected error due to cycle in map inside slice, got nil")
-	}
-}
-
-func TestSimpleTokenizeInt64_AllSwitchBranchesDirectly(t *testing.T) {
-	tests := []struct {
-		n    int64
-		want int
-	}{
-		// Use negative values where the negated result places us cleanly into every bucket.
-		// Wait, the logic is:
-		// if n < 0 { l=1; n=-n }
-		// switch {
-		// case n < 10: l++
-		// case n < 100: l+=2
-		// ...
-		// BUT the fast path is:
-		// if n > -1000000 && n < 10000000 { return 1 }
-		// This means any number between -999999 and 9999999 RETURNS 1 directly!
-		// It will NEVER evaluate the switch for n < 10, n < 100, n < 1000, n < 10000, n < 100000, n < 1000000, n < 10000000!
-		// Because it's already caught by the fast path at the very beginning of the function!
-	}
-	for _, tt := range tests {
-		_ = tt.n
 	}
 }

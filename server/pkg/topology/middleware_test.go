@@ -106,7 +106,7 @@ func TestMiddleware_Comprehensive(t *testing.T) {
 				Content: []mcp.Content{
 					&mcp.EmbeddedResource{
 						Resource: &mcp.ResourceContents{
-							Text: "some text",    // 9
+							Text: "some text",      // 9
 							Blob: []byte("blob"), // 4
 						},
 					},
@@ -134,8 +134,8 @@ func TestMiddleware_Comprehensive(t *testing.T) {
 			req:    &mcp.ReadResourceRequest{},
 			nextResult: &mcp.ReadResourceResult{
 				Contents: []*mcp.ResourceContents{
-					{Text: "resource text"}, // 13
-					{Blob: []byte("data")},  // 4
+					{Text: "resource text"},     // 13
+					{Blob: []byte("data")},      // 4
 				},
 			},
 			setupMock: func(mockTM *MockToolManager, mockRegistry *MockServiceRegistry) {}, // No tool lookup for resources/read in middleware logic
@@ -156,7 +156,7 @@ func TestMiddleware_Comprehensive(t *testing.T) {
 					Name: "error-tool",
 				},
 			},
-			nextError:     errors.New("something went wrong"),
+			nextError: errors.New("something went wrong"),
 			expectedError: true,
 			setupMock: func(mockTM *MockToolManager, mockRegistry *MockServiceRegistry) {
 				mockTool := new(MockTool)

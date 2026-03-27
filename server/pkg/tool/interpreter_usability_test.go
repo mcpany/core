@@ -68,98 +68,98 @@ func TestSecurity_UsabilityBypass(t *testing.T) {
 	)
 
 	tests := []struct {
-		name       string
-		tool       Tool
-		input      string
+		name      string
+		tool      Tool
+		input     string
 		shouldFail bool
-		errorMsg   string
+		errorMsg  string
 	}{
 		// Python - Safe cases (Verified in previous test, but good to have)
 		{
-			name:       "Python safe word 'system'",
-			tool:       pythonTool,
-			input:      "The system is down",
+			name:      "Python safe word 'system'",
+			tool:      pythonTool,
+			input:     "The system is down",
 			shouldFail: false,
 		},
 		{
-			name:       "Python safe word 'os'",
-			tool:       pythonTool,
-			input:      "I use os x",
+			name:      "Python safe word 'os'",
+			tool:      pythonTool,
+			input:     "I use os x",
 			shouldFail: false,
 		},
 
 		// Python - Unsafe cases (Must block)
 		{
-			name:       "Python import statement",
-			tool:       pythonTool,
-			input:      "import os",
+			name:      "Python import statement",
+			tool:      pythonTool,
+			input:     "import os",
 			shouldFail: true,
-			errorMsg:   "dangerous keyword \"import\"",
+			errorMsg:  "dangerous keyword \"import\"",
 		},
 		{
-			name:       "Python os.system",
-			tool:       pythonTool,
-			input:      "os.system('ls')",
+			name:      "Python os.system",
+			tool:      pythonTool,
+			input:     "os.system('ls')",
 			shouldFail: true,
-			errorMsg:   "dangerous keyword \"os\" followed by '.'",
+			errorMsg:  "dangerous keyword \"os\" followed by '.'",
 		},
 		{
-			name:       "Python os[system]",
-			tool:       pythonTool,
-			input:      "os['system']('ls')",
+			name:      "Python os[system]",
+			tool:      pythonTool,
+			input:     "os['system']('ls')",
 			shouldFail: true,
-			errorMsg:   "dangerous keyword \"os\" followed by '['",
+			errorMsg:  "dangerous keyword \"os\" followed by '['",
 		},
 		{
-			name:       "Python eval call",
-			tool:       pythonTool,
-			input:      "eval('1+1')",
+			name:      "Python eval call",
+			tool:      pythonTool,
+			input:     "eval('1+1')",
 			shouldFail: true,
-			errorMsg:   "dangerous keyword \"eval\" followed by '('",
+			errorMsg:  "dangerous keyword \"eval\" followed by '('",
 		},
 		{
-			name:       "Python __import__",
-			tool:       pythonTool,
-			input:      "__import__('os')",
+			name:      "Python __import__",
+			tool:      pythonTool,
+			input:     "__import__('os')",
 			shouldFail: true,
-			errorMsg:   "value contains '__import__'",
+			errorMsg:  "value contains '__import__'",
 		},
 		{
-			name:       "Python spaced call",
-			tool:       pythonTool,
-			input:      "eval ('1+1')",
+			name:      "Python spaced call",
+			tool:      pythonTool,
+			input:     "eval ('1+1')",
 			shouldFail: true,
-			errorMsg:   "dangerous keyword \"eval\" followed by '('",
+			errorMsg:  "dangerous keyword \"eval\" followed by '('",
 		},
 		// Python quoted safe usage
 		{
-			name:       "Python quoted safe usage",
-			tool:       pythonTool,
-			input:      `I said "os.system" is dangerous`,
+			name:      "Python quoted safe usage",
+			tool:      pythonTool,
+			input:     `I said "os.system" is dangerous`,
 			shouldFail: false, // Should pass because it is inside quotes (double quotes inside single quoted template is safe from shell injection, and now safe from interpreter injection)
 		},
 
 		// Ruby - Strict mode checks
 		{
-			name:       "Ruby system call unquoted",
-			tool:       rubyTool,
-			input:      "system 'ls'",
+			name:      "Ruby system call unquoted",
+			tool:      rubyTool,
+			input:     "system 'ls'",
 			shouldFail: true,
-			errorMsg:   "dangerous keyword \"system\"",
+			errorMsg:  "dangerous keyword \"system\"",
 		},
 		{
-			name:       "Ruby system call quoted",
-			tool:       rubyTool,
-			input:      "system('ls')",
+			name:      "Ruby system call quoted",
+			tool:      rubyTool,
+			input:     "system('ls')",
 			shouldFail: true,
-			errorMsg:   "dangerous keyword \"system\"",
+			errorMsg:  "dangerous keyword \"system\"",
 		},
 		{
-			name:       "Ruby safe word 'system' (Strict mode blocks it anyway)",
-			tool:       rubyTool,
-			input:      "The system is down",
+			name:      "Ruby safe word 'system' (Strict mode blocks it anyway)",
+			tool:      rubyTool,
+			input:     "The system is down",
 			shouldFail: true, // Ruby is strict, so it blocks "system" even if not obviously a call
-			errorMsg:   "dangerous keyword \"system\"",
+			errorMsg:  "dangerous keyword \"system\"",
 		},
 	}
 
@@ -169,9 +169,9 @@ func TestSecurity_UsabilityBypass(t *testing.T) {
 			inputJson, _ := json.Marshal(inputMap)
 
 			req := &ExecutionRequest{
-				ToolName:   "test",
+				ToolName: "test",
 				ToolInputs: inputJson,
-				DryRun:     true,
+				DryRun: true,
 			}
 
 			_, err := tc.tool.Execute(context.Background(), req)

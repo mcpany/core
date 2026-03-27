@@ -36,7 +36,7 @@ func SeedStandardData(t *testing.T, serverInfo *MCPANYTestServerInfo) {
 			Address: proto.String(mockServer.URL),
 			Tools: []*configv1.ToolDefinition{
 				configv1.ToolDefinition_builder{
-					Name:   proto.String("status"),
+					Name: proto.String("status"),
 					CallId: proto.String("status"),
 				}.Build(),
 			},
@@ -64,7 +64,7 @@ func SeedStandardData(t *testing.T, serverInfo *MCPANYTestServerInfo) {
 			Address: proto.String(mockServer.URL),
 			Tools: []*configv1.ToolDefinition{
 				configv1.ToolDefinition_builder{
-					Name:   proto.String("calculator"),
+					Name: proto.String("calculator"),
 					CallId: proto.String("calculator"),
 				}.Build(),
 			},

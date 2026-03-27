@@ -20,10 +20,11 @@ import {
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { TraceDetail } from "@/components/traces/trace-detail";
-import { CheckCircle2, AlertCircle, Clock, Terminal, Globe, Database, ChevronRight, ChevronDown, Cpu, MessageSquare } from "lucide-react";
+import { CheckCircle2, AlertCircle, Clock, Terminal, Globe, Database, ChevronRight, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { TableVirtuoso } from "react-virtuoso";
+import { Skeleton } from "@/components/ui/skeleton";
 
 /**
  * Props for the InspectorTable component.
@@ -66,8 +67,6 @@ function TypeIcon({ type, className }: { type: string, className?: string }) {
         case 'tool': return <Terminal className={className} />;
         case 'service': return <Globe className={className} />;
         case 'resource': return <Database className={className} />;
-        case 'core': return <Cpu className={className} />;
-        case 'prompt': return <MessageSquare className={className} />;
         default: return <Clock className={className} />;
     }
 }
@@ -134,8 +133,34 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
                 No traces found.
              </div>
         ) : loading && traces.length === 0 ? (
-             <div className="flex items-center justify-center h-24 text-muted-foreground text-sm">
-                Loading traces...
+             <div className="w-full">
+                <table className="w-full caption-bottom text-sm" style={{ borderCollapse: 'collapse' }}>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead className="w-[180px] bg-card">Timestamp</TableHead>
+                            <TableHead className="w-[50px] bg-card">Type</TableHead>
+                            <TableHead className="bg-card">Method / Name</TableHead>
+                            <TableHead className="w-[100px] bg-card">Status</TableHead>
+                            <TableHead className="w-[100px] text-right bg-card">Duration</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {Array.from({ length: 15 }).map((_, i) => (
+                            <TableRow key={i}>
+                                <TableCell><Skeleton className="h-4 w-[100px]" /><Skeleton className="h-3 w-[60px] mt-1 opacity-50" /></TableCell>
+                                <TableCell><Skeleton className="h-4 w-4 rounded-full" /></TableCell>
+                                <TableCell>
+                                    <div className="flex flex-col gap-1">
+                                        <Skeleton className="h-4 w-[200px]" />
+                                        <Skeleton className="h-3 w-[150px]" />
+                                    </div>
+                                </TableCell>
+                                <TableCell><Skeleton className="h-5 w-[60px] rounded-full" /></TableCell>
+                                <TableCell className="text-right"><Skeleton className="h-4 w-[40px] ml-auto" /></TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </table>
              </div>
         ) : (
             <TableVirtuoso

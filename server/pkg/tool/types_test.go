@@ -624,7 +624,7 @@ func TestCommandTool_Execute_PathTraversal_Args(t *testing.T) {
 	}.Build()
 
 	callDef := configv1.CommandLineCallDefinition_builder{
-		Args:       []string{"{{arg}}"},
+		Args: []string{"{{arg}}"},
 		Parameters: []*configv1.CommandLineParameterMapping{mapping},
 	}.Build()
 

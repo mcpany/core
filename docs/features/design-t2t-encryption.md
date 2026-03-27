@@ -62,26 +62,3 @@ The T2T Encryption Bridge provides a universal, secure bus for teammate-to-teamm
 
 ## 7. Evolutionary Changelog
 *   **2026-05-22:** Initial Document Creation.
-
-### Update: 2026-05-25 - Introducing Asynchronous Mailbox Sharding (AMS)
-**Context:** Today's market sync revealed "Mailbox Lock" bottlenecks in horizontal swarms with 10+ teammates. The monolithic encrypted mailbox model is causing significant latency during peak coordination.
-**Architecture Adjustment:**
-*   Deprecating the single encrypted SQLite mailbox backend in Section 4.
-*   Introducing **Asynchronous Mailbox Sharding (AMS)**. Every teammate-to-teammate pair now utilizes a dedicated, task-bound shard.
-*   Implementing a lock-free queue for inter-shard synchronization.
-**Security Impact:** Enhances isolation by ensuring a compromise of one shard doesn't expose the metadata or throughput of unrelated teammate coordination.
-
-### Update: 2026-05-26 - Non-Blocking Mailbox Sharding (AMS)
-**Context:** Further analysis of Claude Code "Mailbox Lock" confirms that synchronous sharding still introduces global coordination overhead. High-density teams (50+ agents) require a move to fully non-blocking coordination.
-**Architecture Adjustment:**
-*   Upgrading AMS to a **Non-Blocking Architecture**. Replacing inter-shard queues with lock-free ring buffers.
-*   Introducing "Intent-Agnostic Buffering" for metadata-only coordination messages, further reducing the load on the primary Mailbox Integrity Validator.
-**Security Impact:** Mitigates "Coordination DoS" where a single slow teammate can stall the entire swarm's mailbox throughput.
-
-### Update: 2026-05-27 - Fragment-Aware Mailbox Isolation (FAMI)
-**Context:** Today's market sync revealed a class of "State Splicing" exploits in horizontal coordination. Malicious teammates can inject mission-divergent fragments into the sharded mailbox, leading to collective intent drift.
-**Architecture Adjustment:**
-*   Integrating **Fragment-Aware Mailbox Isolation (FAMI)** into the AMS layer.
-*   The Mailbox Integrity Middleware now performs semantic fragment scanning *before* re-composition.
-*   Shards now mandate a "Fragment Proof" (SMI-bound signature) for every message segment.
-**Security Impact:** Prevents "State Splicing" attacks by ensuring every fragment in the teammate coordination loop is semantically validated against the Mission Root.
