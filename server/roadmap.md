@@ -763,13 +763,3 @@ compression for secure cross-framework transfer. (Added: 2026-06-18)
 security guardrails across teammates. (Added: 2026-06-18)
 - **Reasoning Noise-Injection (RNI)**: (P0) Side-channel mitigation for
 inter-agent transport channels. (Added: 2026-06-18)
-
-### Upcoming: [2026-06-18]
-- **Cognitive Entropy Controller (CEC)**: (P0) Authoritative coordination
-service for "Entropy-Aware Reasoning." (Added: 2026-06-18)
-- **Sovereign Fragment Compressor (SFC)**: (P0) Hardware-attested context
-compression for secure cross-framework transfer. (Added: 2026-06-18)
-- **Mesh Policy Synchronizer (MPS)**: (P0) High-speed synchronization of
-security guardrails across teammates. (Added: 2026-06-18)
-- **Reasoning Noise-Injection (RNI)**: (P0) Side-channel mitigation for
-inter-agent transport channels. (Added: 2026-06-18)

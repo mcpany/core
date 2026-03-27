@@ -1379,9 +1379,3 @@ attacks (CVE-2026-70102).
 with the requirement for mandatory **CEC-compliant** entropy governance.
 - **Stylometric Metadata Sanitizer (SMS)**: (Re-affirmed P0) Evolving to support
 the new **SFC-compliant** context snapshotting requirements.
-
-### Updates: [2026-06-18]
-- **[P0] Cognitive Entropy Controller (CEC):** Authoritative coordination service for "Entropy-Aware Reasoning."
-- **[P0] Sovereign Fragment Compressor (SFC):** Hardware-attested context compression for secure cross-framework transfer.
-- **[P0] Mesh Policy Synchronizer (MPS):** High-speed synchronization of security guardrails across teammates.
-- **[P0] Reasoning Noise-Injection (RNI):** Side-channel mitigation for inter-agent transport channels.
