@@ -776,6 +776,7 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] Cognitive Fragment Reconciler**: Background service for synchronizing encrypted monologues across agent sessions. (Added: 2026-04-22)
 
 #### Upcoming (2026-05-10 Evolution)
+
 *   **[P0] Event-Driven CLA Status Monitor**: Implementation of kernel-level (inotify/eBPF) environment attestation for real-time integrity verification. (Added: 2026-05-10)
 *   **[P0] Mission-Root Anchor Provider**: Authoritative UACO middleware for cryptographically pinning task chains to the verified mission root. (Added: 2026-05-10)
 *   **[P1] ARE-Aware Priority Scheduler**: Resource management layer utilizing Gemini CLI's ARE headers to dynamically adjust task priority based on reasoning intensity. (Added: 2026-05-10)
