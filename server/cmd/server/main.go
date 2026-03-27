@@ -114,8 +114,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			}
 
 			if err := metrics.Initialize(); err != nil {
-				logging.GetLogger().Error("Failed to initialize metrics", "error", err)
-				os.Exit(1)
+				return fmt.Errorf("failed to initialize metrics: %w", err)
 			}
 			log := logging.GetLogger().With("service", "mcpany")
 
