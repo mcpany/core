@@ -60,7 +60,7 @@ jobs:
             cd server && pre-commit clean --config ../.pre-commit-config.yaml || true
             cd ..
             export PATH=$PWD/build/env/bin:$PATH
-            pre-commit run --all-files
+            pre-commit install -c .pre-commit-config.yaml || true
             export PATH=$PWD/build/env/bin:$PATH
             make lint
       - save_cache:
