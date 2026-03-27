@@ -17,7 +17,8 @@ func TestStore_Load(t *testing.T) {
 	require.NoError(t, err)
 	defer db.Close()
 
-	store := &Store{db: &DB{DB: db}}
+	pgDB := &DB{DB: db}
+	store := NewStore(pgDB)
 
 	t.Run("Query Error", func(t *testing.T) {
 		// Because store.Load calls loadUsers, loadSettings, etc.
