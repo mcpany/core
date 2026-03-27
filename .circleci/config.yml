@@ -57,6 +57,7 @@ jobs:
             . venv/bin/activate
             # Ensure PATH includes tool install dir
             rm -rf .cache build/.cache/pre-commit ~/.cache/pre-commit
+            pre-commit clean || true
             export PATH=$PWD/build/env/bin:$PATH
             make lint
       - save_cache:
