@@ -19,20 +19,6 @@ interface ToolUsageStats {
 }
 
 /**
- * Intent: Document TopToolsWidget
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * TopToolsWidget displays a bar chart of the most frequently executed tools.
  * @returns The rendered TopToolsWidget component.
  */

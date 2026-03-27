@@ -8,20 +8,6 @@
 import SkillDetail from '@/components/skills/skill-detail';
 
 /**
- * Intent: Document SkillDetailPage
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * SkillDetailPage component.
  * @returns The rendered component.
  */

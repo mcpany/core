@@ -29,20 +29,6 @@ const badgeVariants = cva(
 )
 
 /**
- * Intent: Document BadgeProps
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * BadgeProps type definition.
  */
 export interface BadgeProps

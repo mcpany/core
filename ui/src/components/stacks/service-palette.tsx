@@ -49,20 +49,6 @@ interface ServicePaletteProps {
 }
 
 /**
- * Intent: Document ServicePalette
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ServicePalette component.
  * Fetches service templates from the API and displays them for selection.
  *

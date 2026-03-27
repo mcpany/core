@@ -19,20 +19,6 @@ interface ServicePropertyCardProps {
 }
 
 /**
- * Intent: Document ServicePropertyCard
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * A card component that displays a list of properties.
  *
  * @param data - The data.

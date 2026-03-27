@@ -48,20 +48,6 @@ interface ServiceEditorProps {
 }
 
 /**
- * Intent: Document ServiceEditor
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ServiceEditor.
  *
  * @param onCancel - The onCancel.

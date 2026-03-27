@@ -14,20 +14,6 @@ interface UseTracesOptions {
 const MAX_TRACES = 1000;
 
 /**
- * Intent: Document useTraces
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Hook to manage trace subscriptions via WebSocket.
  *
  * @param options - Configuration options for the trace hook.

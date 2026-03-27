@@ -6,20 +6,6 @@
 import { apiClient, UpstreamServiceConfig } from "@/lib/client";
 
 /**
- * Intent: Document ServiceCollection
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * A collection of services, typically organized by theme or use case.
  */
 export interface ServiceCollection {
@@ -36,20 +22,6 @@ export interface ServiceCollection {
 }
 
 /**
- * Intent: Document ExternalMarketplace
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * An external marketplace where MCP servers can be discovered.
  */
 export interface ExternalMarketplace {
@@ -66,20 +38,6 @@ export interface ExternalMarketplace {
 }
 
 /**
- * Intent: Document ExternalServer
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * A server listed in an external marketplace.
  */
 export interface ExternalServer {
@@ -96,20 +54,6 @@ export interface ExternalServer {
 }
 
 /**
- * Intent: Document CommunityServer
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * A server discovered from the Community (Awesome List).
  */
 export interface CommunityServer {
@@ -143,20 +87,6 @@ const PUBLIC_MARKETPLACES: ExternalMarketplace[] = [
 ];
 
 /**
- * Intent: Document marketplaceService
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Service for interacting with internal and external marketplaces.
  */
 export const marketplaceService = {

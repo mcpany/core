@@ -15,20 +15,6 @@ interface OAuthConfigProps {
 }
 
 /**
- * Intent: Document OAuthConfig
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * OAuthConfig component.
  * @param props - The component props.
  * @param props.auth - The authentication configuration.

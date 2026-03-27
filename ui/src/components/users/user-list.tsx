@@ -44,20 +44,6 @@ interface UserListProps {
 }
 
 /**
- * Intent: Document UserList
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * UserList component.
  * Displays a list of users with filtering and actions.
  *

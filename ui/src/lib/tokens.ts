@@ -4,26 +4,10 @@
  */
 
 /**
- * Intent: Document estimateTokens
- *
- * Params:
- *   - None
- *
  * Estimates the number of tokens in a string or object using a simple heuristic.
- *
- * Summary: Provides a rough estimation of the number of tokens for UI purposes.
- *
- * Parameters:
- *   - input (any): The text or object to estimate tokens for.
- *
- * Returns:
- *   - number: The estimated token count based on heuristics.
- *
- * Errors:
- *   - None.
- *
- * Side Effects:
- *   - None.
+ * This is meant for UI estimation only, not for precision.
+ * @param input - The text or object to estimate tokens for.
+ * @returns Estimated token count.
  */
 export function estimateTokens(input: any): number {
     if (!input) return 0;
@@ -46,26 +30,9 @@ export function estimateTokens(input: any): number {
 }
 
 /**
- * Intent: Document estimateMessageTokens
- *
- * Params:
- *   - None
- *
  * Calculates total tokens for a sequence of messages.
- *
- * Summary: Aggregates the estimated token count for an array of message objects.
- *
- * Parameters:
- *   - messages (any[]): Array of message objects containing content.
- *
- * Returns:
- *   - number: Total estimated tokens for all messages.
- *
- * Errors:
- *   - None.
- *
- * Side Effects:
- *   - None.
+ * @param messages - Array of message objects with content.
+ * @returns Total estimated tokens.
  */
 export function estimateMessageTokens(messages: any[]): number {
     return messages.reduce((acc, msg) => {
@@ -78,26 +45,9 @@ export function estimateMessageTokens(messages: any[]): number {
 }
 
 /**
- * Intent: Document formatTokenCount
- *
- * Params:
- *   - None
- *
- * Formats a number of tokens into a human-readable string.
- *
- * Summary: Converts a token count into a formatted string (e.g., 1.2k).
- *
- * Parameters:
- *   - count (number): The number of tokens.
- *
- * Returns:
- *   - string: The formatted token count string.
- *
- * Errors:
- *   - None.
- *
- * Side Effects:
- *   - None.
+ * Formats a number of tokens into a human-readable string (e.g., 1.2k).
+ * @param count - The number of tokens.
+ * @returns Formatted string.
  */
 export function formatTokenCount(count: number): string {
     if (count >= 1000) {
@@ -107,26 +57,10 @@ export function formatTokenCount(count: number): string {
 }
 
 /**
- * Intent: Document calculateCost
- *
- * Params:
- *   - None
- *
  * Calculates the estimated cost for a given number of tokens.
- *
- * Summary: Estimates the cost in USD based on a generic pricing model.
- *
- * Parameters:
- *   - tokens (number): The number of tokens.
- *
- * Returns:
- *   - number: The estimated cost in USD.
- *
- * Errors:
- *   - None.
- *
- * Side Effects:
- *   - None.
+ * Uses a generic pricing model (e.g., $0.005 / 1k tokens - blend of input/output).
+ * @param tokens - The number of tokens.
+ * @returns Estimated cost in USD.
  */
 export function calculateCost(tokens: number): number {
     // Generic blended rate: $5 per 1M tokens ($0.005 per 1k)
@@ -136,26 +70,9 @@ export function calculateCost(tokens: number): number {
 }
 
 /**
- * Intent: Document formatCost
- *
- * Params:
- *   - None
- *
  * Formats a cost into a currency string.
- *
- * Summary: Formats a numerical cost into a USD currency string.
- *
- * Parameters:
- *   - cost (number): The cost in USD.
- *
- * Returns:
- *   - string: The formatted string (e.g., "$0.0024").
- *
- * Errors:
- *   - None.
- *
- * Side Effects:
- *   - None.
+ * @param cost - The cost in USD.
+ * @returns Formatted string (e.g. $0.0024).
  */
 export function formatCost(cost: number): string {
     if (cost === 0) return "$0.00";

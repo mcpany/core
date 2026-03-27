@@ -17,20 +17,6 @@ interface ServiceHealthSparklineProps {
 // ⚡ Bolt Optimization: Isolated health visualization to prevent row re-renders on context updates.
 // Randomized Selection from Top 5 High-Impact Targets
 /**
- * Intent: Document ServiceHealthSparkline
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ServiceHealthSparkline component.
  * @param props - The component props.
  * @param props.serviceName - The name of the service to display health for.

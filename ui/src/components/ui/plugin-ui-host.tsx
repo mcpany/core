@@ -18,20 +18,6 @@ interface PluginUIHostProps {
 }
 
 /**
- * Intent: Document PluginUIHost
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Component to host custom UI provided by server plugins via iframe.
  * Includes security sandboxing and loading states.
  */

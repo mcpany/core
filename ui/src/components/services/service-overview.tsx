@@ -19,20 +19,6 @@ interface ServiceOverviewProps {
 }
 
 /**
- * Intent: Document ServiceOverview
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ServiceOverview displays a high-level summary of the service's health and metrics.
  * It includes status indicators, sparkline charts for traffic history, and key configuration details.
  */

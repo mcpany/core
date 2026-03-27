@@ -24,20 +24,6 @@ interface KeyValuePair {
 }
 
 /**
- * Intent: Document KeyValueEditor
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * KeyValueEditor allows editing a map of strings.
  */
 export function KeyValueEditor({ initialValues, onChange, keyPlaceholder = "Key", valuePlaceholder = "Value" }: KeyValueEditorProps) {

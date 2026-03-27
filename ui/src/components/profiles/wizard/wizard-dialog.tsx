@@ -17,20 +17,6 @@ import { toast } from "sonner";
 import { apiClient } from "@/lib/client";
 
 /**
- * Intent: Document WizardService
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Interface defining a service configuration within the wizard.
  */
 export interface WizardService {
@@ -42,20 +28,6 @@ export interface WizardService {
 }
 
 /**
- * Intent: Document WizardDialog
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Dialog component for the profile creation wizard.
  * @param props Component properties.
  * @param props.onProfileCreated Callback when a profile is created.

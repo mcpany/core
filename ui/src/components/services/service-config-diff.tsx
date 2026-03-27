@@ -18,20 +18,6 @@ interface ServiceConfigDiffProps {
 }
 
 /**
- * Intent: Document ServiceConfigDiff
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ServiceConfigDiff component.
  * @param props - The component props.
  * @param props.original - The original property.

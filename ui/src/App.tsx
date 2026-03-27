@@ -37,8 +37,6 @@ const ServiceResourcePage = lazy(() => import("./app/service/[id]/resource/[name
 const ServiceToolPage = lazy(() => import("./app/service/[id]/tool/[name]/page"));
 const SettingsMiddlewarePage = lazy(() => import("./app/settings/middleware/page"));
 const SettingsPage = lazy(() => import("./app/settings/page"));
-const HitlPage = lazy(() => import("./app/hitl/page"));
-const BlackboardPage = lazy(() => import("./app/blackboard/page"));
 const SettingsWebhooksPage = lazy(() => import("./app/settings/webhooks/page"));
 const SkillEditPage = lazy(() => import("./app/skills/[name]/edit/page"));
 const SkillNamePage = lazy(() => import("./app/skills/[name]/page"));
@@ -54,7 +52,6 @@ const UpstreamServicesPage = lazy(() => import("./app/upstream-services/page"));
 const UsersPage = lazy(() => import("./app/users/page"));
 const VisualizerPage = lazy(() => import("./app/visualizer/page"));
 const WebhooksPage = lazy(() => import("./app/webhooks/page"));
-const UniversalAgentBusPage = lazy(() => import("./app/universal-agent-bus/page"));
 
 const PageFallback = () => (
   <div className="flex items-center justify-center h-full min-h-[200px]">
@@ -63,20 +60,6 @@ const PageFallback = () => (
 );
 
 /**
- * Intent: Document App
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Root application component with React Router routes.
  * Public routes (login, auth) get a top-level Suspense fallback.
  * Protected routes (wrapped in Layout) have Suspense inside the Layout so the
@@ -98,8 +81,6 @@ export default function App() {
           <Route path="/audit" element={<AuditPage />} />
           <Route path="/config-validator" element={<ConfigValidatorPage />} />
           <Route path="/context" element={<ContextPage />} />
-          <Route path="/hitl" element={<HitlPage />} />
-          <Route path="/blackboard" element={<BlackboardPage />} />
           <Route path="/credentials" element={<CredentialsPage />} />
           <Route path="/diagnostics" element={<DiagnosticsPage />} />
           <Route path="/inspector" element={<InspectorPage />} />
@@ -135,7 +116,6 @@ export default function App() {
           <Route path="/users" element={<UsersPage />} />
           <Route path="/visualizer" element={<VisualizerPage />} />
           <Route path="/webhooks" element={<WebhooksPage />} />
-          <Route path="/universal-agent-bus" element={<UniversalAgentBusPage />} />
 
           {/* Legacy redirect */}
           <Route path="/topology" element={<Navigate to="/network" replace />} />

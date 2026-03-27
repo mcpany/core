@@ -4,39 +4,11 @@
  */
 
 /**
- * Intent: Document SpanStatus
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Represents the status of a span.
  */
 export type SpanStatus = 'success' | 'error' | 'pending';
 
 /**
- * Intent: Document Span
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Represents a span in a trace.
  */
 export interface Span {
@@ -54,20 +26,6 @@ export interface Span {
 }
 
 /**
- * Intent: Document Trace
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Represents a full trace.
  */
 export interface Trace {

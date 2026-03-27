@@ -23,20 +23,6 @@ import { useToast } from "@/hooks/use-toast";
 import { apiClient } from "@/lib/client";
 
 /**
- * Intent: Document WebhookDialog
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * WebhookDialog component.
  * @returns The rendered component.
  */

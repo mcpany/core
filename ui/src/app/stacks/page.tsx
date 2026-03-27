@@ -16,20 +16,6 @@ import { Badge } from "@/components/ui/badge";
 import { ServiceCollection } from "@/lib/marketplace-service";
 
 /**
- * Intent: Document StacksPage
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * StacksPage component.
  * Lists all available service collections (stacks) and provides options to create or delete them.
  * @returns The rendered page.

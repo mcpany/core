@@ -20,20 +20,6 @@ interface SchemaFormProps {
 }
 
 /**
- * Intent: Document SchemaForm
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * SchemaForm - renders a form based on a JSON Schema definition.
  *
  * @param props - Component props

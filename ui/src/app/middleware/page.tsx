@@ -7,23 +7,7 @@
 
 import { PipelineVisualizer } from "@/components/middleware/pipeline-visualizer";
 
-/**
- * Intent: Document MiddlewarePage
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * MiddlewarePage renders the middleware pipeline visualization page.
- */
+/** MiddlewarePage renders the middleware pipeline visualization page. */
 export default function MiddlewarePage() {
     return (
         <div className="flex-1 space-y-4 p-8 pt-6">

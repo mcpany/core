@@ -9,20 +9,6 @@ import { Loader2 } from "lucide-react"
 import { LogStream } from "@/components/logs/log-stream"
 
 /**
- * Intent: Document LogsPage
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * LogsPage component.
  * @returns The rendered component.
  */

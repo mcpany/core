@@ -504,7 +504,7 @@ func TestServer_ListAuditLogs(t *testing.T) {
 	}
 	am.SetStore(mockStore)
 
-	s := NewServer(nil, tm, sr, store, nil, func() *middleware.AuditMiddleware { return am })
+	s := NewServer(nil, tm, sr, store, nil, am)
 	ctx := context.Background()
 
 	// Test ListAuditLogs - Success

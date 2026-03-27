@@ -8,20 +8,6 @@ import * as React from "react"
 const MOBILE_BREAKPOINT = 768
 
 /**
- * Intent: Document useIsMobile
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Hook to detect if the current viewport is mobile-sized.
  * @returns True if the viewport is mobile, false otherwise.
  */

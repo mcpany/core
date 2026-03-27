@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useMemo, useRef, useCallback, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
@@ -12,8 +12,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { JsonView } from "@/components/ui/json-view";
-import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SmartTableProps {
@@ -22,38 +20,10 @@ interface SmartTableProps {
 
 type SortDirection = 'asc' | 'desc' | null;
 
-/**
- * Intent: Document SmartTable
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * SmartTable renders a table with sorting and filtering.
- *
- * @param props - The component props.
- * @param props.data - The data to display.
- * @returns The rendered component.
- */
 export function SmartTable({ data }: SmartTableProps) {
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: SortDirection }>({ key: '', direction: null });
-  const [globalFilter, setGlobalFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10; // Better for tool results default
-
-  // Resizing state
-  const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
-  const resizingColRef = useRef<string | null>(null);
-  const startXRef = useRef<number>(0);
-  const startWidthRef = useRef<number>(0);
 
   // Extract columns
   const columns = useMemo(() => {
@@ -66,24 +36,11 @@ export function SmartTable({ data }: SmartTableProps) {
     return Array.from(keys);
   }, [data]);
 
-  // Filtering logic
-  const filteredData = useMemo(() => {
-    if (!globalFilter) return data;
-    const lowercasedFilter = globalFilter.toLowerCase();
-
-    return data.filter(item => {
-      return Object.values(item).some(value => {
-        if (value == null) return false;
-        return String(value).toLowerCase().includes(lowercasedFilter);
-      });
-    });
-  }, [data, globalFilter]);
-
   // Sorting logic
   const sortedData = useMemo(() => {
-    if (!sortConfig.key || !sortConfig.direction) return filteredData;
+    if (!sortConfig.key || !sortConfig.direction) return data;
 
-    return [...filteredData].sort((a, b) => {
+    return [...data].sort((a, b) => {
       const aVal = a[sortConfig.key];
       const bVal = b[sortConfig.key];
 
@@ -99,7 +56,7 @@ export function SmartTable({ data }: SmartTableProps) {
       if (aStr > bStr) return sortConfig.direction === 'asc' ? 1 : -1;
       return 0;
     });
-  }, [filteredData, sortConfig]);
+  }, [data, sortConfig]);
 
   // Pagination logic
   const totalPages = Math.ceil(sortedData.length / itemsPerPage);
@@ -109,8 +66,6 @@ export function SmartTable({ data }: SmartTableProps) {
   }, [sortedData, currentPage, itemsPerPage]);
 
   const handleSort = (key: string) => {
-    // Disable sorting if we are currently resizing
-    if (resizingColRef.current) return;
     setSortConfig(prev => {
       if (prev.key === key) {
         if (prev.direction === 'asc') return { key, direction: 'desc' };
@@ -119,49 +74,6 @@ export function SmartTable({ data }: SmartTableProps) {
       return { key, direction: 'asc' };
     });
   };
-
-  // Drag handling
-  const handleMouseDown = (e: React.MouseEvent, colKey: string) => {
-    e.preventDefault();
-    e.stopPropagation(); // Prevent sorting
-    resizingColRef.current = colKey;
-    startXRef.current = e.clientX;
-    // Default width is typically 150-200 if not set, let's use current width or default
-    startWidthRef.current = columnWidths[colKey] || 150;
-
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
-  };
-
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!resizingColRef.current) return;
-
-    const diff = e.clientX - startXRef.current;
-    let newWidth = startWidthRef.current + diff;
-
-    // Set a minimum width
-    if (newWidth < 60) newWidth = 60;
-
-    setColumnWidths(prev => ({
-        ...prev,
-        [resizingColRef.current as string]: newWidth
-    }));
-  }, []);
-
-  const handleMouseUp = useCallback(() => {
-    resizingColRef.current = null;
-    document.removeEventListener("mousemove", handleMouseMove);
-    document.removeEventListener("mouseup", handleMouseUp);
-  }, [handleMouseMove]);
-
-  useEffect(() => {
-    // Cleanup event listeners on unmount
-    return () => {
-        document.removeEventListener("mousemove", handleMouseMove);
-        document.removeEventListener("mouseup", handleMouseUp);
-    };
-  }, [handleMouseMove, handleMouseUp]);
-
 
   const [copiedCell, setCopiedCell] = useState<string | null>(null);
   const copyToClipboard = (text: string, id: string) => {
@@ -251,20 +163,6 @@ export function SmartTable({ data }: SmartTableProps) {
 
   return (
     <div className="flex flex-col space-y-4 h-full">
-        <div className="flex items-center">
-            <div className="relative max-w-sm w-full">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                    placeholder="Search all columns..."
-                    value={globalFilter}
-                    onChange={(e) => {
-                        setGlobalFilter(e.target.value);
-                        setCurrentPage(1); // Reset to first page on search
-                    }}
-                    className="pl-8 h-9"
-                />
-            </div>
-        </div>
         <div className="rounded-lg border border-border/50 bg-card overflow-hidden shadow-sm flex-1 flex flex-col">
             <ScrollArea className="flex-1 w-full relative">
                 <Table>
@@ -273,13 +171,12 @@ export function SmartTable({ data }: SmartTableProps) {
                             {columns.map(col => (
                                 <TableHead
                                     key={col}
-                                    className="whitespace-nowrap h-10 cursor-pointer select-none transition-colors hover:bg-muted/50 px-4 group relative"
+                                    className="whitespace-nowrap h-10 cursor-pointer select-none transition-colors hover:bg-muted/50 px-4 group"
                                     onClick={() => handleSort(col)}
-                                    style={{ width: columnWidths[col] ? `${columnWidths[col]}px` : 'auto', minWidth: columnWidths[col] ? `${columnWidths[col]}px` : '100px' }}
                                 >
-                                    <div className="flex items-center justify-between overflow-hidden">
-                                        <span className="font-medium truncate mr-2" title={col}>{col}</span>
-                                        <span className="text-muted-foreground/30 group-hover:text-muted-foreground flex items-center flex-shrink-0">
+                                    <div className="flex items-center justify-between">
+                                        <span className="font-medium">{col}</span>
+                                        <span className="text-muted-foreground/30 group-hover:text-muted-foreground flex items-center ml-2">
                                             {sortConfig.key === col ? (
                                                 sortConfig.direction === 'asc' ? <ChevronUp className="h-3.5 w-3.5 text-primary" /> : <ChevronDown className="h-3.5 w-3.5 text-primary" />
                                             ) : (
@@ -287,10 +184,6 @@ export function SmartTable({ data }: SmartTableProps) {
                                             )}
                                         </span>
                                     </div>
-                                    <div
-                                        className="absolute right-0 top-0 h-full w-2 cursor-col-resize hover:bg-primary/50 opacity-0 group-hover:opacity-100 transition-colors z-20"
-                                        onMouseDown={(e) => handleMouseDown(e, col)}
-                                    />
                                 </TableHead>
                             ))}
                         </TableRow>
@@ -306,11 +199,7 @@ export function SmartTable({ data }: SmartTableProps) {
                             paginatedData.map((row, i) => (
                                 <TableRow key={i} className="hover:bg-muted/30 transition-colors group/row">
                                     {columns.map(col => (
-                                        <TableCell
-                                            key={col}
-                                            className="py-2.5 px-4"
-                                            style={{ width: columnWidths[col] ? `${columnWidths[col]}px` : 'auto', maxWidth: columnWidths[col] ? `${columnWidths[col]}px` : undefined, overflow: columnWidths[col] ? 'hidden' : undefined }}
-                                        >
+                                        <TableCell key={col} className="py-2.5 px-4">
                                             {renderCell(row[col], col, i)}
                                         </TableCell>
                                     ))}

@@ -95,20 +95,6 @@ import { apiClient, Metric } from "@/lib/client";
 // ... (Icon map and MetricItem remain same)
 
 /**
- * Intent: Document MetricsOverview
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * MetricsOverview displays a grid of key system metrics (e.g., QPS, Latency, Users)
  * and the system health status. It fetches data periodically from the API.
  * @returns The rendered MetricsOverview component.

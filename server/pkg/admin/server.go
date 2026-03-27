@@ -32,15 +32,15 @@ import (
 // Summary: Represents a Server.
 type Server struct {
 	pb.UnimplementedAdminServiceServer
-	cache              *middleware.CachingMiddleware
-	toolManager        tool.ManagerInterface
-	serviceRegistry    serviceregistry.ServiceRegistryInterface
-	storage            storage.Storage
-	discoveryManager   *discovery.Manager
-	getAuditMiddleware func() *middleware.AuditMiddleware
+	cache            *middleware.CachingMiddleware
+	toolManager      tool.ManagerInterface
+	serviceRegistry  serviceregistry.ServiceRegistryInterface
+	storage          storage.Storage
+	discoveryManager *discovery.Manager
+	auditMiddleware  *middleware.AuditMiddleware
 }
 
-// NewServer creates a new Admin Server. cache manages the caching layer. toolManager is the toolManager. serviceRegistry is the registry of upstream services. storage provides the persistence layer. discoveryManager manages auto-discovery. getAuditMiddleware provides access to audit logs. Returns the result.
+// NewServer creates a new Admin Server. cache manages the caching layer. toolManager is the toolManager. serviceRegistry is the registry of upstream services. storage provides the persistence layer. discoveryManager manages auto-discovery. auditMiddleware provides access to audit logs. Returns the result.
 //
 // Parameters:
 //   - cache (*middleware.CachingMiddleware): The cache parameter.
@@ -48,7 +48,7 @@ type Server struct {
 //   - serviceRegistry (serviceregistry.ServiceRegistryInterface): The serviceRegistry parameter.
 //   - storage (storage.Storage): The storage parameter.
 //   - discoveryManager (*discovery.Manager): The discoveryManager parameter.
-//   - getAuditMiddleware (func() *middleware.AuditMiddleware): The getAuditMiddleware parameter.
+//   - auditMiddleware (*middleware.AuditMiddleware): The auditMiddleware parameter.
 //
 // Returns:
 //   - *Server: The resulting *Server.
@@ -78,7 +78,7 @@ func NewServer(
 	serviceRegistry serviceregistry.ServiceRegistryInterface,
 	storage storage.Storage,
 	discoveryManager *discovery.Manager,
-	getAuditMiddleware func() *middleware.AuditMiddleware,
+	auditMiddleware *middleware.AuditMiddleware,
 ) *Server {
 	return &Server{
 		cache:            cache,
@@ -86,7 +86,7 @@ func NewServer(
 		serviceRegistry:  serviceRegistry,
 		storage:          storage,
 		discoveryManager: discoveryManager,
-		getAuditMiddleware: getAuditMiddleware,
+		auditMiddleware:  auditMiddleware,
 	}
 }
 
@@ -663,11 +663,7 @@ func (s *Server) GetDiscoveryStatus(_ context.Context, _ *pb.GetDiscoveryStatusR
 // Side Effects:
 //   - None.
 func (s *Server) ListAuditLogs(ctx context.Context, req *pb.ListAuditLogsRequest) (*pb.ListAuditLogsResponse, error) {
-	var auditMiddleware *middleware.AuditMiddleware
-	if s.getAuditMiddleware != nil {
-		auditMiddleware = s.getAuditMiddleware()
-	}
-	if auditMiddleware == nil {
+	if s.auditMiddleware == nil {
 		return nil, status.Error(codes.FailedPrecondition, "audit logging is not enabled")
 	}
 
@@ -697,7 +693,7 @@ func (s *Server) ListAuditLogs(ctx context.Context, req *pb.ListAuditLogsRequest
 		Offset:    int(req.GetOffset()),
 	}
 
-	entries, err := auditMiddleware.Read(ctx, filter)
+	entries, err := s.auditMiddleware.Read(ctx, filter)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to read audit logs: %v", err)
 	}

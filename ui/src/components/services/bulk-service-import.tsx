@@ -48,20 +48,6 @@ interface ServiceImportItem {
 }
 
 /**
- * Intent: Document BulkServiceImport
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * BulkServiceImport provides a wizard-like interface for importing multiple service configurations.
  * It supports JSON/YAML input, file uploads, and URL imports with validation steps.
  */

@@ -22,20 +22,6 @@ interface ServiceTemplateSelectorProps {
 const CATEGORIES = ["All", "Web", "Productivity", "Database", "Dev Tools", "Cloud", "System", "Utility", "Other"];
 
 /**
- * Intent: Document ServiceTemplateSelector
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ServiceTemplateSelector component.
  * Allows users to browse and search for service templates.
  *

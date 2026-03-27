@@ -36,20 +36,6 @@ interface ConnectionDiagnosticDialogProps {
 }
 
 /**
- * Intent: Document ConnectionDiagnosticDialog
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ConnectionDiagnosticDialog.
  *
  * @param trigger - The trigger.
@@ -130,30 +116,7 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
     updateStep("config", { status: "success", detail: "Configuration valid" });
 
     // --- Step 1.5: Browser Connectivity (WebSocket & HTTP) ---
-    if (service.httpService && service.httpService.address) {
-        updateStep("browser_connectivity", { status: "running" });
-        addLog("browser_connectivity", `Attempting browser-side fetch to ${service.httpService.address}...`);
-        try {
-            const start = performance.now();
-            await fetch(service.httpService.address, { mode: 'no-cors', method: 'GET' });
-            const duration = (performance.now() - start).toFixed(0);
-            addLog("browser_connectivity", `✓ Fetch succeeded in ${duration}ms (Note: opaque response due to CORS is expected).`);
-            updateStep("browser_connectivity", { status: "success", detail: `${duration}ms` });
-        } catch (e: any) {
-            addLog("browser_connectivity", `✗ Fetch failed from browser: ${e.message}`);
-            addLog("browser_connectivity", "This might indicate a DNS issue, client-side firewall blocking the request, or invalid SSL certificate.");
-            setDiagnosticResult({
-                category: "network",
-                title: "Browser Connectivity Failed",
-                description: "Your browser cannot reach the upstream service URL directly.",
-                suggestion: "1. Verify the URL is correct.\n2. If using 'localhost', ensure you mean the browser's localhost and not the server's.\n3. Check if your browser or network has a firewall blocking the request.\n4. Check if the SSL certificate is invalid or self-signed (you may need to accept it in a new tab first).",
-                severity: "critical"
-            });
-            updateStep("browser_connectivity", { status: "failure", detail: "Fetch Error" });
-            setIsRunning(false);
-            return;
-        }
-    } else if (service.websocketService) {
+    if (service.websocketService) {
         updateStep("browser_connectivity", { status: "running" });
         addLog("browser_connectivity", `Attempting to connect to ${url} from browser...`);
 

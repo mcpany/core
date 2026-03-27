@@ -20,20 +20,6 @@ interface OutputTransformerEditorProps {
 }
 
 /**
- * Intent: Document OutputTransformerEditor
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Editor for OutputTransformer configuration.
  */
 export function OutputTransformerEditor({ transformer, onChange }: OutputTransformerEditorProps) {

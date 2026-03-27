@@ -77,20 +77,6 @@ function CodeBlock({ language, code }: { language: string; code: string }) {
 }
 
 /**
- * Intent: Document FileConfigCard
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Displays the configuration of a service in multiple formats (YAML, JSON, TextProto).
  *
  * @param props - The component props.

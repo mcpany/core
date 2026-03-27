@@ -25,20 +25,6 @@ interface ToolPresetsProps {
 }
 
 /**
- * Intent: Document ToolPresets
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ToolPresets component.
  * @param props - The component props.
  * @param props.toolName - The name of the tool.

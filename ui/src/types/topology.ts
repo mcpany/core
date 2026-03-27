@@ -4,20 +4,6 @@
  */
 
 /**
- * Intent: Document NodeType
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Represents the type of a node in the topology graph.
  */
 export type NodeType =
@@ -33,20 +19,6 @@ export type NodeType =
   | 'NODE_TYPE_WEBHOOK';
 
 /**
- * Intent: Document NodeStatus
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Represents the operational status of a node.
  */
 export type NodeStatus =
@@ -56,20 +28,6 @@ export type NodeStatus =
   | 'NODE_STATUS_ERROR';
 
 /**
- * Intent: Document NodeMetrics
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Performance metrics associated with a node.
  */
 export interface NodeMetrics {
@@ -82,20 +40,6 @@ export interface NodeMetrics {
 }
 
 /**
- * Intent: Document Node
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Represents a single node in the topology graph.
  */
 export interface Node {
@@ -116,20 +60,6 @@ export interface Node {
 }
 
 /**
- * Intent: Document Graph
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Represents the entire topology graph structure.
  */
 export interface Graph {

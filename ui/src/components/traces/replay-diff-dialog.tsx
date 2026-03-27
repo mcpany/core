@@ -22,20 +22,6 @@ interface ReplayDiffDialogProps {
 }
 
 /**
- * Intent: Document ReplayDiffDialog
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ReplayDiffDialog component.
  * Allows replaying a tool call from a trace and viewing the diff between original and new output.
  */

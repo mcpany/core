@@ -10,20 +10,6 @@ import { Graph, Node as TopologyNode } from '../types/topology';
 import { useTopology } from '../contexts/service-health-context';
 
 /**
- * Intent: Document NetworkGraphState
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * State and actions for the network graph visualization.
  */
 export interface NetworkGraphState {
@@ -81,20 +67,6 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
 };
 
 /**
- * Intent: Document useNetworkTopology
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Hook to fetch and manage network topology data.
  *
  * It periodically polls the backend for topology updates and handles layouting

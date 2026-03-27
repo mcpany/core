@@ -518,7 +518,6 @@ func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 //   - Makes a gRPC call to the upstream service.
 //   - Updates metrics (latency, success/error counts).
 //   - Logs execution details.
-//
 // IsStreaming returns true if the tool supports streaming.
 //
 // Summary: Checks if the tool supports streaming execution.
@@ -554,26 +553,6 @@ func (t *GRPCTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 	return ch, nil
 }
 
-// Execute handles the execution of the gRPC tool.
-//
-// Summary: Executes the gRPC tool call.
-//
-// Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *ExecutionRequest. The execution request.
-//
-// Returns:
-//   - any: The execution result.
-//   - error: An error if execution fails.
-//
-// Errors:
-//   - Returns an error if the grpc pool is not found.
-//   - Returns an error if getting a client from the pool fails.
-//   - Returns an error if unmarshalling the tool inputs fails.
-//   - Returns an error if the grpc method invocation fails.
-//
-// Side Effects:
-//   - Makes a gRPC call to the upstream service.
 func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -889,7 +868,6 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 //   - Makes an HTTP request to the upstream service.
 //   - Updates metrics.
 //   - Logs execution details.
-//
 // IsStreaming returns true if the tool supports streaming.
 //
 // Summary: Checks if the tool supports streaming execution.
@@ -925,27 +903,6 @@ func (t *HTTPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 	return ch, nil
 }
 
-// Execute handles the execution of the HTTP tool.
-//
-// Summary: Executes the HTTP tool call.
-//
-// Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *ExecutionRequest. The execution request.
-//
-// Returns:
-//   - any: The execution result.
-//   - error: An error if execution fails.
-//
-// Errors:
-//   - Returns an error if policy evaluation fails or blocks execution.
-//   - Returns an error if the http pool is not found.
-//   - Returns an error if getting a client from the pool fails.
-//   - Returns an error if input validation or body preparation fails.
-//   - Returns an error if the HTTP request fails.
-//
-// Side Effects:
-//   - Makes an HTTP request to the upstream service.
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -1696,7 +1653,6 @@ func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 // Side Effects:
 //   - Makes an MCP call to the upstream service.
 //   - Logs execution details.
-//
 // IsStreaming returns true if the tool supports streaming.
 //
 // Summary: Checks if the tool supports streaming execution.
@@ -1732,27 +1688,6 @@ func (t *MCPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-c
 	return ch, nil
 }
 
-// Execute handles the execution of the MCP tool.
-//
-// Summary: Executes the MCP tool call.
-//
-// Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *ExecutionRequest. The execution request.
-//
-// Returns:
-//   - any: The execution result.
-//   - error: An error if execution fails.
-//
-// Errors:
-//   - Returns an error if initialization failed.
-//   - Returns an error if unmarshalling tool inputs fails.
-//   - Returns an error if the transformation webhook fails.
-//   - Returns an error if calling the tool on the downstream MCP service fails.
-//   - Returns an error if output parsing or transformation fails.
-//
-// Side Effects:
-//   - Makes a call to a downstream MCP service.
 func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError
@@ -2037,7 +1972,6 @@ func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 // Side Effects:
 //   - Makes an HTTP request to the upstream service.
 //   - Logs execution details.
-//
 // IsStreaming returns true if the tool supports streaming.
 //
 // Summary: Checks if the tool supports streaming execution.
@@ -2073,29 +2007,6 @@ func (t *OpenAPITool) StreamExecute(ctx context.Context, req *ExecutionRequest) 
 	return ch, nil
 }
 
-// Execute handles the execution of the OpenAPI tool.
-//
-// Summary: Executes the OpenAPI tool call.
-//
-// Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *ExecutionRequest. The execution request.
-//
-// Returns:
-//   - any: The execution result.
-//   - error: An error if execution fails.
-//
-// Errors:
-//   - Returns an error if initialization failed.
-//   - Returns an error if unmarshalling tool inputs fails.
-//   - Returns an error if URL validation fails.
-//   - Returns an error if HTTP request creation or execution fails.
-//   - Returns an error if the upstream HTTP response status is >= 400.
-//   - Returns an error if reading the response body fails.
-//   - Returns an error if output parsing or transformation fails.
-//
-// Side Effects:
-//   - Makes an HTTP request to the upstream service.
 func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -2505,7 +2416,6 @@ func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 //   - Executes a subprocess on the local system.
 //   - Consumes system resources (CPU, memory).
 //   - Logs execution details.
-//
 // IsStreaming returns true if the tool supports streaming.
 //
 // Summary: Checks if the tool supports streaming execution.
@@ -2541,27 +2451,6 @@ func (t *LocalCommandTool) StreamExecute(ctx context.Context, req *ExecutionRequ
 	return ch, nil
 }
 
-// Execute handles the execution of the command-line tool.
-//
-// Summary: Executes the local command-line tool.
-//
-// Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *ExecutionRequest. The execution request.
-//
-// Returns:
-//   - any: The execution result.
-//   - error: An error if execution fails.
-//
-// Errors:
-//   - Returns an error if initialization failed.
-//   - Returns an error if policy evaluation blocks the execution.
-//   - Returns an error if argument substitution or validation fails.
-//   - Returns an error if shell injection is detected.
-//   - Returns an error if the command execution fails.
-//
-// Side Effects:
-//   - Executes a local command line process.
 func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -2984,7 +2873,6 @@ func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 //   - Executes a subprocess (potentially inside a container).
 //   - Consumes system resources.
 //   - Logs execution details.
-//
 // IsStreaming returns true if the tool supports streaming.
 //
 // Summary: Checks if the tool supports streaming execution.
@@ -3020,27 +2908,6 @@ func (t *CommandTool) StreamExecute(ctx context.Context, req *ExecutionRequest) 
 	return ch, nil
 }
 
-// Execute handles the execution of the command-line tool.
-//
-// Summary: Executes the command-line tool via executor.
-//
-// Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *ExecutionRequest. The execution request.
-//
-// Returns:
-//   - any: The execution result.
-//   - error: An error if execution fails.
-//
-// Errors:
-//   - Returns an error if initialization failed.
-//   - Returns an error if policy evaluation blocks the execution.
-//   - Returns an error if argument substitution or validation fails.
-//   - Returns an error if shell injection is detected.
-//   - Returns an error if the command execution fails.
-//
-// Side Effects:
-//   - Executes a local command line process, potentially in a container.
 func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -4800,8 +4667,8 @@ func checkArgumentInterpreterInjection(val string, template string, base string,
 	// This covers cases where the main command is a shell or runner (e.g. bash -c "awk ...")
 	// and the argument is the command line for that interpreter.
 	args := strings.Fields(template)
-	for _, arg := range args {
-		argBase := strings.ToLower(filepath.Base(arg))
+	if len(args) > 0 {
+		argBase := strings.ToLower(filepath.Base(args[0]))
 		// Avoid double checking if it's the same command (already checked above)
 		if argBase != base && isInterpreter(argBase) {
 			effectiveQuoteLevel := quoteLevel

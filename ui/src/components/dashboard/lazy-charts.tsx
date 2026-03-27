@@ -36,107 +36,27 @@ const _LazyAuditLogWidget = lazy(() =>
   import("@/components/audit/audit-log-viewer").then((mod) => ({ default: mod.AuditLogViewer }))
 );
 
-/**
- * Intent: Document LazyRequestVolumeChart
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * LazyRequestVolumeChart with Suspense skeleton.
- */
+/** LazyRequestVolumeChart with Suspense skeleton. */
 export const LazyRequestVolumeChart = (props: object) => (
   <Suspense fallback={<ChartSkeleton />}><_LazyRequestVolumeChart {...(props as any)} /></Suspense>
 );
 
-/**
- * Intent: Document LazyRecentActivityWidget
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * LazyRecentActivityWidget with Suspense skeleton.
- */
+/** LazyRecentActivityWidget with Suspense skeleton. */
 export const LazyRecentActivityWidget = (props: object) => (
   <Suspense fallback={<ChartSkeleton />}><_LazyRecentActivityWidget {...(props as any)} /></Suspense>
 );
 
-/**
- * Intent: Document LazyTopToolsWidget
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * LazyTopToolsWidget with Suspense skeleton.
- */
+/** LazyTopToolsWidget with Suspense skeleton. */
 export const LazyTopToolsWidget = (props: object) => (
   <Suspense fallback={<ChartSkeleton />}><_LazyTopToolsWidget {...(props as any)} /></Suspense>
 );
 
-/**
- * Intent: Document LazyHealthHistoryChart
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * LazyHealthHistoryChart with Suspense skeleton.
- */
+/** LazyHealthHistoryChart with Suspense skeleton. */
 export const LazyHealthHistoryChart = (props: object) => (
   <Suspense fallback={<ChartSkeleton />}><_LazyHealthHistoryChart {...(props as any)} /></Suspense>
 );
 
-/**
- * Intent: Document LazyAuditLogWidget
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * LazyAuditLogWidget with Suspense skeleton.
- */
+/** LazyAuditLogWidget with Suspense skeleton. */
 export const LazyAuditLogWidget = (props: object) => (
   <Suspense fallback={<ChartSkeleton />}><_LazyAuditLogWidget {...(props as any)} /></Suspense>
 );

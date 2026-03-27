@@ -57,20 +57,6 @@ interface CredentialFormProps {
 }
 
 /**
- * Intent: Document CredentialForm
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * CredentialForm.
  *
  * @param onSuccess - The onSuccess.

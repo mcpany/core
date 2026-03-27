@@ -30,20 +30,6 @@ interface HttpToolEditorProps {
 }
 
 /**
- * Intent: Document HttpToolEditor
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Editor for configuring a single HTTP tool.
  * Allows defining tool metadata and the mapped HTTP request details.
  * @param props - The component props.

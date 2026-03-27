@@ -48,20 +48,6 @@ interface AuditLogEntry {
 }
 
 /**
- * Intent: Document ToolRunner
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ToolRunner is a component that provides an interface for executing tools
  * and viewing their results, metrics, and schema.
  *

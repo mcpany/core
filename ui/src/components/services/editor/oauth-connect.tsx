@@ -18,20 +18,6 @@ interface OAuthConnectProps {
 }
 
 /**
- * Intent: Document OAuthConnect
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * OAuthConnect component.
  * @param props - The component props.
  * @param props.serviceId - The unique identifier for service.

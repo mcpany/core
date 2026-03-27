@@ -17,20 +17,6 @@ interface DashboardContextType {
 const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
 
 /**
- * Intent: Document DashboardProvider
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Provides dashboard context to children, allowing them to access and update shared state
  * like the currently selected service filter.
  *
@@ -50,20 +36,6 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 }
 
 /**
- * Intent: Document useDashboard
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - Documented below.
- *
- * Side Effects:
- *   - None
- *
  * Hook to access the dashboard context.
  * Must be used within a DashboardProvider.
  *

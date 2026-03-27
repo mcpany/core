@@ -43,20 +43,6 @@ const actions = [
 ];
 
 /**
- * Intent: Document QuickActionsWidget
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * A widget that provides quick access links to common actions and pages.
  *
  * @returns The rendered widget component.

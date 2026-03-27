@@ -23,23 +23,7 @@ interface GlobalSettings {
     [key: string]: any;
 }
 
-/**
- * Intent: Document PipelineVisualizer
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * PipelineVisualizer allows verifying and modifying the middleware pipeline order.
- */
+/** PipelineVisualizer allows verifying and modifying the middleware pipeline order. */
 export function PipelineVisualizer() {
     const [middlewares, setMiddlewares] = useState<Middleware[]>([]);
     const [settings, setSettings] = useState<GlobalSettings | null>(null);

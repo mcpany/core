@@ -68,20 +68,6 @@ const addToRemoveQueue = (toastId: string) => {
 }
 
 /**
- * Intent: Document reducer
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * The reducer function for managing toast state.
  *
  * @param state - The current state of the toasts.

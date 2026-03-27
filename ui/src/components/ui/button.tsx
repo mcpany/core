@@ -39,20 +39,6 @@ const buttonVariants = cva(
 )
 
 /**
- * Intent: Document ButtonProps
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ButtonProps type definition.
  */
 export interface ButtonProps

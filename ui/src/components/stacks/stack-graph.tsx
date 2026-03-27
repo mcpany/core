@@ -113,20 +113,6 @@ const nodeTypes = {
 };
 
 /**
- * Intent: Document StackGraph
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * StackGraph component.
  * Visualizes the stack configuration as a graph.
  */

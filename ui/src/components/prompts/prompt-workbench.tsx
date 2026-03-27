@@ -40,20 +40,6 @@ interface PromptWorkbenchProps {
 }
 
 /**
- * Intent: Document PromptWorkbench
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * PromptWorkbench is a component that provides an interface for creating, editing, and testing prompts.
  * It allows users to manage prompt templates and test them with different inputs.
  *

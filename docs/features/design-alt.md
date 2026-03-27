@@ -56,11 +56,3 @@ ALT addresses this by cryptographically locking high-risk tool capabilities to s
 
 ## 7. Evolutionary Changelog
 * **2026-06-20:** Initial Document Creation.
-* **2026-06-21:** Integrated with **Mission-Root Continuity Provider (MRCP)**. ALT anchors now carry monotonic sequence IDs that must align with the restored continuity state, preventing attention-mapping replay attacks during mission resumption.
-* **2026-06-23: - Integration with Attention-Density Guard (ADG) v2**
-    **Context:** Today's market sync revealed the emergence of "Attention-Density Exhaustion" (CWF) as a means to bypass ALT-pinned instructions.
-    **Architecture Adjustment:**
-    *   ALT middleware now consumes **Attention Masks** provided by the **ADG v2**.
-    *   High-risk tool calls are now locked not just to "Anchors," but to **Hardware-Attested Attention Tiers**.
-    *   If the agent's reasoning trace indicates influence from "Noise Fragments" (un-attested fragments with high entropy), ALT will interdict the call regardless of anchor presence.
-    **Security Impact:** Neutralizes "Noise Injection" attacks that attempt to flood the context window to evict ALT-pinned security constraints.

@@ -6,20 +6,6 @@
 import { PromptWorkbench } from "@/components/prompts/prompt-workbench";
 
 /**
- * Intent: Document PromptsPage
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * PromptsPage component.
  * @returns The rendered component.
  */

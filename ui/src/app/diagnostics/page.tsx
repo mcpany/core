@@ -7,20 +7,6 @@ import { SystemHealth } from "@/components/diagnostics/system-health";
 import { DiscoveryStatus } from "@/components/diagnostics/discovery-status";
 
 /**
- * Intent: Document DiagnosticsPage
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * DiagnosticsPage component.
  * @returns The rendered component.
  */

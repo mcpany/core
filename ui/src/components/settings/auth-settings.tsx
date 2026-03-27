@@ -34,20 +34,6 @@ const authSettingsSchema = z.object({
 type AuthSettingsValues = z.infer<typeof authSettingsSchema>;
 
 /**
- * Intent: Document AuthSettingsForm
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * AuthSettingsForm component.
  * @returns The rendered component.
  */

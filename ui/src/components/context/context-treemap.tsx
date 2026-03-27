@@ -105,20 +105,6 @@ const CustomTooltip = ({ active, payload }: any) => {
 };
 
 /**
- * Intent: Document ContextTreemap
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Visualization component that renders a treemap of tool token costs.
  * It groups tools by service and color-codes them for easy analysis.
  */

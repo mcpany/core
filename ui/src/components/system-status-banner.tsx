@@ -12,20 +12,6 @@ import { apiClient, DoctorReport } from "@/lib/client";
 import { usePolling } from "@/hooks/use-polling";
 
 /**
- * Intent: Document SystemStatusBanner
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * SystemStatusBanner component.
  * @returns The rendered component.
  */
