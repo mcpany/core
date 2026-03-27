@@ -1024,9 +1024,12 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 	// 3. Fallback: If no structured result identified, treat as raw data
 	if finalResult == nil {
 		if len(jsonBytes) == 0 && marshalErr == nil {
-			jsonBytes, marshalErr = util.FastMarshal(result)
-			if marshalErr == nil {
-				text = util.BytesToString(jsonBytes)
+			// ⚡ Bolt Optimization: Fast marshal directly to string
+			// to avoid allocations and copying later.
+			if str, err := util.FastMarshalToString(result); err == nil {
+				text = str
+			} else {
+				marshalErr = err
 			}
 		}
 
@@ -1407,10 +1410,15 @@ func (r LazyLogResult) LogValue() slog.Value {
 		if ctr, err := convertMapToCallToolResult(v); err == nil {
 			return summarizeCallToolResult(ctr)
 		}
-		// Otherwise redact it. We marshal it to JSON bytes to use RedactJSON.
-		// Use json-iterator for speed.
-		jsonBytes, _ := util.FastMarshal(v)
-		return slog.StringValue(util.BytesToString(util.RedactJSON(jsonBytes)))
+		// ⚡ Bolt Optimization: Use RedactMap directly to avoid JSON serialization
+		// which takes huge CPU/memory allocations for gigantic map[string]any.
+		redacted := util.RedactMap(v)
+		// Marshal the redacted map. Use string mapping if small, otherwise summarize.
+		jsonBytes, _ := util.FastMarshal(redacted)
+		if len(jsonBytes) > 1024 {
+			return slog.StringValue(fmt.Sprintf("<Redacted Map, size=%d bytes>", len(jsonBytes)))
+		}
+		return slog.StringValue(util.BytesToString(jsonBytes))
 	default:
 		// Fallback for other types
 		return slog.StringValue(util.ToString(v))
