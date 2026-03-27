@@ -35,6 +35,20 @@ import { AddWidgetSheet } from "@/components/dashboard/add-widget-sheet";
 import { fetchWithAuth } from "@/lib/client";
 
 /**
+ * Intent: Document WidgetInstance
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Represents a specific instance of a widget on the dashboard.
  */
 export interface WidgetInstance {
@@ -79,8 +93,6 @@ const renderWidget = (widget: WidgetInstance) => {
 
 // ⚡ BOLT: [Render Optimization] Extract Draggable Widget into React.memo to prevent re-rendering all widgets during drag or single-widget state changes.
 // Randomized Selection from Top 5 High-Impact Targets
-// The `renderWidget` function within `DashboardGrid` was causing O(N) unmemoized rendering for every grid layout change or state update, dropping frames.
-// By extracting and memoizing this component, we decouple widget content rendering from the grid's layout lifecycle, achieving near O(1) rendering cost during drag/resize.
 const MemoizedWidgetCard = React.memo(({ widget, index, updateWidgetSize, toggleWidgetVisibility, removeWidget }: {
     widget: WidgetInstance;
     index: number;
@@ -160,6 +172,20 @@ const MemoizedWidgetCard = React.memo(({ widget, index, updateWidgetSize, toggle
 MemoizedWidgetCard.displayName = "MemoizedWidgetCard";
 
 /**
+ * Intent: Document DashboardGrid
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * DashboardGrid component.
  * Implements a draggable grid for dashboard widgets with resizing and dynamic layout controls.
  * @returns The rendered component.

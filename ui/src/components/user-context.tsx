@@ -9,11 +9,39 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { apiClient } from '@/lib/client';
 
 /**
+ * Intent: Document UserRole
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Defines the role of a user in the system.
  */
 export type UserRole = 'admin' | 'editor' | 'viewer';
 
 /**
+ * Intent: Document User
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Represents a user of the application.
  */
 export interface User {
@@ -48,6 +76,20 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 /**
+ * Intent: Document UserProvider
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Provider component for user authentication context.
  *
  * @param props - The component props.
@@ -108,6 +150,20 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 }
 
 /**
+ * Intent: Document useUser
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - Documented below.
+ *
+ * Side Effects:
+ *   - None
+ *
  * Hook to access the user context.
  * @returns The user context.
  * @throws Error if used outside of a UserProvider.

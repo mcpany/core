@@ -17,6 +17,20 @@ interface TemplateConfigFormProps {
 }
 
 /**
+ * Intent: Document TemplateConfigForm
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * TemplateConfigForm renders a form based on a service template definition.
  * It handles variable substitution inputs.
  * @param props - Component props.

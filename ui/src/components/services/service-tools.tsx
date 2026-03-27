@@ -26,6 +26,20 @@ interface ServiceToolsProps {
 }
 
 /**
+ * Intent: Document ServiceTools
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * ServiceTools lists the tools exposed by an upstream service.
  * It provides actions to try out tools in the playground and view their schema definitions.
  */

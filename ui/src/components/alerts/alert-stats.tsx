@@ -11,6 +11,20 @@ import { AlertCircle, CheckCircle2, AlertTriangle, Activity, Loader2 } from "luc
 import { apiClient } from "@/lib/client";
 
 /**
+ * Intent: Document AlertStats
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * AlertStats component.
  * @returns The rendered component.
  */

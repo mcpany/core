@@ -13,6 +13,20 @@ import {
 } from "@/components/ui/toast"
 
 /**
+ * Intent: Document Toaster
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Toaster component.
  * @returns The rendered component.
  */

@@ -43,6 +43,20 @@ interface AuditLogEntry {
 }
 
 /**
+ * Intent: Document AuditLogViewer
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * AuditLogViewer component.
  * Displays a table of audit logs with filtering capabilities and detailed view.
  *

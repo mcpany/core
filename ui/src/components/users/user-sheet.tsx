@@ -58,6 +58,20 @@ const userSchema = z.object({
 type UserValues = z.infer<typeof userSchema>;
 
 /**
+ * Intent: Document UserSheet
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * UserSheet component.
  * Renders a sheet for creating or editing a user.
  *

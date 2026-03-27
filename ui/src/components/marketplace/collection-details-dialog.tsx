@@ -18,6 +18,20 @@ interface CollectionDetailsDialogProps {
 }
 
 /**
+ * Intent: Document CollectionDetailsDialog
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * CollectionDetailsDialog component.
  * Displays details about a specific service collection in a dialog.
  *

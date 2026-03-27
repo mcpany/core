@@ -16,6 +16,20 @@ import { ContextTreemap } from "@/components/context/context-treemap";
 import { ContextSimulator } from "@/components/context/context-simulator";
 
 /**
+ * Intent: Document ContextPage
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * ContextPage component.
  * Displays the Recursive Context Dashboard.
  * @returns The rendered component.

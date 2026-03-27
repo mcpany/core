@@ -18,6 +18,20 @@ interface JsonTreeProps {
 }
 
 /**
+ * Intent: Document JsonTree
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * JsonTree component.
  * Renders a recursive tree view of JSON data.
  *

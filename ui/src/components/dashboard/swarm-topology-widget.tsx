@@ -106,6 +106,20 @@ function layoutGraph(graph: any): SwarmTopologyData {
 }
 
 /**
+ * Intent: Document SwarmTopologyWidget
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * SwarmTopologyWidget component displays a visual representation of the swarm network of agents.
  *
  * @returns The rendered component.

@@ -21,6 +21,20 @@ interface ServiceConfigStepProps {
 }
 
 /**
+ * Intent: Document ServiceConfigStep
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Step for configuring service parameters.
  * @param props Component properties.
  */

@@ -52,6 +52,20 @@ const PADDING_BOTTOM = 40;
 const PADDING_X = 40;
 
 /**
+ * Intent: Document SequenceDiagram
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * SequenceDiagram renders a visual timeline of a trace, showing the sequence of tool calls and responses between actors.
  *
  * @param props.trace - The trace data to visualize.

@@ -37,6 +37,20 @@ interface SecretPickerProps {
 }
 
 /**
+ * Intent: Document SecretPicker
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * A component to select a secret from the stored secrets.
  * Can be used as a full combobox or attached to a custom trigger (icon).
  */

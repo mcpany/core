@@ -1,4 +1,18 @@
 /**
+ * Intent: Document ServiceRegistryItem
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -13,6 +27,20 @@ export interface ServiceRegistryItem {
 }
 
 /**
+ * Intent: Document SERVICE_REGISTRY
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Registry of popular services with their default configurations.
  */
 export const SERVICE_REGISTRY: ServiceRegistryItem[] = [

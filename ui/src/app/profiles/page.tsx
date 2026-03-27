@@ -16,6 +16,20 @@ import { ProfileEditor, Profile } from "@/components/profiles/profile-editor";
 import { WizardDialog } from "@/components/profiles/wizard/wizard-dialog";
 
 /**
+ * Intent: Document ProfilesPage
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * ProfilesPage component.
  * @returns The rendered component.
  */
