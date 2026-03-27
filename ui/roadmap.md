@@ -201,14 +201,10 @@
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
 
-#### Upcoming (2026-07-08 Evolution)
-- [ ] **[P0] Mesh Identity Manager**: (2026-07-08) UI for reviewing and approving hardware-attested, mesh-resident agent identities.
-- [ ] **[P0] Service Mesh Topology Monitor**: (2026-07-08) Real-time visualization of authenticated inter-agent communication channels and mesh health.
-- [ ] **[P0] Cache Integrity Auditor**: (2026-07-08) Visual workspace for verifying cryptographic signatures of CI/CD build caches.
-- [ ] **[P0] Action-Chain Sovereignty Monitor**: (2026-07-08) Real-time visualization of automated workflow sequences and interdiction events.
-
 #### Upcoming (2026-07-07 Evolution)
+- [ ] **[P0] Cache Integrity Auditor**: (2026-07-07) Visual workspace for verifying cryptographic signatures of CI/CD build caches.
 - [ ] **[P1] Automated Remediation Tracer**: (2026-07-07) Verifiable audit trail viewer for AI-powered fix suggestions and SSDF compliance.
+- [ ] **[P0] Action-Chain Sovereignty Monitor**: (2026-07-07) Real-time visualization of automated workflow sequences and interdiction events.
 
 #### Upcoming (2026-03-20 Evolution)
 - [ ] **[P0] Mission Manifest Editor**: (2026-03-20) UI for defining and TPM-signing Hardware-Attested Mission Manifests (HAMM).
@@ -759,9 +755,3 @@
 - [ ] **[P0] Programmatic SDK Monitor**: Real-time visualization of SDK-driven agent interactions and Zero-Trust gate status. (Added: 2026-03-25)
 - [ ] **[P1] Session Sovereignty Dashboard**: UI for monitoring hardware-bound SQLite session state and attestation status. (Added: 2026-03-25)
 - [ ] **[P0] Pre-Flight Manifest Reviewer**: Visual workspace for reviewing and approving cryptographically signed mission-root manifests for non-interactive execution. (Added: 2026-03-25)
-
-### Strategic Evolution: [2026-06-05]
-- **Intent-Splicing Audit Log**: (P0) Forensic UI for reviewing deconstructed inter-agent messages and splicing attempts.
-- **Capability Accountability Dashboard**: (P0) Real-time tracker for session-bound capabilities and their lineage-aware expiration.
-- **HAIL Lineage Tracer**: (P0) Visual debugger for hardware-attested intent lineage (HAIL), mapping tool calls to root mission intents.
-- **Synthetic Policy Workspace**: (P1) Interactive environment for reviewing and approving mesh-synthesized security policies.

@@ -12,17 +12,6 @@
 - **WASM-BSH State Sanitizer**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Action-Chain** validation integration.
 - **A2A Authenticated Handshake Provider**: (Re-affirmed P0) Designated as the primary integration point for **PQMH** transition.
 
-## Evolution: [2026-07-08] Updates
-
-### Proposed Additions
-- **Zero-Trust Agent Identity Hub**: (P0) Authoritative local identity service issuing hardware-attested, mesh-resident tokens for all connected agents.
-- **Autonomous Service Mesh Gateway**: (P0) Secure, authenticated transport and discovery layer for inter-agent communication within the mesh.
-- **NHI Lifecycle Governance Provider**: (P1) Automation service for managing the lifecycle of Non-Human Identities, ensuring task-bound revocation.
-
-### Priority Shifts
-- **Full-Mesh Discovery Auth Provider**: (Re-affirmed P0) Evolving into the **Autonomous Service Mesh Gateway** for comprehensive mesh-resident coordination.
-- **Federated Swarm Identity (FSI) Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Mesh-Resident Token** issuance.
-
 ## Evolution: [2026-07-07] Updates
 
 ### Proposed Additions
@@ -1723,9 +1712,3 @@
 ### Priority Shifts
 - **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
 - **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.
-
-### Additions: 2026-06-05
-- **[P0] Intent-Splicing Detector (ISD):** Structural validation middleware to prevent malicious instruction splicing.
-- **[P0] Recursive Accountability Tracker (RAT):** Lifecycle-aware service for immediate revocation of session-bound capabilities.
-- **[P0] HAIL Lineage Provider:** Integration with TPM-backed monotonic counters for mission-root attestation.
-- **[P1] Synthetic Policy Workspace:** UI for reviewing mesh-synthesized security policies.

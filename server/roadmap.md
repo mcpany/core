@@ -205,12 +205,6 @@
 *   **[P0] Lock-Free Sharded Mailbox Hub**: High-speed, non-blocking teammate coordination using CRDT-based mailbox shards. (Added: 2026-06-24)
 *   **[P1] Zero-Knowledge Discovery (ZKD) Proxy**: Cryptographic capability masking for agent tool schemas until mission-bound handshake. (Added: 2026-06-24)
 
-#### Upcoming (2026-07-08 Evolution)
-*   **[P0] Zero-Trust Agent Identity Hub**: Authoritative local identity service issuing hardware-attested, mesh-resident tokens. (Added: 2026-07-08)
-*   **[P0] Autonomous Service Mesh Gateway**: Secure, authenticated transport and discovery layer for mesh-based coordination. (Added: 2026-07-08)
-*   **[P0] CI/CD Cache Integrity Guard (CCIG)**: Mandatory cryptographic signing and verification for all build caches. (Added: 2026-07-08)
-*   **[P0] Action-Chain Sovereignty Monitor (ACSM)**: Real-time validation of agent workflow sequences against mission-root intents. (Added: 2026-07-08)
-
 #### Upcoming (2026-06-27 Evolution)
 *   **[P0] Zero-Knowledge Discovery (ZKD) Proxy**: Authoritative discovery gateway implementing ZK-Capability Proofs for pre-flight masking. (Added: 2026-06-27)
 *   **[P0] CRDT-Native Mailbox Sharding**: Transition to full CRDT-native mailbox shards for lock-free horizontal scaling. (Added: 2026-06-27)
@@ -933,9 +927,3 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Zero-Copy BSH Transport**: Shared-memory based state transfer for sub-millisecond swarm handoffs. (Added: 2026-03-25)
 *   **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited Recursive Intent Delegation. (Added: 2026-03-25)
 *   **[P1] Predictive Resource Locking**: Intent-aware concurrency control for the Shared Blackboard. (Added: 2026-03-25)
-
-### Strategic Evolution: [2026-06-05]
-- **Intent-Splicing Detector (ISD)**: (P0) Structural validation middleware for the Semantic Integrity Bridge to prevent malicious instruction splicing in inter-agent streams.
-- **Recursive Accountability Tracker (RAT)**: (P0) Lifecycle-aware accounting service ensuring immediate revocation of session-bound capabilities upon task completion.
-- **HAIL Lineage Provider**: (P0) Identity middleware supporting Hardware-Attested Intent Lineage (HAIL) for non-repudiable mission-root attestation.
-- **Synthetic Policy Workspace**: (P1) Experimental mesh-local policy generation service backed by hardware attestation.
