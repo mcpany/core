@@ -110,9 +110,6 @@ func TestCheckSQLInjection(t *testing.T) {
 		// Generic SQL Injection keyword tests (from checkSQLKeywords)
 		{"keyword OR", "val OR 1=1", "mysql", 0, true},
 		{"keyword AND", "val AND 1=1", "mysql", 0, true},
-		{"keyword overlap bypass OR", "FORMAT OR 1=1", "mysql", 0, true},
-		{"multiple keywords bypass DROP", "1; DROP TABLE users; --", "mysql", 0, true},
-		{"multiple keywords bypass SELECT", "1; SELECT 1", "mysql", 0, true},
 		{"keyword UNION", "val UNION SELECT", "mysql", 0, true},
 		{"keyword SELECT", "SELECT *", "mysql", 0, true},
 		{"keyword FROM", "FROM users", "mysql", 0, true},

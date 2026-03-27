@@ -1841,14 +1841,10 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 	}
 
-	reqURL := t.url
+	url := t.url
 	for paramName, paramValue := range inputs {
 		if t.parameterDefs[paramName] == "path" {
-			valStr := util.ToString(paramValue)
-			if err := checkForPathTraversal(valStr); err != nil {
-				return nil, fmt.Errorf("path traversal attempt detected in parameter %q: %w", paramName, err)
-			}
-			reqURL = strings.ReplaceAll(reqURL, "{{"+paramName+"}}", url.PathEscape(valStr))
+			url = strings.ReplaceAll(url, "{{"+paramName+"}}", util.ToString(paramValue))
 			delete(inputs, paramName)
 		}
 	}
@@ -1893,11 +1889,11 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		}
 	}
 
-	if err := validation.IsSafeURL(reqURL); err != nil {
+	if err := validation.IsSafeURL(url); err != nil {
 		return nil, fmt.Errorf("unsafe url: %w", err)
 	}
 
-	httpReq, err := http.NewRequestWithContext(ctx, t.method, reqURL, body)
+	httpReq, err := http.NewRequestWithContext(ctx, t.method, url, body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create http request: %w", err)
 	}
@@ -1912,19 +1908,21 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		}
 	}
 
-	q := httpReq.URL.Query()
-	for paramName, paramValue := range inputs {
-		if t.parameterDefs[paramName] == "query" {
-			if slice, ok := paramValue.([]interface{}); ok {
-				for _, v := range slice {
-					q.Add(paramName, util.ToString(v))
+	if t.method == http.MethodGet {
+		q := httpReq.URL.Query()
+		for paramName, paramValue := range inputs {
+			if t.parameterDefs[paramName] == "query" {
+				if slice, ok := paramValue.([]interface{}); ok {
+					for _, v := range slice {
+						q.Add(paramName, util.ToString(v))
+					}
+				} else {
+					q.Add(paramName, util.ToString(paramValue))
 				}
-			} else {
-				q.Add(paramName, util.ToString(paramValue))
 			}
 		}
+		httpReq.URL.RawQuery = q.Encode()
 	}
-	httpReq.URL.RawQuery = q.Encode()
 
 	resp, err := t.client.Do(httpReq)
 	if err != nil {
@@ -4140,11 +4138,11 @@ func checkSQLKeywords(val string) error {
 			if startOk && endOk {
 				return fmt.Errorf("SQL injection detected: value contains SQL keyword %q in unquoted context", kw)
 			}
-			nextIdx := strings.Index(upperVal[idx+len(kw):], kw)
+			nextIdx := strings.Index(upperVal[idx+1:], kw)
 			if nextIdx == -1 {
 				break
 			}
-			idx += len(kw) + nextIdx
+			idx += 1 + nextIdx
 		}
 	}
 	return nil
