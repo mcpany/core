@@ -54,10 +54,3 @@ The **Memfd-Bound BSH Sanitizer** addresses these challenges by integrating WASM
 
 ## 7. Evolutionary Changelog
 * **2026-03-25:** Initial Document Creation.
-
-### Update: 2026-03-25 (Iteration 5) - Sub-Millisecond BSH for Programmatic SDKs
-**Context:** The emergence of programmatic agent orchestration via the OpenCode SDK requires coordination speeds that legacy transport layers cannot support.
-**Architecture Adjustment:**
-* Optimized `memfd` segment allocation for high-frequency programmatic loops.
-* Introducing "Pre-Mapped Sanitizer Buffers" that allow the WASM sanitizer to begin scanning as the source agent is still writing context, further reducing latency for SDK-driven swarms.
-**Security Impact:** Maintains absolute Zero-Trust sanitization even at the higher throughput required by automated programmatic agents.
