@@ -62,3 +62,10 @@ With the rise of "Context-Mirroring" attacks (CVE-2026-34015), it's no longer en
     **Architecture Adjustment:** * Expanding PoI validation to include "Intent Chain" verification.
     * Implementing "Relational Scoping" to narrow subagent permissions based on parent intent.
     **Security Impact:** Prevents subagent coercion and unauthorized credential use in deep swarms.
+
+    ### Update: 2026-03-25 (Iteration 4) - Relational PoI Chain Stability
+    **Context:** UACO v1.8 finalization mandates complete intent lineage for all high-trust interactions.
+    **Architecture Adjustment:**
+    * Mandatory **Relational PoI Chain** verification for every tool call.
+    * Introduction of "Lineage-Bound Scoping" where subagent capabilities are dynamically restricted based on the most restrictive intent in its parentage chain.
+    **Security Impact:** Eliminates "Intent Ghosting" by ensuring no unauthorized intent can shadow the mission root.

@@ -37,6 +37,8 @@ const ServiceResourcePage = lazy(() => import("./app/service/[id]/resource/[name
 const ServiceToolPage = lazy(() => import("./app/service/[id]/tool/[name]/page"));
 const SettingsMiddlewarePage = lazy(() => import("./app/settings/middleware/page"));
 const SettingsPage = lazy(() => import("./app/settings/page"));
+const HitlPage = lazy(() => import("./app/hitl/page"));
+const BlackboardPage = lazy(() => import("./app/blackboard/page"));
 const SettingsWebhooksPage = lazy(() => import("./app/settings/webhooks/page"));
 const SkillEditPage = lazy(() => import("./app/skills/[name]/edit/page"));
 const SkillNamePage = lazy(() => import("./app/skills/[name]/page"));
@@ -61,6 +63,20 @@ const PageFallback = () => (
 );
 
 /**
+ * Intent: Document App
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Root application component with React Router routes.
  * Public routes (login, auth) get a top-level Suspense fallback.
  * Protected routes (wrapped in Layout) have Suspense inside the Layout so the
@@ -82,6 +98,8 @@ export default function App() {
           <Route path="/audit" element={<AuditPage />} />
           <Route path="/config-validator" element={<ConfigValidatorPage />} />
           <Route path="/context" element={<ContextPage />} />
+          <Route path="/hitl" element={<HitlPage />} />
+          <Route path="/blackboard" element={<BlackboardPage />} />
           <Route path="/credentials" element={<CredentialsPage />} />
           <Route path="/diagnostics" element={<DiagnosticsPage />} />
           <Route path="/inspector" element={<InspectorPage />} />

@@ -21,6 +21,20 @@ interface SubagentStatus {
 
 
 /**
+ * Intent: Document ActiveIntentAlignmentWidget
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * ActiveIntentAlignmentWidget displays the intent alignment of active subagents.
  *
  * @returns The rendered component.

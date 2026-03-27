@@ -129,8 +129,9 @@ func (a *Application) handleTraces() http.HandlerFunc {
 		var traces []*Trace
 
 		// 1. Get real audit logs
-		if a.standardMiddlewares != nil && a.standardMiddlewares.Audit != nil {
-			history := a.standardMiddlewares.Audit.GetHistory()
+		auditMiddleware := a.GetAuditMiddleware()
+		if auditMiddleware != nil {
+			history := auditMiddleware.GetHistory()
 
 			// ⚡ BOLT: Optimized trace retrieval
 			// Randomized Selection from Top 5 High-Impact Targets
@@ -174,8 +175,9 @@ func (a *Application) handleClearTraces() http.HandlerFunc {
 			return
 		}
 
-		if a.standardMiddlewares != nil && a.standardMiddlewares.Audit != nil {
-			a.standardMiddlewares.Audit.ClearHistory()
+		auditMiddleware := a.GetAuditMiddleware()
+		if auditMiddleware != nil {
+			auditMiddleware.ClearHistory()
 			logging.GetLogger().Info("Cleared trace history via API")
 		}
 
@@ -196,7 +198,8 @@ func (a *Application) handleTracesWS() http.HandlerFunc {
 			}
 		}()
 
-		if a.standardMiddlewares == nil || a.standardMiddlewares.Audit == nil {
+		auditMiddleware := a.GetAuditMiddleware()
+		if auditMiddleware == nil {
 			// If audit is disabled, just close or keep open but send nothing?
 			// Better to send a close message.
 			_ = conn.WriteControl(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, "Audit disabled"), time.Now().Add(time.Second))
@@ -204,8 +207,8 @@ func (a *Application) handleTracesWS() http.HandlerFunc {
 		}
 
 		// Subscribe to traces with history
-		logCh, history := a.standardMiddlewares.Audit.SubscribeWithHistory()
-		defer a.standardMiddlewares.Audit.Unsubscribe(logCh)
+		logCh, history := auditMiddleware.SubscribeWithHistory()
+		defer auditMiddleware.Unsubscribe(logCh)
 
 		// Set write deadline
 		if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
@@ -273,15 +276,17 @@ func (a *Application) handleDebugSeedTraces() http.HandlerFunc {
 			return
 		}
 
-		if a.standardMiddlewares == nil || a.standardMiddlewares.Audit == nil {
-			http.Error(w, "Audit middleware not enabled", http.StatusInternalServerError)
+		auditMiddleware := a.GetAuditMiddleware()
+		if auditMiddleware == nil {
+			logging.GetLogger().Error("Audit middleware not initialized during seed")
+			http.Error(w, "Audit middleware not initialized", http.StatusInternalServerError)
 			return
 		}
 
 		entries := generateMockAuditEntries()
 
 		for _, entry := range entries {
-			if err := a.standardMiddlewares.Audit.Write(r.Context(), entry); err != nil {
+			if err := auditMiddleware.Write(r.Context(), entry); err != nil {
 				logging.GetLogger().Error("failed to seed trace to audit db", "error", err)
 				// Don't fail the entire request, just log and continue. We don't want tests to flake
 				// because they couldn't write to the audit DB.  This often happens because
@@ -290,7 +295,7 @@ func (a *Application) handleDebugSeedTraces() http.HandlerFunc {
 			}
 
 			// Broadcast locally so websocket/local tests work even without a DB backing
-			a.standardMiddlewares.Audit.Broadcast(entry)
+			auditMiddleware.Broadcast(entry)
 		}
 
 		logging.GetLogger().Info("Seeded debug trace to database", "id", entries[0].TraceID)
