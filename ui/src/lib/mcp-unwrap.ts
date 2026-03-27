@@ -5,10 +5,20 @@
 
 /**
  * Unwraps an MCP Tool Result to extract its core content payload.
- * Useful for displaying clean data in tables or diffs without the protocol wrapper.
  *
- * @param result The raw tool execution result
- * @returns The unwrapped content or the original result if not a recognizable wrapper
+ * Summary: Extracts the core content payload from an MCP tool result.
+ *
+ * Parameters:
+ *   - result (any): The raw tool execution result to be unwrapped.
+ *
+ * Returns:
+ *   - any: The unwrapped content payload, or the original result if it cannot be unwrapped.
+ *
+ * Errors:
+ *   - None.
+ *
+ * Side Effects:
+ *   - None.
  */
 export function unwrapMcpResult(result: any): any {
     let content = result;
@@ -50,7 +60,7 @@ export function unwrapMcpResult(result: any): any {
                 try {
                     const parsed = JSON.parse(content[0].text);
                     if (typeof parsed === 'object' && parsed !== null) {
-                        return parsed;
+                        return unwrapMcpResult(parsed);
                     }
                 } catch (e) {
                     // Not JSON inside text
@@ -66,11 +76,20 @@ export function unwrapMcpResult(result: any): any {
 
 /**
  * Recursively traverses an object or array and parses any stringified JSON values.
- * This is particularly useful for diffing tool results where inner payloads might
- * be returned as strings within an MCP Text block, ensuring a rich diff view.
  *
- * @param obj The object or string to deeply parse
- * @returns The fully expanded object
+ * Summary: Deeply parses JSON strings embedded within an object or array.
+ *
+ * Parameters:
+ *   - obj (any): The object, array, or string to deeply parse.
+ *
+ * Returns:
+ *   - any: The fully expanded object with all valid JSON strings parsed.
+ *
+ * Errors:
+ *   - None.
+ *
+ * Side Effects:
+ *   - None.
  */
 export function deepParseJson(obj: any): any {
     if (typeof obj === 'string') {
@@ -78,6 +97,18 @@ export function deepParseJson(obj: any): any {
             const parsed = JSON.parse(obj);
             if (typeof parsed === 'object' && parsed !== null) {
                 return deepParseJson(parsed);
+            }
+            // Only recurse for strings if the parsed string is still valid JSON
+            // and it is different from the original string.
+            // But if it's a primitive string (e.g. "just a string"), we shouldn't return parsed,
+            // we should return obj to match previous behavior unless it's double escaped JSON.
+            if (typeof parsed === 'string' && parsed !== obj) {
+                 try {
+                     const innerParsed = JSON.parse(parsed);
+                     if (typeof innerParsed === 'object' && innerParsed !== null) {
+                          return deepParseJson(parsed);
+                     }
+                 } catch (e) {}
             }
         } catch (e) {
             // Not a JSON string

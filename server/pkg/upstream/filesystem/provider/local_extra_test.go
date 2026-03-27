@@ -34,7 +34,7 @@ func TestResolvePath_BrokenSymlink(t *testing.T) {
 
 func TestResolvePath_PermissionDenied(t *testing.T) {
 	if os.Getuid() == 0 {
-		// t.Skip("Skipping permission denied test as root user")
+		t.Skip("Skipping permission denied test as root user")
 	}
 
 	rootDir, err := os.MkdirTemp("", "fs_perm_test")
@@ -90,12 +90,8 @@ func TestResolvePath_PermissionDenied(t *testing.T) {
 
 	_, err = p.ResolvePath("/locked/nonexistent.txt")
 	// We expect an error because checking the path involves Lstat/EvalSymlinks which hits Permission Denied
-	if os.Getuid() == 0 {
-		assert.NoError(t, err)
-	} else {
-		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "permission denied")
-	}
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "permission denied")
 }
 
 func TestResolvePath_BestMatchEdgeCases(t *testing.T) {
