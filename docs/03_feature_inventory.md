@@ -1363,5 +1363,5 @@
 
 ### Added 2026-06-18
 - **Teammate Sovereignty Enforcer (TSE):** Kernel-level isolation for parallel agent sessions. [P0]
-- **Logic-Sovereignty Validator (LSV):** Pre-thought governance. [P0]
+- **Logic-Sovereignty Validator (LSV):** Pre-execution logic bomb detection. [P0]
 - **Request-Side Injection Shield (RSIS):** Mitigates CVE-2026-30741 style exploits. [P0]
