@@ -757,7 +757,3 @@ These features represent the next logical steps for the product, focusing on Ent
 ### Upcoming (Updated 2026-06-18)
 - [P0] Teammate Sovereignty Enforcer (Kernel-level isolation)
 - [P1] Request-Side Injection Shield (CVE-2026-30741 mitigation)
-
-### Upcoming (Updated 2026-06-18)
-- [P0] Teammate Sovereignty Enforcer (Kernel-level isolation)
-- [P1] Request-Side Injection Shield (CVE-2026-30741 mitigation)
