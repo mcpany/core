@@ -1831,29 +1831,10 @@ export const apiClient = {
      *
      * Side Effects: Makes a GET request to /api/v1/alerts/stats.
      */
-    getAlertStats: async (): Promise<{ activeCritical: number, activeWarning: number, mttr: string, totalToday: number, activeCriticalTrend?: string, activeWarningTrend?: string, mttrTrend?: string, totalTodayTrend?: string }> => {
+    getAlertStats: async (): Promise<{ activeCritical: number, activeWarning: number, mttr: string, totalToday: number }> => {
         const res = await fetchWithAuth('/api/v1/alerts/stats');
         if (!res.ok) throw new Error('Failed to fetch alert stats');
         return res.json();
-    },
-
-    /**
-     * Deletes an alert.
-     *
-     * Summary: Deletes an alert.
-     *
-     * @param id - The ID of the alert to delete.
-     * @returns A promise that resolves when the alert is deleted.
-     * @throws {Error} If deletion fails.
-     *
-     * Side Effects: Makes a DELETE request to /api/v1/alerts/:id.
-     */
-    deleteAlert: async (id: string) => {
-        const res = await fetchWithAuth(`/api/v1/alerts/${id}`, {
-            method: 'DELETE'
-        });
-        if (!res.ok) throw new Error('Failed to delete alert');
-        return {};
     },
 
     /**
