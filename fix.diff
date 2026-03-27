@@ -1,0 +1,16 @@
+--- server/pkg/util/string.go
++++ server/pkg/util/string.go
+@@ -193,6 +193,13 @@
+	return v0[m]
+ }
+
+ func min(a, b, c int) int {
+	m := a
+	if b < m {
+		m = b
+	}
+	if c < m {
+		m = c
+	}
+	return m
+ }
