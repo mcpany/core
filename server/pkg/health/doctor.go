@@ -44,18 +44,15 @@ type Doctor struct {
 	httpClient *http.Client
 }
 
-// NewDoctor creates a new Doctor.
+// NewDoctor provides newdoctor functionality.
 //
-// Summary: Initializes a new Doctor instance.
+// Summary: NewDoctor.
 //
-// Returns:
-//   - *Doctor: The initialized doctor registry.
-//
-// Side Effects:
-//   - Initializes internal maps and HTTP client.
-//
-// Parameters:
+// Parameters.
 //   - None.
+//
+// Returns.
+//   - result: The result.
 func NewDoctor() *Doctor {
 	return &Doctor{
 		checks:     make(map[string]CheckFunc),
@@ -63,18 +60,15 @@ func NewDoctor() *Doctor {
 	}
 }
 
-// AddCheck adds a named health check.
+// AddCheck provides addcheck functionality.
 //
-// Summary: Registers a custom health check function.
+// Summary: AddCheck.
 //
-// Parameters:
-//   - name: string. The unique name of the check.
-//   - check: CheckFunc. The function to execute.
+// Parameters.
+//   - name: The parameter.
+//   - check: The parameter.
 //
-// Side Effects:
-//   - Updates the internal checks map.
-//
-// Returns:
+// Returns.
 //   - None.
 func (d *Doctor) AddCheck(name string, check CheckFunc) {
 	d.mu.Lock()
@@ -82,21 +76,15 @@ func (d *Doctor) AddCheck(name string, check CheckFunc) {
 	d.checks[name] = check
 }
 
-// Handler returns the http handler.
+// Handler provides handler functionality.
 //
-// Summary: Returns an HTTP handler that runs all checks and returns a JSON report.
+// Summary: Handler.
 //
-// Returns:
-//   - http.HandlerFunc: The HTTP handler.
-//
-// Side Effects:
-//   - Executes all registered health checks.
-//   - Makes an external network call to google.com (connectivity check).
-//   - Reads environment variables (Auth checks).
-//   - Writes JSON response to the client.
-//
-// Parameters:
+// Parameters.
 //   - None.
+//
+// Returns.
+//   - result: The result.
 func (d *Doctor) Handler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		report := DoctorReport{

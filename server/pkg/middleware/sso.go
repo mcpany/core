@@ -18,20 +18,15 @@ type SSOConfig struct {
 	IDPURL  string
 }
 
-// SSOMiddleware creates a new SSO middleware.
+// SSOMiddleware provides ssomiddleware functionality.
 //
-// Summary: Middleware that enforces SSO authentication via trusted headers or bearer tokens.
+// Summary: SSOMiddleware.
 //
-// Parameters:
-//   - config: SSOConfig. The configuration settings for SSO.
+// Parameters.
+//   - config: The parameter.
 //
-// Returns:
-//   - gin.HandlerFunc: The Gin middleware handler.
-//
-// Side Effects:
-//   - Inspects headers for authentication information.
-//   - Aborts the request with 401 Unauthorized if authentication is missing or invalid.
-//   - Sets "UserID" in the context on successful authentication.
+// Returns.
+//   - result: The result.
 func SSOMiddleware(config SSOConfig) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if !config.Enabled {

@@ -33,23 +33,15 @@ const (
 	Info
 )
 
-// String returns the string representation of the severity.
+// String provides string functionality.
 //
-// It converts the Severity enum to its string counterpart (ERROR, WARNING, INFO).
+// Summary: String.
 //
-// Returns:
-//   - string: The string representation of the severity.
-//
-// Summary: Executes String operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Parameters.
 //   - None.
+//
+// Returns.
+//   - result: The result.
 func (s Severity) String() string {
 	switch s {
 	case Error:
@@ -79,23 +71,15 @@ type Result struct {
 	Path string
 }
 
-// String returns the string representation of the result.
+// String provides string functionality.
 //
-// It formats the result into a human-readable string suitable for CLI output.
+// Summary: String.
 //
-// Returns:
-//   - string: A formatted string containing severity, service, path, and message.
-//
-// Summary: Executes String operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Parameters.
 //   - None.
+//
+// Returns.
+//   - result: The result.
 func (r Result) String() string {
 	pathStr := ""
 	if r.Path != "" {
@@ -117,49 +101,28 @@ type Linter struct {
 	cfg *configv1.McpAnyServerConfig
 }
 
-// NewLinter creates a new Linter instance.
+// NewLinter provides newlinter functionality.
 //
-// Parameters:
-//   - cfg: *configv1.McpAnyServerConfig. The server configuration to be linted.
+// Summary: NewLinter.
 //
-// Returns:
-//   - *Linter: A new Linter instance initialized with the provided configuration.
+// Parameters.
+//   - cfg: The parameter.
 //
-// Summary: Initializes NewLinter operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
-//   - None.
+// Returns.
+//   - result: The result.
 func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 	return &Linter{cfg: cfg}
 }
 
-// Run executes all linting checks.
+// Run provides run functionality.
 //
-// It aggregates results from multiple check categories including standard validation,
-// secret usage, shell injection risks, insecure HTTP, and cache settings.
+// Summary: Run.
 //
-// Parameters:
-//   - ctx: context.Context. The context for the request (currently unused but reserved for future async checks).
+// Parameters.
+//   - ctx: The parameter.
+//   - error: The parameter.
 //
-// Returns:
-//   - []Result: A list of linting findings.
-//   - error: An error if the linting process encounters a fatal issue (currently always nil).
-//
-// Summary: Executes Run operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func (l *Linter) Run(ctx context.Context) ([]Result, error) {
 	// Pre-allocate to avoid performance warnings, though initial size is a guess.

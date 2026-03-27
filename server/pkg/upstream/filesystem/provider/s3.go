@@ -23,30 +23,15 @@ type S3Provider struct {
 	fs afero.Fs
 }
 
-// NewS3Provider creates a new S3Provider from the given configuration.
+// NewS3Provider provides news3provider functionality.
 //
-// Parameters:
-//   - config (*configv1.S3Fs): The parameter.
+// Summary: NewS3Provider.
 //
-// Returns:
-//   - *S3Provider: The result.
-//   - error: An error if the operation fails.
+// Parameters.
+//   - config: The parameter.
+//   - error: The parameter.
 //
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewS3Provider operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func NewS3Provider(config *configv1.S3Fs) (*S3Provider, error) {
 	if config == nil {
@@ -85,52 +70,28 @@ func NewS3Provider(config *configv1.S3Fs) (*S3Provider, error) {
 	return &S3Provider{fs: fs}, nil
 }
 
-// GetFs returns the underlying filesystem.
+// GetFs provides getfs functionality.
 //
-// Returns:
-//   - afero.Fs: The result.
+// Summary: GetFs.
 //
-// Side Effects:
+// Parameters.
 //   - None.
 //
-// Summary: Retrieves GetFs operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
-//   - None.
+// Returns.
+//   - result: The result.
 func (p *S3Provider) GetFs() afero.Fs {
 	return p.fs
 }
 
-// ResolvePath resolves the virtual path to a real path in the bucket.
+// ResolvePath provides resolvepath functionality.
 //
-// Parameters:
-//   - virtualPath (string): The parameter.
+// Summary: ResolvePath.
 //
-// Returns:
-//   - string: The result.
-//   - error: An error if the operation fails.
+// Parameters.
+//   - virtualPath: The parameter.
+//   - error: The parameter.
 //
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes ResolvePath operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func (p *S3Provider) ResolvePath(virtualPath string) (string, error) {
 	// For S3, just clean the path. It's virtual relative to the bucket.
@@ -148,27 +109,15 @@ func (p *S3Provider) ResolvePath(virtualPath string) (string, error) {
 	return cleanPath, nil
 }
 
-// Close closes the provider.
+// Close provides close functionality.
 //
-// Returns:
-//   - error: An error if the operation fails.
+// Summary: Close.
 //
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
+// Parameters.
 //   - None.
 //
-// Summary: Executes Close operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
-//   - None.
+// Returns.
+//   - result: The result.
 func (p *S3Provider) Close() error {
 	// S3 provider doesn't hold open connections that need explicit closing typically,
 	// but satisfy the interface.

@@ -21,15 +21,15 @@ type Service struct {
 	mcpServer     *mcp.Server
 }
 
-// NewService creates and returns a new Service instance.
+// NewService provides newservice functionality.
 //
-// Summary: Initializes a new Prompt Service.
+// Summary: NewService.
 //
-// Parameters:
-//   - promptManager: ManagerInterface. The manager handling prompt lifecycle.
+// Parameters.
+//   - promptManager: The parameter.
 //
-// Returns:
-//   - *Service: The initialized service.
+// Returns.
+//   - result: The result.
 func NewService(promptManager ManagerInterface) *Service {
 	s := &Service{
 		promptManager: promptManager,
@@ -38,16 +38,15 @@ func NewService(promptManager ManagerInterface) *Service {
 	return s
 }
 
-// SetMCPServer sets the MCP server instance for the service.
+// SetMCPServer provides setmcpserver functionality.
 //
-// Summary: Configures the underlying MCP server.
+// Summary: SetMCPServer.
 //
-// Parameters:
-//   - mcpServer: *mcp.Server. The MCP server instance.
+// Parameters.
+//   - mcpServer: The parameter.
 //
-// Returns: - None.
-//
-//	None.
+// Returns.
+//   - None.
 func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 	s.mcpServer = mcpServer
 	s.promptManager.SetMCPServer(NewMCPServerProvider(mcpServer))
@@ -65,11 +64,11 @@ func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 //
 // Summary: Lists all available prompts.
 //
-// Parameters:
+// Parameters.
 //   - ctx: context.Context. The context for the request.
 //   - req: *mcp.ListPromptsRequest. The request object.
 //
-// Returns:
+// Returns.
 //   - *mcp.ListPromptsResult: The list of prompts.
 //   - error: An error if the operation fails.
 func (s *Service) ListPrompts(
@@ -90,11 +89,11 @@ func (s *Service) ListPrompts(
 //
 // Summary: Retrieves and executes a specific prompt.
 //
-// Parameters:
+// Parameters.
 //   - ctx: context.Context. The context for the request.
 //   - req: *mcp.GetPromptRequest. The request containing the prompt name and arguments.
 //
-// Returns:
+// Returns.
 //   - *mcp.GetPromptResult: The result of the prompt execution.
 //   - error: An error if the prompt is not found or execution fails.
 //

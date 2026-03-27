@@ -25,27 +25,16 @@ type SQLiteAuditStore struct {
 	mu sync.Mutex
 }
 
-// NewSQLiteAuditStore creates a new SQLiteAuditStore.
+// NewSQLiteAuditStore provides newsqliteauditstore functionality.
 //
-// Summary: Initializes a new SQLiteAuditStore.
+// Summary: NewSQLiteAuditStore.
 //
-// Parameters:
-//   - path: string. The file path to the SQLite database.
+// Parameters.
+//   - path: The parameter.
+//   - error: The parameter.
 //
-// Returns:
-//   - *SQLiteAuditStore: The initialized store.
-//   - error: An error if the path is invalid or database initialization fails.
-//
-// Errors:
-//   - Returns error if path validation fails.
-//   - Returns error if database connection fails.
-//   - Returns error if schema creation fails.
-//
-// Side Effects:
-//   - Opens (or creates) the SQLite database file.
-//   - Creates the 'audit_logs' table.
-//   - Optimizes database with PRAGMA settings.
-//   - Adds missing columns if schema migration is needed.
+// Returns.
+//   - None.
 func NewSQLiteAuditStore(path string) (*SQLiteAuditStore, error) {
 	if path == "" {
 		return nil, fmt.Errorf("sqlite path is required")
@@ -158,19 +147,16 @@ func ensureColumn(db *sql.DB, colName string) error {
 	return err
 }
 
-// Write writes an audit entry to the database.
+// Write provides write functionality.
 //
-// Summary: Writes a single audit entry with cryptographic hash chaining.
+// Summary: Write.
 //
-// Parameters:
-//   - ctx: context.Context. The request context.
-//   - entry: Entry. The audit entry to write.
+// Parameters.
+//   - ctx: The parameter.
+//   - entry: The parameter.
 //
-// Returns:
-//   - error: An error if the write fails.
-//
-// Side Effects:
-//   - Inserts a row into the audit_logs table.
+// Returns.
+//   - result: The result.
 func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -228,20 +214,17 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 	return err
 }
 
-// Read reads audit entries from the database based on the filter.
+// Read provides read functionality.
 //
-// Summary: Retrieves audit entries matching the specified filter criteria.
+// Summary: Read.
 //
-// Parameters:
-//   - ctx: context.Context. The request context.
-//   - filter: Filter. The filtering criteria (time range, tool name, user ID, etc.).
+// Parameters.
+//   - ctx: The parameter.
+//   - filter: The parameter.
+//   - error: The parameter.
 //
-// Returns:
-//   - []Entry: A slice of matching audit entries.
-//   - error: An error if the query fails.
-//
-// Side Effects:
-//   - Executes a SELECT query on the database.
+// Returns.
+//   - None.
 func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -311,22 +294,16 @@ func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, er
 	return entries, nil
 }
 
-// Verify checks the integrity of the audit logs.
+// Verify provides verify functionality.
 //
-// Summary: Validates the cryptographic hash chain of all audit entries.
+// Summary: Verify.
 //
-// Parameters:
+// Parameters.
+//   - ): The parameter.
+//   - error: The parameter.
+//
+// Returns.
 //   - None.
-//
-// Returns:
-//   - bool: True if the chain is valid, false otherwise.
-//   - error: An error if verification fails or data is corrupted.
-//
-// Errors:
-//   - Returns error if a hash mismatch is detected.
-//
-// Side Effects:
-//   - Scans the entire audit_logs table.
 func (s *SQLiteAuditStore) Verify() (bool, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -374,18 +351,15 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 	return true, nil
 }
 
-// Close closes the database connection.
+// Close provides close functionality.
 //
-// Summary: Closes the SQLite database connection.
+// Summary: Close.
 //
-// Returns:
-//   - error: An error if closing fails.
-//
-// Side Effects:
-//   - Closes the DB connection.
-//
-// Parameters:
+// Parameters.
 //   - None.
+//
+// Returns.
+//   - result: The result.
 func (s *SQLiteAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

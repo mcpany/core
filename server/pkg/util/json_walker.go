@@ -16,18 +16,17 @@ var jsonWalkerBufferPool = sync.Pool{
 	},
 }
 
-// WalkJSONStrings visits every string value in the JSON input.
+// WalkJSONStrings provides walkjsonstrings functionality.
 //
-// Summary: Walks through a JSON bytes slice and applies a visitor function to all string values.
+// Summary: WalkJSONStrings.
 //
-// It supports non-standard JSON with comments (// and /* */).
+// Parameters.
+//   - input: The parameter.
+//   - visitor: The parameter.
+//   - bool): The parameter.
 //
-// Parameters:
-//   - input: []byte. The JSON input to walk.
-//   - visitor: func(raw []byte) ([]byte, bool). A function that takes the raw string bytes (including quotes) and returns a replacement and a modified flag.
-//
-// Returns:
-//   - []byte: The potentially modified JSON output.
+// Returns.
+//   - result: The result.
 func WalkJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []byte {
 	var outPtr *[]byte
 	var out []byte
@@ -127,18 +126,17 @@ func WalkJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []by
 	return result
 }
 
-// WalkStandardJSONStrings visits every string value in the JSON input.
+// WalkStandardJSONStrings provides walkstandardjsonstrings functionality.
 //
-// Summary: Optimized JSON walker for standard JSON (no comments).
+// Summary: WalkStandardJSONStrings.
 //
-// It visits every string value (not keys) and applies the visitor.
+// Parameters.
+//   - input: The parameter.
+//   - visitor: The parameter.
+//   - bool): The parameter.
 //
-// Parameters:
-//   - input: []byte. The standard JSON input.
-//   - visitor: func(raw []byte) ([]byte, bool). A function that takes the raw string bytes and returns a replacement and a modified flag.
-//
-// Returns:
-//   - []byte: The potentially modified JSON output.
+// Returns.
+//   - result: The result.
 func WalkStandardJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []byte {
 	var outPtr *[]byte
 	var out []byte

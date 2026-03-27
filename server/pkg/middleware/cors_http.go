@@ -20,32 +20,29 @@ type HTTPCORSMiddleware struct {
 	wildcardAllowed bool
 }
 
-// NewHTTPCORSMiddleware creates a new HTTPCORSMiddleware.
+// NewHTTPCORSMiddleware provides newhttpcorsmiddleware functionality.
 //
-// Summary: Initializes HTTP CORS middleware.
+// Summary: NewHTTPCORSMiddleware.
 //
-// If allowedOrigins is empty, it defaults to allowing nothing (or behaving like standard Same-Origin).
-// To allow all, pass []string{"*"}.
+// Parameters.
+//   - allowedOrigins: The parameter.
 //
-// Parameters:
-//   - allowedOrigins ([]string): The allowed origins.
-//
-// Returns:
-//   - (*HTTPCORSMiddleware): The initialized middleware.
+// Returns.
+//   - result: The result.
 func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
 	m := &HTTPCORSMiddleware{}
 	m.updateInternal(allowedOrigins)
 	return m
 }
 
-// Update updates the allowed origins.
+// Update provides update functionality.
 //
-// Summary: Updates the allowed origins dynamically.
+// Summary: Update.
 //
-// Parameters:
-//   - allowedOrigins ([]string): The new list of allowed origins.
+// Parameters.
+//   - allowedOrigins: The parameter.
 //
-// Returns:
+// Returns.
 //   - None.
 func (m *HTTPCORSMiddleware) Update(allowedOrigins []string) {
 	m.mu.Lock()
@@ -68,15 +65,15 @@ func (m *HTTPCORSMiddleware) updateInternal(origins []string) {
 	}
 }
 
-// Handler wraps an http.Handler with CORS logic.
+// Handler provides handler functionality.
 //
-// Summary: Middleware to handle CORS headers.
+// Summary: Handler.
 //
-// Parameters:
-//   - next (http.Handler): The next handler in the chain.
+// Parameters.
+//   - next: The parameter.
 //
-// Returns:
-//   - (http.Handler): The wrapped handler.
+// Returns.
+//   - result: The result.
 func (m *HTTPCORSMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")

@@ -15,18 +15,18 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// LoadServices loads, validates, and processes the MCP Any server configuration from a given store.
+// LoadServices provides loadservices functionality.
 //
-// Summary: Loads and validates the server configuration.
+// Summary: LoadServices.
 //
-// Parameters:
-//   - ctx: context.Context. The context for the operation.
-//   - store: Store. The configuration store from which to load the configuration.
-//   - binaryType: string. The type of binary running the code (e.g., "server", "worker").
+// Parameters.
+//   - ctx: The parameter.
+//   - store: The parameter.
+//   - binaryType: The parameter.
+//   - error: The parameter.
 //
-// Returns:
-//   - *configv1.McpAnyServerConfig: A validated configuration object.
-//   - error: An error if loading or validation fails.
+// Returns.
+//   - None.
 func LoadServices(ctx context.Context, store Store, binaryType string) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 
@@ -102,17 +102,17 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 	return fileConfig, nil
 }
 
-// LoadResolvedConfig loads key resolved configuration (merging services, setting defaults) without performing strict validation.
+// LoadResolvedConfig provides loadresolvedconfig functionality.
 //
-// Summary: Loads configuration with merging and defaults but without strict validation.
+// Summary: LoadResolvedConfig.
 //
-// Parameters:
-//   - ctx: context.Context. The context for the operation.
-//   - store: Store. The configuration store.
+// Parameters.
+//   - ctx: The parameter.
+//   - store: The parameter.
+//   - error: The parameter.
 //
-// Returns:
-//   - *configv1.McpAnyServerConfig: The resolved configuration.
-//   - error: An error if loading fails.
+// Returns.
+//   - None.
 func LoadResolvedConfig(ctx context.Context, store Store) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 

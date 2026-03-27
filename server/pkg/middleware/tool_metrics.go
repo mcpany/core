@@ -89,19 +89,15 @@ type ToolMetricsMiddleware struct {
 	tokenizer tokenizer.Tokenizer
 }
 
-// NewToolMetricsMiddleware creates a new ToolMetricsMiddleware.
+// NewToolMetricsMiddleware provides newtoolmetricsmiddleware functionality.
 //
-// Summary: Initializes the tool metrics middleware and registers metrics if not already registered.
+// Summary: NewToolMetricsMiddleware.
 //
-// Parameters:
-//   - t: tokenizer.Tokenizer. The tokenizer used to count tokens in tool inputs and outputs.
-//     If nil, a simple default tokenizer is used.
+// Parameters.
+//   - t: The parameter.
 //
-// Returns:
-//   - *ToolMetricsMiddleware: A new instance of ToolMetricsMiddleware with metrics registered.
-//
-// Side Effects:
-//   - Registers Prometheus metrics (globally, once).
+// Returns.
+//   - result: The result.
 func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
 	registerMetricsOnce.Do(func() {
 		// Register metrics with the default registry (which server/pkg/metrics also uses/exposes)
@@ -120,22 +116,18 @@ func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
 	}
 }
 
-// Execute executes the tool metrics middleware.
+// Execute provides execute functionality.
 //
-// Summary: Wraps tool execution to record latency, size, and token metrics.
+// Summary: Execute.
 //
-// Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *tool.ExecutionRequest. The request containing tool execution details.
-//   - next: tool.ExecutionFunc. The next handler in the execution chain.
+// Parameters.
+//   - ctx: The parameter.
+//   - req: The parameter.
+//   - next: The parameter.
+//   - error: The parameter.
 //
-// Returns:
-//   - any: The result of the tool execution.
-//   - error: An error if the execution fails.
-//
-// Side Effects:
-//   - Updates Prometheus counters, histograms, and gauges.
-//   - Measures execution duration.
+// Returns.
+//   - None.
 func (m *ToolMetricsMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	// Get Service ID if possible (from context or tool)
 	var serviceID string

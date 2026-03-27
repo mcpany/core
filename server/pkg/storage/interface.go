@@ -19,10 +19,10 @@ type Storage interface {
 	//
 	// Summary: Loads the entire server configuration.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//
-// Returns:
+// Returns.
 	//   - *configv1.McpAnyServerConfig: The loaded configuration.
 	//   - error: An error if loading fails.
 	//
@@ -34,7 +34,7 @@ type Storage interface {
 	//
 	// Summary: Checks if the store has any configuration sources.
 	//
-// Returns:
+// Returns.
 	//   - bool: True if sources exist.
 	//
 // Side Effects:
@@ -45,11 +45,11 @@ type Storage interface {
 	//
 	// Summary: Persists a service configuration.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//   - service (*configv1.UpstreamServiceConfig): The service configuration.
 	//
-// Returns:
+// Returns.
 	//   - error: An error if saving fails.
 	//
 // Errors:
@@ -63,11 +63,11 @@ type Storage interface {
 	//
 	// Summary: Retrieves a service configuration by name.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//   - name (string): The name of the service.
 	//
-// Returns:
+// Returns.
 	//   - *configv1.UpstreamServiceConfig: The service configuration.
 	//   - error: An error if retrieval fails.
 	//
@@ -79,10 +79,10 @@ type Storage interface {
 	//
 	// Summary: Lists all services.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//
-// Returns:
+// Returns.
 	//   - []*configv1.UpstreamServiceConfig: A list of service configurations.
 	//   - error: An error if listing fails.
 	//
@@ -94,11 +94,11 @@ type Storage interface {
 	//
 	// Summary: Deletes a service configuration.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//   - name (string): The name of the service to delete.
 	//
-// Returns:
+// Returns.
 	//   - error: An error if deletion fails.
 	//
 // Errors:
@@ -112,10 +112,10 @@ type Storage interface {
 	//
 	// Summary: Retrieves global settings.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//
-// Returns:
+// Returns.
 	//   - *configv1.GlobalSettings: The global settings.
 	//   - error: An error if retrieval fails.
 	//
@@ -127,11 +127,11 @@ type Storage interface {
 	//
 	// Summary: Persists global settings.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//   - settings (*configv1.GlobalSettings): The settings to save.
 	//
-// Returns:
+// Returns.
 	//   - error: An error if saving fails.
 	//
 // Errors:
@@ -145,10 +145,10 @@ type Storage interface {
 	//
 	// Summary: Lists all secrets.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//
-// Returns:
+// Returns.
 	//   - []*configv1.Secret: A list of secrets.
 	//   - error: An error if listing fails.
 	//
@@ -160,11 +160,11 @@ type Storage interface {
 	//
 	// Summary: Retrieves a secret by ID.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//   - id (string): The secret ID.
 	//
-// Returns:
+// Returns.
 	//   - *configv1.Secret: The secret.
 	//   - error: An error if retrieval fails.
 	//
@@ -176,11 +176,11 @@ type Storage interface {
 	//
 	// Summary: Persists a secret.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//   - secret (*configv1.Secret): The secret to save.
 	//
-// Returns:
+// Returns.
 	//   - error: An error if saving fails.
 	//
 // Errors:
@@ -194,11 +194,11 @@ type Storage interface {
 	//
 	// Summary: Persists a service template.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//   - template (*configv1.ServiceTemplate): The template to save.
 	//
-// Returns:
+// Returns.
 	//   - error: An error if saving fails.
 	//
 // Errors:
@@ -212,10 +212,10 @@ type Storage interface {
 	//
 	// Summary: Lists all service templates.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//
-// Returns:
+// Returns.
 	//   - []*configv1.ServiceTemplate: A list of service templates.
 	//   - error: An error if listing fails.
 	//
@@ -227,11 +227,11 @@ type Storage interface {
 	//
 	// Summary: Retrieves a service template.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//   - id (string): The template ID.
 	//
-// Returns:
+// Returns.
 	//   - *configv1.ServiceTemplate: The service template.
 	//   - error: An error if retrieval fails.
 	//
@@ -243,11 +243,11 @@ type Storage interface {
 	//
 	// Summary: Deletes a service template.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//   - id (string): The template ID to delete.
 	//
-// Returns:
+// Returns.
 	//   - error: An error if deletion fails.
 	//
 // Errors:
@@ -261,11 +261,11 @@ type Storage interface {
 	//
 	// Summary: Deletes a secret.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//   - id (string): The secret ID to delete.
 	//
-// Returns:
+// Returns.
 	//   - error: An error if deletion fails.
 	//
 // Errors:
@@ -279,11 +279,11 @@ type Storage interface {
 	//
 	// Summary: Creates a user.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//   - user (*configv1.User): The user to create.
 	//
-// Returns:
+// Returns.
 	//   - error: An error if creation fails.
 	//
 // Errors:
@@ -297,11 +297,11 @@ type Storage interface {
 	//
 	// Summary: Retrieves a user by ID.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//   - id (string): The user ID.
 	//
-// Returns:
+// Returns.
 	//   - *configv1.User: The user.
 	//   - error: An error if retrieval fails.
 	//
@@ -313,10 +313,10 @@ type Storage interface {
 	//
 	// Summary: Lists all users.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//
-// Returns:
+// Returns.
 	//   - []*configv1.User: A list of users.
 	//   - error: An error if listing fails.
 	//
@@ -328,11 +328,11 @@ type Storage interface {
 	//
 	// Summary: Updates a user.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//   - user (*configv1.User): The user to update.
 	//
-// Returns:
+// Returns.
 	//   - error: An error if update fails.
 	//
 // Errors:
@@ -346,11 +346,11 @@ type Storage interface {
 	//
 	// Summary: Deletes a user.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//   - id (string): The user ID to delete.
 	//
-// Returns:
+// Returns.
 	//   - error: An error if deletion fails.
 	//
 // Errors:
@@ -364,10 +364,10 @@ type Storage interface {
 	//
 	// Summary: Lists all profiles.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//
-// Returns:
+// Returns.
 	//   - []*configv1.ProfileDefinition: A list of profiles.
 	//   - error: An error if listing fails.
 	//
@@ -379,11 +379,11 @@ type Storage interface {
 	//
 	// Summary: Retrieves a profile by name.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//   - name (string): The profile name.
 	//
-// Returns:
+// Returns.
 	//   - *configv1.ProfileDefinition: The profile.
 	//   - error: An error if retrieval fails.
 	//
@@ -395,11 +395,11 @@ type Storage interface {
 	//
 	// Summary: Persists a profile.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//   - profile (*configv1.ProfileDefinition): The profile to save.
 	//
-// Returns:
+// Returns.
 	//   - error: An error if saving fails.
 	//
 // Errors:
@@ -413,11 +413,11 @@ type Storage interface {
 	//
 	// Summary: Deletes a profile.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//   - name (string): The profile name to delete.
 	//
-// Returns:
+// Returns.
 	//   - error: An error if deletion fails.
 	//
 // Errors:
@@ -431,10 +431,10 @@ type Storage interface {
 	//
 	// Summary: Lists all collections.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//
-// Returns:
+// Returns.
 	//   - []*configv1.Collection: A list of collections.
 	//   - error: An error if listing fails.
 	//
@@ -446,11 +446,11 @@ type Storage interface {
 	//
 	// Summary: Retrieves a collection by name.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//   - name (string): The collection name.
 	//
-// Returns:
+// Returns.
 	//   - *configv1.Collection: The collection.
 	//   - error: An error if retrieval fails.
 	//
@@ -462,11 +462,11 @@ type Storage interface {
 	//
 	// Summary: Persists a collection.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//   - collection (*configv1.Collection): The collection to save.
 	//
-// Returns:
+// Returns.
 	//   - error: An error if saving fails.
 	//
 // Errors:
@@ -480,11 +480,11 @@ type Storage interface {
 	//
 	// Summary: Deletes a collection.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//   - name (string): The collection name to delete.
 	//
-// Returns:
+// Returns.
 	//   - error: An error if deletion fails.
 	//
 // Errors:
@@ -498,11 +498,11 @@ type Storage interface {
 	//
 	// Summary: Persists a user token.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//   - token (*configv1.UserToken): The token to save.
 	//
-// Returns:
+// Returns.
 	//   - error: An error if saving fails.
 	//
 // Errors:
@@ -516,12 +516,12 @@ type Storage interface {
 	//
 	// Summary: Retrieves a user token.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//   - userID (string): The user ID.
 	//   - serviceID (string): The service ID.
 	//
-// Returns:
+// Returns.
 	//   - *configv1.UserToken: The token.
 	//   - error: An error if retrieval fails.
 	//
@@ -533,12 +533,12 @@ type Storage interface {
 	//
 	// Summary: Deletes a user token.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//   - userID (string): The user ID.
 	//   - serviceID (string): The service ID.
 	//
-// Returns:
+// Returns.
 	//   - error: An error if deletion fails.
 	//
 // Errors:
@@ -552,10 +552,10 @@ type Storage interface {
 	//
 	// Summary: Lists all credentials.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//
-// Returns:
+// Returns.
 	//   - []*configv1.Credential: A list of credentials.
 	//   - error: An error if listing fails.
 	//
@@ -567,11 +567,11 @@ type Storage interface {
 	//
 	// Summary: Retrieves a credential by ID.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//   - id (string): The credential ID.
 	//
-// Returns:
+// Returns.
 	//   - *configv1.Credential: The credential.
 	//   - error: An error if retrieval fails.
 	//
@@ -583,11 +583,11 @@ type Storage interface {
 	//
 	// Summary: Persists a credential.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//   - cred (*configv1.Credential): The credential to save.
 	//
-// Returns:
+// Returns.
 	//   - error: An error if saving fails.
 	//
 // Errors:
@@ -601,11 +601,11 @@ type Storage interface {
 	//
 	// Summary: Deletes a credential.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//   - id (string): The credential ID to delete.
 	//
-// Returns:
+// Returns.
 	//   - error: An error if deletion fails.
 	//
 // Errors:
@@ -619,7 +619,7 @@ type Storage interface {
 	//
 	// Summary: Closes the storage connection.
 	//
-// Returns:
+// Returns.
 	//   - error: An error if closing fails.
 	//
 // Errors:
@@ -633,11 +633,11 @@ type Storage interface {
 	//
 	// Summary: Persists a log entry.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//   - entry (*logging.LogEntry): The log entry to save.
 	//
-// Returns:
+// Returns.
 	//   - error: An error if saving fails.
 	//
 // Errors:
@@ -651,11 +651,11 @@ type Storage interface {
 	//
 	// Summary: Retrieves recent log entries.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx (context.Context): The context for the request.
 	//   - limit (int): The maximum number of logs to retrieve.
 	//
-// Returns:
+// Returns.
 	//   - []*logging.LogEntry: A list of log entries.
 	//   - error: An error if retrieval fails.
 	//

@@ -28,20 +28,16 @@ type DoctorRunner struct {
 	HTTPClient *http.Client
 }
 
-// Run executes the doctor checks.
+// Run provides run functionality.
 //
-// Summary: Runs a series of health checks (config, connectivity, deep health).
+// Summary: Run.
 //
-// Parameters: - None.
-//   - cmd: *cobra.Command. The command object.
-//   - _: []string. Unused arguments.
+// Parameters.
+//   - cmd: The parameter.
+//   - _: The parameter.
 //
-// Returns: - None.
-//   - error: An error if a fatal check fails.
-//
-// Side Effects: - None.
-//   - Prints check results to r.Out.
-//   - Makes HTTP requests to the running server.
+// Returns.
+//   - result: The result.
 func (r *DoctorRunner) Run(cmd *cobra.Command, _ []string) error {
 	ctx := cmd.Context()
 	if ctx == nil {

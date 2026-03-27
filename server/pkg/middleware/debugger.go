@@ -47,18 +47,15 @@ type Debugger struct {
 	done        chan struct{}
 }
 
-// NewDebugger creates a new Debugger middleware.
+// NewDebugger provides newdebugger functionality.
 //
-// Summary: Initializes the debugger with a fixed-size ring buffer.
+// Summary: NewDebugger.
 //
-// Parameters:
-//   - size: int. The number of recent requests to keep in memory.
+// Parameters.
+//   - size: The parameter.
 //
-// Returns:
-//   - *Debugger: The initialized debugger.
-//
-// Side Effects:
-//   - Starts a background goroutine to process debug entries.
+// Returns.
+//   - result: The result.
 func NewDebugger(size int) *Debugger {
 	d := &Debugger{
 		ring:        ring.New(size),
@@ -82,29 +79,14 @@ func (d *Debugger) process() {
 	close(d.done)
 }
 
-// Close stops the background processor. Summary: Shuts down the debugger and releases resources. Side Effects: - Closes the ingress channel. - Waits for the background processor to finish.
+// Close provides close functionality.
 //
-// Parameters:
+// Summary: Close.
+//
+// Parameters.
 //   - None.
 //
-// Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Close operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func (d *Debugger) Close() {
 	close(d.ingress)
@@ -120,20 +102,16 @@ type bodyLogWriter struct {
 	wroteHeader bool
 }
 
-// Write writes the data to the connection and captures it for the log.
+// Write provides write functionality.
 //
-// Summary: Writes data to the response and captures a copy for the debug log.
+// Summary: Write.
 //
-// Parameters:
-//   - b: []byte. The data to write.
+// Parameters.
+//   - b: The parameter.
+//   - error: The parameter.
 //
-// Returns:
-//   - int: The number of bytes written.
-//   - error: An error if the write fails.
-//
-// Side Effects:
-//   - Writes to the underlying http.ResponseWriter.
-//   - Writes to the internal buffer for logging, truncating if necessary.
+// Returns.
+//   - None.
 func (w *bodyLogWriter) Write(b []byte) (int, error) {
 	if !w.wroteHeader {
 		w.WriteHeader(http.StatusOK)
@@ -154,18 +132,14 @@ func (w *bodyLogWriter) Write(b []byte) (int, error) {
 	return w.ResponseWriter.Write(b)
 }
 
-// WriteHeader sends an HTTP response header with the provided status code.
+// WriteHeader provides writeheader functionality.
 //
-// Summary: Captures the status code and writes headers.
+// Summary: WriteHeader.
 //
-// Parameters:
-//   - statusCode: int. The HTTP status code.
+// Parameters.
+//   - statusCode: The parameter.
 //
-// Side Effects:
-//   - Sets the status code on the writer.
-//   - Writes the header to the underlying http.ResponseWriter.
-//
-// Returns:
+// Returns.
 //   - None.
 func (w *bodyLogWriter) WriteHeader(statusCode int) {
 	if w.wroteHeader {
@@ -182,21 +156,15 @@ type readCloserWrapper struct {
 	io.Closer
 }
 
-// Handler returns the http handler.
+// Handler provides handler functionality.
 //
-// Summary: Returns an HTTP handler that captures traffic.
+// Summary: Handler.
 //
-// Parameters:
-//   - next: http.Handler. The next handler in the chain.
+// Parameters.
+//   - next: The parameter.
 //
-// Returns:
-//   - http.Handler: The wrapped handler.
-//
-// Side Effects:
-//   - Intercepts HTTP requests and responses.
-//   - Generates trace and span IDs if missing.
-//   - Captures request and response bodies (truncated).
-//   - Sends debug entries to the ingress channel.
+// Returns.
+//   - result: The result.
 func (d *Debugger) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
@@ -316,18 +284,15 @@ func isTextContent(contentType string) bool {
 		strings.Contains(contentType, "form-urlencoded")
 }
 
-// Entries returns the last captured entries.
+// Entries provides entries functionality.
 //
-// Summary: Retrieves the list of captured debug entries from the ring buffer.
+// Summary: Entries.
 //
-// Returns:
-//   - []DebugEntry: A slice of the most recent captured requests and responses.
-//
-// Side Effects:
-//   - Acquires a read lock on the ring buffer.
-//
-// Parameters:
+// Parameters.
 //   - None.
+//
+// Returns.
+//   - result: The result.
 func (d *Debugger) Entries() []DebugEntry {
 	d.mu.RLock()
 	defer d.mu.RUnlock()
@@ -341,18 +306,15 @@ func (d *Debugger) Entries() []DebugEntry {
 	return entries
 }
 
-// APIHandler returns a http.HandlerFunc to view entries.
+// APIHandler provides apihandler functionality.
 //
-// Summary: Returns an HTTP handler that exposes the debug entries as JSON.
+// Summary: APIHandler.
 //
-// Returns:
-//   - http.HandlerFunc: The API handler function.
-//
-// Side Effects:
-//   - Encodes the entries to JSON and writes to the response.
-//
-// Parameters:
+// Parameters.
 //   - None.
+//
+// Returns.
+//   - result: The result.
 func (d *Debugger) APIHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

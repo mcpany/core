@@ -11,53 +11,29 @@ type MockWatcher struct {
 	CloseFunc func()
 }
 
-// NewMockWatcher creates a new mock watcher.
+// NewMockWatcher provides newmockwatcher functionality.
 //
-// Returns:
-//   - *MockWatcher: The result.
+// Summary: NewMockWatcher.
 //
-// Side Effects:
+// Parameters.
 //   - None.
 //
-// Summary: Initializes NewMockWatcher operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
-//   - None.
+// Returns.
+//   - result: The result.
 func NewMockWatcher() *MockWatcher {
 	return &MockWatcher{}
 }
 
-// Watch mocks the Watch method.
+// Watch provides watch functionality.
 //
-// Parameters:
-//   - paths ([]string): The parameter.
-//   - reloadFunc (func(): The parameter.
+// Summary: Watch.
 //
-// Returns:
-//   - ) (error): An error if the operation fails.
+// Parameters.
+//   - paths: The parameter.
+//   - reloadFunc: The parameter.
 //
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Watch operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
-//   - None.
+// Returns.
+//   - result: The result.
 func (m *MockWatcher) Watch(paths []string, reloadFunc func()) error {
 	if m.WatchFunc != nil {
 		m.WatchFunc(paths, reloadFunc)
@@ -65,23 +41,14 @@ func (m *MockWatcher) Watch(paths []string, reloadFunc func()) error {
 	return nil
 }
 
-// Close mocks the Close method.
+// Close provides close functionality.
 //
-// Parameters:
+// Summary: Close.
+//
+// Parameters.
 //   - None.
 //
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Close operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func (m *MockWatcher) Close() {
 	if m.CloseFunc != nil {

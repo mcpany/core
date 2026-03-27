@@ -33,19 +33,16 @@ type WebhookAuditStore struct {
 	done       chan struct{}
 }
 
-// NewWebhookAuditStore creates a new WebhookAuditStore.
+// NewWebhookAuditStore provides newwebhookauditstore functionality.
 //
-// Summary: Creates a new webhook audit store.
+// Summary: NewWebhookAuditStore.
 //
-// Parameters:
-//   - webhookURL (string): The URL to send audit logs to.
-//   - headers (map[string]string): Additional headers to send with the request.
+// Parameters.
+//   - webhookURL: The parameter.
+//   - headers: The parameter.
 //
-// Returns:
-//   - *WebhookAuditStore: A new WebhookAuditStore instance.
-//
-// Side Effects:
-//   - Starts background workers.
+// Returns.
+//   - result: The result.
 func NewWebhookAuditStore(webhookURL string, headers map[string]string) *WebhookAuditStore {
 	store := &WebhookAuditStore{
 		webhookURL: webhookURL,
@@ -101,19 +98,16 @@ func (s *WebhookAuditStore) worker() {
 	}
 }
 
-// Write writes an audit entry to the webhook (buffered).
+// Write provides write functionality.
 //
-// Summary: Queues an audit entry for sending.
+// Summary: Write.
 //
-// Parameters:
-//   - _ (context.Context): Unused context.
-//   - entry (Entry): The audit entry to write.
+// Parameters.
+//   - _: The parameter.
+//   - entry: The parameter.
 //
-// Returns:
-//   - error: An error if the queue is full.
-//
-// Side Effects:
-//   - Queues the entry for processing.
+// Returns.
+//   - result: The result.
 func (s *WebhookAuditStore) Write(_ context.Context, entry Entry) error {
 	select {
 	case s.queue <- entry:
@@ -158,36 +152,30 @@ func (s *WebhookAuditStore) sendBatch(batch []Entry) {
 	}
 }
 
-// Read implements the Store interface.
+// Read provides read functionality.
 //
-// Summary: Reads audit logs (not implemented for webhook store).
+// Summary: Read.
 //
-// Parameters:
-//   - _ (context.Context): Unused.
-//   - _ (Filter): Unused.
+// Parameters.
+//   - _: The parameter.
+//   - _: The parameter.
+//   - error: The parameter.
 //
-// Returns:
-//   - []Entry: Always nil.
-//   - error: Always returns an error indicating not implemented.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func (s *WebhookAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for webhook audit store")
 }
 
-// Close stops the workers and drains the queue.
+// Close provides close functionality.
 //
-// Summary: Gracefully shuts down the webhook store.
+// Summary: Close.
 //
-// Parameters:
+// Parameters.
 //   - None.
 //
-// Returns:
-//   - error: Always nil.
-//
-// Side Effects:
-//   - Stops background workers and drains the queue.
+// Returns.
+//   - result: The result.
 func (s *WebhookAuditStore) Close() error {
 	if s.done != nil {
 		close(s.done)

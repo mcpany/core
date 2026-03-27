@@ -30,52 +30,28 @@ type Upstream struct {
 	mu sync.Mutex
 }
 
-// NewUpstream creates a new SQL upstream.
+// NewUpstream provides newupstream functionality.
 //
-// Returns:
-//   - *Upstream: The result.
+// Summary: NewUpstream.
 //
-// Side Effects:
+// Parameters.
 //   - None.
 //
-// Summary: Initializes NewUpstream operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
-//   - None.
+// Returns.
+//   - result: The result.
 func NewUpstream() *Upstream {
 	return &Upstream{}
 }
 
-// Shutdown closes the database connection.
+// Shutdown provides shutdown functionality.
 //
-// Parameters:
-//   - _ (context.Context): The parameter.
+// Summary: Shutdown.
 //
-// Returns:
-//   - error: An error if the operation fails.
+// Parameters.
+//   - _: The parameter.
 //
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Shutdown operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
-//   - None.
+// Returns.
+//   - result: The result.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -91,7 +67,7 @@ func ptr(s string) *string {
 
 // Register discovers and registers tools from the SQL configuration. ctx is the context for the request. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
 //
-// Parameters:
+// Parameters.
 //   - ctx (context.Context): The context for the request.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
 //   - toolManager (tool.ManagerInterface): The toolManager parameter.
@@ -99,7 +75,7 @@ func ptr(s string) *string {
 //   - _ (resource.ManagerInterface): The _ parameter.
 //   - _ (bool): The _ parameter.
 //
-// Returns:
+// Returns.
 //   - string: The resulting string.
 //   - []*configv1.ToolDefinition: The resulting []*configv1.ToolDefinition.
 //   - []*configv1.ResourceDefinition: The resulting []*configv1.ResourceDefinition.

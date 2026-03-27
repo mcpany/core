@@ -21,15 +21,15 @@ type ContextOptimizer struct {
 	MaxChars int
 }
 
-// NewContextOptimizer creates a new ContextOptimizer.
+// NewContextOptimizer provides newcontextoptimizer functionality.
 //
-// Summary: Initializes a new ContextOptimizer with a maximum character limit.
+// Summary: NewContextOptimizer.
 //
-// Parameters:
-//   - maxChars: int. The maximum allowed number of characters for string values in the JSON response.
+// Parameters.
+//   - maxChars: The parameter.
 //
-// Returns:
-//   - *ContextOptimizer: The initialized optimizer.
+// Returns.
+//   - result: The result.
 func NewContextOptimizer(maxChars int) *ContextOptimizer {
 	return &ContextOptimizer{
 		MaxChars: maxChars,
@@ -44,20 +44,15 @@ var bufferPool = sync.Pool{
 	},
 }
 
-// Handler returns the middleware handler.
+// Handler provides handler functionality.
 //
-// Summary: Returns an HTTP handler that intercepts and potentially truncates response bodies.
+// Summary: Handler.
 //
-// Parameters:
-//   - next: http.Handler. The next handler in the chain.
+// Parameters.
+//   - next: The parameter.
 //
-// Returns:
-//   - http.Handler: The wrapped handler.
-//
-// Side Effects:
-//   - Buffers the entire response body.
-//   - Modifies the response body if it contains JSON strings exceeding MaxChars.
-//   - Updates the Content-Length header.
+// Returns.
+//   - result: The result.
 func (co *ContextOptimizer) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		wb := bufferPool.Get().(*responseBuffer)
@@ -189,20 +184,16 @@ func (w *responseBuffer) checkBuffer() {
 	}
 }
 
-// Write writes the data to the buffer or the underlying ResponseWriter.
+// Write provides write functionality.
 //
-// Summary: Writes data to the internal buffer if enabled, or directly to the response writer.
+// Summary: Write.
 //
-// Parameters:
-//   - b: []byte. The data to write.
+// Parameters.
+//   - b: The parameter.
+//   - error: The parameter.
 //
-// Returns:
-//   - int: The number of bytes written.
-//   - error: An error if the write fails.
-//
-// Side Effects:
-//   - Appends to the body buffer if buffering is enabled.
-//   - Writes to the underlying ResponseWriter otherwise.
+// Returns.
+//   - None.
 func (w *responseBuffer) Write(b []byte) (int, error) {
 	w.checkBuffer()
 
@@ -216,18 +207,14 @@ func (w *responseBuffer) Write(b []byte) (int, error) {
 	return w.ResponseWriter.Write(b)
 }
 
-// WriteHeader captures the status code and decides whether to buffer based on headers.
+// WriteHeader provides writeheader functionality.
 //
-// Summary: Writes the HTTP status code.
+// Summary: WriteHeader.
 //
-// Parameters:
-//   - statusCode: int. The HTTP status code.
+// Parameters.
+//   - statusCode: The parameter.
 //
-// Side Effects:
-//   - Sets the internal status code.
-//   - Checks content-type headers to determine if buffering is needed.
-//
-// Returns:
+// Returns.
 //   - None.
 func (w *responseBuffer) WriteHeader(statusCode int) {
 	if w.wroteHeader {

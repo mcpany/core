@@ -15,18 +15,18 @@ const (
 	parentIDKey traceContextKey = "parent_id"
 )
 
-// WithTraceContext returns a new context with trace information.
+// WithTraceContext provides withtracecontext functionality.
 //
-// Summary: Injects trace, span, and parent IDs into the context.
+// Summary: WithTraceContext.
 //
-// Parameters:
-//   - ctx: context.Context. The parent context.
-//   - traceID: string. The unique identifier for the trace.
-//   - spanID: string. The unique identifier for the current span.
-//   - parentID: string. The unique identifier for the parent span (optional).
+// Parameters.
+//   - ctx: The parameter.
+//   - traceID: The parameter.
+//   - spanID: The parameter.
+//   - parentID: The parameter.
 //
-// Returns:
-//   - context.Context: The new context with trace information attached.
+// Returns.
+//   - result: The result.
 func WithTraceContext(ctx context.Context, traceID, spanID, parentID string) context.Context {
 	ctx = context.WithValue(ctx, traceIDKey, traceID)
 	ctx = context.WithValue(ctx, spanIDKey, spanID)
@@ -36,15 +36,15 @@ func WithTraceContext(ctx context.Context, traceID, spanID, parentID string) con
 	return ctx
 }
 
-// GetTraceID returns the trace ID from the context.
+// GetTraceID provides gettraceid functionality.
 //
-// Summary: Retrieves the trace ID from the context.
+// Summary: GetTraceID.
 //
-// Parameters:
-//   - ctx: context.Context. The context to check.
+// Parameters.
+//   - ctx: The parameter.
 //
-// Returns:
-//   - string: The trace ID if present, otherwise an empty string.
+// Returns.
+//   - result: The result.
 func GetTraceID(ctx context.Context) string {
 	if v, ok := ctx.Value(traceIDKey).(string); ok {
 		return v
@@ -52,15 +52,15 @@ func GetTraceID(ctx context.Context) string {
 	return ""
 }
 
-// GetSpanID returns the span ID from the context.
+// GetSpanID provides getspanid functionality.
 //
-// Summary: Retrieves the span ID from the context.
+// Summary: GetSpanID.
 //
-// Parameters:
-//   - ctx: context.Context. The context to check.
+// Parameters.
+//   - ctx: The parameter.
 //
-// Returns:
-//   - string: The span ID if present, otherwise an empty string.
+// Returns.
+//   - result: The result.
 func GetSpanID(ctx context.Context) string {
 	if v, ok := ctx.Value(spanIDKey).(string); ok {
 		return v
@@ -68,15 +68,15 @@ func GetSpanID(ctx context.Context) string {
 	return ""
 }
 
-// GetParentID returns the parent span ID from the context.
+// GetParentID provides getparentid functionality.
 //
-// Summary: Retrieves the parent span ID from the context.
+// Summary: GetParentID.
 //
-// Parameters:
-//   - ctx: context.Context. The context to check.
+// Parameters.
+//   - ctx: The parameter.
 //
-// Returns:
-//   - string: The parent ID if present, otherwise an empty string.
+// Returns.
+//   - result: The result.
 func GetParentID(ctx context.Context) string {
 	if v, ok := ctx.Value(parentIDKey).(string); ok {
 		return v

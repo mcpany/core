@@ -17,33 +17,28 @@ type OpenAPIProvider struct {
 	Endpoint string // e.g., "http://localhost:8080/openapi.json"
 }
 
-// Name returns the name of the provider.
+// Name provides name functionality.
 //
-// Summary: Executes Name operation.
+// Summary: Name.
 //
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Parameters.
 //   - None.
+//
+// Returns.
+//   - result: The result.
 func (p *OpenAPIProvider) Name() string {
 	return "openapi"
 }
 
-// Discover attempts to find services and return their configurations.
+// Discover provides discover functionality.
 //
-// Summary: Executes Discover operation.
+// Summary: Discover.
 //
-// Parameters: - None.
+// Parameters.
+//   - _: The parameter.
+//   - error: The parameter.
 //
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func (p *OpenAPIProvider) Discover(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	if p.Endpoint == "" {

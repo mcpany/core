@@ -32,20 +32,16 @@ type Redactor struct {
 	customPatterns []*regexp.Regexp
 }
 
-// NewRedactor creates a new Redactor from the given DLP config.
+// NewRedactor provides newredactor functionality.
 //
-// Summary: Initializes a new Redactor based on Data Loss Prevention (DLP) configuration.
+// Summary: NewRedactor.
 //
-// Parameters:
-//   - config: *configv1.DLPConfig. The DLP configuration containing enabled status and custom patterns.
-//   - log: *slog.Logger. Logger for warning about invalid patterns.
+// Parameters.
+//   - config: The parameter.
+//   - log: The parameter.
 //
-// Returns:
-//   - *Redactor: The initialized redactor, or nil if DLP is disabled or config is nil.
-//
-// Side Effects:
-//   - Compiles regular expressions for custom patterns.
-//   - Logs warnings for invalid regex patterns.
+// Returns.
+//   - result: The result.
 func NewRedactor(config *configv1.DLPConfig, log *slog.Logger) *Redactor {
 	if config == nil || !config.GetEnabled() {
 		return nil
@@ -87,20 +83,16 @@ func NewRedactor(config *configv1.DLPConfig, log *slog.Logger) *Redactor {
 	}
 }
 
-// RedactJSON redacts sensitive information from a JSON byte slice.
+// RedactJSON provides redactjson functionality.
 //
-// Summary: Scans and redacts PII from a JSON-encoded byte slice.
+// Summary: RedactJSON.
 //
-// Parameters:
-//   - data: []byte. The JSON data to redact.
+// Parameters.
+//   - data: The parameter.
+//   - error: The parameter.
 //
-// Returns:
-//   - []byte: The redacted JSON data (or original if no redaction needed).
-//   - error: An error if JSON parsing fails (though often swallowed/ignored for safety).
-//
-// Side Effects:
-//   - Walks the JSON structure.
-//   - Unmarshals and remarshals strings if modification is needed.
+// Returns.
+//   - None.
 func (r *Redactor) RedactJSON(data []byte) ([]byte, error) {
 	if r == nil || len(data) == 0 {
 		return data, nil
@@ -148,18 +140,15 @@ func (r *Redactor) RedactJSON(data []byte) ([]byte, error) {
 	}), nil
 }
 
-// RedactString redacts sensitive information from a string.
+// RedactString provides redactstring functionality.
 //
-// Summary: Applies redaction rules to a plain string.
+// Summary: RedactString.
 //
-// Parameters:
-//   - s: string. The input string.
+// Parameters.
+//   - s: The parameter.
 //
-// Returns:
-//   - string: The redacted string.
-//
-// Side Effects:
-//   - Performs regex replacements for emails, credit cards, SSNs, and custom patterns.
+// Returns.
+//   - result: The result.
 func (r *Redactor) RedactString(s string) string {
 	if r == nil {
 		return s
@@ -216,17 +205,14 @@ func (r *Redactor) RedactString(s string) string {
 	return res
 }
 
-// RedactStruct redacts sensitive information from a map.
+// RedactStruct provides redactstruct functionality.
 //
-// Summary: Recursively redacts sensitive information from a map (struct representation).
+// Summary: RedactStruct.
 //
-// Parameters:
-//   - v: map[string]interface{}. The map to redact.
+// Parameters.
+//   - v: The parameter.
 //
-// Side Effects:
-//   - Modifies the map in place.
-//
-// Returns:
+// Returns.
 //   - None.
 func (r *Redactor) RedactStruct(v map[string]interface{}) {
 	if r == nil {
@@ -237,18 +223,15 @@ func (r *Redactor) RedactStruct(v map[string]interface{}) {
 	}
 }
 
-// RedactValue redacts sensitive information from a value.
+// RedactValue provides redactvalue functionality.
 //
-// Summary: Recursively redacts sensitive information from an arbitrary value (string, map, slice).
+// Summary: RedactValue.
 //
-// Parameters:
-//   - val: interface{}. The value to redact.
+// Parameters.
+//   - val: The parameter.
 //
-// Returns:
-//   - interface{}: The redacted value.
-//
-// Side Effects:
-//   - Recursively processes maps and slices.
+// Returns.
+//   - result: The result.
 func (r *Redactor) RedactValue(val interface{}) interface{} {
 	if r == nil {
 		return val

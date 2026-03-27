@@ -33,22 +33,15 @@ type VectorEntry struct {
 	Norm float32
 }
 
-// NewSimpleVectorStore creates a new SimpleVectorStore.
-// It initializes the store with a default configuration.
+// NewSimpleVectorStore provides newsimplevectorstore functionality.
 //
-// Returns:
-//   - *SimpleVectorStore: A pointer to the newly created SimpleVectorStore.
+// Summary: NewSimpleVectorStore.
 //
-// Summary: Initializes NewSimpleVectorStore operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Parameters.
 //   - None.
+//
+// Returns.
+//   - result: The result.
 func NewSimpleVectorStore() *SimpleVectorStore {
 	return &SimpleVectorStore{
 		items:      make(map[string][]*VectorEntry),
@@ -56,28 +49,19 @@ func NewSimpleVectorStore() *SimpleVectorStore {
 	}
 }
 
-// Add adds a new entry to the vector store.
-// It evicts the oldest entry if the store exceeds the maximum number of entries for the key.
+// Add provides add functionality.
 //
-// Parameters:
-//   - key: The key associated with the entry.
-//   - vector: The embedding vector.
-//   - result: The result to cache.
-//   - ttl: The time-to-live for the entry.
+// Summary: Add.
 //
-// Returns:
-//   - error: An error if the operation fails (currently always nil).
+// Parameters.
+//   - _: The parameter.
+//   - key: The parameter.
+//   - vector: The parameter.
+//   - result: The parameter.
+//   - ttl: The parameter.
 //
-// Summary: Executes Add operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
-//   - None.
+// Returns.
+//   - result: The result.
 func (s *SimpleVectorStore) Add(_ context.Context, key string, vector []float32, result any, ttl time.Duration) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -104,27 +88,18 @@ func (s *SimpleVectorStore) Add(_ context.Context, key string, vector []float32,
 	return nil
 }
 
-// Search searches for the most similar entry in the vector store for the given key and query vector.
-// It returns the result, the similarity score, and a boolean indicating if a match was found.
+// Search provides search functionality.
 //
-// Parameters:
-//   - key: The key to search for.
-//   - query: The query vector.
+// Summary: Search.
 //
-// Returns:
-//   - any: The cached result if found.
-//   - float32: The similarity score (cosine similarity).
-//   - bool: True if a match was found, false otherwise.
+// Parameters.
+//   - _: The parameter.
+//   - key: The parameter.
+//   - query: The parameter.
+//   - float32: The parameter.
+//   - bool: The parameter.
 //
-// Summary: Executes Search operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float32) (any, float32, bool) {
 	s.mu.RLock()
@@ -161,20 +136,15 @@ func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float3
 	return bestResult, bestScore, true
 }
 
-// Prune removes expired entries from the vector store for the given key.
+// Prune provides prune functionality.
 //
-// Parameters:
-//   - key: The key to prune entries for.
+// Summary: Prune.
 //
-// Summary: Executes Prune operation.
+// Parameters.
+//   - _: The parameter.
+//   - key: The parameter.
 //
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func (s *SimpleVectorStore) Prune(_ context.Context, key string) {
 	s.mu.Lock()

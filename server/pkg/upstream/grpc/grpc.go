@@ -51,27 +51,15 @@ type Upstream struct {
 	mu              sync.RWMutex
 }
 
-// CheckHealth performs a health check on the upstream service.
+// CheckHealth provides checkhealth functionality.
 //
-// Parameters:
-//   - ctx (context.Context): The context for the health check.
+// Summary: CheckHealth.
 //
-// Returns:
-//   - error: An error if the service is unhealthy.
+// Parameters.
+//   - ctx: The parameter.
 //
-// Side Effects:
-//   - Performs a health check RPC.
-//
-// Summary: Executes CheckHealth operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
-//   - None.
+// Returns.
+//   - result: The result.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -87,27 +75,15 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 	return nil
 }
 
-// NewUpstream creates a new instance of Upstream.
+// NewUpstream provides newupstream functionality.
 //
-// Parameters:
-//   - poolManager (*pool.Manager): The connection pool manager to be used for managing gRPC connections.
+// Summary: NewUpstream.
 //
-// Returns:
-//   - upstream.Upstream: An implementation of the upstream.Upstream interface.
+// Parameters.
+//   - poolManager: The parameter.
 //
-// Side Effects:
-//   - Starts a background cache cleaner.
-//
-// Summary: Initializes NewUpstream operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
-//   - None.
+// Returns.
+//   - result: The result.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	cache := ttlcache.New[string, *descriptorpb.FileDescriptorSet](
 		ttlcache.WithTTL[string, *descriptorpb.FileDescriptorSet](5 * time.Minute),
@@ -120,30 +96,15 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	}
 }
 
-// Shutdown gracefully terminates the gRPC upstream service by shutting down the
-// associated connection pool.
+// Shutdown provides shutdown functionality.
 //
-// Parameters:
-//   - ctx (context.Context): The context for the shutdown operation (currently unused).
+// Summary: Shutdown.
 //
-// Returns:
-//   - error: Always returns nil.
+// Parameters.
+//   - _: The parameter.
 //
-// Side Effects:
-//   - Stops the health checker.
-//   - Stops the reflection cache.
-//   - Deregisters the connection pool.
-//
-// Summary: Executes Shutdown operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
-//   - None.
+// Returns.
+//   - result: The result.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -164,7 +125,7 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // definitions, and then creates and registers tools based on the discovered
 // methods and any MCP annotations.
 //
-// Parameters:
+// Parameters.
 //   - ctx (context.Context): The registration context.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the service.
 //   - toolManager (tool.ManagerInterface): The manager for tools.
@@ -172,7 +133,7 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //   - resourceManager (resource.ManagerInterface): The manager for resources.
 //   - isReload (bool): Indicates whether this is a reload.
 //
-// Returns:
+// Returns.
 //   - string: The unique service ID.
 //   - []*configv1.ToolDefinition: Discovered tools.
 //   - []*configv1.ResourceDefinition: Discovered resources (currently unused for gRPC).

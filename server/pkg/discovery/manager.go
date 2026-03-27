@@ -32,59 +32,29 @@ type Manager struct {
 	statuses  map[string]*ProviderStatus
 }
 
-// NewManager creates a new discovery manager.
+// NewManager provides newmanager functionality.
 //
-// Parameters:
+// Summary: NewManager.
+//
+// Parameters.
 //   - None.
 //
-// Returns:
-//   - *Manager: The resulting *Manager.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewManager operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
-//   - None.
+// Returns.
+//   - result: The result.
 func NewManager() *Manager {
 	return &Manager{
 		statuses: make(map[string]*ProviderStatus),
 	}
 }
 
-// RegisterProvider registers a new provider.
+// RegisterProvider provides registerprovider functionality.
 //
-// Parameters:
-//   - p (Provider): The p parameter.
+// Summary: RegisterProvider.
 //
-// Returns:
-//   - None.
+// Parameters.
+//   - p: The parameter.
 //
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes RegisterProvider operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func (m *Manager) RegisterProvider(p Provider) {
 	m.mu.Lock()
@@ -96,30 +66,15 @@ func (m *Manager) RegisterProvider(p Provider) {
 	}
 }
 
-// Run runs all registered providers and returns the aggregated discovered services. It also updates the internal status of each provider.
+// Run provides run functionality.
 //
-// Parameters:
-//   - ctx (context.Context): The context for the request.
+// Summary: Run.
 //
-// Returns:
-//   - []*configv1.UpstreamServiceConfig: The resulting []*configv1.UpstreamServiceConfig.
+// Parameters.
+//   - ctx: The parameter.
 //
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Run operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
-//   - None.
+// Returns.
+//   - result: The result.
 func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 	var allServices []*configv1.UpstreamServiceConfig
 	log := logging.GetLogger()
@@ -167,30 +122,15 @@ func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 	return allServices
 }
 
-// GetStatuses returns the current status of all providers.
+// GetStatuses provides getstatuses functionality.
 //
-// Parameters:
+// Summary: GetStatuses.
+//
+// Parameters.
 //   - None.
 //
-// Returns:
-//   - []*ProviderStatus: The resulting []*ProviderStatus.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves GetStatuses operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
-//   - None.
+// Returns.
+//   - result: The result.
 func (m *Manager) GetStatuses() []*ProviderStatus {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -206,30 +146,15 @@ func (m *Manager) GetStatuses() []*ProviderStatus {
 	return statuses
 }
 
-// GetProviderStatus returns the status of a specific provider.
+// GetProviderStatus provides getproviderstatus functionality.
 //
-// Parameters:
-//   - name (string): The name parameter.
+// Summary: GetProviderStatus.
 //
-// Returns:
-//   - *ProviderStatus: The resulting *ProviderStatus.
-//   - bool: True if successful, false otherwise.
+// Parameters.
+//   - name: The parameter.
+//   - bool: The parameter.
 //
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves GetProviderStatus operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func (m *Manager) GetProviderStatus(name string) (*ProviderStatus, bool) {
 	m.mu.RLock()

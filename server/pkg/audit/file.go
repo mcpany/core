@@ -23,23 +23,16 @@ type FileAuditStore struct {
 	out  io.Writer
 }
 
-// NewFileAuditStore creates a new FileAuditStore.
+// NewFileAuditStore provides newfileauditstore functionality.
 //
-// Summary: Initializes a new FileAuditStore.
+// Summary: NewFileAuditStore.
 //
-// Parameters:
-//   - path: string. The file path for the audit log (or empty for stdout).
+// Parameters.
+//   - path: The parameter.
+//   - error: The parameter.
 //
-// Returns:
-//   - *FileAuditStore: The initialized store.
-//   - error: An error if the path is invalid or file cannot be opened.
-//
-// Errors:
-//   - Returns error if path validation fails.
-//   - Returns error if file creation/opening fails.
-//
-// Side Effects:
-//   - Opens (or creates) the specified file in append mode.
+// Returns.
+//   - None.
 func NewFileAuditStore(path string) (*FileAuditStore, error) {
 	var f *os.File
 	var err error
@@ -58,19 +51,16 @@ func NewFileAuditStore(path string) (*FileAuditStore, error) {
 	}, nil
 }
 
-// Write writes an audit entry to the file.
+// Write provides write functionality.
 //
-// Summary: Appends a JSON-marshaled audit entry to the configured output.
+// Summary: Write.
 //
-// Parameters:
-//   - _: context.Context. Unused.
-//   - entry: Entry. The audit entry to write.
+// Parameters.
+//   - _: The parameter.
+//   - entry: The parameter.
 //
-// Returns:
-//   - error: An error if writing fails.
-//
-// Side Effects:
-//   - Writes data to the file or stdout.
+// Returns.
+//   - result: The result.
 func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 	// ⚡ BOLT: Serialize JSON outside the lock to reduce critical section duration.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -95,33 +85,30 @@ func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 	return err
 }
 
-// Read implements the Store interface.
+// Read provides read functionality.
 //
-// Summary: Reads audit entries (Not implemented).
+// Summary: Read.
 //
-// Parameters:
-//   - _: context.Context. Unused.
-//   - _: Filter. Unused.
+// Parameters.
+//   - _: The parameter.
+//   - _: The parameter.
+//   - error: The parameter.
 //
-// Returns:
-//   - []Entry: Nil.
-//   - error: Always returns "not implemented".
+// Returns.
+//   - None.
 func (s *FileAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for file audit store")
 }
 
-// Close closes the file.
+// Close provides close functionality.
 //
-// Summary: Closes the underlying file handle if one exists.
+// Summary: Close.
 //
-// Returns:
-//   - error: An error if closing the file fails.
-//
-// Side Effects:
-//   - Closes the file descriptor.
-//
-// Parameters:
+// Parameters.
 //   - None.
+//
+// Returns.
+//   - result: The result.
 func (s *FileAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

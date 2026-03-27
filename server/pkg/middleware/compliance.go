@@ -30,18 +30,15 @@ type JSONRPCResponse struct {
 	Error   *JSONRPCError `json:"error,omitempty"`
 }
 
-// JSONRPCComplianceMiddleware ensures that errors are returned as valid JSON-RPC responses.
+// JSONRPCComplianceMiddleware provides jsonrpccompliancemiddleware functionality.
 //
-// Summary: Wraps non-JSON error responses in a JSON-RPC error format.
+// Summary: JSONRPCComplianceMiddleware.
 //
-// Parameters:
-//   - next: http.Handler. The next handler in the chain.
+// Parameters.
+//   - next: The parameter.
 //
-// Returns:
-//   - http.Handler: The wrapped handler that enforces JSON-RPC compliance for errors.
-//
-// Side Effects:
-//   - Intercepts and rewrites HTTP response bodies for error status codes.
+// Returns.
+//   - result: The result.
 func JSONRPCComplianceMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Only intercept POST requests (likely JSON-RPC)
@@ -95,27 +92,27 @@ type smartResponseWriter struct {
 	passThrough bool
 }
 
-// Header returns the header map that will be sent by WriteHeader.
+// Header provides header functionality.
 //
-// Summary: Returns the response headers.
+// Summary: Header.
 //
-// Returns:
-//   - http.Header: The header map.
-//
-// Parameters:
+// Parameters.
 //   - None.
+//
+// Returns.
+//   - result: The result.
 func (w *smartResponseWriter) Header() http.Header {
 	return w.header
 }
 
-// WriteHeader sends an HTTP response header with the provided status code.
+// WriteHeader provides writeheader functionality.
 //
-// Summary: Writes the status code to the response.
+// Summary: WriteHeader.
 //
-// Parameters:
-//   - code: int. The HTTP status code.
+// Parameters.
+//   - code: The parameter.
 //
-// Returns:
+// Returns.
 //   - None.
 func (w *smartResponseWriter) WriteHeader(code int) {
 	if w.committed {
@@ -139,16 +136,16 @@ func (w *smartResponseWriter) WriteHeader(code int) {
 	}
 }
 
-// Write writes the data to the connection as part of an HTTP reply.
+// Write provides write functionality.
 //
-// Summary: Writes data to the response body, buffering if necessary.
+// Summary: Write.
 //
-// Parameters:
-//   - b: []byte. The data to write.
+// Parameters.
+//   - b: The parameter.
+//   - error: The parameter.
 //
-// Returns:
-//   - int: The number of bytes written.
-//   - error: An error if the write fails.
+// Returns.
+//   - None.
 func (w *smartResponseWriter) Write(b []byte) (int, error) {
 	if !w.committed {
 		w.WriteHeader(http.StatusOK)
@@ -185,15 +182,14 @@ func (w *smartResponseWriter) flushHeader() {
 	w.w.WriteHeader(w.statusCode)
 }
 
-// Flush implements http.Flusher to support streaming.
+// Flush provides flush functionality.
 //
-// Summary: Flushes the response buffer to the client.
+// Summary: Flush.
 //
-// Returns: - None.
+// Parameters.
+//   - None.
 //
-//	None.
-//
-// Parameters:
+// Returns.
 //   - None.
 func (w *smartResponseWriter) Flush() {
 	if w.passThrough {

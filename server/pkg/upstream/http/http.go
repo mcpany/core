@@ -68,33 +68,15 @@ type Upstream struct {
 	mu          sync.RWMutex
 }
 
-// CheckHealth performs a health check on the upstream service.
+// CheckHealth provides checkhealth functionality.
 //
-// It uses a configured health checker if available, or falls back to a basic
-// TCP connection check to the service address.
+// Summary: CheckHealth.
 //
-// Parameters:
-//   - ctx (context.Context): The context for the health check.
+// Parameters.
+//   - ctx: The parameter.
 //
-// Returns:
-//   - error: An error if the service is unhealthy or unreachable.
-//
-// Errors:
-//   - Returns an error if the health check fails or the address is not configured.
-//
-// Side Effects:
-//   - May establish a network connection to the service.
-//
-// Summary: Executes CheckHealth operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
-//   - None.
+// Returns.
+//   - result: The result.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -114,29 +96,15 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 	return util.CheckConnection(ctx, address)
 }
 
-// Shutdown gracefully terminates the HTTP upstream service by shutting down the
-// associated connection pool.
+// Shutdown provides shutdown functionality.
 //
-// Parameters:
-//   - ctx (context.Context): The context for the shutdown operation (currently unused).
+// Summary: Shutdown.
 //
-// Returns:
-//   - error: Always returns nil.
+// Parameters.
+//   - _: The parameter.
 //
-// Side Effects:
-//   - Stops the health checker.
-//   - Deregisters the connection pool.
-//
-// Summary: Executes Shutdown operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
-//   - None.
+// Returns.
+//   - result: The result.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -151,27 +119,15 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
-// NewUpstream creates a new instance of Upstream.
+// NewUpstream provides newupstream functionality.
 //
-// Parameters:
-//   - poolManager (*pool.Manager): The connection pool manager to be used for managing HTTP connections.
+// Summary: NewUpstream.
 //
-// Returns:
-//   - upstream.Upstream: An implementation of the upstream.Upstream interface.
+// Parameters.
+//   - poolManager: The parameter.
 //
-// Side Effects:
-//   - Allocates memory for the Upstream struct.
-//
-// Summary: Initializes NewUpstream operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
-//   - None.
+// Returns.
+//   - result: The result.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager: poolManager,
@@ -182,7 +138,7 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 // pool for it, and then creates and registers tools for each call definition
 // specified in the configuration.
 //
-// Parameters:
+// Parameters.
 //   - ctx (context.Context): The context for the registration process.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
 //   - toolManager (tool.ManagerInterface): The manager where discovered tools will be registered.
@@ -190,7 +146,7 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 //   - resourceManager (resource.ManagerInterface): The manager where discovered resources will be registered.
 //   - isReload (bool): Indicates whether this is a configuration reload.
 //
-// Returns:
+// Returns.
 //   - string: The unique service ID.
 //   - []*configv1.ToolDefinition: A list of registered tool definitions.
 //   - []*configv1.ResourceDefinition: A list of registered resource definitions.

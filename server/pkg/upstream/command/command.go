@@ -38,27 +38,15 @@ type Upstream struct {
 	checker health.Checker
 }
 
-// Shutdown implements the upstream.Upstream interface.
+// Shutdown provides shutdown functionality.
 //
-// Parameters:
-//   - ctx (context.Context): The context for the shutdown operation (currently unused).
+// Summary: Shutdown.
 //
-// Returns:
-//   - error: Always returns nil.
+// Parameters.
+//   - _: The parameter.
 //
-// Side Effects:
-//   - Stops the health checker.
-//
-// Summary: Executes Shutdown operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
-//   - None.
+// Returns.
+//   - result: The result.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -69,24 +57,15 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
-// NewUpstream creates a new instance of CommandUpstream.
+// NewUpstream provides newupstream functionality.
 //
-// Returns:
-//   - upstream.Upstream: A new instance of the command upstream.
+// Summary: NewUpstream.
 //
-// Side Effects:
+// Parameters.
 //   - None.
 //
-// Summary: Initializes NewUpstream operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
-//   - None.
+// Returns.
+//   - result: The result.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{}
 }
@@ -94,7 +73,7 @@ func NewUpstream() upstream.Upstream {
 // Register processes the configuration for a command-line service, creates a
 // new tool for each defined command, and registers them with the tool manager.
 //
-// Parameters:
+// Parameters.
 //   - ctx (context.Context): The context for the registration process.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
 //   - toolManager (tool.ManagerInterface): The manager where discovered tools will be registered.
@@ -102,7 +81,7 @@ func NewUpstream() upstream.Upstream {
 //   - resourceManager (resource.ManagerInterface): The manager where discovered resources will be registered.
 //   - isReload (bool): Indicates whether this is a configuration reload.
 //
-// Returns:
+// Returns.
 //   - string: The unique service ID.
 //   - []*configv1.ToolDefinition: A list of registered tool definitions.
 //   - []*configv1.ResourceDefinition: A list of registered resource definitions.

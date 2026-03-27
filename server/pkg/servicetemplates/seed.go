@@ -30,30 +30,15 @@ type ConfigFile struct {
 	UpstreamServices []map[string]any `yaml:"upstream_services"`
 }
 
-// Seed walks the examples directory and saves service templates.
+// Seed provides seed functionality.
 //
-// Parameters:
-//   - ctx (context.Context): The context for the request.
+// Summary: Seed.
 //
-// Returns:
-//   - error: An error if the operation fails.
+// Parameters.
+//   - ctx: The parameter.
 //
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Seed operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
-//   - None.
+// Returns.
+//   - result: The result.
 func (s *Seeder) Seed(ctx context.Context) error {
 	entries, err := os.ReadDir(s.ExamplesDir)
 	if err != nil {

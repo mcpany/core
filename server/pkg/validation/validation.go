@@ -16,16 +16,15 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// IsValidBindAddress checks if a given string is a valid bind address.
-// A valid bind address is in the format "host:port".
+// IsValidBindAddress provides isvalidbindaddress functionality.
 //
-// Summary: Validates a bind address string.
+// Summary: IsValidBindAddress.
 //
-// Parameters:
-//   - s: string. The address string to validate.
+// Parameters.
+//   - s: The parameter.
 //
-// Returns:
-//   - error: An error if validation fails.
+// Returns.
+//   - result: The result.
 func IsValidBindAddress(s string) error {
 	_, port, err := net.SplitHostPort(s)
 	if err != nil {
@@ -67,10 +66,10 @@ func IsValidBindAddress(s string) error {
 //
 // Summary: Checks for path traversal attempts.
 //
-// Parameters:
+// Parameters.
 //   - path: string. The path to check.
 //
-// Returns:
+// Returns.
 //   - error: An error if the path is insecure.
 //
 // IsSecurePath is a variable to allow mocking in tests.
@@ -138,14 +137,14 @@ var (
 	allowedPaths []string
 )
 
-// SetAllowedPaths sets the list of allowed paths for file operations.
+// SetAllowedPaths provides setallowedpaths functionality.
 //
-// Summary: Sets the global allowed paths list.
+// Summary: SetAllowedPaths.
 //
-// Parameters:
-//   - paths: []string. The list of allowed paths.
+// Parameters.
+//   - paths: The parameter.
 //
-// Returns:
+// Returns.
 //   - None.
 func SetAllowedPaths(paths []string) {
 	allowedPaths = paths
@@ -320,18 +319,15 @@ var allowedOpaqueSchemes = map[string]bool{
 	"file":        true,
 }
 
-// IsValidURL checks if a given string is a valid URL. This function performs
-// several checks, including for length, whitespace, the presence of a scheme,
-// and host, considering special cases for schemes like "unix" or "mailto" that
-// do not require a host.
+// IsValidURL provides isvalidurl functionality.
 //
-// Summary: Validates a URL string.
+// Summary: IsValidURL.
 //
-// Parameters:
-//   - s: string. The URL string.
+// Parameters.
+//   - s: The parameter.
 //
-// Returns:
-//   - bool: True if valid.
+// Returns.
+//   - result: The result.
 func IsValidURL(s string) bool {
 	if len(s) > 2048 || strings.TrimSpace(s) != s {
 		return false
@@ -376,17 +372,15 @@ func IsValidURL(s string) bool {
 	return true
 }
 
-// ValidateHTTPServiceDefinition checks the validity of an HttpCallDefinition.
-// It ensures that the endpoint path is specified and correctly formatted, and
-// that a valid HTTP method is set.
+// ValidateHTTPServiceDefinition provides validatehttpservicedefinition functionality.
 //
-// Summary: Validates an HTTP service definition.
+// Summary: ValidateHTTPServiceDefinition.
 //
-// Parameters:
-//   - def: *configv1.HttpCallDefinition. The definition to validate.
+// Parameters.
+//   - def: The parameter.
 //
-// Returns:
-//   - error: An error if validation fails.
+// Returns.
+//   - result: The result.
 func ValidateHTTPServiceDefinition(def *configv1.HttpCallDefinition) error {
 	if def == nil {
 		return fmt.Errorf("http call definition cannot be nil")

@@ -19,10 +19,10 @@ import (
 //
 // Summary: Helper to create a pool manager with a default "test-service" HTTP pool.
 //
-// Parameters:
+// Parameters.
 //   - t: *testing.T. The testing object.
 //
-// Returns:
+// Returns.
 //   - *pool.Manager: The initialized pool manager.
 //
 // Side Effects:
@@ -56,10 +56,10 @@ type MockAuthenticator struct {
 //
 // Summary: Authenticates a request using the mock function.
 //
-// Parameters:
+// Parameters.
 //   - req: *http.Request. The request to authenticate.
 //
-// Returns:
+// Returns.
 //   - error: The error from AuthenticateFunc.
 //
 // Side Effects:

@@ -24,18 +24,15 @@ type Transformer struct {
 	pool  sync.Pool
 }
 
-// NewTransformer creates and returns a new instance of Transformer.
+// NewTransformer provides newtransformer functionality.
 //
-// Summary: Initializes a new Transformer.
+// Summary: NewTransformer.
 //
-// Returns:
-//   - *Transformer: The initialized transformer.
-//
-// Side Effects:
-//   - Initializes a sync.Pool for bytes.Buffer.
-//
-// Parameters:
+// Parameters.
 //   - None.
+//
+// Returns.
+//   - result: The result.
 func NewTransformer() *Transformer {
 	return &Transformer{
 		pool: sync.Pool{
@@ -46,26 +43,17 @@ func NewTransformer() *Transformer {
 	}
 }
 
-// Transform takes a map of data and a Go template string and returns a byte
-// slice containing the transformed output.
+// Transform provides transform functionality.
 //
-// Summary: Executes a Go template against provided data.
+// Summary: Transform.
 //
-// Parameters:
-//   - templateStr: string. The Go template to execute.
-//   - data: any. The input data context for the template.
+// Parameters.
+//   - templateStr: The parameter.
+//   - data: The parameter.
+//   - error: The parameter.
 //
-// Returns:
-//   - []byte: The transformed output.
-//   - error: An error if template parsing or execution fails.
-//
-// Errors:
-//   - Returns error if template syntax is invalid.
-//   - Returns error if template execution fails.
-//
-// Side Effects:
-//   - Caches parsed templates.
-//   - Uses a buffer pool to reduce allocations.
+// Returns.
+//   - None.
 func (t *Transformer) Transform(templateStr string, data any) ([]byte, error) {
 	var tmpl *template.Template
 	var err error

@@ -25,60 +25,30 @@ type Generator struct {
 	Reader *bufio.Reader
 }
 
-// NewGenerator creates a new Generator instance that reads from standard input.
+// NewGenerator provides newgenerator functionality.
 //
-// Parameters:
+// Summary: NewGenerator.
+//
+// Parameters.
 //   - None.
 //
-// Returns:
-//   - *Generator: The resulting *Generator.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewGenerator operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
-//   - None.
+// Returns.
+//   - result: The result.
 func NewGenerator() *Generator {
 	return &Generator{
 		Reader: bufio.NewReader(os.Stdin),
 	}
 }
 
-// Generate prompts the user for service details and returns the generated configuration as a byte slice.
+// Generate provides generate functionality.
 //
-// Parameters:
-//   - None.
+// Summary: Generate.
 //
-// Returns:
-//   - []byte: The resulting []byte.
-//   - error: An error if the operation fails.
+// Parameters.
+//   - ): The parameter.
+//   - error: The parameter.
 //
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Generate operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func (g *Generator) Generate() ([]byte, error) {
 	serviceType, err := g.prompt("🤖 Enter service type (http, grpc, openapi, graphql): ")

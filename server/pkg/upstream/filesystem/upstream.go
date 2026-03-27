@@ -41,52 +41,30 @@ type Upstream struct {
 	checker health.Checker
 }
 
-// NewUpstream creates a new instance of FilesystemUpstream.
+// NewUpstream provides newupstream functionality.
 //
-// Returns:
-//   - upstream.Upstream: A new instance of the filesystem upstream.
+// Summary: NewUpstream.
 //
-// Side Effects:
+// Parameters.
 //   - None.
 //
-// Summary: Initializes NewUpstream operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
-//   - None.
+// Returns.
+//   - result: The result.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{
 		closers: make([]io.Closer, 0),
 	}
 }
 
-// Shutdown implements the upstream.Upstream interface.
+// Shutdown provides shutdown functionality.
 //
-// Parameters:
-//   - ctx (context.Context): The context for the shutdown operation (currently unused).
+// Summary: Shutdown.
 //
-// Returns:
-//   - error: Always returns nil.
+// Parameters.
+//   - _: The parameter.
 //
-// Side Effects:
-//   - Stops the health checker.
-//   - Closes all registered filesystem providers.
-//
-// Summary: Executes Shutdown operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
-//   - None.
+// Returns.
+//   - result: The result.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -102,7 +80,7 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 
 // Register processes the configuration for a filesystem service.
 //
-// Parameters:
+// Parameters.
 //   - ctx (context.Context): The context for the registration process.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
 //   - toolManager (tool.ManagerInterface): The manager where discovered tools will be registered.
@@ -110,7 +88,7 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //   - _ (resource.ManagerInterface): Unused resource manager.
 //   - _ (bool): Unused reload flag.
 //
-// Returns:
+// Returns.
 //   - string: The unique service ID.
 //   - []*configv1.ToolDefinition: A list of registered tool definitions.
 //   - []*configv1.ResourceDefinition: Always nil.
@@ -246,17 +224,17 @@ type fsCallable struct {
 	handler func(ctx context.Context, args map[string]interface{}) (map[string]interface{}, error)
 }
 
-// Call executes the filesystem tool with the provided request arguments.
+// Call provides call functionality.
 //
-// Summary: Executes a filesystem tool.
+// Summary: Call.
 //
-// Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *tool.ExecutionRequest. The request containing arguments.
+// Parameters.
+//   - ctx: The parameter.
+//   - req: The parameter.
+//   - error: The parameter.
 //
-// Returns:
-//   - any: The result of the execution.
-//   - error: An error if execution fails.
+// Returns.
+//   - None.
 func (c *fsCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	args := req.Arguments
 	if args == nil && len(req.ToolInputs) > 0 {

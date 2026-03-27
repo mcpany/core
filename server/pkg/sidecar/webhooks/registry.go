@@ -37,57 +37,46 @@ type Registry struct {
 	hooks map[string]Handler
 }
 
-// NewRegistry creates and initializes a new Registry instance.
+// NewRegistry provides newregistry functionality.
 //
-// Summary: Creates a new webhook registry.
+// Summary: NewRegistry.
 //
-// Parameters:
+// Parameters.
 //   - None.
 //
-// Returns:
-//   - *Registry: A pointer to a new, empty Registry.
-//
-// Side Effects:
-//   - Allocates memory for the registry map.
+// Returns.
+//   - result: The result.
 func NewRegistry() *Registry {
 	return &Registry{
 		hooks: make(map[string]Handler),
 	}
 }
 
-// Register registers a handler with a specific name.
-// If a handler with the same name already exists, it will be overwritten.
+// Register provides register functionality.
 //
-// Summary: Registers a webhook handler.
+// Summary: Register.
 //
-// Parameters:
-//   - name: string. The name/path to register the handler under.
-//   - handler: Handler. The Handler instance to register.
+// Parameters.
+//   - name: The parameter.
+//   - handler: The parameter.
 //
-// Returns: - None.
-//
-//	None.
-//
-// Side Effects:
-//   - Updates the registry map.
+// Returns.
+//   - None.
 func (r *Registry) Register(name string, handler Handler) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	r.hooks[name] = handler
 }
 
-// Get retrieves a handler by its name.
+// Get provides get functionality.
 //
-// Summary: Retrieves a webhook handler by name.
+// Summary: Get.
 //
-// Parameters:
-//   - name: string. The name of the handler to retrieve.
+// Parameters.
+//   - name: The parameter.
+//   - bool: The parameter.
 //
-// Returns:
-//   - Handler: The registered handler, if found.
-//   - bool: True if the handler exists, false otherwise.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func (r *Registry) Get(name string) (Handler, bool) {
 	r.mu.RLock()

@@ -26,12 +26,12 @@ type Bus[T any] interface {
 	// is sent to each subscriber's channel, and the handler is invoked by a
 	// dedicated goroutine for that subscriber.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx: context.Context. Controls the lifecycle of the publish operation (e.g. timeouts).
 	//   - topic: string. The destination topic for the message.
 	//   - msg: T. The payload message to be broadcasted.
 	//
-// Returns:
+// Returns.
 	//   - error: An error if the publish operation fails (e.g. underlying transport error).
 	Publish(ctx context.Context, topic string, msg T) error
 
@@ -39,13 +39,13 @@ type Bus[T any] interface {
 	// dedicated goroutine for the subscription to process messages from a
 	// channel.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx: context.Context. Controls the setup of the subscription. Note that context cancellation.
 	//     may not automatically unsubscribe depending on implementation; use the returned unsubscribe function..
 	//   - topic: string. The topic to listen to.
 	//   - handler: func(T). The callback function invoked for each received message.
 	//
-// Returns:
+// Returns.
 	//   - func(): A cleanup function that removes the subscription when called.
 	Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func())
 
@@ -53,12 +53,12 @@ type Bus[T any] interface {
 	// for a given topic. After the handler is called, the subscription is
 	// automatically removed.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx: context.Context. Controls the setup of the subscription.
 	//   - topic: string. The topic to listen to.
 	//   - handler: func(T). The callback function invoked for the single received message.
 	//
-// Returns:
+// Returns.
 	//   - func(): A cleanup function that removes the subscription if called before the first message.
 	SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func())
 }
@@ -83,27 +83,15 @@ type Provider struct {
 // Summary: Represents a NewProviderHook.
 var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 
-// NewProvider creates and returns a new Provider, which is used to manage
-// multiple topic-based bus instances.
+// NewProvider provides newprovider functionality.
 //
-// Parameters: - None.
+// Summary: NewProvider.
 //
-//	messageBus: The configuration for the message bus.
+// Parameters.
+//   - messageBus: The parameter.
+//   - error: The parameter.
 //
-// Returns: - None.
-//
-//	*Provider: The created Provider.
-//	error: An error if creation fails.
-//
-// Summary: Initializes NewProvider operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 	if NewProviderHook != nil {

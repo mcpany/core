@@ -20,41 +20,41 @@ import (
 type ManagerInterface interface {
 	// AddPrompt registers a new prompt.
 	//
-// Parameters:
+// Parameters.
 	//   - prompt: Prompt. The prompt definition to add.
 	AddPrompt(prompt Prompt)
 
 	// UpdatePrompt updates an existing prompt.
 	//
-// Parameters:
+// Parameters.
 	//   - prompt: Prompt. The prompt with updated information.
 	UpdatePrompt(prompt Prompt)
 
 	// GetPrompt retrieves a prompt by its name.
 	//
-// Parameters:
+// Parameters.
 	//   - name: string. The unique name of the prompt.
 	//
-// Returns:
+// Returns.
 	//   - Prompt: The prompt instance.
 	//   - bool: True if the prompt was found, false otherwise.
 	GetPrompt(name string) (Prompt, bool)
 
 	// ListPrompts returns all registered prompts.
 	//
-// Returns:
+// Returns.
 	//   - []Prompt: A slice of all registered prompts.
 	ListPrompts() []Prompt
 
 	// ClearPromptsForService removes all prompts associated with a specific service.
 	//
-// Parameters:
+// Parameters.
 	//   - serviceID: string. The unique identifier of the service.
 	ClearPromptsForService(serviceID string)
 
 	// SetMCPServer sets the MCP server provider.
 	//
-// Parameters:
+// Parameters.
 	//   - mcpServer: MCPServerProvider. The provider interface.
 	SetMCPServer(mcpServer MCPServerProvider)
 }
@@ -71,41 +71,29 @@ type Manager struct {
 	cachedPrompts []Prompt
 }
 
-// NewManager creates and returns a new, empty Manager.
+// NewManager provides newmanager functionality.
 //
-// Returns:
-//   - *Manager: A pointer to the newly created Manager.
+// Summary: NewManager.
 //
-// Summary: Initializes NewManager operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Parameters.
 //   - None.
+//
+// Returns.
+//   - result: The result.
 func NewManager() *Manager {
 	return &Manager{
 		prompts: xsync.NewMap[string, Prompt](),
 	}
 }
 
-// SetMCPServer provides the Manager with a reference to the MCP server.
+// SetMCPServer provides setmcpserver functionality.
 //
-// Parameters:
-//   - mcpServer: MCPServerProvider. The MCP server provider.
+// Summary: SetMCPServer.
 //
-// Summary: Updates SetMCPServer operation.
+// Parameters.
+//   - mcpServer: The parameter.
 //
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func (pm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 	pm.mu.Lock()
@@ -113,27 +101,14 @@ func (pm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 	pm.mcpServer = mcpServer
 }
 
-// AddPrompt registers a new prompt with the manager.
+// AddPrompt provides addprompt functionality.
 //
-// If a prompt with the same name already exists, it will be overwritten, and a warning
-// will be logged.
+// Summary: AddPrompt.
 //
-// Parameters:
-//   - prompt: Prompt. The prompt to add.
+// Parameters.
+//   - prompt: The parameter.
 //
-// Side Effects:
-//   - Updates the internal prompt registry.
-//   - Invalidates the list cache.
-//
-// Summary: Executes AddPrompt operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func (pm *Manager) AddPrompt(prompt Prompt) {
 	promptName := prompt.Prompt().Name
@@ -149,26 +124,14 @@ func (pm *Manager) AddPrompt(prompt Prompt) {
 	pm.mu.Unlock()
 }
 
-// UpdatePrompt updates an existing prompt in the manager.
+// UpdatePrompt provides updateprompt functionality.
 //
-// If the prompt does not exist, it will be added.
+// Summary: UpdatePrompt.
 //
-// Parameters:
-//   - prompt: Prompt. The prompt definition to update.
+// Parameters.
+//   - prompt: The parameter.
 //
-// Side Effects:
-//   - Updates the internal prompt registry.
-//   - Invalidates the list cache.
-//
-// Summary: Executes UpdatePrompt operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func (pm *Manager) UpdatePrompt(prompt Prompt) {
 	pm.prompts.Store(prompt.Prompt().Name, prompt)
@@ -177,47 +140,30 @@ func (pm *Manager) UpdatePrompt(prompt Prompt) {
 	pm.mu.Unlock()
 }
 
-// GetPrompt retrieves a prompt from the manager by its name.
+// GetPrompt provides getprompt functionality.
 //
-// Parameters:
-//   - name: string. The name of the prompt.
+// Summary: GetPrompt.
 //
-// Returns:
-//   - Prompt: The prompt instance.
-//   - bool: True if found, false otherwise.
+// Parameters.
+//   - name: The parameter.
+//   - bool: The parameter.
 //
-// Summary: Retrieves GetPrompt operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func (pm *Manager) GetPrompt(name string) (Prompt, bool) {
 	prompt, ok := pm.prompts.Load(name)
 	return prompt, ok
 }
 
-// ListPrompts returns a slice containing all the prompts currently registered.
+// ListPrompts provides listprompts functionality.
 //
-// It uses a read-through cache to improve performance.
+// Summary: ListPrompts.
 //
-// Returns:
-//   - []Prompt: A slice of currently registered prompts.
-//
-// Summary: Executes ListPrompts operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Parameters.
 //   - None.
+//
+// Returns.
+//   - result: The result.
 func (pm *Manager) ListPrompts() []Prompt {
 	// ⚡ Bolt: Use a read-through cache to avoid repeated map iteration and slice allocation.
 	// The cache is invalidated on any write operation (Add/Update/Clear).
@@ -256,24 +202,14 @@ func (pm *Manager) ListPrompts() []Prompt {
 	return result
 }
 
-// ClearPromptsForService removes all prompts associated with a given service.
+// ClearPromptsForService provides clearpromptsforservice functionality.
 //
-// Parameters:
-//   - serviceID: string. The unique identifier of the service.
+// Summary: ClearPromptsForService.
 //
-// Side Effects:
-//   - Removes matching prompts from the registry.
-//   - Invalidates the list cache.
+// Parameters.
+//   - serviceID: The parameter.
 //
-// Summary: Executes ClearPromptsForService operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func (pm *Manager) ClearPromptsForService(serviceID string) {
 	changed := false

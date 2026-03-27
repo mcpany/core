@@ -28,19 +28,15 @@ var (
 	historyMu    sync.RWMutex
 )
 
-// AddHealthStatus adds a status point to the history.
+// AddHealthStatus provides addhealthstatus functionality.
 //
-// Summary: Records a new health status point for a service.
+// Summary: AddHealthStatus.
 //
-// Parameters:
-//   - serviceName: string. The name of the service.
-//   - status: string. The health status (e.g., "healthy", "unhealthy").
+// Parameters.
+//   - serviceName: The parameter.
+//   - status: The parameter.
 //
-// Side Effects:
-//   - Updates the global historyStore.
-//   - Prunes history if it exceeds 1000 points.
-//
-// Returns:
+// Returns.
 //   - None.
 func AddHealthStatus(serviceName string, status string) {
 	historyMu.Lock()
@@ -77,18 +73,15 @@ func AddHealthStatus(serviceName string, status string) {
 	}
 }
 
-// GetHealthHistory returns the history for all services.
+// GetHealthHistory provides gethealthhistory functionality.
 //
-// Summary: Retrieves the complete health history map.
+// Summary: GetHealthHistory.
 //
-// Returns:
-//   - map[string][]HistoryPoint: A map of service names to their health history points.
-//
-// Side Effects:
-//   - Acquires a read lock on the history store.
-//
-// Parameters:
+// Parameters.
 //   - None.
+//
+// Returns.
+//   - result: The result.
 func GetHealthHistory() map[string][]HistoryPoint {
 	historyMu.RLock()
 	defer historyMu.RUnlock()

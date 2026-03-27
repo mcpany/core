@@ -41,18 +41,15 @@ type Manager struct {
 	httpClient *http.Client
 }
 
-// NewManager creates a new Webhook Manager.
+// NewManager provides newmanager functionality.
 //
-// Summary: Creates a new Manager.
+// Summary: NewManager.
 //
-// Returns:
-//   - *Manager: A pointer to the newly created Manager.
-//
-// Side Effects:
-//   - Initializes internal maps and HTTP client.
-//
-// Parameters:
+// Parameters.
 //   - None.
+//
+// Returns.
+//   - result: The result.
 func NewManager() *Manager {
 	return &Manager{
 		webhooks:   make(map[string]*WebhookConfig),
@@ -60,15 +57,15 @@ func NewManager() *Manager {
 	}
 }
 
-// ListWebhooks returns all configured webhooks.
+// ListWebhooks provides listwebhooks functionality.
 //
-// Summary: Lists all webhooks.
+// Summary: ListWebhooks.
 //
-// Returns:
-//   - []*WebhookConfig: A list of webhook configurations.
-//
-// Parameters:
+// Parameters.
 //   - None.
+//
+// Returns.
+//   - result: The result.
 func (m *Manager) ListWebhooks() []*WebhookConfig {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -79,18 +76,14 @@ func (m *Manager) ListWebhooks() []*WebhookConfig {
 	return list
 }
 
-// AddWebhook adds or updates a webhook.
+// AddWebhook provides addwebhook functionality.
 //
-// Summary: Adds or updates a webhook.
+// Summary: AddWebhook.
 //
-// Parameters:
-//   - w (*WebhookConfig): The webhook configuration to add.
+// Parameters.
+//   - w: The parameter.
 //
-// Side Effects:
-//   - Updates the internal webhook map.
-//   - Generates an ID if one is not provided.
-//
-// Returns:
+// Returns.
 //   - None.
 func (m *Manager) AddWebhook(w *WebhookConfig) {
 	m.mu.Lock()
@@ -102,16 +95,16 @@ func (m *Manager) AddWebhook(w *WebhookConfig) {
 	m.webhooks[w.ID] = w
 }
 
-// GetWebhook returns a webhook by ID.
+// GetWebhook provides getwebhook functionality.
 //
-// Summary: Retrieves a webhook by ID.
+// Summary: GetWebhook.
 //
-// Parameters:
-//   - id (string): The webhook ID.
+// Parameters.
+//   - id: The parameter.
+//   - bool: The parameter.
 //
-// Returns:
-//   - *WebhookConfig: The webhook configuration.
-//   - bool: True if found, false otherwise.
+// Returns.
+//   - None.
 func (m *Manager) GetWebhook(id string) (*WebhookConfig, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -119,17 +112,14 @@ func (m *Manager) GetWebhook(id string) (*WebhookConfig, bool) {
 	return w, ok
 }
 
-// DeleteWebhook removes a webhook by ID.
+// DeleteWebhook provides deletewebhook functionality.
 //
-// Summary: Deletes a webhook.
+// Summary: DeleteWebhook.
 //
-// Parameters:
-//   - id (string): The webhook ID to delete.
+// Parameters.
+//   - id: The parameter.
 //
-// Side Effects:
-//   - Removes the webhook from the internal map.
-//
-// Returns:
+// Returns.
 //   - None.
 func (m *Manager) DeleteWebhook(id string) {
 	m.mu.Lock()
@@ -137,24 +127,16 @@ func (m *Manager) DeleteWebhook(id string) {
 	delete(m.webhooks, id)
 }
 
-// TestWebhook sends a test payload to the webhook URL.
+// TestWebhook provides testwebhook functionality.
 //
-// Summary: Tests a webhook.
+// Summary: TestWebhook.
 //
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - id (string): The webhook ID to test.
+// Parameters.
+//   - ctx: The parameter.
+//   - id: The parameter.
 //
-// Returns:
-//   - error: An error if the test fails or the webhook is not found.
-//
-// Errors:
-//   - Returns error if webhook not found.
-//   - Returns error if HTTP request fails or returns non-2xx status.
-//
-// Side Effects:
-//   - Sends an HTTP POST request to the webhook URL.
-//   - Updates the webhook status.
+// Returns.
+//   - result: The result.
 func (m *Manager) TestWebhook(ctx context.Context, id string) error {
 	w, ok := m.GetWebhook(id)
 	if !ok {

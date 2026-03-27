@@ -45,18 +45,15 @@ type CircuitBreaker struct {
 	config *configv1.CircuitBreakerConfig
 }
 
-// NewCircuitBreaker creates a new CircuitBreaker with the given configuration.
+// NewCircuitBreaker provides newcircuitbreaker functionality.
 //
-// Summary: Creates a new circuit breaker.
+// Summary: NewCircuitBreaker.
 //
-// Parameters:
-//   - config (*configv1.CircuitBreakerConfig): The configuration for the circuit breaker.
+// Parameters.
+//   - config: The parameter.
 //
-// Returns:
-//   - *CircuitBreaker: A new CircuitBreaker instance.
-//
-// Side Effects:
-//   - None.
+// Returns.
+//   - result: The result.
 func NewCircuitBreaker(config *configv1.CircuitBreakerConfig) *CircuitBreaker {
 	return &CircuitBreaker{
 		config: config,
@@ -64,22 +61,16 @@ func NewCircuitBreaker(config *configv1.CircuitBreakerConfig) *CircuitBreaker {
 	}
 }
 
-// Execute runs the provided work function. If the circuit breaker is open, it
-// returns a CircuitBreakerOpenError immediately. If the work function fails,
-// it tracks the failure and may trip the breaker.
+// Execute provides execute functionality.
 //
-// Summary: Executes a function protected by the circuit breaker.
+// Summary: Execute.
 //
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - work (func(context.Context) error): The function to execute.
+// Parameters.
+//   - ctx: The parameter.
+//   - work: The parameter.
 //
-// Returns:
-//   - error: An error if the function fails or the breaker is open.
-//
-// Side Effects:
-//   - May change the state of the circuit breaker.
-//   - Executes the provided function.
+// Returns.
+//   - result: The result.
 func (cb *CircuitBreaker) Execute(ctx context.Context, work func(context.Context) error) error {
 	originState := StateClosed
 
@@ -236,18 +227,15 @@ func (cb *CircuitBreaker) onFailure(originState State) {
 // Summary: Represents a CircuitBreakerOpenError.
 type CircuitBreakerOpenError struct{}
 
-// Error returns the error message for a CircuitBreakerOpenError.
+// Error provides error functionality.
 //
-// Summary: Returns the error message.
+// Summary: Error.
 //
-// Parameters:
+// Parameters.
 //   - None.
 //
-// Returns:
-//   - string: The error message.
-//
-// Side Effects:
-//   - None.
+// Returns.
+//   - result: The result.
 func (e *CircuitBreakerOpenError) Error() string {
 	return "circuit breaker is open"
 }

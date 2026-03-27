@@ -24,15 +24,15 @@ type TemplateManager struct {
 	filePath  string
 }
 
-// NewTemplateManager creates a new instance of TemplateManager.
+// NewTemplateManager provides newtemplatemanager functionality.
 //
-// Summary: Initializes a new TemplateManager.
+// Summary: NewTemplateManager.
 //
-// Parameters:
-//   - dataDir: string. The directory where template data is persisted.
+// Parameters.
+//   - dataDir: The parameter.
 //
-// Returns:
-//   - *TemplateManager: The initialized manager.
+// Returns.
+//   - result: The result.
 func NewTemplateManager(dataDir string) *TemplateManager {
 	tm := &TemplateManager{
 		filePath: filepath.Join(dataDir, "templates.json"),
@@ -128,15 +128,15 @@ func (tm *TemplateManager) save() error {
 	return os.WriteFile(tm.filePath, data, 0600)
 }
 
-// ListTemplates returns a list of all stored templates.
+// ListTemplates provides listtemplates functionality.
 //
-// Summary: Retrieves all managed templates.
+// Summary: ListTemplates.
 //
-// Returns:
-//   - []*configv1.UpstreamServiceConfig: A list of templates.
-//
-// Parameters:
+// Parameters.
 //   - None.
+//
+// Returns.
+//   - result: The result.
 func (tm *TemplateManager) ListTemplates() []*configv1.UpstreamServiceConfig {
 	tm.mu.RLock()
 	defer tm.mu.RUnlock()
@@ -148,15 +148,15 @@ func (tm *TemplateManager) ListTemplates() []*configv1.UpstreamServiceConfig {
 	return res
 }
 
-// SaveTemplate saves or updates a template.
+// SaveTemplate provides savetemplate functionality.
 //
-// Summary: Persists a template.
+// Summary: SaveTemplate.
 //
-// Parameters:
-//   - template: *configv1.UpstreamServiceConfig. The template to save.
+// Parameters.
+//   - template: The parameter.
 //
-// Returns:
-//   - error: An error if persistence fails.
+// Returns.
+//   - result: The result.
 func (tm *TemplateManager) SaveTemplate(template *configv1.UpstreamServiceConfig) error {
 	tm.mu.Lock()
 	found := false
@@ -182,15 +182,15 @@ func (tm *TemplateManager) SaveTemplate(template *configv1.UpstreamServiceConfig
 	return tm.save()
 }
 
-// DeleteTemplate deletes a template by its ID or Name.
+// DeleteTemplate provides deletetemplate functionality.
 //
-// Summary: Removes a template.
+// Summary: DeleteTemplate.
 //
-// Parameters:
-//   - idOrName: string. The ID or Name of the template to delete.
+// Parameters.
+//   - idOrName: The parameter.
 //
-// Returns:
-//   - error: An error if deletion or persistence fails.
+// Returns.
+//   - result: The result.
 func (tm *TemplateManager) DeleteTemplate(idOrName string) error {
 	tm.mu.Lock()
 	newTemplates := make([]*configv1.UpstreamServiceConfig, 0, len(tm.templates))

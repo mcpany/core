@@ -37,58 +37,28 @@ type OllamaProvider struct {
 	clientOnce sync.Once
 }
 
-// Name returns the name of the provider.
+// Name provides name functionality.
 //
-// Parameters:
+// Summary: Name.
+//
+// Parameters.
 //   - None.
 //
-// Returns:
-//   - string: The resulting string.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Name operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
-//   - None.
+// Returns.
+//   - result: The result.
 func (p *OllamaProvider) Name() string {
 	return "ollama"
 }
 
-// Discover attempts to find local Ollama instances and return them as tools.
+// Discover provides discover functionality.
 //
-// Parameters:
-//   - ctx (context.Context): The context for the request.
+// Summary: Discover.
 //
-// Returns:
-//   - []*configv1.UpstreamServiceConfig: The resulting []*configv1.UpstreamServiceConfig.
-//   - error: An error if the operation fails.
+// Parameters.
+//   - ctx: The parameter.
+//   - error: The parameter.
 //
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Discover operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func (p *OllamaProvider) Discover(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	// ⚡ BOLT: Reuse http.Client to avoid socket exhaustion.

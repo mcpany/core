@@ -36,88 +36,88 @@ const (
 	APIKeyContextKey authContextKey = "api_key"
 )
 
-// ContextWithAPIKey returns a new context with the API Key embedded.
+// ContextWithAPIKey provides contextwithapikey functionality.
 //
-// Summary: Embeds an API key into the context.
+// Summary: ContextWithAPIKey.
 //
-// Parameters:
-//   - ctx: context.Context. The context to extend.
-//   - apiKey: string. The API key to store.
+// Parameters.
+//   - ctx: The parameter.
+//   - apiKey: The parameter.
 //
-// Returns:
-//   - context.Context: A new context containing the API key.
+// Returns.
+//   - result: The result.
 func ContextWithAPIKey(ctx context.Context, apiKey string) context.Context {
 	return context.WithValue(ctx, APIKeyContextKey, apiKey)
 }
 
-// APIKeyFromContext returns the API Key from the context if present.
+// APIKeyFromContext provides apikeyfromcontext functionality.
 //
-// Summary: Retrieves the API key from the context.
+// Summary: APIKeyFromContext.
 //
-// Parameters:
-//   - ctx: context.Context. The context to search.
+// Parameters.
+//   - ctx: The parameter.
+//   - bool: The parameter.
 //
-// Returns:
-//   - string: The API key.
-//   - bool: True if found.
+// Returns.
+//   - None.
 func APIKeyFromContext(ctx context.Context) (string, bool) {
 	val, ok := ctx.Value(APIKeyContextKey).(string)
 	return val, ok
 }
 
-// ContextWithUser returns a new context with the user ID embedded.
+// ContextWithUser provides contextwithuser functionality.
 //
-// Summary: Embeds a user ID into the context.
+// Summary: ContextWithUser.
 //
-// Parameters:
-//   - ctx: context.Context. The context to extend.
-//   - userID: string. The user ID to store.
+// Parameters.
+//   - ctx: The parameter.
+//   - userID: The parameter.
 //
-// Returns:
-//   - context.Context: A new context containing the user ID.
+// Returns.
+//   - result: The result.
 func ContextWithUser(ctx context.Context, userID string) context.Context {
 	return context.WithValue(ctx, UserContextKey, userID)
 }
 
-// UserFromContext returns the user ID from the context if present.
+// UserFromContext provides userfromcontext functionality.
 //
-// Summary: Retrieves the user ID from the context.
+// Summary: UserFromContext.
 //
-// Parameters:
-//   - ctx: context.Context. The context to search.
+// Parameters.
+//   - ctx: The parameter.
+//   - bool: The parameter.
 //
-// Returns:
-//   - string: The user ID.
-//   - bool: True if found.
+// Returns.
+//   - None.
 func UserFromContext(ctx context.Context) (string, bool) {
 	val, ok := ctx.Value(UserContextKey).(string)
 	return val, ok
 }
 
-// ContextWithProfileID returns a new context with the profile ID embedded.
+// ContextWithProfileID provides contextwithprofileid functionality.
 //
-// Summary: Embeds a profile ID into the context.
+// Summary: ContextWithProfileID.
 //
-// Parameters:
-//   - ctx: context.Context. The context to extend.
-//   - profileID: string. The profile ID to store.
+// Parameters.
+//   - ctx: The parameter.
+//   - profileID: The parameter.
 //
-// Returns:
-//   - context.Context: A new context containing the profile ID.
+// Returns.
+//   - result: The result.
 func ContextWithProfileID(ctx context.Context, profileID string) context.Context {
 	return context.WithValue(ctx, ProfileIDContextKey, profileID)
 }
 
-// ProfileIDFromContext returns the profile ID from the context if present.
+// ProfileIDFromContext provides profileidfromcontext functionality.
 //
-// Summary: Retrieves the profile ID from the context.
+// Summary: ProfileIDFromContext.
 //
-// Parameters:
-//   - ctx: context.Context. The context to search.
+// Parameters.
+//   - ctx: The parameter.
+//   - bool: The parameter.
 //
-// Returns:
-//   - string: The profile ID.
-//   - bool: True if found.
+// Returns.
+//   - None.
 func ProfileIDFromContext(ctx context.Context) (string, bool) {
 	val, ok := ctx.Value(ProfileIDContextKey).(string)
 	return val, ok
@@ -131,11 +131,11 @@ type Authenticator interface {
 	//
 	// Summary: Authenticates a request.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx: context.Context. The request context.
 	//   - r: *http.Request. The HTTP request.
 	//
-// Returns:
+// Returns.
 	//   - context.Context: The authenticated context (e.g. with user info).
 	//   - error: An error if authentication fails.
 	Authenticate(ctx context.Context, r *http.Request) (context.Context, error)
@@ -150,15 +150,15 @@ type APIKeyAuthenticator struct {
 	Value     string
 }
 
-// NewAPIKeyAuthenticator creates a new APIKeyAuthenticator instance.
+// NewAPIKeyAuthenticator provides newapikeyauthenticator functionality.
 //
-// Summary: Initializes an APIKeyAuthenticator.
+// Summary: NewAPIKeyAuthenticator.
 //
-// Parameters:
-//   - config: *configv1.APIKeyAuth. The configuration settings.
+// Parameters.
+//   - config: The parameter.
 //
-// Returns:
-//   - *APIKeyAuthenticator: The initialized authenticator, or nil if config is invalid.
+// Returns.
+//   - result: The result.
 func NewAPIKeyAuthenticator(config *configv1.APIKeyAuth) *APIKeyAuthenticator {
 	if config == nil || config.GetParamName() == "" || config.GetVerificationValue() == "" {
 		return nil
@@ -170,17 +170,17 @@ func NewAPIKeyAuthenticator(config *configv1.APIKeyAuth) *APIKeyAuthenticator {
 	}
 }
 
-// Authenticate verifies the API key in the request.
+// Authenticate provides authenticate functionality.
 //
-// Summary: Validates the API key from header, query, or cookie.
+// Summary: Authenticate.
 //
-// Parameters:
-//   - ctx: context.Context. The request context.
-//   - r: *http.Request. The HTTP request.
+// Parameters.
+//   - ctx: The parameter.
+//   - r: The parameter.
+//   - error: The parameter.
 //
-// Returns:
-//   - context.Context: Context with API key if valid.
-//   - error: Error if unauthorized.
+// Returns.
+//   - None.
 func (a *APIKeyAuthenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
 	var receivedKey string
 	switch a.In {
@@ -211,15 +211,15 @@ type BasicAuthenticator struct {
 	Username     string
 }
 
-// NewBasicAuthenticator creates a new BasicAuthenticator instance.
+// NewBasicAuthenticator provides newbasicauthenticator functionality.
 //
-// Summary: Initializes a BasicAuthenticator.
+// Summary: NewBasicAuthenticator.
 //
-// Parameters:
-//   - config: *configv1.BasicAuth. The configuration settings.
+// Parameters.
+//   - config: The parameter.
 //
-// Returns:
-//   - *BasicAuthenticator: The initialized authenticator, or nil if config is invalid.
+// Returns.
+//   - result: The result.
 func NewBasicAuthenticator(config *configv1.BasicAuth) *BasicAuthenticator {
 	if config == nil || config.GetPasswordHash() == "" {
 		return nil
@@ -230,17 +230,17 @@ func NewBasicAuthenticator(config *configv1.BasicAuth) *BasicAuthenticator {
 	}
 }
 
-// Authenticate validates the basic auth credentials.
+// Authenticate provides authenticate functionality.
 //
-// Summary: Validates username and password hash.
+// Summary: Authenticate.
 //
-// Parameters:
-//   - ctx: context.Context. The request context.
-//   - r: *http.Request. The HTTP request.
+// Parameters.
+//   - ctx: The parameter.
+//   - r: The parameter.
+//   - error: The parameter.
 //
-// Returns:
-//   - context.Context: Authenticated context.
-//   - error: Error if unauthorized.
+// Returns.
+//   - None.
 func (a *BasicAuthenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
 	user, password, ok := r.BasicAuth()
 	if !ok {
@@ -271,15 +271,15 @@ type TrustedHeaderAuthenticator struct {
 	HeaderValue string // Optional: if empty, just checks presence
 }
 
-// NewTrustedHeaderAuthenticator creates a new TrustedHeaderAuthenticator instance.
+// NewTrustedHeaderAuthenticator provides newtrustedheaderauthenticator functionality.
 //
-// Summary: Initializes a TrustedHeaderAuthenticator.
+// Summary: NewTrustedHeaderAuthenticator.
 //
-// Parameters:
-//   - config: *configv1.TrustedHeaderAuth. The configuration settings.
+// Parameters.
+//   - config: The parameter.
 //
-// Returns:
-//   - *TrustedHeaderAuthenticator: The initialized authenticator, or nil if config is invalid.
+// Returns.
+//   - result: The result.
 func NewTrustedHeaderAuthenticator(config *configv1.TrustedHeaderAuth) *TrustedHeaderAuthenticator {
 	if config == nil || config.GetHeaderName() == "" {
 		return nil
@@ -290,17 +290,17 @@ func NewTrustedHeaderAuthenticator(config *configv1.TrustedHeaderAuth) *TrustedH
 	}
 }
 
-// Authenticate validates the trusted header.
+// Authenticate provides authenticate functionality.
 //
-// Summary: Checks for the trusted header.
+// Summary: Authenticate.
 //
-// Parameters:
-//   - ctx: context.Context. The request context.
-//   - r: *http.Request. The HTTP request.
+// Parameters.
+//   - ctx: The parameter.
+//   - r: The parameter.
+//   - error: The parameter.
 //
-// Returns:
-//   - context.Context: Authenticated context.
-//   - error: Error if unauthorized.
+// Returns.
+//   - None.
 func (a *TrustedHeaderAuthenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
 	val := r.Header.Get(a.HeaderName)
 	if val == "" {
@@ -331,15 +331,15 @@ type Manager struct {
 	storage storage.Storage
 }
 
-// NewManager creates and initializes a new Manager with an empty authenticator registry.
+// NewManager provides newmanager functionality.
 //
-// Summary: Initializes a new Authentication Manager.
+// Summary: NewManager.
 //
-// Returns:
-//   - *Manager: A new Manager instance.
-//
-// Parameters:
+// Parameters.
 //   - None.
+//
+// Returns.
+//   - result: The result.
 func NewManager() *Manager {
 	return &Manager{
 		authenticators: xsync.NewMap[string, Authenticator](),
@@ -347,17 +347,14 @@ func NewManager() *Manager {
 	}
 }
 
-// SetUsers updates the list of active users.
+// SetUsers provides setusers functionality.
 //
-// Summary: Sets the configured users.
+// Summary: SetUsers.
 //
-// Parameters:
-//   - users: []*configv1.User. The list of users.
+// Parameters.
+//   - users: The parameter.
 //
-// Side Effects:
-//   - Updates the internal user map.
-//
-// Returns:
+// Returns.
 //   - None.
 func (am *Manager) SetUsers(users []*configv1.User) {
 	am.usersMu.Lock()
@@ -367,17 +364,14 @@ func (am *Manager) SetUsers(users []*configv1.User) {
 	}
 }
 
-// SetStorage sets the storage backend for the manager.
+// SetStorage provides setstorage functionality.
 //
-// Summary: Configures the storage backend.
+// Summary: SetStorage.
 //
-// Parameters:
-//   - s: storage.Storage. The storage implementation.
+// Parameters.
+//   - s: The parameter.
 //
-// Side Effects:
-//   - Updates the internal storage reference.
-//
-// Returns:
+// Returns.
 //   - None.
 func (am *Manager) SetStorage(s storage.Storage) {
 	am.mu.Lock()
@@ -385,16 +379,16 @@ func (am *Manager) SetStorage(s storage.Storage) {
 	am.storage = s
 }
 
-// GetUser retrieves a user configuration by their ID.
+// GetUser provides getuser functionality.
 //
-// Summary: Looks up a user by ID.
+// Summary: GetUser.
 //
-// Parameters:
-//   - id: string. The user ID.
+// Parameters.
+//   - id: The parameter.
+//   - bool: The parameter.
 //
-// Returns:
-//   - *configv1.User: The user configuration.
-//   - bool: True if found.
+// Returns.
+//   - None.
 func (am *Manager) GetUser(id string) (*configv1.User, bool) {
 	am.usersMu.RLock()
 	defer am.usersMu.RUnlock()
@@ -402,35 +396,29 @@ func (am *Manager) GetUser(id string) (*configv1.User, bool) {
 	return u, ok
 }
 
-// SetAPIKey sets the global API key for the server.
+// SetAPIKey provides setapikey functionality.
 //
-// Summary: Sets the global API key.
+// Summary: SetAPIKey.
 //
-// Parameters:
-//   - apiKey: string. The API key.
+// Parameters.
+//   - apiKey: The parameter.
 //
-// Side Effects:
-//   - Updates the internal API key.
-//
-// Returns:
+// Returns.
 //   - None.
 func (am *Manager) SetAPIKey(apiKey string) {
 	am.apiKey = apiKey
 }
 
-// AddAuthenticator registers an authenticator for a given service ID.
+// AddAuthenticator provides addauthenticator functionality.
 //
-// Summary: Registers an authenticator for a service.
+// Summary: AddAuthenticator.
 //
-// Parameters:
-//   - serviceID: string. The service ID.
-//   - authenticator: Authenticator. The authenticator instance.
+// Parameters.
+//   - serviceID: The parameter.
+//   - authenticator: The parameter.
 //
-// Returns:
-//   - error: Error if authenticator is nil.
-//
-// Side Effects:
-//   - Adds or updates an entry in the authenticators map.
+// Returns.
+//   - result: The result.
 func (am *Manager) AddAuthenticator(serviceID string, authenticator Authenticator) error {
 	if authenticator == nil {
 		return fmt.Errorf("authenticator for service %s is nil", serviceID)
@@ -439,18 +427,18 @@ func (am *Manager) AddAuthenticator(serviceID string, authenticator Authenticato
 	return nil
 }
 
-// Authenticate authenticates a request for a specific service.
+// Authenticate provides authenticate functionality.
 //
-// Summary: Authenticates a request, checking service-specific or global rules.
+// Summary: Authenticate.
 //
-// Parameters:
-//   - ctx: context.Context. The request context.
-//   - serviceID: string. The service ID.
-//   - r: *http.Request. The HTTP request.
+// Parameters.
+//   - ctx: The parameter.
+//   - serviceID: The parameter.
+//   - r: The parameter.
+//   - error: The parameter.
 //
-// Returns:
-//   - context.Context: The authenticated context.
-//   - error: Error if unauthorized.
+// Returns.
+//   - None.
 func (am *Manager) Authenticate(ctx context.Context, serviceID string, r *http.Request) (context.Context, error) {
 	if am.apiKey != "" {
 		receivedKey := r.Header.Get("X-API-Key")
@@ -500,47 +488,44 @@ func (am *Manager) Authenticate(ctx context.Context, serviceID string, r *http.R
 	return ctx, fmt.Errorf("unauthorized: no authentication configured")
 }
 
-// GetAuthenticator retrieves the authenticator registered for a specific service.
+// GetAuthenticator provides getauthenticator functionality.
 //
-// Summary: Looks up an authenticator by service ID.
+// Summary: GetAuthenticator.
 //
-// Parameters:
-//   - serviceID: string. The service ID.
+// Parameters.
+//   - serviceID: The parameter.
+//   - bool: The parameter.
 //
-// Returns:
-//   - Authenticator: The authenticator instance.
-//   - bool: True if found.
+// Returns.
+//   - None.
 func (am *Manager) GetAuthenticator(serviceID string) (Authenticator, bool) {
 	return am.authenticators.Load(serviceID)
 }
 
-// RemoveAuthenticator removes the authenticator for a given service ID.
+// RemoveAuthenticator provides removeauthenticator functionality.
 //
-// Summary: Removes an authenticator by service ID.
+// Summary: RemoveAuthenticator.
 //
-// Parameters:
-//   - serviceID: string. The service ID.
+// Parameters.
+//   - serviceID: The parameter.
 //
-// Side Effects:
-//   - Removes an entry from the authenticators map.
-//
-// Returns:
+// Returns.
 //   - None.
 func (am *Manager) RemoveAuthenticator(serviceID string) {
 	am.authenticators.Delete(serviceID)
 }
 
-// AddOAuth2Authenticator creates and registers a new OAuth2Authenticator for a given service ID.
+// AddOAuth2Authenticator provides addoauth2authenticator functionality.
 //
-// Summary: Helper to add an OAuth2 authenticator.
+// Summary: AddOAuth2Authenticator.
 //
-// Parameters:
-//   - ctx: context.Context. Context for initialization.
-//   - serviceID: string. The service ID.
-//   - config: *OAuth2Config. The OAuth2 configuration.
+// Parameters.
+//   - ctx: The parameter.
+//   - serviceID: The parameter.
+//   - config: The parameter.
 //
-// Returns:
-//   - error: Error if creation fails.
+// Returns.
+//   - result: The result.
 func (am *Manager) AddOAuth2Authenticator(ctx context.Context, serviceID string, config *OAuth2Config) error {
 	if config == nil {
 		return nil
@@ -557,17 +542,17 @@ var (
 	oauthAuthenticatorCache = xsync.NewMap[string, *OAuth2Authenticator]()
 )
 
-// ValidateAuthentication validates the authentication request against the provided configuration.
+// ValidateAuthentication provides validateauthentication functionality.
 //
-// Summary: Validates a request against a specific auth configuration.
+// Summary: ValidateAuthentication.
 //
-// Parameters:
-//   - ctx: context.Context. The request context.
-//   - config: *configv1.Authentication. The authentication configuration.
-//   - r: *http.Request. The HTTP request.
+// Parameters.
+//   - ctx: The parameter.
+//   - config: The parameter.
+//   - r: The parameter.
 //
-// Returns:
-//   - error: Error if validation fails.
+// Returns.
+//   - result: The result.
 func ValidateAuthentication(ctx context.Context, config *configv1.Authentication, r *http.Request) error {
 	if config == nil {
 		return nil // No auth configured implies allowed

@@ -42,7 +42,7 @@ type Server struct {
 
 // NewServer creates a new Admin Server. cache manages the caching layer. toolManager is the toolManager. serviceRegistry is the registry of upstream services. storage provides the persistence layer. discoveryManager manages auto-discovery. auditMiddleware provides access to audit logs. Returns the result.
 //
-// Parameters:
+// Parameters.
 //   - cache (*middleware.CachingMiddleware): The cache parameter.
 //   - toolManager (tool.ManagerInterface): The toolManager parameter.
 //   - serviceRegistry (serviceregistry.ServiceRegistryInterface): The serviceRegistry parameter.
@@ -50,7 +50,7 @@ type Server struct {
 //   - discoveryManager (*discovery.Manager): The discoveryManager parameter.
 //   - auditMiddleware (*middleware.AuditMiddleware): The auditMiddleware parameter.
 //
-// Returns:
+// Returns.
 //   - *Server: The resulting *Server.
 //
 // Errors:
@@ -87,31 +87,16 @@ func NewServer(
 	}
 }
 
-// ClearCache clears the cache. ctx is the context for the request. _ is an unused parameter. Returns the response. Returns an error if the operation fails.
+// ClearCache provides clearcache functionality.
 //
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - _ (*pb.ClearCacheRequest): The _ parameter.
+// Summary: ClearCache.
 //
-// Returns:
-//   - *pb.ClearCacheResponse: The resulting *pb.ClearCacheResponse.
-//   - error: An error if the operation fails.
+// Parameters.
+//   - ctx: The parameter.
+//   - _: The parameter.
+//   - error: The parameter.
 //
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes ClearCache operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func (s *Server) ClearCache(ctx context.Context, _ *pb.ClearCacheRequest) (*pb.ClearCacheResponse, error) {
 	if s.cache == nil {
@@ -123,31 +108,16 @@ func (s *Server) ClearCache(ctx context.Context, _ *pb.ClearCacheRequest) (*pb.C
 	return &pb.ClearCacheResponse{}, nil
 }
 
-// ListServices returns all registered services. _ is an unused parameter. _ is an unused parameter. Returns the response. Returns an error if the operation fails.
+// ListServices provides listservices functionality.
 //
-// Parameters:
-//   - _ (context.Context): The _ parameter.
-//   - _ (*pb.ListServicesRequest): The _ parameter.
+// Summary: ListServices.
 //
-// Returns:
-//   - *pb.ListServicesResponse: The resulting *pb.ListServicesResponse.
-//   - error: An error if the operation fails.
+// Parameters.
+//   - _: The parameter.
+//   - _: The parameter.
+//   - error: The parameter.
 //
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes ListServices operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func (s *Server) ListServices(_ context.Context, _ *pb.ListServicesRequest) (*pb.ListServicesResponse, error) {
 	var services []*configv1.UpstreamServiceConfig
@@ -195,31 +165,16 @@ func (s *Server) ListServices(_ context.Context, _ *pb.ListServicesRequest) (*pb
 	}.Build(), nil
 }
 
-// GetService returns a specific service by ID. _ is an unused parameter. req is the request object. Returns the response. Returns an error if the operation fails.
+// GetService provides getservice functionality.
 //
-// Parameters:
-//   - _ (context.Context): The _ parameter.
-//   - req (*pb.GetServiceRequest): The request object.
+// Summary: GetService.
 //
-// Returns:
-//   - *pb.GetServiceResponse: The resulting *pb.GetServiceResponse.
-//   - error: An error if the operation fails.
+// Parameters.
+//   - _: The parameter.
+//   - req: The parameter.
+//   - error: The parameter.
 //
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves GetService operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func (s *Server) GetService(_ context.Context, req *pb.GetServiceRequest) (*pb.GetServiceResponse, error) {
 	if s.serviceRegistry != nil {
@@ -263,31 +218,16 @@ func (s *Server) GetService(_ context.Context, req *pb.GetServiceRequest) (*pb.G
 	}.Build(), nil
 }
 
-// ListTools returns all registered tools. _ is an unused parameter. _ is an unused parameter. Returns the response. Returns an error if the operation fails.
+// ListTools provides listtools functionality.
 //
-// Parameters:
-//   - _ (context.Context): The _ parameter.
-//   - _ (*pb.ListToolsRequest): The _ parameter.
+// Summary: ListTools.
 //
-// Returns:
-//   - *pb.ListToolsResponse: The resulting *pb.ListToolsResponse.
-//   - error: An error if the operation fails.
+// Parameters.
+//   - _: The parameter.
+//   - _: The parameter.
+//   - error: The parameter.
 //
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes ListTools operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func (s *Server) ListTools(_ context.Context, _ *pb.ListToolsRequest) (*pb.ListToolsResponse, error) {
 	tools := s.toolManager.ListTools()
@@ -298,31 +238,16 @@ func (s *Server) ListTools(_ context.Context, _ *pb.ListToolsRequest) (*pb.ListT
 	return pb.ListToolsResponse_builder{Tools: responseTools}.Build(), nil
 }
 
-// GetTool returns a specific tool by name. _ is an unused parameter. req is the request object. Returns the response. Returns an error if the operation fails.
+// GetTool provides gettool functionality.
 //
-// Parameters:
-//   - _ (context.Context): The _ parameter.
-//   - req (*pb.GetToolRequest): The request object.
+// Summary: GetTool.
 //
-// Returns:
-//   - *pb.GetToolResponse: The resulting *pb.GetToolResponse.
-//   - error: An error if the operation fails.
+// Parameters.
+//   - _: The parameter.
+//   - req: The parameter.
+//   - error: The parameter.
 //
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves GetTool operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func (s *Server) GetTool(_ context.Context, req *pb.GetToolRequest) (*pb.GetToolResponse, error) {
 	t, ok := s.toolManager.GetTool(req.GetToolName())
@@ -332,31 +257,16 @@ func (s *Server) GetTool(_ context.Context, req *pb.GetToolRequest) (*pb.GetTool
 	return pb.GetToolResponse_builder{Tool: t.Tool()}.Build(), nil
 }
 
-// CreateUser creates a new user. ctx is the context for the request. req is the request object. Returns the response. Returns an error if the operation fails.
+// CreateUser provides createuser functionality.
 //
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*pb.CreateUserRequest): The request object.
+// Summary: CreateUser.
 //
-// Returns:
-//   - *pb.CreateUserResponse: The resulting *pb.CreateUserResponse.
-//   - error: An error if the operation fails.
+// Parameters.
+//   - ctx: The parameter.
+//   - req: The parameter.
+//   - error: The parameter.
 //
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes CreateUser operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
 	if !req.HasUser() {
@@ -383,31 +293,16 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb
 	return pb.CreateUserResponse_builder{User: safeUser}.Build(), nil
 }
 
-// GetUser retrieves a user by ID. ctx is the context for the request. req is the request object. Returns the response. Returns an error if the operation fails.
+// GetUser provides getuser functionality.
 //
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*pb.GetUserRequest): The request object.
+// Summary: GetUser.
 //
-// Returns:
-//   - *pb.GetUserResponse: The resulting *pb.GetUserResponse.
-//   - error: An error if the operation fails.
+// Parameters.
+//   - ctx: The parameter.
+//   - req: The parameter.
+//   - error: The parameter.
 //
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves GetUser operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func (s *Server) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUserResponse, error) {
 	user, err := s.storage.GetUser(ctx, req.GetUserId())
@@ -423,31 +318,16 @@ func (s *Server) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUs
 	return pb.GetUserResponse_builder{User: safeUser}.Build(), nil
 }
 
-// ListUsers lists all users. ctx is the context for the request. _ is an unused parameter. Returns the response. Returns an error if the operation fails.
+// ListUsers provides listusers functionality.
 //
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - _ (*pb.ListUsersRequest): The _ parameter.
+// Summary: ListUsers.
 //
-// Returns:
-//   - *pb.ListUsersResponse: The resulting *pb.ListUsersResponse.
-//   - error: An error if the operation fails.
+// Parameters.
+//   - ctx: The parameter.
+//   - _: The parameter.
+//   - error: The parameter.
 //
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes ListUsers operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func (s *Server) ListUsers(ctx context.Context, _ *pb.ListUsersRequest) (*pb.ListUsersResponse, error) {
 	users, err := s.storage.ListUsers(ctx)
@@ -465,31 +345,16 @@ func (s *Server) ListUsers(ctx context.Context, _ *pb.ListUsersRequest) (*pb.Lis
 	return pb.ListUsersResponse_builder{Users: safeUsers}.Build(), nil
 }
 
-// UpdateUser updates an existing user. ctx is the context for the request. req is the request object. Returns the response. Returns an error if the operation fails.
+// UpdateUser provides updateuser functionality.
 //
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*pb.UpdateUserRequest): The request object.
+// Summary: UpdateUser.
 //
-// Returns:
-//   - *pb.UpdateUserResponse: The resulting *pb.UpdateUserResponse.
-//   - error: An error if the operation fails.
+// Parameters.
+//   - ctx: The parameter.
+//   - req: The parameter.
+//   - error: The parameter.
 //
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes UpdateUser operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func (s *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.UpdateUserResponse, error) {
 	if !req.HasUser() {
@@ -516,31 +381,16 @@ func (s *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb
 	return pb.UpdateUserResponse_builder{User: safeUser}.Build(), nil
 }
 
-// DeleteUser deletes a user by ID. ctx is the context for the request. req is the request object. Returns the response. Returns an error if the operation fails.
+// DeleteUser provides deleteuser functionality.
 //
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*pb.DeleteUserRequest): The request object.
+// Summary: DeleteUser.
 //
-// Returns:
-//   - *pb.DeleteUserResponse: The resulting *pb.DeleteUserResponse.
-//   - error: An error if the operation fails.
+// Parameters.
+//   - ctx: The parameter.
+//   - req: The parameter.
+//   - error: The parameter.
 //
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes DeleteUser operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func (s *Server) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb.DeleteUserResponse, error) {
 	if err := s.storage.DeleteUser(ctx, req.GetUserId()); err != nil {
@@ -549,31 +399,16 @@ func (s *Server) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb
 	return &pb.DeleteUserResponse{}, nil
 }
 
-// GetDiscoveryStatus returns the status of auto-discovery providers.
+// GetDiscoveryStatus provides getdiscoverystatus functionality.
 //
-// Parameters:
-//   - _ (context.Context): The _ parameter.
-//   - _ (*pb.GetDiscoveryStatusRequest): The _ parameter.
+// Summary: GetDiscoveryStatus.
 //
-// Returns:
-//   - *pb.GetDiscoveryStatusResponse: The resulting *pb.GetDiscoveryStatusResponse.
-//   - error: An error if the operation fails.
+// Parameters.
+//   - _: The parameter.
+//   - _: The parameter.
+//   - error: The parameter.
 //
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves GetDiscoveryStatus operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func (s *Server) GetDiscoveryStatus(_ context.Context, _ *pb.GetDiscoveryStatusRequest) (*pb.GetDiscoveryStatusResponse, error) {
 	if s.discoveryManager == nil {
@@ -597,31 +432,16 @@ func (s *Server) GetDiscoveryStatus(_ context.Context, _ *pb.GetDiscoveryStatusR
 	return pb.GetDiscoveryStatusResponse_builder{Providers: pbStatuses}.Build(), nil
 }
 
-// ListAuditLogs returns audit logs matching the filter.
+// ListAuditLogs provides listauditlogs functionality.
 //
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*pb.ListAuditLogsRequest): The request object.
+// Summary: ListAuditLogs.
 //
-// Returns:
-//   - *pb.ListAuditLogsResponse: The resulting *pb.ListAuditLogsResponse.
-//   - error: An error if the operation fails.
+// Parameters.
+//   - ctx: The parameter.
+//   - req: The parameter.
+//   - error: The parameter.
 //
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes ListAuditLogs operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func (s *Server) ListAuditLogs(ctx context.Context, req *pb.ListAuditLogsRequest) (*pb.ListAuditLogsResponse, error) {
 	if s.auditMiddleware == nil {

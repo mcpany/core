@@ -5,19 +5,16 @@ package util //nolint:revive,nolintlint // Package name 'util' is common in this
 
 import "unicode/utf8"
 
-// LevenshteinDistance calculates the Levenshtein distance between two strings.
+// LevenshteinDistance provides levenshteindistance functionality.
 //
-// Summary: Calculates the Levenshtein edit distance.
+// Summary: LevenshteinDistance.
 //
-// It returns the minimum number of single-character edits (insertions, deletions, or substitutions)
-// required to change one string into the other.
+// Parameters.
+//   - s1: The parameter.
+//   - s2: The parameter.
 //
-// Parameters:
-//   - s1: string. The first string.
-//   - s2: string. The second string.
-//
-// Returns:
-//   - int: The Levenshtein distance.
+// Returns.
+//   - result: The result.
 func LevenshteinDistance(s1, s2 string) int {
 	// Pass a very large limit so it behaves like the unbounded version.
 	// The maximum possible distance is max(len(s1), len(s2)).
@@ -25,19 +22,17 @@ func LevenshteinDistance(s1, s2 string) int {
 	return LevenshteinDistanceWithLimit(s1, s2, len(s1)+len(s2))
 }
 
-// LevenshteinDistanceWithLimit calculates the Levenshtein distance with an upper limit.
+// LevenshteinDistanceWithLimit provides levenshteindistancewithlimit functionality.
 //
-// Summary: Calculates the Levenshtein edit distance with a limit.
+// Summary: LevenshteinDistanceWithLimit.
 //
-// If the distance is strictly greater than limit, it returns a value > limit (specifically limit + 1).
+// Parameters.
+//   - s1: The parameter.
+//   - s2: The parameter.
+//   - limit: The parameter.
 //
-// Parameters:
-//   - s1: string. The first string.
-//   - s2: string. The second string.
-//   - limit: int. The maximum distance to compute.
-//
-// Returns:
-//   - int: The Levenshtein distance, or limit + 1 if it exceeds the limit.
+// Returns.
+//   - result: The result.
 func LevenshteinDistanceWithLimit(s1, s2 string, limit int) int {
 	// Optimization: If both strings are ASCII, we can avoid rune conversion
 	// and use stack-based allocation for small strings.

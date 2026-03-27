@@ -19,44 +19,30 @@ type CatalogServer struct {
 	manager *catalog.Manager
 }
 
-// NewCatalogServer creates a new CatalogServer.
+// NewCatalogServer provides newcatalogserver functionality.
 //
-// Summary: Initializes a new CatalogServer.
+// Summary: NewCatalogServer.
 //
-// Parameters:
-//   - manager (*catalog.Manager): The catalog manager instance.
+// Parameters.
+//   - manager: The parameter.
 //
-// Returns:
-//   - (*CatalogServer): The initialized server instance.
-//
-// Errors: - None.
-//
-//	None.
-//
-// Side Effects: - None.
-//
-//	None.
+// Returns.
+//   - result: The result.
 func NewCatalogServer(manager *catalog.Manager) *CatalogServer {
 	return &CatalogServer{manager: manager}
 }
 
-// ListServices returns a list of available services in the catalog.
+// ListServices provides listservices functionality.
 //
-// Summary: Lists available catalog services.
+// Summary: ListServices.
 //
-// Parameters:
-//   - ctx (context.Context): The request context.
-//   - _ (*apiv1.ListCatalogServicesRequest): The request object (currently unused).
+// Parameters.
+//   - ctx: The parameter.
+//   - _: The parameter.
+//   - error: The parameter.
 //
-// Returns:
-//   - (*apiv1.ListCatalogServicesResponse): The response containing the list of services.
-//   - (error): An error if the listing fails.
-//
-// Errors:
-//   - Returns an error if the underlying manager fails to list services.
-//
-// Side Effects:
-//   - Fetches services from the catalog manager.
+// Returns.
+//   - None.
 func (s *CatalogServer) ListServices(ctx context.Context, _ *apiv1.ListCatalogServicesRequest) (*apiv1.ListCatalogServicesResponse, error) {
 	services, err := s.manager.ListServices(ctx)
 	if err != nil {

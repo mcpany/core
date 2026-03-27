@@ -20,16 +20,16 @@ type JSONExecutor struct {
 	out io.Reader
 }
 
-// NewJSONExecutor creates a new JSONExecutor with the given writer and reader.  Parameters: - in: io.Writer. The destination for writing JSON requests. - out: io.Reader. The source for reading JSON responses.  Returns: - *JSONExecutor: A new JSONExecutor instance.
+// NewJSONExecutor provides newjsonexecutor functionality.
 //
-// Summary: Creates a new JSONExecutor with the given writer and reader.  Parameters: - in: io.Writer. The destination for writing JSON requests. - out: io.Reader. The source for reading JSON responses.  Returns: - *JSONExecutor: A new JSONExecutor instance.
+// Summary: NewJSONExecutor.
 //
-// Parameters:
-//   - in (io.Writer): Description for in.
-//   - out (io.Reader): Description for out.
+// Parameters.
+//   - in: The parameter.
+//   - out: The parameter.
 //
-// Returns:
-//   - (*JSONExecutor): Result.
+// Returns.
+//   - result: The result.
 func NewJSONExecutor(in io.Writer, out io.Reader) *JSONExecutor {
 	return &JSONExecutor{
 		in:  in,
@@ -37,16 +37,16 @@ func NewJSONExecutor(in io.Writer, out io.Reader) *JSONExecutor {
 	}
 }
 
-// Execute sends the given data as a JSON-encoded message to the writer and decodes the JSON-encoded response from the reader into the given result.
+// Execute provides execute functionality.
 //
-// Summary: Sends the given data as a JSON-encoded message to the writer and decodes the JSON-encoded response from the reader into the given result.
+// Summary: Execute.
 //
-// Parameters:
-//   - data: Parameter.
-//   - result (any): Description for result.
+// Parameters.
+//   - data: The parameter.
+//   - result: The parameter.
 //
-// Returns:
-//   - (error): Result.
+// Returns.
+//   - result: The result.
 func (e *JSONExecutor) Execute(data, result any) error {
 	if err := json.NewEncoder(e.in).Encode(data); err != nil {
 		return fmt.Errorf("failed to encode data: %w", err)

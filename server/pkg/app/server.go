@@ -167,10 +167,10 @@ type Runner interface {
 	//
 	// Summary: Starts the application.
 	//
-// Parameters:
+// Parameters.
 	//   - opts: RunOptions. The configuration for running.
 	//
-// Returns:
+// Returns.
 	//   - error: An error if startup or execution fails.
 	Run(opts RunOptions) error
 
@@ -178,12 +178,12 @@ type Runner interface {
 	//
 	// Summary: Triggers a configuration reload.
 	//
-// Parameters:
+// Parameters.
 	//   - ctx: context.Context. The context for the operation.
 	//   - fs: afero.Fs. The filesystem.
 	//   - configPaths: []string. Paths to configuration files.
 	//
-// Returns:
+// Returns.
 	//   - error: An error if reload fails.
 	ReloadConfig(ctx context.Context, fs afero.Fs, configPaths []string) error
 }
@@ -308,15 +308,15 @@ type statsCacheEntry struct {
 	ExpiresAt time.Time
 }
 
-// NewApplication creates a new Application with default dependencies.
+// NewApplication provides newapplication functionality.
 //
-// Summary: Initializes a new Application instance.
+// Summary: NewApplication.
 //
-// Returns:
-//   - (*Application): The initialized application.
-//
-// Parameters:
+// Parameters.
 //   - None.
+//
+// Returns.
+//   - result: The result.
 func NewApplication() *Application {
 	busProvider, _ := bus.NewProvider(nil)
 	return &Application{
@@ -337,22 +337,15 @@ func NewApplication() *Application {
 	}
 }
 
-// Run starts the MCP Any server and all its components.
+// Run provides run functionality.
 //
-// Summary: Executes the application.
+// Summary: Run.
 //
-// Parameters:
-//   - opts (RunOptions): The runtime options.
+// Parameters.
+//   - opts: The parameter.
 //
-// Returns:
-//   - (error): An error if execution fails.
-//
-// Side Effects:
-//   - Starts HTTP and gRPC servers.
-//   - Initializes background workers.
-//   - Loads configuration.
-//
-//nolint:gocyclo // Run is the main entry point and setup function, expected to be complex
+// Returns.
+//   - result: The result.
 func (a *Application) Run(opts RunOptions) error {
 	log := logging.GetLogger()
 	fs, err := setup(opts.Fs)
@@ -918,22 +911,17 @@ func (a *Application) Run(opts RunOptions) error {
 	return nil
 }
 
-// ReloadConfig reloads the configuration from the given paths and updates the
-// services.
+// ReloadConfig provides reloadconfig functionality.
 //
-// Summary: Reloads application configuration from disk/storage.
+// Summary: ReloadConfig.
 //
-// Parameters:
-//   - ctx (context.Context): The context for the reload operation.
-//   - fs (afero.Fs): The filesystem interface for reading configuration files.
-//   - configPaths ([]string): A slice of paths to configuration files to reload.
+// Parameters.
+//   - ctx: The parameter.
+//   - fs: The parameter.
+//   - configPaths: The parameter.
 //
-// Returns:
-//   - (error): An error if the configuration reload fails.
-//
-// Side Effects:
-//   - Reads configuration files.
-//   - Updates global settings, user auth, profiles, and service registry.
+// Returns.
+//   - result: The result.
 func (a *Application) ReloadConfig(ctx context.Context, fs afero.Fs, configPaths []string) error {
 	log := logging.GetLogger()
 	start := time.Now()
@@ -1355,17 +1343,15 @@ func (a *Application) generateConfigDiff(oldConfig, newConfig map[string]string)
 	return strings.Join(diffs, "\n")
 }
 
-// WaitForStartup waits for the application to be fully initialized.
+// WaitForStartup provides waitforstartup functionality.
 //
-// Summary: Waits for application startup completion.
+// Summary: WaitForStartup.
 //
-// It blocks until the startup process is complete or the context is canceled.
+// Parameters.
+//   - ctx: The parameter.
 //
-// Parameters:
-//   - ctx (context.Context): The context to wait on.
-//
-// Returns:
-//   - (error): nil if startup completes successfully, or a context error if canceled.
+// Returns.
+//   - result: The result.
 func (a *Application) WaitForStartup(ctx context.Context) error {
 	select {
 	case <-a.startupCh:
@@ -1378,10 +1364,10 @@ func (a *Application) WaitForStartup(ctx context.Context) error {
 // setup initializes the filesystem for the server. It ensures that a valid
 // afero.Fs is available, returning an error if a nil filesystem is provided.
 //
-// Parameters:
+// Parameters.
 //   - fs (afero.Fs): The filesystem to be validated.
 //
-// Returns:
+// Returns.
 //   - (afero.Fs): A non-nil afero.Fs.
 //   - (error): An error if the provided filesystem is nil.
 func setup(fs afero.Fs) (afero.Fs, error) {
@@ -1399,11 +1385,11 @@ func setup(fs afero.Fs) (afero.Fs, error) {
 // debugging and simple, single-client scenarios. It uses the standard input
 // and output as the transport layer.
 //
-// Parameters:
+// Parameters.
 //   - ctx (context.Context): The context for managing the server's lifecycle.
 //   - mcpSrv (*mcpserver.Server): The MCP server instance to run.
 //
-// Returns:
+// Returns.
 //   - (error): An error if the server fails to run in stdio mode.
 func runStdioMode(ctx context.Context, mcpSrv *mcpserver.Server) error {
 	log := logging.GetLogger()
@@ -1481,21 +1467,17 @@ func (a *Application) filesystemHealthCheck(_ context.Context) health.CheckResul
 	}
 }
 
-// HealthCheck performs a health check against a running server.
+// HealthCheck provides healthcheck functionality.
 //
-// Summary: Checks the health of a running server.
+// Summary: HealthCheck.
 //
-// The function constructs the health check URL from the provided address and
-// sends an HTTP GET request. It expects a 200 OK status code for a successful
-// health check.
+// Parameters.
+//   - out: The parameter.
+//   - addr: The parameter.
+//   - timeout: The parameter.
 //
-// Parameters:
-//   - out (io.Writer): The writer to which the success message will be written.
-//   - addr (string): The address (host:port) on which the server is running.
-//   - timeout (time.Duration): The maximum duration to wait for the health check.
-//
-// Returns:
-//   - (error): nil if healthy, or an error if the health check fails.
+// Returns.
+//   - result: The result.
 func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -1510,12 +1492,12 @@ func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 // sends an HTTP GET request. It expects a 200 OK status code for a successful
 // health check.
 //
-// Parameters:
+// Parameters.
 //   - ctx (context.Context): The context for managing the health check's lifecycle.
 //   - out (io.Writer): The writer to which the success message will be written.
 //   - addr (string): The address (host:port) on which the server is running.
 //
-// Returns:
+// Returns.
 //   - (error): nil if healthy, or an error if the health check fails.
 func HealthCheckWithContext(
 	ctx context.Context,
@@ -1556,7 +1538,7 @@ func HealthCheckWithContext(
 // starts the HTTP server for JSON-RPC and the gRPC server for service
 // registration, and handles graceful shutdown.
 //
-// Parameters:
+// Parameters.
 //   - ctx (context.Context): The context for managing the server's lifecycle.
 //   - mcpSrv (*mcpserver.Server): The MCP server instance.
 //   - bus (*bus.Provider): The message bus for inter-component communication.
@@ -1573,7 +1555,7 @@ func HealthCheckWithContext(
 //   - tlsKey (string): Path to TLS key.
 //   - tlsClientCA (string): Path to TLS Client CA.
 //
-// Returns:
+// Returns.
 //   - (error): An error if any of the servers fail to start or run.
 //
 //nolint:gocyclo
@@ -2542,15 +2524,15 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 	}
 }
 
-// HTTPRequestContextMiddleware injects the HTTP request into the context.
+// HTTPRequestContextMiddleware provides httprequestcontextmiddleware functionality.
 //
-// Summary: Middleware to add HTTP request to context.
+// Summary: HTTPRequestContextMiddleware.
 //
-// Parameters:
-//   - next (http.Handler): The next handler.
+// Parameters.
+//   - next: The parameter.
 //
-// Returns:
-//   - (http.Handler): The wrapped handler.
+// Returns.
+//   - result: The result.
 func (a *Application) HTTPRequestContextMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := context.WithValue(r.Context(), middleware.HTTPRequestContextKey, r)

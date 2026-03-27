@@ -10,15 +10,15 @@ type PermanentError struct {
 	Err error
 }
 
-// Error returns the error message.
+// Error provides error functionality.
 //
-// Summary: Returns the string representation of the error.
+// Summary: Error.
 //
-// Returns:
-//   - string: The error message.
-//
-// Parameters:
+// Parameters.
 //   - None.
+//
+// Returns.
+//   - result: The result.
 func (e *PermanentError) Error() string {
 	if e.Err == nil {
 		return "permanent error"
@@ -26,15 +26,15 @@ func (e *PermanentError) Error() string {
 	return e.Err.Error()
 }
 
-// Unwrap returns the wrapped error.
+// Unwrap provides unwrap functionality.
 //
-// Summary: Unwraps the underlying error.
+// Summary: Unwrap.
 //
-// Returns:
-//   - error: The original error.
-//
-// Parameters:
+// Parameters.
 //   - None.
+//
+// Returns.
+//   - result: The result.
 func (e *PermanentError) Unwrap() error {
 	return e.Err
 }

@@ -51,30 +51,15 @@ type CachingMiddleware struct {
 	hasherPool      *sync.Pool
 }
 
-// NewCachingMiddleware creates a new CachingMiddleware. toolManager is the toolManager. Returns the result.
+// NewCachingMiddleware provides newcachingmiddleware functionality.
 //
-// Parameters:
-//   - toolManager (tool.ManagerInterface): The toolManager parameter.
+// Summary: NewCachingMiddleware.
 //
-// Returns:
-//   - *CachingMiddleware: The resulting *CachingMiddleware.
+// Parameters.
+//   - toolManager: The parameter.
 //
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewCachingMiddleware operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
-//   - None.
+// Returns.
+//   - result: The result.
 func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware {
 	goCacheStore := gocache_store.NewGoCache(go_cache.New(5*time.Minute, 10*time.Minute))
 	cacheManager := cache.New[any](goCacheStore)
@@ -133,60 +118,30 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 	}
 }
 
-// SetProviderFactory allows overriding the default provider factory for testing. factory is the factory.
+// SetProviderFactory provides setproviderfactory functionality.
 //
-// Parameters:
-//   - factory (ProviderFactory): The factory parameter.
+// Summary: SetProviderFactory.
 //
-// Returns:
-//   - None.
+// Parameters.
+//   - factory: The parameter.
 //
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Updates SetProviderFactory operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 	m.providerFactory = factory
 }
 
-// Execute executes the caching middleware. ctx is the context for the request. req is the request object. next is the next. Returns the result. Returns an error if the operation fails.
+// Execute provides execute functionality.
 //
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The request object.
-//   - next (tool.ExecutionFunc): The next parameter.
+// Summary: Execute.
 //
-// Returns:
-//   - any: The resulting any.
-//   - error: An error if the operation fails.
+// Parameters.
+//   - ctx: The parameter.
+//   - req: The parameter.
+//   - next: The parameter.
+//   - error: The parameter.
 //
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Execute operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := tool.GetFromContext(ctx)
@@ -480,30 +435,15 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 	return sb.String()
 }
 
-// Clear clears the cache. ctx is the context for the request. Returns an error if the operation fails.
+// Clear provides clear functionality.
 //
-// Parameters:
-//   - ctx (context.Context): The context for the request.
+// Summary: Clear.
 //
-// Returns:
-//   - error: An error if the operation fails.
+// Parameters.
+//   - ctx: The parameter.
 //
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Clear operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
-//   - None.
+// Returns.
+//   - result: The result.
 func (m *CachingMiddleware) Clear(ctx context.Context) error {
 	return m.cache.Clear(ctx)
 }

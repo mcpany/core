@@ -24,21 +24,18 @@ type TextTemplate struct {
 	IsJSON   bool
 }
 
-// NewTemplate parses a template string and creates a new TextTemplate.
+// NewTemplate provides newtemplate functionality.
 //
-// Summary: Initializes a new TextTemplate.
+// Summary: NewTemplate.
 //
-// Parameters:
-//   - templateString: string. The template source.
-//   - startTag: string. The start delimiter (e.g. "{{").
-//   - endTag: string. The end delimiter (e.g. "}}").
+// Parameters.
+//   - templateString: The parameter.
+//   - startTag: The parameter.
+//   - endTag: The parameter.
+//   - error: The parameter.
 //
-// Returns:
-//   - *TextTemplate: The parsed template.
-//   - error: An error if parsing fails.
-//
-// Side Effects:
-//   - Auto-detects if the template output is likely JSON to enable automatic escaping.
+// Returns.
+//   - None.
 func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error) {
 	tpl, err := fasttemplate.NewTemplate(templateString, startTag, endTag)
 	if err != nil {
@@ -63,23 +60,16 @@ func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error)
 	}, nil
 }
 
-// Render executes the template with the provided parameters and returns the
-// resulting string.
+// Render provides render functionality.
 //
-// Summary: Renders the template with data.
+// Summary: Render.
 //
-// Parameters:
-//   - params: map[string]any. The data map for variable substitution.
+// Parameters.
+//   - params: The parameter.
+//   - error: The parameter.
 //
-// Returns:
-//   - string: The rendered output.
-//   - error: An error if a key is missing or rendering fails.
-//
-// Errors:
-//   - Returns error if a required tag is missing in params.
-//
-// Side Effects:
-//   - Automatically escapes strings if the template is detected as JSON.
+// Returns.
+//   - None.
 func (t *TextTemplate) Render(params map[string]any) (string, error) {
 	return t.template.ExecuteFuncStringWithErr(func(w io.Writer, tag string) (int, error) {
 		val, ok := params[tag]

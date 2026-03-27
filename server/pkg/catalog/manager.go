@@ -29,16 +29,16 @@ type Manager struct {
 	services    []*configv1.UpstreamServiceConfig
 }
 
-// NewManager creates a new Catalog Manager.
+// NewManager provides newmanager functionality.
 //
-// Summary: Initializes a new Catalog Manager.
+// Summary: NewManager.
 //
-// Parameters:
-//   - fs: afero.Fs. The filesystem to scan.
-//   - catalogPath: string. The path to the catalog directory.
+// Parameters.
+//   - fs: The parameter.
+//   - catalogPath: The parameter.
 //
-// Returns:
-//   - *Manager: The initialized manager.
+// Returns.
+//   - result: The result.
 func NewManager(fs afero.Fs, catalogPath string) *Manager {
 	return &Manager{
 		fs:          fs,
@@ -46,19 +46,15 @@ func NewManager(fs afero.Fs, catalogPath string) *Manager {
 	}
 }
 
-// Load scans the catalog directory and loads all service configurations.
+// Load provides load functionality.
 //
-// Summary: Loads service configurations from the catalog directory.
+// Summary: Load.
 //
-// Parameters:
-//   - ctx: context.Context. The context for the operation.
+// Parameters.
+//   - ctx: The parameter.
 //
-// Returns:
-//   - error: An error if the directory walk fails (individual config load errors are logged but do not abort).
-//
-// Side Effects:
-//   - Updates the internal list of services.
-//   - Reads files from the filesystem.
+// Returns.
+//   - result: The result.
 func (m *Manager) Load(ctx context.Context) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -127,16 +123,16 @@ func (m *Manager) Load(ctx context.Context) error {
 	return g.Wait()
 }
 
-// ListServices returns the list of loaded services.
+// ListServices provides listservices functionality.
 //
-// Summary: Retrieves the list of loaded services.
+// Summary: ListServices.
 //
-// Parameters:
-//   - _ context.Context: The context (unused).
+// Parameters.
+//   - _: The parameter.
+//   - error: The parameter.
 //
-// Returns:
-//   - []*configv1.UpstreamServiceConfig: A slice of service configurations.
-//   - error: Always nil.
+// Returns.
+//   - None.
 func (m *Manager) ListServices(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

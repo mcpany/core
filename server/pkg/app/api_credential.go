@@ -104,7 +104,7 @@ func writeError(w http.ResponseWriter, err error) {
 //
 // Summary: Lists all stored credentials.
 //
-// Parameters:
+// Parameters.
 //   - w: http.ResponseWriter. The response writer.
 //   - r: *http.Request. The HTTP request.
 func (a *Application) listCredentialsHandler(w http.ResponseWriter, r *http.Request) {
@@ -129,7 +129,7 @@ func (a *Application) listCredentialsHandler(w http.ResponseWriter, r *http.Requ
 //
 // Summary: Retrieves a specific credential by ID.
 //
-// Parameters:
+// Parameters.
 //   - w: http.ResponseWriter. The response writer.
 //   - r: *http.Request. The HTTP request containing the ID in the path.
 func (a *Application) getCredentialHandler(w http.ResponseWriter, r *http.Request) {
@@ -163,7 +163,7 @@ func (a *Application) getCredentialHandler(w http.ResponseWriter, r *http.Reques
 //
 // Summary: Creates a new credential.
 //
-// Parameters:
+// Parameters.
 //   - w: http.ResponseWriter. The response writer.
 //   - r: *http.Request. The HTTP request containing the credential in the body.
 func (a *Application) createCredentialHandler(w http.ResponseWriter, r *http.Request) {
@@ -212,7 +212,7 @@ func (a *Application) createCredentialHandler(w http.ResponseWriter, r *http.Req
 //
 // Summary: Updates an existing credential.
 //
-// Parameters:
+// Parameters.
 //   - w: http.ResponseWriter. The response writer.
 //   - r: *http.Request. The HTTP request containing the updated credential.
 func (a *Application) updateCredentialHandler(w http.ResponseWriter, r *http.Request) {
@@ -258,7 +258,7 @@ func (a *Application) updateCredentialHandler(w http.ResponseWriter, r *http.Req
 //
 // Summary: Deletes a credential by ID.
 //
-// Parameters:
+// Parameters.
 //   - w: http.ResponseWriter. The response writer.
 //   - r: *http.Request. The HTTP request containing the ID in the path.
 func (a *Application) deleteCredentialHandler(w http.ResponseWriter, r *http.Request) {
@@ -314,7 +314,7 @@ type TestAuthResponse struct {
 //
 // Summary: Tests an authentication configuration by making a request to a target URL.
 //
-// Parameters:
+// Parameters.
 //   - w: http.ResponseWriter. The response writer.
 //   - r: *http.Request. The HTTP request containing the test parameters.
 func (a *Application) testAuthHandler(w http.ResponseWriter, r *http.Request) {

@@ -22,27 +22,16 @@ type OAuth2Authenticator struct {
 	audiences []string
 }
 
-// NewOAuth2Authenticator creates a new OAuth2Authenticator with the provided
-// configuration. It initializes the OIDC provider and creates a verifier for
-// validating ID tokens.
+// NewOAuth2Authenticator provides newoauth2authenticator functionality.
 //
-// Parameters:
-//   - ctx: The context for the OIDC provider initialization.
-//   - config: The OAuth2 configuration, including the issuer URL and client ID.
+// Summary: NewOAuth2Authenticator.
 //
-// Returns:
-//   - A new OAuth2Authenticator.
-//   - An error if the OIDC provider cannot be initialized.
+// Parameters.
+//   - ctx: The parameter.
+//   - config: The parameter.
+//   - error: The parameter.
 //
-// Summary: Initializes NewOAuth2Authenticator operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func NewOAuth2Authenticator(ctx context.Context, config *OAuth2Config) (*OAuth2Authenticator, error) {
 	provider, err := oidc.NewProvider(ctx, config.IssuerURL)
@@ -72,27 +61,16 @@ func NewOAuth2Authenticator(ctx context.Context, config *OAuth2Config) (*OAuth2A
 	}, nil
 }
 
-// Authenticate validates the JWT from the Authorization header of the request.
-// It checks for a "Bearer" token and verifies its signature, expiration, and
-// claims against the OIDC provider.
+// Authenticate provides authenticate functionality.
 //
-// Parameters:
-//   - ctx: The request context.
-//   - r: The HTTP request to authenticate.
+// Summary: Authenticate.
 //
-// Returns:
-//   - The context with the user's identity (email) on success.
-//   - An error if authentication fails.
+// Parameters.
+//   - ctx: The parameter.
+//   - r: The parameter.
+//   - error: The parameter.
 //
-// Summary: Executes Authenticate operation.
-//
-// Parameters: - None.
-//
-// Returns: - None.
-//
-// Errors: - None.
-//
-// Side Effects:
+// Returns.
 //   - None.
 func (a *OAuth2Authenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
 	authHeader := r.Header.Get("Authorization")

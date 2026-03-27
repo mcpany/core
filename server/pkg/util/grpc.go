@@ -17,15 +17,15 @@ type WrappedServerStream struct {
 	Ctx context.Context
 }
 
-// Context returns the modified context.
+// Context provides context functionality.
 //
-// Summary: Returns the context associated with the stream.
+// Summary: Context.
 //
-// Returns:
-//   - context.Context: The modified context.
-//
-// Parameters:
+// Parameters.
 //   - None.
+//
+// Returns.
+//   - result: The result.
 func (w *WrappedServerStream) Context() context.Context {
 	return w.Ctx
 }
