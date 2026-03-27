@@ -49,39 +49,11 @@ const DiffEditor = (props: any) => (
 );
 
 /**
- * Intent: Document MessageType
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * MessageType type definition.
  */
 export type MessageType = "user" | "assistant" | "tool-call" | "tool-result" | "error";
 
 /**
- * Intent: Document Message
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Message type definition.
  */
 export interface Message {
@@ -125,20 +97,6 @@ function analyzeError(error: string): string | null {
 }
 
 /**
- * Intent: Document ChatMessage
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ChatMessage.
  *
  * @param { message - The { message.

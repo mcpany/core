@@ -15,20 +15,6 @@ import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 
  /**
- * Intent: Document render
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
   * render wraps the component in a MemoryRouter for testing.
   *
   * @param ui The component to render.

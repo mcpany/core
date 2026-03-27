@@ -17,20 +17,6 @@ import { ServicePropertyCard } from "./service-property-card";
 import { SchemaViewer } from "./tools/schema-viewer";
 
 /**
- * Intent: Document ToolDetail
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Displays details of a specific tool within a service.
  *
  * @param props - The component props.

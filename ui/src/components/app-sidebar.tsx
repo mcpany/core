@@ -212,20 +212,6 @@ const configItems = [
 ]
 
 /**
- * Intent: Document AppSidebar
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * The main application sidebar.
  * Displays navigation links and user profile menu.
  *

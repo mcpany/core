@@ -48,20 +48,6 @@ function safeParsePayload(payload: any) {
 }
 
 /**
- * Intent: Document RecentActivityWidget
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * RecentActivityWidget component.
  * Displays the most recent tool executions.
  * @returns The rendered component.

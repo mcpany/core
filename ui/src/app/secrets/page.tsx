@@ -6,20 +6,6 @@
 import { SecretsManager } from "@/components/settings/secrets-manager";
 
 /**
- * Intent: Document SecretsPage
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * SecretsPage component.
  * @returns The rendered component.
  */

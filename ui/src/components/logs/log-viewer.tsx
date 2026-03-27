@@ -17,39 +17,11 @@ const Virtuoso = lazy(() => import('react-virtuoso').then((m) => ({ default: m.V
 const JsonViewer = lazy(() => import('./json-viewer'));
 
 /**
- * Intent: Document LogLevel
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * LogLevel defines the severity of a log entry.
  */
 export type LogLevel = "INFO" | "WARN" | "ERROR" | "DEBUG"
 
 /**
- * Intent: Document LogEntry
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * LogEntry represents a single structured log message.
  */
 export interface LogEntry {
@@ -70,20 +42,6 @@ interface LogViewerProps {
 
 // Optimization: Reuse DateTimeFormat instance
 /**
- * Intent: Document timeFormatter
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * timeFormatter is a shared Intl.DateTimeFormat instance for formatting log timestamps.
  */
 export const timeFormatter = typeof Intl !== 'undefined' ? new Intl.DateTimeFormat(undefined, {
@@ -257,20 +215,6 @@ const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRe
 LogRow.displayName = 'LogRow'
 
 /**
- * Intent: Document LogViewer
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * LogViewer component.
  * @param props - The component props.
  * @param props.logs - The list of log entries to display.

@@ -32,20 +32,6 @@ interface OptimizationTabProps {
 }
 
 /**
- * Intent: Document OptimizationTab
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * OptimizationTab displays analysis of tool usage and suggests optimizations.
  * It identifies "Ghost Tools" which are heavy in tokens but rarely used.
  *

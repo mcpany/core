@@ -56,20 +56,6 @@ import { OptimizationTab } from "./optimization-tab";
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#ec4899', '#6366f1'];
 
 /**
- * Intent: Document AnalyticsDashboard
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * AnalyticsDashboard component.
  * @returns The rendered component.
  */

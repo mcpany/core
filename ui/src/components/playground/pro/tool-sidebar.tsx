@@ -21,20 +21,6 @@ interface ToolSidebarProps {
 }
 
 /**
- * Intent: Document ToolSidebar
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ToolSidebar.
  *
  * @param className - The className.

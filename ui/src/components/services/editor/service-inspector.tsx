@@ -18,20 +18,6 @@ interface ServiceInspectorProps {
 }
 
 /**
- * Intent: Document ServiceInspector
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ServiceInspector component.
  * @param props - The component props.
  * @param props.service - The service property.

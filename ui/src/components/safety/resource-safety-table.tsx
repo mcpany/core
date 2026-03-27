@@ -24,20 +24,6 @@ interface ResourceSafetyTableProps {
 }
 
 /**
- * Intent: Document ResourceSafetyTable
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ResourceSafetyTable displays a table of resources and allows toggling their enabled/disabled status.
  *
  * @param props - The component props.

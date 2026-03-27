@@ -29,20 +29,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { FileInput } from "@/components/ui/file-input";
 
 /**
- * Intent: Document Schema
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Schema definition interface.
  * Represents a JSON Schema object used for form generation.
  */
@@ -82,20 +68,6 @@ interface SchemaFieldProps {
 }
 
 /**
- * Intent: Document UniversalSchemaForm
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * UniversalSchemaForm component.
  * Renders a form based on a JSON schema with improved UX for nested objects and arrays.
  */

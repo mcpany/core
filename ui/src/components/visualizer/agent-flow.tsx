@@ -38,20 +38,6 @@ const edgeTypes = {
 };
 
 /**
- * Intent: Document AgentFlow
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * AgentFlow component renders the interactive flow visualization.
  * Renamed conceptually to NetworkTopology but keeping component name for compatibility.
  * @returns The AgentFlow component.

@@ -12,20 +12,6 @@ import { UpstreamServiceConfig } from "@/lib/types";
 import { useServiceSiblings } from "@/hooks/use-siblings";
 
 /**
- * Intent: Document ServiceDetailPage
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Page component for displaying service details.
  * @returns The service detail page.
  */

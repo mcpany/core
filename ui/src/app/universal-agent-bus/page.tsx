@@ -20,14 +20,6 @@ import {
 } from "lucide-react";
 
 /**
- * Intent: Document UniversalAgentBusPage
- *
- * Params:
- *   - None
- *
- * Errors:
- *   - None
- *
  * UniversalAgentBusPage component for managing the Universal Agent Bus.
  *
  * Summary: Renders a dashboard with metrics for the Universal Agent Bus.

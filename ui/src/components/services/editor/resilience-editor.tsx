@@ -29,20 +29,6 @@ const durationToString = (d: any): string => {
 };
 
 /**
- * Intent: Document ResilienceEditor
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ResilienceEditor component.
  * Allows configuring Retry Policy, Circuit Breaker, and Timeouts.
  */

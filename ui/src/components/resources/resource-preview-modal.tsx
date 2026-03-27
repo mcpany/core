@@ -28,20 +28,6 @@ interface ResourcePreviewModalProps {
 }
 
 /**
- * Intent: Document ResourcePreviewModal
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ResourcePreviewModal component.
  * @param props - The component props.
  * @param props.isOpen - Whether the component is open.

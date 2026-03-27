@@ -7,7 +7,7 @@ import (
 
 // AutoGenAdapter implements the AgentFramework interface for AutoGen.
 //
-// Intent: Represents an adapter that connects the AutoGen multi-agent framework to the universal adapter hub.
+// Summary: Represents an adapter that connects the AutoGen multi-agent framework to the universal adapter hub.
 //
 // Parameters:
 //   - None.
@@ -27,7 +27,7 @@ type AutoGenAdapter struct {
 
 // NewAutoGenAdapter creates a new AutoGenAdapter instance.
 //
-// Intent: Constructs a new AutoGenAdapter with predefined multi-agent capabilities.
+// Summary: Constructs a new AutoGenAdapter with predefined multi-agent capabilities.
 //
 // Parameters:
 //   - None.
@@ -52,7 +52,7 @@ func NewAutoGenAdapter() *AutoGenAdapter {
 
 // Name returns the identifier of the agent framework.
 //
-// Intent: Retrieves the exact name identifier for the AutoGen adapter.
+// Summary: Retrieves the exact name identifier for the AutoGen adapter.
 //
 // Parameters:
 //   - None.
@@ -71,7 +71,7 @@ func (a *AutoGenAdapter) Name() string {
 
 // HandleTask translates and executes a universal task on the AutoGen framework.
 //
-// Intent: Processes and executes a task through simulated multi-agent subagent execution.
+// Summary: Processes and executes a task through simulated multi-agent subagent execution.
 //
 // Parameters:
 //   - ctx (context.Context): Execution context for controlling cancellation and timeout.
@@ -110,7 +110,7 @@ func (a *AutoGenAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResul
 
 // SupportsCapability checks if the framework provides a requested capability.
 //
-// Intent: Confirms if the AutoGen adapter's capabilities include the requested functionality.
+// Summary: Confirms if the AutoGen adapter's capabilities include the requested functionality.
 //
 // Parameters:
 //   - capability (string): The intended capability name.
@@ -129,7 +129,7 @@ func (a *AutoGenAdapter) SupportsCapability(capability string) bool {
 
 // SyncMemoryShard synchronizes a hardware-attested multimodal memory shard with the AutoGen framework.
 //
-// Intent: Ingests a memory shard to synchronize state across agents.
+// Summary: Ingests a memory shard to synchronize state across agents.
 //
 // Parameters:
 //   - ctx (context.Context): The context for controlling cancellation and timeouts.

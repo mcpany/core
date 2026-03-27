@@ -7,14 +7,6 @@ import React from "react";
 import { HitlDashboard } from "@/components/hitl/hitl-dashboard";
 
 /**
- * Intent: Document HitlPage
- *
- * Params:
- *   - None
- *
- * Errors:
- *   - None
- *
  * HitlPage component for displaying the HITL approvals dashboard.
  *
  * Summary: Renders the root page view for the HITL dashboard.

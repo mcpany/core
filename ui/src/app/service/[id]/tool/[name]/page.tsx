@@ -12,20 +12,6 @@ import { UpstreamServiceConfig } from "@/lib/types";
 import { useServiceSiblings, useToolSiblings } from "@/hooks/use-siblings";
 
 /**
- * Intent: Document ToolDetailPage
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ToolDetailPage component.
  * @returns The rendered component.
  */

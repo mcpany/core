@@ -9,20 +9,6 @@ const STORAGE_KEY = "mcpany-recent-tools";
 const MAX_RECENT_TOOLS = 5;
 
 /**
- * Intent: Document useRecentTools
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Hook for managing recently used tools.
  * @returns The recent tools state and functions.
  */

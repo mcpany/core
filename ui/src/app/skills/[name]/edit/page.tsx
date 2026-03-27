@@ -8,20 +8,6 @@
 import SkillWizard from '@/components/skills/skill-wizard';
 
 /**
- * Intent: Document EditSkillPage
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * EditSkillPage component.
  * @returns The rendered component.
  */

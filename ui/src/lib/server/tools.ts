@@ -1,18 +1,4 @@
 /**
- * Intent: Document Tool
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Copyright 2025 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -25,20 +11,6 @@ export interface Tool {
 }
 
 /**
- * Intent: Document BuiltInTools
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * BuiltInTools contains the definitions and implementations of standard tools
  * provided by the server, such as calculator, echo, and system info.
  */
@@ -138,20 +110,6 @@ export const BuiltInTools: Record<string, Tool> = {
 };
 
 /**
- * Intent: Document executeTool
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - Documented below.
- *
- * Side Effects:
- *   - None
- *
  * executeTool executes a built-in tool by name with the provided arguments.
  *
  * @param toolName - The name of the tool to execute.

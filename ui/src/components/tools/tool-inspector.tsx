@@ -16,20 +16,6 @@ interface ToolInspectorProps {
 }
 
 /**
- * Intent: Document ToolInspector
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ToolInspector.
  * Wrapper around ToolRunner for dialog presentation.
  *

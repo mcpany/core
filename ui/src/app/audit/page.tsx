@@ -6,20 +6,6 @@
 import { AuditLogViewer } from "@/components/audit/audit-log-viewer";
 
 /**
- * Intent: Document AuditPage
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * AuditPage component.
  * Renders the audit logs page, which includes the AuditLogViewer.
  *

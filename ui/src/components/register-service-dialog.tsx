@@ -55,20 +55,6 @@ const detectSensitiveData = (text: string) => {
 };
 
 /**
- * Intent: Document RegisterServiceDialog
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * RegisterServiceDialog.
  *
  * @param serviceToEdit - The serviceToEdit.

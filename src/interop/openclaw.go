@@ -7,7 +7,7 @@ import (
 
 // OpenClawAdapter implements the AgentFramework interface for OpenClaw.
 //
-// Intent: An adapter implementation that bridges the OpenClaw agent framework with the universal hub.
+// Summary: An adapter implementation that bridges the OpenClaw agent framework with the universal hub.
 //
 // Parameters:
 //   - None.
@@ -27,7 +27,7 @@ type OpenClawAdapter struct {
 
 // NewOpenClawAdapter creates a new OpenClawAdapter instance.
 //
-// Intent: Initializes and returns a new adapter for OpenClaw with its specific capabilities.
+// Summary: Initializes and returns a new adapter for OpenClaw with its specific capabilities.
 //
 // Parameters:
 //   - None.
@@ -52,7 +52,7 @@ func NewOpenClawAdapter() *OpenClawAdapter {
 
 // Name returns the identifier of the agent framework.
 //
-// Intent: Returns the specific name identifier of the OpenClaw adapter.
+// Summary: Returns the specific name identifier of the OpenClaw adapter.
 //
 // Parameters:
 //   - None.
@@ -71,7 +71,7 @@ func (a *OpenClawAdapter) Name() string {
 
 // HandleTask translates and executes a universal task on the OpenClaw framework.
 //
-// Intent: Executes the provided task using simulated adaptive reasoning logic.
+// Summary: Executes the provided task using simulated adaptive reasoning logic.
 //
 // Parameters:
 //   - ctx (context.Context): The task execution context, for managing lifecycle.
@@ -108,7 +108,7 @@ func (a *OpenClawAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResu
 
 // SupportsCapability checks if the framework provides a requested capability.
 //
-// Intent: Determines whether the OpenClaw adapter can execute tasks for a given capability intent.
+// Summary: Determines whether the OpenClaw adapter can execute tasks for a given capability intent.
 //
 // Parameters:
 //   - capability (string): The capability identifier string to query.
@@ -127,7 +127,7 @@ func (a *OpenClawAdapter) SupportsCapability(capability string) bool {
 
 // SyncMemoryShard synchronizes a hardware-attested multimodal memory shard with the OpenClaw framework.
 //
-// Intent: Ingests a memory shard and appends it to OpenClaw's internal state.
+// Summary: Ingests a memory shard and appends it to OpenClaw's internal state.
 //
 // Parameters:
 //   - ctx (context.Context): The context for controlling cancellation and timeouts.

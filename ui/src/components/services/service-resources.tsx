@@ -25,20 +25,6 @@ interface ServiceResourcesProps {
 }
 
 /**
- * Intent: Document ServiceResources
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ServiceResources lists the resources exposed by an upstream service.
  * It allows users to view resource details and read their content.
  */

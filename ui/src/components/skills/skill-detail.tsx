@@ -14,20 +14,6 @@ import { Edit, ChevronLeft } from 'lucide-react';
 import { toast } from 'sonner';
 
 /**
- * Intent: Document SkillDetail
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * SkillDetail component.
  * @returns The rendered component.
  */

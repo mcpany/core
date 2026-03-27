@@ -6,20 +6,6 @@
 import { AnalyticsDashboard } from "@/components/stats/analytics-dashboard";
 
 /**
- * Intent: Document StatsPage
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * StatsPage component.
  * @returns The rendered component.
  */

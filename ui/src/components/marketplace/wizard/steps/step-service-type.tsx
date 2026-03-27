@@ -28,20 +28,6 @@ const MANUAL_TEMPLATE: any = {
 };
 
 /**
- * Intent: Document StepServiceType
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * StepServiceType component.
  * @returns The rendered component.
  */

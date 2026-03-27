@@ -23,20 +23,6 @@ interface AuthStepProps {
 }
 
 /**
- * Intent: Document AuthStep
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Step for authenticating services.
  * @param props Component properties.
  */

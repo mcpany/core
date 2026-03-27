@@ -26,20 +26,6 @@ interface DiagnosticResult {
 }
 
 /**
- * Intent: Document ServiceDiagnostics
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * A component that runs and displays diagnostic checks for a service.
  * Checks include configuration validation, runtime status, and tool discovery.
  *

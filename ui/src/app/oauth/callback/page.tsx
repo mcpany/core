@@ -132,20 +132,6 @@ function OAuthCallbackContent() {
 }
 
 /**
- * Intent: Document OAuthCallbackPage
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * OAuthCallbackPage component.
  * @returns The rendered component.
  */

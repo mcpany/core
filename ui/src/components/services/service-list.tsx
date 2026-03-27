@@ -53,20 +53,6 @@ interface ServiceListProps {
 }
 
 /**
- * Intent: Document ServiceList
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ServiceList.
  *
  * @param onExport - The onExport.

@@ -23,20 +23,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useState, useMemo } from "react";
 
 /**
- * Intent: Document InspectorPage
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * InspectorPage component.
  * @returns The rendered component.
  */
