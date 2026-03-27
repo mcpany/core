@@ -127,32 +127,31 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
             ⚡ BOLT: Implemented virtualization for trace table using react-virtuoso.
             Randomized Selection from Top 5 High-Impact Targets
         */}
-        <TableVirtuoso
-            style={{ height: '100%', width: '100%' }}
-            data={visibleRows}
-            context={{ onClick: setSelectedTrace }}
-            components={{
-                EmptyPlaceholder: () => (
-                    <tbody>
-                        <tr>
-                            <td colSpan={5}>
-                                <div className="flex items-center justify-center h-24 text-muted-foreground text-sm">
-                                    {loading ? 'Loading traces...' : 'No traces found.'}
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                ),
-                Table: ({ style, ...props }) => (
-                    <table {...props} style={{...style, width: '100%', borderCollapse: 'collapse'}} className="w-full caption-bottom text-sm" />
-                ),
-                TableHead: TableHeader,
-                TableBody: TableBody,
-                TableRow: ({ item, context, ...props }: any) => (
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-                    <TableRow {...props} className="cursor-pointer hover:bg-muted/50" onClick={() => context.onClick(item.trace)} />
-                ),
-            }}
+        {traces.length === 0 && !loading ? (
+             <div className="flex items-center justify-center h-24 text-muted-foreground text-sm">
+                No traces found.
+             </div>
+        ) : loading && traces.length === 0 ? (
+             <div className="flex items-center justify-center h-24 text-muted-foreground text-sm">
+                Loading traces...
+             </div>
+        ) : (
+            <TableVirtuoso
+                style={{ height: '100%', width: '100%' }}
+                data={visibleRows}
+                context={{ onClick: setSelectedTrace }}
+                components={{
+                    // Use shadcn/ui Table components where possible.
+                    // Table: The root table element. shadcn Table is a wrapper. We need the table element.
+                    Table: ({ style, ...props }) => (
+                        <table {...props} style={{...style, width: '100%', borderCollapse: 'collapse'}} className="w-full caption-bottom text-sm" />
+                    ),
+                    TableHead: TableHeader,
+                    TableBody: TableBody,
+                    TableRow: ({ item, context, ...props }: any) => (
+                        <TableRow {...props} className="cursor-pointer hover:bg-muted/50" onClick={() => context.onClick(item.trace)} />
+                    ),
+                }}
                 fixedHeaderContent={() => (
                     <TableRow>
                     <TableHead className="w-[180px] bg-card z-10">Timestamp</TableHead>
@@ -204,7 +203,8 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
                     </TableCell>
                     </>
                 )}
-        />
+            />
+        )}
       </div>
 
       <Sheet open={!!selectedTrace} onOpenChange={(open) => !open && setSelectedTrace(null)}>
