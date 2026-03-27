@@ -1,5 +1,5 @@
-// Copyright 2026 Author(s) of MCP Any.
-// SPDX-License-Identifier: Apache-2.0.
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
 // Package v1alpha1 contains API Schema definitions for the mcp.any v1alpha1 API group.
 // +kubebuilder:object:generate=true

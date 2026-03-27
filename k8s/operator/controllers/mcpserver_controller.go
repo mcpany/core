@@ -1,5 +1,5 @@
-// Copyright 2026 Author(s) of MCP Any.
-// SPDX-License-Identifier: Apache-2.0.
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
 package controllers
 
@@ -19,7 +19,7 @@ import (
 	mcpv1alpha1 "github.com/mcpany/core/operator/api/v1alpha1"
 )
 
-// MCPServerReconciler reconciles a MCPServer object.
+// MCPServerReconciler reconciles a MCPServer object..
 type MCPServerReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
@@ -33,7 +33,7 @@ type MCPServerReconciler struct {
 
 // Reconcile is part of the main kubernetes reconciliation loop.
 //
-// Summary: Reconciles a MCPServer object.
+// Summary: Reconciles a MCPServer object..
 func (r *MCPServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	l := log.FromContext(ctx)
 

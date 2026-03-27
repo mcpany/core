@@ -1,5 +1,5 @@
-// Copyright 2026 Author(s) of MCP Any.
-// SPDX-License-Identifier: Apache-2.0.
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
 package tests
 
@@ -185,8 +185,8 @@ nodes:
 	if grepInvert := os.Getenv("PLAYWRIGHT_GREP_INVERT"); grepInvert != "" {
 		playwrightArgs = append(playwrightArgs, "--grep-invert", grepInvert)
 	}
-	args := append([]string{"playwright"}, playwrightArgs...)
-	playwrightCmd := exec.CommandContext(ctx, "npx", args...)
+	args := append([]string{"playwright"}, playwrightArgs..)
+	playwrightCmd := exec.CommandContext(ctx, "npx", args..)
 	playwrightCmd.Dir = uiDir
 	playwrightCmd.Env = append(os.Environ(), fmt.Sprintf("PLAYWRIGHT_BASE_URL=http://127.0.0.1:%d", hostPort), "SKIP_WEBSERVER=true")
 	playwrightCmd.Stdout = os.Stdout

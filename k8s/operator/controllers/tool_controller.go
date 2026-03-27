@@ -1,5 +1,5 @@
-// Copyright 2026 Author(s) of MCP Any.
-// SPDX-License-Identifier: Apache-2.0.
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
 package controllers
 
@@ -14,7 +14,7 @@ import (
 	mcpv1alpha1 "github.com/mcpany/core/operator/api/v1alpha1"
 )
 
-// ToolReconciler reconciles a Tool object.
+// ToolReconciler reconciles a Tool object..
 type ToolReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
@@ -26,7 +26,7 @@ type ToolReconciler struct {
 
 // Reconcile is part of the main kubernetes reconciliation loop.
 //
-// Summary: Reconciles a Tool object.
+// Summary: Reconciles a Tool object..
 func (r *ToolReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	tool := &mcpv1alpha1.Tool{}
 	err := r.Get(ctx, req.NamespacedName, tool)
