@@ -17,20 +17,70 @@ import (
 // Severity indicates the importance of a linting result.
 //
 // Summary: Represents the severity level of a linting finding.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Severity int
 
 const (
 	// Error indicates a critical issue that must be fixed.
 	//
 	// Summary: Defines the Error severity level.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	Error Severity = iota
+
 	// Warning indicates a potential issue or best practice violation.
 	//
 	// Summary: Defines the Warning severity level.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	Warning
+
 	// Info indicates a suggestion or informational message.
 	//
 	// Summary: Defines the Info severity level.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	Info
 )
 
@@ -39,7 +89,7 @@ const (
 // Summary: Returns the string name of the severity level.
 //
 // Parameters:
-//   - s (Severity): The severity level to convert.
+//   - None.
 //
 // Returns:
 //   - string: The name of the severity (e.g., "ERROR").
@@ -65,6 +115,18 @@ func (s Severity) String() string {
 // Result represents a single linting finding.
 //
 // Summary: Encapsulates an issue found during configuration analysis.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Result struct {
 	// Severity indicates how critical the finding is.
 	Severity Severity
@@ -81,7 +143,7 @@ type Result struct {
 // Summary: Formats the result into a readable string.
 //
 // Parameters:
-//   - r (Result): The result instance to format.
+//   - None.
 //
 // Returns:
 //   - string: A formatted summary of the finding.
@@ -107,6 +169,18 @@ func (r Result) String() string {
 // Linter performs static analysis on the configuration.
 //
 // Summary: Analyzes McpAnyServerConfig for security and best practices.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Linter struct {
 	cfg *configv1.McpAnyServerConfig
 }
@@ -145,7 +219,7 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 //   - None.
 //
 // Side Effects:
-//   - None.
+//   - Executes multiple analysis modules against the configuration.
 func (l *Linter) Run(ctx context.Context) ([]Result, error) {
 	results := make([]Result, 0, 10)
 
