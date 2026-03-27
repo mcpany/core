@@ -8,6 +8,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 
 /**
+ * Intent: Document HitlDashboard
+ *
+ * Params:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
  * HitlDashboard component for managing Human-in-the-Loop approvals.
  *
  * Summary: Renders a dashboard for reviewing and managing pending HITL approvals.

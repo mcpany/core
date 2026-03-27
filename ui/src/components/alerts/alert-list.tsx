@@ -41,6 +41,20 @@ import { useToast } from "@/hooks/use-toast";
 import { apiClient } from "@/lib/client";
 
 /**
+ * Intent: Document AlertList
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * AlertList component.
  * @returns The rendered component.
  */

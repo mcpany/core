@@ -40,10 +40,40 @@ import { useToast } from "@/hooks/use-toast"
 import { useShortcut, useKeyboardShortcuts } from "@/contexts/keyboard-shortcuts-context"
 import { KeyboardShortcutsDialog } from "@/components/keyboard-shortcuts-dialog"
 
-/** Reloads the current page. Extracted as a module-level function to allow test mocking. */
+/**
+ * Intent: Document reloadPage
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
+ * Reloads the current page. Extracted as a module-level function to allow test mocking.
+ */
 export const reloadPage = () => window.location.reload();
 
 /**
+ * Intent: Document GlobalSearch
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Global search component that provides quick access to navigation, tools, services, and actions.
  * It is triggered by a keyboard shortcut (Cmd/Ctrl+K) or by clicking the search button.
  */

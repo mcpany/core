@@ -27,6 +27,20 @@ interface ProviderStatus {
 }
 
 /**
+ * Intent: Document DiscoveryStatus
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * DiscoveryStatus displays the status of auto-discovery providers.
  * @returns The rendered component.
  */

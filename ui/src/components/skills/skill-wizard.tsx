@@ -17,6 +17,20 @@ import { ChevronRight, ChevronLeft, Save, Upload } from 'lucide-react';
 const STEPS = ['Metadata', 'Instructions', 'Assets'];
 
 /**
+ * Intent: Document SkillWizard
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * SkillWizard component.
  * @returns The rendered component.
  */

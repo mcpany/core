@@ -7,6 +7,20 @@ import { ServiceTemplate } from "@/lib/templates";
 import { UpstreamServiceConfig } from "@/lib/client";
 
 /**
+ * Intent: Document applyTemplateFields
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Applies user-provided field values to a service template's configuration.
  *
  * @param template The service template.
