@@ -223,7 +223,7 @@ func runfilesWorkspaceName() string {
 
 func runfilesRoots() []string {
 	workspace := runfilesWorkspaceName()
-	roots := make([]string, 0, 2)
+	roots := make([]string, 0, 4)
 	for _, base := range []string{os.Getenv("TEST_SRCDIR"), os.Getenv("RUNFILES_DIR")} {
 		if base == "" {
 			continue
@@ -268,9 +268,10 @@ func isServerProjectRoot(dir string) bool {
 	return true
 }
 
+//nolint:nilerr
 func symlinkIfPresent(src, dst string) error {
 	if _, err := os.Stat(src); err != nil {
-		return nil //nolint:nilerr // Ignore file not found
+		return nil
 	}
 	return os.Symlink(src, dst)
 }
@@ -1131,10 +1132,10 @@ func StartNatsServer(t *testing.T) (string, func()) {
 	t.Helper()
 
 	opts := &natsserver.Options{
-		Host:     loopbackIP,
-		Port:     -1, // random port
-		NoLog:    true,
-		NoSigs:   true,
+		Host:       loopbackIP,
+		Port:       -1, // random port
+		NoLog:      true,
+		NoSigs:     true,
 		MaxPending: 64 << 20,
 	}
 	ns, err := natsserver.NewServer(opts)
