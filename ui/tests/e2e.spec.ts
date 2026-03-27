@@ -34,7 +34,7 @@ test.describe('MCP Any UI E2E Tests', () => {
     ]);
     await expect(page).toHaveURL('/', { timeout: 15000 });
   });
-  test.afterEach(async ({ request }) => {
+  test.afterEach(async () => {
     // Seeding handles cleanup automatically, so we don't need explicit cleanup here
     // unless we want to leave a clean state.
     // For now, we rely on atomic seeding at start of next test.

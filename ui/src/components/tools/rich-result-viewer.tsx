@@ -17,8 +17,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 
 interface RichResultViewerProps {
-
-    result: any;
+    result: unknown;
 }
 
 interface TextContent {
