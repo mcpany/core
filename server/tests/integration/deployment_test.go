@@ -84,18 +84,9 @@ func dockerComposeDir(t *testing.T) string {
 }
 
 func TestDockerCompose(t *testing.T) {
-	if !integration.IsDockerSocketAccessible() {
-		t.Skip("Docker socket not accessible, skipping TestDockerCompose.")
-	}
-	if !commandExists("docker") {
-		t.Skip("docker command not found, skipping TestDockerCompose.")
-	}
 
 	srcComposeDir := dockerComposeDir(t)
 	dockerComposeFile := filepath.Join(srcComposeDir, "docker-compose.yml")
-	if _, err := os.Stat(dockerComposeFile); err != nil {
-		t.Skipf("docker-compose.yml not found at %s, skipping TestDockerCompose", dockerComposeFile)
-	}
 
 	// Copy docker-compose files to a real temp directory so that Docker can bind-mount
 	// them without issues from Bazel's runfile symlinks.
@@ -302,15 +293,9 @@ func TestDockerCompose(t *testing.T) {
 }
 
 func TestHelmChart(t *testing.T) {
-	if !commandExists("helm") {
-		t.Skip("helm command not found, skipping TestHelmChart.")
-	}
 	t.Parallel()
 
 	helmPath := helmChartDir(t)
-	if _, err := os.Stat(helmPath); err != nil {
-		t.Skipf("Helm chart directory not found at %s, skipping TestHelmChart.", helmPath)
-	}
 
 	// 1. Lint the chart
 	lintCmd := exec.Command("helm", "lint", ".")
@@ -333,14 +318,8 @@ func TestHelmChart(t *testing.T) {
 }
 
 func TestK8sFullStack(t *testing.T) {
-	if !commandExists("helm") {
-		t.Skip("helm command not found, skipping TestK8sFullStack.")
-	}
 
 	helmPath := helmChartDir(t)
-	if _, err := os.Stat(helmPath); err != nil {
-		t.Skipf("Helm chart directory not found at %s, skipping TestK8sFullStack.", helmPath)
-	}
 
 	t.Parallel()
 

@@ -58,7 +58,7 @@ test.describe('Network Topology', () => {
              await page.waitForTimeout(500);
              // Logic depends on actual implementation of filter.
         } else {
-             console.log('Filter options not found, skipping specific filter interaction');
+             await expect(filterSelect).toBeVisible();
         }
     } else {
         console.log('Filter button not found in UI');

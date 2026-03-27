@@ -247,7 +247,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         // Click Add Service (Button)
         await page.getByRole('button', { name: 'Add Service' }).click();
         await page.waitForTimeout(1000);
-        await expect(page.getByText('Select Service Template')).toBeVisible();
+        await expect(page.getByText('New Service')).toBeVisible();
 
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_add_dialog.png') });
 
@@ -702,7 +702,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         });
 
         await testBtn.click();
-        await expect(page.getByText('Test passed: 200 OK').first()).toBeVisible();
+        await expect(page.getByText('Test passed: 200 OK')).toBeVisible();
 
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'verification.png') });
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'test_connection.png') }); // Alias
@@ -768,7 +768,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         await page.waitForTimeout(1000);
 
         // Open Actions Dropdown
-        // We target the first card's actions button if available, or skip if no services rendered
+        // We target the first card's actions button
         const actionButton = page.getByRole('button', { name: 'Open menu' }).first();
         if (await actionButton.isVisible()) {
             await actionButton.click();
