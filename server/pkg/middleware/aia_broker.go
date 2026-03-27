@@ -35,8 +35,6 @@ type AIABroker struct {
 
 // NewAIABroker creates a new AIABroker middleware instance.
 //
-// Summary: Creates a new Active Intent Alignment Broker instance.
-//
 // Parameters:
 //   - config (AIABrokerConfig): The configuration settings.
 //
@@ -55,8 +53,6 @@ func NewAIABroker(config AIABrokerConfig) *AIABroker {
 }
 
 // Execute enforces intent alignment before proceeding to the next handler.
-//
-// Summary: Executes the intent alignment check before proceeding.
 //
 // Parameters:
 //   - ctx (context.Context): The execution context.

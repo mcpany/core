@@ -7,29 +7,15 @@
 
 import { useState, useEffect } from "react";
 import { DashboardGrid } from "@/components/dashboard/dashboard-grid";
+import { Button } from "@/components/ui/button";
 import { DashboardProvider } from "@/components/dashboard/dashboard-context";
 import { ServiceFilter } from "@/components/dashboard/service-filter";
 import { TimeRangeFilter } from "@/components/dashboard/time-range-filter";
 import { OnboardingHero } from "@/components/dashboard/onboarding-hero";
 import { apiClient } from "@/lib/client";
 import { Loader2 } from "lucide-react";
-import { DownloadReportButton } from "@/components/dashboard/download-report-button";
 
 /**
- * Intent: Document DashboardPage
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * The main dashboard page component.
  * Displays an overview of metrics, service health, and request volume.
  * @returns The dashboard page.
@@ -74,7 +60,7 @@ export default function DashboardPage() {
           <div className="flex items-center space-x-2">
             <ServiceFilter />
             <TimeRangeFilter />
-            <DownloadReportButton />
+            <Button>Download Report</Button>
           </div>
         </div>
         <div className="space-y-4">

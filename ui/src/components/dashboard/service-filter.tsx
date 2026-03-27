@@ -18,20 +18,6 @@ import { apiClient } from "@/lib/client";
 import { Filter } from "lucide-react";
 
 /**
- * Intent: Document ServiceFilter
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * A dropdown component to filter dashboard views by a specific service.
  * Updates the global dashboard context when a service is selected.
  *

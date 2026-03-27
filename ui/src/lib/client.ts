@@ -9,7 +9,7 @@
  */
 
 import { GrpcWebImpl, RegistrationServiceClientImpl } from '@proto/api/v1/registration';
-import { UpstreamServiceConfig as BaseUpstreamServiceConfig, HttpUpstreamService, CommandLineUpstreamService, ServiceProvenance } from '@proto/config/v1/upstream_service';
+import { UpstreamServiceConfig as BaseUpstreamServiceConfig, HttpUpstreamService, ServiceProvenance } from '@proto/config/v1/upstream_service';
 import { ProfileDefinition } from '@proto/config/v1/config';
 import { ToolDefinition } from '@proto/config/v1/tool';
 import { ResourceDefinition } from '@proto/config/v1/resource';
@@ -19,23 +19,9 @@ import { Credential, Authentication } from '@proto/config/v1/auth';
 import { BrowserHeaders } from 'browser-headers';
 
 /**
- * Intent: Document UpstreamServiceConfig
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Extended UpstreamServiceConfig to include runtime error information.
  */
-export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, 'lastError' | 'toolCount' | 'commandLineService'> {
+export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, 'lastError' | 'toolCount'> {
     /**
      * The last error message encountered by the service, if any.
      */
@@ -52,32 +38,13 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
      * Optional template ID if this config was loaded from a template.
      */
     templateId?: string;
-
-    /**
-     * Overridden to properly support the latest CommandLineUpstreamService structure with args array
-     */
-    commandLineService?: CommandLineUpstreamService | any | undefined;
 }
 
 // Re-export generated types
-export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition, ServiceProvenance, CommandLineUpstreamService };
-export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '@proto/api/v1/registration';
+export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition, ServiceProvenance };
+export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '../../../proto/api/v1/registration';
 
 /**
- * Intent: Document ServiceTemplate
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ServiceTemplate defines a template for an upstream service.
  */
 export interface ServiceTemplate {
@@ -159,27 +126,6 @@ const rpc = new GrpcWebImpl(getBaseUrl(), {
 });
 const registrationClient = new RegistrationServiceClientImpl(rpc);
 
-/**
- * Intent: Document fetchWithAuth
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Fetches data with authentication headers attached.
- *
- * @param input The request info or URL.
- * @param init The request initialization options.
- * @returns The response from the fetch request.
- */
 export const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
     const headers = new Headers(init?.headers);
     // Inject Authorization header from localStorage if available
@@ -214,20 +160,6 @@ const dedupeRequests = <T>(key: string, fn: () => Promise<T>): Promise<T> => {
 };
 
 /**
- * Intent: Document SecretDefinition
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Definition of a secret stored in the system.
  */
 export interface SecretDefinition {
@@ -248,20 +180,6 @@ export interface SecretDefinition {
 }
 
 /**
- * Intent: Document ResourceContent
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Content of a resource.
  */
 export interface ResourceContent {
@@ -276,20 +194,6 @@ export interface ResourceContent {
 }
 
 /**
- * Intent: Document ReadResourceResponse
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Response for reading a resource.
  */
 export interface ReadResourceResponse {
@@ -306,20 +210,6 @@ interface RawValidateServiceResponse {
 }
 
 /**
- * Intent: Document CheckResult
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Result of a single system health check.
  */
 export interface CheckResult {
@@ -334,20 +224,6 @@ export interface CheckResult {
 }
 
 /**
- * Intent: Document DoctorReport
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Full doctor report containing system health status.
  */
 export interface DoctorReport {
@@ -360,20 +236,6 @@ export interface DoctorReport {
 }
 
 /**
- * Intent: Document ToolFailureStats
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Tool failure statistics.
  */
 export interface ToolFailureStats {
@@ -384,20 +246,6 @@ export interface ToolFailureStats {
 }
 
 /**
- * Intent: Document ToolAnalytics
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Tool usage analytics.
  */
 export interface ToolAnalytics {
@@ -409,20 +257,6 @@ export interface ToolAnalytics {
 
 
 /**
- * Intent: Document Metric
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Metric definition for dashboard.
  */
 export interface Metric {
@@ -436,20 +270,6 @@ export interface Metric {
 
 
 /**
- * Intent: Document SystemStatus
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Represents the current status and health of the system.
  */
 export interface SystemStatus {
@@ -468,39 +288,11 @@ export interface SystemStatus {
 }
 
 /**
- * Intent: Document ServiceStatus
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ServiceStatus represents the possible health states of a service.
  */
 export type ServiceStatus = "healthy" | "degraded" | "unhealthy" | "inactive" | "unknown";
 
 /**
- * Intent: Document ServiceHealth
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ServiceHealth describes the current health information of a service.
  */
 export interface ServiceHealth {
@@ -519,20 +311,6 @@ export interface ServiceHealth {
 }
 
 /**
- * Intent: Document HealthHistoryPoint
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * HealthHistoryPoint represents a single data point in the health history of a service.
  */
 export interface HealthHistoryPoint {
@@ -543,20 +321,6 @@ export interface HealthHistoryPoint {
 }
 
 /**
- * Intent: Document ServiceHealthResponse
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ServiceHealthResponse represents the response for the health dashboard.
  */
 export interface ServiceHealthResponse {
@@ -582,20 +346,6 @@ const getMetadata = () => {
 };
 
 /**
- * Intent: Document apiClient
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * API Client for interacting with the MCP Any server.
  */
 export const apiClient = {
@@ -813,7 +563,6 @@ export const apiClient = {
         if (config.commandLineService) {
             payload.command_line_service = {
                 command: config.commandLineService.command,
-                args: config.commandLineService.args || [],
                 working_directory: config.commandLineService.workingDirectory,
                 environment: config.commandLineService.env,
                 env: config.commandLineService.env
@@ -925,7 +674,6 @@ export const apiClient = {
         if (config.commandLineService) {
             payload.command_line_service = {
                 command: config.commandLineService.command,
-                args: config.commandLineService.args || [],
                 working_directory: config.commandLineService.workingDirectory,
             };
         }
@@ -1054,7 +802,6 @@ export const apiClient = {
         if (config.commandLineService) {
             payload.command_line_service = {
                 command: config.commandLineService.command,
-                args: config.commandLineService.args || [],
                 working_directory: config.commandLineService.workingDirectory,
                 env: config.commandLineService.env,
                 container_environment: config.commandLineService.containerEnvironment, // Include this if needed
@@ -2077,29 +1824,10 @@ export const apiClient = {
      *
      * Side Effects: Makes a GET request to /api/v1/alerts/stats.
      */
-    getAlertStats: async (): Promise<{ activeCritical: number, activeWarning: number, mttr: string, totalToday: number, activeCriticalTrend?: string, activeWarningTrend?: string, mttrTrend?: string, totalTodayTrend?: string }> => {
+    getAlertStats: async (): Promise<{ activeCritical: number, activeWarning: number, mttr: string, totalToday: number }> => {
         const res = await fetchWithAuth('/api/v1/alerts/stats');
         if (!res.ok) throw new Error('Failed to fetch alert stats');
         return res.json();
-    },
-
-    /**
-     * Deletes an alert.
-     *
-     * Summary: Deletes an alert.
-     *
-     * @param id - The ID of the alert to delete.
-     * @returns A promise that resolves when the alert is deleted.
-     * @throws {Error} If deletion fails.
-     *
-     * Side Effects: Makes a DELETE request to /api/v1/alerts/:id.
-     */
-    deleteAlert: async (id: string) => {
-        const res = await fetchWithAuth(`/api/v1/alerts/${id}`, {
-            method: 'DELETE'
-        });
-        if (!res.ok) throw new Error('Failed to delete alert');
-        return {};
     },
 
     /**

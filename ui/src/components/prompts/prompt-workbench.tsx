@@ -34,27 +34,12 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Switch } from "@/components/ui/switch";
 import { PromptEditor } from "./prompt-editor";
-import { RichResultViewer } from "@/components/tools/rich-result-viewer";
 
 interface PromptWorkbenchProps {
   initialPrompts?: PromptDefinition[];
 }
 
 /**
- * Intent: Document PromptWorkbench
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * PromptWorkbench is a component that provides an interface for creating, editing, and testing prompts.
  * It allows users to manage prompt templates and test them with different inputs.
  *
@@ -434,11 +419,22 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
                             <Card className="flex-1 flex flex-col overflow-hidden bg-muted/30 border-dashed">
                                 <CardContent className="flex-1 p-0 overflow-auto">
                                     {executionResult ? (
-                                        <div className="p-4 space-y-4 h-full flex flex-col">
-                                            <div className="flex-1 overflow-auto">
-                                                <RichResultViewer result={executionResult.messages || executionResult} />
-                                            </div>
-                                            <div className="pt-4 flex justify-end shrink-0 border-t mt-4">
+                                        <div className="p-4 space-y-4">
+                                            {(executionResult?.messages || []).map((msg: any, idx: number) => (
+                                                <div key={idx} className="space-y-1">
+                                                     <div className="text-[10px] font-mono uppercase text-muted-foreground flex items-center gap-2">
+                                                        <span className={cn(
+                                                            "w-2 h-2 rounded-full",
+                                                            msg.role === "user" ? "bg-blue-500" : "bg-green-500"
+                                                        )} />
+                                                        {msg.role}
+                                                     </div>
+                                                     <div className="bg-background border rounded-md p-3 text-sm whitespace-pre-wrap font-mono">
+                                                        {msg.content?.type === 'text' ? msg.content.text : typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)}
+                                                     </div>
+                                                </div>
+                                            ))}
+                                            <div className="pt-4 flex justify-end">
                                                 <Button size="sm" variant="outline" onClick={openInPlayground}>
                                                     Open in Playground <ExternalLink className="ml-2 h-3 w-3" />
                                                 </Button>

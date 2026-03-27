@@ -21,20 +21,6 @@ interface ToolFailureRate {
 }
 
 /**
- * Intent: Document ToolFailureRateWidget
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ToolFailureRateWidget component.
  * Displays tools with the highest error rates.
  * @returns The rendered component.

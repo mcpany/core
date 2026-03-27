@@ -29,20 +29,6 @@ interface HttpToolManagerProps {
 }
 
 /**
- * Intent: Document HttpToolManager
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Manager component for HTTP tools within a service.
  * Displays a list of tools and allows adding, editing, and deleting them.
  * @param props - The component props.

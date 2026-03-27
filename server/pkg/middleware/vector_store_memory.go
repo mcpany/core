@@ -247,9 +247,6 @@ func dotProduct(a, b []float32) float32 {
 		return 0
 	}
 
-	// Tell the compiler to skip bounds checks for the loop
-	_ = b[len(a)-1]
-
 	var sum float32
 	// ⚡ BOLT: Simple dot product loop without bounds checking in loop if possible
 	// Go compiler does eliminate bounds checks for `range`.

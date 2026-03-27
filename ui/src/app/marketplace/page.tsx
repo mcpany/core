@@ -28,20 +28,6 @@ import { Badge } from "@/components/ui/badge";
 import { SERVICE_REGISTRY } from "@/lib/service-registry";
 
 /**
- * Intent: Document MarketplacePage
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * MarketplacePage component.
  * @returns The rendered component.
  */

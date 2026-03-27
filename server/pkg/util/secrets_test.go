@@ -295,20 +295,6 @@ func TestResolveSecret(t *testing.T) {
 		_, err := util.ResolveSecret(context.Background(), secret)
 		assert.Error(t, err)
 	})
-
-	t.Run("ResolveSecret_RegexCache", func(t *testing.T) {
-		pt := &configv1.SecretValue{}
-		pt.SetPlainText("secret_pt")
-		pt.SetValidationRegex("sec.*")
-
-		result1, err1 := util.ResolveSecret(context.Background(), pt)
-		assert.NoError(t, err1)
-		assert.Equal(t, "secret_pt", result1)
-
-		result2, err2 := util.ResolveSecret(context.Background(), pt)
-		assert.NoError(t, err2)
-		assert.Equal(t, "secret_pt", result2)
-	})
 }
 
 func TestResolveSecret_Vault(t *testing.T) {

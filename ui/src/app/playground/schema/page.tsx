@@ -14,20 +14,6 @@ import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { apiClient } from "@/lib/client";
 
 /**
- * Intent: Document SchemaPlaygroundPage
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * SchemaPlaygroundPage provides an interactive environment for users to test and validate
  * configuration snippets against the MCP Any schema.
  * @returns The Schema Playground page component.

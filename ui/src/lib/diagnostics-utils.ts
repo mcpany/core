@@ -1,18 +1,4 @@
 /**
- * Intent: Document DiagnosticResult
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Copyright 2025 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -26,20 +12,6 @@ export interface DiagnosticResult {
 }
 
 /**
- * Intent: Document analyzeConnectionError
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Analyzes a raw connection error string and categorizes it into a user-friendly diagnostic result.
  *
  * @param error - The raw error string received from the backend or network.

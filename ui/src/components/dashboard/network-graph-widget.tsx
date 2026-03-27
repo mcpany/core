@@ -10,20 +10,6 @@ import { ReactFlowProvider } from "@xyflow/react";
 import { NetworkGraphFlow } from "@/components/network/network-graph-client";
 
 /**
- * Intent: Document NetworkGraphWidget
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * NetworkGraphWidget component for the dashboard.
  * Renders a simplified network topology graph.
  * @returns The rendered component.

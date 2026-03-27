@@ -6,20 +6,6 @@
 import { useState, useEffect, useCallback } from "react";
 
 /**
- * Intent: Document useLocalStorage
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * A hook that manages state synchronized with localStorage.
  *
  * @template T - The type of the value to store.

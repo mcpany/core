@@ -29,10 +29,10 @@ MCP Any needs to provide a secure, hardware-attested coordination bus that ensur
 
 ## 4. Design & Architecture
 *   **System Flow:**
-    `Agent A -> [MIS Middleware: Signature Check] -> [MIS Middleware: Manifest Validation] -> Teammate Mailbox -> Agent B`
+    Agent A -> [MIS Middleware: Signature Check] -> [MIS Middleware: Manifest Validation] -> Teammate Mailbox -> Agent B
 *   **APIs / Interfaces:**
-    *   `POST /mailbox/sign`: Endpoint for agents to request a hardware-attested signature for a message fragment.
-    *   `POST /mailbox/verify`: Internal verification hook for incoming coordination messages.
+    *   POST /mailbox/sign: Endpoint for agents to request a hardware-attested signature for a message fragment.
+    *   POST /mailbox/verify: Internal verification hook for incoming coordination messages.
 *   **Data Storage/State:**
     *   State is managed in an in-memory "Authenticated Message Ledger," which is periodically flushed to the hardware-attested ARI Hub.
 

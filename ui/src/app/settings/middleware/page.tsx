@@ -17,20 +17,6 @@ interface Middleware {
 }
 
 /**
- * Intent: Document MiddlewarePage
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * MiddlewarePage component.
  * @returns The rendered component.
  */

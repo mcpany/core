@@ -11,20 +11,6 @@ import { cn } from "@/lib/utils"
 const THEMES = { light: "", dark: ".dark" } as const
 
 /**
- * Intent: Document ChartConfig
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ChartConfig type definition.
  */
 export type ChartConfig = {

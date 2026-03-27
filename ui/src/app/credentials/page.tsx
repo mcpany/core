@@ -7,20 +7,6 @@ import { CredentialList } from "@/components/credentials/credential-list"
 import { Separator } from "@/components/ui/separator"
 
 /**
- * Intent: Document CredentialsPage
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * CredentialsPage component.
  * @returns The rendered component.
  */

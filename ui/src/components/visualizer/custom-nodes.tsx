@@ -20,20 +20,6 @@ const NodeWrapper = ({ children, className, selected }: { children: React.ReactN
 );
 
 /**
- * Intent: Document UserNode
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * UserNode represents a user in the flow.
  */
 export const UserNode = memo(({ data, selected }: any) => {
@@ -55,20 +41,6 @@ export const UserNode = memo(({ data, selected }: any) => {
 UserNode.displayName = 'UserNode';
 
 /**
- * Intent: Document AgentNode
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * AgentNode represents an agent in the flow.
  */
 export const AgentNode = memo(({ data, selected }: any) => {
@@ -96,20 +68,6 @@ export const AgentNode = memo(({ data, selected }: any) => {
 AgentNode.displayName = 'AgentNode';
 
 /**
- * Intent: Document ToolNode
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ToolNode represents a tool in the flow.
  */
 export const ToolNode = memo(({ data, selected }: any) => {
@@ -131,20 +89,6 @@ export const ToolNode = memo(({ data, selected }: any) => {
 ToolNode.displayName = 'ToolNode';
 
 /**
- * Intent: Document ResourceNode
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ResourceNode represents a resource in the flow.
  */
 export const ResourceNode = memo(({ data, selected }: any) => {
@@ -167,20 +111,6 @@ export const ResourceNode = memo(({ data, selected }: any) => {
 ResourceNode.displayName = 'ResourceNode';
 
 /**
- * Intent: Document ServiceNode
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ServiceNode represents a service in the flow.
  */
 export const ServiceNode = memo(({ data, selected }: any) => {

@@ -8,20 +8,6 @@ import { BaseEdge, EdgeLabelRenderer, EdgeProps, getSmoothStepPath } from '@xyfl
 import { cn } from '@/lib/utils';
 
 /**
- * Intent: Document TrafficEdge
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * TrafficEdge is a custom edge component that visualizes traffic flow.
  * It renders particles moving along the path if QPS > 0.
  */

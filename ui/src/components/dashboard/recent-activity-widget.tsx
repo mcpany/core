@@ -14,7 +14,6 @@ import { CheckCircle2, XCircle, Clock, ArrowRight, Activity, Loader2, ChevronDow
 import { apiClient } from "@/lib/client";
 import { cn } from "@/lib/utils";
 import { usePolling } from "@/hooks/use-polling";
-import { RichResultViewer } from "@/components/tools/rich-result-viewer";
 
 const formatTime = (timestamp: string) => {
   const date = new Date(timestamp);
@@ -35,33 +34,19 @@ const getDurationColor = (ms: number) => {
   return "text-muted-foreground";
 };
 
-function safeParsePayload(payload: any) {
+function formatJsonPayload(payload: any) {
     if (!payload) return null;
     try {
         if (typeof payload === 'string') {
-            return JSON.parse(payload);
+            return JSON.stringify(JSON.parse(payload), null, 2);
         }
-        return payload;
+        return JSON.stringify(payload, null, 2);
     } catch {
-        return { value: String(payload) };
+        return String(payload);
     }
 }
 
 /**
- * Intent: Document RecentActivityWidget
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * RecentActivityWidget component.
  * Displays the most recent tool executions.
  * @returns The rendered component.
@@ -219,8 +204,10 @@ export function RecentActivityWidget() {
                                                     <div className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
                                                         <Code2 className="h-3 w-3" /> Request
                                                     </div>
-                                                    <div className="bg-muted/50 rounded-md border border-border/50 overflow-hidden">
-                                                        <RichResultViewer result={safeParsePayload(trace.rootSpan.attributes['mcp.request_payload'])} />
+                                                    <div className="bg-muted/50 rounded-md p-2 border border-border/50 overflow-x-auto">
+                                                        <pre className="text-[11px] font-mono text-foreground/80 whitespace-pre-wrap break-all">
+                                                            {formatJsonPayload(trace.rootSpan.attributes['mcp.request_payload'])}
+                                                        </pre>
                                                     </div>
                                                 </div>
                                             )}
@@ -245,8 +232,10 @@ export function RecentActivityWidget() {
                                                     <div className="text-xs font-medium text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                                                         <CheckCircle2 className="h-3 w-3" /> Response
                                                     </div>
-                                                    <div className="bg-emerald-500/5 rounded-md border border-emerald-500/20 overflow-hidden">
-                                                        <RichResultViewer result={safeParsePayload(trace.rootSpan.attributes['mcp.response_payload'])} />
+                                                    <div className="bg-emerald-500/5 rounded-md p-2 border border-emerald-500/20 overflow-x-auto">
+                                                        <pre className="text-[11px] font-mono text-emerald-700 dark:text-emerald-300 whitespace-pre-wrap break-all">
+                                                            {formatJsonPayload(trace.rootSpan.attributes['mcp.response_payload'])}
+                                                        </pre>
                                                     </div>
                                                 </div>
                                             )}

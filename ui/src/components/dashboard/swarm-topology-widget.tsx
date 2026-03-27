@@ -7,16 +7,15 @@ import React, { useState, useEffect, useRef } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Loader2, Zap, Shield, ShieldAlert, Cpu } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { apiClient } from "@/lib/client";
 
-// Internal Types for the Swarm Topology Visualizer
+// Types for the Swarm Topology Mock Data
 interface SwarmNode {
     id: string;
     label: string;
-    type: 'core' | 'client' | 'service' | 'tool' | 'api' | 'middleware' | 'webhook';
-    status: 'active' | 'inactive' | 'error';
-    x: number;
-    y: number;
+    type: 'agent' | 'service' | 'validator';
+    status: 'idle' | 'active' | 'stall' | 'locked';
+    x?: number;
+    y?: number;
 }
 
 interface SwarmEdge {
@@ -32,124 +31,46 @@ interface SwarmTopologyData {
     anomalies: string[];
 }
 
-// Function to convert backend Topology Graph to visual layout
-function layoutGraph(graph: any): SwarmTopologyData {
-    const nodes: SwarmNode[] = [];
-    const edges: SwarmEdge[] = [];
-    const anomalies: string[] = [];
-
-    // If no graph, return empty
-    if (!graph || !graph.core) return { nodes, edges, anomalies };
-
-    // Add Core Node at the center
-    nodes.push({
-        id: graph.core.id || 'core',
-        label: graph.core.label || 'MCP Any',
-        type: 'core',
-        status: graph.core.status === 'NODE_STATUS_ERROR' ? 'error' : 'active',
-        x: 50,
-        y: 50
-    });
-
-    // Distribute services around the core
-    const children = graph.core.children || [];
-    const numServices = children.length;
-
-    children.forEach((child: any, i: number) => {
-        const angle = (i / numServices) * 2 * Math.PI;
-        const radius = 30; // % distance from center
-        const cx = 50 + radius * Math.cos(angle);
-        const cy = 50 + radius * Math.sin(angle);
-
-        nodes.push({
-            id: child.id,
-            label: child.label,
-            type: child.type?.toLowerCase().replace('node_type_', '') || 'service',
-            status: child.status === 'NODE_STATUS_ERROR' ? 'error' : (child.status === 'NODE_STATUS_INACTIVE' ? 'inactive' : 'active'),
-            x: cx,
-            y: cy
-        });
-
-        // Add edge from core to service
-        edges.push({
-            source: graph.core.id || 'core',
-            target: child.id,
-            status: child.status === 'NODE_STATUS_ERROR' ? 'blocked' : 'healthy',
-            hash: `edge-${graph.core.id}-${child.id}`
-        });
-
-        if (child.status === 'NODE_STATUS_ERROR') {
-            anomalies.push(`Anomaly detected in ${child.label}`);
-        }
-    });
-
-    // Add clients
-    const clients = graph.clients || [];
-    clients.forEach((client: any, i: number) => {
-        nodes.push({
-            id: client.id,
-            label: client.label,
-            type: 'client',
-            status: client.status === 'NODE_STATUS_ERROR' ? 'error' : 'active',
-            x: 10,
-            y: 20 + (i * 15) // Stack clients on the left
-        });
-        edges.push({
-            source: client.id,
-            target: graph.core.id || 'core',
-            status: client.status === 'NODE_STATUS_ERROR' ? 'blocked' : 'healthy',
-            hash: `edge-${client.id}-core`
-        });
-    });
-
-    return { nodes, edges, anomalies };
-}
-
-/**
- * Intent: Document SwarmTopologyWidget
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * SwarmTopologyWidget component displays a visual representation of the swarm network of agents.
- *
- * @returns The rendered component.
- */
 export function SwarmTopologyWidget() {
     const [data, setData] = useState<SwarmTopologyData | null>(null);
     const [loading, setLoading] = useState(true);
     const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const fetchTopologyData = async () => {
-            try {
-                const response = await fetch('/api/v1/topology');
-                if (response.ok) {
-                    const result = await response.json();
-                    setData(layoutGraph(result));
-                }
-            } catch (error) {
-                console.error("Failed to fetch swarm topology data:", error);
-            } finally {
-                setLoading(false);
-            }
+        // Mock data generator since we don't have the backend endpoint hooked up in this isolated UI component yet
+        // In a real scenario, this would fetch from /api/v1/mock/swarm-topology
+        const generateMockData = (): SwarmTopologyData => {
+            const nodes: SwarmNode[] = [
+                { id: 'n1', label: 'Primary Orchestrator', type: 'validator', status: 'locked', x: 50, y: 50 },
+                { id: 'n2', label: 'Research Agent', type: 'agent', status: 'active', x: 20, y: 30 },
+                { id: 'n3', label: 'Tool Exec', type: 'service', status: 'idle', x: 20, y: 70 },
+                { id: 'n4', label: 'Synthesizer', type: 'agent', status: 'active', x: 80, y: 50 },
+                { id: 'n5', label: 'Rogue Node', type: 'agent', status: 'stall', x: 80, y: 20 },
+            ];
+
+            const edges: SwarmEdge[] = [
+                { source: 'n2', target: 'n1', status: 'healthy', hash: '0x1A4' },
+                { source: 'n1', target: 'n3', status: 'healthy', hash: '0x2B9' },
+                { source: 'n1', target: 'n4', status: 'healthy', hash: '0x3C1' },
+                { source: 'n5', target: 'n1', status: 'blocked', hash: 'INVALID_GRAFT' },
+            ];
+
+            return {
+                nodes,
+                edges,
+                anomalies: ['ARI Hub: Logic Graft Blocked from Rogue Node (n5)']
+            };
         };
 
         const interval = setInterval(() => {
-            fetchTopologyData();
+            // Simulate dynamic updates
+            setData(generateMockData());
+            setLoading(false);
         }, 3000);
 
         // Initial load
-        fetchTopologyData();
+        setData(generateMockData());
+        setLoading(false);
 
         return () => clearInterval(interval);
     }, []);
@@ -239,15 +160,15 @@ export function SwarmTopologyWidget() {
                 {/* Nodes Layer (HTML for easier interaction/styling) */}
                 <div className="absolute inset-0">
                     {data.nodes.map((node) => {
-                        const Icon = node.type === 'core' ? Shield : node.type === 'client' ? Cpu : Zap;
-                        const isBlocked = node.status === 'error';
+                        const Icon = node.type === 'validator' ? Shield : node.type === 'agent' ? Cpu : Zap;
+                        const isBlocked = node.status === 'stall';
 
                         return (
                             <div
                                 key={node.id}
                                 className={cn(
                                     "absolute w-12 h-12 -ml-6 -mt-6 rounded-2xl flex items-center justify-center backdrop-blur-md border cursor-pointer transition-all duration-300 hover:scale-110",
-                                    node.type === 'core' ? "bg-cyan-950/80 border-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.5)]" :
+                                    node.status === 'locked' ? "bg-cyan-950/80 border-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.5)]" :
                                     isBlocked ? "bg-red-950/80 border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.5)] animate-pulse" :
                                     "bg-slate-900/80 border-slate-700 hover:border-slate-500"
                                 )}
@@ -255,13 +176,13 @@ export function SwarmTopologyWidget() {
                                 title={`${node.label} (${node.status})`}
                             >
                                 <Icon className={cn("w-5 h-5",
-                                    node.type === 'core' ? "text-cyan-400" :
+                                    node.status === 'locked' ? "text-cyan-400" :
                                     isBlocked ? "text-red-400" :
                                     "text-slate-400"
                                 )} />
 
                                 {/* Inner spin indicator for active nodes */}
-                                {node.status === 'active' && node.type !== 'core' && (
+                                {node.status === 'active' && (
                                     <div className="absolute inset-0 border border-emerald-500/50 rounded-2xl animate-[spin_4s_linear_infinite] [border-top-color:transparent]" />
                                 )}
                             </div>

@@ -49,39 +49,11 @@ const DiffEditor = (props: any) => (
 );
 
 /**
- * Intent: Document MessageType
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * MessageType type definition.
  */
 export type MessageType = "user" | "assistant" | "tool-call" | "tool-result" | "error";
 
 /**
- * Intent: Document Message
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Message type definition.
  */
 export interface Message {
@@ -125,20 +97,6 @@ function analyzeError(error: string): string | null {
 }
 
 /**
- * Intent: Document ChatMessage
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ChatMessage.
  *
  * @param { message - The { message.
@@ -146,8 +104,7 @@ function analyzeError(error: string): string | null {
 export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
     const [copied, setCopied] = useState(false);
     const [showDiff, setShowDiff] = useState(false);
-    const { theme, resolvedTheme } = useTheme();
-    const isDark = theme === "dark" || resolvedTheme === "dark";
+    const { theme } = useTheme();
 
     const copyToClipboard = (text: string) => {
         navigator.clipboard.writeText(text);
@@ -312,10 +269,12 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
                             original={JSON.stringify(prevUnwrapped, null, 2)}
                             modified={JSON.stringify(currUnwrapped, null, 2)}
                             language="json"
-                            theme={isDark ? "dracula" : "light"}
+                            theme={theme === "dark" ? "dracula" : "light"}
                             onMount={(_editor: any, monaco: any) => {
-                                defineDraculaTheme(monaco);
-                                monaco.editor.setTheme(isDark ? "dracula" : "light");
+                                if (theme === "dark") {
+                                    defineDraculaTheme(monaco);
+                                    monaco.editor.setTheme("dracula");
+                                }
                             }}
                             options={{
                                 readOnly: true,

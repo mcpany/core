@@ -17,20 +17,6 @@ interface HealthPoint {
 }
 
 /**
- * Intent: Document HealthHistoryChart
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * HealthHistoryChart component.
  * Displays server uptime history over the last 24 hours.
  * @returns The rendered component.

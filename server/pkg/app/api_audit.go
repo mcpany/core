@@ -15,21 +15,6 @@ import (
 )
 
 // handleAuditLogs handles requests to list audit logs.
-//
-// Summary: Lists audit logs.
-//
-// Parameters:
-//   - w (http.ResponseWriter): The response writer.
-//   - r (*http.Request): The HTTP request.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - Writes HTTP errors on failure.
-//
-// Side Effects:
-//   - None.
 func (a *Application) handleAuditLogs(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -92,22 +77,6 @@ func (a *Application) handleAuditLogs(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// handleAuditExport exports audit logs as CSV.
-//
-// Summary: Exports audit logs.
-//
-// Parameters:
-//   - w (http.ResponseWriter): The response writer.
-//   - r (*http.Request): The HTTP request.
-//
-// Returns:
-//   - None.
-//
-// Errors:
-//   - Writes HTTP errors on failure.
-//
-// Side Effects:
-//   - Writes CSV to response.
 func (a *Application) handleAuditExport(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)

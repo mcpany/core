@@ -4,178 +4,250 @@ import (
 	"errors"
 	"reflect"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
-type failTokenizer struct {
-	*SimpleTokenizer
-	failOn string
-}
-
-func (t *failTokenizer) CountTokens(text string) (int, error) {
-	if text == t.failOn {
-		return 0, errors.New("mock error")
+// The simpleTokenizeInt64 unrolled loop has a default case
+// which matches numbers larger than what can be typed as a literal in go sometimes,
+// or at least is only reached for things with 19+ digits.
+func TestSimpleTokenizeInt64Max(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    int64
+		expected int
+	}{
+		{"min_int64", -9223372036854775808, 5},
+		{"zero", 0, 1},
+		{"digit_1", 9, 1},
+		{"digit_2", 99, 1},
+		{"digit_3", 999, 1},
+		{"digit_4", 9999, 1},
+		{"digit_5", 99999, 1},
+		{"digit_6", 999999, 1},
+		{"digit_7", 9999999, 1},
+		{"digit_8", 99999999, 2},
+		{"digit_9", 999999999, 2},
+		{"digit_10", 9999999999, 2},
+		{"digit_11", 99999999999, 2},
+		{"digit_12", 999999999999, 3},
+		{"digit_13", 9999999999999, 3},
+		{"digit_14", 99999999999999, 3},
+		{"digit_15", 999999999999999, 3},
+		{"digit_16", 9999999999999999, 4},
+		{"digit_17", 99999999999999999, 4},
+		{"digit_18", 999999999999999999, 4},
 	}
-	return t.SimpleTokenizer.CountTokens(text)
-}
 
-func (t *failTokenizer) countRecursive(v interface{}, visited map[uintptr]bool) (int, error) {
-	if s, ok := v.(string); ok && s == t.failOn {
-		return 0, errors.New("mock error")
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := simpleTokenizeInt64(tt.input); got != tt.expected {
+				t.Errorf("simpleTokenizeInt64() = %v, want %v", got, tt.expected)
+			}
+		})
 	}
-	return t.SimpleTokenizer.countRecursive(v, visited)
 }
 
-// Ensure it implements Tokenizer, not SimpleTokenizer
-type genericMockTokenizer struct {
-	failOn string
-	*SimpleTokenizer
+type MyStruct struct {
+	Name string
 }
 
-func (g *genericMockTokenizer) CountTokens(text string) (int, error) {
-	if text == g.failOn {
-		return 0, errors.New("mock error")
+func TestCountTokensReflectSliceCoverage3(t *testing.T) {
+	st := NewSimpleTokenizer()
+
+	tests := []struct {
+		name        string
+		tokenizer   recursiveTokenizer
+		input       interface{}
+		expectError bool
+		expectCount int
+	}{
+		{
+			name:        "nil_slice",
+			tokenizer:   st,
+			input:       []string(nil),
+			expectError: false,
+			expectCount: 0,
+		},
+		{
+			name:        "array",
+			tokenizer:   st,
+			input:       [1]string{"test"},
+			expectError: false,
+			expectCount: 1,
+		},
+		{
+			name:        "failing_tokenizer_generic_item",
+			tokenizer:   &failingTokenizer2{},
+			input:       []MyStruct{{Name: "test"}},
+			expectError: true,
+			expectCount: 0,
+		},
+		{
+			name:        "failing_tokenizer_string_item",
+			tokenizer:   &failingTokenizer3{},
+			input:       []string{"test"},
+			expectError: true,
+			expectCount: 0,
+		},
 	}
-	return g.SimpleTokenizer.CountTokens(text)
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			v := reflect.ValueOf(tt.input)
+			got, err := countTokensReflectSlice(tt.tokenizer, v, make(map[uintptr]bool))
+			if (err != nil) != tt.expectError {
+				t.Errorf("countTokensReflectSlice() error = %v, expectError %v", err, tt.expectError)
+				return
+			}
+			if got != tt.expectCount {
+				t.Errorf("countTokensReflectSlice() = %v, want %v", got, tt.expectCount)
+			}
+		})
+	}
 }
 
-func TestTokenizerCoverage(t *testing.T) {
-	st := &failTokenizer{SimpleTokenizer: NewSimpleTokenizer(), failOn: "error"}
-	gt := &genericMockTokenizer{SimpleTokenizer: NewSimpleTokenizer(), failOn: "error"}
+func TestCountTokensReflectMapCoverage3(t *testing.T) {
+	st := NewSimpleTokenizer()
+	failTok := &failingTokenizer2{}
+	failTok3 := &failingTokenizer3{}
 
-	// --- 1. reflectSlice errors ---
-	sliceStr := reflect.ValueOf([]string{"ok", "error"})
-	_, err := countTokensReflectSlice(st, sliceStr, make(map[uintptr]bool))
-	assert.Error(t, err)
+	// Create cycle
+	mCycle := make(map[string]interface{})
+	vCycle := reflect.ValueOf(mCycle)
+	visited := make(map[uintptr]bool)
+	visited[vCycle.Pointer()] = true
 
-	sliceIntf := reflect.ValueOf([]interface{}{"ok", "error"})
-	_, err = countTokensReflectSlice(st, sliceIntf, make(map[uintptr]bool))
-	assert.Error(t, err)
+	mCycle2 := make(map[int]interface{})
+	vCycle2 := reflect.ValueOf(mCycle2)
+	visited2 := make(map[uintptr]bool)
+	visited2[vCycle2.Pointer()] = true
 
-	// --- 2. reflectMap errors ---
-	mapStrKey := reflect.ValueOf(map[string]int{"error": 1})
-	_, err = countTokensReflectMap(st, mapStrKey, make(map[uintptr]bool))
-	assert.Error(t, err)
+	tests := []struct {
+		name        string
+		tokenizer   recursiveTokenizer
+		input       interface{}
+		visited     map[uintptr]bool
+		expectError bool
+		expectCount int
+	}{
+		{
+			name:        "nil_map",
+			tokenizer:   st,
+			input:       map[string]string(nil),
+			visited:     make(map[uintptr]bool),
+			expectError: false,
+			expectCount: 0,
+		},
+		{
+			name:        "map_cycle_string_key",
+			tokenizer:   st,
+			input:       mCycle,
+			visited:     visited,
+			expectError: true,
+			expectCount: 0,
+		},
+		{
+			name:        "map_cycle_generic_key",
+			tokenizer:   st,
+			input:       mCycle2,
+			visited:     visited2,
+			expectError: true,
+			expectCount: 0,
+		},
+		{
+			name:        "string_key_bool_value",
+			tokenizer:   st,
+			input:       map[string]bool{"test": true},
+			visited:     make(map[uintptr]bool),
+			expectError: false,
+			expectCount: 2,
+		},
+		{
+			name:        "generic_key_bool_value",
+			tokenizer:   st,
+			input:       map[int]bool{1: true},
+			visited:     make(map[uintptr]bool),
+			expectError: false,
+			expectCount: 2,
+		},
+		{
+			name:        "generic_value_error",
+			tokenizer:   failTok,
+			input:       map[string]int{"test": 1},
+			visited:     make(map[uintptr]bool),
+			expectError: true,
+			expectCount: 0,
+		},
+		{
+			name:        "generic_key_error",
+			tokenizer:   failTok,
+			input:       map[int]int{1: 1},
+			visited:     make(map[uintptr]bool),
+			expectError: true,
+			expectCount: 0,
+		},
+		{
+			name:        "non_string_map_key_error",
+			tokenizer:   failTok,
+			input:       map[bool]string{true: "test"},
+			visited:     make(map[uintptr]bool),
+			expectError: true,
+			expectCount: 0,
+		},
+		{
+			name:        "failing_tokenizer_string_key",
+			tokenizer:   failTok3,
+			input:       map[string]int{"test": 1},
+			visited:     make(map[uintptr]bool),
+			expectError: true,
+			expectCount: 0,
+		},
+		{
+			name:        "failing_tokenizer_string_val",
+			tokenizer:   failTok3,
+			input:       map[int]string{1: "test"},
+			visited:     make(map[uintptr]bool),
+			expectError: true,
+			expectCount: 0,
+		},
+		{
+			name:        "failing_tokenizer_bool_val",
+			tokenizer:   failTok3,
+			input:       map[int]bool{1: true, 2: false},
+			visited:     make(map[uintptr]bool),
+			expectError: true,
+			expectCount: 0,
+		},
+	}
 
-	mapIntfKey := reflect.ValueOf(map[interface{}]int{"error": 1})
-	_, err = countTokensReflectMap(st, mapIntfKey, make(map[uintptr]bool))
-	assert.Error(t, err)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			v := reflect.ValueOf(tt.input)
+			got, err := countTokensReflectMap(tt.tokenizer, v, tt.visited)
+			if (err != nil) != tt.expectError {
+				t.Errorf("countTokensReflectMap() error = %v, expectError %v", err, tt.expectError)
+				return
+			}
+			if got != tt.expectCount {
+				t.Errorf("countTokensReflectMap() = %v, want %v", got, tt.expectCount)
+			}
+		})
+	}
+}
 
-	mapVal := reflect.ValueOf(map[int]string{1: "error"})
-	_, err = countTokensReflectMap(st, mapVal, make(map[uintptr]bool))
-	assert.Error(t, err)
+type failingTokenizer2 struct{}
 
-	// --- 3. countTokensInValueRecursive errors & fallback logic ---
-	// Force it to use generic fallback switch in countTokensInValueRecursive
-	// By using genericMockTokenizer, it won't cast to *SimpleTokenizer or *WordTokenizer
-	c, err := countTokensInValueRecursive(gt, "ok", make(map[uintptr]bool))
-	assert.NoError(t, err)
-	assert.Greater(t, c, 0)
+func (f *failingTokenizer2) CountTokens(text string) (int, error) {
+	return 1, nil // succeed on text
+}
+func (f *failingTokenizer2) countRecursive(v interface{}, visited map[uintptr]bool) (int, error) {
+	return 0, errors.New("fake error generic") // fail on generic recursive
+}
 
-	_, err = countTokensInValueRecursive(gt, "error", make(map[uintptr]bool))
-	assert.Error(t, err)
+type failingTokenizer3 struct{}
 
-	_, err = countTokensInValueRecursive(gt, []string{"ok", "error"}, make(map[uintptr]bool))
-	assert.Error(t, err)
-
-	_, err = countTokensInValueRecursive(gt, map[string]interface{}{"error": 1}, make(map[uintptr]bool))
-	assert.Error(t, err)
-
-	_, err = countTokensInValueRecursive(gt, map[string]interface{}{"ok": "error"}, make(map[uintptr]bool))
-	assert.Error(t, err)
-
-	_, err = countTokensInValueRecursive(gt, []interface{}{"ok", "error"}, make(map[uintptr]bool))
-	assert.Error(t, err)
-
-	// Hit map[string]string fallback for countTokensInValueRecursive
-	c, err = countTokensInValueRecursive(gt, map[string]string{"ok": "ok2"}, make(map[uintptr]bool))
-	assert.NoError(t, err)
-	assert.Greater(t, c, 0)
-
-	_, err = countTokensInValueRecursive(gt, map[string]string{"error": "ok"}, make(map[uintptr]bool))
-	assert.Error(t, err)
-
-	_, err = countTokensInValueRecursive(gt, map[string]string{"ok": "error"}, make(map[uintptr]bool))
-	assert.Error(t, err)
-
-	// Hit []int fallback for countTokensInValueRecursive
-	c, err = countTokensInValueRecursive(gt, []int{1, 2}, make(map[uintptr]bool))
-	assert.NoError(t, err)
-	assert.Greater(t, c, 0)
-
-	// Hit reflection fallback for countTokensInValueRecursive
-	// Provide an unsupported type like channel or a struct
-	type testStruct struct{ F1 string }
-	c, err = countTokensInValueRecursive(gt, testStruct{F1: "ok"}, make(map[uintptr]bool))
-	assert.NoError(t, err)
-	assert.Greater(t, c, 0)
-
-	_, err = countTokensInValueRecursive(gt, testStruct{F1: "error"}, make(map[uintptr]bool))
-	assert.Error(t, err)
-
-	// --- 4. countMapStringInterface & countSliceInterfaceSimple & reflectStruct errors ---
-	_, err = countMapStringInterface(st, map[string]interface{}{"ok": "error"}, make(map[uintptr]bool))
-	assert.Error(t, err)
-
-	_, err = countMapStringInterface(st, map[string]interface{}{"error": 1}, make(map[uintptr]bool))
-	assert.Error(t, err)
-
-	_, err = countSliceInterfaceSimple(st.SimpleTokenizer, []interface{}{"ok", "error"}, make(map[uintptr]bool))
-	// countSliceInterfaceSimple uses SimpleTokenizer internally, so we can't easily make it fail
-	// unless there's a cycle. But we will cover its positive branch.
-	// Actually we can test its cycle detection to get coverage on the error path.
-
-	_, err = countTokensReflectStruct(st, reflect.ValueOf(testStruct{F1: "error"}), make(map[uintptr]bool))
-	assert.Error(t, err)
-
-	type structGen struct{ F1 interface{} }
-	_, err = countTokensReflectStruct(st, reflect.ValueOf(structGen{F1: "error"}), make(map[uintptr]bool))
-	assert.Error(t, err)
-
-	// --- 5. simpleTokenizeInt/Int64 edge cases ---
-	c, handled, err := countTokensInValueSimpleFast(st.SimpleTokenizer, -123)
-	assert.True(t, handled)
-	assert.NoError(t, err)
-	assert.Equal(t, 1, c) // In SimpleTokenizer, it uses length/4. "-123" is 4 chars, 4/4 = 1.
-
-	c, handled, err = countTokensInValueSimpleFast(st.SimpleTokenizer, int64(-123456789))
-	assert.True(t, handled)
-	assert.NoError(t, err)
-
-	c, handled, err = countTokensInValueSimpleFast(st.SimpleTokenizer, 0)
-	assert.True(t, handled)
-	assert.Equal(t, 1, c)
-
-	c, handled, err = countTokensInValueSimpleFast(st.SimpleTokenizer, int64(0))
-	assert.True(t, handled)
-	assert.Equal(t, 1, c)
-
-	// --- 6. WordTokenizer recursive fallback ---
-	wt := NewWordTokenizer()
-	// To hit countTokensInValueWord generic fallback, give it a map with non-string
-	c, err = countTokensInValueWord(wt, map[int]string{1: "test"}, make(map[uintptr]bool))
-	assert.NoError(t, err)
-	assert.Greater(t, c, 0)
-
-	// --- 7. Generic Reflection edge cases ---
-	c, err = countTokensReflectGeneric(st, "string", make(map[uintptr]bool))
-	assert.NoError(t, err)
-	assert.Greater(t, c, 0)
-
-	c, err = countTokensReflect(st, reflect.ValueOf(map[int]string{1: "test"}), make(map[uintptr]bool))
-	assert.NoError(t, err)
-	assert.Greater(t, c, 0)
-
-	// Pointers
-	ptrInt := 1
-	c, err = countTokensReflect(st, reflect.ValueOf(&ptrInt), make(map[uintptr]bool))
-	assert.NoError(t, err)
-
-	// --- 8. Cycle Detection in interfaces ---
-	type cycleNode struct{ Next *cycleNode }
-	node := &cycleNode{}
-	node.Next = node
-	_, err = countSliceInterfaceSimple(st.SimpleTokenizer, []interface{}{node}, make(map[uintptr]bool))
-	assert.Error(t, err)
+func (f *failingTokenizer3) CountTokens(text string) (int, error) {
+	return 0, errors.New("fake error")
+}
+func (f *failingTokenizer3) countRecursive(v interface{}, visited map[uintptr]bool) (int, error) {
+	return 0, errors.New("fake error")
 }

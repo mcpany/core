@@ -21,20 +21,6 @@ interface ProfileStepProps {
 }
 
 /**
- * Intent: Document ProfileStep
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Step for finalizing the profile configuration.
  * @param props Component properties.
  */

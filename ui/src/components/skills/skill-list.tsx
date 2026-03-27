@@ -12,20 +12,6 @@ import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
 /**
- * Intent: Document SkillList
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * SkillList component.
  * @returns The rendered component.
  */

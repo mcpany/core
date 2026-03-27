@@ -16,20 +16,6 @@ interface OAuthStatusBannerProps {
 }
 
 /**
- * Intent: Document OAuthStatusBanner
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * OAuthStatusBanner component.
  * @param props - The component props.
  * @param props.status - The current status.

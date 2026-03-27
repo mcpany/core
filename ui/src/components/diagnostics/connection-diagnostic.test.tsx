@@ -167,7 +167,7 @@ describe("ConnectionDiagnosticDialog", () => {
 
         // Verify success log
         await waitFor(() => {
-            expect(screen.getByText(/✓ Fetch succeeded in/)).toBeInTheDocument();
+            expect(screen.getByText(/Successfully connected to HTTP server from browser/)).toBeInTheDocument();
         });
     });
 
@@ -352,14 +352,15 @@ describe("ConnectionDiagnosticDialog", () => {
 
         // Wait for failure
         await waitFor(() => {
-            expect(screen.getByText("Fetch Error")).toBeInTheDocument();
+            expect(screen.getByText("Not Accessible")).toBeInTheDocument();
         });
 
         // Check for the warning message in logs
         // We use getAllByText or check for partial text
         await waitFor(() => {
-            expect(screen.getByText((content) => content.includes("Your browser cannot reach the upstream service"))).toBeInTheDocument();
+            expect(screen.getByText((content) => content.includes("WARNING: You are using 'localhost'"))).toBeInTheDocument();
         });
+        expect(screen.getByText((content) => content.includes("host.docker.internal"))).toBeInTheDocument();
 
         // Restore fetch
         global.fetch = originalFetch;

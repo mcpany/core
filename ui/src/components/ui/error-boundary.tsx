@@ -21,20 +21,6 @@ interface State {
 }
 
 /**
- * Intent: Document ErrorBoundary
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Global Error Boundary to catch and report UI crashes.
  */
 export class ErrorBoundary extends Component<Props, State> {
