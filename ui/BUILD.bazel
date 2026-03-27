@@ -126,13 +126,10 @@ define_vitest_tests(vitest_bin)
 eslint_bin.eslint_test(
     name = "lint",
     args = [
-        "--config",
-        "eslint.config.mjs",
         "src/",
     ],
     chdir = package_name(),
     data = [
-        "eslint.config.mjs",
         ":node_modules",
         ":srcs",
         "//proto:ts_proto",

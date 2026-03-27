@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 
 interface RichResultViewerProps {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     result: any;
 }
 
@@ -106,33 +106,67 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
 
     const mcpContent = useMemo<McpContent[] | null>(() => {
         if (Array.isArray(content)) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const isValidArray = content.every((item: any) =>
-                (item.type === 'text' && typeof item.text === 'string') ||
-                (item.type === 'image' && typeof item.data === 'string' && typeof item.mimeType === 'string')
-            );
+            const isValidArray = content.every((item: unknown) => {
+                if (typeof item !== 'object' || item === null) return false;
+                const i = item as Record<string, unknown>;
+                return (i.type === 'text' && typeof i.text === 'string') ||
+                       (i.type === 'image' && typeof i.data === 'string' && typeof i.mimeType === 'string');
+            });
             if (isValidArray) {
                 return content as McpContent[];
             }
         }
 
-        if (content && typeof content === 'object' && Array.isArray(content.content)) {
-            // Check if it looks like MCP content
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const isValid = content.content.every((item: any) =>
-                (item.type === 'text' && typeof item.text === 'string') ||
-                (item.type === 'image' && typeof item.data === 'string' && typeof item.mimeType === 'string')
-            );
+        if (content && typeof content === 'object' && 'content' in content && Array.isArray((content as Record<string, unknown>).content)) {
+            const cArr = (content as Record<string, unknown>).content as unknown[];
+            const isValid = cArr.every((item: unknown) => {
+                if (typeof item !== 'object' || item === null) return false;
+                const i = item as Record<string, unknown>;
+                return (i.type === 'text' && typeof i.text === 'string') ||
+                       (i.type === 'image' && typeof i.data === 'string' && typeof i.mimeType === 'string');
+            });
             if (isValid) {
-                return content.content;
+                return cArr as McpContent[];
             }
         }
         return null;
     }, [content]);
 
     const isTableEligible = useMemo(() => {
-        return !mcpContent && Array.isArray(content) && content.length > 0 && typeof content[0] === 'object' && content[0] !== null;
+        // If content is pure array of objects, it's eligible
+        if (Array.isArray(content) && content.length > 0 && typeof content[0] === 'object' && content[0] !== null) {
+            return true;
+        }
+
+        // If it's a standard MCP response payload: { content: [{ type: "text", text: "[{...}]" }] }
+        if (mcpContent && mcpContent.length === 1 && mcpContent[0].type === 'text') {
+            try {
+                const parsed = JSON.parse(mcpContent[0].text);
+                if (Array.isArray(parsed) && parsed.length > 0 && typeof parsed[0] === 'object' && parsed[0] !== null) {
+                    return true;
+                }
+            } catch {
+                // Not JSON or not array
+            }
+        }
+
+        return false;
     }, [content, mcpContent]);
+
+    // Derived table data (extracts from MCP string if necessary)
+    const tableData = useMemo(() => {
+        if (!isTableEligible) return [];
+        if (Array.isArray(content)) return content as Record<string, unknown>[];
+        if (mcpContent && mcpContent.length === 1 && mcpContent[0].type === 'text') {
+            try {
+                const parsed = JSON.parse(mcpContent[0].text);
+                if (Array.isArray(parsed)) return parsed as Record<string, unknown>[];
+            } catch {
+                return [];
+            }
+        }
+        return [];
+    }, [content, isTableEligible, mcpContent]);
 
     const { toast } = useToast();
     const [sortColumn, setSortColumn] = useState<string | null>(null);
@@ -144,14 +178,13 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         // aggregate all keys from all objects to handle sparse data
         const keys = new Set<string>();
         // Limit rows scanned for columns to avoid perf issues on huge datasets
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        content.slice(0, 50).forEach((item: any) => {
+        tableData.slice(0, 50).forEach((item) => {
             if (typeof item === 'object' && item !== null) {
                 Object.keys(item).forEach(k => keys.add(k));
             }
         });
         return Array.from(keys);
-    }, [content, isTableEligible]);
+    }, [tableData, isTableEligible]);
 
     const handleSort = (column: string) => {
         if (sortColumn === column) {
@@ -163,10 +196,9 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
     };
 
     const sortedContent = useMemo(() => {
-        if (!isTableEligible || !sortColumn) return content;
+        if (!isTableEligible || !sortColumn) return tableData;
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const sorted = [...content].sort((a: any, b: any) => {
+        const sorted = [...tableData].sort((a, b) => {
             const aVal = a[sortColumn];
             const bVal = b[sortColumn];
 
@@ -187,23 +219,22 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
             return sortDirection === 'asc' ? aStr.localeCompare(bStr) : bStr.localeCompare(aStr);
         });
         return sorted;
-    }, [content, sortColumn, sortDirection, isTableEligible]);
+    }, [tableData, sortColumn, sortDirection, isTableEligible]);
 
     const handleExportCSV = () => {
         if (!isTableEligible) return;
 
         // Escape helper for CSV cells
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const escapeCSV = (val: any) => {
+        const escapeCSV = (val: unknown) => {
             if (val === null || val === undefined) return '""';
-            let str = typeof val === 'object' ? JSON.stringify(val) : String(val);
+            const str = typeof val === 'object' ? JSON.stringify(val) : String(val);
             // Replace double quotes with double-double quotes, and wrap in double quotes
             return `"${str.replace(/"/g, '""')}"`;
         };
 
         const headers = columns.map(escapeCSV).join(',');
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const rows = sortedContent.map((row: any) =>
+
+        const rows = sortedContent.map((row) =>
             columns.map(col => escapeCSV(row[col])).join(',')
         ).join('\n');
 
@@ -221,8 +252,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         toast({ title: "Exported to CSV", description: "Your result has been successfully exported." });
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const renderCell = (value: any) => {
+    const renderCell = (value: unknown) => {
         if (value === null || value === undefined) return <span className="text-muted-foreground">-</span>;
         if (typeof value === 'object') return <span className="font-mono text-xs text-muted-foreground truncate max-w-[200px] block" title={JSON.stringify(value)}>{JSON.stringify(value)}</span>;
         if (typeof value === 'boolean') return <span className={value ? "text-green-500 font-medium" : "text-red-500 font-medium"}>{String(value)}</span>;
@@ -294,8 +324,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                                {sortedContent.map((row: any, i: number) => (
+                                {sortedContent.map((row, i) => (
                                     <TableRow key={i}>
                                         {columns.map(col => (
                                             <TableCell key={col} className="py-2">

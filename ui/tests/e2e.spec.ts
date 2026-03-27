@@ -153,9 +153,9 @@ test.describe('MCP Any UI E2E Tests', () => {
     // Execute the tool (it has no required inputs based on schema)
     await page.click('button[type="submit"]');
 
-    // Wait for the tabular result to appear (we look for our new Download CSV button)
-    const downloadCsvButton = page.locator('button', { hasText: 'Download CSV' });
-    await expect(downloadCsvButton).toBeVisible({ timeout: 10000 });
+    // Wait for the tabular result to appear (we look for our new Export CSV button)
+    const exportCsvButton = page.locator('button', { hasText: 'Export CSV' });
+    await expect(exportCsvButton).toBeVisible({ timeout: 10000 });
 
     // Verify table headers exist and default state
     await expect(page.locator('th', { hasText: 'id' })).toBeVisible();
@@ -178,10 +178,10 @@ test.describe('MCP Any UI E2E Tests', () => {
     // Ensure download triggers via Download Event
     const [download] = await Promise.all([
       page.waitForEvent('download'),
-      downloadCsvButton.click()
+      exportCsvButton.click()
     ]);
 
-    expect(download.suggestedFilename()).toBe('result.csv');
+    expect(download.suggestedFilename()).toMatch(/^mcpany-result-\d+\.csv$/);
 
     if (process.env.CAPTURE_SCREENSHOTS === 'true') {
       await page.screenshot({ path: path.join(AUDIT_DIR, 'rich_result_viewer_verified.png'), fullPage: true });
