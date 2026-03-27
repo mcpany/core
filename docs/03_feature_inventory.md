@@ -1,13 +1,5 @@
 # Feature Inventory: MCP Any
 
-## Evolution: [2026-07-07] Updates
-
-### Proposed Additions
-- **CI/CD Cache Integrity Guard (CCIG)**: (P0) Authoritative validator for build caches, requiring cryptographic signatures for all cache fragments to prevent supply chain poisoning.
-- **Automated Remediation Hub (ARH)**: (P1) Compliance service providing a verifiable audit trail for AI-powered fix suggestions, satisfying SSDF requirements.
-- **Metadata Sanitization Gateway**: (P0) Real-time semantic sanitizer for agent-ingested external metadata (GitHub issues, Slack messages) to neutralize instruction injection.
-- **Action-Chain Sovereignty Monitor**: (P0) High-speed monitoring service that validates agent workflow sequences against mission-root intents to prevent cascading failures.
-
 ## Evolution: [2026-07-06] Updates
 
 ### Proposed Additions
