@@ -102,17 +102,11 @@ common:buildbuddy-official --remote_header=x-buildbuddy-api-key=vGFjlQg7X49NwoQH
 
 # Set buildbuddy as the default configuration for all builds
 build:remote --config=buildbuddy-official
-build:remote --jobs=1
-build:remote --local_resources=memory=2048
-build:remote --local_resources=cpu=1
 # Avoid local test host overload for targets that cannot run remotely
 # (e.g. no-remote-exec Playwright/integration tests).
-test:remote --local_test_jobs=1
+test:remote --local_test_jobs=8
 
 # Local config to disable remote execution
 build:local --remote_cache=
 build:local --remote_executor=
 build:local --spawn_strategy=local
-
-# Disable global parallel testing to stop test action OOM in CI
-test --local_test_jobs=1

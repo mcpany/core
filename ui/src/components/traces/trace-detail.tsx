@@ -385,13 +385,13 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                                 <h3 className="text-sm font-medium flex items-center gap-2 text-primary">
                                     <Code className="h-4 w-4" /> Request Payload
                                 </h3>
-                                <JsonView data={trace.rootSpan.input} maxHeight={400} smartTable={true} />
+                                <JsonView data={trace.rootSpan.input} maxHeight={400} />
                             </div>
                             <div className="space-y-2">
                                 <h3 className="text-sm font-medium flex items-center gap-2 text-primary">
                                     <Terminal className="h-4 w-4" /> Response Payload
                                 </h3>
-                                <JsonView data={trace.rootSpan.output} maxHeight={400} smartTable={true} />
+                                <JsonView data={trace.rootSpan.output} maxHeight={400} />
                             </div>
                         </div>
                      </ScrollArea>

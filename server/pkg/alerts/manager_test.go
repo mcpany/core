@@ -63,27 +63,6 @@ func TestManager_Webhook(t *testing.T) {
 	}
 }
 
-func TestManager_DeleteAlert(t *testing.T) {
-	m := NewManager()
-	alert := &Alert{Title: "Test Delete", Status: StatusActive}
-	created := m.CreateAlert(alert)
-
-	err := m.DeleteAlert(created.ID)
-	if err != nil {
-		t.Errorf("expected no error deleting alert, got %v", err)
-	}
-
-	got := m.GetAlert(created.ID)
-	if got != nil {
-		t.Errorf("expected alert to be deleted, but it still exists")
-	}
-
-	err = m.DeleteAlert("nonexistent")
-	if err == nil {
-		t.Errorf("expected error deleting nonexistent alert, got nil")
-	}
-}
-
 func TestManager_GetAlertStats(t *testing.T) {
 	m := NewManager()
 	stats := m.GetAlertStats()

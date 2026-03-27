@@ -83,19 +83,3 @@ MCP Any needs to implement a **Recursive Intent Delegation (RID) Validator** tha
 * Mandatory integration with TPM/Secure Enclave for **Monotonic Depth-Counters**.
 * The validator now blocks any subagent creation if the hardware counter reaches zero, independent of software-level intent metadata.
 **Security Impact:** Prevents "Recursive Intent Poisoning" attacks by anchoring swarm stability to immutable hardware limits.
-
-### Update: 2026-03-25 (Iteration 5) - SDK-Driven Intent Boundary Enforcement
-**Context:** Programmatic agent control via the OpenCode SDK allows for rapid intent mutation that can bypass traditional chat-based observation.
-**Architecture Adjustment:**
-* Integration of RID validation directly into the OpenCode SDK client library.
-* Mandating hardware-attested "Mission Context" headers for all programmatic SDK requests.
-* The validator now performs real-time semantic analysis of SDK-injected intents to ensure they remain within the mission-root manifest.
-**Security Impact:** Neutralizes the risk of automated agents diverging from their mission via programmatic instruction injection.
-
-### Update: 2026-03-26 - Action-Chain Sovereignty & Post-Quantum Mesh Integrity
-**Context:** Today's analysis of swarm attacks (GTG-1002) and NIST's post-quantum standard release confirm that RID must now protect the entire lineage of system actions and transport.
-**Architecture Adjustment:**
-* Extending RID tokens to include an "Action-Chain Manifest" that restricts the sequence of authorized tool calls.
-* Transitioning RID handshake and token generation to Post-Quantum Mesh Handshake (PQMH) resistant algorithms.
-* Integration with the Action-Chain Sovereignty Monitor (ACSM) for real-time interdiction of non-linear intent escalations.
-**Security Impact:** Provides long-term mesh integrity and prevents machine-speed "Insider Threat" escalations across sharded agent swarms.

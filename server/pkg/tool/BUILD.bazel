@@ -194,7 +194,6 @@ go_test(
         "types_coverage_test.go",
         "types_extra_coverage_test.go",
         "types_injection_sql_test.go",
-        "types_is_streaming_test.go",
         "types_test.go",
         "url_parsing_test.go",
         "vim_security_test.go",

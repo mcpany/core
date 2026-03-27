@@ -84,7 +84,7 @@ func TestHITLMiddleware_ApprovalGranted(t *testing.T) {
 	// Set up a background worker to simulate the human approving the request
 	go func() {
 		// Wait a tiny bit to ensure the middleware has subscribed
-		time.Sleep(2000 * time.Millisecond)
+		time.Sleep(100 * time.Millisecond)
 
 		reqBus, _ := corebus.GetBus[HITLApprovalRequest](bp, "hitl.requests")
 		// Listen for the request to get the execution ID
@@ -123,7 +123,7 @@ func TestHITLMiddleware_ApprovalDenied(t *testing.T) {
 
 	// Set up a background worker to simulate the human denying the request
 	go func() {
-		time.Sleep(2000 * time.Millisecond)
+		time.Sleep(100 * time.Millisecond)
 		reqBus, _ := corebus.GetBus[HITLApprovalRequest](bp, "hitl.requests")
 		reqBus.SubscribeOnce(context.Background(), "hitl.requests", func(req HITLApprovalRequest) {
 			resBus, _ := corebus.GetBus[HITLApprovalResponse](bp, "hitl.responses."+req.ExecutionID)
