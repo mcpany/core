@@ -15,12 +15,10 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-// server is used to implement greeter.GreeterServer.
 type server struct {
 	pb.UnimplementedGreeterServer
 }
 
-// SayHello implements greeter.GreeterServer.
 func (s *server) SayHello(_ context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
 	log.Printf("Received: %v", in.GetName())
 	return &pb.HelloReply{Message: "Hello " + in.GetName()}, nil
@@ -28,7 +26,7 @@ func (s *server) SayHello(_ context.Context, in *pb.HelloRequest) (*pb.HelloRepl
 
 func main() {
 	if err := run(); err != nil {
-		log.Fatalf("Fatal error: %v", err)
+		log.Fatal(err)
 	}
 }
 
@@ -48,8 +46,5 @@ func run() error {
 	pb.RegisterGreeterServer(s, &server{})
 	reflection.Register(s)
 	log.Printf("server listening at %v", lis.Addr())
-	if err := s.Serve(lis); err != nil {
-		return fmt.Errorf("failed to serve: %w", err)
-	}
-	return nil
+	return s.Serve(lis)
 }

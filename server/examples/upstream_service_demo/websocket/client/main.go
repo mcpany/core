@@ -15,6 +15,12 @@ import (
 )
 
 func main() {
+	if err := run(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func run() error {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 
@@ -23,7 +29,7 @@ func main() {
 
 	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {
-		log.Fatal("dial:", err)
+		return err
 	}
 	defer func() { _ = c.Close() }()
 
@@ -47,12 +53,12 @@ func main() {
 	for {
 		select {
 		case <-done:
-			return
+			return nil
 		case t := <-ticker.C:
 			err := c.WriteMessage(websocket.TextMessage, []byte(t.String()))
 			if err != nil {
 				log.Println("write:", err)
-				return
+				return err
 			}
 		case <-interrupt:
 			log.Println("interrupt")
@@ -62,13 +68,13 @@ func main() {
 			err := c.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 			if err != nil {
 				log.Println("write close:", err)
-				return
+				return err
 			}
 			select {
 			case <-done:
 			case <-time.After(time.Second):
 			}
-			return
+			return nil
 		}
 	}
 }

@@ -39,6 +39,12 @@ func echo(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	if err := run(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func run() error {
 	http.HandleFunc("/echo", echo)
 	http.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -54,5 +60,5 @@ func main() {
 		Addr:              addr,
 		ReadHeaderTimeout: 3 * time.Second,
 	}
-	log.Fatal(server.ListenAndServe())
+	return server.ListenAndServe()
 }

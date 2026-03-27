@@ -20,7 +20,9 @@ func TestMain(m *testing.M) {
 
 	originalIsSafeURL := validation.IsSafeURL
 	validation.IsSafeURL = func(urlStr string) error { return nil }
-	defer func() { validation.IsSafeURL = originalIsSafeURL }()
 
-	os.Exit(m.Run())
+	code := m.Run()
+
+	validation.IsSafeURL = originalIsSafeURL
+	os.Exit(code)
 }

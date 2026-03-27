@@ -37,6 +37,12 @@ type Status struct {
 }
 
 func main() {
+	if err := run(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func run() error {
 	http.HandleFunc("/validate", validateHandler)
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -48,9 +54,7 @@ func main() {
 		Addr:              addr,
 		ReadHeaderTimeout: 5 * time.Second,
 	}
-	if err := server.ListenAndServe(); err != nil {
-		log.Fatal(err)
-	}
+	return server.ListenAndServe()
 }
 
 func validateHandler(w http.ResponseWriter, r *http.Request) {

@@ -15,21 +15,25 @@ import (
 )
 
 func main() {
+	if err := run(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func run() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 	cs, err := client.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: "http://localhost:8081"}, nil)
 	if err != nil {
-		cancel()
-		log.Printf("Failed to connect to MCPANY server: %v", err)
-		return
+		return fmt.Errorf("failed to connect to MCPANY server: %w", err)
 	}
 	defer func() { _ = cs.Close() }()
 
 	result, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
 	if err != nil {
-		log.Fatalf("Failed to list tools: %v", err) //nolint:gocritic // Example code, exit is intended
+		return fmt.Errorf("failed to list tools: %w", err)
 	}
 
 	for _, tool := range result.Tools {
@@ -38,22 +42,27 @@ func main() {
 
 	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: "echo-service.echo", Arguments: map[string]interface{}{"message": "hello"}})
 	if err != nil {
-		log.Fatalf("Error calling tool: %v", err)
+		return fmt.Errorf("error calling tool: %w", err)
 	}
 
 	if res.IsError {
-		log.Fatalf("Tool returned an error: %v", res.Content)
+		return fmt.Errorf("tool returned an error: %v", res.Content)
+	}
+
+	if len(res.Content) == 0 {
+		return fmt.Errorf("expected content in tool response")
 	}
 
 	textContent, ok := res.Content[0].(*mcp.TextContent)
 	if !ok {
-		log.Fatalf("Expected content to be of type TextContent")
+		return fmt.Errorf("expected content to be of type TextContent")
 	}
 
 	var toolResult map[string]interface{}
 	if err := json.Unmarshal([]byte(textContent.Text), &toolResult); err != nil {
-		log.Fatalf("Failed to unmarshal tool output: %v", err)
+		return fmt.Errorf("failed to unmarshal tool output: %w", err)
 	}
 
 	fmt.Printf("Tool result: %v\n", toolResult)
+	return nil
 }

@@ -27,15 +27,19 @@ type WebhookResponse struct {
 }
 
 func main() {
+	if err := run(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func run() error {
 	http.HandleFunc("/convert", convertHandler)
 	log.Println("Starting html-to-md webhook on :8082")
 	server := &http.Server{
 		Addr:              ":8082",
 		ReadHeaderTimeout: 5 * time.Second,
 	}
-	if err := server.ListenAndServe(); err != nil {
-		log.Fatal(err)
-	}
+	return server.ListenAndServe()
 }
 
 func convertHandler(w http.ResponseWriter, r *http.Request) {
