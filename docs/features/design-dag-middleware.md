@@ -66,10 +66,3 @@ The Dynamic Attention Gating (DAG) Middleware acts as a cognitive stability laye
 *   **Entropy-Aware Gating (AAG)**: Upgrading Section 4 to include AAG. This layer performs real-time analysis of reasoning fragments to detect "Attention-Baiting" patterns.
 *   **Spectral Attention Guards**: Implementing hardware-attested timing jitter for attention-locking headers to neutralize "Leaked Enclave-Timing" side-channels.
 **Security Impact:** Prevents mission-root eviction by high-entropy noise and secures attention locking against timing-based side-channel probes.
-
-### Update: 2026-06-18 - Entropy-Aware Attention Gating (AAG)
-**Context:** Today's market sync revealed the emergence of "Attention-Baiting" (CVE-2026-62001) where high-entropy reasoning fragments are used to evict mission-root anchors.
-**Architecture Adjustment:**
-*   **Entropy-Aware Gating (AAG)**: Upgrading Section 4 to include AAG. This layer performs real-time analysis of reasoning fragments to detect "Attention-Baiting" patterns.
-*   **Spectral Attention Guards**: Implementing hardware-attested timing jitter for attention-locking headers to neutralize "Leaked Enclave-Timing" side-channels.
-**Security Impact:** Prevents mission-root eviction by high-entropy noise and secures attention locking against timing-based side-channel probes.
