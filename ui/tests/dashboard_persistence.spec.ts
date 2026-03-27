@@ -7,7 +7,6 @@ import { test, expect } from '@playwright/test';
 
 test('dashboard layout persistence', async ({ page, request }) => {
 <<<<<<< HEAD
-<<<<<<< HEAD
   // 1. Initial Load
   await page.goto('/');
 
@@ -19,9 +18,6 @@ test('dashboard layout persistence', async ({ page, request }) => {
   // The test env might start fresh.
 
   // Clear preferences via API first to ensure clean state
-=======
-  // Clear preferences via API and localstorage first to ensure clean state
->>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
 =======
   // Clear preferences via API and localstorage first to ensure clean state
 >>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
@@ -37,18 +33,12 @@ test('dashboard layout persistence', async ({ page, request }) => {
   });
   await page.reload();
 <<<<<<< HEAD
-<<<<<<< HEAD
   await expect(page.locator('.lucide-loader-circle.animate-spin').first()).not.toBeVisible();
 =======
-=======
->>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
 
   // Wait for loading to finish
   await expect(page.locator('.lucide-loader2.animate-spin, .lucide-loader-2.animate-spin, .lucide-loader.animate-spin, .animate-spin').first()).not.toBeVisible();
 
-<<<<<<< HEAD
->>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
-=======
 >>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
   await expect(page.getByText('Your dashboard is empty')).toBeVisible();
 
@@ -70,11 +60,7 @@ test('dashboard layout persistence', async ({ page, request }) => {
   // 5. Reload page
   await page.reload();
 <<<<<<< HEAD
-<<<<<<< HEAD
   await expect(page.locator('.lucide-loader-circle.animate-spin').first()).not.toBeVisible();
-=======
-  await expect(page.locator('.lucide-loader2.animate-spin, .lucide-loader-2.animate-spin, .lucide-loader.animate-spin, .animate-spin').first()).not.toBeVisible();
->>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
 =======
   await expect(page.locator('.lucide-loader2.animate-spin, .lucide-loader-2.animate-spin, .lucide-loader.animate-spin, .animate-spin').first()).not.toBeVisible();
 >>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)

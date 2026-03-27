@@ -11,11 +11,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 <<<<<<< HEAD
-<<<<<<< HEAD
 interface JsonTreeProps {
 =======
-=======
->>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
 /**
  * Props for the JsonTree component
  */
@@ -30,7 +27,6 @@ export interface JsonTreeProps {
 /**
  * JsonTree component.
 <<<<<<< HEAD
-<<<<<<< HEAD
  * Renders a recursive tree view of JSON data.
  *
  * @param props - The component props.
@@ -40,8 +36,6 @@ export interface JsonTreeProps {
  * @param props.className - The className.
  * @returns The rendered component.
 =======
-=======
->>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
  * Renders a recursive tree view of JSON data with high contrast,
  * subtle borders, and meaningful animations (Unifi/Apple aesthetic).
 >>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
@@ -123,13 +117,10 @@ export function JsonTree({ data, level = 0, defaultExpandedLevel = 1, className 
 
       {expanded && (
 <<<<<<< HEAD
-<<<<<<< HEAD
         <div className="border-l border-white/10 ml-2 pl-2 flex flex-col">
           {entries.map(([key, value], idx) => (
             <div key={key} className="flex items-start gap-1">
 =======
-=======
->>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
         <div className="border-l-[1.5px] border-border/40 ml-[6px] pl-4 flex flex-col my-1 relative before:absolute before:inset-y-0 before:-left-[1.5px] before:w-[1.5px] before:bg-gradient-to-b before:from-transparent before:via-border/40 before:to-transparent">
           {entries.map(([key, value]) => (
             <div key={key} className="flex items-start gap-2 py-0.5">

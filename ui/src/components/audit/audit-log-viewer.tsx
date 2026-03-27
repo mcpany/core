@@ -48,14 +48,10 @@ import {
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 <<<<<<< HEAD
-<<<<<<< HEAD
 import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light';
 import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
 import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
 import { RichResultViewer } from "@/components/tools/rich-result-viewer";
-=======
-import { JsonTree } from "@/components/ui/json-tree";
->>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
 =======
 import { JsonTree } from "@/components/ui/json-tree";
 >>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
@@ -99,7 +95,6 @@ export function AuditLogViewer() {
   const [userId, setUserId] = useState("");
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
-<<<<<<< HEAD
 
 <<<<<<< HEAD
     // Pagination
@@ -193,44 +188,6 @@ export function AuditLogViewer() {
             if (startDate) filters.start_time = startDate.toISOString();
             if (endDate) filters.end_time = endDate.toISOString();
 =======
-=======
-
-  const fetchLogs = useCallback(async () => {
-    setLoading(true);
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const filters: any = {
-        limit: 50,
-        offset: 0,
-      };
-      if (toolName) filters.tool_name = toolName;
-      if (userId) filters.user_id = userId;
-      if (startDate) filters.start_time = startDate.toISOString();
-      if (endDate) filters.end_time = endDate.toISOString();
-
-      const res = await apiClient.listAuditLogs(filters);
-      // Map snake_case to camelCase manually if needed, but assuming client returns what server sends.
-      // Server sends protobuf JSON which is camelCase by default for fields?
-      // Actually, grpc-gateway default uses snake_case for JSON unless configured otherwise.
-      // But I implemented manual marshalling in `server.go` using `AuditLogEntry` struct?
-      // No, I used `pb.AuditLogEntry`. Protobuf JSON serialization uses camelCase by default in Go (protojson).
-      // Let's assume camelCase.
-      // Wait, looking at `admin.proto`:
-      // string tool_name = 2;
-      // In JSON it will be `toolName`.
-      setLogs(res.entries || []);
-    } catch (e) {
-      console.error("Failed to fetch audit logs", e);
-    } finally {
-      setLoading(false);
-    }
-  }, [toolName, userId, startDate, endDate]);
-
-  useEffect(() => {
-    fetchLogs();
-  }, [fetchLogs]);
-
->>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
   const handleExport = async () => {
     setExporting(true);
     try {
@@ -240,9 +197,6 @@ export function AuditLogViewer() {
       if (userId) filters.user_id = userId;
       if (startDate) filters.start_time = startDate.toISOString();
       if (endDate) filters.end_time = endDate.toISOString();
-<<<<<<< HEAD
->>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
-=======
 >>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
 
       await apiClient.exportAuditLogs(filters);
@@ -263,7 +217,6 @@ export function AuditLogViewer() {
     }
   };
 
-<<<<<<< HEAD
 <<<<<<< HEAD
 
     const safeParse = (str: string | undefined | null) => {
@@ -595,114 +548,6 @@ export function AuditLogViewer() {
         </CardContent>
       </Card>
 
-=======
-  return (
-    <div className="space-y-4 h-full flex flex-col">
-      <Card className="flex-none">
-        <CardHeader className="pb-3">
-          <CardTitle>Filters</CardTitle>
-          <CardDescription>
-            Search audit logs by tool, user, or date.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col md:flex-row gap-4 items-end">
-            <div className="grid gap-2 flex-1 w-full md:w-auto">
-              <label className="text-sm font-medium">Tool Name</label>
-              <Input
-                placeholder="e.g. weather_get"
-                value={toolName}
-                onChange={(e) => setToolName(e.target.value)}
-              />
-            </div>
-            <div className="grid gap-2 flex-1 w-full md:w-auto">
-              <label className="text-sm font-medium">User ID</label>
-              <Input
-                placeholder="e.g. alice"
-                value={userId}
-                onChange={(e) => setUserId(e.target.value)}
-              />
-            </div>
-            <div className="grid gap-2 flex-1 w-full md:w-auto">
-              <label className="text-sm font-medium">Date Range</label>
-              <div className="flex gap-2">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-[140px] justify-start text-left font-normal",
-                        !startDate && "text-muted-foreground",
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {startDate ? (
-                        format(startDate, "PPP")
-                      ) : (
-                        <span>Start Date</span>
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={startDate}
-                      onSelect={setStartDate}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-[140px] justify-start text-left font-normal",
-                        !endDate && "text-muted-foreground",
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {endDate ? format(endDate, "PPP") : <span>End Date</span>}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={endDate}
-                      onSelect={setEndDate}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-            </div>
-            <div className="flex gap-2 w-full md:w-auto mt-4 md:mt-0">
-              <Button
-                variant="outline"
-                onClick={handleExport}
-                disabled={exporting || loading}
-              >
-                {exporting ? (
-                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Download className="mr-2 h-4 w-4" />
-                )}
-                Export CSV
-              </Button>
-              <Button onClick={fetchLogs} disabled={loading}>
-                {loading ? (
-                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Search className="mr-2 h-4 w-4" />
-                )}
-                Filter
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
->>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
       <Card className="flex-1 flex flex-col overflow-hidden">
         <CardContent className="p-0 flex-1 overflow-auto">
           <Table>
@@ -747,9 +592,6 @@ export function AuditLogViewer() {
                       >
                         Success
                       </Badge>
-<<<<<<< HEAD
->>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
-=======
 >>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
                     )}
                   </TableCell>

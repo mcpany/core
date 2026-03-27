@@ -16,7 +16,4 @@
     * I implemented a comprehensive table-driven test `TestHandleSkillDetail` which tests `GET` (Retrieve with Success and Not Found scenarios), `PUT` (Update with Success, Invalid Body, and Update Error scenarios), `DELETE` (Delete with Success and Not Found scenarios), default method handler (Method Not Allowed), missing skill names in the request URL, and correct asset routing (delegation to `handleUploadSkillAsset`).
     * The new coverage mimics the Google Standard Table-Driven Test pattern present in `TestHandleUploadSkillAsset`.
 * **Verification:** `bazelisk test //server/pkg/app:app_test` confirms tests pass correctly without modifying underlying functionality. Running `bazelisk test //server/...` confirms there are no new regressions.
-<<<<<<< HEAD
->>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
-=======
 >>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)

@@ -49,14 +49,11 @@ test.describe("Inspector Page", () => {
     // mock the WS at the browser level to ensure the trace is delivered to the
     // InspectorTable without depending on proxy-level WS tunnelling.
 <<<<<<< HEAD
-<<<<<<< HEAD
     let wsSend: any = null;
     await page.routeWebSocket('**/api/v1/ws/traces', (ws: any) => {
       wsSend = (data: string) => ws.send(data);
     });
 =======
-=======
->>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
     let wsSend: ((data: string) => void) | null = null;
 
     await page.routeWebSocket(
@@ -66,9 +63,6 @@ test.describe("Inspector Page", () => {
         wsSend = (data: string) => ws.send(data);
       },
     );
-<<<<<<< HEAD
->>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
-=======
 >>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
 
     // Navigate to the Inspector page
@@ -112,15 +106,12 @@ test.describe("Inspector Page", () => {
   });
 
 <<<<<<< HEAD
-<<<<<<< HEAD
   test('should clear traces permanently on backend when Clear is clicked', async ({ page }) => {
     let wsSend: any = null;
     await page.routeWebSocket('**/api/v1/ws/traces', (ws: any) => {
       wsSend = (data: string) => ws.send(data);
     });
 =======
-=======
->>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
   test("should clear traces permanently on backend when Clear is clicked", async ({
     page,
   }) => {
@@ -133,9 +124,6 @@ test.describe("Inspector Page", () => {
         wsSend = (data: string) => ws.send(data);
       },
     );
-<<<<<<< HEAD
->>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
-=======
 >>>>>>> 2e6c7b662 (feat: integrate JsonTree into AuditLogViewer and fix test selectors)
 
     let deleteCalled = false;
