@@ -597,3 +597,9 @@
 - [ ] **[P0] Mesh-Split Alert Center**: Visualization of network partition events and CPI "Majority-Or-Freeze" enforcement. (Added: 2026-06-18)
 - [ ] **[P1] Composite Trust Viewer**: Forensic UI for inspecting recursive attestation tokens binding agent and hardware identities. (Added: 2026-06-18)
 - [ ] **[P0] PAD-v2 Capability Browser**: Unified search and discovery for tool metadata across gRPC/WS/Stdio protocols. (Added: 2026-06-18)
+
+### Upcoming: [2026-06-18]
+- [ ] **[P0] MRGO Status Monitor**: Real-time visualization of local policy decisions and hardware signature verification latency. (Added: 2026-06-18)
+- [ ] **[P0] Mesh-Split Alert Center**: Visualization of network partition events and CPI "Majority-Or-Freeze" enforcement. (Added: 2026-06-18)
+- [ ] **[P1] Composite Trust Viewer**: Forensic UI for inspecting recursive attestation tokens binding agent and hardware identities. (Added: 2026-06-18)
+- [ ] **[P0] PAD-v2 Capability Browser**: Unified search and discovery for tool metadata across gRPC/WS/Stdio protocols. (Added: 2026-06-18)
