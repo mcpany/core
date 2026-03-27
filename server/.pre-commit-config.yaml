@@ -63,4 +63,3 @@ repos:
             - -ignore
             - "**/*.pb.go"
             - -s=only
-# 123
