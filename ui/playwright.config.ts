@@ -16,7 +16,7 @@ const TEST_MATCH = process.env.PLAYWRIGHT_TEST_MATCH;
 export default defineConfig({
   testDir: './tests',
   testMatch: TEST_MATCH ? new RegExp(TEST_MATCH) : ['**/*.spec.ts'],
-  fullyParallel: true,
+  fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: 1, // Run serially to avoid state collisions in shared backend
