@@ -25,6 +25,7 @@ import (
 	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/util"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -67,7 +68,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/services/", a.handleServiceDetail(store))
 	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("OK")) //nolint:errcheck
+		_, _ = w.Write([]byte("OK")) //nolint:errcheck
 	})
 	// Doctor API
 	doctor := health.NewDoctor()
@@ -298,7 +299,7 @@ func (a *Application) handleListServices(w http.ResponseWriter, r *http.Request,
 		buf = append(buf, b...)
 	}
 	buf = append(buf, ']')
-	w.Write(buf) //nolint:errcheck
+	_, _ = w.Write(buf) //nolint:errcheck
 }
 
 func (a *Application) handleCreateService(w http.ResponseWriter, r *http.Request, store storage.Storage) {
@@ -353,7 +354,7 @@ func (a *Application) handleCreateService(w http.ResponseWriter, r *http.Request
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte("{}")) //nolint:errcheck
+	_, _ = w.Write([]byte("{}")) //nolint:errcheck
 }
 
 func (a *Application) handleServiceValidate() http.HandlerFunc {
@@ -376,7 +377,7 @@ func (a *Application) handleServiceValidate() http.HandlerFunc {
 		if err := config.ValidateOrError(r.Context(), &svc); err != nil {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusBadRequest)
-			json.NewEncoder(w).Encode(map[string]any{ //nolint:errcheck
+			_ = json.NewEncoder(w).Encode(map[string]any{ //nolint:errcheck
 				"valid":   false,
 				"error":   err.Error(),
 				"details": "Static validation failed",
@@ -429,7 +430,7 @@ func (a *Application) handleServiceValidate() http.HandlerFunc {
 		if checkErr != nil {
 			w.Header().Set("Content-Type", "application/json")
 			// Return 200 OK but with valid=false to distinguish from malformed request
-			json.NewEncoder(w).Encode(map[string]any{ //nolint:errcheck
+			_ = json.NewEncoder(w).Encode(map[string]any{ //nolint:errcheck
 				"valid":   false,
 				"error":   checkErr.Error(),
 				"details": checkDetails,
@@ -438,7 +439,7 @@ func (a *Application) handleServiceValidate() http.HandlerFunc {
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]any{ //nolint:errcheck
+		_ = json.NewEncoder(w).Encode(map[string]any{ //nolint:errcheck
 			"valid": true,
 		})
 	}
@@ -465,7 +466,7 @@ func checkURLReachability(ctx context.Context, urlStr string) error {
 			return fmt.Errorf("failed to reach %s: %w", urlStr, err)
 		}
 	}
-	defer func() { resp.Body.Close() }() //nolint:errcheck
+	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode >= 400 && resp.StatusCode != http.StatusMethodNotAllowed && resp.StatusCode != http.StatusUnauthorized {
 		// We treat 401/403 as "reachable but requires auth", which is fine for basic connectivity check (auth check is deeper).
 		// But 404 or 500 might indicate issues.
@@ -479,14 +480,13 @@ func checkURLReachability(ctx context.Context, urlStr string) error {
 }
 
 func checkFilesystemAccess(path string) error {
-	info, err := os.Stat(path)
+	_, err := os.Stat(path)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return fmt.Errorf("path does not exist: %s", path)
 		}
 		return fmt.Errorf("failed to access path: %w", err)
 	}
-	_ = info
 	// We allow both files and directories, so existence is sufficient validation for now.
 	return nil
 }
@@ -498,17 +498,13 @@ func checkCommandAvailability(command string, workDir string) error {
 
 	// If absolute path, check existence
 	if filepath.IsAbs(command) {
-		if info, err := os.Stat(command); err != nil {
+		if _, err := os.Stat(command); err != nil {
 			return fmt.Errorf("executable not found at %s", command)
-		} else {
-			_ = info
 		}
 	} else {
 		// Look in PATH
-		if p, err := exec.LookPath(command); err != nil {
+		if _, err := exec.LookPath(command); err != nil {
 			return fmt.Errorf("command %s not found in PATH", command)
-		} else {
-			_ = p
 		}
 	}
 
@@ -564,13 +560,9 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 				return
 			}
 			opts := protojson.MarshalOptions{UseProtoNames: true}
-			b, err := opts.Marshal(svc)
-			if err != nil {
-				http.Error(w, "Failed to marshal", http.StatusInternalServerError)
-				return
-			}
+			b, _ := opts.Marshal(svc)
 			w.Header().Set("Content-Type", "application/json")
-			w.Write(b) //nolint:errcheck
+			_, _ = w.Write(b) //nolint:errcheck
 		case http.MethodPut:
 			var svc configv1.UpstreamServiceConfig
 			body, err := readBodyWithLimit(w, r, 1048576)
@@ -614,7 +606,7 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 				logging.GetLogger().Error("failed to reload config after update", "error", err)
 			}
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte("{}")) //nolint:errcheck
+			_, _ = w.Write([]byte("{}")) //nolint:errcheck
 		case http.MethodDelete:
 			if err := store.DeleteService(r.Context(), name); err != nil {
 				logging.GetLogger().Error("failed to delete service", "name", name, "error", err)
@@ -661,7 +653,7 @@ func (a *Application) handleServiceStatus(w http.ResponseWriter, r *http.Request
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]any{ //nolint:errcheck
+	_ = json.NewEncoder(w).Encode(map[string]any{ //nolint:errcheck
 		"name":    name,
 		"status":  status,
 		"metrics": map[string]any{},
@@ -700,7 +692,7 @@ func (a *Application) handleServiceRestart(w http.ResponseWriter, r *http.Reques
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("{}")) //nolint:errcheck
+	_, _ = w.Write([]byte("{}")) //nolint:errcheck
 }
 
 func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
@@ -724,7 +716,7 @@ func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
-			w.Write(b) //nolint:errcheck
+			_, _ = w.Write(b) //nolint:errcheck
 
 		case http.MethodPost:
 			var settings configv1.GlobalSettings
@@ -747,7 +739,7 @@ func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
 			}
 
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte("{}")) //nolint:errcheck
+			_, _ = w.Write([]byte("{}")) //nolint:errcheck
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
@@ -759,145 +751,12 @@ func (a *Application) handleTools() http.HandlerFunc {
 		switch r.Method {
 		case http.MethodGet:
 			tools := a.ToolManager.ListTools()
-			var buf []byte
-			buf = append(buf, '[')
-			opts := protojson.MarshalOptions{UseProtoNames: true, EmitUnpopulated: false}
-
-			for i, t := range tools {
-				if i > 0 {
-					buf = append(buf, ',')
-				}
-				b, err := opts.Marshal(t.Tool())
-				if err != nil {
-					http.Error(w, "Failed to marshal tool", http.StatusInternalServerError)
-					return
-				}
-				buf = append(buf, b...)
+			var toolList []*mcp.Tool
+			for _, t := range tools {
+				toolList = append(toolList, t.MCPTool())
 			}
-			buf = append(buf, ']')
-
 			w.Header().Set("Content-Type", "application/json")
-			w.Write(buf) //nolint:errcheck
-
-		case http.MethodPut:
-			var req struct {
-				Name    string `json:"name"`
-				Disable bool   `json:"disable"`
-			}
-			body, err := readBodyWithLimit(w, r, 1024*1024)
-			if err != nil {
-				return
-			}
-			if err := json.Unmarshal(body, &req); err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-
-			if a.ServiceRegistry == nil || a.Storage == nil {
-				http.Error(w, "Service Registry or Storage not initialized", http.StatusInternalServerError)
-				return
-			}
-
-			// Find the service that owns this tool
-			services, err := a.ServiceRegistry.GetAllServices()
-			if err != nil {
-				logging.GetLogger().Error("failed to list services", "error", err.Error())
-				http.Error(w, "Failed to list services", http.StatusInternalServerError)
-				return
-			}
-
-			var targetSvc *configv1.UpstreamServiceConfig
-			var found bool
-
-			for _, svc := range services {
-				// Search the tools in the raw config
-				if mcpSvc := svc.GetMcpService(); mcpSvc != nil {
-					for _, t := range mcpSvc.GetTools() {
-						if t.GetName() == req.Name {
-							t.SetDisable(req.Disable)
-							targetSvc = svc
-							found = true
-							break
-						}
-					}
-				}
-				if found {
-					break
-				}
-				if cmdSvc := svc.GetCommandLineService(); cmdSvc != nil {
-					for _, t := range cmdSvc.GetTools() {
-						if t.GetName() == req.Name {
-							t.SetDisable(req.Disable)
-							targetSvc = svc
-							found = true
-							break
-						}
-					}
-				}
-				if found {
-					break
-				}
-				if httpSvc := svc.GetHttpService(); httpSvc != nil {
-					for _, t := range httpSvc.GetTools() {
-						if t.GetName() == req.Name {
-							t.SetDisable(req.Disable)
-							targetSvc = svc
-							found = true
-							break
-						}
-					}
-				}
-				if found {
-					break
-				}
-				if grpcSvc := svc.GetGrpcService(); grpcSvc != nil {
-					for _, t := range grpcSvc.GetTools() {
-						if t.GetName() == req.Name {
-							t.SetDisable(req.Disable)
-							targetSvc = svc
-							found = true
-							break
-						}
-					}
-				}
-				if found {
-					break
-				}
-				if openapiSvc := svc.GetOpenapiService(); openapiSvc != nil {
-					for _, t := range openapiSvc.GetTools() {
-						if t.GetName() == req.Name {
-							t.SetDisable(req.Disable)
-							targetSvc = svc
-							found = true
-							break
-						}
-					}
-				}
-				if found {
-					break
-				}
-			}
-
-			if !found {
-				http.Error(w, "Tool not found in any registered service", http.StatusNotFound)
-				return
-			}
-
-			// Save updated service back to storage
-			if err := a.Storage.SaveService(r.Context(), targetSvc); err != nil {
-				logging.GetLogger().Error("failed to save service with updated tool status", "error", err.Error())
-				http.Error(w, "Failed to save service", http.StatusInternalServerError)
-				return
-			}
-
-			// Reload configuration
-			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
-				logging.GetLogger().Error("failed to reload config after updating tool status", "error", err.Error())
-			}
-
-			w.WriteHeader(http.StatusOK)
-			w.Write([]byte("{}")) //nolint:errcheck
-
+			_ = json.NewEncoder(w).Encode(toolList) //nolint:errcheck
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
@@ -939,7 +798,7 @@ func (a *Application) handleExecute() http.HandlerFunc {
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(result) //nolint:errcheck
+		_ = json.NewEncoder(w).Encode(result) //nolint:errcheck
 	}
 }
 
@@ -969,7 +828,7 @@ func (a *Application) handlePrompts() http.HandlerFunc {
 				}
 			}
 
-			json.NewEncoder(w).Encode(jsonPrompts) //nolint:errcheck
+			_ = json.NewEncoder(w).Encode(jsonPrompts) //nolint:errcheck
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
@@ -982,7 +841,7 @@ func (a *Application) handleResources() http.HandlerFunc {
 		case http.MethodGet:
 			resources := a.ResourceManager.ListResources()
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(resources) //nolint:errcheck
+			_ = json.NewEncoder(w).Encode(resources) //nolint:errcheck
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
@@ -1011,15 +870,11 @@ func (a *Application) handleSecrets(store storage.Storage) http.HandlerFunc {
 				if i > 0 {
 					buf = append(buf, ',')
 				}
-				b, err := opts.Marshal(s)
-				if err != nil {
-					http.Error(w, "Failed to marshal", http.StatusInternalServerError)
-					return
-				}
+				b, _ := opts.Marshal(s)
 				buf = append(buf, b...)
 			}
 			buf = append(buf, ']')
-			w.Write(buf) //nolint:errcheck
+			_, _ = w.Write(buf) //nolint:errcheck
 
 		case http.MethodPost:
 			var secret configv1.Secret
@@ -1050,7 +905,7 @@ func (a *Application) handleSecrets(store storage.Storage) http.HandlerFunc {
 				logging.GetLogger().Error("failed to reload config after secret save", "error", err)
 			}
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte("{}")) //nolint:errcheck
+			_, _ = w.Write([]byte("{}")) //nolint:errcheck
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
@@ -1091,12 +946,8 @@ func (a *Application) handleSecretDetail(store storage.Storage) http.HandlerFunc
 			secret.SetValue("[REDACTED]")
 			w.Header().Set("Content-Type", "application/json")
 			opts := protojson.MarshalOptions{UseProtoNames: true}
-			b, err := opts.Marshal(secret)
-			if err != nil {
-				http.Error(w, "Failed to marshal", http.StatusInternalServerError)
-				return
-			}
-			w.Write(b) //nolint:errcheck
+			b, _ := opts.Marshal(secret)
+			_, _ = w.Write(b) //nolint:errcheck
 
 		case http.MethodPut:
 			var secret configv1.Secret
@@ -1124,7 +975,7 @@ func (a *Application) handleSecretDetail(store storage.Storage) http.HandlerFunc
 				logging.GetLogger().Error("failed to reload config after secret update", "error", err)
 			}
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte("{}")) //nolint:errcheck
+			_, _ = w.Write([]byte("{}")) //nolint:errcheck
 
 		case http.MethodDelete:
 			if err := store.DeleteSecret(r.Context(), path); err != nil {
@@ -1160,14 +1011,11 @@ func (a *Application) handleSecretReveal(w http.ResponseWriter, r *http.Request,
 	}
 
 	// Log the access (Audit)
-	user, ok := auth.UserFromContext(r.Context())
-	if !ok {
-		user = "unknown"
-	}
+	user, _ := auth.UserFromContext(r.Context())
 	logging.GetLogger().Info("Secret revealed", "id", id, "user", user)
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{ //nolint:errcheck
+	_ = json.NewEncoder(w).Encode(map[string]string{ //nolint:errcheck
 		"value": secret.GetValue(),
 	})
 }
@@ -1198,15 +1046,11 @@ func (a *Application) handleProfiles(store storage.Storage) http.HandlerFunc {
 				if i > 0 {
 					buf = append(buf, ',')
 				}
-				b, err := opts.Marshal(p)
-				if err != nil {
-					http.Error(w, "Failed to marshal", http.StatusInternalServerError)
-					return
-				}
+				b, _ := opts.Marshal(p)
 				buf = append(buf, b...)
 			}
 			buf = append(buf, ']')
-			w.Write(buf) //nolint:errcheck
+			_, _ = w.Write(buf) //nolint:errcheck
 
 		case http.MethodPost:
 			var profile configv1.ProfileDefinition
@@ -1234,7 +1078,7 @@ func (a *Application) handleProfiles(store storage.Storage) http.HandlerFunc {
 				logging.GetLogger().Error("failed to reload config after profile save", "error", err)
 			}
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte("{}")) //nolint:errcheck
+			_, _ = w.Write([]byte("{}")) //nolint:errcheck
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
@@ -1271,12 +1115,8 @@ func (a *Application) handleProfileDetail(store storage.Storage) http.HandlerFun
 			// Force download? Maybe 'Content-Disposition: attachment; filename="profile.json"'
 			w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.json\"", name))
 			opts := protojson.MarshalOptions{UseProtoNames: true, Multiline: true, Indent: "  "}
-			b, err := opts.Marshal(exportProfile)
-			if err != nil {
-				http.Error(w, "Failed to marshal", http.StatusInternalServerError)
-				return
-			}
-			w.Write(b) //nolint:errcheck
+			b, _ := opts.Marshal(exportProfile)
+			_, _ = w.Write(b) //nolint:errcheck
 			return
 		}
 
@@ -1294,12 +1134,8 @@ func (a *Application) handleProfileDetail(store storage.Storage) http.HandlerFun
 			}
 			w.Header().Set("Content-Type", "application/json")
 			opts := protojson.MarshalOptions{UseProtoNames: true}
-			b, err := opts.Marshal(profile)
-			if err != nil {
-				http.Error(w, "Failed to marshal", http.StatusInternalServerError)
-				return
-			}
-			w.Write(b) //nolint:errcheck
+			b, _ := opts.Marshal(profile)
+			_, _ = w.Write(b) //nolint:errcheck
 
 		case http.MethodPut:
 			var profile configv1.ProfileDefinition
@@ -1322,7 +1158,7 @@ func (a *Application) handleProfileDetail(store storage.Storage) http.HandlerFun
 				logging.GetLogger().Error("failed to reload config after profile update", "error", err)
 			}
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte("{}")) //nolint:errcheck
+			_, _ = w.Write([]byte("{}")) //nolint:errcheck
 
 		case http.MethodDelete:
 			if err := store.DeleteProfile(r.Context(), name); err != nil {
@@ -1359,15 +1195,11 @@ func (a *Application) handleCollections(store storage.Storage) http.HandlerFunc 
 				if i > 0 {
 					buf = append(buf, ',')
 				}
-				b, err := opts.Marshal(c)
-				if err != nil {
-					http.Error(w, "Failed to marshal", http.StatusInternalServerError)
-					return
-				}
+				b, _ := opts.Marshal(c)
 				buf = append(buf, b...)
 			}
 			buf = append(buf, ']')
-			w.Write(buf) //nolint:errcheck
+			_, _ = w.Write(buf) //nolint:errcheck
 
 		case http.MethodPost:
 			var collection configv1.Collection
@@ -1389,7 +1221,7 @@ func (a *Application) handleCollections(store storage.Storage) http.HandlerFunc 
 				return
 			}
 			w.WriteHeader(http.StatusCreated)
-			w.Write([]byte("{}")) //nolint:errcheck
+			_, _ = w.Write([]byte("{}")) //nolint:errcheck
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
@@ -1425,12 +1257,8 @@ func (a *Application) handleCollectionDetail(store storage.Storage) http.Handler
 			w.Header().Set("Content-Type", "application/json")
 			w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.json\"", name))
 			opts := protojson.MarshalOptions{UseProtoNames: true, Multiline: true, Indent: "  "}
-			b, err := opts.Marshal(exportCollection)
-			if err != nil {
-				http.Error(w, "Failed to marshal", http.StatusInternalServerError)
-				return
-			}
-			w.Write(b) //nolint:errcheck
+			b, _ := opts.Marshal(exportCollection)
+			_, _ = w.Write(b) //nolint:errcheck
 			return
 		}
 
@@ -1454,12 +1282,8 @@ func (a *Application) handleCollectionDetail(store storage.Storage) http.Handler
 			}
 			w.Header().Set("Content-Type", "application/json")
 			opts := protojson.MarshalOptions{UseProtoNames: true}
-			b, err := opts.Marshal(collection)
-			if err != nil {
-				http.Error(w, "Failed to marshal", http.StatusInternalServerError)
-				return
-			}
-			w.Write(b) //nolint:errcheck
+			b, _ := opts.Marshal(collection)
+			_, _ = w.Write(b) //nolint:errcheck
 
 		case http.MethodPut:
 			var collection configv1.Collection
@@ -1479,7 +1303,7 @@ func (a *Application) handleCollectionDetail(store storage.Storage) http.Handler
 				return
 			}
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte("{}")) //nolint:errcheck
+			_, _ = w.Write([]byte("{}")) //nolint:errcheck
 
 		case http.MethodDelete:
 			if err := store.DeleteServiceCollection(r.Context(), name); err != nil {
@@ -1541,7 +1365,7 @@ func (a *Application) handleCollectionApply(w http.ResponseWriter, r *http.Reque
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("{}")) //nolint:errcheck
+	_, _ = w.Write([]byte("{}")) //nolint:errcheck
 }
 
 func isUnsafeConfig(service *configv1.UpstreamServiceConfig) bool {

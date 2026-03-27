@@ -25,30 +25,16 @@ func main() {
 
 	ast.Inspect(f, func(n ast.Node) bool {
 		switch x := n.(type) {
-		case *ast.AssignStmt:
-			isUnderscore := false
-			for _, lhs := range x.Lhs {
-				if id, ok := lhs.(*ast.Ident); ok && id.Name == "_" {
-					isUnderscore = true
-					break
-				}
-			}
-
-			if isUnderscore && len(x.Rhs) > 0 {
-				if _, ok := x.Rhs[0].(*ast.CallExpr); ok {
-					lineNum := fset.Position(x.Pos()).Line - 1
-					if !strings.Contains(lines[lineNum], "//nolint:errcheck") {
-						lines[lineNum] = lines[lineNum] + " //nolint:errcheck"
-					}
-				}
-			}
 		case *ast.ExprStmt:
 			if call, ok := x.X.(*ast.CallExpr); ok {
 				if sel, ok := call.Fun.(*ast.SelectorExpr); ok {
 					if sel.Sel.Name == "Write" || sel.Sel.Name == "Marshal" || sel.Sel.Name == "Encode" || sel.Sel.Name == "Close" {
 						lineNum := fset.Position(x.Pos()).Line - 1
 						if !strings.Contains(lines[lineNum], "//nolint:errcheck") {
-							lines[lineNum] = lines[lineNum] + " //nolint:errcheck"
+                            // Only flag if it doesn't already have it
+                            // Actually it shouldn't just be an ExprStmt, wait.
+                            // If it has //nolint:errcheck it's technically fine.
+                            fmt.Printf("Line %d: unassigned call to %s without nolint\n", lineNum+1, sel.Sel.Name)
 						}
 					}
 				}
@@ -56,10 +42,4 @@ func main() {
 		}
 		return true
 	})
-
-	err = os.WriteFile("pkg/app/api.go", []byte(strings.Join(lines, "\n")), 0644)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("Done")
 }
