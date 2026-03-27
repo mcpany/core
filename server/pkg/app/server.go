@@ -124,7 +124,9 @@ func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 	// Sanitize the filename to prevent reflected XSS and ensure safe filesystem usage
 	safeFilename := util.SanitizeFilename(header.Filename)
 	w.Header().Set("Content-Type", "text/plain")
-	_, _ = fmt.Fprintf(w, "File '%s' uploaded successfully (size: %d bytes)", html.EscapeString(safeFilename), written)
+	if _, err := fmt.Fprintf(w, "File '%s' uploaded successfully (size: %d bytes)", html.EscapeString(safeFilename), written); err != nil {
+		logging.GetLogger().Error("failed to write response", "error", err)
+	}
 }
 
 // RunOptions configuration for starting the MCP Any application.
@@ -411,7 +413,9 @@ func (a *Application) Run(opts RunOptions) error {
 	}
 	defer func() {
 		if storageCloser != nil {
-			_ = storageCloser()
+			if err := storageCloser(); err != nil {
+				logging.GetLogger().Error("failed to close storage", "error", err)
+			}
 		}
 	}()
 
@@ -1528,7 +1532,9 @@ func HealthCheckWithContext(
 		return fmt.Errorf("health check failed with status code: %d", resp.StatusCode)
 	}
 
-	_, _ = fmt.Fprintln(out, "Health check successful: server is running and healthy.")
+	if _, err := fmt.Fprintln(out, "Health check successful: server is running and healthy."); err != nil {
+		logging.GetLogger().Error("failed to write health check response", "error", err)
+	}
 	return nil
 }
 
@@ -1720,7 +1726,9 @@ func (a *Application) runServerMode(
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
-		_, _ = w.Write(b)
+		if _, err := w.Write(b); err != nil {
+			logging.GetLogger().Error("failed to write response", "error", err)
+		}
 	})))
 
 	logging.GetLogger().Info("DEBUG: Registering /mcp/u/ handler")
@@ -1948,7 +1956,9 @@ func (a *Application) runServerMode(
 						},
 					}
 					w.Header().Set("Content-Type", "application/json")
-					_ = json.NewEncoder(w).Encode(resp)
+					if err := json.NewEncoder(w).Encode(resp); err != nil {
+						logging.GetLogger().Error("failed to encode response", "error", err)
+					}
 					return
 				}
 
@@ -1964,7 +1974,9 @@ func (a *Application) runServerMode(
 
 	healthHandler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		_, _ = fmt.Fprintln(w, "OK")
+		if _, err := fmt.Fprintln(w, "OK"); err != nil {
+			logging.GetLogger().Error("failed to write response", "error", err)
+		}
 	})
 	mux.Handle("/healthz", healthHandler)
 	mux.Handle("/health", healthHandler)
@@ -2511,7 +2523,7 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 					return
 				}
 
-				// Grant Admin privileges (Root Access) for local development/testing convenience
+				// Grant Admin privileges (Root Access) for local development/testing convenience.
 				// when running in insecure mode (private network, no API key).
 				ctx = auth.ContextWithRoles(ctx, []string{"admin"})
 				ctx = auth.ContextWithUser(ctx, "system-admin")

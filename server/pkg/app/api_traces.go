@@ -55,7 +55,7 @@ func toTrace(entry audit.Entry) *Trace {
 	hash := sha256.Sum256([]byte(data))
 	traceID := hex.EncodeToString(hash[:])
 
-	// Span ID can be same or derived
+	// Span ID can be same or derived.
 	spanID := traceID + "-0"
 
 	status := statusSuccess
@@ -69,7 +69,9 @@ func toTrace(entry audit.Entry) *Trace {
 
 	var input map[string]any
 	if len(entry.Arguments) > 0 {
-		_ = json.Unmarshal(entry.Arguments, &input)
+		if err := json.Unmarshal(entry.Arguments, &input); err != nil {
+			input = map[string]any{"raw": string(entry.Arguments)}
+		}
 	}
 
 	var output map[string]any
@@ -79,7 +81,9 @@ func toTrace(entry audit.Entry) *Trace {
 		// For now assume map or convertible.
 		b, err := json.Marshal(entry.Result)
 		if err == nil {
-			_ = json.Unmarshal(b, &output)
+			if err := json.Unmarshal(b, &output); err != nil {
+				output = map[string]any{"raw": string(b)}
+			}
 		}
 	}
 
@@ -101,7 +105,7 @@ func toTrace(entry audit.Entry) *Trace {
 		Timestamp:     entry.Timestamp.Format(time.RFC3339),
 		TotalDuration: durationMs,
 		Status:        status,
-		Trigger:       "user", // Default to user for now
+		Trigger:       "user", // Default to user for now.
 	}
 }
 
@@ -114,12 +118,12 @@ func (a *Application) handleTraces() http.HandlerFunc {
 
 		var traces []*Trace
 
-		// 1. Get real audit logs
+		// 1. Get real audit logs.
 		if a.standardMiddlewares != nil && a.standardMiddlewares.Audit != nil {
 			history := a.standardMiddlewares.Audit.GetHistory()
 
 			// ⚡ BOLT: Optimized trace retrieval
-			// Randomized Selection from Top 5 High-Impact Targets
+			// Randomized Selection from Top 5 High-Impact Targets.
 			// Only unmarshal the requested number of recent traces to save CPU and bandwidth.
 			limitStr := r.URL.Query().Get("limit")
 			limit := len(history)
@@ -136,7 +140,7 @@ func (a *Application) handleTraces() http.HandlerFunc {
 				startIdx = len(history) - limit
 			}
 
-			// Iterate backwards from end to startIdx to return newest first
+			// Iterate backwards from end to startIdx to return newest first.
 			for i := len(history) - 1; i >= startIdx; i-- {
 				if entry, ok := history[i].(audit.Entry); ok {
 					traces = append(traces, toTrace(entry))
@@ -149,7 +153,9 @@ func (a *Application) handleTraces() http.HandlerFunc {
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(traces)
+		if err := json.NewEncoder(w).Encode(traces); err != nil {
+			logging.GetLogger().Error("failed to encode traces", "error", err)
+		}
 	}
 }
 
@@ -169,15 +175,17 @@ func (a *Application) handleTracesWS() http.HandlerFunc {
 		if a.standardMiddlewares == nil || a.standardMiddlewares.Audit == nil {
 			// If audit is disabled, just close or keep open but send nothing?
 			// Better to send a close message.
-			_ = conn.WriteControl(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, "Audit disabled"), time.Now().Add(time.Second))
+			if closeErr := conn.WriteControl(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, "Audit disabled"), time.Now().Add(time.Second)); closeErr != nil {
+				logging.GetLogger().Error("failed to write close message", "error", closeErr)
+			}
 			return
 		}
 
-		// Subscribe to traces with history
+		// Subscribe to traces with history.
 		logCh, history := a.standardMiddlewares.Audit.SubscribeWithHistory()
 		defer a.standardMiddlewares.Audit.Unsubscribe(logCh)
 
-		// Set write deadline
+		// Set write deadline.
 		if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
 			logging.GetLogger().Error("failed to set write deadline", "error", err)
 			return
@@ -186,7 +194,7 @@ func (a *Application) handleTracesWS() http.HandlerFunc {
 			return conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
 		})
 
-		// Send history
+		// Send history.
 		for _, msg := range history {
 			entry, ok := msg.(audit.Entry)
 			if !ok {
@@ -246,7 +254,7 @@ func (a *Application) handleDebugSeedTraces() http.HandlerFunc {
 		trace := generateMockTrace()
 
 		if a.standardMiddlewares != nil && a.standardMiddlewares.Audit != nil {
-			// Flatten and write to DB
+			// Flatten and write to DB.
 			var writeSpans func(span Span, parentID string)
 			writeSpans = func(span Span, parentID string) {
 				argsBytes, _ := json.Marshal(span.Input)
@@ -281,7 +289,9 @@ func (a *Application) handleDebugSeedTraces() http.HandlerFunc {
 		logging.GetLogger().Info("Seeded debug trace to database", "id", trace.ID)
 
 		w.WriteHeader(http.StatusCreated)
-		_ = json.NewEncoder(w).Encode(map[string]string{"status": "seeded", "id": trace.ID})
+		if err := json.NewEncoder(w).Encode(map[string]string{"status": "seeded", "id": trace.ID}); err != nil {
+			logging.GetLogger().Error("failed to encode response", "error", err)
+		}
 	}
 }
 
@@ -292,7 +302,7 @@ func generateMockTrace() Trace {
 	if err == nil {
 		traceSuffix = n.Int64()
 	} else {
-		traceSuffix = now % 10000 // Fallback if random fails
+		traceSuffix = now % 10000 // Fallback if random fails.
 	}
 	traceID := fmt.Sprintf("trace-seed-%d", traceSuffix)
 	return Trace{

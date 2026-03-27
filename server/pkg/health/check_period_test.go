@@ -45,7 +45,7 @@ func TestNewChecker_WithoutInterval(t *testing.T) {
 		HttpService: configv1.HttpUpstreamService_builder{
 			Address: proto.String("http://localhost:1234"),
 			HealthCheck: configv1.HttpHealthCheck_builder{
-				Url:      proto.String("http://localhost:1234/health"),
+				Url: proto.String("http://localhost:1234/health"),
 				// No interval
 			}.Build(),
 		}.Build(),

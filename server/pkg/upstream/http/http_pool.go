@@ -6,8 +6,8 @@ package http //nolint:revive,nolintlint // Package name 'http' is intentional fo
 import (
 	"context"
 	"crypto/tls"
-	"fmt"
 	"crypto/x509"
+	"fmt"
 	"net/http"
 	"os"
 	"time"

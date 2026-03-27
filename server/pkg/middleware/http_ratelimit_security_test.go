@@ -25,7 +25,7 @@ func TestHTTPRateLimitMiddleware_Security_Bypass(t *testing.T) {
 	req1 := httptest.NewRequest("GET", "/", nil)
 	req1.RemoteAddr = remoteAddr
 	// Proxy appends realClientIP. Attacker sets "fake-ip-1"
-	req1.Header.Set("X-Forwarded-For", "fake-ip-1, " + realClientIP)
+	req1.Header.Set("X-Forwarded-For", "fake-ip-1, "+realClientIP)
 	rec1 := httptest.NewRecorder()
 	handler.ServeHTTP(rec1, req1)
 	assert.Equal(t, http.StatusOK, rec1.Code, "Request 1 should be allowed")
@@ -36,7 +36,7 @@ func TestHTTPRateLimitMiddleware_Security_Bypass(t *testing.T) {
 	// Attacker changes fake IP to "fake-ip-2"
 	req2 := httptest.NewRequest("GET", "/", nil)
 	req2.RemoteAddr = remoteAddr
-	req2.Header.Set("X-Forwarded-For", "fake-ip-2, " + realClientIP)
+	req2.Header.Set("X-Forwarded-For", "fake-ip-2, "+realClientIP)
 	rec2 := httptest.NewRecorder()
 	handler.ServeHTTP(rec2, req2)
 

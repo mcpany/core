@@ -27,7 +27,7 @@ func TestSafeSecretClient_SecurityDefaults(t *testing.T) {
 
 	// Verify SSRF Protection (Loopback blocked by default)
 	// We need to ensure the environment variable is NOT set for this test.
-	t.Setenv("MCPANY_ALLOW_LOOPBACK_SECRETS", "") // Force disable
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_SECRETS", "")        // Force disable
 	t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_SECRETS", "") // Force disable
 
 	secret := &configv1.SecretValue{}

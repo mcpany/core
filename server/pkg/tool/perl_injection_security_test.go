@@ -51,7 +51,7 @@ func TestPerlInjection(t *testing.T) {
 	payload := "@{[ system('echo INJECTED') ]}"
 
 	req := &ExecutionRequest{
-		ToolName: "perl_hello",
+		ToolName:   "perl_hello",
 		ToolInputs: []byte(`{"name": "` + payload + `"}`),
 	}
 

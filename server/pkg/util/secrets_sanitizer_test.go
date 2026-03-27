@@ -195,19 +195,19 @@ func TestStripSecretsFromCalls(t *testing.T) {
 
 func TestHydrateSecretValue_Internal(t *testing.T) {
 	secrets := map[string]*configv1.SecretValue{
-        "API_KEY": configv1.SecretValue_builder{
-            PlainText: proto.String("12345"),
-        }.Build(),
-    }
+		"API_KEY": configv1.SecretValue_builder{
+			PlainText: proto.String("12345"),
+		}.Build(),
+	}
 
 	// Test hydrateSecretValue with non-env var
-    plainSecret := configv1.SecretValue_builder{PlainText: proto.String("plain")}.Build()
-    hydrateSecretValue(plainSecret, secrets) // Should do nothing
+	plainSecret := configv1.SecretValue_builder{PlainText: proto.String("plain")}.Build()
+	hydrateSecretValue(plainSecret, secrets) // Should do nothing
 	assert.Equal(t, "plain", plainSecret.GetPlainText())
 
-    // Test hydrateSecretValue with missing secret key
-    missingSecret := configv1.SecretValue_builder{EnvironmentVariable: proto.String("MISSING")}.Build()
-    hydrateSecretValue(missingSecret, secrets) // Should do nothing
+	// Test hydrateSecretValue with missing secret key
+	missingSecret := configv1.SecretValue_builder{EnvironmentVariable: proto.String("MISSING")}.Build()
+	hydrateSecretValue(missingSecret, secrets) // Should do nothing
 	assert.Equal(t, "MISSING", missingSecret.GetEnvironmentVariable())
 }
 
@@ -577,13 +577,13 @@ func TestStripSecretsFromAllServices(t *testing.T) {
 func TestStripSecretsFromGrpcAndOpenapi(t *testing.T) {
 	// These currently don't do much, but we test for coverage
 	svcGrpc := configv1.UpstreamServiceConfig_builder{
-		Id: proto.String("grpc"),
+		Id:          proto.String("grpc"),
 		GrpcService: configv1.GrpcUpstreamService_builder{}.Build(),
 	}.Build()
 	StripSecretsFromService(svcGrpc)
 
 	svcOpenapi := configv1.UpstreamServiceConfig_builder{
-		Id: proto.String("openapi"),
+		Id:             proto.String("openapi"),
 		OpenapiService: configv1.OpenapiUpstreamService_builder{}.Build(),
 	}.Build()
 	StripSecretsFromService(svcOpenapi)
@@ -674,67 +674,67 @@ func TestStripSecretsFromService_NilBranches(t *testing.T) {
 		sanitize func()
 	}{
 		{
-			name: "CommandLineService with nil",
+			name:     "CommandLineService with nil",
 			sanitize: func() { stripSecretsFromCommandLineService(nil) },
 		},
 		{
-			name: "HTTPService with nil",
+			name:     "HTTPService with nil",
 			sanitize: func() { stripSecretsFromHTTPService(nil) },
 		},
 		{
-			name: "McpService with nil",
+			name:     "McpService with nil",
 			sanitize: func() { stripSecretsFromMcpService(nil) },
 		},
 		{
-			name: "FilesystemService with nil",
+			name:     "FilesystemService with nil",
 			sanitize: func() { stripSecretsFromFilesystemService(nil) },
 		},
 		{
-			name: "VectorService with nil",
+			name:     "VectorService with nil",
 			sanitize: func() { stripSecretsFromVectorService(nil) },
 		},
 		{
-			name: "WebsocketService with nil",
+			name:     "WebsocketService with nil",
 			sanitize: func() { stripSecretsFromWebsocketService(nil) },
 		},
 		{
-			name: "WebrtcService with nil",
+			name:     "WebrtcService with nil",
 			sanitize: func() { stripSecretsFromWebrtcService(nil) },
 		},
 		{
-			name: "Hook with nil",
+			name:     "Hook with nil",
 			sanitize: func() { stripSecretsFromHook(nil) },
 		},
 		{
-			name: "CommandLineCall with nil",
+			name:     "CommandLineCall with nil",
 			sanitize: func() { stripSecretsFromCommandLineCall(nil) },
 		},
 		{
-			name: "HTTPCall with nil",
+			name:     "HTTPCall with nil",
 			sanitize: func() { stripSecretsFromHTTPCall(nil) },
 		},
 		{
-			name: "WebsocketCall with nil",
+			name:     "WebsocketCall with nil",
 			sanitize: func() { stripSecretsFromWebsocketCall(nil) },
 		},
 		{
-			name: "WebrtcCall with nil",
+			name:     "WebrtcCall with nil",
 			sanitize: func() { stripSecretsFromWebrtcCall(nil) },
 		},
 		{
-			name: "SecretValue with nil",
+			name:     "SecretValue with nil",
 			sanitize: func() { scrubSecretValue(nil) },
 		},
 		{
-			name: "Profile with nil",
+			name:     "Profile with nil",
 			sanitize: func() { StripSecretsFromProfile(nil) },
 		},
 		{
-			name: "Collection with nil",
+			name:     "Collection with nil",
 			sanitize: func() { StripSecretsFromCollection(nil) },
 		},
 		{
-			name: "Service with nil config",
+			name:     "Service with nil config",
 			sanitize: func() { StripSecretsFromService(nil) },
 		},
 	}

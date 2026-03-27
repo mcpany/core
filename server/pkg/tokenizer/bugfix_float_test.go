@@ -5,8 +5,8 @@ package tokenizer
 
 import (
 	"fmt"
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestHunter_SimpleTokenizer_FloatOptimization_Bug(t *testing.T) {
@@ -17,12 +17,12 @@ func TestHunter_SimpleTokenizer_FloatOptimization_Bug(t *testing.T) {
 	}{
 		// These values trigger the scientific notation in %v (default formatting),
 		// but the fast path optimization treats them as integers, leading to incorrect token counts.
-		{10000000.0},  // 1e+07 (5 chars -> 1 token) vs 10000000 (8 digits -> 2 tokens)
-		{1234567.0},   // 1.234567e+06 (12 chars -> 3 tokens) vs 1234567 (7 digits -> 1 token)
-		{-1234567.0},  // -1.234567e+06 (13 chars -> 3 tokens) vs -1234567 (8 chars -> 2 tokens)
+		{10000000.0}, // 1e+07 (5 chars -> 1 token) vs 10000000 (8 digits -> 2 tokens)
+		{1234567.0},  // 1.234567e+06 (12 chars -> 3 tokens) vs 1234567 (7 digits -> 1 token)
+		{-1234567.0}, // -1.234567e+06 (13 chars -> 3 tokens) vs -1234567 (8 chars -> 2 tokens)
 
 		// Boundary cases
-		{1000000.0},   // 1e+06 (5 chars -> 1 token) vs 1000000 (7 digits -> 1 token) - This one is coincidentally same count
+		{1000000.0}, // 1e+06 (5 chars -> 1 token) vs 1000000 (7 digits -> 1 token) - This one is coincidentally same count
 	}
 
 	for _, tt := range tests {

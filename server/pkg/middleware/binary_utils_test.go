@@ -12,8 +12,8 @@ import (
 
 func TestFloat32ToBytes_And_Back(t *testing.T) {
 	tests := []struct {
-		name   string
-		input  []float32
+		name  string
+		input []float32
 	}{
 		{
 			name:  "Empty",
