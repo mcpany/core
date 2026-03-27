@@ -28,13 +28,13 @@ func TestSkillResource_BinaryAsset(t *testing.T) {
 	// Create a binary asset (simulated with random bytes and .bin extension)
 	binaryContent := []byte{0xDE, 0xAD, 0xBE, 0xEF, 0x00, 0xFF}
 	binaryFile := filepath.Join(skillDir, "data.bin")
-	err = os.WriteFile(binaryFile, binaryContent, 0644)
+	err = os.WriteFile(binaryFile, binaryContent, 0600)
 	require.NoError(t, err)
 
 	// Create a text asset
 	textContent := []byte("Hello, world!")
 	textFile := filepath.Join(skillDir, "data.txt")
-	err = os.WriteFile(textFile, textContent, 0644)
+	err = os.WriteFile(textFile, textContent, 0600)
 	require.NoError(t, err)
 
 	s := &skill.Skill{

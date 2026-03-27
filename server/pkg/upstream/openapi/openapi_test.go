@@ -504,6 +504,9 @@ func TestHttpClientImpl_Do(t *testing.T) {
 	req, _ := http.NewRequest("GET", "http://example.com", nil)
 	resp, err := wrapper.Do(req)
 	assert.NoError(t, err)
+	if resp != nil {
+		resp.Body.Close()
+	}
 	assert.Equal(t, 200, resp.StatusCode)
 }
 

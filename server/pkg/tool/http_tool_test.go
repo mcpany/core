@@ -521,9 +521,7 @@ func TestHTTPTool_Execute_ErrorBodyRedaction(t *testing.T) {
 }
 
 func TestHTTPTool_Execute_InputTransformation_Webhook(t *testing.T) {
-
-
-	webhookServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	webhookServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/cloudevents+json")
 		responseEvent := `{
 			"specversion": "1.0",

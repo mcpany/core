@@ -75,7 +75,7 @@ func TestSkillResource_Read(t *testing.T) {
 
 	// Create SKILL.md
 	skillContent := "# Test Skill\n\nInstructions..."
-	err = os.WriteFile(filepath.Join(skillDir, "SKILL.md"), []byte(skillContent), 0644)
+	err = os.WriteFile(filepath.Join(skillDir, "SKILL.md"), []byte(skillContent), 0600)
 	require.NoError(t, err)
 
 	// Create assets
@@ -84,16 +84,16 @@ func TestSkillResource_Read(t *testing.T) {
 	require.NoError(t, err)
 
 	jsonContent := `{"key": "value"}`
-	err = os.WriteFile(filepath.Join(assetsDir, "data.json"), []byte(jsonContent), 0644)
+	err = os.WriteFile(filepath.Join(assetsDir, "data.json"), []byte(jsonContent), 0600)
 	require.NoError(t, err)
 
 	binContent := []byte{0x00, 0x01, 0x02, 0x03}
-	err = os.WriteFile(filepath.Join(assetsDir, "data.bin"), binContent, 0644)
+	err = os.WriteFile(filepath.Join(assetsDir, "data.bin"), binContent, 0600)
 	require.NoError(t, err)
 
 	// Create a file outside the skill directory
 	outsideFile := filepath.Join(tempDir, "outside.txt")
-	err = os.WriteFile(outsideFile, []byte("SECRET"), 0644)
+	err = os.WriteFile(outsideFile, []byte("SECRET"), 0600)
 	require.NoError(t, err)
 
 	// Create a symlink inside the skill pointing to the outside file

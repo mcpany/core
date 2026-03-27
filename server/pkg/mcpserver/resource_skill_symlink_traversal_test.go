@@ -27,7 +27,7 @@ func TestSkillResource_SymlinkTraversal(t *testing.T) {
 
 	// Create a secret file outside the skill directory
 	secretFile := filepath.Join(tmpDir, "secret.txt")
-	err = os.WriteFile(secretFile, []byte("super secret"), 0644)
+	err = os.WriteFile(secretFile, []byte("super secret"), 0600)
 	require.NoError(t, err)
 
 	// Create a symlink inside the skill directory pointing to the secret file
