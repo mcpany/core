@@ -42,9 +42,13 @@ issues:
     - node_modules
     - .cache
     - proto
+    - bazel-.*
+    - ../proto
   skip-dirs:
     - proto
     - vendor
+    - bazel-.*
+    - ../proto
   exclude-rules:
     - path: "_test.go"
       linters:
