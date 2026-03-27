@@ -592,7 +592,6 @@
 - [ ] **[P1] Speculative Garbage Collection Log**: (2026-06-17) Real-time tracker for R-GC purged context fragments and reasoning entropy scores.
 - [ ] **[P0] Temporal Jitter Security Hub**: (2026-06-17) UI for monitoring TSJ-injected state synchronization and timing-side-channel mitigation.
 
-
 ### Upcoming (Updated 2026-06-18)
 - [P0] Per-Agent Sovereignty Visualization
 - [P1] Real-time Inter-Agent Logic-Path Monitoring
