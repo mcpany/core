@@ -142,7 +142,7 @@ fi
 # ---------------------------------------------------------------------------
 echo "==> Running Docstring Audit..."
 if [[ -f "server/tools/audit_docs.py" ]]; then
-    python3 server/tools/audit_docs.py server/pkg server/cmd
+    python3 server/tools/audit_docs.py .
     echo "    Docstring Audit OK."
 else
     echo "    Warning: audit_docs.py not found – skipping."
