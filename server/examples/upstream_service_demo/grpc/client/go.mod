@@ -1,6 +1,6 @@
 module github.com/mcpany/core/upstream_service/grpc/client
 
-go 1.26.1
+go 1.24.1
 
 require google.golang.org/grpc v1.79.2
 

@@ -1,6 +1,6 @@
 module example/block_rm
 
-go 1.26.1
+go 1.24.1
 
 toolchain go1.24.11
 

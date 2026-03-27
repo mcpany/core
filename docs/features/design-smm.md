@@ -1,4 +1,3 @@
-<!-- markdownlint-disable -->
 # Design Doc: Stylometric Mimicry Mitigator (SMM)
 
 **Status:** Draft

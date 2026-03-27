@@ -1,4 +1,3 @@
-<!-- markdownlint-disable -->
 # Strategic Vision: MCP Any
 
 ## Mission Statement

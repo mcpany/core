@@ -1,4 +1,3 @@
-<!-- markdownlint-disable -->
 # Design Doc: HAIL (Hardware-Attested Intent Lineage)
 
 **Status:** Draft

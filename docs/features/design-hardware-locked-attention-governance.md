@@ -1,4 +1,3 @@
-<!-- markdownlint-disable -->
 # Design Doc: HLAG (Hardware-Locked Attention Governance)
 
 **Status:** Draft

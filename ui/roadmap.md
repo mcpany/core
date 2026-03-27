@@ -1,4 +1,3 @@
-<!-- markdownlint-disable -->
 # UI Roadmap
 
 ## Status: Active Development

@@ -1,4 +1,3 @@
-<!-- markdownlint-disable -->
 # Design Doc: LFMC (Lock-Free Mesh Coordination)
 
 **Status:** Draft
