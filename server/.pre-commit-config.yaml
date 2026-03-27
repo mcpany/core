@@ -62,6 +62,4 @@ repos:
             - "vendor/**"
             - -ignore
             - "**/*.pb.go"
-            - -ignore
-            - "ui/pnpm-lock.yaml"
             - -s=only
