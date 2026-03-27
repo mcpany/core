@@ -19,7 +19,7 @@ As AI swarms grow in complexity, the "Consensus Bottleneck" (MTTC) has become th
 *   **The Happy Path (Tasks):**
     1. Agent A generates a reasoning shard.
     2. AVQ Hub signs the shard using a local TPM/Secure Enclave.
-    3. Agent B ingests the signed shard and proceeds without re-verifying the security policy.
+    3. Agent B gets the signed shard and proceeds without re-verifying the security policy.
 
 ## 4. Design & Architecture
 *   **System Flow:** [Agent] -> [MCP Tool Bus] -> [AVQ Hub / TPM] -> [Signed Attestation] -> [Consumer Agent]
