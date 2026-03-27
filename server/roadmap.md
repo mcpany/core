@@ -490,4 +490,13 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] GSR Deadlock Resolver**: Implementation of a graph-based reconciliation engine for resolving circular attestation dependencies in swarms. (Added: 2026-05-03)
 *   **[P1] Predictive Intent Warming (PIW)**: Middleware to pre-fetch tool schemas and pre-warm sandboxes based on early reasoning signals. (Added: 2026-05-03)
 *   **[P1] Host-Native Snapshotting Driver**: Support for ZFS/LVM kernel-level primitives in the PLSS Sync bridge. (Added: 2026-05-03)
+
 #### Upcoming (2026-05-05 Evolution)
+*   **[P0] Reasoning-Path Validator (RPV)**: Native support for RPW cryptographically watermarked reasoning paths in the UACO layer. (Added: 2026-05-05)
+*   **[P0] Sovereign Intent Auditor (SIA) Bridge**: Integration of SIA reasoning proofs into the Risk-Adaptive CQ Controller. (Added: 2026-05-05)
+*   **[P1] Zk-Context Proxy Middleware**: Support for Zero-Knowledge Context Splicing (Zk-CS) in context sharing. (Added: 2026-05-05)
+
+#### Upcoming (2026-05-06 Evolution)
+*   **[P0] Federated Quorum Broker (FQB)**: Multi-swarm coordination infrastructure for negotiating cross-organizational joint quorums. (Added: 2026-05-06)
+*   **[P0] Dynamic Capability Leasing (DCL) Broker**: JIT permission manager that binds tool capabilities to the agent's active reasoning path. (Added: 2026-05-06)
+*   **[P1] TE-Bound Context Shards (CIS)**: Upgrade to Context Sharding to support TEE-resident isolation and hardware-backed data sovereignty. (Added: 2026-05-06)

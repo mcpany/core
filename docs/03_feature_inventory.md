@@ -822,4 +822,26 @@
 ### Priority Shifts
 - **Inter-Swarm Deadlock Detector**: (Promoted to P0) Now critical for ensuring stability in peer-to-peer swarms using GSR patterns.
 - **Lazy-Discovery Architecture**: (Re-affirmed P0) Elevated with the requirement for "Predictive Warming" to combat schema bloat.
+
+## Evolution: [2026-05-06] Updates
+
+### Proposed Additions
+- **Federated Quorum Broker (FQB)**: (P0) Multi-swarm coordination service that facilitates joint quorum negotiations for cross-organizational high-stakes actions.
+- **Dynamic Capability Leasing (DCL) Broker**: (P0) Security middleware that binds tool permissions to verified reasoning paths (RPW), providing "Just-in-Time" agency.
+- **TEE-Bound Shard Isolation (CIS)**: (P1) Hardware-level isolation for context shards using TEEs to prevent cross-shard data leakage in compromised environments.
+- **Joint Quorum Attestation Ledger**: (P1) Immutable ledger for recording the provenance and multi-signature status of federated quorums.
+
+### Priority Shifts
+- **Contextual Quorum (CQ) Hub**: (Re-affirmed P0) Evolving into the Federated Quorum Broker to support OpenClaw v2026.5.5 requirements.
+- **Policy Firewall Engine**: (Re-affirmed P0) Now designated as the primary host for the Dynamic Capability Leasing (DCL) Broker.
+
 ## Evolution: [2026-05-05] Updates
+
+### Proposed Additions
+- **Reasoning-Path Validator (RPV)**: (P0) Core security service that verifies cryptographically watermarked reasoning paths (RPW) to ensure task lineage.
+- **Sovereign Intent Auditor (SIA) Bridge**: (P0) Extension for the Risk-Adaptive CQ Controller that validates tool calls against the collective mission-root reasoning proofs.
+- **Zk-Context Proxy Middleware**: (P1) Implementation of Zero-Knowledge Context Splicing (Zk-CS) for secure, privacy-preserving context possession proofs.
+
+### Priority Shifts
+- **Context Sharding Middleware**: (Re-affirmed P0) Expanded to support Zk-Context Proxies for Zero-Trust context sharing.
+- **Risk-Adaptive CQ Controller**: (Re-affirmed P0) Integrated with the SIA Bridge for intent-bound attestation.

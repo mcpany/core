@@ -337,4 +337,13 @@
 - [ ] **[P0] Inter-Swarm Wait-Graph Explorer**: Interactive visualization of attestation dependencies and deadlock resolution status. (Added: 2026-05-03)
 - [ ] **[P1] Intent Warming Dashboard**: Monitor for PIW pre-fetch hits, misses, and latency reduction scores. (Added: 2026-05-03)
 - [ ] **[P1] Host-Native Snapshot Monitor**: Real-time status indicator for ZFS/LVM snapshotting speed and integrity. (Added: 2026-05-03)
+
 #### Upcoming (2026-05-05 Evolution)
+- [ ] **[P0] Reasoning Lineage Visualizer**: Visual timeline for verifying RPW-watermarked reasoning paths and task lineages. (Added: 2026-05-05)
+- [ ] **[P0] Sovereign Intent Auditor (SIA) UI**: Dashboard for reviewing Reasoning Proofs and mission-root alignment scores. (Added: 2026-05-05)
+- [ ] **[P1] Zk-Context Possession Inspector**: Security UI for visualizing zero-knowledge context possession proofs. (Added: 2026-05-05)
+
+#### Upcoming (2026-05-06 Evolution)
+- [ ] **[P0] Federated Quorum Workspace**: Multi-swarm coordination UI for negotiating and reviewing joint quorum proposals. (Added: 2026-05-06)
+- [ ] **[P0] JIT Capability Lease Monitor**: Real-time dashboard for monitoring active DCL leases and their alignment with the reasoning path. (Added: 2026-05-06)
+- [ ] **[P1] TEE Shard Isolation Dashboard**: Hardware-bound status monitor for CIS-resident context shards and isolation integrity. (Added: 2026-05-06)
