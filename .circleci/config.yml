@@ -57,18 +57,8 @@ jobs:
             . venv/bin/activate
             # Ensure PATH includes tool install dir
             export PATH=$PWD/build/env/bin:$PATH
-
-            echo "Running Pre-Commit Hooks..."
-            pre-commit run --all-files || {
-                echo "Pre-commit failed. See output above."
-                exit 1
-            }
-
-            echo "Running Make Lint..."
-            make lint || {
-                echo "Make lint failed. See output above."
-                exit 1
-            }
+            pre-commit run --all-files
+            make lint
       - save_cache:
           key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}-v3
           paths:
