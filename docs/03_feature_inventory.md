@@ -1,5 +1,37 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-03-26] Updates
+
+### Proposed Additions
+- **Action-Chain Sovereignty Monitor (ACSM)**: (P0) Real-time monitoring service that validates complete agent workflow sequences against mission-root intents to prevent cascading failures.
+- **CI/CD Cache Integrity Guard (CCIG)**: (P0) Authoritative validator for agent-accessible build caches, requiring cryptographic signatures to prevent supply-chain poisoning.
+- **Metadata Sanitization Gateway (MSG)**: (P0) Real-time semantic sanitizer for agent-ingested external metadata (GitHub, Slack) to neutralize instruction injection.
+- **Post-Quantum Mesh Handshake (PQMH) Provider**: (P1) Security service implementing NIST-standard post-quantum resistant algorithms (FIPS 203/204/205) for long-term mesh integrity.
+
+### Priority Shifts
+- **WASM-BSH State Sanitizer**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Action-Chain** validation integration.
+- **A2A Authenticated Handshake Provider**: (Re-affirmed P0) Designated as the primary integration point for **PQMH** transition.
+
+## Evolution: [2026-07-07] Updates
+
+### Proposed Additions
+- **CI/CD Cache Integrity Guard (CCIG)**: (P0) Authoritative validator for build caches, requiring cryptographic signatures for all cache fragments to prevent supply chain poisoning.
+- **Automated Remediation Hub (ARH)**: (P1) Compliance service providing a verifiable audit trail for AI-powered fix suggestions, satisfying SSDF requirements.
+- **Metadata Sanitization Gateway**: (P0) Real-time semantic sanitizer for agent-ingested external metadata (GitHub issues, Slack messages) to neutralize instruction injection.
+- **Action-Chain Sovereignty Monitor**: (P0) High-speed monitoring service that validates agent workflow sequences against mission-root intents to prevent cascading failures.
+
+## Evolution: [2026-07-06] Updates
+
+### Proposed Additions
+- **Quorum-Bound Summarization (QBS) Hub**: (P0) Distributed coordination service requiring multi-agent consensus before context compaction to prevent mission-root erasure.
+- **Optimistic Summarization Middleware**: (P1) Performance-optimizing service allowing speculative reasoning against pending summaries with automated quorum-failure rollbacks.
+- **Intent-Aware Adaptive Jitter**: (P1) Risk-aware side-channel defense that scales jitter variations based on real-time reasoning intent and shard sensitivity.
+- **Enclave-local Metadata Attestation (EMA) Provider**: (P0) Hardware-bound security service for PSS-compliant shard metadata verification using TPM/SEP enclaves.
+
+### Priority Shifts
+- **Adaptive Jitter Profiler**: (Evolved to Intent-Aware Adaptive Jitter) Now designated as the primary performance optimization for side-channel defense.
+- **Quorum-Bound Summarization (QBS) Hub**: (Re-affirmed P0) Designated as a mandatory requirement for high-density horizontal Agent Teams.
+
 ## Evolution: [2026-07-05] Updates
 
 ### Proposed Additions
@@ -977,9 +1009,27 @@
 - **BSH State Buffer**: (P1) High-speed memory-mapped buffer for binary state handoffs between agents to minimize context transfer latency.
 - **Ghost Shell Hook Profiler**: (P0) Instrumented sandbox for behavioral profiling of un-attested configuration hooks, detecting "Binary Smuggling" before host execution.
 
+## Evolution: [2026-03-25] (Iteration 5) Updates
+
+### Proposed Additions
+- **Programmatic SDK Bridge**: (P0) Mandatory security proxy for all SDK-driven agent interactions, enforcing Zero-Trust policies on programmatic tool calls.
+- **Persistent Session Sovereignty Hub**: (P1) Cryptographic attestation service that binds local SQLite session state to hardware identity (TPM) to prevent unauthorized session resumption.
+- **Non-Interactive Mode Security Guard**: (P0) Pre-execution authorization engine that validates all potential tool calls against a mission-root manifest for headless automation.
+
 ### Priority Shifts
-- **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
-- **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.
+- **Binary State Handoff (BSH) Gateway**: (Re-affirmed P0) Elevated to support sub-millisecond transfers for high-frequency SDK programmatic loops.
+- **Relational PoI Chain Validator**: (Re-affirmed P0) Now designated as the primary enforcement mechanism for SDK-driven intent boundaries.
+
+## Evolution: [2026-03-25] (Iteration 4) Updates
+
+### Proposed Additions
+- **Relational PoI Chain Validator**: (P0) Core security service mandating cryptographic verification of the entire intent lineage back to the hardware-attested mission root.
+- **Memfd-Bound BSH Sanitizer**: (P0) Integration of WASM-based binary scanning directly into zero-copy shared memory segments.
+- **Hardware-Attested Monotonic Depth-Counters**: (P0) Physical constraint enforcement for recursive delegations to prevent infinite resource exhaustion loops.
+
+### Priority Shifts
+- **RID Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Hardware-Attested Depth-Counters**.
+- **WASM-BSH State Sanitizer**: (Re-affirmed P0) Evolving into the **Memfd-Bound Sanitizer** to eliminate intermediate buffer copies.
 
 ## Evolution: [2026-07-03] Updates
 

@@ -1,0 +1,310 @@
+--- server/pkg/tool/types.go
++++ server/pkg/tool/types.go
+@@ -114,6 +114,30 @@ type Tool interface {
+	//   - Executes the underlying service logic (network calls, command execution, etc.).
+	Execute(ctx context.Context, req *ExecutionRequest) (any, error)
+
++	// IsStreaming returns true if the tool supports streaming execution.
++	//
++	// Summary: Checks if the tool supports streaming execution.
++	//
++	// Returns:
++	//   - bool: True if streaming is supported.
++	IsStreaming() bool
++
++	// StreamExecute runs the tool in streaming mode, returning a channel of results.
++	//
++	// Summary: Executes the tool in streaming mode.
++	//
++	// Parameters:
++	//   - ctx: context.Context. The execution context.
++	//   - req: *ExecutionRequest. The request payload.
++	//
++	// Returns:
++	//   - <-chan any: A channel that emits streaming results.
++	//   - error: An error if the operation fails or streaming is not supported.
++	//
++	// Side Effects:
++	//   - Executes the underlying service logic in a streaming manner.
++	StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error)
++
+	// GetCacheConfig returns the cache configuration for the tool.
+	//
+	// Summary: Retrieves cache configuration.
+@@ -257,6 +281,24 @@ type Callable interface {
+	Call(ctx context.Context, req *ExecutionRequest) (any, error)
+ }
+
++// StreamingCallable is an interface that represents a callable tool that can stream output.
++//
++// Summary: Interface for executing a tool with streaming output.
++type StreamingCallable interface {
++	Callable
++
++	// StreamCall executes the callable with the given request, emitting updates to the channel.
++	//
++	// Parameters:
++	//   - ctx: context.Context. The context for the request.
++	//   - req: *ExecutionRequest. The execution request details.
++	//
++	// Returns:
++	//   - <-chan any: A channel that emits streaming results.
++	//   - error: An error if the initial operation fails.
++	StreamCall(ctx context.Context, req *ExecutionRequest) (<-chan any, error)
++}
++
+ // Action defines the decision made by a pre-call hook.
+ //
+ // Summary: Enumeration of possible hook actions.
+@@ -476,6 +518,41 @@ func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
+ //   - Makes a gRPC call to the upstream service.
+ //   - Updates metrics (latency, success/error counts).
+ //   - Logs execution details.
++// IsStreaming returns true if the tool supports streaming.
++//
++// Summary: Checks if the tool supports streaming execution.
++//
++// Returns:
++//   - bool: True if streaming is supported.
++func (t *GRPCTool) IsStreaming() bool {
++	return false
++}
++
++// StreamExecute executes the tool in streaming mode.
++//
++// Summary: Executes the tool in streaming mode.
++//
++// Parameters:
++//   - ctx: context.Context. The context for the request.
++//   - req: *ExecutionRequest. The request object containing parameters.
++//
++// Returns:
++//   - <-chan any: A channel that emits streaming results.
++//   - error: An error if the operation fails or streaming is not supported.
++func (t *GRPCTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
++	ch := make(chan any, 1)
++	go func() {
++		defer close(ch)
++		res, err := t.Execute(ctx, req)
++		if err != nil {
++			ch <- err
++		} else {
++			ch <- res
++		}
++	}()
++	return ch, nil
++}
++
+ func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
+		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
+@@ -791,6 +868,41 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
+ //   - Makes an HTTP request to the upstream service.
+ //   - Updates metrics.
+ //   - Logs execution details.
++// IsStreaming returns true if the tool supports streaming.
++//
++// Summary: Checks if the tool supports streaming execution.
++//
++// Returns:
++//   - bool: True if streaming is supported.
++func (t *HTTPTool) IsStreaming() bool {
++	return false
++}
++
++// StreamExecute executes the tool in streaming mode.
++//
++// Summary: Executes the tool in streaming mode.
++//
++// Parameters:
++//   - ctx: context.Context. The context for the request.
++//   - req: *ExecutionRequest. The request object containing parameters.
++//
++// Returns:
++//   - <-chan any: A channel that emits streaming results.
++//   - error: An error if the operation fails or streaming is not supported.
++func (t *HTTPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
++	ch := make(chan any, 1)
++	go func() {
++		defer close(ch)
++		res, err := t.Execute(ctx, req)
++		if err != nil {
++			ch <- err
++		} else {
++			ch <- res
++		}
++	}()
++	return ch, nil
++}
++
+ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
+		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
+@@ -1539,6 +1651,41 @@ func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
+ // Side Effects:
+ //   - Makes an MCP call to the upstream service.
+ //   - Logs execution details.
++// IsStreaming returns true if the tool supports streaming.
++//
++// Summary: Checks if the tool supports streaming execution.
++//
++// Returns:
++//   - bool: True if streaming is supported.
++func (t *MCPTool) IsStreaming() bool {
++	return false
++}
++
++// StreamExecute executes the tool in streaming mode.
++//
++// Summary: Executes the tool in streaming mode.
++//
++// Parameters:
++//   - ctx: context.Context. The context for the request.
++//   - req: *ExecutionRequest. The request object containing parameters.
++//
++// Returns:
++//   - <-chan any: A channel that emits streaming results.
++//   - error: An error if the operation fails or streaming is not supported.
++func (t *MCPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
++	ch := make(chan any, 1)
++	go func() {
++		defer close(ch)
++		res, err := t.Execute(ctx, req)
++		if err != nil {
++			ch <- err
++		} else {
++			ch <- res
++		}
++	}()
++	return ch, nil
++}
++
+ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	if t.initError != nil {
+		return nil, t.initError
+@@ -1823,6 +1970,41 @@ func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
+ // Side Effects:
+ //   - Makes an HTTP request to the upstream service.
+ //   - Logs execution details.
++// IsStreaming returns true if the tool supports streaming.
++//
++// Summary: Checks if the tool supports streaming execution.
++//
++// Returns:
++//   - bool: True if streaming is supported.
++func (t *OpenAPITool) IsStreaming() bool {
++	return false
++}
++
++// StreamExecute executes the tool in streaming mode.
++//
++// Summary: Executes the tool in streaming mode.
++//
++// Parameters:
++//   - ctx: context.Context. The context for the request.
++//   - req: *ExecutionRequest. The request object containing parameters.
++//
++// Returns:
++//   - <-chan any: A channel that emits streaming results.
++//   - error: An error if the operation fails or streaming is not supported.
++func (t *OpenAPITool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
++	ch := make(chan any, 1)
++	go func() {
++		defer close(ch)
++		res, err := t.Execute(ctx, req)
++		if err != nil {
++			ch <- err
++		} else {
++			ch <- res
++		}
++	}()
++	return ch, nil
++}
++
+ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
+	if t.initError != nil {
+		return nil, t.initError
+@@ -2228,6 +2410,41 @@ func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
+ //   - Executes a subprocess on the local system.
+ //   - Consumes system resources (CPU, memory).
+ //   - Logs execution details.
++// IsStreaming returns true if the tool supports streaming.
++//
++// Summary: Checks if the tool supports streaming execution.
++//
++// Returns:
++//   - bool: True if streaming is supported.
++func (t *LocalCommandTool) IsStreaming() bool {
++	return false
++}
++
++// StreamExecute executes the tool in streaming mode.
++//
++// Summary: Executes the tool in streaming mode.
++//
++// Parameters:
++//   - ctx: context.Context. The context for the request.
++//   - req: *ExecutionRequest. The request object containing parameters.
++//
++// Returns:
++//   - <-chan any: A channel that emits streaming results.
++//   - error: An error if the operation fails or streaming is not supported.
++func (t *LocalCommandTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
++	ch := make(chan any, 1)
++	go func() {
++		defer close(ch)
++		res, err := t.Execute(ctx, req)
++		if err != nil {
++			ch <- err
++		} else {
++			ch <- res
++		}
++	}()
++	return ch, nil
++}
++
+ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
+	if t.initError != nil {
+		return nil, t.initError
+@@ -2646,6 +2863,41 @@ func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
+ //   - Executes a subprocess (potentially inside a container).
+ //   - Consumes system resources.
+ //   - Logs execution details.
++// IsStreaming returns true if the tool supports streaming.
++//
++// Summary: Checks if the tool supports streaming execution.
++//
++// Returns:
++//   - bool: True if streaming is supported.
++func (t *CommandTool) IsStreaming() bool {
++	return false
++}
++
++// StreamExecute executes the tool in streaming mode.
++//
++// Summary: Executes the tool in streaming mode.
++//
++// Parameters:
++//   - ctx: context.Context. The context for the request.
++//   - req: *ExecutionRequest. The request object containing parameters.
++//
++// Returns:
++//   - <-chan any: A channel that emits streaming results.
++//   - error: An error if the operation fails or streaming is not supported.
++func (t *CommandTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
++	ch := make(chan any, 1)
++	go func() {
++		defer close(ch)
++		res, err := t.Execute(ctx, req)
++		if err != nil {
++			ch <- err
++		} else {
++			ch <- res
++		}
++	}()
++	return ch, nil
++}
++
+ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
+	if t.initError != nil {
+		return nil, t.initError
