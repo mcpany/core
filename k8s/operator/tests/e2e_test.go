@@ -185,8 +185,8 @@ nodes:
 	if grepInvert := os.Getenv("PLAYWRIGHT_GREP_INVERT"); grepInvert != "" {
 		playwrightArgs = append(playwrightArgs, "--grep-invert", grepInvert)
 	}
-	args := append([]string{"playwright"}, playwrightArgs..)
-	playwrightCmd := exec.CommandContext(ctx, "npx", args..)
+	args := append([]string{"playwright"}, playwrightArgs...)
+	playwrightCmd := exec.CommandContext(ctx, "npx", args...)
 	playwrightCmd.Dir = uiDir
 	playwrightCmd.Env = append(os.Environ(), fmt.Sprintf("PLAYWRIGHT_BASE_URL=http://127.0.0.1:%d", hostPort), "SKIP_WEBSERVER=true")
 	playwrightCmd.Stdout = os.Stdout
@@ -308,8 +308,8 @@ func ensureBazelImageLoaded(t *testing.T, loaderRelPath, imageName string) {
 	t.Logf("Bazel image loader not found for %s (%s)", imageName, loaderRelPath)
 }
 
-func runCommand(t *testing.T, ctx context.Context, dir string, name string, args .string) error {
-	cmd := exec.CommandContext(ctx, name, args.)
+func runCommand(t *testing.T, ctx context.Context, dir string, name string, args ...string) error {
+	cmd := exec.CommandContext(ctx, name, args...)
 	cmd.Dir = dir
 	// Force Docker API version to 1.44 to avoid "client version too old" errors.
 	cmd.Env = append(os.Environ(), "DOCKER_API_VERSION=1.44")
