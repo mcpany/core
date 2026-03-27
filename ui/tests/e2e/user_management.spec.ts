@@ -71,7 +71,7 @@ test.describe('User Management', () => {
 
         // Verify user created in list
         // Use a more specific row locator
-        const row = page.getByTestId('user-row-test-api-user');
+        const row = page.locator('tr').filter({ hasText: 'test-api-user' });
         await expect(row).toBeVisible({ timeout: 15000 });
 
         // Row should indicate API Key auth

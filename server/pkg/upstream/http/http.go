@@ -58,8 +58,6 @@ func httpMethodToString(method configv1.HttpCallDefinition_HttpMethod) (string, 
 //
 // It handles the registration of tools defined in the service configuration
 // and manages connection pooling for HTTP requests.
-//
-// Summary: Represents a Upstream.
 type Upstream struct {
 	poolManager *pool.Manager
 	serviceID   string
@@ -84,20 +82,6 @@ type Upstream struct {
 //
 // Side Effects:
 //   - May establish a network connection to the service.
-//
-// Summary: Executes CheckHealth operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -129,20 +113,6 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 // Side Effects:
 //   - Stops the health checker.
 //   - Deregisters the connection pool.
-//
-// Summary: Executes Shutdown operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -167,20 +137,6 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Side Effects:
 //   - Allocates memory for the Upstream struct.
-//
-// Summary: Initializes NewUpstream operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager: poolManager,
@@ -213,20 +169,6 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 //   - Creates and registers a new HTTP connection pool.
 //   - Starts a health checker for the service.
 //   - Registers tools and prompts with their respective managers.
-//
-// Summary: Executes Register operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

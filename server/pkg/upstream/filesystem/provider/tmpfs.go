@@ -10,8 +10,6 @@ import (
 )
 
 // TmpfsProvider provides access to a temporary in-memory filesystem.
-//
-// Summary: Represents a TmpfsProvider.
 type TmpfsProvider struct {
 	fs afero.Fs
 }
@@ -20,20 +18,6 @@ type TmpfsProvider struct {
 //
 // Returns:
 //   - *TmpfsProvider: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewTmpfsProvider operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -47,20 +31,6 @@ func NewTmpfsProvider() *TmpfsProvider {
 //
 // Returns:
 //   - afero.Fs: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves GetFs operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -82,20 +52,6 @@ func (p *TmpfsProvider) GetFs() afero.Fs {
 //
 // Side Effects:
 //   - None.
-//
-// Summary: Executes ResolvePath operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 func (p *TmpfsProvider) ResolvePath(virtualPath string) (string, error) {
 	// For MemMapFs, just clean the path. It's virtual.
 	return filepath.Clean(virtualPath), nil
@@ -108,20 +64,6 @@ func (p *TmpfsProvider) ResolvePath(virtualPath string) (string, error) {
 //
 // Errors:
 //   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Close operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
