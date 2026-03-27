@@ -46,7 +46,7 @@ jobs:
             sudo apt-get install -y nodejs
       - restore_cache:
           keys:
-            - v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}-v2
+            - v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}-v3
             - v1-lint-
       - run:
           name: Prepare Environment
@@ -57,9 +57,10 @@ jobs:
             . venv/bin/activate
             # Ensure PATH includes tool install dir
             export PATH=$PWD/build/env/bin:$PATH
+            pre-commit run --all-files
             make lint
       - save_cache:
-          key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}-v2
+          key: v1-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}-v3
           paths:
             - "build/env/bin"
             - "build/.cache"
