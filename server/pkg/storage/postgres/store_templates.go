@@ -28,7 +28,7 @@ import (
 // Side Effects:
 //   - Executes a SELECT query.
 func (s *Store) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTemplate, error) {
-	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM service_templates")
+	rows, err := s.db.DB.QueryContext(ctx, "SELECT config_json FROM service_templates")
 	if err != nil {
 		return nil, fmt.Errorf("failed to query service_templates: %w", err)
 	}
@@ -69,7 +69,7 @@ func (s *Store) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTe
 //   - Executes a SELECT query.
 func (s *Store) GetServiceTemplate(ctx context.Context, id string) (*configv1.ServiceTemplate, error) {
 	query := "SELECT config_json FROM service_templates WHERE id = $1"
-	row := s.db.QueryRowContext(ctx, query, id)
+	row := s.db.DB.QueryRowContext(ctx, query, id)
 
 	var configJSON []byte
 	if err := row.Scan(&configJSON); err != nil {
@@ -121,7 +121,7 @@ func (s *Store) SaveServiceTemplate(ctx context.Context, template *configv1.Serv
 		config_json = excluded.config_json,
 		updated_at = excluded.updated_at;
 	`
-	_, err = s.db.ExecContext(ctx, query, template.GetId(), template.GetName(), string(configJSON))
+	_, err = s.db.DB.ExecContext(ctx, query, template.GetId(), template.GetName(), string(configJSON))
 	if err != nil {
 		return fmt.Errorf("failed to save service template: %w", err)
 	}
