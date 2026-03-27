@@ -42,7 +42,8 @@ func TestExampleConfigs(t *testing.T) {
 		cmd.Dir = runtimeRoot
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
-		if err := cmd.Run(); err != nil {
+		if out, err := cmd.CombinedOutput(); err != nil {
+			t.Logf("Build Output: %s", string(out))
 			t.Logf("Failed to build stdio example binary (continuing, but validation might fail): %v", err)
 		}
 	}
