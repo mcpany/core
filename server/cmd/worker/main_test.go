@@ -23,21 +23,21 @@ func (s *MainTestSuite) TestSetup_InMemoryBus() {
 	_ = os.Unsetenv("REDIS_ADDR")
 
 	_, err := setup()
-	s.NoError(err, "setup() should not return an error when using in-memory bus")
+	s.Suite.Require().NoError(err, "setup() should not return an error when using in-memory bus")
 }
 
 func (s *MainTestSuite) TestSetup_ValidRedisAddress() {
-	s.T().Setenv("REDIS_ADDR", "127.0.0.1:6379")
+	s.Suite.T().Setenv("REDIS_ADDR", "127.0.0.1:6379")
 
 	_, err := setup()
-	s.NoError(err, "setup() should not return an error with a valid REDIS_ADDR because the connection is lazy")
+	s.Suite.Require().NoError(err, "setup() should not return an error with a valid REDIS_ADDR because the connection is lazy")
 }
 
 func (s *MainTestSuite) TestSetup_InvalidRedisAddress() {
-	s.T().Setenv("REDIS_ADDR", "invalid-address")
+	s.Suite.T().Setenv("REDIS_ADDR", "invalid-address")
 
 	_, err := setup()
-	s.NoError(err, "setup() should not return an error with an invalid REDIS_ADDR because the connection is lazy")
+	s.Suite.Require().NoError(err, "setup() should not return an error with an invalid REDIS_ADDR because the connection is lazy")
 }
 
 func (s *MainTestSuite) TestMainLifecycle() {
@@ -61,7 +61,7 @@ func (s *MainTestSuite) TestMainLifecycle() {
 	case <-mainDone:
 		// main exited gracefully
 	case <-time.After(2 * time.Second):
-		s.T().Fatal("main function did not exit in time")
+		s.Suite.T().Fatal("main function did not exit in time")
 	}
 }
 
