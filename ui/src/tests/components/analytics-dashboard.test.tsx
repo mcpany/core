@@ -20,7 +20,7 @@ vi.mock('recharts', async () => {
         Pie: ({ children }: any) => <div>{children}</div>,
         Cell: () => <div />,
         Tooltip: () => <div />,
-        AreaChart: ({ children }: any) => <div>{children}</div>,
+        AreaChart: ({ children }: any) => <div data-testid="area-chart"></div>,
         Area: () => <div />,
         XAxis: () => <div />,
         YAxis: () => <div />,
