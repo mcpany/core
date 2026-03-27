@@ -45,7 +45,7 @@ jobs:
           name: Run Lint
           command: |
             curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.64.6
-            go work sync && cd proto && go mod tidy && cd ../server && go mod edit -replace github.com/mcpany/core/proto=../proto && go mod tidy && go work vendor && $(go env GOPATH)/bin/golangci-lint run --timeout 20m ./cmd/... ./pkg/... ./tests/... ./examples/... && cd ..
+            go work sync && cd proto && go mod edit -go=1.24.0 && go mod tidy && cd ../server && go mod edit -go=1.24.0 && go mod edit -replace github.com/mcpany/core/proto=../proto && go mod tidy && go work vendor && $(go env GOPATH)/bin/golangci-lint run --timeout 20m ./cmd/... ./pkg/... ./tests/... ./examples/... && cd ..
             bazelisk run //:lint
             bazelisk test //ui:lint //ui:typecheck
       - save_cache:
