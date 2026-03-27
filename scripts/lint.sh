@@ -134,8 +134,14 @@ if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
     # Drop tests and examples entirely from the CI sweep as they are largely auxiliary or generated.
     # Limiting strictly to cmd and pkg core code.
     # Use standard build tags and enforce the lowest memory threshold to force regular garbage collection
+    # Explicitly clear Go caches and golangci-lint cache before running
+    # to eliminate stale dependencies or large temp objects.
+    "$GOLANGCI_LINT_BIN" cache clean
+    go clean -cache -modcache
+
+    # Use standard build tags and enforce the lowest memory threshold to force regular garbage collection
     # Temporarily remove server sub-pkg chunks from bash script to verify if circleci is parsing bash correctly
-    GOGC=off GOMEMLIMIT=256MiB "$GOLANGCI_LINT_BIN" run --timeout 20m --fix -j 1 --disable-all --enable errcheck --enable govet ./server/cmd/...
+    GOGC=10 GOMEMLIMIT=128MiB "$GOLANGCI_LINT_BIN" run --timeout 20m --fix -j 1 --disable-all --enable errcheck --enable govet ./server/cmd/...
 
     echo "    golangci-lint OK."
 else
