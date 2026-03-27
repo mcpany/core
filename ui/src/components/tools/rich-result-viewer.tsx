@@ -73,6 +73,30 @@ function McpContentRenderer({ content }: McpContentRendererProps) {
  * @param props.result - The raw result object from the tool execution.
  * @returns The rendered component.
  */
+// Flatten a nested object to a single level object with dot-notation keys
+export const flattenObject = (obj: any, prefix = ''): Record<string, any> => {
+    if (obj === null || typeof obj !== 'object') {
+        return { [prefix]: obj };
+    }
+
+    return Object.keys(obj).reduce((acc: Record<string, any>, k: string) => {
+        const pre = prefix.length ? `${prefix}.${k}` : k;
+        if (typeof obj[k] === 'object' && obj[k] !== null && !Array.isArray(obj[k])) {
+            Object.assign(acc, flattenObject(obj[k], pre));
+        } else if (Array.isArray(obj[k])) {
+            acc[pre] = obj[k].map((item: any) => {
+                if (typeof item === 'object' && item !== null) {
+                    return Object.entries(item).map(([key, val]) => `${key}: ${val}`).join(', ');
+                }
+                return String(item);
+            }).join(', ');
+        } else {
+            acc[pre] = obj[k];
+        }
+        return acc;
+    }, {});
+};
+
 export function RichResultViewer({ result }: RichResultViewerProps) {
     // Attempt to extract meaningful content if it's a command result
     const [content, isExtracted] = useMemo(() => {
@@ -128,23 +152,6 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
     const isTableEligible = useMemo(() => {
         return !mcpContent && Array.isArray(content) && content.length > 0 && typeof content[0] === 'object' && content[0] !== null;
     }, [content, mcpContent]);
-
-    // Flatten a nested object to a single level object with dot-notation keys
-    const flattenObject = (obj: any, prefix = ''): Record<string, any> => {
-        if (obj === null || typeof obj !== 'object') {
-            return { [prefix]: obj };
-        }
-
-        return Object.keys(obj).reduce((acc: Record<string, any>, k: string) => {
-            const pre = prefix.length ? `${prefix}.${k}` : k;
-            if (typeof obj[k] === 'object' && obj[k] !== null && !Array.isArray(obj[k])) {
-                Object.assign(acc, flattenObject(obj[k], pre));
-            } else {
-                acc[pre] = obj[k];
-            }
-            return acc;
-        }, {});
-    };
 
     const flattenedContent = useMemo(() => {
         if (!isTableEligible) return [];

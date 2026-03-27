@@ -38,7 +38,7 @@ describe('flattenObject', () => {
         const result = flattenObject(obj);
 
         expect(result).toEqual({
-            'contacts': 'type: a@b.com, type: 123'
+            'contacts': 'type: email, value: a@b.com, type: phone, value: 123'
         });
     });
 
@@ -77,9 +77,9 @@ describe('RichResultViewer Component', () => {
         render(<RichResultViewer result={complexData} />);
 
         // Headers
-        expect(screen.getByText('USER.PROFILE.NAME')).toBeInTheDocument();
-        expect(screen.getByText('USER.ROLE')).toBeInTheDocument();
-        expect(screen.getByText('TAGS')).toBeInTheDocument();
+        expect(screen.getByText('user.profile.name')).toBeInTheDocument();
+        expect(screen.getByText('user.role')).toBeInTheDocument();
+        expect(screen.getByText('tags')).toBeInTheDocument();
 
         // Data cells
         expect(screen.getByText('Alice')).toBeInTheDocument();

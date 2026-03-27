@@ -26,10 +26,10 @@ test.describe('RichResultViewer Complex JSON Table', () => {
         await expect(page.locator('text=Result')).toBeVisible();
 
         // Assert that the table headers correspond to the flattened keys
-        await expect(page.locator('th:has-text("USER.PROFILE.NAME")')).toBeVisible();
-        await expect(page.locator('th:has-text("USER.ROLE")')).toBeVisible();
-        await expect(page.locator('th:has-text("METADATA.PREFERENCES.THEME")')).toBeVisible();
-        await expect(page.locator('th:has-text("CONTACTS")')).toBeVisible();
+        await expect(page.locator('th:has-text("user.profile.name")')).toBeVisible();
+        await expect(page.locator('th:has-text("user.role")')).toBeVisible();
+        await expect(page.locator('th:has-text("metadata.preferences.theme")')).toBeVisible();
+        await expect(page.locator('th:has-text("contacts")')).toBeVisible();
 
         // Assert that the table cells contain the correct data
         await expect(page.locator('td:has-text("Alice Liddell")')).toBeVisible();
