@@ -45,20 +45,20 @@ func TestOperatorE2E(t *testing.T) {
 	}
 	t.Logf("Project root detected: %s", rootDir)
 
-	// 3. Clean up existing cluster to ensure fresh state and free ports
+	// 3. Clean up existing cluster to ensure fresh state and free ports.
 	if clusterExists(t, ctx, clusterName) {
 		t.Logf("Deleting existing cluster %s to ensure clean state.", clusterName)
 		_ = runCommand(t, ctx, rootDir, "kind", "delete", "cluster", "--name", clusterName)
 	}
 
-	// 4. Get a free port for the host side of NodePort
+	// 4. Get a free port for the host side of NodePort.
 	hostPort, err := getFreePort()
 	if err != nil {
 		t.Fatalf("Failed to get free port: %v", err)
 	}
 	t.Logf("Using host port %d for UI access (mapped to NodePort 30000)", hostPort)
 
-	// 5. Create Kind Cluster
+	// 5. Create Kind Cluster.
 	t.Logf("Creating Kind cluster %s.", clusterName)
 	// Generate temporary kind config with port mapping.
 	kindConfigContent := fmt.Sprintf(`kind: Cluster
@@ -82,7 +82,7 @@ nodes:
 		t.Fatalf("Failed to create kind cluster: %v", err)
 	}
 
-	// 6. Build Images
+	// 6. Build Images.
 	// Server and http-echo-server images are built and tagged via Bazel (see k8s/Makefile build-images target).
 	// Only operator and UI still use Docker builds.
 	ensureBazelImageLoaded(t, filepath.Join("server", "cmd", "server", "server_tarball.sh"), "mcpany/server")
@@ -99,7 +99,7 @@ nodes:
 		t.Log("Skipping image build (SKIP_IMAGE_BUILD=true). Assuming images exist.")
 	}
 
-	// 7. Load Images into Kind
+	// 7. Load Images into Kind.
 	t.Log("Loading images into Kind.")
 	if err := runCommand(t, ctx, rootDir, "kind", "load", "docker-image", fmt.Sprintf("mcpany/server:%s", tag), "--name", clusterName); err != nil {
 		t.Fatalf("Failed to load server image: %v", err)
@@ -114,7 +114,7 @@ nodes:
 		t.Fatalf("Failed to load http-echo-server image: %v", err)
 	}
 
-	// 6. Install Helm Chart
+	// 6. Install Helm Chart.
 	t.Log("Installing Helm chart.")
 	// Helm upgrade --install.
 	if err := runCommand(t, ctx, rootDir, "helm", "upgrade", "--install", "mcpany", "k8s/helm/mcpany",
@@ -145,7 +145,7 @@ nodes:
 
 	t.Log("Deployment successful!")
 
-	// 7. Verify Pods
+	// 7. Verify Pods.
 	t.Log("Verifying pods.")
 	if err := runCommand(t, ctx, rootDir, "kubectl", "wait", "--for=condition=ready", "pod", "-l", "app.kubernetes.io/name=mcpany", "-n", namespace, "--timeout=60s"); err != nil {
 		t.Fatalf("Failed to wait for pods: %v", err)
@@ -162,7 +162,7 @@ nodes:
 		t.Fatalf("Failed to wait for http-echo-server: %v", err)
 	}
 
-	// 8. Run UI Tests
+	// 8. Run UI Tests.
 	t.Logf("Using host port %d for UI tests (NodePort)", hostPort)
 
 	// Wait for NodePort to be accessible.
@@ -246,7 +246,7 @@ func getRootDir() (string, error) {
 		}
 	}
 
-	// Assuming test is run from k8s/operator/tests, go up 3 levels to find root
+	// Assuming test is run from k8s/operator/tests, go up 3 levels to find root.
 	// Or better, find go.mod file.
 	dir, err := os.Getwd()
 	if err != nil {
