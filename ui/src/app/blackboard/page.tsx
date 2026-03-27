@@ -7,6 +7,14 @@ import React from "react";
 import { BlackboardDashboard } from "@/components/blackboard/blackboard-dashboard";
 
 /**
+ * Intent: Document BlackboardPage
+ *
+ * Params:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
  * BlackboardPage component for displaying the Blackboard dashboard.
  *
  * Summary: Renders the root page view for the Blackboard.

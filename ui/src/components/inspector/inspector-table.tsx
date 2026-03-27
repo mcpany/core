@@ -81,6 +81,20 @@ interface VisibleRow {
 }
 
 /**
+ * Intent: Document InspectorTable
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * A table component for displaying and inspecting traces.
  * Allows clicking on a row to view detailed trace information in a sheet.
  *

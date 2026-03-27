@@ -41,6 +41,20 @@ interface ServicesTableProps {
 }
 
 /**
+ * Intent: Document ServicesTable
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * ServicesTable.
  *
  * @param onDelete - The onDelete.

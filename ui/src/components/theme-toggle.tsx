@@ -15,6 +15,20 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 /**
+ * Intent: Document ThemeToggle
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * A dropdown menu button to toggle between light, dark, and system themes.
  *
  * @returns {JSX.Element} The rendered theme toggle component.

@@ -26,6 +26,20 @@ import {
 import { cn } from "@/lib/utils";
 
 /**
+ * Intent: Document SystemHealth
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * SystemHealth component.
  * @returns The rendered component.
  */

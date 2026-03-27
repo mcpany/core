@@ -40,6 +40,20 @@ import { applyTemplateFields } from "@/lib/template-utils";
 
 
 /**
+ * Intent: Document ServicesPage
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * ServicesPage component.
  * @returns The rendered component.
  */

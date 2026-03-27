@@ -4,6 +4,11 @@
  */
 
 /**
+ * Intent: Document estimateTokens
+ *
+ * Params:
+ *   - None
+ *
  * Estimates the number of tokens in a string or object using a simple heuristic.
  *
  * Summary: Provides a rough estimation of the number of tokens for UI purposes.
@@ -41,6 +46,11 @@ export function estimateTokens(input: any): number {
 }
 
 /**
+ * Intent: Document estimateMessageTokens
+ *
+ * Params:
+ *   - None
+ *
  * Calculates total tokens for a sequence of messages.
  *
  * Summary: Aggregates the estimated token count for an array of message objects.
@@ -68,6 +78,11 @@ export function estimateMessageTokens(messages: any[]): number {
 }
 
 /**
+ * Intent: Document formatTokenCount
+ *
+ * Params:
+ *   - None
+ *
  * Formats a number of tokens into a human-readable string.
  *
  * Summary: Converts a token count into a formatted string (e.g., 1.2k).
@@ -92,6 +107,11 @@ export function formatTokenCount(count: number): string {
 }
 
 /**
+ * Intent: Document calculateCost
+ *
+ * Params:
+ *   - None
+ *
  * Calculates the estimated cost for a given number of tokens.
  *
  * Summary: Estimates the cost in USD based on a generic pricing model.
@@ -116,6 +136,11 @@ export function calculateCost(tokens: number): number {
 }
 
 /**
+ * Intent: Document formatCost
+ *
+ * Params:
+ *   - None
+ *
  * Formats a cost into a currency string.
  *
  * Summary: Formats a numerical cost into a USD currency string.

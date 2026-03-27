@@ -6,6 +6,20 @@
 import { UpstreamServiceConfig } from "./client";
 
 /**
+ * Intent: Document SecretHandlingMode
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Defines the mode for handling secrets in configurations.
  * - 'redact': Replaces secrets with '<REDACTED>'.
  * - 'template': Replaces secrets with template placeholders (e.g., '${API_KEY}').
@@ -14,6 +28,11 @@ import { UpstreamServiceConfig } from "./client";
 export type SecretHandlingMode = 'redact' | 'template' | 'unsafe';
 
 /**
+ * Intent: Document sanitizeServiceConfig
+ *
+ * Params:
+ *   - None
+ *
  * Sanitizes a service configuration by redacting or templating potential secrets.
  *
  * Summary: Redacts or templates secrets embedded in a service configuration object.

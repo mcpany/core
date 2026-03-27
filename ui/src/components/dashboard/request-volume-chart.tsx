@@ -11,6 +11,20 @@ import { useDashboard } from "@/components/dashboard/dashboard-context";
 import { usePolling } from "@/hooks/use-polling";
 
 /**
+ * Intent: Document RequestVolumeChart
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * RequestVolumeChart component.
  * @returns The rendered component.
  */

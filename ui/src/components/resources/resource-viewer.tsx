@@ -29,6 +29,20 @@ interface ResourceViewerProps {
 }
 
 /**
+ * Intent: Document ResourceViewer
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * ResourceViewer.
  *
  * @param loading - The loading.

@@ -43,6 +43,20 @@ import { useToast } from "@/hooks/use-toast";
 import { apiClient, SecretDefinition } from "@/lib/client";
 
 /**
+ * Intent: Document SecretsManager
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * SecretsManager component.
  * @returns The rendered component.
  */

@@ -8,6 +8,20 @@ import { apiClient } from "@/lib/client";
 import { UpstreamServiceConfig, ToolDefinition } from "@/lib/types";
 
 /**
+ * Intent: Document useServiceSiblings
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * useServiceSiblings.
  *
  * @param currentServiceId - The currentServiceId.
@@ -29,6 +43,20 @@ export function useServiceSiblings(currentServiceId: string) {
 }
 
 /**
+ * Intent: Document useToolSiblings
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * useToolSiblings.
  *
  * @param serviceId - The serviceId.

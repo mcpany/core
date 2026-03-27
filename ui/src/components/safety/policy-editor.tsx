@@ -44,6 +44,20 @@ const ACTION_COLORS: Record<number, "default" | "destructive" | "secondary" | "o
 };
 
 /**
+ * Intent: Document PolicyEditor
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * A component for editing call policies.
  * @param props The component props.
  * @param props.policies The list of policies to edit.

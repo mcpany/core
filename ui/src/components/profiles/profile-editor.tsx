@@ -134,6 +134,20 @@ const ItemContent = (_: number, svc: UpstreamServiceConfig, context: VirtuosoCon
 };
 
 /**
+ * Intent: Document Profile
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Represents a user profile configuration in the UI.
  */
 export interface Profile {
@@ -170,6 +184,20 @@ interface ProfileEditorProps {
 }
 
 /**
+ * Intent: Document ProfileEditor
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * A sheet component for creating or editing a user profile.
  * Allows configuring profile details and selecting accessible services.
  *

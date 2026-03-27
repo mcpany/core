@@ -16,6 +16,20 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ServicePropertyCard } from "./service-property-card";
 
 /**
+ * Intent: Document PromptDetail
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * PromptDetail.
  *
  * @param promptName - The promptName.

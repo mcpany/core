@@ -36,6 +36,20 @@ interface ConnectionDiagnosticDialogProps {
 }
 
 /**
+ * Intent: Document ConnectionDiagnosticDialog
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * ConnectionDiagnosticDialog.
  *
  * @param trigger - The trigger.
