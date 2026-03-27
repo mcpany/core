@@ -486,7 +486,5 @@
 - [ ] **[P0] Context Fragment Auditor**: UI for inspecting and approving sharded mailbox fragments flagged by the mesh-bound isolation engine. (Added: 2026-05-29)
 
 #### Upcoming (2026-05-30 Evolution)
-- [ ] **[P0] Reasoning Integrity Arbiter**: Visual indicator for HART-compliant reasoning path authenticity and mirroring alerts. (Added: 2026-05-30)
-- [ ] **[P0] Sharded Context Inspector**: Visual debugger for reasoning-bound context shards and cryptographic anchoring status. (Added: 2026-05-30)
-- [ ] **[P0] Monotonic Task Nonce Monitor**: Real-time visualization of teammate delegation nonces and "Replay" detection alerts. (Added: 2026-05-30)
-- [ ] **[P0] Mesh Sovereignty Dashboard**: Status monitor for CRDT-based local shard synchronization in horizontal swarms. (Added: 2026-05-30)
+- [ ] **[P0] Reasoning Integrity Arbiter**: Visual indicator for reasoning path authenticity. (Added: 2026-05-30)
+- [ ] **[P0] Sharded Context Inspector**: Visual debugger for RBCS fragments. (Added: 2026-05-30)
