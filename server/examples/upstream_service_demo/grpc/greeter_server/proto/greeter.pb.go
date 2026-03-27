@@ -32,6 +32,18 @@ type HelloRequest struct {
 	sizeCache     protoimpl.SizeCache
 }
 
+// Reset executes the operation.
+//
+// Summary: Executes Reset operation.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (x *HelloRequest) Reset() {
 	*x = HelloRequest{}
 	mi := &file_greeter_proto_msgTypes[0]
@@ -39,12 +51,54 @@ func (x *HelloRequest) Reset() {
 	ms.StoreMessageInfo(mi)
 }
 
+// String executes the operation.
+//
+// Summary: Executes String operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - See return values.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (x *HelloRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
+// ProtoMessage executes the operation.
+//
+// Summary: Executes ProtoMessage operation.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (*HelloRequest) ProtoMessage() {}
 
+// ProtoReflect executes the operation.
+//
+// Summary: Executes ProtoReflect operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - See return values.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (x *HelloRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_greeter_proto_msgTypes[0]
 	if x != nil {
@@ -58,10 +112,40 @@ func (x *HelloRequest) ProtoReflect() protoreflect.Message {
 }
 
 // Deprecated: Use HelloRequest.ProtoReflect.Descriptor instead.
+//
+// Summary:
+//   - Executes the Descriptor operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - See return values.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (*HelloRequest) Descriptor() ([]byte, []int) {
 	return file_greeter_proto_rawDescGZIP(), []int{0}
 }
 
+// GetName executes the operation.
+//
+// Summary: Executes GetName operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - See return values.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (x *HelloRequest) GetName() string {
 	if x != nil {
 		return x.Name
@@ -77,6 +161,18 @@ type HelloReply struct {
 	sizeCache     protoimpl.SizeCache
 }
 
+// Reset executes the operation.
+//
+// Summary: Executes Reset operation.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (x *HelloReply) Reset() {
 	*x = HelloReply{}
 	mi := &file_greeter_proto_msgTypes[1]
@@ -84,12 +180,54 @@ func (x *HelloReply) Reset() {
 	ms.StoreMessageInfo(mi)
 }
 
+// String executes the operation.
+//
+// Summary: Executes String operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - See return values.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (x *HelloReply) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
+// ProtoMessage executes the operation.
+//
+// Summary: Executes ProtoMessage operation.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (*HelloReply) ProtoMessage() {}
 
+// ProtoReflect executes the operation.
+//
+// Summary: Executes ProtoReflect operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - See return values.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (x *HelloReply) ProtoReflect() protoreflect.Message {
 	mi := &file_greeter_proto_msgTypes[1]
 	if x != nil {
@@ -103,10 +241,40 @@ func (x *HelloReply) ProtoReflect() protoreflect.Message {
 }
 
 // Deprecated: Use HelloReply.ProtoReflect.Descriptor instead.
+//
+// Summary:
+//   - Executes the Descriptor operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - See return values.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (*HelloReply) Descriptor() ([]byte, []int) {
 	return file_greeter_proto_rawDescGZIP(), []int{1}
 }
 
+// GetMessage executes the operation.
+//
+// Summary: Executes GetMessage operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - See return values.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (x *HelloReply) GetMessage() string {
 	if x != nil {
 		return x.Message

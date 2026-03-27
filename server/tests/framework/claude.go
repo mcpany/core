@@ -28,11 +28,38 @@ type ClaudeCLI struct {
 // t is the t.
 //
 // Returns the result.
+//
+// Summary:
+//   - Executes the NewClaudeCLI operation.
+//
+// Parameters:
+//   - See parameters.
+//
+// Returns:
+//   - See return values.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewClaudeCLI(t *testing.T) *ClaudeCLI {
 	return &ClaudeCLI{t: t}
 }
 
 // Install installs the Claude CLI tool.
+//
+// Summary:
+//   - Executes the Install operation.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (c *ClaudeCLI) Install() {
 	c.t.Helper()
 	root, err := integration.GetProjectRoot()
@@ -56,6 +83,18 @@ func (c *ClaudeCLI) claudeCommand(args ...string) *exec.Cmd {
 //
 // name is the name of the resource.
 // endpoint is the endpoint.
+//
+// Summary:
+//   - Executes the AddMCP operation.
+//
+// Parameters:
+//   - See parameters.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (c *ClaudeCLI) AddMCP(name, endpoint string) {
 	c.t.Helper()
 
@@ -77,6 +116,18 @@ func (c *ClaudeCLI) AddMCP(name, endpoint string) {
 // RemoveMCP removes an MCP server from the Claude CLI configuration.
 //
 // name is the name of the resource.
+//
+// Summary:
+//   - Executes the RemoveMCP operation.
+//
+// Parameters:
+//   - See parameters.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (c *ClaudeCLI) RemoveMCP(name string) {
 	c.t.Helper()
 	cmd := c.claudeCommand("mcp", "remove", name)
@@ -93,6 +144,21 @@ func (c *ClaudeCLI) RemoveMCP(name string) {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Summary:
+//   - Executes the Run operation.
+//
+// Parameters:
+//   - See parameters.
+//
+// Returns:
+//   - See return values.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (c *ClaudeCLI) Run(apiKey, prompt string) (string, error) {
 	c.t.Helper()
 	var outputBuffer strings.Builder

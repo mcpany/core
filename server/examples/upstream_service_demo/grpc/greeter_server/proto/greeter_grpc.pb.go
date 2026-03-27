@@ -39,10 +39,40 @@ type greeterClient struct {
 	cc grpc.ClientConnInterface
 }
 
+// NewGreeterClient executes the operation.
+//
+// Summary: Executes NewGreeterClient operation.
+//
+// Parameters:
+//   - See parameters.
+//
+// Returns:
+//   - See return values.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewGreeterClient(cc grpc.ClientConnInterface) GreeterClient {
 	return &greeterClient{cc}
 }
 
+// SayHello executes the operation.
+//
+// Summary: Executes SayHello operation.
+//
+// Parameters:
+//   - See parameters.
+//
+// Returns:
+//   - See return values.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (c *greeterClient) SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(HelloReply)
@@ -71,6 +101,21 @@ type GreeterServer interface {
 // pointer dereference when methods are called.
 type UnimplementedGreeterServer struct{}
 
+// SayHello executes the operation.
+//
+// Summary: Executes SayHello operation.
+//
+// Parameters:
+//   - See parameters.
+//
+// Returns:
+//   - See return values.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (UnimplementedGreeterServer) SayHello(context.Context, *HelloRequest) (*HelloReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SayHello not implemented")
 }
@@ -84,6 +129,18 @@ type UnsafeGreeterServer interface {
 	mustEmbedUnimplementedGreeterServer()
 }
 
+// RegisterGreeterServer executes the operation.
+//
+// Summary: Executes RegisterGreeterServer operation.
+//
+// Parameters:
+//   - See parameters.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func RegisterGreeterServer(s grpc.ServiceRegistrar, srv GreeterServer) {
 	// If the following call pancis, it indicates UnimplementedGreeterServer was
 	// embedded by pointer and is nil.  This will cause panics if an
