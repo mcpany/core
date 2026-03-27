@@ -130,11 +130,6 @@
 *   **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited Recursive Intent Delegation. (Added: 2026-03-25)
 *   **[P1] Predictive Resource Locking**: Intent-aware concurrency control for the Shared Blackboard. (Added: 2026-03-25)
 
-#### Upcoming (2026-05-30 Evolution)
-*   **[P0] Cognitive Integrity Arbiter (CIA)**: Implement HART v1.0 compliant hardware-attested reasoning trace validation. (Added: 2026-05-30)
-*   **[P0] Reasoning-Bound Context Sharding (RBCS) Hub**: Core service for cryptographically pinning context shards to HART fragments. (Added: 2026-05-30)
-*   **[P0] MTN Provider**: High-performance monotonic task nonce issuer for re-execution protection. (Added: 2026-05-30)
-
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
@@ -643,6 +638,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Autonomous PR Integrity Gate (APRIG)**: Multi-agent security quorum for code-generating tool calls requiring independent attestation for pull request safety. (Added: 2026-05-28)
 *   **[P0] Trace-Aware Identity Propagation (TAIP)**: Extension for SMI Relay ensuring hardware-attested identities carry full lineage metadata. (Added: 2026-05-28)
 *   **[P1] Reasoning-Effort Attribution Middleware**: Resource management service cryptographically attributing token/compute usage to specific mission-root branches. (Added: 2026-05-28)
+
+#### Upcoming (2026-05-30 Evolution)
+*   **[P0] Cognitive Integrity Arbiter (CIA)**: Hardware-attested validation service implementing the HART v1.0 standard for reasoning path authenticity. (Added: 2026-05-30)
+*   **[P0] Reasoning-Bound Context Sharding (RBCS) Hub**: Authoritative lifecycle manager for context shards cryptographically bound to hardware-attested reasoning fragments. (Added: 2026-05-30)
+*   **[P0] Monotonic Task Nonce (MTN) Provider**: High-speed infrastructure service for issuing and validating unique, incrementing nonces for horizontal teammate task-claiming. (Added: 2026-05-30)
+*   **[P0] Mesh-Bound Sovereignty Hub**: Transition to decentralized, CRDT-based local shard synchronization for horizontal teammate meshes. (Added: 2026-05-30)
 
 #### Upcoming (2026-05-29 Evolution)
 *   **[P0] Collective Swarm Anomaly Detection (CSAD) Hub**: Cross-agent behavioral analysis middleware to detect "Hivenet" swarm attacks. (Added: 2026-05-29)

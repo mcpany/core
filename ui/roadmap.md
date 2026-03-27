@@ -159,9 +159,6 @@
 - [ ] **[P0] Zero-Copy Transport Monitor**: (2026-03-25) Real-time performance metrics for memory-mapped BSH buffers.
 - [ ] **[P0] RID Lineage Inspector**: (2026-03-25) Security UI for visualizing UACO v1.8 recursive delegation depths and mutation boundaries.
 - [ ] **[P1] Predictive Locking Visualizer**: (2026-03-25) Gantt-style view of projected Blackboard resource locks based on agent intents.
-- [ ] **[P0] Cognitive Path Integrity Viewer**: (2026-05-30) Visualizer for HART-compliant hardware-attested reasoning traces.
-- [ ] **[P0] Context Shard Lineage Monitor**: (2026-05-30) Interactive dashboard for auditing reasoning-bound context shards (RBCS).
-- [ ] **[P0] MTN Status Widget**: (2026-05-30) Real-time monitor for Monotonic Task Nonce validation and re-execution alerts.
 - [ ] **[P0] Context Hook Interop Viewer**: (2026-03-26) Visualize how MCP Any state maps to external framework lifecycle hooks (e.g., OpenClaw).
 - [ ] **[P0] RID Delegation Graph**: (2026-03-26) Interactive visualization of UACO v1.8 intent lineages, showing depth limits and mutation boundaries.
 - [ ] **[P0] WASM Sanitization Dashboard**: (2026-03-26) Monitor and configure active WASM-BSH sanitization rules and rejected buffers.
@@ -481,6 +478,12 @@
 - [ ] **[P0] PR Integrity Quorum Interface**: Authorization workspace for multi-agent code reviews and APRIG attestation status. (Added: 2026-05-28)
 - [ ] **[P0] Identity Lineage Inspector**: Forensic UI for visualizing trace-aware identities and their parentage. (Added: 2026-05-28)
 - [ ] **[P1] Resource Attribution Overlay**: Cost and effort metrics broken down by intent-branch and agent parentage. (Added: 2026-05-28)
+
+#### Upcoming (2026-05-30 Evolution)
+- [ ] **[P0] Reasoning Integrity Arbiter**: Visual indicator for HART-compliant reasoning path authenticity and mirroring alerts. (Added: 2026-05-30)
+- [ ] **[P0] Sharded Context Inspector**: Visual debugger for reasoning-bound context shards and cryptographic anchoring status. (Added: 2026-05-30)
+- [ ] **[P0] Monotonic Task Nonce Monitor**: Real-time visualization of teammate delegation nonces and "Replay" detection alerts. (Added: 2026-05-30)
+- [ ] **[P0] Mesh Sovereignty Dashboard**: Status monitor for CRDT-based local shard synchronization in horizontal swarms. (Added: 2026-05-30)
 
 #### Upcoming (2026-05-29 Evolution)
 - [ ] **[P0] Swarm Anomaly Visualizer**: Real-time Gantt-style chart showing coordinated agent behavior and CSAD neutralization events. (Added: 2026-05-29)

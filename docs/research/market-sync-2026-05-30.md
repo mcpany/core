@@ -1,16 +1,15 @@
 # Market Sync: 2026-05-30
 
-## Ecosystem Updates
-### 1. Hardware-Attested Reasoning Traces (HART)
-The Sovereign Agent Collective has released the HART v1.0 specification. Unlike previous monologue signing (SRM), HART provides a continuous hardware-attested cryptographic chain for every reasoning step. This ensures that the "Chain of Reason" cannot be modified or re-ordered by a compromised gateway.
-
-### 2. Claude Code: Monotonic Task Nonces (MTN)
-Anthropic has updated the Claude Code `TeammateTool` to require **Monotonic Task Nonces (MTN)**. This is a direct response to the "Replay-as-Delegation" patterns observed in the wild. Every subagent delegation must now include a unique, incrementing nonce tied to the mission-root to prevent the re-execution of high-risk commands from stale context fragments.
-
-## Vulnerability Disclosure
-### CVE-2026-45012: Context Mirroring
-A critical vulnerability has been disclosed affecting horizontal teammate meshes. Compromised teammates can induce "Context Mirroring" in their peers, causing them to adopt the attacker's intent as their own without an explicit delegation token. This bypasses traditional mailbox integrity checks by exploiting semantic similarity in the shared blackboard.
+## Ecosystem Shifts
+- **Anthropic Claude Code (v2.4.1)**: Introduced "Monotonic Task Nonces" (MTN) for horizontal teammate delegation, neutralizing several classes of replay-as-delegation exploits in large swarms.
+- **OpenClaw (v2026.5.3)**: Released the "HART v1.0" (Hardware-Attested Reasoning Traces) specification, allowing for the first time verifiable proof that an agent's reasoning path was generated on a trusted TEE without semantic mirroring.
+- **Gemini CLI (v0.38.2)**: Integrated "Reasoning-Bound Context Sharding," which cryptographically anchors context shards to specific hardware-attested reasoning fragments.
 
 ## Autonomous Agent Pain Points
-- **"The Coordination Lockout"**: Large swarms are experiencing 400ms+ latency during task-claiming due to centralized mailbox synchronization.
-- **"Identity Fatigue"**: Subagents are frequently losing hardware-attestation leases during long-running reasoning chains, causing mission stalls.
+- **Context Mirroring (CVE-2026-45012)**: A newly disclosed vulnerability where a teammate agent can be coerced into "mirroring" its private context window into a peer's reasoning path via malicious mailbox requests.
+- **The Coordination Lockout**: Swarms larger than 50 agents are experiencing significant latency overhead due to centralized synchronization locks in the T2T bridge.
+
+## Strategic Findings
+- Transport security is solved; the new frontier is **Cognitive Integrity**.
+- Verifying *who* sent a message is insufficient; we must now verify that the *intent* within the message hasn't been semantically mirrored from an untrusted source.
+- Mesh coordination must move from synchronous locks to CRDT-based local shard synchronization.

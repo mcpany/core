@@ -1123,6 +1123,17 @@
 - **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Reasoning-Effort Attribution**.
 - **Consensus Tool Validation Hub**: (Re-affirmed P0) Evolving to support the new APRIG multi-agent quorum for PR safety.
 
+## Evolution: [2026-05-30] Updates
+
+### Proposed Additions
+- **Cognitive Integrity Arbiter (CIA)**: (P0) A hardware-attested validation service implementing the HART v1.0 standard to verify reasoning path authenticity and detect external mirroring.
+- **Reasoning-Bound Context Sharding (RBCS) Hub**: (P0) Authoritative lifecycle manager for context shards that are cryptographically bound to hardware-attested reasoning fragments, neutralizing CVE-2026-45012.
+- **Monotonic Task Nonce (MTN) Provider**: (P0) High-speed infrastructure service for issuing and validating unique, incrementing nonces for horizontal teammate task-claiming.
+
+### Priority Shifts
+- **Mesh-Bound Sovereignty Hub**: (Re-affirmed P0) Transitioning from the T2T bridge to a decentralized Sovereignty Hub utilizing CRDT-based local shard synchronization.
+- **Live Context Sharding Middleware**: (Evolved to RBCS Hub) Now elevated with the requirement for mandatory reasoning-bound cryptographic anchoring.
+
 ## Evolution: [2026-05-29] Updates
 
 ### Proposed Additions
@@ -1134,14 +1145,3 @@
 ### Priority Shifts
 - **Differential Context Guarding (DCG) Middleware**: (Re-affirmed P0) Now elevated with the requirement for **Mesh-Bound Sovereignty**.
 - **SMI Relay Provider**: (Re-affirmed P0) Evolving to act as the authoritative backend for the **Atomic Teammate Handshake (ATH)**.
-
-## Evolution: [2026-05-30] Updates
-
-### Proposed Additions
-- **Cognitive Integrity Arbiter (CIA)**: (P0) A hardware-attested validation service implementing the HART v1.0 standard to verify reasoning path authenticity and detect external mirroring.
-- **Reasoning-Bound Context Sharding (RBCS) Hub**: (P0) Authoritative lifecycle manager for context shards that are cryptographically bound to hardware-attested reasoning fragments, neutralizing CVE-2026-45012.
-- **Monotonic Task Nonce (MTN) Provider**: (P0) High-speed infrastructure service for issuing and validating unique, incrementing nonces for horizontal teammate task-claiming.
-
-### Priority Shifts
-- **Mesh-Bound Sovereignty Hub**: (Re-affirmed P0) Transitioning from the T2T bridge to a decentralized Sovereignty Hub utilizing CRDT-based local shard synchronization.
-- **Live Context Sharding Middleware**: (Evolved to RBCS Hub) Now elevated with the requirement for mandatory reasoning-bound cryptographic anchoring.
