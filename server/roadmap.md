@@ -933,3 +933,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Zero-Copy BSH Transport**: Shared-memory based state transfer for sub-millisecond swarm handoffs. (Added: 2026-03-25)
 *   **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited Recursive Intent Delegation. (Added: 2026-03-25)
 *   **[P1] Predictive Resource Locking**: Intent-aware concurrency control for the Shared Blackboard. (Added: 2026-03-25)
+
+#### Upcoming (2026-03-27 Evolution - v2)
+*   **[P0] Process Boundary Guard**: Middleware to automatically scrub dangerous process-control variables (NODE_OPTIONS, LD_PRELOAD) from agent environments. (Added: 2026-03-27)
+*   **[P0] Mandatory Non-Shell Spawning**: Strict prohibition of shell-fallback mechanisms in all execution adapters to neutralize CVE-2026-32000. (Added: 2026-03-27)
+*   **[P0] Structured Lineage Broker**: Observability service for standardized agent_id and mission_id tracking across frameworks. (Added: 2026-03-27)
+*   **[P1] Swarm Compliance Auditor**: Real-time framework versioning checks and vulnerability scanning for the agentic supply chain. (Added: 2026-03-27)

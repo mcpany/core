@@ -1723,3 +1723,14 @@
 ### Priority Shifts
 - **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
 - **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.
+
+## Evolution: [2026-03-27] (v2) Updates
+
+### Proposed Additions
+- **Process Boundary Guard**: (P0) Security middleware that automatically scrubs dangerous process-control variables (NODE_OPTIONS, LD_PRELOAD) from agent environments to prevent configuration-time hijacking.
+- **Structured Lineage Broker**: (P0) Observability service that enforces standardized agent_id and mission_id tracking across heterogeneous framework boundaries.
+- **Swarm Compliance Auditor**: (P1) Real-time monitoring service that performs framework versioning checks and vulnerability scanning for the agentic supply chain.
+
+### Priority Shifts
+- **Argument-Level Semantic Validator (ALSV)**: (Re-affirmed P0) Elevated with the requirement for **Mandatory Non-Shell Spawning** to neutralize shell-fallback exploits.
+- **Action-Chain Sovereignty Monitor (ACSM)**: (Re-affirmed P0) Now designated as the primary consumer of the **Structured Lineage Broker** telemetry.

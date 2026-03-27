@@ -45,3 +45,6 @@ Recent vulnerabilities in OpenClaw (CVE-2026-32000, CVE-2026-22169) have shown t
 
 ## 7. Evolutionary Changelog
 * **2026-03-24:** Initial Document Creation.
+* **2026-03-27:** Mandatory Non-Shell Spawning Mandate.
+    * **Context:** Today's market sync revealed CVE-2026-32000, where failure to spawn a process triggered an un-sanitized Windows shell fallback.
+    * **Architecture Adjustment:** Deprecating any execution path that utilizes an intermediate shell. Mandating the use of direct `exec` with explicit error handling that prohibits fallback to shell execution.
