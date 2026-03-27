@@ -67,11 +67,3 @@ MCP Any will implement a **WASM-BSH State Sanitizer** that executes state transf
 * WASM sanitizer now utilizes **Read-Only Memfd mappings** for validation, ensuring zero intermediate copies during the scanning process.
 * Implementing "Differential State Scanning" where only the byte-level deltas since the last parent-attested handoff are scanned by the WASM sandbox.
 **Security Impact:** Eliminates TOCTOU vulnerabilities in shared memory and reduces sanitization latency by 80% for high-density swarms.
-
-### Update: 2026-03-25 (Iteration 3) - Memfd-Native Zero-Copy Active Sanitization
-**Context**: Beta testing of OpenClaw v2.5 confirms that "Copy-on-Sanitize" is the primary bottleneck for multi-GB context mesh.
-**Architecture Adjustment**:
-*   Implementing **Zero-Copy Active Sanitization**. The WASM sanitizer now operates directly on **Read-Only Memfd mappings** of the shared context. By utilizing `memfd_create` with sealable file descriptors, we ensure that state cannot be mutated during the validation window.
-*   Mandating **Protobuf Schema Hardening**. All BSH fragments must conform to a hardware-signed Protobuf schema. The WASM sanitizer performs byte-level structural validation against the schema without intermediate deserialization.
-*   Introducing **Kernel-Mediated Handoffs**. MCP Any now acts as the authoritative broker for FD-passing. Once a shard is sanitized, its file descriptor is passed to the recipient agent via UNIX domain sockets, ensuring zero-copy memory ingestion.
-**Security Impact**: Eliminates TOCTOU (Time-of-Check to Time-of-Use) vulnerabilities in shared memory and reduces state-transfer latency to sub-millisecond levels.
