@@ -23,6 +23,20 @@ interface NavItemProps {
 }
 
 /**
+ * Intent: Document NavItem
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * A navigation item for the sidebar or menu.
  *
  * @param props - The component props.

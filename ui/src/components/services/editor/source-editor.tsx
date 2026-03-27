@@ -15,6 +15,20 @@ interface SourceEditorProps {
 }
 
 /**
+ * Intent: Document SourceEditor
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * SourceEditor component for editing YAML configuration.
  * Uses Monaco Editor.
  *

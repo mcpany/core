@@ -64,6 +64,20 @@ const promptSchema = z.object({
 type PromptValues = z.infer<typeof promptSchema>;
 
 /**
+ * Intent: Document PromptEditor
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * PromptEditor is a form component for creating and editing prompt definitions.
  * It handles the configuration of prompt metadata, input schema, and message templates.
  *

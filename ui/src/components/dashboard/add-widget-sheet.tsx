@@ -25,6 +25,20 @@ interface AddWidgetSheetProps {
 }
 
 /**
+ * Intent: Document AddWidgetSheet
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * AddWidgetSheet component.
  * A sheet that displays a gallery of available widgets to add to the dashboard.
  * @param props - The component props.

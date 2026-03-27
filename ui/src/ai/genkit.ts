@@ -7,6 +7,20 @@ import {genkit} from 'genkit';
 import {googleAI} from '@genkit-ai/google-genai';
 
 /**
+ * Intent: Document ai
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * The initialized Genkit instance configured with Google AI plugin and Gemini 2.5 Flash model.
  * Used for AI-powered features in the application.
  */

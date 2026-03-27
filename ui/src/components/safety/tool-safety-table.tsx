@@ -24,6 +24,20 @@ interface ToolSafetyTableProps {
 }
 
 /**
+ * Intent: Document ToolSafetyTable
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * ToolSafetyTable displays a table of tools and allows toggling their enabled/disabled status.
  *
  * @param props - The component props.

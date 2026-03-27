@@ -12,6 +12,20 @@ import { Plus, Trash2, Webhook } from "lucide-react";
 import { WizardWebhook } from "../wizard-context";
 
 /**
+ * Intent: Document StepWebhooks
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * StepWebhooks component.
  * @returns The rendered component.
  */

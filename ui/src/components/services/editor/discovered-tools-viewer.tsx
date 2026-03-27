@@ -21,6 +21,20 @@ interface DiscoveredToolsViewerProps {
 }
 
 /**
+ * Intent: Document DiscoveredToolsViewer
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * DiscoveredToolsViewer component.
  * Displays a list of discovered tools in an accordion view.
  */

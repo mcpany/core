@@ -16,6 +16,20 @@ import { Loader2 } from "lucide-react";
 import { DownloadReportButton } from "@/components/dashboard/download-report-button";
 
 /**
+ * Intent: Document DashboardPage
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * The main dashboard page component.
  * Displays an overview of metrics, service health, and request volume.
  * @returns The dashboard page.

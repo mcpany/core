@@ -21,6 +21,20 @@ interface PolicyEditorProps {
 }
 
 /**
+ * Intent: Document PolicyEditor
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * A component for editing export policies (allow/deny rules).
  * Allows setting a default action and adding specific exception rules based on regex.
  *

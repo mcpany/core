@@ -65,6 +65,20 @@ const getTableData = (data: unknown, smartTable: boolean) => {
 };
 
 /**
+ * Intent: Document JsonView
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * JsonView component.
  * Renders data with interactive tree view, optional smart table view, and raw syntax highlighting.
  *

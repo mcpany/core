@@ -22,6 +22,20 @@ services:
 `;
 
 /**
+ * Intent: Document StackDetailPage
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * StackDetailPage component.
  * Displays the Stack Editor for creating or editing a stack.
  * @returns The rendered page.

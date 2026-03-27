@@ -18,6 +18,20 @@ export enum WizardStep {
 }
 
 /**
+ * Intent: Document WizardWebhook
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * WizardState type definition.
  */
 export interface WizardWebhook {
@@ -30,6 +44,20 @@ export interface WizardWebhook {
 }
 
 /**
+ * Intent: Document WizardState
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * WizardState type definition.
  */
 export interface WizardState {
@@ -75,6 +103,20 @@ const defaultState: WizardState = {
 const WizardContext = createContext<WizardContextType | undefined>(undefined);
 
 /**
+ * Intent: Document WizardProvider
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * WizardProvider manages the state of the configuration wizard and provides
  * methods to navigate between steps and update the configuration.
  * @param props - The component props.
@@ -192,6 +234,20 @@ export function WizardProvider({ children }: { children: ReactNode }) {
 }
 
 /**
+ * Intent: Document useWizard
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - Documented below.
+ *
+ * Side Effects:
+ *   - None
+ *
  * useWizard is a hook to access the wizard context.
  * @returns The wizard context containing state and navigation methods.
  * @throws Error if used outside of a WizardProvider.

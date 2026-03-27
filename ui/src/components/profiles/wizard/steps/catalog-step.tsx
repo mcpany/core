@@ -19,6 +19,20 @@ interface CatalogStepProps {
 }
 
 /**
+ * Intent: Document CatalogStep
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Step for selecting services from the catalog.
  * @param props Component properties.
  */

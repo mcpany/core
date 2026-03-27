@@ -18,6 +18,20 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 /**
+ * Intent: Document BreadcrumbItem
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Represents a single item in the breadcrumb navigation.
  */
 export interface BreadcrumbItem {
@@ -40,6 +54,20 @@ interface BreadcrumbsProps {
 }
 
 /**
+ * Intent: Document Breadcrumbs
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Breadcrumbs navigation component.
  *
  * @param props - The component props.

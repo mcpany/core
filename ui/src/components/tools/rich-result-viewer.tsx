@@ -66,6 +66,20 @@ function McpContentRenderer({ content }: McpContentRendererProps) {
 }
 
 /**
+ * Intent: Document RichResultViewer
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * RichResultViewer displays tool execution results in a user-friendly format.
  * It automatically detects if the result contains JSON or tabular data and provides
  * appropriate views (Table, JSON, Raw).

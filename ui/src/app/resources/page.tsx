@@ -6,6 +6,20 @@
 import { ResourceExplorer } from "@/components/resources/resource-explorer";
 
 /**
+ * Intent: Document ResourcesPage
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * ResourcesPage component.
  * @returns The rendered component.
  */

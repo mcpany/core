@@ -8,6 +8,20 @@
 import SkillWizard from '@/components/skills/skill-wizard';
 
 /**
+ * Intent: Document CreateSkillPage
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * CreateSkillPage component.
  * @returns The rendered component.
  */

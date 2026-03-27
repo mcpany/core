@@ -5,6 +5,20 @@
 import * as React from "react"
 
 /**
+ * Intent: Document ShortcutDefinition
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Defines a keyboard shortcut.
  */
 export type ShortcutDefinition = {
@@ -49,6 +63,20 @@ const KeyboardShortcutsContext = React.createContext<KeyboardShortcutsContextTyp
 const STORAGE_KEY = "mcp_any_shortcut_overrides"
 
 /**
+ * Intent: Document KeyboardShortcutsProvider
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Provider component for keyboard shortcuts.
  *
  * @param { children - The { children.
@@ -132,6 +160,20 @@ export function KeyboardShortcutsProvider({ children }: { children: React.ReactN
 }
 
 /**
+ * Intent: Document useKeyboardShortcuts
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Hook to access the keyboard shortcuts context.
  * @returns The context.
  */
@@ -168,6 +210,20 @@ function matchesKey(event: KeyboardEvent, keyDef: string): boolean {
 }
 
 /**
+ * Intent: Document useShortcut
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Hook to register and listen for a keyboard shortcut.
  * @param id Unique identifier.
  * @param defaultKeys Default key combinations.
