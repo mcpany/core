@@ -128,7 +128,7 @@ test.describe('MCP Any UI E2E Tests', () => {
 
     await expect(userService).toBeVisible();
 
-    // Error details omitted
+    // We skip checking error details as it depends on runtime health check timing
   });
 
 });

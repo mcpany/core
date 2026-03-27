@@ -98,7 +98,7 @@ func TestUnzipBundle_Cases(t *testing.T) {
 
 	t.Run("DecompressionBomb", func(t *testing.T) {
 		if os.Getenv("SKIP_EXPENSIVE_TESTS") == "true" {
-			// t.Skip("Skipping expensive decompression bomb test")
+			t.Skip("Skipping expensive decompression bomb test")
 		}
 		// Create a zip bomb (1.1 GB of zeros)
 		tmpDir := t.TempDir()
