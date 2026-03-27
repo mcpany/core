@@ -127,18 +127,6 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
     }, [content]);
 
     const { isTableEligible, tableData } = useMemo(() => {
-        // First check if there is mcpContent that contains a single text block which is a JSON array of objects
-        if (mcpContent && mcpContent.length === 1 && mcpContent[0].type === "text") {
-            try {
-                const parsedText = JSON.parse(mcpContent[0].text);
-                if (Array.isArray(parsedText) && parsedText.length > 0 && typeof parsedText[0] === 'object' && parsedText[0] !== null) {
-                    return { isTableEligible: true, tableData: parsedText };
-                }
-            } catch {
-                // Ignore parse errors, it's just regular text
-            }
-        }
-
         if (mcpContent) return { isTableEligible: false, tableData: [] };
 
         // 1. Array of objects
@@ -189,20 +177,20 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         return <span className="truncate max-w-[300px] block" title={String(value)}>{String(value)}</span>;
     }
 
-    const defaultTab = isTableEligible ? "table" : (mcpContent ? "rendered" : "json");
+    const defaultTab = mcpContent ? "rendered" : (isTableEligible ? "table" : "json");
 
     return (
         <Tabs defaultValue={defaultTab} className="w-full">
             <div className="flex items-center justify-between mb-2">
                 <TabsList>
-                    {isTableEligible && (
-                        <TabsTrigger value="table" className="flex items-center gap-2">
-                            <TableIcon className="h-4 w-4" /> Table
-                        </TabsTrigger>
-                    )}
                     {mcpContent && (
                         <TabsTrigger value="rendered" className="flex items-center gap-2">
                             <FileText className="h-4 w-4" /> Rendered
+                        </TabsTrigger>
+                    )}
+                    {isTableEligible && (
+                        <TabsTrigger value="table" className="flex items-center gap-2">
+                            <TableIcon className="h-4 w-4" /> Table
                         </TabsTrigger>
                     )}
                     <TabsTrigger value="json" className="flex items-center gap-2">
