@@ -87,9 +87,6 @@ jobs:
       # Node is pre-installed on ubuntu-latest runners; no actions/setup-node needed.
       # The Chromium browser binary itself is downloaded by playwright_test.sh
       # on first use and cached in /tmp/mcpany-playwright-browsers.
-      - name: Install Playwright Chromium system dependencies
-        run: npx -y playwright@1.58.0 install-deps chromium
-
       - name: Test
         env:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_OFFICIAL_API_KEY }}
