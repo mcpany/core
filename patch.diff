@@ -1,19 +1,45 @@
---- ui/src/components/dashboard/dashboard-grid.tsx
-+++ ui/src/components/dashboard/dashboard-grid.tsx
-@@ -75,2 +75,4 @@
--// Draggable widget card
--const WidgetCard = ({ widget, index, updateWidgetSize, toggleWidgetVisibility, removeWidget }: {
-+// ⚡ BOLT: [Render Optimization] Extract Draggable Widget into React.memo to prevent re-rendering all widgets during drag or single-widget state changes.
-+// Randomized Selection from Top 5 High-Impact Targets
-+const MemoizedWidgetCard = React.memo(({ widget, index, updateWidgetSize, toggleWidgetVisibility, removeWidget }: {
-     widget: WidgetInstance;
-@@ -132,2 +134,3 @@
--};
-+});
-+MemoizedWidgetCard.displayName = "MemoizedWidgetCard";
-
-@@ -321,2 +324,2 @@
--                            {widgets.filter(w => !w.hidden).map((widget, index) => (
--                                <WidgetCard
-+                            {widgets.filter(w => !w.hidden).map((widget, index) => (
-+                                <MemoizedWidgetCard
+--- ui/src/lib/client.ts
++++ ui/src/lib/client.ts
+@@ -572,7 +572,13 @@
+             payload.grpc_service = { address: config.grpcService.address };
+         }
+         if (config.commandLineService) {
+-            payload.command_line_service = CommandLineUpstreamService.toJSON(config.commandLineService);
++            payload.command_line_service = {
++                command: config.commandLineService.command,
++                args: config.commandLineService.args || [],
++                working_directory: config.commandLineService.workingDirectory,
++                environment: config.commandLineService.env,
++                env: config.commandLineService.env
++            };
+         }
+         if (config.mcpService) {
+             payload.mcp_service = { ...config.mcpService };
+@@ -678,7 +684,11 @@
+             payload.grpc_service = { address: config.grpcService.address };
+         }
+         if (config.commandLineService) {
+-            payload.command_line_service = CommandLineUpstreamService.toJSON(config.commandLineService);
++            payload.command_line_service = {
++                command: config.commandLineService.command,
++                args: config.commandLineService.args || [],
++                working_directory: config.commandLineService.workingDirectory,
++            };
+         }
+         if (config.mcpService) {
+             payload.mcp_service = { ...config.mcpService };
+@@ -803,7 +813,13 @@
+             payload.grpc_service = { address: config.grpcService.address };
+         }
+         if (config.commandLineService) {
+-            payload.command_line_service = CommandLineUpstreamService.toJSON(config.commandLineService);
++            payload.command_line_service = {
++                command: config.commandLineService.command,
++                args: config.commandLineService.args || [],
++                working_directory: config.commandLineService.workingDirectory,
++                env: config.commandLineService.env,
++                container_environment: config.commandLineService.containerEnvironment, // Include this if needed
++            };
+         }
+         if (config.mcpService) {
+             payload.mcp_service = { ...config.mcpService };
