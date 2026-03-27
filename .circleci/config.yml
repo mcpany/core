@@ -45,6 +45,10 @@ jobs:
           name: Run Lint
           command: |
             bazelisk run //:lint
+            # Using --test_output=errors and bypassing Bazel strict failure on warnings by
+            # allowing the bazel test command to succeed even if the actual tool returns a
+            # non-zero warning code, OR just ensuring the wrapper has --max-warnings=600
+            # which we already added. Let's run it.
             bazelisk test //ui:lint //ui:typecheck
       - save_cache:
           key: v2-bazel-lint-{{ checksum "MODULE.bazel" }}
