@@ -131,16 +131,27 @@
 *   **[P0] Argument-Level Semantic Validator (ALSV)**: Deep-inspection for command arguments to prevent shell-fallback exploits. (Added: 2026-03-24)
 *   **[P0] Task-Claim Integrity Provider**: Hardware-attested tokens for horizontal mesh task claiming. (Added: 2026-03-24)
 
+#### Upcoming (2026-07-07 Evolution)
+*   **[P0] CI/CD Cache Integrity Guard**: Mandatory cryptographic signing and verification for all agent-accessible build caches. (Added: 2026-07-07)
+*   **[P1] Automated Remediation Hub**: Verifiable audit trail service for AI-powered fixes to ensure SSDF compliance. (Added: 2026-07-07)
+*   **[P0] Metadata Sanitization Gateway**: Real-time semantic deconstruction of external metadata to neutralize injection exploits. (Added: 2026-07-07)
+
 #### Upcoming (2026-03-20 Evolution)
 *   **[P0] Hardware-Attested Mission Manifest (HAMM) Provider**: Authoritative service for enforcing TPM-signed capability manifests. (Added: 2026-03-20)
 *   **[P0] Asynchronous Mailbox Sharding (AMS) Middleware**: High-density teammate coordination service with granular mailbox shards. (Added: 2026-03-20)
 *   **[P0] Mission-Root Budget Enforcer**: Resource management for reasoning effort and token limits based on process-bound agency. (Added: 2026-03-20)
 *   **[P1] A2A Multi-Channel Inbox Bridge**: Secure coordination and translation for handling 20+ messaging platforms simultaneously. (Added: 2026-03-20)
 
+#### Upcoming (2026-07-06 Evolution)
+*   **[P0] Quorum-Bound Summarization (QBS) Hub**: Consensus-broker requiring multi-agent attestation for context compaction to prevent Mission-Root Erasure. (Added: 2026-07-06)
+*   **[P1] Optimistic Summarization Middleware**: Performance-optimizing service for speculative reasoning against pending summaries. (Added: 2026-07-06)
+*   **[P1] Intent-Aware Adaptive Jitter**: Risk-aware side-channel defense scaling jitter based on real-time intent and shard sensitivity. (Added: 2026-07-06)
+*   **[P0] Enclave-local Metadata Attestation (EMA)**: Hardware-enclave bound validation for PSS-compliant shard metadata. (Added: 2026-07-06)
+
 #### Upcoming (2026-07-05 Evolution)
 *   **[P0] Physical Shard Sovereignty (PSS) Provider**: Cryptographically pin context shards to specific hardware Enclave IDs to neutralize shard-hopping. (Added: 2026-07-05)
 *   **[P0] Multi-Modal Stylometric Integrity (MMSI) Validator**: Real-time stylometric analysis for SVG logic diagrams and audio reasoning traces within SBF. (Added: 2026-07-05)
-*   **[P0] Quorum-Bound Summarization (QBS) Hub**: Distributed service requiring multi-agent consensus (Mission-Root + Auditor) on context compaction. (Added: 2026-07-05)
+*   **[P0] Quorum-Bound Summarization (QBS) Hub**: Distributed service requiring multi-agent consensus (Mission-Root + Auditor) on all context compaction events. (Added: 2026-07-05)
 *   **[P1] Adaptive Jitter Profiler**: Performance-optimizing middleware for risk-aware timing variations in enclave handoffs. (Added: 2026-07-05)
 
 #### Upcoming (2026-07-04 Evolution)
@@ -149,6 +160,12 @@
 *   **[P0] Hardware-Locked Attention Masking (HLAM)**: Middleware for cryptographic masking of subagent noise at the attention layer. (Added: 2026-07-04)
 *   **[P0] Monotonic Jitter Provider**: Hardware-attested timing variation service to neutralize enclave timing side-channels. (Added: 2026-07-04)
 *   **[P1] Context Compaction Quorum Hub**: Consensus-based state summarization service for large mesh efficiency. (Added: 2026-07-04)
+
+#### Upcoming (2026-03-26 Evolution)
+*   **[P0] Action-Chain Sovereignty Monitor (ACSM)**: Real-time validation of complete agent workflow sequences against mission-root intents. (Added: 2026-03-26)
+*   **[P0] CI/CD Cache Integrity Guard (CCIG)**: Mandatory cryptographic signing and verification for all agent-accessible build caches. (Added: 2026-03-26)
+*   **[P0] Metadata Sanitization Gateway (MSG)**: Real-time semantic deconstruction of ingested metadata to neutralize instruction injection. (Added: 2026-03-26)
+*   **[P1] Post-Quantum Mesh Handshake (PQMH)**: Transition inter-agent transport to NIST-standard quantum-resistant algorithms. (Added: 2026-03-26)
 
 #### Upcoming (2026-03-25 Evolution)
 *   **[P0] Hardware-Attested Monotonic Depth-Counters**: physical constraint enforcement for recursive delegations to prevent infinite resource loops. (Added: 2026-03-25)
@@ -170,6 +187,11 @@
 *   **[P0] Memfd-Bound Zero-Copy Sanitizer**: Native byte-level WASM scanning on kernel-mediated shared memory segments. (Added: 2026-03-25)
 *   **[P0] Hardware-Attested Monotonic Depth-Counters**: TPM-bound constraint enforcement for recursive agent delegations. (Added: 2026-03-25)
 *   **[P1] Optimistic Attestation Gate**: Speculative safety middleware for non-blocking coordination during high-density mesh handoffs. (Added: 2026-03-25)
+
+#### Upcoming (2026-03-25 Iteration 5)
+*   **[P0] Programmatic SDK Bridge**: Authoritative security proxy for SDK-driven agent interactions, enforcing Zero-Trust policies on programmatic tool calls. (Added: 2026-03-25)
+*   **[P1] Persistent Session Sovereignty Hub**: TPM-bound cryptographic attestation for local SQLite session state to prevent unauthorized session resumption. (Added: 2026-03-25)
+*   **[P0] Non-Interactive Mode Security Guard**: Pre-flight authorization engine that validates all potential tool calls against a mission-root manifest for headless automation. (Added: 2026-03-25)
 
 #### Upcoming (2026-06-23 Evolution)
 *   **[P0] Recursive Mission-Root Attestation (RMRA)**: Mandatory hardware-bound re-attestation of sub-process lineage for headless handoffs. (Added: 2026-06-23)
