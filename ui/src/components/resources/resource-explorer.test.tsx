@@ -30,7 +30,7 @@ vi.mock('react-syntax-highlighter/dist/esm/light', () => {
  * @param props.children - The child components.
  * @returns The rendered component.
  */
-    const MockHighlighter = ({ children, value }: { children?: React.ReactNode, value?: string }) => <pre data-testid="code-block">{value || children}</pre>;
+    const MockHighlighter = ({ children }: { children: React.ReactNode }) => <pre data-testid="code-block">{children}</pre>;
     // Mock static methods like registerLanguage
     MockHighlighter.registerLanguage = vi.fn();
     return {
