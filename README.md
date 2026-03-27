@@ -7,7 +7,7 @@
 
 ## Project Identity
 
-**What is this?** MCP Any is the definitive Model Context Protocol (MCP) universal adapter designed to streamline and democratize API integration for AI agents.
+**What is this?** MCP Any is the ultimate developer entry point and definitive Model Context Protocol (MCP) universal adapter designed to streamline and democratize API integration for AI agents.
 
 **Why does it exist?** Our mission is to eliminate "binary fatigue" by ensuring you never have to write another single-purpose MCP server. With MCP Any, your existing infrastructure—whether REST, gRPC, OpenAPI, or local Command-line scripts—becomes instantly discoverable and operable by AI through elegant, configuration-driven policies.
 
@@ -16,6 +16,16 @@
 - **Universal Compatibility:** Out-of-the-box support for HTTP/REST, gRPC via reflection, OpenAPI specs, and secure command execution.
 - **Enterprise Security:** Built-in authentication proxying, strict rate limiting, Data Loss Prevention (DLP) middleware, and comprehensive audit logs.
 - **Deploy Anywhere:** Run it locally, as a containerized central gateway, or as a Kubernetes sidecar.
+
+### Architecture Identity
+```mermaid
+graph TD
+    A[AI Agents] -->|MCP JSON-RPC| B[MCP Any Universal Adapter]
+    B --> C{Protocol Adapters}
+    C -->|REST| D[Legacy HTTP APIs]
+    C -->|gRPC| E[Modern Microservices]
+    C -->|CLI| F[Local Scripts]
+```
 
 ## Architecture
 
@@ -129,7 +139,7 @@ We adhere to a strict development workflow to ensure code quality and maintainab
 ### Testing
 Run all unit and integration tests to ensure code correctness. We practice proactive testing and continuous integration.
 ```bash
-make test
+bazelisk test //...
 ```
 
 ### Linting
@@ -141,7 +151,7 @@ See [AGENTS.md](server/AGENTS.md) for detailed coding and documentation guidelin
 
 To run linters:
 ```bash
-make lint
+bazelisk run //:lint
 ```
 
 ### Building
@@ -153,7 +163,7 @@ bazelisk build //...
 ### Code Generation
 Regenerate Protocol Buffers and other auto-generated files if you modify `.proto` definitions.
 ```bash
-make gen
+bazelisk run //:gen
 ```
 
 ### UI Development

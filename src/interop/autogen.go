@@ -7,9 +7,9 @@ import (
 
 // AutoGenAdapter implements the AgentFramework interface for AutoGen.
 //
-// Summary: Represents an adapter that connects the AutoGen multi-agent framework to the universal adapter hub.
+// Intent: Represents an adapter that connects the AutoGen multi-agent framework to the universal adapter hub.
 //
-// Parameters:
+// Params:
 //   - None.
 //
 // Returns:
@@ -27,9 +27,9 @@ type AutoGenAdapter struct {
 
 // NewAutoGenAdapter creates a new AutoGenAdapter instance.
 //
-// Summary: Constructs a new AutoGenAdapter with predefined multi-agent capabilities.
+// Intent: Constructs a new AutoGenAdapter with predefined multi-agent capabilities.
 //
-// Parameters:
+// Params:
 //   - None.
 //
 // Returns:
@@ -52,9 +52,9 @@ func NewAutoGenAdapter() *AutoGenAdapter {
 
 // Name returns the identifier of the agent framework.
 //
-// Summary: Retrieves the exact name identifier for the AutoGen adapter.
+// Intent: Retrieves the exact name identifier for the AutoGen adapter.
 //
-// Parameters:
+// Params:
 //   - None.
 //
 // Returns:
@@ -71,9 +71,9 @@ func (a *AutoGenAdapter) Name() string {
 
 // HandleTask translates and executes a universal task on the AutoGen framework.
 //
-// Summary: Processes and executes a task through simulated multi-agent subagent execution.
+// Intent: Processes and executes a task through simulated multi-agent subagent execution.
 //
-// Parameters:
+// Params:
 //   - ctx (context.Context): Execution context for controlling cancellation and timeout.
 //   - task (*Task): The generic task object that needs to be executed by AutoGen.
 //
@@ -110,9 +110,9 @@ func (a *AutoGenAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResul
 
 // SupportsCapability checks if the framework provides a requested capability.
 //
-// Summary: Confirms if the AutoGen adapter's capabilities include the requested functionality.
+// Intent: Confirms if the AutoGen adapter's capabilities include the requested functionality.
 //
-// Parameters:
+// Params:
 //   - capability (string): The intended capability name.
 //
 // Returns:
