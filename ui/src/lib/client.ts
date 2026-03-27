@@ -497,7 +497,11 @@ export const apiClient = {
         // We first fetch the existing service, mutate the `disable` flag, and then PUT it back.
         const currentServiceRes = await fetchWithAuth(`/api/v1/services/${name}`);
         if (!currentServiceRes.ok) throw new Error('Failed to fetch service for status update');
-        const currentService = await currentServiceRes.json();
+
+        let currentService = await currentServiceRes.json();
+        if (currentService.service) {
+             currentService = currentService.service;
+        }
 
         currentService.disable = disable;
 
