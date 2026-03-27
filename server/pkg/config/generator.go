@@ -14,7 +14,7 @@ import (
 
 // Generator handles the interactive generation of configuration files.
 //
-// Summary. Interactive configuration generator.
+// Summary: Interactive configuration generator.
 //
 // It prompts the user for input and uses templates to generate YAML configuration
 // for different types of services (HTTP, gRPC, OpenAPI, GraphQL).
@@ -45,11 +45,10 @@ func NewGenerator() *Generator {
 // Summary: Generate.
 //
 // Parameters.
-//   - ): The parameter.
-//   - error: The parameter.
+//   - None.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (g *Generator) Generate() ([]byte, error) {
 	serviceType, err := g.prompt("🤖 Enter service type (http, grpc, openapi, graphql): ")
 	if err != nil {
@@ -126,7 +125,7 @@ const httpServiceTemplate = `upstreamServices:
 // HTTPServiceData holds the data required to generate an HTTP service configuration.
 // It is used as the data context for the httpServiceTemplate.
 //
-// Summary. Data context for generating HTTP service configuration.
+// Summary: Data context for generating HTTP service configuration.
 //
 // Fields:
 //   - Name (string): The name of the service.
@@ -203,7 +202,7 @@ const grpcServiceTemplate = `upstreamServices:
 // GRPCServiceData holds the data required to generate a gRPC service configuration.
 // It is used as the data context for the grpcServiceTemplate.
 //
-// Summary. Data context for generating gRPC service configuration.
+// Summary: Data context for generating gRPC service configuration.
 //
 // Fields:
 //   - Name (string): The name of the service.
@@ -257,7 +256,7 @@ const openapiServiceTemplate = `upstreamServices:
 // OpenAPIServiceData holds the data required to generate an OpenAPI service configuration.
 // It is used as the data context for the openapiServiceTemplate.
 //
-// Summary. Data context for generating OpenAPI service configuration.
+// Summary: Data context for generating OpenAPI service configuration.
 //
 // Fields:
 //   - Name (string): The name of the service.
@@ -306,7 +305,7 @@ const graphqlServiceTemplate = `upstreamServices:
 // GraphQLServiceData holds the data required to generate a GraphQL service configuration.
 // It is used as the data context for the graphqlServiceTemplate.
 //
-// Summary. Data context for generating GraphQL service configuration.
+// Summary: Data context for generating GraphQL service configuration.
 //
 // Fields:
 //   - Name (string): The name of the service.

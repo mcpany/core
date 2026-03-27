@@ -17,7 +17,7 @@ import (
 // DynamicResource implements the Resource interface for resources that are
 // fetched dynamically by executing a tool.
 //
-// Summary. Represents a DynamicResource.
+// Summary: Represents a DynamicResource.
 type DynamicResource struct {
 	resource *mcp.Resource
 	tool     tool.Tool
@@ -30,10 +30,9 @@ type DynamicResource struct {
 // Parameters.
 //   - def: The parameter.
 //   - t: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func NewDynamicResource(def *configv1.ResourceDefinition, t tool.Tool) (*DynamicResource, error) {
 	if def == nil {
 		return nil, fmt.Errorf("resource definition is nil")
@@ -86,10 +85,9 @@ func (r *DynamicResource) Service() string {
 //
 // Parameters.
 //   - ctx: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (r *DynamicResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
 	// For now, we'll just execute the tool with no inputs.
 	// In the future, we may need to pass inputs to the tool.

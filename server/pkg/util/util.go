@@ -33,10 +33,9 @@ import (
 //   - alwaysAppendHash: The parameter.
 //   - maxSanitizedPrefixLength: The parameter.
 //   - reqHashLength: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, reqHashLength int) (string, error) {
 	if len(ids) == 0 {
 		return "", nil
@@ -195,10 +194,9 @@ func isValidChar(c byte) bool {
 //
 // Parameters.
 //   - name: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func SanitizeServiceName(name string) (string, error) {
 	return SanitizeID([]string{name}, false, maxSanitizedPrefixLength, hashLength)
 }
@@ -209,10 +207,9 @@ func SanitizeServiceName(name string) (string, error) {
 //
 // Parameters.
 //   - name: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func SanitizeToolName(name string) (string, error) {
 	return SanitizeID([]string{name}, false, maxSanitizedPrefixLength, hashLength)
 }
@@ -276,11 +273,9 @@ func GenerateUUID() string {
 //
 // Parameters.
 //   - toolName: The parameter.
-//   - bareToolName: The parameter.
-//   - err: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func ParseToolName(toolName string) (service, bareToolName string, err error) {
 	parts := strings.SplitN(toolName, consts.ToolNameServiceSeparator, 2)
 	if len(parts) == 2 {
@@ -381,11 +376,10 @@ func BytesToString(b []byte) string {
 // Summary: GetDockerCommand.
 //
 // Parameters.
-//   - ): The parameter.
-//   - []string: The parameter.
+//   - None.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func GetDockerCommand() (string, []string) {
 	const dockerCmd = "docker"
 	if os.Getenv("USE_SUDO_FOR_DOCKER") == TrueStr {

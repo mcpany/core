@@ -41,7 +41,7 @@ var (
 
 // CachingMiddleware handles caching of tool execution results.
 //
-// Summary. Represents a CachingMiddleware.
+// Summary: Represents a CachingMiddleware.
 type CachingMiddleware struct {
 	cache           *cache.Cache[any]
 	toolManager     tool.ManagerInterface
@@ -139,10 +139,9 @@ func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 //   - ctx: The parameter.
 //   - req: The parameter.
 //   - next: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := tool.GetFromContext(ctx)
 	if !ok {

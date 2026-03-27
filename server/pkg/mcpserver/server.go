@@ -61,7 +61,7 @@ var AddReceivingMiddlewareHook func(name string)
 // tools, prompts, resources, and services. It uses an internal router to delegate requests to the appropriate
 // handlers and communicates with backend workers via an event bus.
 //
-// Summary. Represents a Server.
+// Summary: Represents a Server.
 type Server struct {
 	server          *mcp.Server
 	router          *Router
@@ -471,10 +471,9 @@ func (s *Server) ListPrompts(
 // Parameters.
 //   - ctx: The parameter.
 //   - params: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (s *Server) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
 	// Attempt to retrieve session from context, which is populated during request handling
 	if session, ok := tool.GetSession(ctx); ok {
@@ -715,10 +714,9 @@ func (s *Server) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 //
 // Parameters.
 //   - toolName: The parameter.
-//   - bool: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (s *Server) GetTool(toolName string) (tool.Tool, bool) {
 	return s.toolManager.GetTool(toolName)
 }
@@ -745,10 +743,9 @@ func (s *Server) ListTools() []tool.Tool {
 // Parameters.
 //   - ctx: The parameter.
 //   - req: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	logger := logging.GetLogger()
 	// ⚡ Bolt Optimization: Check if logging is enabled to avoid unnecessary allocations.
@@ -920,10 +917,9 @@ func (s *Server) AddTool(t tool.Tool) error {
 //
 // Parameters.
 //   - serviceID: The parameter.
-//   - bool: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (s *Server) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	return s.toolManager.GetServiceInfo(serviceID)
 }
@@ -953,7 +949,7 @@ func (s *Server) ClearToolsForService(serviceKey string) {
 //   - f: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (s *Server) SetReloadFunc(f func(context.Context) error) {
 	s.reloadFunc = f
 }
@@ -1099,7 +1095,7 @@ func (l LazyRedact) LogValue() slog.Value {
 // It avoids expensive serialization of large payloads (e.g. images, huge text)
 // and lazily computes the string representation only when logging is enabled.
 //
-// Summary. Represents a LazyLogResult.
+// Summary: Represents a LazyLogResult.
 type LazyLogResult struct {
 	Value any
 }

@@ -68,7 +68,7 @@ func (w *peerConnectionWrapper) IsHealthy(_ context.Context) bool {
 // WebrtcTool implements the Tool interface for a tool that is exposed via a
 // WebRTC data channel.
 //
-// Summary. WebRTC Tool implementation.
+// Summary: WebRTC Tool implementation.
 //
 // It handles the signaling and establishment of a peer connection to communicate
 // with the remote service. This is useful for scenarios requiring low-latency,
@@ -206,10 +206,9 @@ func (t *WebrtcTool) GetCacheConfig() *configv1.CacheConfig {
 // Parameters.
 //   - ctx: The parameter.
 //   - req: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (t *WebrtcTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.webrtcPool == nil {
 		// Fallback to creating a new connection if the pool is not initialized

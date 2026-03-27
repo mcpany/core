@@ -32,7 +32,7 @@ import (
 
 // Engine defines the interface for configuration unmarshaling from different file formats.
 //
-// Summary. Abstraction for parsing configuration files into protobuf messages.
+// Summary: Abstraction for parsing configuration files into protobuf messages.
 type Engine interface {
 	// Unmarshal parses the given byte slice and populates the provided proto.Message.
 	//
@@ -49,7 +49,7 @@ type Engine interface {
 
 // StructuredEngine defines an interface for engines that can unmarshal directly from a map structure.
 //
-// Summary. Abstraction for parsing configurations from map structures, avoiding double parsing.
+// Summary: Abstraction for parsing configurations from map structures, avoiding double parsing.
 type StructuredEngine interface {
 	Engine
 	// UnmarshalFromMap populates the provided proto.Message from a raw map.
@@ -68,7 +68,7 @@ type StructuredEngine interface {
 
 // ConfigurableEngine defines an interface for engines that support configuration options.
 //
-// Summary. Interface for engines that can be configured (e.g. skip validation).
+// Summary: Interface for engines that can be configured (e.g. skip validation).
 type ConfigurableEngine interface {
 	Engine
 	// SetSkipValidation sets whether to skip schema validation.
@@ -94,10 +94,9 @@ type ConfigurableEngine interface {
 //
 // Parameters.
 //   - path: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func NewEngine(path string) (Engine, error) {
 	ext := strings.ToLower(filepath.Ext(path))
 	switch ext {
@@ -348,7 +347,7 @@ func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 
 // Store defines the interface for loading MCP-X server configurations.
 //
-// Summary. Abstraction for configuration sources.
+// Summary: Abstraction for configuration sources.
 type Store interface {
 	// Load retrieves and returns the McpAnyServerConfig.
 	//
@@ -373,7 +372,7 @@ type Store interface {
 
 // ServiceStore extends Store to provide CRUD operations for UpstreamServices.
 //
-// Summary. Interface for stores that support managing individual services.
+// Summary: Interface for stores that support managing individual services.
 type ServiceStore interface {
 	Store
 	// SaveService saves or updates a service configuration.
@@ -629,7 +628,7 @@ func handleSimpleVar(b []byte, startIdx int, buf *bytes.Buffer, missingErrBuilde
 
 // FileStore implements the `Store` interface for loading configurations from files.
 //
-// Summary. Loads configurations from the filesystem.
+// Summary: Loads configurations from the filesystem.
 type FileStore struct {
 	fs               afero.Fs
 	paths            []string
@@ -711,10 +710,9 @@ func (s *FileStore) HasConfigSources() bool {
 //
 // Parameters.
 //   - ctx: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	filePaths, err := s.collectFilePaths()
 	if err != nil {
@@ -1198,7 +1196,7 @@ func findField(md protoreflect.MessageDescriptor, name string) protoreflect.Fiel
 
 // MultiStore implements the Store interface for loading configurations from multiple stores.
 //
-// Summary. Combines multiple stores into a single logical store.
+// Summary: Combines multiple stores into a single logical store.
 type MultiStore struct {
 	stores []Store
 }
@@ -1222,10 +1220,9 @@ func NewMultiStore(stores ...Store) *MultiStore {
 //
 // Parameters.
 //   - ctx: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (ms *MultiStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	mergedConfig := configv1.McpAnyServerConfig_builder{}.Build()
 	for _, s := range ms.stores {

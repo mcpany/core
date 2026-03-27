@@ -16,7 +16,7 @@ import (
 
 // ContextOptimizer optimises the context size of responses.
 //
-// Summary. Middleware that truncates excessively long string values in JSON responses to fit within a context window.
+// Summary: Middleware that truncates excessively long string values in JSON responses to fit within a context window.
 type ContextOptimizer struct {
 	MaxChars int
 }
@@ -190,10 +190,9 @@ func (w *responseBuffer) checkBuffer() {
 //
 // Parameters.
 //   - b: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (w *responseBuffer) Write(b []byte) (int, error) {
 	w.checkBuffer()
 

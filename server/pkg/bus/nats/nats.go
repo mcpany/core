@@ -119,7 +119,7 @@ func (b *Bus[T]) Publish(_ context.Context, topic string, msg T) error {
 //   - handler: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (b *Bus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	sub, _ := b.nc.Subscribe(topic, func(m *natsgo.Msg) {
 		var msg T
@@ -142,7 +142,7 @@ func (b *Bus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (un
 //   - handler: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (b *Bus[T]) SubscribeOnce(_ context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	sub, err := b.nc.Subscribe(topic, func(m *natsgo.Msg) {
 		var msg T

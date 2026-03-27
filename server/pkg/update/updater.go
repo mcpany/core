@@ -22,7 +22,7 @@ import (
 //
 // It manages checking for updates on GitHub and applying them to the local executable.
 //
-// Summary. Represents a Updater.
+// Summary: Represents a Updater.
 type Updater struct {
 	client     *github.Client
 	httpClient *http.Client
@@ -64,11 +64,9 @@ func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 //   - owner: The parameter.
 //   - repo: The parameter.
 //   - currentVersion: The parameter.
-//   - bool: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersion string) (*github.RepositoryRelease, bool, error) {
 	release, _, err := u.client.Repositories.GetLatestRelease(ctx, owner, repo)
 	if err != nil {

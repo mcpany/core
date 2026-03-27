@@ -23,10 +23,9 @@ import (
 //   - ctx: The parameter.
 //   - store: The parameter.
 //   - binaryType: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func LoadServices(ctx context.Context, store Store, binaryType string) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 
@@ -109,10 +108,9 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 // Parameters.
 //   - ctx: The parameter.
 //   - store: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func LoadResolvedConfig(ctx context.Context, store Store) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 

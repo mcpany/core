@@ -15,7 +15,7 @@ import (
 // CallPolicyMiddleware is a middleware that enforces call policies (allow/deny)
 // based on tool name and arguments.
 //
-// Summary. Middleware that evaluates and enforces security policies for tool executions.
+// Summary: Middleware that evaluates and enforces security policies for tool executions.
 type CallPolicyMiddleware struct {
 	toolManager tool.ManagerInterface
 }
@@ -43,10 +43,9 @@ func NewCallPolicyMiddleware(toolManager tool.ManagerInterface) *CallPolicyMiddl
 //   - ctx: The parameter.
 //   - req: The parameter.
 //   - next: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (m *CallPolicyMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

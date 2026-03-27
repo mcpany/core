@@ -17,7 +17,7 @@ import (
 
 // ZipProvider provides access to files within a zip archive.
 //
-// Summary. Represents a ZipProvider.
+// Summary: Represents a ZipProvider.
 type ZipProvider struct {
 	fs     afero.Fs
 	closer *os.File
@@ -29,10 +29,9 @@ type ZipProvider struct {
 //
 // Parameters.
 //   - config: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func NewZipProvider(config *configv1.ZipFs) (*ZipProvider, error) {
 	if err := validation.IsAllowedPath(config.GetFilePath()); err != nil {
 		return nil, fmt.Errorf("zip file path not allowed: %w", err)
@@ -82,10 +81,9 @@ func (p *ZipProvider) GetFs() afero.Fs {
 //
 // Parameters.
 //   - virtualPath: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (p *ZipProvider) ResolvePath(virtualPath string) (string, error) {
 	// For ZipFs, just clean the path. It's virtual (based on zip contents).
 	return filepath.Clean(virtualPath), nil

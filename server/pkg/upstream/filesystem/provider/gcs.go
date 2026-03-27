@@ -22,7 +22,7 @@ import (
 
 // GcsProvider provides access to files in a Google Cloud Storage bucket.
 //
-// Summary. Represents a GcsProvider.
+// Summary: Represents a GcsProvider.
 type GcsProvider struct {
 	fs     afero.Fs
 	client *storage.Client
@@ -37,10 +37,9 @@ var newStorageClient = storage.NewClient
 // Parameters.
 //   - _: The parameter.
 //   - config: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func NewGcsProvider(_ context.Context, config *configv1.GcsFs) (*GcsProvider, error) {
 	if config == nil {
 		return nil, fmt.Errorf("gcs config is nil")
@@ -76,10 +75,9 @@ func (p *GcsProvider) GetFs() afero.Fs {
 //
 // Parameters.
 //   - virtualPath: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (p *GcsProvider) ResolvePath(virtualPath string) (string, error) {
 	// Same as S3
 	cleanPath := path.Clean("/" + virtualPath)
@@ -121,10 +119,9 @@ type gcsFs struct {
 //
 // Parameters.
 //   - name: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (fs *gcsFs) Create(name string) (afero.File, error) {
 	return fs.OpenFile(name, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
 }
@@ -163,10 +160,9 @@ func (fs *gcsFs) MkdirAll(_ string, _ os.FileMode) error {
 //
 // Parameters.
 //   - name: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (fs *gcsFs) Open(name string) (afero.File, error) {
 	return fs.OpenFile(name, os.O_RDONLY, 0)
 }
@@ -179,10 +175,9 @@ func (fs *gcsFs) Open(name string) (afero.File, error) {
 //   - name: The parameter.
 //   - flag: The parameter.
 //   - _: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (fs *gcsFs) OpenFile(name string, flag int, _ os.FileMode) (afero.File, error) {
 	f := &gcsFile{
 		fs:   fs,
@@ -274,10 +269,9 @@ func (fs *gcsFs) Rename(oldname, newname string) error {
 //
 // Parameters.
 //   - name: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (fs *gcsFs) Stat(name string) (os.FileInfo, error) {
 	attrs, err := fs.client.Bucket(fs.bucket).Object(name).Attrs(fs.ctx)
 	if err != nil {
@@ -383,10 +377,9 @@ func (f *gcsFile) Close() error {
 //
 // Parameters.
 //   - p: The parameter.
-//   - err: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (f *gcsFile) Read(p []byte) (n int, err error) {
 	if f.reader == nil {
 		return 0, fmt.Errorf("file not opened for reading")
@@ -401,10 +394,9 @@ func (f *gcsFile) Read(p []byte) (n int, err error) {
 // Parameters.
 //   - p: The parameter.
 //   - off: The parameter.
-//   - err: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (f *gcsFile) ReadAt(p []byte, off int64) (n int, err error) {
 	// storage.Reader doesn't support ReadAt directly unless created with range?
 	// But afero.File requires ReadAt.
@@ -424,10 +416,9 @@ func (f *gcsFile) ReadAt(p []byte, off int64) (n int, err error) {
 // Parameters.
 //   - _: The parameter.
 //   - _: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (f *gcsFile) Seek(_ int64, _ int) (int64, error) {
 	return 0, fmt.Errorf("seek not supported")
 }
@@ -438,10 +429,9 @@ func (f *gcsFile) Seek(_ int64, _ int) (int64, error) {
 //
 // Parameters.
 //   - p: The parameter.
-//   - err: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (f *gcsFile) Write(p []byte) (n int, err error) {
 	if f.writer == nil {
 		return 0, fmt.Errorf("file not opened for writing")
@@ -456,10 +446,9 @@ func (f *gcsFile) Write(p []byte) (n int, err error) {
 // Parameters.
 //   - _: The parameter.
 //   - _: The parameter.
-//   - err: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (f *gcsFile) WriteAt(_ []byte, _ int64) (n int, err error) {
 	return 0, fmt.Errorf("writeat not supported")
 }
@@ -483,10 +472,9 @@ func (f *gcsFile) Name() string {
 //
 // Parameters.
 //   - _: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (f *gcsFile) Readdir(_ int) ([]os.FileInfo, error) {
 	// List objects with prefix name/
 	prefix := f.name
@@ -536,10 +524,9 @@ func (f *gcsFile) Readdir(_ int) ([]os.FileInfo, error) {
 //
 // Parameters.
 //   - n: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (f *gcsFile) Readdirnames(n int) ([]string, error) {
 	infos, err := f.Readdir(n)
 	if err != nil {
@@ -557,11 +544,10 @@ func (f *gcsFile) Readdirnames(n int) ([]string, error) {
 // Summary: Stat.
 //
 // Parameters.
-//   - ): The parameter.
-//   - error: The parameter.
+//   - None.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (f *gcsFile) Stat() (os.FileInfo, error) {
 	if f.reader != nil {
 		return &gcsFileInfo{
@@ -615,10 +601,9 @@ func (f *gcsFile) Truncate(_ int64) error {
 //
 // Parameters.
 //   - s: The parameter.
-//   - err: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (f *gcsFile) WriteString(s string) (ret int, err error) {
 	return f.Write([]byte(s))
 }

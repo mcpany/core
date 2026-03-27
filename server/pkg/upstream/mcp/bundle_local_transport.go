@@ -12,7 +12,7 @@ import (
 
 // BundleLocalTransport implements mcp.Transport for running a bundle locally via exec.
 //
-// Summary. Represents a BundleLocalTransport.
+// Summary: Represents a BundleLocalTransport.
 type BundleLocalTransport struct {
 	Command    string
 	Args       []string
@@ -26,10 +26,9 @@ type BundleLocalTransport struct {
 //
 // Parameters.
 //   - ctx: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (t *BundleLocalTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	cmd := exec.CommandContext(ctx, t.Command, t.Args...) //nolint:gosec // Trusted configuration
 	cmd.Env = t.Env

@@ -18,7 +18,7 @@ import (
 // StaticResource implements the Resource interface for resources that are
 // defined statically in the configuration (e.g. pointing to a URL).
 //
-// Summary. Represents a StaticResource.
+// Summary: Represents a StaticResource.
 type StaticResource struct {
 	resource      *mcp.Resource
 	serviceID     string
@@ -83,10 +83,9 @@ func (r *StaticResource) Service() string {
 //
 // Parameters.
 //   - ctx: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (r *StaticResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
 	if r.staticContent != nil {
 		var blob []byte

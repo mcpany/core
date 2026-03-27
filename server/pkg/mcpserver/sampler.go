@@ -13,7 +13,7 @@ import (
 
 // MCPSession wraps an MCP session to provide client interaction capabilities like sampling and roots.
 //
-// Summary. Provides a wrapper around the MCP server session to facilitate client interactions.
+// Summary: Provides a wrapper around the MCP server session to facilitate client interactions.
 type MCPSession struct {
 	session *mcp.ServerSession
 }
@@ -51,10 +51,9 @@ func NewMCPSampler(session *mcp.ServerSession) *MCPSession {
 // Parameters.
 //   - ctx: The parameter.
 //   - params: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (s *MCPSession) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
 	if s.session == nil {
 		return nil, fmt.Errorf("no active session available for sampling")
@@ -68,10 +67,9 @@ func (s *MCPSession) CreateMessage(ctx context.Context, params *mcp.CreateMessag
 //
 // Parameters.
 //   - ctx: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (s *MCPSession) ListRoots(ctx context.Context) (*mcp.ListRootsResult, error) {
 	if s.session == nil {
 		return nil, fmt.Errorf("no active session available for roots inspection")

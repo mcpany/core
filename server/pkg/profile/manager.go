@@ -14,7 +14,7 @@ import (
 
 // Manager handles the lifecycle and resolution of profiles.
 //
-// Summary. Manages profile definitions and resolution.
+// Summary: Manages profile definitions and resolution.
 type Manager struct {
 	mu       sync.RWMutex
 	profiles map[string]*configv1.ProfileDefinition
@@ -62,10 +62,9 @@ func (m *Manager) Update(profiles []*configv1.ProfileDefinition) {
 //
 // Parameters.
 //   - name: The parameter.
-//   - bool: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (m *Manager) GetProfileDefinition(name string) (*configv1.ProfileDefinition, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -79,11 +78,9 @@ func (m *Manager) GetProfileDefinition(name string) (*configv1.ProfileDefinition
 //
 // Parameters.
 //   - profileName: The parameter.
-//   - map[string]*configv1.SecretValue: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (m *Manager) ResolveProfile(profileName string) (map[string]*configv1.ProfileServiceConfig, map[string]*configv1.SecretValue, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

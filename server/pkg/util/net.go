@@ -20,7 +20,7 @@ import (
 
 // IPResolver defines an interface for looking up IP addresses.
 //
-// Summary. Interface for IP address resolution.
+// Summary: Interface for IP address resolution.
 //
 // It matches the signature of net.Resolver.LookupIP.
 type IPResolver interface {
@@ -41,7 +41,7 @@ type IPResolver interface {
 
 // NetDialer defines an interface for dialing network connections.
 //
-// Summary. Interface for network dialing.
+// Summary: Interface for network dialing.
 //
 // It matches the signature of net.Dialer.DialContext.
 type NetDialer interface {
@@ -62,7 +62,7 @@ type NetDialer interface {
 
 // SafeDialer provides control over outbound connections to prevent Server-Side Request Forgery (SSRF).
 //
-// Summary. Secure network dialer preventing SSRF.
+// Summary: Secure network dialer preventing SSRF.
 type SafeDialer struct {
 	// AllowLoopback allows connections to loopback addresses (127.0.0.1, ::1).
 	AllowLoopback bool
@@ -103,10 +103,9 @@ func NewSafeDialer() *SafeDialer {
 //   - ctx: The parameter.
 //   - network: The parameter.
 //   - addr: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net.Conn, error) {
 	host, port, err := net.SplitHostPort(addr)
 	if err != nil {
@@ -175,10 +174,9 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 //   - ctx: The parameter.
 //   - network: The parameter.
 //   - addr: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error) {
 	return NewSafeDialer().DialContext(ctx, network, addr)
 }
@@ -291,10 +289,9 @@ func CheckConnection(ctx context.Context, address string) error {
 //   - ctx: The parameter.
 //   - network: The parameter.
 //   - address: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func ListenWithRetry(ctx context.Context, network, address string) (net.Listener, error) {
 	var lis net.Listener
 	var err error

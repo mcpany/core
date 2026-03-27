@@ -27,7 +27,7 @@ import (
 // MCPServerProvider defines an interface for components that can provide an
 // instance of an *mcp.Server.
 //
-// Summary. Interface for providing an MCP server instance.
+// Summary: Interface for providing an MCP server instance.
 //
 // This interface is used to decouple the Manager from the concrete server implementation,
 // avoiding circular dependencies.
@@ -43,7 +43,7 @@ type MCPServerProvider interface {
 
 // ManagerInterface defines the contract for a tool manager.
 //
-// Summary. Interface for tool management operations.
+// Summary: Interface for tool management operations.
 //
 // It outlines the methods required for managing the lifecycle, registration, discovery,
 // and execution of tools within the MCP Any server.
@@ -222,7 +222,7 @@ type ManagerInterface interface {
 
 // ExecutionMiddleware defines the interface for middleware that intercepts tool execution.
 //
-// Summary. Interface for tool execution middleware.
+// Summary: Interface for tool execution middleware.
 type ExecutionMiddleware interface {
 	// Execute performs the middleware logic wrapping the next handler in the chain.
 	//
@@ -241,7 +241,7 @@ type ExecutionMiddleware interface {
 
 // Manager is the central component for managing tools in MCP Any.
 //
-// Summary. Central manager for tool lifecycle and execution.
+// Summary: Central manager for tool lifecycle and execution.
 //
 // It handles tool registration, retrieval, execution, and profile-based filtering.
 // It is thread-safe and supports efficient lookups via caching and indexing.
@@ -450,10 +450,9 @@ func (tm *Manager) ToolMatchesProfile(tool Tool, profileID string) bool {
 //
 // Parameters.
 //   - profileID: The parameter.
-//   - bool: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (tm *Manager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
 	tm.mu.RLock()
 	defer tm.mu.RUnlock()
@@ -594,10 +593,9 @@ func (tm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 // Parameters.
 //   - ctx: The parameter.
 //   - req: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error) {
 	log := logging.GetLogger().With("toolName", req.ToolName)
 	log.Debug("Executing tool")
@@ -799,10 +797,9 @@ func (tm *Manager) AddServiceInfo(serviceID string, info *ServiceInfo) {
 //
 // Parameters.
 //   - serviceID: The parameter.
-//   - bool: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (tm *Manager) GetServiceInfo(serviceID string) (*ServiceInfo, bool) {
 	info, ok := tm.serviceInfo.Load(serviceID)
 	if !ok {
@@ -1015,10 +1012,9 @@ func (tm *Manager) AddTool(tool Tool) error {
 //
 // Parameters.
 //   - toolName: The parameter.
-//   - bool: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (tm *Manager) GetTool(toolName string) (Tool, bool) {
 	// Try direct lookup (if client sends ID)
 	tool, ok := tm.tools.Load(toolName)

@@ -75,10 +75,9 @@ func ShouldExport(name string, policy *configv1.ExportPolicy) bool {
 //   - toolName: The parameter.
 //   - callID: The parameter.
 //   - arguments: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func EvaluateCallPolicy(policies []*configv1.CallPolicy, toolName, callID string, arguments []byte) (bool, error) {
 	// Fallback to slower implementation if not using compiled policies
 	for _, policy := range policies {
@@ -141,7 +140,7 @@ type compiledCallPolicyRule struct {
 
 // CompiledCallPolicy holds a compiled version of a call policy.
 //
-// Summary. Represents a pre-compiled call policy for efficient evaluation.
+// Summary: Represents a pre-compiled call policy for efficient evaluation.
 type CompiledCallPolicy struct {
 	policy        *configv1.CallPolicy
 	compiledRules []compiledCallPolicyRule
@@ -153,10 +152,9 @@ type CompiledCallPolicy struct {
 //
 // Parameters.
 //   - policies: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func CompileCallPolicies(policies []*configv1.CallPolicy) ([]*CompiledCallPolicy, error) {
 	compiled := make([]*CompiledCallPolicy, 0, len(policies))
 	for _, p := range policies {
@@ -178,10 +176,9 @@ func CompileCallPolicies(policies []*configv1.CallPolicy) ([]*CompiledCallPolicy
 //
 // Parameters.
 //   - policy: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, error) {
 	compiledRules := make([]compiledCallPolicyRule, len(policy.GetRules()))
 	for i, rule := range policy.GetRules() {
@@ -231,10 +228,9 @@ func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, er
 //   - toolName: The parameter.
 //   - callID: The parameter.
 //   - arguments: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func EvaluateCompiledCallPolicy(policies []*CompiledCallPolicy, toolName, callID string, arguments []byte) (bool, error) {
 	for _, policy := range policies {
 		policyBlocked := false

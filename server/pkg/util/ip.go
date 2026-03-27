@@ -103,10 +103,9 @@ func GetClientIP(r *http.Request, trustProxy bool) string {
 //
 // Parameters.
 //   - ctx: The parameter.
-//   - bool: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func RemoteIPFromContext(ctx context.Context) (string, bool) {
 	ip, ok := ctx.Value(remoteIPContextKey).(string)
 	return ip, ok

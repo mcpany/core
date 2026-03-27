@@ -24,7 +24,7 @@ import (
 
 // AuditMiddleware provides audit logging for tool executions.
 //
-// Summary. Middleware for auditing tool execution.
+// Summary: Middleware for auditing tool execution.
 type AuditMiddleware struct {
 	mu          sync.RWMutex
 	config      *configv1.AuditConfig
@@ -39,10 +39,9 @@ type AuditMiddleware struct {
 //
 // Parameters.
 //   - auditConfig: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func NewAuditMiddleware(auditConfig *configv1.AuditConfig) (*AuditMiddleware, error) {
 	m := &AuditMiddleware{
 		config:      auditConfig,
@@ -166,10 +165,9 @@ func (m *AuditMiddleware) UpdateConfig(auditConfig *configv1.AuditConfig) error 
 //   - ctx: The parameter.
 //   - req: The parameter.
 //   - next: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	m.mu.RLock()
 	auditConfig := m.config
@@ -303,11 +301,10 @@ func (m *AuditMiddleware) ClearHistory() {
 // Summary: SubscribeWithHistory.
 //
 // Parameters.
-//   - ): The parameter.
-//   - []any: The parameter.
+//   - None.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (m *AuditMiddleware) SubscribeWithHistory() (chan any, []any) {
 	return m.broadcaster.SubscribeWithHistory()
 }
@@ -345,10 +342,9 @@ func (m *AuditMiddleware) Unsubscribe(ch chan any) {
 // Parameters.
 //   - ctx: The parameter.
 //   - filter: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (m *AuditMiddleware) Read(ctx context.Context, filter audit.Filter) ([]audit.Entry, error) {
 	m.mu.RLock()
 	store := m.store

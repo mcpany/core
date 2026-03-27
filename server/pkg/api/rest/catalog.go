@@ -12,7 +12,7 @@ import (
 
 // CatalogServer implements the CatalogService API.
 //
-// Summary. Server implementation for the Catalog Service.
+// Summary: Server implementation for the Catalog Service.
 //
 // It handles requests to list available services from the dynamic catalog.
 type CatalogServer struct {
@@ -39,10 +39,9 @@ func NewCatalogServer(manager *catalog.Manager) *CatalogServer {
 // Parameters.
 //   - ctx: The parameter.
 //   - _: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (s *CatalogServer) ListServices(ctx context.Context, _ *apiv1.ListCatalogServicesRequest) (*apiv1.ListCatalogServicesResponse, error) {
 	services, err := s.manager.ListServices(ctx)
 	if err != nil {

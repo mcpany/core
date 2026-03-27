@@ -13,7 +13,7 @@ import (
 
 // MockTool is a mock implementation of the Tool interface for testing purposes.
 //
-// Summary. Mock tool for testing.
+// Summary: Mock tool for testing.
 type MockTool struct {
 	ToolFunc           func() *v1.Tool
 	MCPToolFunc        func() *mcp.Tool
@@ -60,10 +60,9 @@ func (m *MockTool) MCPTool() *mcp.Tool {
 // Parameters.
 //   - ctx: The parameter.
 //   - req: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (m *MockTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if m.ExecuteFunc != nil {
 		return m.ExecuteFunc(ctx, req)

@@ -22,7 +22,7 @@ var ErrPromptNotFound = errors.New("prompt not found")
 
 // Prompt is the fundamental interface for any executable prompt in the system.
 //
-// Summary. Interface for defining and executing prompts.
+// Summary: Interface for defining and executing prompts.
 type Prompt interface {
 	// Prompt returns the MCP prompt definition.
 	//
@@ -56,7 +56,7 @@ type Prompt interface {
 
 // MCPServerProvider defines an interface for components that can provide an instance of an *mcp.Server.
 //
-// Summary. Interface for providing an MCP server instance.
+// Summary: Interface for providing an MCP server instance.
 //
 // This is used to decouple the Manager from the concrete server implementation.
 type MCPServerProvider interface {
@@ -69,7 +69,7 @@ type MCPServerProvider interface {
 
 // TemplatedPrompt implements the Prompt interface for a prompt that is defined by a template.
 //
-// Summary. Prompt implementation using templates.
+// Summary: Prompt implementation using templates.
 type TemplatedPrompt struct {
 	definition        *configv1.PromptDefinition
 	serviceID         string
@@ -83,10 +83,9 @@ type TemplatedPrompt struct {
 // Parameters.
 //   - definition: The parameter.
 //   - serviceID: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func NewTemplatedPrompt(definition *configv1.PromptDefinition, serviceID string) (*TemplatedPrompt, error) {
 	// ⚡ BOLT: Pre-compile templates to avoid parsing on every request.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -203,10 +202,9 @@ func (p *TemplatedPrompt) Definition() *configv1.PromptDefinition {
 // Parameters.
 //   - _: The parameter.
 //   - args: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (p *TemplatedPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
 	var inputs map[string]any
 	if err := json.Unmarshal(args, &inputs); err != nil {
@@ -242,10 +240,9 @@ func (p *TemplatedPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.Get
 // Parameters.
 //   - definition: The parameter.
 //   - serviceID: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func NewPromptFromConfig(definition *configv1.PromptDefinition, serviceID string) (Prompt, error) {
 	return NewTemplatedPrompt(definition, serviceID)
 }

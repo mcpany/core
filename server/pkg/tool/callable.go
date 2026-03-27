@@ -13,7 +13,7 @@ import (
 // CallableTool implements the Tool interface for a tool that is executed by a
 // Callable.
 //
-// Summary. Represents a CallableTool.
+// Summary: Represents a CallableTool.
 type CallableTool struct {
 	*baseTool
 }
@@ -28,10 +28,9 @@ type CallableTool struct {
 //   - callable: The parameter.
 //   - inputSchema: The parameter.
 //   - outputSchema: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func NewCallableTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.UpstreamServiceConfig, callable Callable, inputSchema, outputSchema *structpb.Struct) (*CallableTool, error) {
 	base, err := newBaseTool(toolDef, serviceConfig, callable, inputSchema, outputSchema)
 	if err != nil {
@@ -47,10 +46,9 @@ func NewCallableTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.U
 // Parameters.
 //   - ctx: The parameter.
 //   - req: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (t *CallableTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	return t.callable.Call(ctx, req)
 }

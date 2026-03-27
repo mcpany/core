@@ -20,7 +20,7 @@ import (
 // StdioTransport implements mcp.Transport for a local command,
 // capturing stderr to provide better error messages on failure.
 //
-// Summary. Represents a StdioTransport.
+// Summary: Represents a StdioTransport.
 type StdioTransport struct {
 	Command *exec.Cmd
 }
@@ -31,10 +31,9 @@ type StdioTransport struct {
 //
 // Parameters.
 //   - _: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (t *StdioTransport) Connect(_ context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
 
@@ -103,10 +102,9 @@ type stdioConn struct {
 //
 // Parameters.
 //   - _: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
 	if err := c.decoder.Decode(&raw); err != nil {

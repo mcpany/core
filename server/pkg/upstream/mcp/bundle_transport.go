@@ -46,7 +46,7 @@ func (e *transportError) Error() string {
 // BundleDockerTransport implements the mcp.Transport interface to connect to a service
 // running inside a Docker container from a bundle. It supports mounts and environment variables.
 //
-// Summary. Represents a BundleDockerTransport.
+// Summary: Represents a BundleDockerTransport.
 type BundleDockerTransport struct {
 	Image      string
 	Command    string
@@ -66,10 +66,9 @@ type BundleDockerTransport struct {
 //
 // Parameters.
 //   - ctx: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (t *BundleDockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
 
@@ -186,10 +185,9 @@ type bundleDockerConn struct {
 //
 // Parameters.
 //   - _: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (c *bundleDockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
 	if err := c.decoder.Decode(&raw); err != nil {
@@ -485,10 +483,9 @@ type bundleSlogWriter struct {
 //
 // Parameters.
 //   - p: The parameter.
-//   - err: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (s *bundleSlogWriter) Write(p []byte) (n int, err error) {
 	msg := string(p)
 	s.log.Log(context.Background(), s.level, msg)

@@ -19,7 +19,7 @@ import (
 
 // Manager handles the loading and listing of catalog services.
 //
-// Summary. Manages the service catalog.
+// Summary: Manages the service catalog.
 //
 // It scans a specified directory for service configurations and provides access to them.
 type Manager struct {
@@ -129,10 +129,9 @@ func (m *Manager) Load(ctx context.Context) error {
 //
 // Parameters.
 //   - _: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (m *Manager) ListServices(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

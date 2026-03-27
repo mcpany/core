@@ -26,7 +26,7 @@ var (
 
 // Redactor handles redaction of sensitive data based on configuration.
 //
-// Summary. Component responsible for identifying and masking sensitive information (PII) in data.
+// Summary: Component responsible for identifying and masking sensitive information (PII) in data.
 type Redactor struct {
 	customPattern  *regexp.Regexp
 	customPatterns []*regexp.Regexp
@@ -89,10 +89,9 @@ func NewRedactor(config *configv1.DLPConfig, log *slog.Logger) *Redactor {
 //
 // Parameters.
 //   - data: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (r *Redactor) RedactJSON(data []byte) ([]byte, error) {
 	if r == nil || len(data) == 0 {
 		return data, nil

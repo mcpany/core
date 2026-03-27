@@ -113,7 +113,7 @@ func (b *DefaultBus[T]) Publish(_ context.Context, topic string, msg T) error {
 //   - handler: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (b *DefaultBus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -166,7 +166,7 @@ func (b *DefaultBus[T]) Subscribe(_ context.Context, topic string, handler func(
 //   - handler: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (b *DefaultBus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	var once sync.Once
 	var unsub func()

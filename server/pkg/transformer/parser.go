@@ -30,7 +30,7 @@ var (
 // map to define the extraction rules for each format, such as JSONPath for
 // JSON, XPath for XML, and regex for plain text.
 //
-// Summary. Generic parser for extracting data from JSON, XML, Text, or using JQ.
+// Summary: Generic parser for extracting data from JSON, XML, Text, or using JQ.
 type TextParser struct {
 	transformer *Transformer
 }
@@ -65,10 +65,9 @@ func NewTextParser() *TextParser {
 // Parameters.
 //   - templateStr: The parameter.
 //   - data: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (p *TextParser) Transform(templateStr string, data any) ([]byte, error) {
 	return p.transformer.Transform(templateStr, data)
 }
@@ -82,10 +81,9 @@ func (p *TextParser) Transform(templateStr string, data any) ([]byte, error) {
 //   - input: The parameter.
 //   - config: The parameter.
 //   - jqQuery: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (p *TextParser) Parse(inputType string, input []byte, config map[string]string, jqQuery string) (any, error) {
 	switch strings.ToLower(inputType) {
 	case "json":

@@ -46,10 +46,9 @@ const MaxRecursionDepth = 10
 //
 // Parameters.
 //   - methodDesc: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor) (*structpb.Struct, error) {
 	return fieldsToProperties(methodDesc.Input().Fields(), 0)
 }
@@ -60,10 +59,9 @@ func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor)
 //
 // Parameters.
 //   - methodDesc: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func MethodOutputDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor) (*structpb.Struct, error) {
 	return fieldsToProperties(methodDesc.Output().Fields(), 0)
 }
@@ -160,7 +158,7 @@ func fieldToSchema(field protoreflect.FieldDescriptor, depth int) (map[string]in
 
 // ConfigParameter an interface for config parameter schemas.
 //
-// Summary. Represents a ConfigParameter.
+// Summary: Represents a ConfigParameter.
 type ConfigParameter interface {
 	// GetSchema returns the parameter schema.
 	//
@@ -171,7 +169,7 @@ type ConfigParameter interface {
 
 // McpFieldParameter an interface for McpField parameter schemas.
 //
-// Summary. Represents a McpFieldParameter.
+// Summary: Represents a McpFieldParameter.
 type McpFieldParameter interface {
 	// GetName returns the name of the parameter.
 	//

@@ -59,7 +59,7 @@ func (s Severity) String() string {
 //
 // It encapsulates all details about a detected issue, including its severity, location, and description.
 //
-// Summary. Represents a Result.
+// Summary: Represents a Result.
 type Result struct {
 	// Severity indicates how critical the finding is (Error, Warning, Info).
 	Severity Severity
@@ -96,7 +96,7 @@ func (r Result) String() string {
 //
 // It holds the configuration to be analyzed and provides methods to execute various checks.
 //
-// Summary. Represents a Linter.
+// Summary: Represents a Linter.
 type Linter struct {
 	cfg *configv1.McpAnyServerConfig
 }
@@ -120,10 +120,9 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 //
 // Parameters.
 //   - ctx: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (l *Linter) Run(ctx context.Context) ([]Result, error) {
 	// Pre-allocate to avoid performance warnings, though initial size is a guess.
 	results := make([]Result, 0, 10)

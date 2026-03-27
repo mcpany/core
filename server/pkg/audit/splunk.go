@@ -25,7 +25,7 @@ const (
 
 // SplunkAuditStore sends audit logs to Splunk HTTP Event Collector.
 //
-// Summary. Asynchronous audit store that pushes logs to Splunk via HEC.
+// Summary: Asynchronous audit store that pushes logs to Splunk via HEC.
 type SplunkAuditStore struct {
 	config *configv1.SplunkConfig
 	client *http.Client
@@ -174,10 +174,9 @@ func (e *SplunkAuditStore) sendBatch(batch []Entry) {
 // Parameters.
 //   - _: The parameter.
 //   - _: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (e *SplunkAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for splunk audit store")
 }

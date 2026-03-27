@@ -56,10 +56,9 @@ func ContextWithAPIKey(ctx context.Context, apiKey string) context.Context {
 //
 // Parameters.
 //   - ctx: The parameter.
-//   - bool: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func APIKeyFromContext(ctx context.Context) (string, bool) {
 	val, ok := ctx.Value(APIKeyContextKey).(string)
 	return val, ok
@@ -85,10 +84,9 @@ func ContextWithUser(ctx context.Context, userID string) context.Context {
 //
 // Parameters.
 //   - ctx: The parameter.
-//   - bool: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func UserFromContext(ctx context.Context) (string, bool) {
 	val, ok := ctx.Value(UserContextKey).(string)
 	return val, ok
@@ -114,10 +112,9 @@ func ContextWithProfileID(ctx context.Context, profileID string) context.Context
 //
 // Parameters.
 //   - ctx: The parameter.
-//   - bool: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func ProfileIDFromContext(ctx context.Context) (string, bool) {
 	val, ok := ctx.Value(ProfileIDContextKey).(string)
 	return val, ok
@@ -125,7 +122,7 @@ func ProfileIDFromContext(ctx context.Context) (string, bool) {
 
 // Authenticator defines the interface for authentication mechanisms.
 //
-// Summary. Interface for authenticating HTTP requests.
+// Summary: Interface for authenticating HTTP requests.
 type Authenticator interface {
 	// Authenticate checks if a request is authenticated and returns the updated context.
 	//
@@ -143,7 +140,7 @@ type Authenticator interface {
 
 // APIKeyAuthenticator provides an authentication mechanism based on a static API key.
 //
-// Summary. Authenticates requests using a static API key.
+// Summary: Authenticates requests using a static API key.
 type APIKeyAuthenticator struct {
 	ParamName string
 	In        configv1.APIKeyAuth_Location
@@ -177,10 +174,9 @@ func NewAPIKeyAuthenticator(config *configv1.APIKeyAuth) *APIKeyAuthenticator {
 // Parameters.
 //   - ctx: The parameter.
 //   - r: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (a *APIKeyAuthenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
 	var receivedKey string
 	switch a.In {
@@ -205,7 +201,7 @@ func (a *APIKeyAuthenticator) Authenticate(ctx context.Context, r *http.Request)
 
 // BasicAuthenticator authenticates using HTTP Basic Auth and bcrypt password hashing.
 //
-// Summary. Authenticates requests using HTTP Basic Auth.
+// Summary: Authenticates requests using HTTP Basic Auth.
 type BasicAuthenticator struct {
 	PasswordHash string
 	Username     string
@@ -237,10 +233,9 @@ func NewBasicAuthenticator(config *configv1.BasicAuth) *BasicAuthenticator {
 // Parameters.
 //   - ctx: The parameter.
 //   - r: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (a *BasicAuthenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
 	user, password, ok := r.BasicAuth()
 	if !ok {
@@ -265,7 +260,7 @@ func (a *BasicAuthenticator) Authenticate(ctx context.Context, r *http.Request) 
 
 // TrustedHeaderAuthenticator authenticates using a trusted header.
 //
-// Summary. Authenticates requests based on the presence/value of a specific header.
+// Summary: Authenticates requests based on the presence/value of a specific header.
 type TrustedHeaderAuthenticator struct {
 	HeaderName  string
 	HeaderValue string // Optional: if empty, just checks presence
@@ -297,10 +292,9 @@ func NewTrustedHeaderAuthenticator(config *configv1.TrustedHeaderAuth) *TrustedH
 // Parameters.
 //   - ctx: The parameter.
 //   - r: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (a *TrustedHeaderAuthenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
 	val := r.Header.Get(a.HeaderName)
 	if val == "" {
@@ -317,7 +311,7 @@ func (a *TrustedHeaderAuthenticator) Authenticate(ctx context.Context, r *http.R
 
 // Manager oversees the authentication process for the server.
 //
-// Summary. Manages authentication strategies and user sessions.
+// Summary: Manages authentication strategies and user sessions.
 type Manager struct {
 	authenticators *xsync.Map[string, Authenticator]
 	apiKey         string
@@ -385,10 +379,9 @@ func (am *Manager) SetStorage(s storage.Storage) {
 //
 // Parameters.
 //   - id: The parameter.
-//   - bool: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (am *Manager) GetUser(id string) (*configv1.User, bool) {
 	am.usersMu.RLock()
 	defer am.usersMu.RUnlock()
@@ -435,10 +428,9 @@ func (am *Manager) AddAuthenticator(serviceID string, authenticator Authenticato
 //   - ctx: The parameter.
 //   - serviceID: The parameter.
 //   - r: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (am *Manager) Authenticate(ctx context.Context, serviceID string, r *http.Request) (context.Context, error) {
 	if am.apiKey != "" {
 		receivedKey := r.Header.Get("X-API-Key")
@@ -494,10 +486,9 @@ func (am *Manager) Authenticate(ctx context.Context, serviceID string, r *http.R
 //
 // Parameters.
 //   - serviceID: The parameter.
-//   - bool: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (am *Manager) GetAuthenticator(serviceID string) (Authenticator, bool) {
 	return am.authenticators.Load(serviceID)
 }

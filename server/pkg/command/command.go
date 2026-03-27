@@ -26,7 +26,7 @@ import (
 
 // Executor is an interface for executing commands.
 //
-// Summary. Represents a Executor.
+// Summary: Represents a Executor.
 type Executor interface {
 	// Execute executes a command and returns the stdout and stderr as streams.
 	//
@@ -106,12 +106,9 @@ type localExecutor struct{}
 //   - args: The parameter.
 //   - workingDir: The parameter.
 //   - env: The parameter.
-//   - io.ReadCloser: The parameter.
-//   - <-chan: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (e *localExecutor) Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	if workingDir != "" {
 		if err := validation.IsAllowedPath(workingDir); err != nil {
@@ -167,13 +164,9 @@ func (e *localExecutor) Execute(ctx context.Context, command string, args []stri
 //   - args: The parameter.
 //   - workingDir: The parameter.
 //   - env: The parameter.
-//   - io.ReadCloser: The parameter.
-//   - io.ReadCloser: The parameter.
-//   - <-chan: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (e *localExecutor) ExecuteWithStdIO(ctx context.Context, command string, args []string, workingDir string, env []string) (io.WriteCloser, io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	if workingDir != "" {
 		if err := validation.IsAllowedPath(workingDir); err != nil {
@@ -251,12 +244,9 @@ func newDockerExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 //   - args: The parameter.
 //   - workingDir: The parameter.
 //   - env: The parameter.
-//   - io.ReadCloser: The parameter.
-//   - <-chan: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (e *dockerExecutor) Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	log := logging.GetLogger()
 	cli, err := e.clientFactory()
@@ -384,13 +374,9 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 //   - args: The parameter.
 //   - workingDir: The parameter.
 //   - env: The parameter.
-//   - io.ReadCloser: The parameter.
-//   - io.ReadCloser: The parameter.
-//   - <-chan: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (e *dockerExecutor) ExecuteWithStdIO(ctx context.Context, command string, args []string, workingDir string, env []string) (io.WriteCloser, io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	log := logging.GetLogger()
 	cli, err := e.clientFactory()
@@ -516,10 +502,9 @@ type closeWriter struct {
 //
 // Parameters.
 //   - p: The parameter.
-//   - err: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (c *closeWriter) Write(p []byte) (n int, err error) {
 	return c.conn.Write(p)
 }

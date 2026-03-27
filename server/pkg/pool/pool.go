@@ -35,7 +35,7 @@ var (
 // connection pool. Implementations must provide methods for closing the
 // connection and checking its health.
 //
-// Summary. Interface for poolable clients.
+// Summary: Interface for poolable clients.
 type ClosableClient interface {
 	// Close terminates the client's connection.
 	//
@@ -226,10 +226,9 @@ func (p *poolImpl[T]) release(n int64) {
 //
 // Parameters.
 //   - ctx: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 	var zero T
 
@@ -501,7 +500,7 @@ func (p *poolImpl[T]) Len() int {
 
 // UntypedPool defines a non-generic interface for a pool.
 //
-// Summary. Interface for untyped pool management.
+// Summary: Interface for untyped pool management.
 type UntypedPool interface {
 	io.Closer
 	// Len returns the number of idle clients currently in the pool.
@@ -515,7 +514,7 @@ type UntypedPool interface {
 
 // Manager provides a way to manage multiple named connection pools.
 //
-// Summary. Manages a collection of pools.
+// Summary: Manages a collection of pools.
 type Manager struct {
 	pools map[string]any
 	mu    sync.RWMutex

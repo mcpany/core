@@ -24,7 +24,7 @@ import (
 
 // Tool implements the Tool interface for a tool that executes a SQL query.
 //
-// Summary. Represents a Tool.
+// Summary: Represents a Tool.
 type Tool struct {
 	tool        *v1.Tool
 	mcpTool     *mcp.Tool
@@ -120,10 +120,9 @@ func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 // Parameters.
 //   - ctx: The parameter.
 //   - req: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (t *Tool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError

@@ -14,7 +14,7 @@ import (
 
 // IPAllowlistMiddleware restricts access to allowed IP addresses.
 //
-// Summary. Middleware that filters requests based on a list of allowed IP addresses or CIDRs.
+// Summary: Middleware that filters requests based on a list of allowed IP addresses or CIDRs.
 type IPAllowlistMiddleware struct {
 	mu            sync.RWMutex
 	allowedIPNets []*net.IPNet
@@ -26,10 +26,9 @@ type IPAllowlistMiddleware struct {
 //
 // Parameters.
 //   - allowedCIDRs: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func NewIPAllowlistMiddleware(allowedCIDRs []string) (*IPAllowlistMiddleware, error) {
 	m := &IPAllowlistMiddleware{}
 	if err := m.Update(allowedCIDRs); err != nil {

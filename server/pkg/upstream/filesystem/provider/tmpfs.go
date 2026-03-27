@@ -11,7 +11,7 @@ import (
 
 // TmpfsProvider provides access to a temporary in-memory filesystem.
 //
-// Summary. Represents a TmpfsProvider.
+// Summary: Represents a TmpfsProvider.
 type TmpfsProvider struct {
 	fs afero.Fs
 }
@@ -50,10 +50,9 @@ func (p *TmpfsProvider) GetFs() afero.Fs {
 //
 // Parameters.
 //   - virtualPath: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (p *TmpfsProvider) ResolvePath(virtualPath string) (string, error) {
 	// For MemMapFs, just clean the path. It's virtual.
 	return filepath.Clean(virtualPath), nil

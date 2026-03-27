@@ -31,9 +31,9 @@ const MergeStrategyReplace = "replace"
 
 // UpstreamServiceManager manages the lifecycle and configuration of upstream services.
 //
-// Summary. Handles loading, validating, and merging service configurations from various sources.
+// Summary: Handles loading, validating, and merging service configurations from various sources.
 //
-// Side Effects.
+// Side Effects:
 //   - Stores the final, merged UpstreamServiceConfig objects.
 //   - Makes HTTP requests to fetch remote configurations.
 type UpstreamServiceManager struct {
@@ -84,10 +84,9 @@ func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager
 // Parameters.
 //   - ctx: The parameter.
 //   - config: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (m *UpstreamServiceManager) LoadAndMergeServices(ctx context.Context, config *configv1.McpAnyServerConfig) ([]*configv1.UpstreamServiceConfig, error) {
 	// Respect merge strategy
 	if strategy := config.GetMergeStrategy(); strategy != nil {

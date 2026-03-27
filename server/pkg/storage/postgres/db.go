@@ -15,7 +15,7 @@ import (
 
 // DB wraps the sql.DB connection.
 //
-// Summary. Represents a DB.
+// Summary: Represents a DB.
 type DB struct {
 	*sql.DB
 }
@@ -26,10 +26,9 @@ type DB struct {
 //
 // Parameters.
 //   - dsn: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func NewDB(dsn string) (*DB, error) {
 	return NewDBWithDriver("postgres", dsn)
 }
@@ -41,10 +40,9 @@ func NewDB(dsn string) (*DB, error) {
 // Parameters.
 //   - driver: The parameter.
 //   - dsn: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func NewDBWithDriver(driver, dsn string) (*DB, error) {
 	db, err := sql.Open(driver, dsn)
 	if err != nil {
@@ -77,10 +75,9 @@ func NewDBWithDriver(driver, dsn string) (*DB, error) {
 //
 // Parameters.
 //   - db: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func NewDBFromSQLDB(db *sql.DB) (*DB, error) {
 	if err := db.PingContext(context.Background()); err != nil {
 		return nil, fmt.Errorf("failed to ping db: %w", err)

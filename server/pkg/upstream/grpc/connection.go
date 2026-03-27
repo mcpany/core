@@ -18,7 +18,7 @@ import (
 // It can be configured with a custom dialer for testing or special connection
 // scenarios.
 //
-// Summary. Represents a ConnectionFactory.
+// Summary: Represents a ConnectionFactory.
 type ConnectionFactory struct {
 	dialer func(context.Context, string) (net.Conn, error)
 }
@@ -44,7 +44,7 @@ func NewConnectionFactory() *ConnectionFactory {
 //   - dialer: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (f *ConnectionFactory) WithDialer(dialer func(context.Context, string) (net.Conn, error)) {
 	f.dialer = dialer
 }
@@ -56,10 +56,9 @@ func (f *ConnectionFactory) WithDialer(dialer func(context.Context, string) (net
 // Parameters.
 //   - _: The parameter.
 //   - targetAddress: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (f *ConnectionFactory) NewConnection(_ context.Context, targetAddress string) (*grpc.ClientConn, error) {
 	opts := []grpc.DialOption{
 		grpc.WithTransportCredentials(insecure.NewCredentials()),

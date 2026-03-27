@@ -27,11 +27,9 @@ import (
 //   - serviceID: The parameter.
 //   - credentialID: The parameter.
 //   - redirectURL: The parameter.
-//   - string: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credentialID, redirectURL string) (string, string, error) {
 	// Fix for unused userID:
 	_ = userID

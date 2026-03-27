@@ -16,7 +16,7 @@ import (
 // It is intended for use in ValidateService where we need to store service info
 // and discovered tools for the duration of the validation request but discard them afterwards.
 //
-// Summary. Represents a TemporaryToolManager.
+// Summary: Represents a TemporaryToolManager.
 type TemporaryToolManager struct {
 	NoOpToolManager
 	mu          sync.RWMutex
@@ -65,10 +65,9 @@ func (m *TemporaryToolManager) AddServiceInfo(serviceID string, info *tool.Servi
 //
 // Parameters.
 //   - serviceID: The parameter.
-//   - bool: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (m *TemporaryToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -116,10 +115,9 @@ func (m *TemporaryToolManager) AddTool(t tool.Tool) error {
 //
 // Parameters.
 //   - toolName: The parameter.
-//   - bool: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (m *TemporaryToolManager) GetTool(toolName string) (tool.Tool, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

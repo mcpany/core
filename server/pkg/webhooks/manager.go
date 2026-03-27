@@ -14,7 +14,7 @@ import (
 
 // WebhookConfig represents a configured webhook.
 //
-// Summary. Webhook configuration definition.
+// Summary: Webhook configuration definition.
 //
 // Fields:
 //   - ID (string): Unique identifier for the webhook.
@@ -34,7 +34,7 @@ type WebhookConfig struct {
 
 // Manager manages webhooks.
 //
-// Summary. Webhook lifecycle manager.
+// Summary: Webhook lifecycle manager.
 type Manager struct {
 	mu         sync.RWMutex
 	webhooks   map[string]*WebhookConfig
@@ -101,10 +101,9 @@ func (m *Manager) AddWebhook(w *WebhookConfig) {
 //
 // Parameters.
 //   - id: The parameter.
-//   - bool: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (m *Manager) GetWebhook(id string) (*WebhookConfig, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

@@ -35,7 +35,7 @@ var (
 // GitHub represents a client for interacting with the GitHub API to fetch
 // configuration files or directories.
 //
-// Summary. A client for fetching configuration from GitHub.
+// Summary: A client for fetching configuration from GitHub.
 //
 // Fields:
 //   - Owner (string): The owner of the repository (user or organization).
@@ -62,10 +62,9 @@ type GitHub struct {
 // Parameters.
 //   - _: The parameter.
 //   - rawURL: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func NewGitHub(_ context.Context, rawURL string) (*GitHub, error) {
 	parsedURL, err := url.Parse(rawURL)
 	if err != nil {
@@ -124,7 +123,7 @@ func (g *GitHub) ToRawContentURL() string {
 
 // Content represents a file or directory in a GitHub repository.
 //
-// Summary. Metadata for a file or directory in a GitHub repository.
+// Summary: Metadata for a file or directory in a GitHub repository.
 //
 // Fields:
 //   - Name (string): The name of the file or directory.
@@ -145,10 +144,9 @@ type Content struct {
 // Parameters.
 //   - ctx: The parameter.
 //   - auth: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (g *GitHub) List(ctx context.Context, auth *configv1.Authentication) ([]Content, error) {
 	apiURL := fmt.Sprintf("%s/repos/%s/%s/contents/%s", g.apiURL, g.Owner, g.Repo, g.Path)
 	if g.Ref != "" {

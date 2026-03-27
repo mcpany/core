@@ -107,7 +107,7 @@ func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 //   - handler: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("redis bus: handler cannot be nil")
@@ -167,7 +167,7 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 //   - handler: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("redis bus: handler cannot be nil")

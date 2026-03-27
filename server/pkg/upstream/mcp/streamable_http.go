@@ -44,7 +44,7 @@ var (
 // mcp.ClientSession. This is used primarily for testing, allowing mock sessions
 // to be injected.
 //
-// Summary. Represents a ClientSession.
+// Summary: Represents a ClientSession.
 type ClientSession interface {
 	// ListTools lists the tools available in the session.
 	//
@@ -108,7 +108,7 @@ type ClientSession interface {
 //   - f: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func SetNewClientImplForTesting(f func(client *mcp.Client, stdioConfig *configv1.McpStdioConnection, httpAddress string, httpClient *http.Client) client.MCPClient) {
 	newClientImplForTesting = f
 }
@@ -121,7 +121,7 @@ func SetNewClientImplForTesting(f func(client *mcp.Client, stdioConfig *configv1
 //   - f: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func SetNewClientForTesting(f func(impl *mcp.Implementation) *mcp.Client) {
 	newClientForTesting = f
 }
@@ -134,7 +134,7 @@ func SetNewClientForTesting(f func(impl *mcp.Implementation) *mcp.Client) {
 //   - f: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func SetConnectForTesting(f func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error)) {
 	connectForTesting = f
 }
@@ -144,7 +144,7 @@ func SetConnectForTesting(f func(client *mcp.Client, ctx context.Context, transp
 // its tools, prompts, and resources, and registers them with the current server,
 // effectively acting as a proxy or aggregator.
 //
-// Summary. Represents a Upstream.
+// Summary: Represents a Upstream.
 type Upstream struct {
 	sessionRegistry *SessionRegistry
 	// BundleBaseDir is the directory where bundles are extracted.
@@ -317,10 +317,9 @@ func (p *mcpPrompt) Definition() *configv1.PromptDefinition {
 // Parameters.
 //   - ctx: The parameter.
 //   - args: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (p *mcpPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
 	var arguments map[string]string
 	if args != nil {
@@ -391,10 +390,9 @@ func (r *mcpResource) Service() string {
 //
 // Parameters.
 //   - ctx: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (r *mcpResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
 	var result *mcp.ReadResourceResult
 	err := r.withMCPClientSession(ctx, func(cs ClientSession) error {
@@ -618,10 +616,9 @@ func (c *mcpConnection) withMCPClientSession(ctx context.Context, f func(cs Clie
 // Parameters.
 //   - ctx: The parameter.
 //   - params: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (c *mcpConnection) CallTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
 	var result *mcp.CallToolResult
 	err := c.withMCPClientSession(ctx, func(cs ClientSession) error {
@@ -1275,10 +1272,9 @@ type authenticatedRoundTripper struct {
 //
 // Parameters.
 //   - req: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (rt *authenticatedRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	if rt.authenticator != nil {
 		if err := rt.authenticator.Authenticate(req); err != nil {
@@ -1294,7 +1290,7 @@ func (rt *authenticatedRoundTripper) RoundTrip(req *http.Request) (*http.Respons
 
 // StreamableHTTP implements the mcp.Transport interface for HTTP connections.
 //
-// Summary. Represents a StreamableHTTP.
+// Summary: Represents a StreamableHTTP.
 type StreamableHTTP struct {
 	// Address is the HTTP address of the MCP service.
 	Address string
@@ -1308,10 +1304,9 @@ type StreamableHTTP struct {
 //
 // Parameters.
 //   - req: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (t *StreamableHTTP) RoundTrip(req *http.Request) (*http.Response, error) {
 	if t.Client == nil {
 		t.Client = http.DefaultClient

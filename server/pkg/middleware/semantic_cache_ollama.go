@@ -15,7 +15,7 @@ import (
 
 // OllamaEmbeddingProvider implements EmbeddingProvider for Ollama.
 //
-// Summary. Provides an interface to generate text embeddings using the Ollama API.
+// Summary: Provides an interface to generate text embeddings using the Ollama API.
 type OllamaEmbeddingProvider struct {
 	baseURL string
 	model   string
@@ -62,10 +62,9 @@ type ollamaEmbeddingResponse struct {
 // Parameters.
 //   - ctx: The parameter.
 //   - text: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (p *OllamaEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
 	reqBody := ollamaEmbeddingRequest{
 		Model:  p.model,

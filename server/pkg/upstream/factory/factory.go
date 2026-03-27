@@ -26,7 +26,7 @@ import (
 // Factory defines the interface for a factory that creates upstream service
 // instances.
 //
-// Summary. Interface for creating upstream services.
+// Summary: Interface for creating upstream services.
 type Factory interface {
 	// NewUpstream creates a new upstream service instance based on the provided
 	// configuration.
@@ -46,7 +46,7 @@ type Factory interface {
 // It creates different types of upstream services based on the service
 // configuration.
 //
-// Summary. Concrete factory for creating upstream services.
+// Summary: Concrete factory for creating upstream services.
 type UpstreamServiceFactory struct {
 	poolManager    *pool.Manager
 	globalSettings *configv1.GlobalSettings
@@ -75,10 +75,9 @@ func NewUpstreamServiceFactory(poolManager *pool.Manager, globalSettings *config
 //
 // Parameters.
 //   - config: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (f *UpstreamServiceFactory) NewUpstream(config *configv1.UpstreamServiceConfig) (upstream.Upstream, error) {
 	if config == nil {
 		return nil, fmt.Errorf("upstream service config cannot be nil")

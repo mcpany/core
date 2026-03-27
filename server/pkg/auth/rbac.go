@@ -35,10 +35,9 @@ func ContextWithRoles(ctx context.Context, roles []string) context.Context {
 //
 // Parameters.
 //   - ctx: The parameter.
-//   - bool: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func RolesFromContext(ctx context.Context) ([]string, bool) {
 	val, ok := ctx.Value(RolesContextKey).([]string)
 	return val, ok
@@ -46,7 +45,7 @@ func RolesFromContext(ctx context.Context) ([]string, bool) {
 
 // RBACEnforcer handles Role-Based Access Control checks.
 //
-// Summary. Represents a RBACEnforcer.
+// Summary: Represents a RBACEnforcer.
 type RBACEnforcer struct {
 }
 

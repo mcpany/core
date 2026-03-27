@@ -18,7 +18,7 @@ import (
 
 // S3Provider provides access to files in an S3 bucket.
 //
-// Summary. Represents a S3Provider.
+// Summary: Represents a S3Provider.
 type S3Provider struct {
 	fs afero.Fs
 }
@@ -29,10 +29,9 @@ type S3Provider struct {
 //
 // Parameters.
 //   - config: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func NewS3Provider(config *configv1.S3Fs) (*S3Provider, error) {
 	if config == nil {
 		return nil, fmt.Errorf("s3 config is nil")
@@ -89,10 +88,9 @@ func (p *S3Provider) GetFs() afero.Fs {
 //
 // Parameters.
 //   - virtualPath: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (p *S3Provider) ResolvePath(virtualPath string) (string, error) {
 	// For S3, just clean the path. It's virtual relative to the bucket.
 	// Join with "/" to ensure we resolve relative paths against a root, preventing ".." traversal

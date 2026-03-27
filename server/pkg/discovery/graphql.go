@@ -12,7 +12,7 @@ import (
 
 // GraphQLProvider discovers services via GraphQL introspection.
 //
-// Summary. Represents a GraphQLProvider.
+// Summary: Represents a GraphQLProvider.
 type GraphQLProvider struct {
 	Endpoint string // e.g., "http://localhost:8080/graphql"
 }
@@ -36,10 +36,9 @@ func (p *GraphQLProvider) Name() string {
 //
 // Parameters.
 //   - _: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (p *GraphQLProvider) Discover(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	if p.Endpoint == "" {
 		return nil, nil

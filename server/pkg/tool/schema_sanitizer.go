@@ -20,10 +20,9 @@ const maxRecursionDepth = 100
 //
 // Parameters.
 //   - schema: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func SanitizeJSONSchema(schema any) (*structpb.Struct, error) {
 	if schema == nil {
 		return nil, nil

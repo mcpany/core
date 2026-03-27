@@ -18,7 +18,7 @@ import (
 
 // SftpProvider provides access to files via SFTP.
 //
-// Summary. Represents a SftpProvider.
+// Summary: Represents a SftpProvider.
 type SftpProvider struct {
 	fs     afero.Fs
 	client *sftp.Client
@@ -31,10 +31,9 @@ type SftpProvider struct {
 //
 // Parameters.
 //   - config: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func NewSftpProvider(config *configv1.SftpFs) (*SftpProvider, error) {
 	if config == nil {
 		return nil, fmt.Errorf("sftp config is nil")
@@ -106,10 +105,9 @@ func (p *SftpProvider) GetFs() afero.Fs {
 //
 // Parameters.
 //   - virtualPath: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (p *SftpProvider) ResolvePath(virtualPath string) (string, error) {
 	// SFTP paths are remote paths. We assume they are absolute or relative to user home.
 	// But `clean` is probably good enough for now.
@@ -150,10 +148,9 @@ type sftpFs struct {
 //
 // Parameters.
 //   - name: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (s *sftpFs) Create(name string) (afero.File, error) {
 	f, err := s.client.Create(name)
 	if err != nil {
@@ -196,10 +193,9 @@ func (s *sftpFs) MkdirAll(path string, _ os.FileMode) error {
 //
 // Parameters.
 //   - name: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (s *sftpFs) Open(name string) (afero.File, error) {
 	f, err := s.client.Open(name)
 	if err != nil {
@@ -216,10 +212,9 @@ func (s *sftpFs) Open(name string) (afero.File, error) {
 //   - name: The parameter.
 //   - flag: The parameter.
 //   - _: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (s *sftpFs) OpenFile(name string, flag int, _ os.FileMode) (afero.File, error) {
 	f, err := s.client.OpenFile(name, flag)
 	if err != nil {
@@ -275,10 +270,9 @@ func (s *sftpFs) Rename(oldname, newname string) error {
 //
 // Parameters.
 //   - name: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (s *sftpFs) Stat(name string) (os.FileInfo, error) {
 	return s.client.Stat(name)
 }
@@ -364,10 +358,9 @@ func (f *sftpFile) Close() error {
 //
 // Parameters.
 //   - p: The parameter.
-//   - err: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (f *sftpFile) Read(p []byte) (n int, err error) {
 	return f.f.Read(p)
 }
@@ -379,10 +372,9 @@ func (f *sftpFile) Read(p []byte) (n int, err error) {
 // Parameters.
 //   - p: The parameter.
 //   - off: The parameter.
-//   - err: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (f *sftpFile) ReadAt(p []byte, off int64) (n int, err error) {
 	return f.f.ReadAt(p, off)
 }
@@ -394,10 +386,9 @@ func (f *sftpFile) ReadAt(p []byte, off int64) (n int, err error) {
 // Parameters.
 //   - offset: The parameter.
 //   - whence: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (f *sftpFile) Seek(offset int64, whence int) (int64, error) {
 	return f.f.Seek(offset, whence)
 }
@@ -408,10 +399,9 @@ func (f *sftpFile) Seek(offset int64, whence int) (int64, error) {
 //
 // Parameters.
 //   - p: The parameter.
-//   - err: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (f *sftpFile) Write(p []byte) (n int, err error) {
 	return f.f.Write(p)
 }
@@ -423,10 +413,9 @@ func (f *sftpFile) Write(p []byte) (n int, err error) {
 // Parameters.
 //   - p: The parameter.
 //   - off: The parameter.
-//   - err: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (f *sftpFile) WriteAt(p []byte, off int64) (n int, err error) {
 	return f.f.WriteAt(p, off)
 }
@@ -450,10 +439,9 @@ func (f *sftpFile) Name() string {
 //
 // Parameters.
 //   - _: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (f *sftpFile) Readdir(_ int) ([]os.FileInfo, error) {
 	return f.client.ReadDir(f.f.Name())
 }
@@ -464,10 +452,9 @@ func (f *sftpFile) Readdir(_ int) ([]os.FileInfo, error) {
 //
 // Parameters.
 //   - n: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (f *sftpFile) Readdirnames(n int) ([]string, error) {
 	infos, err := f.Readdir(n)
 	if err != nil {
@@ -485,11 +472,10 @@ func (f *sftpFile) Readdirnames(n int) ([]string, error) {
 // Summary: Stat.
 //
 // Parameters.
-//   - ): The parameter.
-//   - error: The parameter.
+//   - None.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (f *sftpFile) Stat() (os.FileInfo, error) {
 	return f.f.Stat()
 }
@@ -526,10 +512,9 @@ func (f *sftpFile) Truncate(size int64) error {
 //
 // Parameters.
 //   - s: The parameter.
-//   - err: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (f *sftpFile) WriteString(s string) (ret int, err error) {
 	return f.f.Write([]byte(s))
 }

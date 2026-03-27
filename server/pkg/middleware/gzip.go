@@ -118,10 +118,9 @@ type gzipResponseWriter struct {
 //
 // Parameters.
 //   - b: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (w *gzipResponseWriter) Write(b []byte) (int, error) {
 	// If we are already compressing, write to gzip writer
 	if w.writer != nil {

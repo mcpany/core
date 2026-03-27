@@ -19,7 +19,7 @@ import (
 
 // SQLiteAuditStore writes audit logs to a SQLite database.
 //
-// Summary. Stores audit logs in a local SQLite database with tamper-evident hashing.
+// Summary: Stores audit logs in a local SQLite database with tamper-evident hashing.
 type SQLiteAuditStore struct {
 	db *sql.DB
 	mu sync.Mutex
@@ -31,10 +31,9 @@ type SQLiteAuditStore struct {
 //
 // Parameters.
 //   - path: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func NewSQLiteAuditStore(path string) (*SQLiteAuditStore, error) {
 	if path == "" {
 		return nil, fmt.Errorf("sqlite path is required")
@@ -221,10 +220,9 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 // Parameters.
 //   - ctx: The parameter.
 //   - filter: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -299,11 +297,10 @@ func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, er
 // Summary: Verify.
 //
 // Parameters.
-//   - ): The parameter.
-//   - error: The parameter.
+//   - None.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (s *SQLiteAuditStore) Verify() (bool, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()

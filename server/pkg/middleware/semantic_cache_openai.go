@@ -15,7 +15,7 @@ import (
 
 // OpenAIEmbeddingProvider implements EmbeddingProvider for OpenAI.
 //
-// Summary. Provides vector embeddings using the OpenAI API.
+// Summary: Provides vector embeddings using the OpenAI API.
 type OpenAIEmbeddingProvider struct {
 	apiKey  string
 	model   string
@@ -67,10 +67,9 @@ type openAIEmbeddingResponse struct {
 // Parameters.
 //   - ctx: The parameter.
 //   - text: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (p *OpenAIEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
 	reqBody := openAIEmbeddingRequest{
 		Input:          text,

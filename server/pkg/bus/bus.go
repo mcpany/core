@@ -72,7 +72,7 @@ type Bus[T any] interface {
 // message type and topic without needing to manage the lifecycle of the bus
 // instances themselves.
 //
-// Summary. Represents a Provider.
+// Summary: Represents a Provider.
 type Provider struct {
 	buses  *xsync.Map[string, any]
 	config *bus.MessageBus
@@ -89,10 +89,9 @@ var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 //
 // Parameters.
 //   - messageBus: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 	if NewProviderHook != nil {
 		return NewProviderHook(messageBus)

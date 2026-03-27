@@ -9,7 +9,7 @@ import (
 
 // Broadcaster manages a set of subscribers and broadcasts messages to them.
 //
-// Summary. Represents a Broadcaster.
+// Summary: Represents a Broadcaster.
 type Broadcaster struct {
 	mu          sync.RWMutex
 	subscribers map[chan any]struct{}
@@ -95,11 +95,10 @@ func (b *Broadcaster) SubscribeBuffered(size int) chan any {
 // Summary: SubscribeWithHistory.
 //
 // Parameters.
-//   - ): The parameter.
-//   - []any: The parameter.
+//   - None.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (b *Broadcaster) SubscribeWithHistory() (chan any, []any) {
 	return b.SubscribeWithHistoryBuffered(100)
 }
@@ -110,10 +109,9 @@ func (b *Broadcaster) SubscribeWithHistory() (chan any, []any) {
 //
 // Parameters.
 //   - size: The parameter.
-//   - []any: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (b *Broadcaster) SubscribeWithHistoryBuffered(size int) (chan any, []any) {
 	b.mu.Lock()
 	defer b.mu.Unlock()

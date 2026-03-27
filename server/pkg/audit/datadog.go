@@ -26,7 +26,7 @@ const (
 
 // DatadogAuditStore sends audit logs to Datadog.
 //
-// Summary. Asynchronous audit store that forwards logs to Datadog's API.
+// Summary: Asynchronous audit store that forwards logs to Datadog's API.
 type DatadogAuditStore struct {
 	config *configv1.DatadogConfig
 	client *http.Client
@@ -182,10 +182,9 @@ func (e *DatadogAuditStore) sendBatch(batch []Entry) {
 // Parameters.
 //   - _: The parameter.
 //   - _: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (e *DatadogAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for datadog audit store")
 }

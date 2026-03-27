@@ -11,7 +11,7 @@ import (
 
 // Runtime defines the interface for a WASM plugin runtime.
 //
-// Summary. Represents a Runtime.
+// Summary: Represents a Runtime.
 type Runtime interface {
 	// LoadPlugin loads a WASM plugin from bytecode.
 	//
@@ -33,7 +33,7 @@ type Runtime interface {
 
 // Plugin defines an instantiated WASM plugin.
 //
-// Summary. Represents a Plugin.
+// Summary: Represents a Plugin.
 type Plugin interface {
 	// Execute runs a function exported by the WASM module
 	//
@@ -56,7 +56,7 @@ type Plugin interface {
 
 // MockRuntime is a placeholder implementation.
 //
-// Summary. Represents a MockRuntime.
+// Summary: Represents a MockRuntime.
 type MockRuntime struct{}
 
 // NewMockRuntime provides newmockruntime functionality.
@@ -79,10 +79,9 @@ func NewMockRuntime() *MockRuntime {
 // Parameters.
 //   - _: The parameter.
 //   - bytecode: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (m *MockRuntime) LoadPlugin(_ context.Context, bytecode []byte) (Plugin, error) {
 	if len(bytecode) == 0 {
 		return nil, fmt.Errorf("btyecode cannot be empty")
@@ -105,7 +104,7 @@ func (m *MockRuntime) Close() error {
 
 // MockPlugin is a mock plugin.
 //
-// Summary. Represents a MockPlugin.
+// Summary: Represents a MockPlugin.
 type MockPlugin struct{}
 
 // Execute provides execute functionality.
@@ -116,10 +115,9 @@ type MockPlugin struct{}
 //   - _: The parameter.
 //   - function: The parameter.
 //   - _: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (p *MockPlugin) Execute(_ context.Context, function string, _ ...[]byte) ([]byte, error) {
 	if function == "error" {
 		return nil, fmt.Errorf("simulated error")

@@ -25,7 +25,7 @@ import (
 // connection. It handles sending and receiving messages over a persistent
 // WebSocket connection managed by a connection pool.
 //
-// Summary. A tool implementation for WebSocket services.
+// Summary: A tool implementation for WebSocket services.
 type WebsocketTool struct {
 	tool              *v1.Tool
 	mcpTool           *mcp.Tool
@@ -124,10 +124,9 @@ func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
 // Parameters.
 //   - ctx: The parameter.
 //   - req: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	wsPool, ok := pool.Get[*client.WebsocketClientWrapper](t.poolManager, t.serviceID)
 	if !ok {

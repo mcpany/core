@@ -30,7 +30,7 @@ var (
 
 // Manager handles the storage and retrieval of skills.
 //
-// Summary. Represents a Manager.
+// Summary: Represents a Manager.
 type Manager struct {
 	rootDir string
 	mu      sync.RWMutex
@@ -43,10 +43,9 @@ type Manager struct {
 //
 // Parameters.
 //   - rootDir: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func NewManager(rootDir string) (*Manager, error) {
 	if err := os.MkdirAll(rootDir, 0755); err != nil {
 		return nil, fmt.Errorf("failed to create skill root directory: %w", err)
@@ -61,11 +60,10 @@ func NewManager(rootDir string) (*Manager, error) {
 // Summary: ListSkills.
 //
 // Parameters.
-//   - ): The parameter.
-//   - error: The parameter.
+//   - None.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (m *Manager) ListSkills() ([]*Skill, error) {
 	// ⚡ BOLT: Optimization - Cached skill listing to avoid redundant I/O.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -112,10 +110,9 @@ func (m *Manager) ListSkills() ([]*Skill, error) {
 //
 // Parameters.
 //   - name: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (m *Manager) GetSkill(name string) (*Skill, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

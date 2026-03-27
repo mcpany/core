@@ -16,7 +16,7 @@ import (
 
 // DB wraps the sql.DB connection.
 //
-// Summary. Represents a DB.
+// Summary: Represents a DB.
 type DB struct {
 	*sql.DB
 }
@@ -27,10 +27,9 @@ type DB struct {
 //
 // Parameters.
 //   - path: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func NewDB(path string) (*DB, error) {
 	if err := os.MkdirAll(filepath.Dir(path), 0750); err != nil {
 		return nil, fmt.Errorf("failed to create db directory: %w", err)

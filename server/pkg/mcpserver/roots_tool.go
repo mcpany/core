@@ -20,7 +20,7 @@ import (
 // It provides a built-in tool ("mcp:list_roots") that allows the server to query the client
 // for available filesystem roots.
 //
-// Summary. Represents a RootsTool.
+// Summary: Represents a RootsTool.
 type RootsTool struct {
 	tool    *v1.Tool
 	mcpTool *mcp.Tool
@@ -89,10 +89,9 @@ func (t *RootsTool) MCPTool() *mcp.Tool {
 // Parameters.
 //   - ctx: The parameter.
 //   - _: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 	session, ok := tool.GetSession(ctx)
 	if !ok {

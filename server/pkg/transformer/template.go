@@ -15,7 +15,7 @@ import (
 // TextTemplate provides a simple wrapper around Go's standard text/template
 // for rendering strings with dynamic data.
 //
-// Summary. High-performance template engine using fasttemplate.
+// Summary: High-performance template engine using fasttemplate.
 type TextTemplate struct {
 	template *fasttemplate.Template
 	raw      string
@@ -32,10 +32,9 @@ type TextTemplate struct {
 //   - templateString: The parameter.
 //   - startTag: The parameter.
 //   - endTag: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error) {
 	tpl, err := fasttemplate.NewTemplate(templateString, startTag, endTag)
 	if err != nil {
@@ -66,10 +65,9 @@ func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error)
 //
 // Parameters.
 //   - params: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (t *TextTemplate) Render(params map[string]any) (string, error) {
 	return t.template.ExecuteFuncStringWithErr(func(w io.Writer, tag string) (int, error) {
 		val, ok := params[tag]

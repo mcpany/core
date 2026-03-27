@@ -14,7 +14,7 @@ import (
 
 // LocalLimiter is an in-memory implementation of Limiter.
 //
-// Summary. Rate limiter implementation using golang.org/x/time/rate.
+// Summary: Rate limiter implementation using golang.org/x/time/rate.
 type LocalLimiter struct {
 	*rate.Limiter
 }
@@ -25,10 +25,9 @@ type LocalLimiter struct {
 //
 // Parameters.
 //   - _: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (l *LocalLimiter) Allow(_ context.Context) (bool, error) {
 	return l.Limiter.Allow(), nil
 }
@@ -40,10 +39,9 @@ func (l *LocalLimiter) Allow(_ context.Context) (bool, error) {
 // Parameters.
 //   - _: The parameter.
 //   - n: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (l *LocalLimiter) AllowN(_ context.Context, n int) (bool, error) {
 	return l.Limiter.AllowN(time.Now(), n), nil
 }
@@ -70,7 +68,7 @@ func (l *LocalLimiter) Update(rps float64, burst int) {
 
 // LocalStrategy implements RateLimitStrategy for local in-memory rate limiting.
 //
-// Summary. Strategy for creating local rate limiters.
+// Summary: Strategy for creating local rate limiters.
 type LocalStrategy struct{}
 
 // NewLocalStrategy provides newlocalstrategy functionality.
@@ -96,10 +94,9 @@ func NewLocalStrategy() *LocalStrategy {
 //   - _: The parameter.
 //   - _: The parameter.
 //   - config: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (s *LocalStrategy) Create(_ context.Context, _, _, _ string, config *configv1.RateLimitConfig) (Limiter, error) {
 	rps := config.GetRequestsPerSecond()
 	burst := int(config.GetBurst())

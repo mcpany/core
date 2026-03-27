@@ -24,9 +24,9 @@ type MethodHandler func(ctx context.Context, req mcp.Request) (mcp.Result, error
 
 // Router is responsible for mapping MCP method names to their corresponding handler functions.
 //
-// Summary. Routes MCP requests to registered handlers.
+// Summary: Routes MCP requests to registered handlers.
 //
-// Side Effects.
+// Side Effects:
 //   - Stores handlers in an internal map.
 type Router struct {
 	handlers map[string]MethodHandler
@@ -67,10 +67,9 @@ func (r *Router) Register(method string, handler MethodHandler) {
 //
 // Parameters.
 //   - method: The parameter.
-//   - bool: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (r *Router) GetHandler(method string) (MethodHandler, bool) {
 	handler, ok := r.handlers[method]
 	return handler, ok

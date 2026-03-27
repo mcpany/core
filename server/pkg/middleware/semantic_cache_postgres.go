@@ -16,7 +16,7 @@ import (
 
 // PostgresVectorStore implements VectorStore using PostgreSQL and pgvector.
 //
-// Summary. Provides vector storage capabilities using a PostgreSQL database with the pgvector extension.
+// Summary: Provides vector storage capabilities using a PostgreSQL database with the pgvector extension.
 type PostgresVectorStore struct {
 	db *sql.DB
 }
@@ -27,10 +27,9 @@ type PostgresVectorStore struct {
 //
 // Parameters.
 //   - dsn: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func NewPostgresVectorStore(dsn string) (*PostgresVectorStore, error) {
 	if dsn == "" {
 		return nil, fmt.Errorf("postgres dsn is required")
@@ -56,10 +55,9 @@ func NewPostgresVectorStore(dsn string) (*PostgresVectorStore, error) {
 //
 // Parameters.
 //   - db: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func NewPostgresVectorStoreWithDB(db *sql.DB) (*PostgresVectorStore, error) {
 	// Verify connection
 	ctxPing, cancelPing := context.WithTimeout(context.Background(), 5*time.Second)
@@ -149,11 +147,9 @@ func (s *PostgresVectorStore) Add(ctx context.Context, key string, vector []floa
 //   - ctx: The parameter.
 //   - key: The parameter.
 //   - query: The parameter.
-//   - float32: The parameter.
-//   - bool: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (s *PostgresVectorStore) Search(ctx context.Context, key string, query []float32) (any, float32, bool) {
 	queryJSON, err := json.Marshal(query)
 	if err != nil {

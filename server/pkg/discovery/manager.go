@@ -14,7 +14,7 @@ import (
 
 // ProviderStatus represents the status of a discovery provider.
 //
-// Summary. Represents a ProviderStatus.
+// Summary: Represents a ProviderStatus.
 type ProviderStatus struct {
 	Name            string
 	Status          string // "OK", "ERROR"
@@ -25,7 +25,7 @@ type ProviderStatus struct {
 
 // Manager manages auto-discovery providers.
 //
-// Summary. Represents a Manager.
+// Summary: Represents a Manager.
 type Manager struct {
 	providers []Provider
 	mu        sync.RWMutex
@@ -152,10 +152,9 @@ func (m *Manager) GetStatuses() []*ProviderStatus {
 //
 // Parameters.
 //   - name: The parameter.
-//   - bool: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (m *Manager) GetProviderStatus(name string) (*ProviderStatus, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

@@ -16,7 +16,7 @@ import (
 // credentials.PerRPCCredentials interface. It allows applying upstream
 // authentication headers to outgoing gRPC requests.
 //
-// Summary. Represents a PerRPCCredentials.
+// Summary: Represents a PerRPCCredentials.
 type PerRPCCredentials struct {
 	authenticator UpstreamAuthenticator
 }
@@ -44,10 +44,9 @@ func NewPerRPCCredentials(authenticator UpstreamAuthenticator) credentials.PerRP
 // Parameters.
 //   - ctx: The parameter.
 //   - _: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (c *PerRPCCredentials) GetRequestMetadata(ctx context.Context, _ ...string) (map[string]string, error) {
 	if c.authenticator == nil {
 		return nil, nil

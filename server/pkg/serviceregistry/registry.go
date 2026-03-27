@@ -34,7 +34,7 @@ var ErrServiceAlreadyRegistered = errors.New("service already registered")
 // It manages the registration, lifecycle, and discovery of upstream services
 // and their associated capabilities (tools, resources, prompts).
 //
-// Summary. Represents a ServiceRegistryInterface.
+// Summary: Represents a ServiceRegistryInterface.
 type ServiceRegistryInterface interface { //nolint:revive
 	// RegisterService registers a new upstream service based on the provided configuration.
 	//
@@ -106,7 +106,7 @@ type ServiceRegistryInterface interface { //nolint:revive
 // It serves as the central hub for managing upstream services, coordinating
 // with tool, prompt, and resource managers.
 //
-// Summary. Represents a ServiceRegistry.
+// Summary: Represents a ServiceRegistry.
 type ServiceRegistry struct {
 	mu              sync.RWMutex
 	serviceConfigs  map[string]*config.UpstreamServiceConfig
@@ -156,12 +156,9 @@ func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManag
 // Parameters.
 //   - ctx: The parameter.
 //   - serviceConfig: The parameter.
-//   - []*config.ToolDefinition: The parameter.
-//   - []*config.ResourceDefinition: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) (string, []*config.ToolDefinition, []*config.ResourceDefinition, error) {
 	r.mu.Lock()
 
@@ -311,10 +308,9 @@ func (r *ServiceRegistry) AddServiceInfo(serviceID string, info *tool.ServiceInf
 //
 // Parameters.
 //   - serviceID: The parameter.
-//   - bool: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (r *ServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -340,10 +336,9 @@ func (r *ServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 //
 // Parameters.
 //   - serviceID: The parameter.
-//   - bool: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamServiceConfig, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -406,10 +401,9 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 //
 // Parameters.
 //   - serviceID: The parameter.
-//   - bool: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (r *ServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -534,11 +528,10 @@ func (r *ServiceRegistry) Close(ctx context.Context) error {
 // Summary: GetAllServices.
 //
 // Parameters.
-//   - ): The parameter.
-//   - error: The parameter.
+//   - None.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (r *ServiceRegistry) GetAllServices() ([]*config.UpstreamServiceConfig, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()

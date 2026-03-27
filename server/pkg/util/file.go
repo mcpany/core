@@ -17,10 +17,9 @@ import (
 // Parameters.
 //   - path: The parameter.
 //   - n: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func ReadLastNLines(path string, n int) ([][]byte, error) {
 	if n <= 0 {
 		return nil, nil

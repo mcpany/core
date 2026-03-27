@@ -34,7 +34,7 @@ import (
 // It provides tools for interacting with various filesystem backends (local,
 // S3, GCS, etc.) as defined in the service configuration.
 //
-// Summary. Represents a Upstream.
+// Summary: Represents a Upstream.
 type Upstream struct {
 	mu      sync.Mutex
 	closers []io.Closer
@@ -231,10 +231,9 @@ type fsCallable struct {
 // Parameters.
 //   - ctx: The parameter.
 //   - req: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (c *fsCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	args := req.Arguments
 	if args == nil && len(req.ToolInputs) > 0 {

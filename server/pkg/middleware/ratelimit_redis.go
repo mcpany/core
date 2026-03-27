@@ -22,7 +22,7 @@ var redisClientCreator = redis.NewClient
 //   - creator: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func SetRedisClientCreatorForTests(creator func(opts *redis.Options) *redis.Client) {
 	redisClientCreator = creator
 }
@@ -32,7 +32,7 @@ func SetRedisClientCreatorForTests(creator func(opts *redis.Options) *redis.Clie
 // ensuring that the configured Requests Per Second (RPS) and burst limits are respected
 // regardless of how many server replicas are running.
 //
-// Summary. Distributed token bucket rate limiter using Redis.
+// Summary: Distributed token bucket rate limiter using Redis.
 type RedisLimiter struct {
 	client     *redis.Client
 	key        string
@@ -48,10 +48,9 @@ type RedisLimiter struct {
 // Parameters.
 //   - serviceID: The parameter.
 //   - config: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func NewRedisLimiter(serviceID string, config *configv1.RateLimitConfig) (*RedisLimiter, error) {
 	return NewRedisLimiterWithPartition(serviceID, "", "", config)
 }
@@ -65,10 +64,9 @@ func NewRedisLimiter(serviceID string, config *configv1.RateLimitConfig) (*Redis
 //   - limitScopeKey: The parameter.
 //   - partitionKey: The parameter.
 //   - config: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func NewRedisLimiterWithPartition(serviceID, limitScopeKey, partitionKey string, config *configv1.RateLimitConfig) (*RedisLimiter, error) {
 	if config.GetRedis() == nil {
 		return nil, fmt.Errorf("redis config is missing")
@@ -195,10 +193,9 @@ var redisRateLimitScript = redis.NewScript(RedisRateLimitScript)
 //
 // Parameters.
 //   - ctx: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (l *RedisLimiter) Allow(ctx context.Context) (bool, error) {
 	return l.AllowN(ctx, 1)
 }
@@ -210,10 +207,9 @@ func (l *RedisLimiter) Allow(ctx context.Context) (bool, error) {
 // Parameters.
 //   - ctx: The parameter.
 //   - n: The parameter.
-//   - error: The parameter.
 //
 // Returns.
-//   - None.
+//   - result: The result.
 func (l *RedisLimiter) AllowN(ctx context.Context, n int) (bool, error) {
 	// ⚡ BOLT: Use server time to prevent clock skew issues in distributed systems.
 	// Randomized Selection from Top 5 High-Impact Targets
