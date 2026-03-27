@@ -599,3 +599,11 @@ of cognitive entropy scores across active swarms.
 hardware-attested context snapshots.
 - [ ] **[P1] Mesh Policy Editor**: (2026-06-18) Centralized UI for managing
 security guardrails across horizontal agent teams.
+
+### Upcoming: [2026-06-18]
+- [ ] **[P0] Entropy Monitor Dashboard**: (2026-06-18) Real-time visualization
+of cognitive entropy scores across active swarms.
+- [ ] **[P0] Sovereign State Explorer**: (2026-06-18) Management UI for
+hardware-attested context snapshots.
+- [ ] **[P1] Mesh Policy Editor**: (2026-06-18) Centralized UI for managing
+security guardrails across horizontal agent teams.
