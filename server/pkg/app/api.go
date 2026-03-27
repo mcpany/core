@@ -466,7 +466,7 @@ func checkURLReachability(ctx context.Context, urlStr string) error {
 			return fmt.Errorf("failed to reach %s: %w", urlStr, err)
 		}
 	}
-	defer func() { _ = resp.Body.Close() }()
+	defer func() { _ = resp.Body.Close() }() //nolint:errcheck
 	if resp.StatusCode >= 400 && resp.StatusCode != http.StatusMethodNotAllowed && resp.StatusCode != http.StatusUnauthorized {
 		// We treat 401/403 as "reachable but requires auth", which is fine for basic connectivity check (auth check is deeper).
 		// But 404 or 500 might indicate issues.
@@ -560,7 +560,7 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 				return
 			}
 			opts := protojson.MarshalOptions{UseProtoNames: true}
-			b, _ := opts.Marshal(svc)
+			b, _ := opts.Marshal(svc) //nolint:errcheck
 			w.Header().Set("Content-Type", "application/json")
 			_, _ = w.Write(b) //nolint:errcheck
 		case http.MethodPut:
@@ -870,7 +870,7 @@ func (a *Application) handleSecrets(store storage.Storage) http.HandlerFunc {
 				if i > 0 {
 					buf = append(buf, ',')
 				}
-				b, _ := opts.Marshal(s)
+				b, _ := opts.Marshal(s) //nolint:errcheck
 				buf = append(buf, b...)
 			}
 			buf = append(buf, ']')
@@ -946,7 +946,7 @@ func (a *Application) handleSecretDetail(store storage.Storage) http.HandlerFunc
 			secret.SetValue("[REDACTED]")
 			w.Header().Set("Content-Type", "application/json")
 			opts := protojson.MarshalOptions{UseProtoNames: true}
-			b, _ := opts.Marshal(secret)
+			b, _ := opts.Marshal(secret) //nolint:errcheck
 			_, _ = w.Write(b) //nolint:errcheck
 
 		case http.MethodPut:
@@ -1046,7 +1046,7 @@ func (a *Application) handleProfiles(store storage.Storage) http.HandlerFunc {
 				if i > 0 {
 					buf = append(buf, ',')
 				}
-				b, _ := opts.Marshal(p)
+				b, _ := opts.Marshal(p) //nolint:errcheck
 				buf = append(buf, b...)
 			}
 			buf = append(buf, ']')
@@ -1115,7 +1115,7 @@ func (a *Application) handleProfileDetail(store storage.Storage) http.HandlerFun
 			// Force download? Maybe 'Content-Disposition: attachment; filename="profile.json"'
 			w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.json\"", name))
 			opts := protojson.MarshalOptions{UseProtoNames: true, Multiline: true, Indent: "  "}
-			b, _ := opts.Marshal(exportProfile)
+			b, _ := opts.Marshal(exportProfile) //nolint:errcheck
 			_, _ = w.Write(b) //nolint:errcheck
 			return
 		}
@@ -1134,7 +1134,7 @@ func (a *Application) handleProfileDetail(store storage.Storage) http.HandlerFun
 			}
 			w.Header().Set("Content-Type", "application/json")
 			opts := protojson.MarshalOptions{UseProtoNames: true}
-			b, _ := opts.Marshal(profile)
+			b, _ := opts.Marshal(profile) //nolint:errcheck
 			_, _ = w.Write(b) //nolint:errcheck
 
 		case http.MethodPut:
@@ -1195,7 +1195,7 @@ func (a *Application) handleCollections(store storage.Storage) http.HandlerFunc 
 				if i > 0 {
 					buf = append(buf, ',')
 				}
-				b, _ := opts.Marshal(c)
+				b, _ := opts.Marshal(c) //nolint:errcheck
 				buf = append(buf, b...)
 			}
 			buf = append(buf, ']')
@@ -1257,7 +1257,7 @@ func (a *Application) handleCollectionDetail(store storage.Storage) http.Handler
 			w.Header().Set("Content-Type", "application/json")
 			w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.json\"", name))
 			opts := protojson.MarshalOptions{UseProtoNames: true, Multiline: true, Indent: "  "}
-			b, _ := opts.Marshal(exportCollection)
+			b, _ := opts.Marshal(exportCollection) //nolint:errcheck
 			_, _ = w.Write(b) //nolint:errcheck
 			return
 		}
@@ -1282,7 +1282,7 @@ func (a *Application) handleCollectionDetail(store storage.Storage) http.Handler
 			}
 			w.Header().Set("Content-Type", "application/json")
 			opts := protojson.MarshalOptions{UseProtoNames: true}
-			b, _ := opts.Marshal(collection)
+			b, _ := opts.Marshal(collection) //nolint:errcheck
 			_, _ = w.Write(b) //nolint:errcheck
 
 		case http.MethodPut:

@@ -5,10 +5,8 @@ with open('pkg/app/api.go', 'r') as f:
 
 lines = content.split('\n')
 for i, line in enumerate(lines):
-    stripped = line.strip()
-    if stripped.startswith('_ = ') or stripped.startswith('_, _ = '):
-        if not line.endswith('//nolint:errcheck'):
-            lines[i] = line + " //nolint:errcheck"
+    if 'b, _ := opts.Marshal(' in line and '//nolint:errcheck' not in line:
+        lines[i] = line.replace('b, _ := opts.Marshal(', 'b, _ := opts.Marshal(') + ' //nolint:errcheck'
 
 with open('pkg/app/api.go', 'w') as f:
     f.write('\n'.join(lines))
