@@ -465,7 +465,7 @@ func checkURLReachability(ctx context.Context, urlStr string) error {
 			return fmt.Errorf("failed to reach %s: %w", urlStr, err)
 		}
 	}
-	defer func() { _ = resp.Body.Close() }()
+	defer func() { _ = resp.Body.Close() }() //nolint:errcheck
 	if resp.StatusCode >= 400 && resp.StatusCode != http.StatusMethodNotAllowed && resp.StatusCode != http.StatusUnauthorized {
 		// We treat 401/403 as "reachable but requires auth", which is fine for basic connectivity check (auth check is deeper).
 		// But 404 or 500 might indicate issues.
