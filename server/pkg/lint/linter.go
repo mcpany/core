@@ -89,7 +89,7 @@ const (
 // Summary: Returns the string name of the severity level.
 //
 // Parameters:
-//   - None.
+//   - s (Severity): The severity level to convert.
 //
 // Returns:
 //   - string: The name of the severity (e.g., "ERROR").
@@ -143,7 +143,7 @@ type Result struct {
 // Summary: Formats the result into a readable string.
 //
 // Parameters:
-//   - None.
+//   - r (Result): The result instance to format.
 //
 // Returns:
 //   - string: A formatted summary of the finding.
