@@ -63,7 +63,9 @@ jobs:
             export PATH=$PWD/build/env/bin:$PATH
             pre-commit install -c .pre-commit-config.yaml || true
             git config --unset-all core.hooksPath || true
-            git checkout -- .git/hooks/pre-commit || true
+            rm -f .git/hooks/pre-commit || true
+            git config --unset-all core.hooksPath || true
+            rm -f .git/hooks/pre-commit || true
             export PATH=$PWD/build/env/bin:$PATH
             pre-commit run --all-files -c .pre-commit-config.yaml
             export PATH=$PWD/build/env/bin:$PATH
