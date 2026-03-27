@@ -18,14 +18,16 @@ import (
 
 // Helper to create a mock OIDC server
 func mockOIDCServer(t *testing.T) *httptest.Server {
+	const wellKnownPath = "/.well-known/openid-configuration"
+	const jwksPath = "/jwks"
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/.well-known/openid-configuration" {
+		if r.URL.Path == wellKnownPath {
 			w.Header().Set("Content-Type", "application/json")
 			// Return minimal config
-			fmt.Fprintf(w, `{"issuer": "%s", "jwks_uri": "%s/jwks"}`, "http://"+r.Host, "http://"+r.Host)
+			fmt.Fprintf(w, `{"issuer": "%s", "jwks_uri": "%s%s"}`, "http://"+r.Host, "http://"+r.Host, jwksPath)
 			return
 		}
-		if r.URL.Path == "/jwks" {
+		if r.URL.Path == jwksPath {
 			w.Header().Set("Content-Type", "application/json")
 			fmt.Fprintln(w, `{"keys": []}`)
 			return
@@ -201,7 +203,7 @@ func TestTrustedHeaderAuthenticator_NoValue(t *testing.T) {
 func TestManager_CheckBasicAuthWithUsers(t *testing.T) {
 	manager := NewManager()
 
-	password := "secret123"
+	const password = "secret123"
 	hashed, _ := passhash.Password(password)
 
 	user1 := configv1.User_builder{

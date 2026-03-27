@@ -37,7 +37,7 @@ func TestGrpcPool_New(t *testing.T) {
 		return lis.Dial()
 	}
 
-	configJSON := `{"grpc_service": {"address": "bufnet"}}`
+	const configJSON = `{"grpc_service": {"address": "bufnet"}}`
 	config := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), config))
 
@@ -102,7 +102,7 @@ func TestGrpcPool_Get_ContextCancelled(t *testing.T) {
 		return lis.Dial()
 	}
 
-	configJSON := `{"grpc_service": {"address": "bufnet"}}`
+	const configJSON = `{"grpc_service": {"address": "bufnet"}}`
 	config := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), config))
 
@@ -128,7 +128,7 @@ func TestGrpcPool_Close_StopsChecker(t *testing.T) {
 		return lis.Dial()
 	}
 
-	configJSON := `{"grpc_service": {"address": "bufnet"}}`
+	const configJSON = `{"grpc_service": {"address": "bufnet"}}`
 	config := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), config))
 

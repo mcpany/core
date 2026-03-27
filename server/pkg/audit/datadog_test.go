@@ -87,7 +87,9 @@ func TestDatadogAuditStore_Batch(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var logs []map[string]interface{}
 		_ = json.NewDecoder(r.Body).Decode(&logs)
-		atomic.AddInt32(&totalReceived, int32(len(logs)))
+		for range logs {
+			atomic.AddInt32(&totalReceived, 1)
+		}
 		w.WriteHeader(http.StatusAccepted)
 		if atomic.LoadInt32(&totalReceived) >= 5 {
 			done <- struct{}{}

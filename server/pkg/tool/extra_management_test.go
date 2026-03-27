@@ -238,7 +238,7 @@ func TestManager_AddTool_WithMCPServer_Coverage(t *testing.T) {
 		t.Fatalf("Could not find handler field in serverTool")
 	}
 
-	handlerAccessible := reflect.NewAt(handlerField.Type(), unsafe.Pointer(handlerField.UnsafeAddr())).Elem() //nolint:gosec
+	handlerAccessible := reflect.NewAt(handlerField.Type(), unsafe.Pointer(handlerField.UnsafeAddr())).Elem()
 
 	// Prepare request
 	callToolReq := &mcp.CallToolRequest{

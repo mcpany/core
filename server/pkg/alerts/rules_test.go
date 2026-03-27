@@ -53,7 +53,7 @@ func TestManager_Rules(t *testing.T) {
 	}
 	updated := m.UpdateRule(created.ID, update)
 	if updated == nil {
-		t.Error("Failed to update rule")
+		t.Fatal("Failed to update rule")
 	}
 	if updated.Name != "Updated Rule" {
 		t.Errorf("Expected name 'Updated Rule', got %s", updated.Name)
@@ -64,6 +64,9 @@ func TestManager_Rules(t *testing.T) {
 
 	// Verify persistence of update
 	fetchedAfterUpdate := m.GetRule(created.ID)
+	if fetchedAfterUpdate == nil {
+		t.Fatal("Failed to fetch rule after update")
+	}
 	if fetchedAfterUpdate.Name != "Updated Rule" {
 		t.Error("Update was not persisted")
 	}

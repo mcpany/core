@@ -798,7 +798,6 @@ func TestValidate_MtlsInsecure(t *testing.T) {
 	if err := os.Chmod(dirPerm, 0000); err != nil {
 		t.Fatalf("Failed to chmod: %v", err)
 	}
-	//nolint:gosec // Directory permissions need to be 0755
 	defer func() { _ = os.Chmod(dirPerm, 0755) }()
 
 	// Create a real file for secure path (needs to exist for FileExists check)

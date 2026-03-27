@@ -48,7 +48,7 @@ func TestDockerTransport_Connect_Success_Mock(t *testing.T) {
 				c1, c2 := net.Pipe()
 				// We need to simulate the docker daemon side on c2
 				go func() {
-					defer c2.Close() //nolint:errcheck
+					defer c2.Close()
 					// Write some stdout/stderr to satisfy stdcopy
 					// Stdcopy protocol: [STREAM_TYPE, 0, 0, 0, SIZE, ... PAYLOAD]
 					// STREAM_TYPE: 1=stdout, 2=stderr

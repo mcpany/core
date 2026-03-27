@@ -24,7 +24,7 @@ import (
 
 func createTestBundle(t *testing.T, dir string) string {
 	bundlePath := filepath.Join(dir, "test.mcpb")
-	file, err := os.Create(bundlePath) //nolint:gosec // Test file
+	file, err := os.Create(bundlePath)
 	require.NoError(t, err)
 	defer func() { _ = file.Close() }()
 
@@ -158,7 +158,7 @@ func TestUpstream_Register_Bundle_Failures(t *testing.T) {
 func TestUpstream_Register_Bundle_Python(t *testing.T) {
 	tempDir := t.TempDir()
 	bundlePath := filepath.Join(tempDir, "python.mcpb")
-	file, err := os.Create(bundlePath) //nolint:gosec
+	file, err := os.Create(bundlePath)
 	require.NoError(t, err)
 	w := zip.NewWriter(file)
 	manifest := `{

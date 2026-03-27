@@ -19,7 +19,7 @@ func TestSafeDialer_Security(t *testing.T) {
 	// Setup common variables
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
-	host := "example.com"
+	const host = "example.com"
 	port := "80"
 	addr := net.JoinHostPort(host, port)
 

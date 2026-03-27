@@ -131,7 +131,7 @@ func TestUnzipBundle(t *testing.T) {
 	// Create a zip file
 	tmpDir := t.TempDir()
 	zipPath := filepath.Join(tmpDir, "test.zip")
-	zipFile, err := os.Create(zipPath) //nolint:gosec
+	zipFile, err := os.Create(zipPath)
 	assert.NoError(t, err)
 
 	w := zip.NewWriter(zipFile)
@@ -157,11 +157,11 @@ func TestUnzipBundle(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Verify
-	c1, err := os.ReadFile(filepath.Join(destDir, "file1.txt")) //nolint:gosec
+	c1, err := os.ReadFile(filepath.Join(destDir, "file1.txt"))
 	assert.NoError(t, err)
 	assert.Equal(t, "content1", string(c1))
 
-	c2, err := os.ReadFile(filepath.Join(destDir, "dir", "file2.txt")) //nolint:gosec
+	c2, err := os.ReadFile(filepath.Join(destDir, "dir", "file2.txt"))
 	assert.NoError(t, err)
 	assert.Equal(t, "content2", string(c2))
 }
@@ -195,7 +195,7 @@ func TestAuthenticatedRoundTripper_Coverage(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 200, resp.StatusCode)
 	if err == nil {
-		defer resp.Body.Close() //nolint:errcheck
+		defer resp.Body.Close()
 	}
 
 	// Test with authenticator
@@ -203,13 +203,13 @@ func TestAuthenticatedRoundTripper_Coverage(t *testing.T) {
 	resp, err = art.RoundTrip(req)
 	assert.NoError(t, err)
 	assert.Equal(t, "true", req.Header.Get("Authenticated"))
-	resp.Body.Close() //nolint:errcheck,gosec
+	resp.Body.Close()
 
 	// Test authenticator error
 	art.authenticator = &mockAuthCoverage{fail: true}
 	resp, err = art.RoundTrip(req)
 	if err == nil {
-		resp.Body.Close() //nolint:errcheck,gosec
+		resp.Body.Close()
 	}
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to authenticate")
@@ -218,7 +218,7 @@ func TestAuthenticatedRoundTripper_Coverage(t *testing.T) {
 func TestUnzipBundle_ZipSlip(t *testing.T) {
 	tmpDir := t.TempDir()
 	zipPath := filepath.Join(tmpDir, "slip.zip")
-	zipFile, err := os.Create(zipPath) //nolint:gosec
+	zipFile, err := os.Create(zipPath)
 	assert.NoError(t, err)
 
 	w := zip.NewWriter(zipFile)
@@ -597,7 +597,7 @@ func TestDockerTransport_Connect_Errors(t *testing.T) {
 		transport := &BundleDockerTransport{Image: "test", Command: "test"}
 		conn, err := transport.Connect(context.Background())
 		assert.NoError(t, err)
-		conn.Close() //nolint:errcheck,gosec
+		conn.Close()
 	})
 }
 
@@ -650,11 +650,11 @@ func TestRegister_DynamicResource_EdgeCases(t *testing.T) {
 }
 
 func createZip(t *testing.T, path string, files map[string]string) {
-	f, err := os.Create(path) //nolint:gosec
+	f, err := os.Create(path)
 	assert.NoError(t, err)
-	defer f.Close() //nolint:errcheck
+	defer f.Close()
 	w := zip.NewWriter(f)
-	defer w.Close() //nolint:errcheck
+	defer w.Close()
 
 	for name, content := range files {
 		wf, err := w.Create(name)
@@ -697,7 +697,7 @@ func TestStreamableHTTP_RoundTrip_Coverage(t *testing.T) {
 	resp, err := tr.RoundTrip(req)
 	assert.NoError(t, err)
 	if err == nil {
-		defer resp.Body.Close() //nolint:errcheck
+		defer resp.Body.Close()
 	}
 	assert.Equal(t, 202, resp.StatusCode)
 
@@ -707,7 +707,7 @@ func TestStreamableHTTP_RoundTrip_Coverage(t *testing.T) {
 	reqInvalid, _ := http.NewRequest("GET", "http://invalid.local", nil)
 	resp, err = trDefault.RoundTrip(reqInvalid) // Should not panic
 	if err == nil {
-		defer resp.Body.Close() //nolint:errcheck
+		defer resp.Body.Close()
 	}
 }
 
@@ -892,13 +892,13 @@ func TestUnzipBundle_InvalidFile(t *testing.T) {
 	// Create a dummy non-zip file
 	tmpFile, err := os.CreateTemp("", "not-a-zip")
 	assert.NoError(t, err)
-	defer os.Remove(tmpFile.Name()) //nolint:errcheck
+	defer func() { _ = os.Remove(tmpFile.Name()) }()
 	_, _ = tmpFile.WriteString("this is not a zip file")
 	_ = tmpFile.Close()
 
 	destDir, err := os.MkdirTemp("", "unzip-dest-fail")
 	assert.NoError(t, err)
-	defer os.RemoveAll(destDir) //nolint:errcheck
+	defer func() { _ = os.RemoveAll(destDir) }()
 
 	err = unzipBundle(tmpFile.Name(), destDir)
 	assert.Error(t, err)

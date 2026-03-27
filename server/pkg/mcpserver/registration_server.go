@@ -322,6 +322,7 @@ func (s *RegistrationServer) GetServiceStatus(_ context.Context, _ *v1.GetServic
 //   - codes.InvalidArgument: If the service name is missing.
 //   - codes.NotFound: If the service is not found.
 //   - codes.DeadlineExceeded: If the request times out.
+// GetService retrieves a service by its name.
 func (s *RegistrationServer) GetService(ctx context.Context, req *v1.GetServiceRequest) (*v1.GetServiceResponse, error) {
 	if req.GetServiceName() == "" {
 		return nil, status.Errorf(codes.InvalidArgument, "service_name is required")
@@ -361,7 +362,6 @@ func (s *RegistrationServer) GetService(ctx context.Context, req *v1.GetServiceR
 	}
 }
 
-func (s *RegistrationServer) mustEmbedUnimplementedRegistrationServiceServer() {} //nolint:unused
 
 // ListServices lists all registered services by querying the service registry via the event bus.
 //

@@ -84,11 +84,11 @@ global_settings:
 	grpcRegPort := int(appRunner.BoundGRPCPort.Load())
 
 	// Wait for health check
-	httpUrl := fmt.Sprintf("http://127.0.0.1:%d/healthz", jsonrpcPort)
-	integration.WaitForHTTPHealth(t, httpUrl, 10*time.Second)
+	httpURL := fmt.Sprintf("http://127.0.0.1:%d/healthz", jsonrpcPort)
+	integration.WaitForHTTPHealth(t, httpURL, 10*time.Second)
 
 	// Connect to gRPC Admin Service to create user
-	conn, err := grpc.Dial(fmt.Sprintf("127.0.0.1:%d", grpcRegPort), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient(fmt.Sprintf("127.0.0.1:%d", grpcRegPort), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	require.NoError(t, err)
 	defer conn.Close()
 
@@ -134,7 +134,10 @@ global_settings:
 	body, _ := json.Marshal(loginReq)
 	loginURL := fmt.Sprintf("http://127.0.0.1:%d/api/v1/auth/login", jsonrpcPort)
 
-	resp, err := http.Post(loginURL, "application/json", bytes.NewReader(body))
+	reqPost, err := http.NewRequestWithContext(ctx, http.MethodPost, loginURL, bytes.NewReader(body))
+	require.NoError(t, err)
+	reqPost.Header.Set("Content-Type", "application/json")
+	resp, err := http.DefaultClient.Do(reqPost)
 	require.NoError(t, err)
 	defer resp.Body.Close()
 
@@ -163,13 +166,13 @@ global_settings:
 	// Note: Listing users (/api/v1/users) is restricted to admin, so we fetch our own profile.
 
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", fmt.Sprintf("http://127.0.0.1:%d/api/v1/users/%s", jsonrpcPort, username), nil)
+	reqGet, err := http.NewRequestWithContext(ctx, "GET", fmt.Sprintf("http://127.0.0.1:%d/api/v1/users/%s", jsonrpcPort, username), nil)
 	require.NoError(t, err)
 
 	// Add Basic Auth header manually using the token
-	req.Header.Set("Authorization", "Basic "+loginResp.Token)
+	reqGet.Header.Set("Authorization", "Basic "+loginResp.Token)
 
-	apiResp, err := client.Do(req)
+	apiResp, err := client.Do(reqGet)
 	require.NoError(t, err)
 	defer apiResp.Body.Close()
 

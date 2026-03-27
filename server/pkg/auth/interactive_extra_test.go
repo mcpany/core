@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/storage/memory"
@@ -18,9 +17,10 @@ import (
 )
 
 func TestHandleOAuthCallbackExtra(t *testing.T) {
+	const tokenPath = "/token"
 	// Setup mock oauth2 server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/token" {
+		if r.URL.Path == tokenPath {
 			w.Header().Set("Content-Type", "application/json")
 			w.Write([]byte(`{"access_token": "mock_access_token", "refresh_token": "mock_refresh_token", "token_type": "Bearer", "expires_in": 3600, "scope": "read"}`))
 			return
@@ -42,7 +42,7 @@ func TestHandleOAuthCallbackExtra(t *testing.T) {
 				Oauth2: configv1.OAuth2Auth_builder{
 					ClientId:     configv1.SecretValue_builder{PlainText: proto.String("client-id")}.Build(),
 					ClientSecret: configv1.SecretValue_builder{PlainText: proto.String("client-secret")}.Build(),
-					TokenUrl:     proto.String(server.URL + "/token"),
+					TokenUrl:     proto.String(server.URL + tokenPath),
 					Scopes:       proto.String("read"),
 				}.Build(),
 			}.Build(),
@@ -67,7 +67,7 @@ func TestHandleOAuthCallbackExtra(t *testing.T) {
 				Oauth2: configv1.OAuth2Auth_builder{
 					ClientId:     configv1.SecretValue_builder{PlainText: proto.String("client-id")}.Build(),
 					ClientSecret: configv1.SecretValue_builder{PlainText: proto.String("client-secret")}.Build(),
-					TokenUrl:     proto.String(server.URL + "/token"),
+					TokenUrl:     proto.String(server.URL + tokenPath),
 				}.Build(),
 			}.Build(),
 		}.Build()
@@ -193,13 +193,6 @@ func TestInitiateOAuthExtra(t *testing.T) {
 	})
 }
 
-// Helper for testing expiration
-func tokenWithExpiry(d time.Duration) *configv1.UserToken {
-	return configv1.UserToken_builder{
-		AccessToken: proto.String("access"),
-		Expiry:      proto.String(time.Now().Add(d).Format(time.RFC3339)),
-	}.Build()
-}
 
 func TestOAuth2AuthenticateExtra(t *testing.T) {
 	// We need to test OAuth2Authenticator.Authenticate

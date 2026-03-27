@@ -113,7 +113,10 @@ func TestCheckConnection(t *testing.T) {
 	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
 
 	// Start a test server
-	server := http.Server{Handler: http.NotFoundHandler()}
+	server := http.Server{
+		Handler:           http.NotFoundHandler(),
+		ReadHeaderTimeout: 2 * time.Second,
+	}
 	listener, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	go func() {

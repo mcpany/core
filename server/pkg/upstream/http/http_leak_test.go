@@ -69,7 +69,9 @@ func TestHTTPPoolConnectionLeak(t *testing.T) {
 		client, err := pool.Get(ctx)
 		assert.NoError(t, err)
 
-		resp, err := client.Get(server.URL)
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, server.URL, nil)
+		assert.NoError(t, err)
+		resp, err := client.Do(req)
 		if assert.NoError(t, err) {
 			resp.Body.Close()
 		}

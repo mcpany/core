@@ -21,7 +21,7 @@ func TestManager_CreateAndGet(t *testing.T) {
 
 	got := m.GetAlert(created.ID)
 	if got == nil {
-		t.Error("expected to get alert")
+		t.Fatal("expected to get alert")
 	}
 	if got.Title != "Test Alert" {
 		t.Errorf("expected title 'Test Alert', got '%s'", got.Title)
@@ -67,7 +67,7 @@ func TestManager_GetAlertStats(t *testing.T) {
 	m := NewManager()
 	stats := m.GetAlertStats()
 	if stats == nil {
-		t.Error("expected non-nil stats")
+		t.Fatal("expected non-nil stats")
 	}
 
 	// With the seeded data, we should have 1 active critical, 1 active warning, and at least some total today
