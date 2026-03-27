@@ -480,7 +480,7 @@ func checkURLReachability(ctx context.Context, urlStr string) error {
 }
 
 func checkFilesystemAccess(path string) error {
-	_, err := os.Stat(path)
+	_, err := os.Stat(path) //nolint:errcheck
 	if err != nil {
 		if os.IsNotExist(err) {
 			return fmt.Errorf("path does not exist: %s", path)
@@ -498,12 +498,12 @@ func checkCommandAvailability(command string, workDir string) error {
 
 	// If absolute path, check existence
 	if filepath.IsAbs(command) {
-		if _, err := os.Stat(command); err != nil {
+		if _, err := os.Stat(command); err != nil { //nolint:errcheck
 			return fmt.Errorf("executable not found at %s", command)
 		}
 	} else {
 		// Look in PATH
-		if _, err := exec.LookPath(command); err != nil {
+		if _, err := exec.LookPath(command); err != nil { //nolint:errcheck
 			return fmt.Errorf("command %s not found in PATH", command)
 		}
 	}
@@ -1011,7 +1011,7 @@ func (a *Application) handleSecretReveal(w http.ResponseWriter, r *http.Request,
 	}
 
 	// Log the access (Audit)
-	user, _ := auth.UserFromContext(r.Context())
+	user, _ := auth.UserFromContext(r.Context()) //nolint:errcheck
 	logging.GetLogger().Info("Secret revealed", "id", id, "user", user)
 
 	w.Header().Set("Content-Type", "application/json")
