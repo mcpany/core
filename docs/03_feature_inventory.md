@@ -2274,9 +2274,3 @@ support the new **Multi-Modal Behavioral Anchoring** requirement.
   capability revocation.
 - **Recursive Depth-Limit Enforcer (RDLE)**: (P0) Middleware to track and
   enforce hardware-attested handoff depth.
-
-### Update: 2026-06-18
-- **[P0] ACR Hub Controller**: Authoritative coordination for autonomous
-  capability revocation.
-- **[P0] Recursive Depth-Limit Enforcer (RDLE)**: Real-time tracking and
-  enforcement of hardware-attested handoff depth.
