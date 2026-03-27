@@ -1,4 +1,4 @@
-<!-- markdownlint-disable-file -->
+<!-- markdownlint-disable -->
 # UI Roadmap
 
 ## Status: Active Development
