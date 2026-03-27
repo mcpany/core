@@ -479,14 +479,12 @@
 - [ ] **[P0] Identity Lineage Inspector**: Forensic UI for visualizing trace-aware identities and their parentage. (Added: 2026-05-28)
 - [ ] **[P1] Resource Attribution Overlay**: Cost and effort metrics broken down by intent-branch and agent parentage. (Added: 2026-05-28)
 
-#### Upcoming (2026-05-30 Evolution)
-- [ ] **[P0] Reasoning Integrity Arbiter**: Visual indicator for HART-compliant reasoning path authenticity and mirroring alerts. (Added: 2026-05-30)
-- [ ] **[P0] Sharded Context Inspector**: Visual debugger for reasoning-bound context shards and cryptographic anchoring status. (Added: 2026-05-30)
-- [ ] **[P0] Monotonic Task Nonce Monitor**: Real-time visualization of teammate delegation nonces and "Replay" detection alerts. (Added: 2026-05-30)
-- [ ] **[P0] Mesh Sovereignty Dashboard**: Status monitor for CRDT-based local shard synchronization in horizontal swarms. (Added: 2026-05-30)
-
 #### Upcoming (2026-05-29 Evolution)
 - [ ] **[P0] Swarm Anomaly Visualizer**: Real-time Gantt-style chart showing coordinated agent behavior and CSAD neutralization events. (Added: 2026-05-29)
 - [ ] **[P0] Mesh Command Sovereignty Dashboard**: Visual "Chain of Mesh-Command" tracer for inter-teammate mailbox validation. (Added: 2026-05-29)
 - [ ] **[P0] Teammate Handshake Monitor**: Real-time status indicator for ATH identity exchange in horizontal swarms. (Added: 2026-05-29)
 - [ ] **[P0] Context Fragment Auditor**: UI for inspecting and approving sharded mailbox fragments flagged by the mesh-bound isolation engine. (Added: 2026-05-29)
+
+#### Upcoming (2026-05-30 Evolution)
+- [ ] **[P0] Reasoning Integrity Arbiter**: Visual indicator for reasoning path authenticity. (Added: 2026-05-30)
+- [ ] **[P0] Sharded Context Inspector**: Visual debugger for RBCS fragments. (Added: 2026-05-30)
