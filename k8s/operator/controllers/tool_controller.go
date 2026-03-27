@@ -25,7 +25,7 @@ type ToolReconciler struct {
 //+kubebuilder:rbac:groups=mcp.any,resources=tools/finalizers,verbs=update
 
 // Reconcile is part of the main kubernetes reconciliation loop.
-//.
+//
 // Summary: Reconciles a Tool object.
 func (r *ToolReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	tool := &mcpv1alpha1.Tool{}
