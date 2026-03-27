@@ -658,6 +658,11 @@
 - [ ] **[P0] Auditor Attestation Portal**: Interactive workspace for third-party security auditors to review and sign dynamic skill grafts. (Added: 2026-06-27)
 - [ ] **[P1] Reasoning Path Integrity Viewer**: Visual debugger for hardware-signed RPI fragments and semantic hash-chain integrity. (Added: 2026-06-27)
 
+#### Upcoming (2026-06-28 Evolution)
+- [ ] **[P0] ZK-Capability Unmasking Dialog**: Secure UI fragment for hardware-attested unmasking of capability cards. (Added: 2026-06-28)
+- [ ] **[P0] Gossip Convergence Heatmap**: Real-time visualization of mesh-wide CRDT convergence and gossip lag. (Added: 2026-06-28)
+- [ ] **[P0] Multi-Signature Auditor Dashboard**: UI for managing and reviewing third-party auditor signatures for skills. (Added: 2026-06-28)
+
 #### Upcoming (2026-06-23 Evolution)
 - [ ] **[P0] Attention Masking Interface**: UI for configuring and monitoring ADG v2 hardware-attested attention masks. (Added: 2026-06-23)
 - [ ] **[P0] Mission-Root Lineage Visualizer**: Enhanced visualizer for RMRA-compliant headless mission chains. (Added: 2026-06-23)
