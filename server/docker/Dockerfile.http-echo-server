@@ -31,6 +31,9 @@ COPY --from=builder /http-echo-server /http-echo-server
 
 # Expose the port the server will listen on.
 # This is for documentation and can be used by automated systems.
+RUN adduser -D -H -h / -s /sbin/nologin -u 1000 nonroot
+USER nonroot
+
 EXPOSE 8080
 
 # Set the entrypoint for the container.

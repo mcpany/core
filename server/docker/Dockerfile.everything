@@ -28,9 +28,9 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 RUN chown node:node /app
 
 # Use non-root user 'node' provided by the base image
-USER node
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 # Run the server by default
 CMD ["streamableHttp"]
+USER node

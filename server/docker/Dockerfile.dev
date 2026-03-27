@@ -101,4 +101,5 @@ ENV PATH="/workspace/server/tools:${PATH}"
 ENV GOPATH="/workspace/server/tools/.go"
 ENV PATH="$GOPATH/bin:$PATH"
 
+USER user
 CMD ["/bin/bash"]

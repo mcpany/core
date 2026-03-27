@@ -96,5 +96,7 @@ RUN mkdir -p node_modules/.cache test-results playwright-report && \
     chmod -R 777 node_modules/.cache test-results playwright-report
 
 # Default command (can be overridden)
+RUN useradd -m -u 1000 nonroot && chown -R nonroot:nonroot /work
+USER nonroot
 CMD ["npx", "playwright", "test"]
 

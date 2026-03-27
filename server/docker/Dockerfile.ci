@@ -74,4 +74,6 @@ RUN curl -sSL -o googleapis.zip https://github.com/googleapis/googleapis/archive
 # Cleanup
 RUN rm -rf /go/pkg/mod/* /root/.cache
 
+RUN adduser -D -H -h / -s /sbin/nologin -u 1000 nonroot
+USER nonroot
 WORKDIR /workspace

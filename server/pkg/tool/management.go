@@ -4,6 +4,7 @@
 package tool
 
 import (
+	"github.com/mcpany/core/server/pkg/telemetry"
 	"context"
 	"fmt"
 	"strings"
@@ -631,6 +632,9 @@ func (tm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 //   - Runs pre/post-execution hooks.
 //   - Logs execution details.
 func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error) {
+	ctx, span := telemetry.Tracer().Start(ctx, "Manager.ExecuteTool")
+	span.SetAttributes(telemetry.String("tool.name", req.ToolName))
+	defer span.End()
 	log := logging.GetLogger().With("toolName", req.ToolName)
 	log.Debug("Executing tool")
 

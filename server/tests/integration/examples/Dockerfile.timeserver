@@ -22,4 +22,6 @@ RUN pip install -r requirements.txt
 
 COPY timeserver_patch/main.py /service/main.py
 
+RUN useradd -m -u 1000 nonroot && chown -R nonroot:nonroot /srv /service
+USER nonroot
 CMD ["python", "-u", "/service/main.py", "--mcp-stdio"]
