@@ -139,11 +139,15 @@ if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
     "$GOLANGCI_LINT_BIN" cache clean
     go clean -cache -modcache
 
-    # Use standard build tags and enforce the lowest memory threshold to force regular garbage collection
-    # Temporarily remove server sub-pkg chunks from bash script to verify if circleci is parsing bash correctly
-    GOGC=10 GOMEMLIMIT=128MiB "$GOLANGCI_LINT_BIN" run --timeout 20m --fix -j 1 --disable-all --enable errcheck --enable govet ./server/cmd/...
-
-    echo "    golangci-lint OK."
+    # Explicitly bound memory limit for CI execution while bypassing tests to prevent OOM termination.
+    if [[ "${CI:-}" == "true" ]] || [[ -n "${CIRCLECI:-}" ]]; then
+        GOGC=25 GOMEMLIMIT=1024MiB "$GOLANGCI_LINT_BIN" run --timeout 20m --fix -j 2 ./server/cmd/... ./server/pkg/...
+        echo "    golangci-lint CI OK."
+    else
+        # Local or non-constrained runner limits
+        GOGC=50 GOMEMLIMIT=2048MiB "$GOLANGCI_LINT_BIN" run --timeout 20m --fix ./server/...
+        echo "    golangci-lint OK."
+    fi
 else
     echo "    Warning: golangci-lint not found (skipping Go linting)."
     echo "    To enable, add a :golangci_lint_bin data dep or run 'make prepare'."
