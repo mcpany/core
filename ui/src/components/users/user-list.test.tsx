@@ -10,7 +10,7 @@ import { vi } from 'vitest';
 describe('UserList', () => {
     const mockUsers: User[] = [
         {
-            id: 'test-user-1',
+            id: 'test-user-1', profileIds: [], preferences: {},
             roles: ['admin', 'editor'],
             authentication: {
                 apiKey: 'some-key',
@@ -18,7 +18,7 @@ describe('UserList', () => {
             } as any
         },
         {
-            id: 'test-user-2',
+            id: 'test-user-2', profileIds: [], preferences: {},
             roles: ['viewer'],
             authentication: {
                 basicAuth: 'some-hash',
@@ -26,7 +26,7 @@ describe('UserList', () => {
             } as any
         },
         {
-            id: 'test-user-3',
+            id: 'test-user-3', profileIds: [], preferences: {},
             roles: [],
             authentication: {}
         }
