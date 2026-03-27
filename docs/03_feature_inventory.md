@@ -1227,6 +1227,10 @@
 - **HAIL v0.36.1 Lineage Provider**: (P0) Identity extension for the SRM Provider supporting hardware-attested intent lineage for non-repudiable mission-root attestation.
 - **Mission-Root Lineage Attestation (MRLA) Gateway**: (P0) Advanced A2A handshake gateway mandating proof of mission-root lineage before capability discovery.
 
+### Priority Shifts
+- **Semantic Integrity Bridge**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Active Intent-Deconstruction (AID)** to counter semantic splicing.
+- **Ephemeral Privilege Manager (EPM)**: (Re-affirmed P0) Evolving to support mandatory **Capability Garbage Collection (CGC)** for all task-bound leases.
+
 ## Evolution: [2026-06-07] Updates
 
 ### Proposed Additions
