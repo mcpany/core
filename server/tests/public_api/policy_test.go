@@ -42,7 +42,7 @@ upstream_services:
     name: "deny-service"
     mcp_service:
       stdio_connection:
-		command: %q
+        command: %q
         args: ["%s", "."]
     call_policies:
       - default_action: DENY
@@ -98,7 +98,7 @@ upstream_services:
     name: "fs-service"
     mcp_service:
       stdio_connection:
-		command: %q
+        command: %q
         args: ["%s", "."]
     call_policies:
       - default_action: ALLOW
