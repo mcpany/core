@@ -24,7 +24,7 @@ import (
 // messages on the event bus, processes them using the service registry, and
 // publishes the results as ServiceRegistrationResult messages.
 //
-// Summary: Represents a ServiceRegistrationWorker.
+// Summary. Represents a ServiceRegistrationWorker.
 type ServiceRegistrationWorker struct {
 	bus             *bus.Provider
 	serviceRegistry serviceregistry.ServiceRegistryInterface

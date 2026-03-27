@@ -18,7 +18,7 @@ import (
 // It can be configured with a custom dialer for testing or special connection
 // scenarios.
 //
-// Summary: Represents a ConnectionFactory.
+// Summary. Represents a ConnectionFactory.
 type ConnectionFactory struct {
 	dialer func(context.Context, string) (net.Conn, error)
 }
@@ -42,8 +42,6 @@ func NewConnectionFactory() *ConnectionFactory {
 //
 // Parameters.
 //   - dialer: The parameter.
-//   - string): The parameter.
-//   - error): The parameter.
 //
 // Returns.
 //   - None.

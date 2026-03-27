@@ -59,7 +59,7 @@ func httpMethodToString(method configv1.HttpCallDefinition_HttpMethod) (string, 
 // It handles the registration of tools defined in the service configuration
 // and manages connection pooling for HTTP requests.
 //
-// Summary: Represents a Upstream.
+// Summary. Represents a Upstream.
 type Upstream struct {
 	poolManager *pool.Manager
 	serviceID   string

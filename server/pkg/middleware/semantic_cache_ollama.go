@@ -15,7 +15,7 @@ import (
 
 // OllamaEmbeddingProvider implements EmbeddingProvider for Ollama.
 //
-// Summary: Provides an interface to generate text embeddings using the Ollama API.
+// Summary. Provides an interface to generate text embeddings using the Ollama API.
 type OllamaEmbeddingProvider struct {
 	baseURL string
 	model   string

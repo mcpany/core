@@ -24,7 +24,7 @@ import (
 
 // AuditMiddleware provides audit logging for tool executions.
 //
-// Summary: Middleware for auditing tool execution.
+// Summary. Middleware for auditing tool execution.
 type AuditMiddleware struct {
 	mu          sync.RWMutex
 	config      *configv1.AuditConfig

@@ -24,7 +24,7 @@ import (
 
 // Upstream implements the upstream.Upstream interface for SQL databases.
 //
-// Summary: Represents a Upstream.
+// Summary. Represents a Upstream.
 type Upstream struct {
 	db *sql.DB
 	mu sync.Mutex

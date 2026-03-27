@@ -16,7 +16,7 @@ import (
 
 // SessionState represents the shared state for a recursive context session.
 //
-// Summary: Represents a SessionState.
+// Summary. Represents a SessionState.
 type SessionState struct {
 	ID        string                 `json:"id"`
 	Data      map[string]interface{} `json:"data"`
@@ -26,7 +26,7 @@ type SessionState struct {
 
 // RecursiveContextManager manages the shared context sessions (Blackboard).
 //
-// Summary: Represents a RecursiveContextManager.
+// Summary. Represents a RecursiveContextManager.
 type RecursiveContextManager struct {
 	mu       sync.RWMutex
 	sessions map[string]*SessionState

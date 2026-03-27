@@ -11,7 +11,7 @@ import (
 
 // Manager orchestrates resilience features like circuit breakers, retries, and timeouts.
 //
-// Summary: Central manager for applying resilience patterns to operations.
+// Summary. Central manager for applying resilience patterns to operations.
 type Manager struct {
 	circuitBreaker *CircuitBreaker
 	retry          *Retry

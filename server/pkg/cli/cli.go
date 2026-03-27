@@ -12,7 +12,7 @@ import (
 
 // JSONExecutor is a struct that sends JSON-encoded data to a writer and decodes JSON-encoded data from a reader.
 //
-// Summary: JSONExecutor is a struct that sends JSON-encoded data to a writer and decodes JSON-encoded data from a reader.
+// Summary. JSONExecutor is a struct that sends JSON-encoded data to a writer and decodes JSON-encoded data from a reader.
 type JSONExecutor struct {
 	// in is the writer where JSON commands are written to (e.g. stdin of a process).
 	in io.Writer

@@ -22,7 +22,7 @@ import (
 //
 // It manages checking for updates on GitHub and applying them to the local executable.
 //
-// Summary: Represents a Updater.
+// Summary. Represents a Updater.
 type Updater struct {
 	client     *github.Client
 	httpClient *http.Client

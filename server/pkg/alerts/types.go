@@ -39,7 +39,7 @@ const (
 
 // Alert represents a system alert.
 //
-// Summary: Represents a Alert.
+// Summary. Represents a Alert.
 type Alert struct {
 	ID        string    `json:"id"`
 	Title     string    `json:"title"`
@@ -53,7 +53,7 @@ type Alert struct {
 
 // AlertRule defines a condition for triggering an alert.
 //
-// Summary: Represents a AlertRule.
+// Summary. Represents a AlertRule.
 type AlertRule struct {
 	ID          string    `json:"id"`
 	Name        string    `json:"name"`
@@ -68,7 +68,7 @@ type AlertRule struct {
 
 // AlertStats represents aggregated statistics for alerts.
 //
-// Summary: Represents a AlertStats.
+// Summary. Represents a AlertStats.
 type AlertStats struct {
 	ActiveCritical int    `json:"activeCritical"`
 	ActiveWarning  int    `json:"activeWarning"`

@@ -34,7 +34,7 @@ var ErrServiceAlreadyRegistered = errors.New("service already registered")
 // It manages the registration, lifecycle, and discovery of upstream services
 // and their associated capabilities (tools, resources, prompts).
 //
-// Summary: Represents a ServiceRegistryInterface.
+// Summary. Represents a ServiceRegistryInterface.
 type ServiceRegistryInterface interface { //nolint:revive
 	// RegisterService registers a new upstream service based on the provided configuration.
 	//
@@ -106,7 +106,7 @@ type ServiceRegistryInterface interface { //nolint:revive
 // It serves as the central hub for managing upstream services, coordinating
 // with tool, prompt, and resource managers.
 //
-// Summary: Represents a ServiceRegistry.
+// Summary. Represents a ServiceRegistry.
 type ServiceRegistry struct {
 	mu              sync.RWMutex
 	serviceConfigs  map[string]*config.UpstreamServiceConfig

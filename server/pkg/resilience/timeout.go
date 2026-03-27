@@ -11,7 +11,7 @@ import (
 
 // Timeout implements a timeout policy for operations.
 //
-// Summary: Enforces a maximum duration for operations.
+// Summary. Enforces a maximum duration for operations.
 type Timeout struct {
 	duration *durationpb.Duration
 }

@@ -10,7 +10,7 @@ import (
 
 // EmbeddingProvider defines the interface for fetching text embeddings.
 //
-// Summary: Interface for services that can generate vector embeddings from text.
+// Summary. Interface for services that can generate vector embeddings from text.
 type EmbeddingProvider interface {
 	// Embed generates an embedding vector for the given text.
 	//
@@ -26,7 +26,7 @@ type EmbeddingProvider interface {
 
 // VectorStore defines the interface for storing and searching vectors.
 //
-// Summary: Interface for storage backends that support vector similarity search.
+// Summary. Interface for storage backends that support vector similarity search.
 type VectorStore interface {
 	// Add adds a new entry to the vector store.
 	//
@@ -64,7 +64,7 @@ type VectorStore interface {
 
 // SemanticCache implements a semantic cache using embeddings and cosine similarity.
 //
-// Summary: A cache implementation that uses semantic similarity rather than exact key matching.
+// Summary. A cache implementation that uses semantic similarity rather than exact key matching.
 type SemanticCache struct {
 	provider  EmbeddingProvider
 	store     VectorStore

@@ -23,9 +23,9 @@ import (
 
 // RegistrationServer implements the gRPC server for service registration.
 //
-// Summary: Handles gRPC requests for registering and managing upstream services.
+// Summary. Handles gRPC requests for registering and managing upstream services.
 //
-// Side Effects:
+// Side Effects.
 //   - Publishes messages to the event bus.
 //   - Interacts with the authentication manager.
 type RegistrationServer struct {

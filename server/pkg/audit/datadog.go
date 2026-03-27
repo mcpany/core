@@ -26,7 +26,7 @@ const (
 
 // DatadogAuditStore sends audit logs to Datadog.
 //
-// Summary: Asynchronous audit store that forwards logs to Datadog's API.
+// Summary. Asynchronous audit store that forwards logs to Datadog's API.
 type DatadogAuditStore struct {
 	config *configv1.DatadogConfig
 	client *http.Client

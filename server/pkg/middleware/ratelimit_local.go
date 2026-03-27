@@ -14,7 +14,7 @@ import (
 
 // LocalLimiter is an in-memory implementation of Limiter.
 //
-// Summary: Rate limiter implementation using golang.org/x/time/rate.
+// Summary. Rate limiter implementation using golang.org/x/time/rate.
 type LocalLimiter struct {
 	*rate.Limiter
 }
@@ -70,7 +70,7 @@ func (l *LocalLimiter) Update(rps float64, burst int) {
 
 // LocalStrategy implements RateLimitStrategy for local in-memory rate limiting.
 //
-// Summary: Strategy for creating local rate limiters.
+// Summary. Strategy for creating local rate limiters.
 type LocalStrategy struct{}
 
 // NewLocalStrategy provides newlocalstrategy functionality.

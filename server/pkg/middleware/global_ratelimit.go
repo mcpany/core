@@ -26,7 +26,7 @@ import (
 
 // GlobalRateLimitMiddleware provides rate limiting functionality for all MCP requests.
 //
-// Summary: Middleware that enforces global rate limits on MCP requests across the entire server.
+// Summary. Middleware that enforces global rate limits on MCP requests across the entire server.
 type GlobalRateLimitMiddleware struct {
 	mu     sync.RWMutex
 	config *configv1.RateLimitConfig

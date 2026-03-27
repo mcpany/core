@@ -14,7 +14,7 @@ import (
 
 // Manager handles the lifecycle and resolution of profiles.
 //
-// Summary: Manages profile definitions and resolution.
+// Summary. Manages profile definitions and resolution.
 type Manager struct {
 	mu       sync.RWMutex
 	profiles map[string]*configv1.ProfileDefinition

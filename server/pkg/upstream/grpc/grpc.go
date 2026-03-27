@@ -41,7 +41,7 @@ import (
 // It uses gRPC reflection to discover services and methods, and creates tools
 // for them. It also manages a connection pool and a cache for reflection data.
 //
-// Summary: Represents a Upstream.
+// Summary. Represents a Upstream.
 type Upstream struct {
 	poolManager     *pool.Manager
 	reflectionCache *ttlcache.Cache[string, *descriptorpb.FileDescriptorSet]

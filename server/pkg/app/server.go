@@ -129,7 +129,7 @@ func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 
 // RunOptions configuration for starting the MCP Any application.
 //
-// Summary: Options for configuring the application runtime.
+// Summary. Options for configuring the application runtime.
 //
 // Fields:
 //   - Ctx: context.Context. The context for the application.
@@ -161,7 +161,7 @@ type RunOptions struct {
 
 // Runner defines the interface for running the application.
 //
-// Summary: Interface for application execution and management.
+// Summary. Interface for application execution and management.
 type Runner interface {
 	// Run starts the application with the given options.
 	//
@@ -190,7 +190,7 @@ type Runner interface {
 
 // Application is the main application struct, holding the dependencies and logic for the MCP Any server.
 //
-// Summary: The main application container.
+// Summary. The main application container.
 //
 // Fields:
 //   - PromptManager: prompt.ManagerInterface. Manages AI prompts.

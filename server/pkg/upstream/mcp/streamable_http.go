@@ -44,7 +44,7 @@ var (
 // mcp.ClientSession. This is used primarily for testing, allowing mock sessions
 // to be injected.
 //
-// Summary: Represents a ClientSession.
+// Summary. Represents a ClientSession.
 type ClientSession interface {
 	// ListTools lists the tools available in the session.
 	//
@@ -106,9 +106,6 @@ type ClientSession interface {
 //
 // Parameters.
 //   - f: The parameter.
-//   - stdioConfig: The parameter.
-//   - httpAddress: The parameter.
-//   - httpClient: The parameter.
 //
 // Returns.
 //   - None.
@@ -135,10 +132,6 @@ func SetNewClientForTesting(f func(impl *mcp.Implementation) *mcp.Client) {
 //
 // Parameters.
 //   - f: The parameter.
-//   - ctx: The parameter.
-//   - transport: The parameter.
-//   - roots: The parameter.
-//   - error): The parameter.
 //
 // Returns.
 //   - None.
@@ -151,7 +144,7 @@ func SetConnectForTesting(f func(client *mcp.Client, ctx context.Context, transp
 // its tools, prompts, and resources, and registers them with the current server,
 // effectively acting as a proxy or aggregator.
 //
-// Summary: Represents a Upstream.
+// Summary. Represents a Upstream.
 type Upstream struct {
 	sessionRegistry *SessionRegistry
 	// BundleBaseDir is the directory where bundles are extracted.
@@ -1301,7 +1294,7 @@ func (rt *authenticatedRoundTripper) RoundTrip(req *http.Request) (*http.Respons
 
 // StreamableHTTP implements the mcp.Transport interface for HTTP connections.
 //
-// Summary: Represents a StreamableHTTP.
+// Summary. Represents a StreamableHTTP.
 type StreamableHTTP struct {
 	// Address is the HTTP address of the MCP service.
 	Address string

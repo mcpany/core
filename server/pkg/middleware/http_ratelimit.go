@@ -17,7 +17,7 @@ import (
 
 // HTTPRateLimitMiddleware provides global rate limiting for HTTP endpoints.
 //
-// Summary: Middleware for rate limiting HTTP requests based on IP address.
+// Summary. Middleware for rate limiting HTTP requests based on IP address.
 type HTTPRateLimitMiddleware struct {
 	limiters   *ttlcache.Cache[string, *rate.Limiter]
 	rps        rate.Limit

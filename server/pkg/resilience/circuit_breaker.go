@@ -33,7 +33,7 @@ const (
 // CircuitBreaker implements the circuit breaker pattern. It prevents the
 // application from performing operations that are likely to fail.
 //
-// Summary: Represents a CircuitBreaker.
+// Summary. Represents a CircuitBreaker.
 type CircuitBreaker struct {
 	mutex sync.Mutex
 
@@ -224,7 +224,7 @@ func (cb *CircuitBreaker) onFailure(originState State) {
 
 // CircuitBreakerOpenError is returned when the circuit breaker is in the Open state.
 //
-// Summary: Represents a CircuitBreakerOpenError.
+// Summary. Represents a CircuitBreakerOpenError.
 type CircuitBreakerOpenError struct{}
 
 // Error provides error functionality.

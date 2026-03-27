@@ -15,7 +15,7 @@ import (
 
 // CSRFMiddleware protects against Cross-Site Request Forgery attacks.
 //
-// Summary: Middleware that blocks unauthorized cross-origin requests.
+// Summary. Middleware that blocks unauthorized cross-origin requests.
 type CSRFMiddleware struct {
 	allowedOrigins map[string]bool
 	mu             sync.RWMutex

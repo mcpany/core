@@ -13,7 +13,7 @@ import (
 
 // ResilienceMiddleware provides circuit breaker and retry functionality for tool executions.
 //
-// Summary: Middleware that wraps tool executions with circuit breakers, retries, and timeouts.
+// Summary. Middleware that wraps tool executions with circuit breakers, retries, and timeouts.
 type ResilienceMiddleware struct {
 	toolManager tool.ManagerInterface
 	managers    sync.Map // map[string]*resilience.Manager (serviceID -> Manager)

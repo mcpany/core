@@ -14,7 +14,7 @@ import (
 
 // LoginRequest is the request body for login.
 //
-// Summary: Represents a LoginRequest.
+// Summary. Represents a LoginRequest.
 type LoginRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -22,7 +22,7 @@ type LoginRequest struct {
 
 // LoginResponse is the response body for login.
 //
-// Summary: Represents a LoginResponse.
+// Summary. Represents a LoginResponse.
 type LoginResponse struct {
 	Token string `json:"token"`
 }

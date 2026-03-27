@@ -12,7 +12,7 @@ import (
 
 // Metric represents a single dashboard metric to be displayed in the UI.
 //
-// Summary: Data structure for dashboard metrics.
+// Summary. Data structure for dashboard metrics.
 //
 // It contains the label, value, trend direction, and other visual metadata.
 type Metric struct {

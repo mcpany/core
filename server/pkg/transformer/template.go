@@ -15,7 +15,7 @@ import (
 // TextTemplate provides a simple wrapper around Go's standard text/template
 // for rendering strings with dynamic data.
 //
-// Summary: High-performance template engine using fasttemplate.
+// Summary. High-performance template engine using fasttemplate.
 type TextTemplate struct {
 	template *fasttemplate.Template
 	raw      string

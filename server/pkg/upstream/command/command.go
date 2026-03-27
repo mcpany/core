@@ -32,7 +32,7 @@ import (
 // It discovers and registers tools based on a list of commands defined in the
 // service configuration.
 //
-// Summary: Represents a Upstream.
+// Summary. Represents a Upstream.
 type Upstream struct {
 	mu      sync.Mutex
 	checker health.Checker

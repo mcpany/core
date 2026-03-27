@@ -12,7 +12,7 @@ import (
 
 // GRPCProvider discovers services via gRPC reflection.
 //
-// Summary: Represents a GRPCProvider.
+// Summary. Represents a GRPCProvider.
 type GRPCProvider struct {
 	Endpoint string // e.g., "localhost:50051"
 }

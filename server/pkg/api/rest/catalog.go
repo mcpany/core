@@ -12,7 +12,7 @@ import (
 
 // CatalogServer implements the CatalogService API.
 //
-// Summary: Server implementation for the Catalog Service.
+// Summary. Server implementation for the Catalog Service.
 //
 // It handles requests to list available services from the dynamic catalog.
 type CatalogServer struct {

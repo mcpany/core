@@ -16,7 +16,7 @@ import (
 
 // PostgresVectorStore implements VectorStore using PostgreSQL and pgvector.
 //
-// Summary: Provides vector storage capabilities using a PostgreSQL database with the pgvector extension.
+// Summary. Provides vector storage capabilities using a PostgreSQL database with the pgvector extension.
 type PostgresVectorStore struct {
 	db *sql.DB
 }

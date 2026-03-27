@@ -17,7 +17,7 @@ import (
 // SQLiteVectorStore implements VectorStore using SQLite for persistence
 // and an in-memory cache for fast search.
 //
-// Summary: A hybrid vector store that uses SQLite for persistence and an in-memory structure for search.
+// Summary. A hybrid vector store that uses SQLite for persistence and an in-memory structure for search.
 type SQLiteVectorStore struct {
 	memoryStore *SimpleVectorStore
 	db          *sql.DB

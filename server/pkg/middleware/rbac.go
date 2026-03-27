@@ -13,7 +13,7 @@ import (
 
 // RBACMiddleware provides middleware for Role-Based Access Control.
 //
-// Summary: Middleware for enforcing role-based access control policies.
+// Summary. Middleware for enforcing role-based access control policies.
 type RBACMiddleware struct {
 	enforcer *auth.RBACEnforcer
 }

@@ -15,7 +15,7 @@ import (
 
 // Config holds the configuration for the worker.
 //
-// Summary: Configuration for worker pool.
+// Summary. Configuration for worker pool.
 type Config struct {
 	MaxWorkers   int
 	MaxQueueSize int
@@ -23,7 +23,7 @@ type Config struct {
 
 // Worker is responsible for processing jobs from the bus.
 //
-// Summary: Processes background jobs.
+// Summary. Processes background jobs.
 type Worker struct {
 	busProvider *bus.Provider
 	pond        pond.Pool

@@ -25,7 +25,7 @@ const (
 
 // SplunkAuditStore sends audit logs to Splunk HTTP Event Collector.
 //
-// Summary: Asynchronous audit store that pushes logs to Splunk via HEC.
+// Summary. Asynchronous audit store that pushes logs to Splunk via HEC.
 type SplunkAuditStore struct {
 	config *configv1.SplunkConfig
 	client *http.Client

@@ -30,7 +30,7 @@ type compiledRule struct {
 
 // PolicyHook implements PreCallHook using CallPolicy.
 //
-// Summary: Pre-call hook that enforces call policies defined in configuration.
+// Summary. Pre-call hook that enforces call policies defined in configuration.
 type PolicyHook struct {
 	policy        *configv1.CallPolicy
 	compiledRules []compiledRule
@@ -149,7 +149,7 @@ func (h *PolicyHook) ExecutePre(
 
 // WebhookClient handles the communication with an external webhook.
 //
-// Summary: Client for sending CloudEvents to external webhooks.
+// Summary. Client for sending CloudEvents to external webhooks.
 type WebhookClient struct {
 	url     string
 	timeout time.Duration
@@ -248,7 +248,7 @@ func (c *WebhookClient) Call(ctx context.Context, eventType string, data any) (*
 
 // WebhookHook supports modification of requests and responses via external webhook using CloudEvents.
 //
-// Summary: Hook implementation that delegates logic to an external webhook.
+// Summary. Hook implementation that delegates logic to an external webhook.
 type WebhookHook struct {
 	client *WebhookClient
 }
@@ -418,7 +418,7 @@ func (h *WebhookHook) ExecutePost(
 
 // WebhookStatus represents the status returned by the webhook.
 //
-// Summary: Status information included in the webhook response.
+// Summary. Status information included in the webhook response.
 type WebhookStatus struct {
 	// Code is the status code returned by the webhook.
 	Code int `json:"code"`
@@ -428,7 +428,7 @@ type WebhookStatus struct {
 
 // SigningRoundTripper signs the request using the webhook signer.
 //
-// Summary: HTTP Transport that adds HMAC signatures to outgoing requests.
+// Summary. HTTP Transport that adds HMAC signatures to outgoing requests.
 type SigningRoundTripper struct {
 	signer *webhook.Webhook
 	base   http.RoundTripper

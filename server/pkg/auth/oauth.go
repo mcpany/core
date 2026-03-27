@@ -16,7 +16,7 @@ import (
 // authentication using OpenID Connect (OIDC). It validates JWTs (JSON Web
 // Tokens) presented in the HTTP Authorization header.
 //
-// Summary: Represents a OAuth2Authenticator.
+// Summary. Represents a OAuth2Authenticator.
 type OAuth2Authenticator struct {
 	verifier  *oidc.IDTokenVerifier
 	audiences []string

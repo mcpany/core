@@ -18,7 +18,7 @@ import (
 
 // DebugEntry represents a captured HTTP request/response.
 //
-// Summary: Data structure holding details of a captured HTTP transaction.
+// Summary. Data structure holding details of a captured HTTP transaction.
 type DebugEntry struct {
 	ID              string        `json:"id"`
 	TraceID         string        `json:"trace_id"`
@@ -37,7 +37,7 @@ type DebugEntry struct {
 
 // Debugger monitors and records traffic for inspection.
 //
-// Summary: Middleware that captures recent HTTP traffic for debugging purposes.
+// Summary. Middleware that captures recent HTTP traffic for debugging purposes.
 type Debugger struct {
 	ring        *ring.Ring
 	mu          sync.RWMutex

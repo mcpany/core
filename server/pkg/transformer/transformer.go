@@ -18,7 +18,7 @@ import (
 // structured string using a Go template. It supports multiple output formats
 // specified by the template, such as JSON, XML, or plain text.
 //
-// Summary: Data transformation engine using Go templates with caching and pooling optimization.
+// Summary. Data transformation engine using Go templates with caching and pooling optimization.
 type Transformer struct {
 	cache sync.Map
 	pool  sync.Pool

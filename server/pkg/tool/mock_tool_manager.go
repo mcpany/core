@@ -20,7 +20,7 @@ import (
 
 // MockManagerInterface is a mock of ManagerInterface interface.
 //
-// Summary: Mock tool manager for testing.
+// Summary. Mock tool manager for testing.
 type MockManagerInterface struct {
 	ctrl     *gomock.Controller
 	recorder *MockManagerInterfaceMockRecorder
@@ -29,7 +29,7 @@ type MockManagerInterface struct {
 
 // MockManagerInterfaceMockRecorder is the mock recorder for MockManagerInterface.
 //
-// Summary: Recorder for MockManagerInterface expectations.
+// Summary. Recorder for MockManagerInterface expectations.
 type MockManagerInterfaceMockRecorder struct {
 	mock *MockManagerInterface
 }

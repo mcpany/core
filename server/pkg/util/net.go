@@ -20,7 +20,7 @@ import (
 
 // IPResolver defines an interface for looking up IP addresses.
 //
-// Summary: Interface for IP address resolution.
+// Summary. Interface for IP address resolution.
 //
 // It matches the signature of net.Resolver.LookupIP.
 type IPResolver interface {
@@ -41,7 +41,7 @@ type IPResolver interface {
 
 // NetDialer defines an interface for dialing network connections.
 //
-// Summary: Interface for network dialing.
+// Summary. Interface for network dialing.
 //
 // It matches the signature of net.Dialer.DialContext.
 type NetDialer interface {
@@ -62,7 +62,7 @@ type NetDialer interface {
 
 // SafeDialer provides control over outbound connections to prevent Server-Side Request Forgery (SSRF).
 //
-// Summary: Secure network dialer preventing SSRF.
+// Summary. Secure network dialer preventing SSRF.
 type SafeDialer struct {
 	// AllowLoopback allows connections to loopback addresses (127.0.0.1, ::1).
 	AllowLoopback bool

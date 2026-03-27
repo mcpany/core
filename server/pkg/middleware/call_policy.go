@@ -15,7 +15,7 @@ import (
 // CallPolicyMiddleware is a middleware that enforces call policies (allow/deny)
 // based on tool name and arguments.
 //
-// Summary: Middleware that evaluates and enforces security policies for tool executions.
+// Summary. Middleware that evaluates and enforces security policies for tool executions.
 type CallPolicyMiddleware struct {
 	toolManager tool.ManagerInterface
 }

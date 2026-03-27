@@ -19,7 +19,7 @@ import (
 
 // SQLiteAuditStore writes audit logs to a SQLite database.
 //
-// Summary: Stores audit logs in a local SQLite database with tamper-evident hashing.
+// Summary. Stores audit logs in a local SQLite database with tamper-evident hashing.
 type SQLiteAuditStore struct {
 	db *sql.DB
 	mu sync.Mutex

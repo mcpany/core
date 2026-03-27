@@ -14,7 +14,7 @@ import (
 
 // WebhookConfig represents a configured webhook.
 //
-// Summary: Webhook configuration definition.
+// Summary. Webhook configuration definition.
 //
 // Fields:
 //   - ID (string): Unique identifier for the webhook.
@@ -34,7 +34,7 @@ type WebhookConfig struct {
 
 // Manager manages webhooks.
 //
-// Summary: Webhook lifecycle manager.
+// Summary. Webhook lifecycle manager.
 type Manager struct {
 	mu         sync.RWMutex
 	webhooks   map[string]*WebhookConfig

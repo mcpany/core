@@ -24,7 +24,7 @@ type tokenKey struct {
 
 // Store implements storage.Storage in memory.
 //
-// Summary: A thread-safe, in-memory implementation of the Storage interface, primarily for testing.
+// Summary. A thread-safe, in-memory implementation of the Storage interface, primarily for testing.
 type Store struct {
 	mu                 sync.RWMutex
 	services           map[string]*configv1.UpstreamServiceConfig

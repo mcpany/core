@@ -11,7 +11,7 @@ import (
 
 // Limiter interface defines the methods required for a rate limiter.
 //
-// Summary: Represents a Limiter.
+// Summary. Represents a Limiter.
 type Limiter interface {
 	// Allow checks if the request is allowed.
 	//
@@ -37,7 +37,7 @@ type Limiter interface {
 
 // RateLimitStrategy defines the interface for creating rate limiters.
 //
-// Summary: Represents a RateLimitStrategy.
+// Summary. Represents a RateLimitStrategy.
 type RateLimitStrategy interface {
 	// Create creates a new Limiter instance.
 	//

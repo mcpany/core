@@ -9,7 +9,7 @@ import (
 
 // Broadcaster manages a set of subscribers and broadcasts messages to them.
 //
-// Summary: Represents a Broadcaster.
+// Summary. Represents a Broadcaster.
 type Broadcaster struct {
 	mu          sync.RWMutex
 	subscribers map[chan any]struct{}

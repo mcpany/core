@@ -12,7 +12,7 @@ import (
 // Session defines the interface for tools to interact with the client session.
 // It includes capabilities like Sampling (CreateMessage) and Roots inspection.
 //
-// Summary: Represents a Session.
+// Summary. Represents a Session.
 type Session interface {
 	// CreateMessage requests a message creation (sampling) from the client.
 	//

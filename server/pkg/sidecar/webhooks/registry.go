@@ -11,7 +11,7 @@ import (
 // Handler defines the interface for handling webhook requests.
 // Implementations of this interface process incoming webhook events.
 //
-// Summary: Interface for webhook handlers.
+// Summary. Interface for webhook handlers.
 type Handler interface {
 	// Handle processes the webhook request.
 	//
@@ -31,7 +31,7 @@ type Handler interface {
 // Registry manages the registration and retrieval of system webhooks.
 // It provides a thread-safe mechanism to store and lookup handlers by name.
 //
-// Summary: Thread-safe registry for webhook handlers.
+// Summary. Thread-safe registry for webhook handlers.
 type Registry struct {
 	mu    sync.RWMutex
 	hooks map[string]Handler

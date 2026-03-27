@@ -23,7 +23,6 @@ var jsonWalkerBufferPool = sync.Pool{
 // Parameters.
 //   - input: The parameter.
 //   - visitor: The parameter.
-//   - bool): The parameter.
 //
 // Returns.
 //   - result: The result.
@@ -133,7 +132,6 @@ func WalkJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []by
 // Parameters.
 //   - input: The parameter.
 //   - visitor: The parameter.
-//   - bool): The parameter.
 //
 // Returns.
 //   - result: The result.

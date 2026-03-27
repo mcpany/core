@@ -15,7 +15,7 @@ import (
 
 // NoOpToolManager is a no-op implementation of tool.ManagerInterface.
 //
-// Summary: A tool manager that does nothing.
+// Summary. A tool manager that does nothing.
 type NoOpToolManager struct{}
 
 // AddTool provides addtool functionality.
@@ -211,7 +211,7 @@ func (m *NoOpToolManager) GetToolCountForService(_ string) int {
 
 // NoOpPromptManager is a no-op implementation of prompt.ManagerInterface.
 //
-// Summary: A prompt manager that does nothing.
+// Summary. A prompt manager that does nothing.
 type NoOpPromptManager struct{}
 
 // AddPrompt provides addprompt functionality.
@@ -283,7 +283,7 @@ func (m *NoOpPromptManager) SetMCPServer(_ prompt.MCPServerProvider) {}
 
 // NoOpResourceManager is a no-op implementation of resource.ManagerInterface.
 //
-// Summary: A resource manager that does nothing.
+// Summary. A resource manager that does nothing.
 type NoOpResourceManager struct{}
 
 // GetResource provides getresource functionality.

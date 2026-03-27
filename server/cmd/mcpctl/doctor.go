@@ -21,7 +21,7 @@ import (
 
 // DoctorRunner runs the doctor command checks.
 //
-// Summary: Component to run system health diagnostics.
+// Summary. Component to run system health diagnostics.
 type DoctorRunner struct {
 	Out        io.Writer
 	Fs         afero.Fs

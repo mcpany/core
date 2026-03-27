@@ -15,7 +15,7 @@ import (
 // methods for listing available prompts and retrieving a specific prompt by
 // name.
 //
-// Summary: Represents a Service.
+// Summary. Represents a Service.
 type Service struct {
 	promptManager ManagerInterface
 	mcpServer     *mcp.Server

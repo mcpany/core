@@ -16,7 +16,7 @@ import (
 
 // RedisStrategy implements RateLimitStrategy for Redis-based rate limiting.
 //
-// Summary: Strategy for creating Redis-backed distributed rate limiters.
+// Summary. Strategy for creating Redis-backed distributed rate limiters.
 type RedisStrategy struct {
 	// redisClients caches Redis clients per config. Key is configHash.
 	redisClients sync.Map

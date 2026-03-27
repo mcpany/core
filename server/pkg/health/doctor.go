@@ -13,7 +13,7 @@ import (
 
 // CheckResult represents a single check result.
 //
-// Summary: The outcome of a single health check execution.
+// Summary. The outcome of a single health check execution.
 type CheckResult struct {
 	Status  string `json:"status"`
 	Message string `json:"message,omitempty"`
@@ -28,7 +28,7 @@ type CheckFunc func(context.Context) CheckResult
 
 // DoctorReport represents the full doctor report.
 //
-// Summary: Aggregated health report containing all check results.
+// Summary. Aggregated health report containing all check results.
 type DoctorReport struct {
 	Status    string                 `json:"status"`
 	Timestamp time.Time              `json:"timestamp"`
@@ -37,7 +37,7 @@ type DoctorReport struct {
 
 // Doctor is the health check handler.
 //
-// Summary: Registry and handler for system health checks (Doctor).
+// Summary. Registry and handler for system health checks (Doctor).
 type Doctor struct {
 	checks     map[string]CheckFunc
 	mu         sync.RWMutex

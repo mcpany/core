@@ -18,7 +18,7 @@ import (
 
 // Store implements config.Store using PostgreSQL.
 //
-// Summary: PostgreSQL storage implementation.
+// Summary. PostgreSQL storage implementation.
 type Store struct {
 	db *DB
 }

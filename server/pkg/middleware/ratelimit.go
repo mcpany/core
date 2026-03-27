@@ -31,7 +31,7 @@ var metricRateLimitRequestsTotal = []string{"rate_limit", "requests_total"}
 // RateLimitMiddleware is a tool execution middleware that provides rate limiting
 // functionality for upstream services.
 //
-// Summary: Middleware for rate limiting tool execution.
+// Summary. Middleware for rate limiting tool execution.
 type RateLimitMiddleware struct {
 	toolManager tool.ManagerInterface
 	tokenizer   tokenizer.Tokenizer

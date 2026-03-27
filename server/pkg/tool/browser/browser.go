@@ -17,7 +17,7 @@ import (
 // It is an interface so tests can inject a lightweight implementation without
 // requiring a real browser installation.
 //
-// Summary: Represents a PageFetcher.
+// Summary. Represents a PageFetcher.
 type PageFetcher interface {
 	// FetchText retrieves the text content of a URL.
 	//
@@ -41,7 +41,7 @@ type PageFetcher interface {
 
 // Provider implements a basic browser automation tool.
 //
-// Summary: Tool provider for browsing web pages.
+// Summary. Tool provider for browsing web pages.
 type Provider struct {
 	fetcher PageFetcher // nil → default playwrightFetcher
 }

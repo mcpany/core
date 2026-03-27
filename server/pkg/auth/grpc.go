@@ -16,7 +16,7 @@ import (
 // credentials.PerRPCCredentials interface. It allows applying upstream
 // authentication headers to outgoing gRPC requests.
 //
-// Summary: Represents a PerRPCCredentials.
+// Summary. Represents a PerRPCCredentials.
 type PerRPCCredentials struct {
 	authenticator UpstreamAuthenticator
 }

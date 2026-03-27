@@ -598,7 +598,7 @@ func RedactDSN(dsn string) string {
 // SecretRedactor handles redaction of secrets from text.
 // It is optimized to pre-process the list of secrets once and reuse the configuration.
 //
-// Summary: Optimized text redactor for known secrets.
+// Summary. Optimized text redactor for known secrets.
 type SecretRedactor struct {
 	replacer *strings.Replacer
 }

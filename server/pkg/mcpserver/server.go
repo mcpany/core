@@ -61,7 +61,7 @@ var AddReceivingMiddlewareHook func(name string)
 // tools, prompts, resources, and services. It uses an internal router to delegate requests to the appropriate
 // handlers and communicates with backend workers via an event bus.
 //
-// Summary: Represents a Server.
+// Summary. Represents a Server.
 type Server struct {
 	server          *mcp.Server
 	router          *Router
@@ -1099,7 +1099,7 @@ func (l LazyRedact) LogValue() slog.Value {
 // It avoids expensive serialization of large payloads (e.g. images, huge text)
 // and lazily computes the string representation only when logging is enabled.
 //
-// Summary: Represents a LazyLogResult.
+// Summary. Represents a LazyLogResult.
 type LazyLogResult struct {
 	Value any
 }

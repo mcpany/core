@@ -72,7 +72,7 @@ type Bus[T any] interface {
 // message type and topic without needing to manage the lifecycle of the bus
 // instances themselves.
 //
-// Summary: Represents a Provider.
+// Summary. Represents a Provider.
 type Provider struct {
 	buses  *xsync.Map[string, any]
 	config *bus.MessageBus

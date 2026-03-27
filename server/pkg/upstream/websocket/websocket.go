@@ -34,7 +34,7 @@ import (
 // are exposed via a WebSocket connection. It manages a connection pool and
 // registers tools based on the service configuration.
 //
-// Summary: Represents a Upstream.
+// Summary. Represents a Upstream.
 type Upstream struct {
 	poolManager *pool.Manager
 	serviceID   string

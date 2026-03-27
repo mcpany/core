@@ -20,7 +20,7 @@ import (
 // It provides a built-in tool ("mcp:list_roots") that allows the server to query the client
 // for available filesystem roots.
 //
-// Summary: Represents a RootsTool.
+// Summary. Represents a RootsTool.
 type RootsTool struct {
 	tool    *v1.Tool
 	mcpTool *mcp.Tool

@@ -68,7 +68,7 @@ func (w *peerConnectionWrapper) IsHealthy(_ context.Context) bool {
 // WebrtcTool implements the Tool interface for a tool that is exposed via a
 // WebRTC data channel.
 //
-// Summary: WebRTC Tool implementation.
+// Summary. WebRTC Tool implementation.
 //
 // It handles the signaling and establishment of a peer connection to communicate
 // with the remote service. This is useful for scenarios requiring low-latency,

@@ -11,9 +11,6 @@ TYPE_PATTERN = re.compile(r'^type\s+([A-Z][a-zA-Z0-9_]*)\s+(struct|interface)\s*
 METHOD_PATTERN = re.compile(r'^func\s+\((.*?)\)\s+([A-Z][a-zA-Z0-9_]*)\s*\((.*?)\)\s*(\(.*\)|[a-zA-Z0-9_*\[\]\.]*)?\s*{')
 
 def nice_name(name):
-    # Split camelCase -> "camel case"
-    # e.g. HTTPRateLimit -> HTTP Rate Limit
-    # e.g. SaveUser -> Save User
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1 \2', name)
     s2 = re.sub('([a-z0-9])([A-Z])', r'\1 \2', s1)
     return s2.lower()
@@ -111,9 +108,9 @@ def generate_doc(name, params, returns, receiver=None, is_type=False):
     lines.append(f"// Summary: {summary}\n")
 
     if not is_type:
+        lines.append("//\n")
+        lines.append("// Parameters.\n")
         if params:
-            lines.append("//\n")
-            lines.append("// Parameters:\n")
             for pname, ptype in params:
                 if pname == "_":
                     desc = "Unused parameter."
@@ -125,25 +122,17 @@ def generate_doc(name, params, returns, receiver=None, is_type=False):
                     desc = f"The {nice_name(pname)}."
                 lines.append(f"//   - {pname} ({ptype}): {desc}\n")
         else:
-            lines.append("//\n")
-            lines.append("// Parameters:\n")
-            lines.append("//   None.\n")
+            lines.append("//   - None.\n")
 
+        lines.append("//\n")
+        lines.append("// Returns.\n")
         if returns:
-            lines.append("//\n")
-            lines.append("// Returns:\n")
             for rtype in returns:
                 desc = "The result."
                 if rtype == "error": desc = "An error if the operation fails."
                 lines.append(f"//   - {rtype}: {desc}\n")
         else:
-             lines.append("//\n")
-             lines.append("// Returns:\n")
-             lines.append("//   None.\n")
-    else:
-        # For Types, we don't add Params/Returns
-        # Maybe "Fields" if we parsed them, but regex doesn't
-        pass
+             lines.append("//   - None.\n")
 
     return lines
 
@@ -188,20 +177,25 @@ def process_file(filepath):
                 is_type = True
 
             if target_name:
-                # SAFETY CHECK: If comments exist, DO NOT OVERWRITE unless trivial
                 has_comments = len(comment_buffer) > 0
                 is_trivial = False
                 if has_comments:
-                    # Check if trivial (e.g. "// TODO")
                     text = "".join(comment_buffer).lower()
                     if "todo" in text or len(text) < 10:
                         is_trivial = True
 
                 if has_comments and not is_trivial:
-                    # Preserve existing comments exactly
-                    final_lines.extend(comment_buffer)
+                    # Fix existing comments
+                    fixed_comments = []
+                    for cl in comment_buffer:
+                        if "Summary:" in cl or "Parameters:" in cl or "Returns:" in cl or "Errors:" in cl or "Side Effects:" in cl:
+                             if not cl.strip().endswith('.'):
+                                 cl = cl.rstrip().replace(":", ".") + "\n"
+                             else:
+                                 cl = cl.replace(":", ".")
+                        fixed_comments.append(cl)
+                    final_lines.extend(fixed_comments)
                 else:
-                    # Generate new doc
                     new_doc = generate_doc(target_name, params, returns, receiver, is_type)
                     final_lines.extend(new_doc)
 

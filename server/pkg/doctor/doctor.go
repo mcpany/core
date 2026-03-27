@@ -49,7 +49,7 @@ const (
 //
 // It aggregates the status, any message, and potential error encountered during the check.
 //
-// Summary: Represents a CheckResult.
+// Summary. Represents a CheckResult.
 type CheckResult struct {
 	// ServiceName is the name of the service being checked.
 	ServiceName string

@@ -5,7 +5,7 @@ package resilience
 
 // PermanentError is an error that should not be retried.
 //
-// Summary: Wrapper error indicating that an operation failed permanently and should not be retried.
+// Summary. Wrapper error indicating that an operation failed permanently and should not be retried.
 type PermanentError struct {
 	Err error
 }

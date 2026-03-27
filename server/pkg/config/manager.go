@@ -31,9 +31,9 @@ const MergeStrategyReplace = "replace"
 
 // UpstreamServiceManager manages the lifecycle and configuration of upstream services.
 //
-// Summary: Handles loading, validating, and merging service configurations from various sources.
+// Summary. Handles loading, validating, and merging service configurations from various sources.
 //
-// Side Effects:
+// Side Effects.
 //   - Stores the final, merged UpstreamServiceConfig objects.
 //   - Makes HTTP requests to fetch remote configurations.
 type UpstreamServiceManager struct {

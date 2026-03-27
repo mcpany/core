@@ -41,7 +41,7 @@ var (
 
 // CachingMiddleware handles caching of tool execution results.
 //
-// Summary: Represents a CachingMiddleware.
+// Summary. Represents a CachingMiddleware.
 type CachingMiddleware struct {
 	cache           *cache.Cache[any]
 	toolManager     tool.ManagerInterface

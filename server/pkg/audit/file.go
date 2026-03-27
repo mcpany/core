@@ -16,7 +16,7 @@ import (
 
 // FileAuditStore writes audit logs to a file or stdout.
 //
-// Summary: Audit store implementation that appends newline-delimited JSON (NDJSON) to a file or standard output.
+// Summary. Audit store implementation that appends newline-delimited JSON (NDJSON) to a file or standard output.
 type FileAuditStore struct {
 	mu   sync.Mutex
 	file *os.File

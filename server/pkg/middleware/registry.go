@@ -17,7 +17,7 @@ import (
 
 // Registry manages available middlewares.
 //
-// Summary: Represents a Registry.
+// Summary. Represents a Registry.
 type Registry struct {
 	mu           sync.RWMutex
 	factories    map[string]Factory
@@ -139,7 +139,7 @@ func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler)
 
 // StandardMiddlewares holds the standard middlewares that might need to be updated.
 //
-// Summary: Represents a StandardMiddlewares.
+// Summary. Represents a StandardMiddlewares.
 type StandardMiddlewares struct {
 	Audit            *AuditMiddleware
 	GlobalRateLimit  *GlobalRateLimitMiddleware

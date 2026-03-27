@@ -16,7 +16,7 @@ import (
 
 // PostgresAuditStore writes audit logs to a PostgreSQL database.
 //
-// Summary: Stores audit log entries in a PostgreSQL database with tamper-evident hashing.
+// Summary. Stores audit log entries in a PostgreSQL database with tamper-evident hashing.
 type PostgresAuditStore struct {
 	db *sql.DB
 	mu sync.Mutex

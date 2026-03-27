@@ -15,7 +15,7 @@ import (
 
 // Tokenizer defines the interface for counting tokens in a given text.
 //
-// Summary: Represents a Tokenizer.
+// Summary. Represents a Tokenizer.
 type Tokenizer interface {
 	// CountTokens estimates or calculates the number of tokens in the input text.
 	//
@@ -29,7 +29,7 @@ type Tokenizer interface {
 // SimpleTokenizer implements a character-based heuristic.
 // Logic: ~4 characters per token.
 //
-// Summary: Represents a SimpleTokenizer.
+// Summary. Represents a SimpleTokenizer.
 type SimpleTokenizer struct{}
 
 // NewSimpleTokenizer provides newsimpletokenizer functionality.
@@ -69,7 +69,7 @@ func (t *SimpleTokenizer) CountTokens(text string) (int, error) {
 // WordTokenizer implements a word-based heuristic.
 // Logic: Count words (split by space) and multiply by a factor (e.g. 1.3) to account for subwords/punctuation.
 //
-// Summary: Represents a WordTokenizer.
+// Summary. Represents a WordTokenizer.
 type WordTokenizer struct {
 	Factor float64
 }

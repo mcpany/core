@@ -15,7 +15,7 @@ import (
 
 // Watcher monitors configuration files for changes and triggers a reload.
 //
-// Summary: A file system watcher for configuration reloading.
+// Summary. A file system watcher for configuration reloading.
 //
 // It watches the parent directory of specified files to handle atomic saves (rename/move)
 // commonly used by text editors.

@@ -13,7 +13,7 @@ import (
 
 // MCPSession wraps an MCP session to provide client interaction capabilities like sampling and roots.
 //
-// Summary: Provides a wrapper around the MCP server session to facilitate client interactions.
+// Summary. Provides a wrapper around the MCP server session to facilitate client interactions.
 type MCPSession struct {
 	session *mcp.ServerSession
 }

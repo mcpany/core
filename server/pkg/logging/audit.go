@@ -16,7 +16,7 @@ import (
 
 // AuditHandler is a slog.Handler that exports logs to audit sinks.
 //
-// Summary: Represents a AuditHandler.
+// Summary. Represents a AuditHandler.
 type AuditHandler struct {
 	next   slog.Handler
 	config *configv1.AuditConfig

@@ -35,7 +35,7 @@ import (
 // are defined by an OpenAPI specification. It parses the spec, discovers the
 // available operations, and registers them as tools.
 //
-// Summary: Represents a OpenAPIUpstream.
+// Summary. Represents a OpenAPIUpstream.
 type OpenAPIUpstream struct { //nolint:revive
 	openapiCache *ttlcache.Cache[string, *openapi3.T]
 	httpClients  map[string]*http.Client

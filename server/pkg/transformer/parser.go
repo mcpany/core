@@ -30,7 +30,7 @@ var (
 // map to define the extraction rules for each format, such as JSONPath for
 // JSON, XPath for XML, and regex for plain text.
 //
-// Summary: Generic parser for extracting data from JSON, XML, Text, or using JQ.
+// Summary. Generic parser for extracting data from JSON, XML, Text, or using JQ.
 type TextParser struct {
 	transformer *Transformer
 }

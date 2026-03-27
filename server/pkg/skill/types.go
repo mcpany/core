@@ -5,7 +5,7 @@ package skill
 
 // Frontmatter represents the YAML frontmatter of a SKILL.md file.
 //
-// Summary: Represents a Frontmatter.
+// Summary. Represents a Frontmatter.
 type Frontmatter struct {
 	Name          string            `yaml:"name" json:"name"`
 	Description   string            `yaml:"description" json:"description"`
@@ -17,7 +17,7 @@ type Frontmatter struct {
 
 // Skill represents a complete Agent Skill.
 //
-// Summary: Represents a Skill.
+// Summary. Represents a Skill.
 type Skill struct {
 	// Frontmatter contains the metadata parsed from the YAML frontmatter.
 	Frontmatter `yaml:",inline"`

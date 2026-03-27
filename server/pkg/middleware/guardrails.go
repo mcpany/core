@@ -14,7 +14,7 @@ import (
 
 // GuardrailsConfig defines patterns to block.
 //
-// Summary: Configuration for the guardrails middleware.
+// Summary. Configuration for the guardrails middleware.
 type GuardrailsConfig struct {
 	BlockedPhrases []string
 }

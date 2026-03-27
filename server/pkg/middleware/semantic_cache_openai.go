@@ -15,7 +15,7 @@ import (
 
 // OpenAIEmbeddingProvider implements EmbeddingProvider for OpenAI.
 //
-// Summary: Provides vector embeddings using the OpenAI API.
+// Summary. Provides vector embeddings using the OpenAI API.
 type OpenAIEmbeddingProvider struct {
 	apiKey  string
 	model   string

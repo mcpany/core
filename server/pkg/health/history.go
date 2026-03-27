@@ -10,7 +10,7 @@ import (
 
 // HistoryPoint represents a single point in time for a service's health.
 //
-// Summary: A data point representing service health status at a specific time.
+// Summary. A data point representing service health status at a specific time.
 type HistoryPoint struct {
 	Timestamp int64  `json:"timestamp"` // Unix millis
 	Status    string `json:"status"`
@@ -18,7 +18,7 @@ type HistoryPoint struct {
 
 // ServiceHealthHistory stores the history for a service.
 //
-// Summary: Collection of historical health data points for a service.
+// Summary. Collection of historical health data points for a service.
 type ServiceHealthHistory struct {
 	Points []HistoryPoint
 }

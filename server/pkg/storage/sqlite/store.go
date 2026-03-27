@@ -17,7 +17,7 @@ import (
 
 // Store implements config.Store using SQLite.
 //
-// Summary: SQLite storage implementation.
+// Summary. SQLite storage implementation.
 type Store struct {
 	db *DB
 }

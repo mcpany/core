@@ -27,7 +27,7 @@ type activityEvent struct {
 
 // Manager handles topology state tracking.
 //
-// Summary: Represents a Manager.
+// Summary. Represents a Manager.
 type Manager struct {
 	mu              sync.RWMutex
 	sessions        map[string]*SessionStats
@@ -41,7 +41,7 @@ type Manager struct {
 
 // SessionStats contains statistics about a topology session.
 //
-// Summary: Represents a SessionStats.
+// Summary. Represents a SessionStats.
 type SessionStats struct {
 	ID             string
 	Metadata       map[string]string
@@ -57,7 +57,7 @@ type SessionStats struct {
 
 // Stats aggregated metrics.
 //
-// Summary: Represents a Stats.
+// Summary. Represents a Stats.
 type Stats struct {
 	TotalRequests int64
 	AvgLatency    time.Duration
@@ -66,7 +66,7 @@ type Stats struct {
 
 // MinuteStats tracks stats for a single minute.
 //
-// Summary: Represents a MinuteStats.
+// Summary. Represents a MinuteStats.
 type MinuteStats struct {
 	Requests     int64
 	Errors       int64
@@ -77,7 +77,7 @@ type MinuteStats struct {
 
 // ServiceTrafficStats tracks stats for a single service in a minute.
 //
-// Summary: Represents a ServiceTrafficStats.
+// Summary. Represents a ServiceTrafficStats.
 type ServiceTrafficStats struct {
 	Requests int64
 	Errors   int64
@@ -87,7 +87,7 @@ type ServiceTrafficStats struct {
 
 // TrafficPoint represents a data point for the traffic chart.
 //
-// Summary: Represents a TrafficPoint.
+// Summary. Represents a TrafficPoint.
 type TrafficPoint struct {
 	Time    string `json:"time"`
 	Total   int64  `json:"requests"` // mapped to "requests" for UI

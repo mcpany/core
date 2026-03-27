@@ -19,7 +19,7 @@ import (
 
 // Manager handles the loading and listing of catalog services.
 //
-// Summary: Manages the service catalog.
+// Summary. Manages the service catalog.
 //
 // It scans a specified directory for service configurations and provides access to them.
 type Manager struct {

@@ -18,7 +18,7 @@ var ErrResourceNotFound = errors.New("resource not found")
 
 // Resource defines the interface for a resource that can be managed by the Manager.
 //
-// Summary: Interface for a managed resource.
+// Summary. Interface for a managed resource.
 //
 // A resource represents a data source (e.g., a file, a database record) that can be
 // read by an MCP client.
@@ -57,7 +57,7 @@ type Resource interface {
 
 // ManagerInterface defines the interface for managing a collection of resources.
 //
-// Summary: Interface for resource management.
+// Summary. Interface for resource management.
 //
 // It provides methods for adding, removing, listing, and retrieving resources, as well
 // as managing callbacks for list changes.
@@ -117,7 +117,7 @@ type ManagerInterface interface {
 
 // Manager is a thread-safe implementation of the ManagerInterface.
 //
-// Summary: Thread-safe resource manager implementation.
+// Summary. Thread-safe resource manager implementation.
 //
 // It manages the lifecycle and retrieval of resources, providing thread-safe access
 // and efficient listing via caching.

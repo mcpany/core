@@ -32,7 +32,7 @@ func SetRedisClientCreatorForTests(creator func(opts *redis.Options) *redis.Clie
 // ensuring that the configured Requests Per Second (RPS) and burst limits are respected
 // regardless of how many server replicas are running.
 //
-// Summary: Distributed token bucket rate limiter using Redis.
+// Summary. Distributed token bucket rate limiter using Redis.
 type RedisLimiter struct {
 	client     *redis.Client
 	key        string

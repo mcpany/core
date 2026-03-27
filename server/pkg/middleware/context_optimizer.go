@@ -16,7 +16,7 @@ import (
 
 // ContextOptimizer optimises the context size of responses.
 //
-// Summary: Middleware that truncates excessively long string values in JSON responses to fit within a context window.
+// Summary. Middleware that truncates excessively long string values in JSON responses to fit within a context window.
 type ContextOptimizer struct {
 	MaxChars int
 }

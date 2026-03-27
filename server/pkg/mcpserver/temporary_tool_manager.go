@@ -16,7 +16,7 @@ import (
 // It is intended for use in ValidateService where we need to store service info
 // and discovered tools for the duration of the validation request but discard them afterwards.
 //
-// Summary: Represents a TemporaryToolManager.
+// Summary. Represents a TemporaryToolManager.
 type TemporaryToolManager struct {
 	NoOpToolManager
 	mu          sync.RWMutex

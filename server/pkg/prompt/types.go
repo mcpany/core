@@ -22,7 +22,7 @@ var ErrPromptNotFound = errors.New("prompt not found")
 
 // Prompt is the fundamental interface for any executable prompt in the system.
 //
-// Summary: Interface for defining and executing prompts.
+// Summary. Interface for defining and executing prompts.
 type Prompt interface {
 	// Prompt returns the MCP prompt definition.
 	//
@@ -56,7 +56,7 @@ type Prompt interface {
 
 // MCPServerProvider defines an interface for components that can provide an instance of an *mcp.Server.
 //
-// Summary: Interface for providing an MCP server instance.
+// Summary. Interface for providing an MCP server instance.
 //
 // This is used to decouple the Manager from the concrete server implementation.
 type MCPServerProvider interface {
@@ -69,7 +69,7 @@ type MCPServerProvider interface {
 
 // TemplatedPrompt implements the Prompt interface for a prompt that is defined by a template.
 //
-// Summary: Prompt implementation using templates.
+// Summary. Prompt implementation using templates.
 type TemplatedPrompt struct {
 	definition        *configv1.PromptDefinition
 	serviceID         string

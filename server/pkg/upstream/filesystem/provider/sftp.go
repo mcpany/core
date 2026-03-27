@@ -18,7 +18,7 @@ import (
 
 // SftpProvider provides access to files via SFTP.
 //
-// Summary: Represents a SftpProvider.
+// Summary. Represents a SftpProvider.
 type SftpProvider struct {
 	fs     afero.Fs
 	client *sftp.Client

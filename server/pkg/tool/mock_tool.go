@@ -13,7 +13,7 @@ import (
 
 // MockTool is a mock implementation of the Tool interface for testing purposes.
 //
-// Summary: Mock tool for testing.
+// Summary. Mock tool for testing.
 type MockTool struct {
 	ToolFunc           func() *v1.Tool
 	MCPToolFunc        func() *mcp.Tool

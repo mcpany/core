@@ -12,7 +12,7 @@ import (
 
 // OpenAPIProvider discovers services via OpenAPI specifications.
 //
-// Summary: Represents a OpenAPIProvider.
+// Summary. Represents a OpenAPIProvider.
 type OpenAPIProvider struct {
 	Endpoint string // e.g., "http://localhost:8080/openapi.json"
 }

@@ -14,7 +14,7 @@ import (
 
 // JSONRPCError represents a JSON-RPC 2.0 error object.
 //
-// Summary: Represents a JSONRPCError.
+// Summary. Represents a JSONRPCError.
 type JSONRPCError struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
@@ -23,7 +23,7 @@ type JSONRPCError struct {
 
 // JSONRPCResponse represents a JSON-RPC 2.0 response object.
 //
-// Summary: Represents a JSONRPCResponse.
+// Summary. Represents a JSONRPCResponse.
 type JSONRPCResponse struct {
 	JSONRPC string        `json:"jsonrpc"`
 	ID      any           `json:"id"`

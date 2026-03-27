@@ -81,7 +81,7 @@ var (
 
 // ValidationError encapsulates a validation error for a specific service.
 //
-// Summary: Represents a configuration validation error.
+// Summary. Represents a configuration validation error.
 type ValidationError struct {
 	ServiceName string
 	Err         error

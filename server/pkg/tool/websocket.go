@@ -25,7 +25,7 @@ import (
 // connection. It handles sending and receiving messages over a persistent
 // WebSocket connection managed by a connection pool.
 //
-// Summary: A tool implementation for WebSocket services.
+// Summary. A tool implementation for WebSocket services.
 type WebsocketTool struct {
 	tool              *v1.Tool
 	mcpTool           *mcp.Tool

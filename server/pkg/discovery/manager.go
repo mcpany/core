@@ -14,7 +14,7 @@ import (
 
 // ProviderStatus represents the status of a discovery provider.
 //
-// Summary: Represents a ProviderStatus.
+// Summary. Represents a ProviderStatus.
 type ProviderStatus struct {
 	Name            string
 	Status          string // "OK", "ERROR"
@@ -25,7 +25,7 @@ type ProviderStatus struct {
 
 // Manager manages auto-discovery providers.
 //
-// Summary: Represents a Manager.
+// Summary. Represents a Manager.
 type Manager struct {
 	providers []Provider
 	mu        sync.RWMutex
