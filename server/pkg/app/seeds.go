@@ -10,13 +10,9 @@ import (
 
 // BuiltinTemplates contains the seed configurations for high-value MCP servers.
 // Deprecated: Use BuiltinServiceTemplates instead.
-//
-// Summary: Represents a BuiltinTemplates.
 var BuiltinTemplates []*configv1.UpstreamServiceConfig
 
 // BuiltinServiceTemplates contains the rich seed configurations for the UI wizard.
-//
-// Summary: Represents a BuiltinServiceTemplates.
 var BuiltinServiceTemplates []*configv1.ServiceTemplate
 
 func init() {
@@ -356,31 +352,6 @@ func init() {
 				UpstreamAuth: configv1.Authentication_builder{
 					Oauth2: configv1.OAuth2Auth_builder{
 						Scopes: proto.String("read:jira-work,write:jira-work"),
-					}.Build(),
-				}.Build(),
-			}.Build(),
-		}.Build(),
-		configv1.ServiceTemplate_builder{
-			Id:          proto.String("swarm-orchestrator"),
-			Name:        proto.String("Swarm Orchestrator"),
-			Description: proto.String("Gold Standard demonstration of multi-agent swarm topology, cryptographic entanglement, and active intent alignment. Simulates a high-performance, hardware-attested agent mesh."),
-			Icon:        proto.String("network"),
-			Tags:        []string{"security", "topology", "mock"},
-			ServiceConfig: configv1.UpstreamServiceConfig_builder{
-				Name: proto.String("swarm-orchestrator"),
-				McpService: configv1.McpUpstreamService_builder{
-					HttpConnection: configv1.McpStreamableHttpConnection_builder{
-						HttpAddress: proto.String("http://localhost:50050/api/v1/topology"),
-					}.Build(),
-					ToolAutoDiscovery: proto.Bool(true),
-				}.Build(),
-				UpstreamAuth: configv1.Authentication_builder{
-					ApiKey: configv1.APIKeyAuth_builder{
-						Value: configv1.SecretValue_builder{
-							PlainText: proto.String("mcp-any-swarm-attestation-token"),
-						}.Build(),
-						ParamName: proto.String("X-Hardware-Attested-Token"),
-						In:        configv1.APIKeyAuth_HEADER.Enum(),
 					}.Build(),
 				}.Build(),
 			}.Build(),

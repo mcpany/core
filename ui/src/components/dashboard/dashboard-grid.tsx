@@ -5,7 +5,7 @@
 
 
 
-import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { GripVertical, MoreHorizontal, Maximize, Columns, LayoutGrid, EyeOff, Trash2, Settings2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -32,7 +32,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { WIDGET_DEFINITIONS, getWidgetDefinition, WidgetSize } from "@/components/dashboard/widget-registry";
 import { AddWidgetSheet } from "@/components/dashboard/add-widget-sheet";
-import { fetchWithAuth } from "@/lib/client";
 
 /**
  * Represents a specific instance of a widget on the dashboard.
@@ -59,104 +58,6 @@ const DEFAULT_LAYOUT: WidgetInstance[] = WIDGET_DEFINITIONS.map(def => ({
     hidden: false
 }));
 
-const getColSpan = (size: WidgetSize) => {
-    switch (size) {
-        case "full": return "col-span-12";
-        case "two-thirds": return "col-span-12 lg:col-span-8";
-        case "half": return "col-span-12 lg:col-span-6";
-        case "third": return "col-span-12 lg:col-span-4";
-        default: return "col-span-12 lg:col-span-4";
-    }
-};
-
-const renderWidget = (widget: WidgetInstance) => {
-    const def = getWidgetDefinition(widget.type);
-    if (!def) return <div className="p-4 border border-dashed text-muted-foreground">Unknown Widget Type: {widget.type}</div>;
-
-    const Component = def.component;
-    return <Component />;
-};
-
-// ⚡ BOLT: [Render Optimization] Extract Draggable Widget into React.memo to prevent re-rendering all widgets during drag or single-widget state changes.
-// Randomized Selection from Top 5 High-Impact Targets
-const MemoizedWidgetCard = React.memo(({ widget, index, updateWidgetSize, toggleWidgetVisibility, removeWidget }: {
-    widget: WidgetInstance;
-    index: number;
-    updateWidgetSize: (instanceId: string, newSize: WidgetSize) => void;
-    toggleWidgetVisibility: (instanceId: string) => void;
-    removeWidget: (instanceId: string) => void;
-}) => {
-    return (
-        <Draggable draggableId={widget.instanceId} index={index}>
-            {(provided, snapshot) => (
-                <div
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    className={cn(
-                        "relative group/widget rounded-lg transition-all duration-200",
-                        getColSpan(widget.size),
-                        snapshot.isDragging && "z-50 shadow-2xl scale-[1.02] opacity-90"
-                    )}
-                >
-                    <div className="absolute top-2 right-2 flex items-center space-x-1 opacity-0 group-hover/widget:opacity-100 transition-opacity z-20">
-                         <div
-                            {...provided.dragHandleProps}
-                            className="p-1 hover:bg-muted/80 bg-background/50 backdrop-blur-sm rounded cursor-grab active:cursor-grabbing border border-transparent hover:border-border"
-                        >
-                            <GripVertical className="h-4 w-4 text-muted-foreground" />
-                        </div>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-6 w-6 bg-background/50 backdrop-blur-sm hover:bg-muted/80 border border-transparent hover:border-border">
-                                    <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">Options</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuSub>
-                                    <DropdownMenuSubTrigger>
-                                        <Maximize className="mr-2 h-4 w-4" />
-                                        <span>Size</span>
-                                    </DropdownMenuSubTrigger>
-                                    <DropdownMenuSubContent>
-                                        <DropdownMenuRadioGroup value={widget.size} onValueChange={(v) => updateWidgetSize(widget.instanceId, v as WidgetSize)}>
-                                            <DropdownMenuRadioItem value="full">
-                                                <LayoutGrid className="mr-2 h-4 w-4" /> Full Width
-                                            </DropdownMenuRadioItem>
-                                            <DropdownMenuRadioItem value="two-thirds">
-                                                <Columns className="mr-2 h-4 w-4" /> 2/3 Width
-                                            </DropdownMenuRadioItem>
-                                            <DropdownMenuRadioItem value="half">
-                                                <Columns className="mr-2 h-4 w-4" /> 1/2 Width
-                                            </DropdownMenuRadioItem>
-                                            <DropdownMenuRadioItem value="third">
-                                                <Columns className="mr-2 h-4 w-4" /> 1/3 Width
-                                            </DropdownMenuRadioItem>
-                                        </DropdownMenuRadioGroup>
-                                    </DropdownMenuSubContent>
-                                </DropdownMenuSub>
-                                <DropdownMenuItem onClick={() => toggleWidgetVisibility(widget.instanceId)}>
-                                    <EyeOff className="mr-2 h-4 w-4" />
-                                    Hide Widget
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={() => removeWidget(widget.instanceId)} className="text-red-600 focus:text-red-600">
-                                    <Trash2 className="mr-2 h-4 w-4" />
-                                    Remove
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </div>
-
-                    {renderWidget(widget)}
-                </div>
-            )}
-        </Draggable>
-    );
-});
-MemoizedWidgetCard.displayName = "MemoizedWidgetCard";
-
 /**
  * DashboardGrid component.
  * Implements a draggable grid for dashboard widgets with resizing and dynamic layout controls.
@@ -166,7 +67,6 @@ export function DashboardGrid() {
     const [widgets, setWidgets] = useState<WidgetInstance[]>([]);
     const [isMounted, setIsMounted] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [isLoaded, setIsLoaded] = useState(false);
 
     const migrateLayout = (parsed: any): WidgetInstance[] => {
         // Migration Logic
@@ -201,34 +101,24 @@ export function DashboardGrid() {
             return parsed;
         }
         return DEFAULT_LAYOUT;
-    };
-
-    const requiresMigration = (parsed: any): boolean => {
-        return Array.isArray(parsed) && parsed.length > 0 && !parsed[0].instanceId;
-    };
+    }
 
     useEffect(() => {
         setIsMounted(true);
 
         const loadLayout = async () => {
-            let initialLayout = DEFAULT_LAYOUT;
-            let needsSave = false;
             try {
                 // Fetch from API
-                const res = await fetchWithAuth('/api/v1/user/preferences');
+                const res = await fetch('/api/v1/user/preferences');
                 if (res.ok) {
                     const data = await res.json();
                     if (data && data['dashboard-layout']) {
                          try {
                             const parsed = JSON.parse(data['dashboard-layout']);
-                            initialLayout = migrateLayout(parsed);
-                            if (requiresMigration(parsed)) {
-                                needsSave = true;
-                            }
+                            setWidgets(migrateLayout(parsed));
                          } catch (e) {
                             console.error("Failed to parse remote layout", e);
-                            initialLayout = DEFAULT_LAYOUT;
-                            needsSave = true;
+                            setWidgets(DEFAULT_LAYOUT);
                          }
                     } else {
                          // No layout saved in backend, check local storage for migration
@@ -236,21 +126,15 @@ export function DashboardGrid() {
                          if (local) {
                              try {
                                 const parsed = JSON.parse(local);
-                                initialLayout = migrateLayout(parsed);
-                                if (requiresMigration(parsed)) {
-                                    needsSave = true;
-                                } else {
-                                    needsSave = true; // Still save to API since API was missing it
-                                }
+                                const migrated = migrateLayout(parsed);
+                                setWidgets(migrated);
                                 // We rely on the save effect to sync this to backend
                              } catch (e) {
                                 console.error("Failed to parse local layout", e);
-                                initialLayout = DEFAULT_LAYOUT;
-                                needsSave = true;
+                                setWidgets(DEFAULT_LAYOUT);
                              }
                          } else {
-                             initialLayout = DEFAULT_LAYOUT;
-                             needsSave = true;
+                             setWidgets(DEFAULT_LAYOUT);
                          }
                     }
                 } else {
@@ -259,40 +143,19 @@ export function DashboardGrid() {
                      const local = localStorage.getItem("dashboard-layout");
                      if (local) {
                         try {
-                            const parsed = JSON.parse(local);
-                            initialLayout = migrateLayout(parsed);
-                            if (requiresMigration(parsed)) {
-                                needsSave = true;
-                            }
+                            setWidgets(migrateLayout(JSON.parse(local)));
                         } catch {
-                            initialLayout = DEFAULT_LAYOUT;
-                            needsSave = true;
+                            setWidgets(DEFAULT_LAYOUT);
                         }
                      } else {
-                        initialLayout = DEFAULT_LAYOUT;
+                        setWidgets(DEFAULT_LAYOUT);
                      }
                 }
             } catch (err) {
                  console.error("Failed to load layout", err);
-                 initialLayout = DEFAULT_LAYOUT;
+                 setWidgets(DEFAULT_LAYOUT);
             } finally {
-                setWidgets(initialLayout);
                 setLoading(false);
-                setIsLoaded(true);
-
-                if (needsSave) {
-                    // Force an immediate save to persist migrations or defaults
-                    try {
-                        fetchWithAuth('/api/v1/user/preferences', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                'dashboard-layout': JSON.stringify(initialLayout)
-                            })
-                        }).catch(e => console.error("Failed to sync migrated layout", e));
-                        localStorage.setItem("dashboard-layout", JSON.stringify(initialLayout));
-                    } catch (e) {}
-                }
             }
         };
 
@@ -305,12 +168,21 @@ export function DashboardGrid() {
 
     // ⚡ BOLT: Debounce API writes to prevent server spam during drag/resize operations
     // Randomized Selection from Top 5 High-Impact Targets
+    const isFirstRun = useRef(true);
     useEffect(() => {
-        if (!isMounted || loading || !isLoaded) return;
+        if (!isMounted || loading) return;
+
+        // Prevent saving the initial empty state if it's the very first mounted render
+        // But we must allow saving if we just loaded/migrated data.
+        if (isFirstRun.current) {
+            isFirstRun.current = false;
+            // If widgets are empty on first run, it's likely the initial state.
+            return;
+        }
 
         const timer = setTimeout(async () => {
             try {
-                await fetchWithAuth('/api/v1/user/preferences', {
+                await fetch('/api/v1/user/preferences', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -325,7 +197,7 @@ export function DashboardGrid() {
         }, 1000); // Increased debounce to 1s for network
 
         return () => clearTimeout(timer);
-    }, [widgets, isMounted, loading, isLoaded]);
+    }, [widgets, isMounted, loading]);
 
     const onDragEnd = (result: DropResult) => {
         if (!result.destination) return;
@@ -385,6 +257,24 @@ export function DashboardGrid() {
         );
     }
 
+    const renderWidget = (widget: WidgetInstance) => {
+        const def = getWidgetDefinition(widget.type);
+        if (!def) return <div className="p-4 border border-dashed text-muted-foreground">Unknown Widget Type: {widget.type}</div>;
+
+        const Component = def.component;
+        return <Component />;
+    };
+
+    const getColSpan = (size: WidgetSize) => {
+        switch (size) {
+            case "full": return "col-span-12";
+            case "two-thirds": return "col-span-12 lg:col-span-8";
+            case "half": return "col-span-12 lg:col-span-6";
+            case "third": return "col-span-12 lg:col-span-4";
+            default: return "col-span-12 lg:col-span-4";
+        }
+    };
+
     return (
         <div className="space-y-4">
             <div className="flex justify-end gap-2">
@@ -437,14 +327,73 @@ export function DashboardGrid() {
                             className="grid grid-cols-12 gap-4"
                         >
                             {visibleWidgets.map((widget, index) => (
-                                <MemoizedWidgetCard
-                                    key={widget.instanceId}
-                                    widget={widget}
-                                    index={index}
-                                    updateWidgetSize={updateWidgetSize}
-                                    toggleWidgetVisibility={toggleWidgetVisibility}
-                                    removeWidget={removeWidget}
-                                />
+                                <Draggable key={widget.instanceId} draggableId={widget.instanceId} index={index}>
+                                    {(provided, snapshot) => (
+                                        <div
+                                            ref={provided.innerRef}
+                                            {...provided.draggableProps}
+                                            className={cn(
+                                                "relative group/widget rounded-lg transition-all duration-200",
+                                                getColSpan(widget.size),
+                                                snapshot.isDragging && "z-50 shadow-2xl scale-[1.02] opacity-90"
+                                            )}
+                                        >
+                                            <div className="absolute top-2 right-2 flex items-center space-x-1 opacity-0 group-hover/widget:opacity-100 transition-opacity z-20">
+                                                 <div
+                                                    {...provided.dragHandleProps}
+                                                    className="p-1 hover:bg-muted/80 bg-background/50 backdrop-blur-sm rounded cursor-grab active:cursor-grabbing border border-transparent hover:border-border"
+                                                >
+                                                    <GripVertical className="h-4 w-4 text-muted-foreground" />
+                                                </div>
+
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <div className="p-1 hover:bg-muted/80 bg-background/50 backdrop-blur-sm rounded cursor-pointer border border-transparent hover:border-border">
+                                                            <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+                                                        </div>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+                                                        <DropdownMenuLabel>Widget Options</DropdownMenuLabel>
+                                                        <DropdownMenuSeparator />
+                                                        <DropdownMenuSub>
+                                                            <DropdownMenuSubTrigger>
+                                                                <Maximize className="mr-2 h-4 w-4" />
+                                                                <span>Size</span>
+                                                            </DropdownMenuSubTrigger>
+                                                            <DropdownMenuSubContent>
+                                                                <DropdownMenuRadioGroup value={widget.size} onValueChange={(v) => updateWidgetSize(widget.instanceId, v as WidgetSize)}>
+                                                                    <DropdownMenuRadioItem value="full">
+                                                                        <LayoutGrid className="mr-2 h-4 w-4" /> Full Width
+                                                                    </DropdownMenuRadioItem>
+                                                                    <DropdownMenuRadioItem value="two-thirds">
+                                                                        <Columns className="mr-2 h-4 w-4" /> 2/3 Width
+                                                                    </DropdownMenuRadioItem>
+                                                                    <DropdownMenuRadioItem value="half">
+                                                                        <Columns className="mr-2 h-4 w-4" /> 1/2 Width
+                                                                    </DropdownMenuRadioItem>
+                                                                    <DropdownMenuRadioItem value="third">
+                                                                        <Columns className="mr-2 h-4 w-4" /> 1/3 Width
+                                                                    </DropdownMenuRadioItem>
+                                                                </DropdownMenuRadioGroup>
+                                                            </DropdownMenuSubContent>
+                                                        </DropdownMenuSub>
+                                                        <DropdownMenuItem onClick={() => toggleWidgetVisibility(widget.instanceId)}>
+                                                            <EyeOff className="mr-2 h-4 w-4" />
+                                                            Hide Widget
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuSeparator />
+                                                        <DropdownMenuItem onClick={() => removeWidget(widget.instanceId)} className="text-red-600 focus:text-red-600">
+                                                            <Trash2 className="mr-2 h-4 w-4" />
+                                                            Remove
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </div>
+
+                                            {renderWidget(widget)}
+                                        </div>
+                                    )}
+                                </Draggable>
                             ))}
                             {provided.placeholder}
                         </div>

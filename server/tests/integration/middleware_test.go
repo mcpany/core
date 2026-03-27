@@ -20,7 +20,7 @@ import (
 )
 
 func TestCacheMiddleware_CacheHit(t *testing.T) {
-
+	// // t.Skip("Skipping flaky test: tool registration times out intermittently.")
 	var requestCount int32
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		atomic.AddInt32(&requestCount, 1)
@@ -82,7 +82,7 @@ upstream_services:
 }
 
 func TestCacheMiddleware_CacheExpires(t *testing.T) {
-
+	// // t.Skip("Skipping flaky test: tool registration times out intermittently.")
 	var requestCount int32
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		atomic.AddInt32(&requestCount, 1)
@@ -105,7 +105,7 @@ upstream_services:
           call_id: "test_call"
     cache:
       is_enabled: true
-      ttl: "0.2s"
+      ttl: "1s"
 `, upstream.URL)
 
 	serverInfo := integration.StartMCPANYServerWithConfig(t, "cache-expires-test", configContent)
@@ -138,7 +138,7 @@ upstream_services:
 	require.NoError(t, err)
 	require.Equal(t, int32(1), atomic.LoadInt32(&requestCount), "Upstream should be called once")
 
-	time.Sleep(1000 * time.Millisecond)
+	time.Sleep(1100 * time.Millisecond)
 
 	_, err = serverInfo.CallTool(context.Background(), callToolParams)
 	require.NoError(t, err)

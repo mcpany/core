@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 load("@rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
-load("@rules_oci//oci:defs.bzl", "oci_image", "oci_image_index", "oci_load", "oci_push")
-load("@rules_pkg//pkg:mappings.bzl", "pkg_attributes", "pkg_files")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
+load("@rules_pkg//pkg:mappings.bzl", "pkg_files")
 load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
 
 go_library(
@@ -37,7 +37,6 @@ go_binary(
 pkg_files(
     name = "server_binary_files",
     srcs = [":server"],
-    attributes = pkg_attributes(mode = "0755"),
     prefix = "/app",
 )
 
@@ -65,20 +64,6 @@ oci_load(
         "mcpany/server:1.0.0",
     ],
     visibility = ["//visibility:public"],
-)
-
-oci_push(
-    name = "push",
-    image = ":server_index",
-    remote_tags = ["latest"],
-    repository = "ghcr.io/mcpany/server",
-)
-
-oci_image_index(
-    name = "server_index",
-    images = [
-        ":server_image",
-    ],
 )
 
 go_test(

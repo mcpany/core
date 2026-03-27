@@ -129,8 +129,6 @@ func LoadResolvedConfig(ctx context.Context, store Store) (*configv1.McpAnyServe
 		fileConfig = configv1.McpAnyServerConfig_builder{}.Build()
 	}
 
-	ensureDefaultProfileDefinition(fileConfig)
-
 	// Use profiles from config if available, otherwise fall back to global settings
 	profiles := fileConfig.GetGlobalSettings().GetProfiles()
 	if len(profiles) == 0 {
@@ -162,10 +160,7 @@ func LoadResolvedConfig(ctx context.Context, store Store) (*configv1.McpAnyServe
 			profileIDs = append(profileIDs, id)
 		}
 
-		apiKey := fileConfig.GetGlobalSettings().GetApiKey()
-		if apiKey == "" {
-			apiKey = GlobalSettings().APIKey()
-		}
+		apiKey := GlobalSettings().APIKey()
 		defaultUser := configv1.User_builder{
 			Id:         proto.String("default"),
 			ProfileIds: profileIDs,
@@ -184,26 +179,4 @@ func LoadResolvedConfig(ctx context.Context, store Store) (*configv1.McpAnyServe
 	}
 
 	return fileConfig, nil
-}
-
-func ensureDefaultProfileDefinition(cfg *configv1.McpAnyServerConfig) {
-	if cfg == nil {
-		return
-	}
-
-	gs := cfg.GetGlobalSettings()
-	if gs == nil {
-		gs = configv1.GlobalSettings_builder{}.Build()
-		cfg.SetGlobalSettings(gs)
-	}
-
-	for _, profileDefinition := range gs.GetProfileDefinitions() {
-		if profileDefinition.GetName() == "default" {
-			return
-		}
-	}
-
-	gs.SetProfileDefinitions(append(gs.GetProfileDefinitions(), configv1.ProfileDefinition_builder{
-		Name: proto.String("default"),
-	}.Build()))
 }

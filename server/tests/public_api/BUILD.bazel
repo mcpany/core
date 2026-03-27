@@ -6,10 +6,7 @@ load("@rules_go//go:def.bzl", "go_test")
 go_test(
     name = "public_api_test",
     srcs = ["policy_test.go"],
-    data = [
-        "//server/cmd/mock_mcp_server",
-        "//server/cmd/server",
-    ],
+    data = ["//server/cmd/server"],
     tags = ["integration"],
     deps = [
         "//server/tests/integration",

@@ -6,40 +6,28 @@ package alerts
 import "time"
 
 // Severity represents the severity level of an alert.
-//
-// Summary: Represents a Severity.
 type Severity string
 
 // Status represents the status of an alert.
-//
-// Summary: Represents a Status.
 type Status string
 
 const (
 	// SeverityCritical indicates a critical issue.
-	// Summary: Defines SeverityCritica.
 	SeverityCritical Severity = "critical"
 	// SeverityWarning indicates a warning.
-	// Summary: Defines SeverityWarnin.
 	SeverityWarning Severity = "warning"
 	// SeverityInfo indicates an informational alert.
-	// Summary: Defines SeverityInf.
 	SeverityInfo Severity = "info"
 
 	// StatusActive indicates the alert is currently active.
-	// Summary: Defines StatusActiv.
 	StatusActive Status = "active"
 	// StatusAcknowledged indicates the alert has been acknowledged.
-	// Summary: Defines StatusAcknowledge.
 	StatusAcknowledged Status = "acknowledged"
 	// StatusResolved indicates the alert has been resolved.
-	// Summary: Defines StatusResolve.
 	StatusResolved Status = "resolved"
 )
 
 // Alert represents a system alert.
-//
-// Summary: Represents a Alert.
 type Alert struct {
 	ID        string    `json:"id"`
 	Title     string    `json:"title"`
@@ -52,8 +40,6 @@ type Alert struct {
 }
 
 // AlertRule defines a condition for triggering an alert.
-//
-// Summary: Represents a AlertRule.
 type AlertRule struct {
 	ID          string    `json:"id"`
 	Name        string    `json:"name"`
@@ -67,15 +53,9 @@ type AlertRule struct {
 }
 
 // AlertStats represents aggregated statistics for alerts.
-//
-// Summary: Represents a AlertStats.
 type AlertStats struct {
-	ActiveCritical      int    `json:"activeCritical"`
-	ActiveCriticalTrend string `json:"activeCriticalTrend"`
-	ActiveWarning       int    `json:"activeWarning"`
-	ActiveWarningTrend  string `json:"activeWarningTrend"`
-	MTTR                string `json:"mttr"`
-	MTTRTrend           string `json:"mttrTrend"`
-	TotalToday          int    `json:"totalToday"`
-	TotalTodayTrend     string `json:"totalTodayTrend"`
+	ActiveCritical int    `json:"activeCritical"`
+	ActiveWarning  int    `json:"activeWarning"`
+	MTTR           string `json:"mttr"`
+	TotalToday     int    `json:"totalToday"`
 }
