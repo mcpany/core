@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { ChevronDown, ChevronUp, ChevronsUpDown, Search, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
 
 /**
- * DataTableProps defines the properties for the DataTable component.
+ * DataTableProps
  */
 export interface DataTableProps<TData> {
   data: TData[];
@@ -18,7 +18,7 @@ export interface DataTableProps<TData> {
 }
 
 /**
- * DataTable renders structured data arrays into a filterable, sortable, and paginated table.
+ * DataTable
  */
 export function DataTable<TData>({ data, columns, searchKey }: DataTableProps<TData>) {
   const [sortConfig, setSortConfig] = React.useState<{ key: string; direction: "asc" | "desc" } | null>(null);
