@@ -420,6 +420,7 @@ func TestRegistrationServer_Unimplemented(t *testing.T) {
 		require.True(t, ok)
 		assert.Equal(t, codes.Unimplemented, st.Code())
 	})
+
 }
 
 func TestNewRegistrationServer_NilBus(t *testing.T) {

@@ -33,11 +33,8 @@ func TestHandleLogsWS_History(t *testing.T) {
 	defer ts.Close()
 
 	u := "ws" + strings.TrimPrefix(ts.URL, "http")
-	ws, resp, err := websocket.DefaultDialer.Dial(u, nil)
+	ws, _, err := websocket.DefaultDialer.Dial(u, nil)
 	require.NoError(t, err)
-	if resp != nil {
-		resp.Body.Close()
-	}
 	defer ws.Close()
 
 	// Read history messages
@@ -65,11 +62,8 @@ func TestHandleLogsWS_Streaming(t *testing.T) {
 	defer ts.Close()
 
 	u := "ws" + strings.TrimPrefix(ts.URL, "http")
-	ws, resp, err := websocket.DefaultDialer.Dial(u, nil)
+	ws, _, err := websocket.DefaultDialer.Dial(u, nil)
 	require.NoError(t, err)
-	if resp != nil {
-		resp.Body.Close()
-	}
 	defer ws.Close()
 
 	syncMsg := logging.LogEntry{Message: "SYNC"}
@@ -133,11 +127,8 @@ func TestHandleLogsWS_Concurrency(t *testing.T) {
 	clients := make([]*websocket.Conn, clientCount)
 
 	for i := 0; i < clientCount; i++ {
-		ws, resp, err := websocket.DefaultDialer.Dial(u, nil)
+		ws, _, err := websocket.DefaultDialer.Dial(u, nil)
 		require.NoError(t, err)
-		if resp != nil {
-			resp.Body.Close()
-		}
 		clients[i] = ws
 		defer ws.Close()
 	}
@@ -206,11 +197,8 @@ func TestHandleLogsWS_Close(t *testing.T) {
 	defer ts.Close()
 
 	u := "ws" + strings.TrimPrefix(ts.URL, "http")
-	ws, resp, err := websocket.DefaultDialer.Dial(u, nil)
+	ws, _, err := websocket.DefaultDialer.Dial(u, nil)
 	require.NoError(t, err)
-	if resp != nil {
-		resp.Body.Close()
-	}
 
 	// Close immediately
 	ws.Close()

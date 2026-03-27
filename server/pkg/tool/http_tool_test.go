@@ -162,6 +162,8 @@ func TestHTTPTool_Execute_OutputTransformation_Text(t *testing.T) {
 }
 
 func TestHTTPTool_Execute_NoTransformation(t *testing.T) {
+
+
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, "test", r.URL.Query().Get("param"))
 		w.WriteHeader(http.StatusOK)
@@ -193,6 +195,8 @@ func TestHTTPTool_Execute_NoTransformation(t *testing.T) {
 }
 
 func TestHTTPTool_Execute_Errors(t *testing.T) {
+
+
 	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte(`{"status": "ok"}`))
@@ -205,6 +209,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 	}.Build()
 
 	t.Run("pool_not_found", func(t *testing.T) {
+
 		poolManager := pool.NewManager() // Empty pool manager
 		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, &configv1.HttpCallDefinition{}, nil, nil, "")
 		_, err := httpTool.Execute(context.Background(), &tool.ExecutionRequest{})
@@ -481,6 +486,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 		_, err := httpTool.Execute(context.Background(), req)
 		require.NoError(t, err)
 	})
+
 }
 
 func TestHTTPTool_Execute_ErrorBodyRedaction(t *testing.T) {

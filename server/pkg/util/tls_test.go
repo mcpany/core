@@ -1,7 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package util
+package util //nolint:revive
 
 import (
 	"context"
@@ -44,12 +44,12 @@ func generateTestCerts(t *testing.T, tempDir string) (certPath, keyPath string) 
 	derBytes, err := x509.CreateCertificate(rand.Reader, &template, &template, &priv.PublicKey, priv)
 	require.NoError(t, err)
 
-	certFile, err := os.OpenFile(filepath.Join(tempDir, "cert.pem"), os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
+	certFile, err := os.Create(filepath.Join(tempDir, "cert.pem")) //nolint:gosec // Test file
 	require.NoError(t, err)
 	_ = pem.Encode(certFile, &pem.Block{Type: "CERTIFICATE", Bytes: derBytes})
 	_ = certFile.Close()
 
-	keyFile, err := os.OpenFile(filepath.Join(tempDir, "key.pem"), os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
+	keyFile, err := os.Create(filepath.Join(tempDir, "key.pem")) //nolint:gosec // Test file
 	require.NoError(t, err)
 	privBytes, err := x509.MarshalPKCS8PrivateKey(priv)
 	require.NoError(t, err)

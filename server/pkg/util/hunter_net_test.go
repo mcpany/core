@@ -65,22 +65,16 @@ func TestSafeDialer_Coverage(t *testing.T) {
 
 	// By default, SafeDialer blocks loopback
 	client := NewSafeHTTPClient()
-	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, ts.URL, nil)
-	require.NoError(t, err)
-	_, err = client.Do(req)
+	_, err := client.Get(ts.URL)
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "loopback")
 
 	// Allow loopback via env
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	client = NewSafeHTTPClient()
-	req2, err := http.NewRequestWithContext(context.Background(), http.MethodGet, ts.URL, nil)
-	require.NoError(t, err)
-	resp, err := client.Do(req2)
+	resp, err := client.Get(ts.URL)
 	assert.NoError(t, err)
-	if resp != nil {
-		resp.Body.Close()
-	}
+	resp.Body.Close()
 
 	// Direct SafeDialContext usage
 	// Should fail for loopback if default

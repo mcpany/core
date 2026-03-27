@@ -892,13 +892,13 @@ func TestUnzipBundle_InvalidFile(t *testing.T) {
 	// Create a dummy non-zip file
 	tmpFile, err := os.CreateTemp("", "not-a-zip")
 	assert.NoError(t, err)
-	defer func() { _ = os.Remove(tmpFile.Name()) }()
+	defer os.Remove(tmpFile.Name()) //nolint:errcheck
 	_, _ = tmpFile.WriteString("this is not a zip file")
 	_ = tmpFile.Close()
 
 	destDir, err := os.MkdirTemp("", "unzip-dest-fail")
 	assert.NoError(t, err)
-	defer func() { _ = os.RemoveAll(destDir) }()
+	defer os.RemoveAll(destDir) //nolint:errcheck
 
 	err = unzipBundle(tmpFile.Name(), destDir)
 	assert.Error(t, err)

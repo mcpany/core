@@ -87,11 +87,13 @@ func TestSplunkAuditStore_Batch(t *testing.T) {
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		decoder := json.NewDecoder(r.Body)
+		count := 0
 		for decoder.More() {
 			var body map[string]interface{}
 			_ = decoder.Decode(&body)
-			atomic.AddInt32(&totalReceived, 1)
+			count++
 		}
+		atomic.AddInt32(&totalReceived, int32(uint32(count)))
 		w.WriteHeader(http.StatusOK)
 		if atomic.LoadInt32(&totalReceived) >= 5 {
 			done <- struct{}{}

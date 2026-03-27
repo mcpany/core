@@ -37,9 +37,9 @@ func TestUserManagement(t *testing.T) {
 	mockOIDC := httptest.NewTLSServer(mockOIDCMux)
 	defer mockOIDC.Close()
 
-	mockOIDCMux.HandleFunc("/.well-known/openid-configuration", func(w http.ResponseWriter, _ *http.Request) {
+	mockOIDCMux.HandleFunc("/.well-known/openid-configuration", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		_, _ = io.WriteString(w, fmt.Sprintf(`{
+		io.WriteString(w, fmt.Sprintf(`{
 			"issuer": "%s",
 			"authorization_endpoint": "%s/authorize",
 			"token_endpoint": "%s/token",
@@ -51,9 +51,9 @@ func TestUserManagement(t *testing.T) {
 	})
 
 	// Just return 200 for keys to satisfy startup check if it fetches them
-	mockOIDCMux.HandleFunc("/keys", func(w http.ResponseWriter, _ *http.Request) {
+	mockOIDCMux.HandleFunc("/keys", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		_, _ = io.WriteString(w, `{"keys": []}`)
+		io.WriteString(w, `{"keys": []}`)
 	})
 
 	// Setup temporary DB path
@@ -128,8 +128,8 @@ global_settings:
 	require.NotZero(t, grpcRegPort, "gRPC Port should be bound")
 
 	// Wait for health check
-	httpURL := fmt.Sprintf("http://127.0.0.1:%d/healthz", jsonrpcPort)
-	integration.WaitForHTTPHealth(t, httpURL, 10*time.Second)
+	httpUrl := fmt.Sprintf("http://127.0.0.1:%d/healthz", jsonrpcPort)
+	integration.WaitForHTTPHealth(t, httpUrl, 10*time.Second)
 
 	// Connect to gRPC Admin Service
 	conn, err := grpc.NewClient(fmt.Sprintf("127.0.0.1:%d", grpcRegPort), grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -203,14 +203,14 @@ global_settings:
 
 	// Clone client config
 	checkRedirectClient := *oidcClient
-	checkRedirectClient.CheckRedirect = func(_ *http.Request, _ []*http.Request) error {
+	checkRedirectClient.CheckRedirect = func(req *http.Request, via []*http.Request) error {
 		return http.ErrUseLastResponse
 	}
 
-	loginURL := fmt.Sprintf("http://127.0.0.1:%d/auth/login", jsonrpcPort)
-	reqGet, err := http.NewRequestWithContext(ctx, http.MethodGet, loginURL, nil)
+	loginUrl := fmt.Sprintf("http://127.0.0.1:%d/auth/login", jsonrpcPort)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, loginUrl, nil)
 	require.NoError(t, err)
-	loginResp, err := checkRedirectClient.Do(reqGet)
+	loginResp, err := checkRedirectClient.Do(req)
 	require.NoError(t, err)
 	defer loginResp.Body.Close()
 
