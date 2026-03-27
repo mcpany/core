@@ -1,4 +1,4 @@
-<!-- markdownlint-disable -->
+<!-- markdownlint-disable-file -->
 # Design Doc: Shadow Coordination Interceptor (SCI)
 
 **Status:** Draft
