@@ -23,7 +23,8 @@ func TestStore_Load(t *testing.T) {
 		require.NoError(t, err)
 		defer db.Close()
 
-		store := &Store{db: &DB{DB: db}}
+		pgDB := &DB{DB: db}
+		store := NewStore(pgDB)
 
 		svc := configv1.UpstreamServiceConfig_builder{Id: proto.String("service-1"), Name: proto.String("Service One")}.Build()
 		svcBytes, err := protojson.MarshalOptions{}.Marshal(svc)
@@ -65,7 +66,8 @@ func TestStore_Load(t *testing.T) {
 		require.NoError(t, err)
 		defer db.Close()
 
-		store := &Store{db: &DB{DB: db}}
+		pgDB := &DB{DB: db}
+		store := NewStore(pgDB)
 
 		mock.ExpectQuery(".*").
 			WillReturnError(errors.New("db error"))
@@ -80,7 +82,8 @@ func TestStore_Load(t *testing.T) {
 		require.NoError(t, err)
 		defer db.Close()
 
-		store := &Store{db: &DB{DB: db}}
+		pgDB := &DB{DB: db}
+		store := NewStore(pgDB)
 
 		mock.ExpectQuery(".*").
 			WillReturnRows(sqlmock.NewRows([]string{"config_json"}).AddRow([]byte("invalid json")))
@@ -95,7 +98,8 @@ func TestStore_Load(t *testing.T) {
 		require.NoError(t, err)
 		defer db.Close()
 
-		store := &Store{db: &DB{DB: db}}
+		pgDB := &DB{DB: db}
+		store := NewStore(pgDB)
 
 		mock.ExpectQuery(".*").
 			WillReturnError(sql.ErrNoRows)
