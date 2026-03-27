@@ -34,6 +34,7 @@ go_proto_library(
         "//proto/mcp_router/v1:mcp_router",
         "@com_github_grpc_ecosystem_grpc_gateway_v2//runtime",
         "@com_github_grpc_ecosystem_grpc_gateway_v2//utilities",
+        "@org_golang_google_genproto_googleapis_api//annotations",
         "@org_golang_google_grpc//:grpc",
         "@org_golang_google_grpc//codes",
         "@org_golang_google_grpc//grpclog",
