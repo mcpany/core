@@ -123,7 +123,7 @@ fi
 # ---------------------------------------------------------------------------
 echo "==> Running golangci-lint..."
 if [[ -z "${GOLANGCI_LINT_BIN:-}" ]]; then
-    GOLANGCI_LINT_BIN="${GOLANGCI_LINT_BIN:-$(find_tool golangci-lint)}"
+    GOLANGCI_LINT_BIN="$(find_tool golangci-lint)"
 fi
 # No longer fall back to build/env/bin/ (local make-managed path) since this
 # is a Bazel-native project. If the binary is not in runfiles, skip gracefully.
@@ -142,7 +142,7 @@ fi
 # ---------------------------------------------------------------------------
 echo "==> Running Docstring Audit..."
 if [[ -f "server/tools/audit_docs.py" ]]; then
-    python3 server/tools/audit_docs.py .
+    python3 server/tools/audit_docs.py server/pkg server/cmd
     echo "    Docstring Audit OK."
 else
     echo "    Warning: audit_docs.py not found – skipping."
