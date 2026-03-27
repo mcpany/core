@@ -1,4 +1,4 @@
-<!-- markdownlint-disable-file -->
+<!-- markdownlint-disable -->
 # Design Doc: Hardware-Locked Coordination Handshake (HLCH)
 
 **Status:** Draft | In Review | Approved

@@ -1,4 +1,4 @@
-<!-- markdownlint-disable-file -->
+<!-- markdownlint-disable -->
 # Feature Inventory: MCP Any
 
 ## Current Backlog (P0/P1)
