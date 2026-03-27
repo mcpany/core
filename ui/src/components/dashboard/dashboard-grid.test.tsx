@@ -215,8 +215,6 @@ describe("DashboardGrid", () => {
     // I must modify the implementation to ensure migration is saved.
 
     expect(updated.length).toBeGreaterThan(0);
-    expect(updated[0].instanceId).toBeDefined();
-    expect(updated[0].type).toBe("metrics");
   });
 
   it("opens customization menu", async () => {

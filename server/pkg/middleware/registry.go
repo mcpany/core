@@ -5,6 +5,7 @@ package middleware
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"sort"
 	"sync"
@@ -191,6 +192,7 @@ type StandardMiddlewares struct {
 	RecursiveContext *RecursiveContextManager
 	A2ABridge        *A2ABridgeMiddleware
 	ESB              *ESBMiddleware
+	CFIA             *CFIAMiddleware
 	Cleanup          func() error
 }
 
@@ -234,6 +236,7 @@ func InitStandardMiddlewares(
 	contextOptimizerConfig *configv1.ContextOptimizerConfig,
 	debuggerConfig *configv1.DebuggerConfig,
 	smartRecoveryConfig *configv1.SmartRecoveryConfig,
+	cfiaConfig *CFIAConfig,
 ) (*StandardMiddlewares, error) {
 	// 1. Logging
 	RegisterMCP("logging", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
@@ -465,6 +468,51 @@ func InitStandardMiddlewares(
 		}
 	})
 
+	// Context-File Integrity Attestation (CFIA)
+	var cfiaMiddleware *CFIAMiddleware
+	if cfiaConfig != nil && cfiaConfig.Enabled {
+		cfiaMiddleware = NewCFIAMiddleware(*cfiaConfig)
+		RegisterMCP("cfia", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
+			return func(next mcp.MethodHandler) mcp.MethodHandler {
+				return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+					if method != "tools/call" {
+						return next(ctx, method, req)
+					}
+
+					callReq, ok := req.(*mcp.CallToolRequest)
+					if !ok {
+						return next(ctx, method, req)
+					}
+
+					var args map[string]interface{}
+					if callReq.Params.Arguments != nil {
+						// Attempt to unmarshal json.RawMessage to map[string]interface{}
+						_ = json.Unmarshal(callReq.Params.Arguments, &args)
+					}
+
+					executionReq := &tool.ExecutionRequest{
+						ToolName:  callReq.Params.Name,
+						Arguments: args,
+					}
+
+					result, err := cfiaMiddleware.Execute(ctx, executionReq, func(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
+						return next(ctx, method, req)
+					})
+					if err != nil {
+						return nil, err
+					}
+
+					// Convert `any` back to `mcp.Result` safely
+					mcpResult, ok := result.(mcp.Result)
+					if ok {
+						return mcpResult, nil
+					}
+					return &mcp.CallToolResult{}, nil
+				}
+			}
+		})
+	}
+
 	return &StandardMiddlewares{
 		Audit:            audit,
 		GlobalRateLimit:  globalRateLimit,
@@ -474,6 +522,7 @@ func InitStandardMiddlewares(
 		RecursiveContext: recursiveContext,
 		A2ABridge:        a2aBridge,
 		ESB:              esbMiddleware,
+		CFIA:             cfiaMiddleware,
 		Cleanup:          audit.Close,
 	}, nil
 }

@@ -46,10 +46,3 @@ The release of OpenClaw v2026.3.7-beta.1's "ContextEngine" has introduced a stan
 * **2026-05-14:** Evolving to support OpenClaw v2026.3.7 "ContextEngine" lifecycle hooks. This update enables MCP Any to act as a universal host for pluggable context plugins, neutralizing "Context Amnesia" in deep, heterogeneous swarms.
 * **2026-05-15:** Introducing "Intent-Bound Memory Isolation." This evolution ensures that "Mission-Root" anchors are cryptographically protected and semantically isolated within the plugin host, preventing "Context Ghosting" where critical goals are discarded during automated state compression or summarization.
 * **2026-06-28:** Implementing "Multi-Tenant Context Isolation." This update leverages the matured OpenClaw v2026.3.7 lifecycle hooks to enforce strict state separation between disparate agent missions. It ensures that pluggable context strategies cannot "leak" state or reasoning fragments across framework boundaries, maintaining absolute cognitive sovereignty in shared execution environments.
-
-### Update: 2026-03-26 - Action-Chain Governance Integration
-**Context:** Today's market sync revealed the rise of "Insider Threat" agents and machine-speed "Swarm Attacks" (GTG-1002).
-**Architecture Adjustment:**
-* Integrating the **Action-Chain Sovereignty Monitor (ACSM)** into the ContextEngine lifecycle.
-* Mandatory validation of state-transition sequences against the mission-root manifest before plugin-mediated context updates.
-**Security Impact:** Prevents malicious subagents from using pluggable context hooks to "chain" unauthorized system actions at machine speed.

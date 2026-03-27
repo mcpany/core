@@ -193,6 +193,7 @@ func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Side Effects:
 //   - None.
+//
 // IsStreaming returns true if the tool supports streaming.
 //
 // Summary: Checks if the tool supports streaming execution.
