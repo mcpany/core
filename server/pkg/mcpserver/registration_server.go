@@ -59,6 +59,9 @@ var NewRegistrationServerHook func(bus interface{}, authManager interface{}) (*R
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 func NewRegistrationServer(bus *bus.Provider, authManager *auth.Manager) (*RegistrationServer, error) {
 	if NewRegistrationServerHook != nil {
 		// The type assertion is safe because this is a test-only hook.
@@ -265,6 +268,9 @@ func (s *RegistrationServer) UnregisterService(_ context.Context, _ *v1.Unregist
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 func (s *RegistrationServer) InitiateOAuth2Flow(ctx context.Context, req *v1.InitiateOAuth2FlowRequest) (*v1.InitiateOAuth2FlowResponse, error) {
 	if req.GetServiceId() == "" && req.GetCredentialId() == "" {
 		return nil, status.Error(codes.InvalidArgument, "either service_id or credential_id is required")
@@ -355,6 +361,9 @@ func (s *RegistrationServer) GetServiceStatus(_ context.Context, _ *v1.GetServic
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 func (s *RegistrationServer) GetService(ctx context.Context, req *v1.GetServiceRequest) (*v1.GetServiceResponse, error) {
 	if req.GetServiceName() == "" {
 		return nil, status.Errorf(codes.InvalidArgument, "service_name is required")
@@ -414,6 +423,9 @@ func (s *RegistrationServer) mustEmbedUnimplementedRegistrationServiceServer() {
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 func (s *RegistrationServer) ListServices(ctx context.Context, _ *v1.ListServicesRequest) (*v1.ListServicesResponse, error) {
 	correlationID := uuid.New().String()
 	resultChan := make(chan *bus.ServiceListResult, 1)
