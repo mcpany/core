@@ -125,11 +125,16 @@ func setupPeerConnection() error {
 	return nil
 }
 
-// main starts the mock WebRTC weather server.
 func main() {
-	if err := setupPeerConnection(); err != nil {
-		slog.Error("webrtc_weather_server: Failed to setup peer connection", "error", err)
+	if err := run(); err != nil {
+		slog.Error("webrtc_weather_server: Failed to run", "error", err)
 		os.Exit(1)
+	}
+}
+
+func run() error {
+	if err := setupPeerConnection(); err != nil {
+		return err
 	}
 
 	port := flag.Int("port", 0, "Port to listen on. If 0, a random available port will be chosen and printed to stdout.")
@@ -138,9 +143,9 @@ func main() {
 	addr := fmt.Sprintf(":%d", *port)
 	listener, err := (&net.ListenConfig{}).Listen(context.Background(), "tcp", addr)
 	if err != nil {
-		slog.Error("webrtc_weather_server: Failed to listen on a port", "error", err)
-		os.Exit(1)
+		return fmt.Errorf("failed to listen: %w", err)
 	}
+	defer func() { _ = listener.Close() }()
 
 	actualPort := listener.Addr().(*net.TCPAddr).Port
 	slog.Info("webrtc_weather_server: Listening on port", "port", actualPort)
@@ -161,10 +166,5 @@ func main() {
 		ReadHeaderTimeout: 3 * time.Second,
 	}
 
-	if err := server.Serve(listener); err != nil && err != http.ErrServerClosed {
-		slog.Error("webrtc_weather_server: Server failed", "error", err)
-		os.Exit(1)
-	}
-
-	slog.Info("webrtc_weather_server: Server shut down.")
+	return server.Serve(listener)
 }
