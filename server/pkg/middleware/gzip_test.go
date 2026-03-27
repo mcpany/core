@@ -38,12 +38,14 @@ func TestGzipCompressionMiddleware(t *testing.T) {
 		// Verify content is gzipped
 		reader, err := gzip.NewReader(rec.Body)
 		if err != nil {
+				_ = err
 			t.Fatalf("Failed to create gzip reader: %v", err)
 		}
 		defer reader.Close()
 
 		body, err := io.ReadAll(reader)
 		if err != nil {
+				_ = err
 			t.Fatalf("Failed to read gzip body: %v", err)
 		}
 
@@ -165,7 +167,11 @@ func TestGzipCompressionMiddleware(t *testing.T) {
 			if len(firstFlush) == 0 {
 				t.Error("Expected data to be written before flush")
 			}
-			if !(firstFlush[0] == 0x1f && firstFlush[1] == 0x8b) {
+			// Check for Gzip magic bytes
+			if len(firstFlush) > 2 && firstFlush[0] == 0x1f && firstFlush[1] == 0x8b {
+				_ = err
+				// Good
+			} else {
 				t.Errorf("Expected gzip header in flushed data, got: %x", firstFlush)
 			}
 		}

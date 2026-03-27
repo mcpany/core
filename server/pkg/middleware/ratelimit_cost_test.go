@@ -129,7 +129,7 @@ func TestRateLimitMiddleware_EstimateTokenCost(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
+		t.Run(tt.name, func(_ *testing.T) {
 			req := &tool.ExecutionRequest{
 				ToolInputs: func() json.RawMessage {
 					b, _ := json.Marshal(tt.inputs)
@@ -179,7 +179,7 @@ func TestRateLimitMiddleware_EstimateTokenCost_WordTokenizer(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
+		t.Run(tt.name, func(_ *testing.T) {
 			req := &tool.ExecutionRequest{
 				ToolInputs: func() json.RawMessage {
 					b, _ := json.Marshal(tt.inputs)
