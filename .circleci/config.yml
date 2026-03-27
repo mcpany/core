@@ -39,6 +39,7 @@ jobs:
              curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
              chmod 700 get_helm.sh
              sudo ./get_helm.sh
+             export PATH=$PATH:/usr/local/bin
              python3 -m venv venv
              . venv/bin/activate
              pip install pre-commit
@@ -59,7 +60,7 @@ jobs:
           command: |
             . venv/bin/activate
             # Ensure PATH includes tool install dir
-            export PATH=$PWD/build/env/bin:$PATH
+            export PATH=$PWD/build/env/bin:/usr/local/bin:$PATH
             make lint
       - save_cache:
           key: v4-lint-{{ checksum "server/go.sum" }}-{{ checksum "server/.pre-commit-config.yaml" }}
