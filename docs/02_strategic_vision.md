@@ -1084,24 +1084,9 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Attention-Locked Tooling (ALT)**: To neutralize "Context-Hijacked Exfiltration," we are introducing ALT. High-risk tool calls (e.g., shell, filesystem write) will be cryptographically locked to specific, user-verified "Attention Anchors." If the agent attempts to call a high-risk tool while its reasoning trace shows "Injected Context" as the primary driver, the ALT middleware will interdict the call.
 - **Semantic Lineage Tracking**: Supporting the stability of "Headless Handoffs," MCP Any will implement Semantic Lineage Tracking. This provides a cryptographically signed "Chain of Reason" that verifies the lineage of a tool call back to the mission-root intent, ensuring that "Injected Context" cannot shadow the root authority.
 
----
-
 ## Strategic Evolution: [2026-06-21]
-### Focus: Mission-Root Continuity & Mailbox Injection Shielding
-**Context**: The emergence of "Mailbox Splicing" in horizontal meshes and the requirement for hardware-attested budget persistence (ARE v1.7) confirm that **Message Integrity** must be hardware-locked. Simultaneously, the industry shift toward long-running, resilient swarms (OpenClaw v3.1.2) demands that infrastructure provides **Mission-Root Continuity** that survives system restarts and transport resets.
-**Strategic Pivot**:
-- **Mailbox Injection Shield (MIS)**: MCP Any will evolve to act as the authoritative gatekeeper for inter-teammate coordination. We will implement MIS, mandating TPM 2.0 signatures for every mailbox message and validating task-claiming metadata against a hardware-attested mission manifest to neutralize splicing exploits.
-- **Mission-Root Continuity Provider (MRCP)**: Supporting the stability of long-running missions, we are introducing MRCP. This service will utilize hardware-bound monotonic counters and "Stateful Resumption Tokens" to ensure that agent swarms can resume their specific mission-root context across reboots without re-attestation overhead.
-- **Hardware-Attested Budget Persistence**: To counter "Budget Reset" exploits, we are mandating ARE v1.7 compliance. Reasoning-effort and token budgets will be cryptographically pinned to the hardware-attested mission session, ensuring they remain immutable even during framework-neutral handoffs.
-- **Logic-Grafting Interdiction Hub**: We are evolving the ARI Hub to support "Post-Resumption Alignment." Every resumed mission branch must pass a semantic consistency check against the mission-root manifest before sub-missions are allowed to spawn, ensuring that "Dormant" logic bombs cannot be triggered during mission resumption.
 
----
+### Pivot toward "Mission-Root Continuity"
+Today's ecosystem analysis reveals a critical shift from ephemeral agent sessions to long-running, persistent mission roots. With the emergence of **Mailbox Splicing** exploits in Claude Code and hardware-locked reasoning budgets in Gemini CLI (ARE v1.7), MCP Any must evolve from a simple protocol gateway into an authoritative **Mission Sovereignty Provider**.
 
-## Strategic Evolution: [2026-06-21]
-### Focus: Mission-Root Continuity & Mailbox Injection Shielding
-**Context**: The emergence of "Mailbox Splicing" in horizontal meshes and the requirement for hardware-attested budget persistence (ARE v1.7) confirm that **Message Integrity** must be hardware-locked. Simultaneously, the industry shift toward long-running, resilient swarms (OpenClaw v3.1.2) demands that infrastructure provides **Mission-Root Continuity** that survives system restarts and transport resets.
-**Strategic Pivot**:
-- **Mailbox Injection Shield (MIS)**: MCP Any will evolve to act as the authoritative gatekeeper for inter-teammate coordination. We will implement MIS, mandating TPM 2.0 signatures for every mailbox message and validating task-claiming metadata against a hardware-attested mission manifest to neutralize splicing exploits.
-- **Mission-Root Continuity Provider (MRCP)**: Supporting the stability of long-running missions, we are introducing MRCP. This service will utilize hardware-bound monotonic counters and "Stateful Resumption Tokens" to ensure that agent swarms can resume their specific mission-root context across reboots without re-attestation overhead.
-- **Hardware-Attested Budget Persistence**: To counter "Budget Reset" exploits, we are mandating ARE v1.7 compliance. Reasoning-effort and token budgets will be cryptographically pinned to the hardware-attested mission session, ensuring they remain immutable even during framework-neutral handoffs.
-- **Logic-Grafting Interdiction Hub**: We are evolving the ARI Hub to support "Post-Resumption Alignment." Every resumed mission branch must pass a semantic consistency check against the mission-root manifest before sub-missions are allowed to spawn, ensuring that "Dormant" logic bombs cannot be triggered during mission resumption.
+Our immediate architectural priority is the implementation of the **Mailbox Injection Shield (MIS)** and **Mission-Root Continuity Provider (MRCP)**. These services will ensure that inter-agent coordination is hardware-attested and that mission state can survive system restarts without losing cryptographic alignment or budget integrity.

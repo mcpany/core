@@ -1423,14 +1423,3 @@
 ### Priority Shifts
 - **Mailbox Integrity Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory **MIS** integration to counter mailbox splicing.
 - **ARI Hub**: (Re-affirmed P0) Evolving to support **Post-Resumption Alignment** as a primary stability guarantee.
-
-## Evolution: [2026-06-21] Updates
-
-### Proposed Additions
-- **Mailbox Injection Shield (MIS)**: (P0) Authoritative security gatekeeper for inter-teammate coordination, mandating TPM 2.0 signatures for mailbox messages.
-- **Mission-Root Continuity Provider (MRCP)**: (P0) Resumption service utilizing hardware-bound monotonic counters to preserve context across system restarts.
-- **Hardware-Attested Budget Persistence**: (P1) Resource management extension enforcing ARE v1.7 budgets across mission resumption cycles.
-
-### Priority Shifts
-- **Mailbox Integrity Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory MIS integration to counter mailbox splicing.
-- **ARI Hub**: (Re-affirmed P0) Evolving to support Post-Resumption Alignment as a primary stability guarantee.

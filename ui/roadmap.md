@@ -619,8 +619,3 @@
 - [ ] **[P0] Mailbox Integrity Dashboard**: Visualize hardware-attested message signatures and splicing alerts in horizontal meshes. (Added: 2026-06-21)
 - [ ] **[P0] Mission Resumption Workspace**: UI for managing hardware-locked resumption tokens and mission checkpoints. (Added: 2026-06-21)
 - [ ] **[P1] Reasoning Budget Widget**: Real-time tracker for ARE v1.7 mission budgets and hardware-attested limits. (Added: 2026-06-21)
-
-### Upcoming: [2026-06-21]
-- [ ] **[P0] Mailbox Integrity Dashboard**: Visualize hardware-attested message signatures and splicing alerts in horizontal meshes. (Added: 2026-06-21)
-- [ ] **[P0] Mission Resumption Workspace**: UI for managing hardware-locked resumption tokens and mission checkpoints. (Added: 2026-06-21)
-- [ ] **[P1] Reasoning Budget Widget**: Real-time tracker for ARE v1.7 mission budgets and hardware-attested limits. (Added: 2026-06-21)

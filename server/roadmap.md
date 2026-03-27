@@ -781,8 +781,3 @@ These features represent the next logical steps for the product, focusing on Ent
 - **[P0] Mailbox Injection Shield (MIS)**: Implement TPM 2.0 message signing and manifest validation for teammate mailboxes. (Added: 2026-06-21)
 - **[P0] Mission-Root Continuity Provider (MRCP)**: Implement hardware-bound stateful resumption for long-running missions. (Added: 2026-06-21)
 - **[P1] ARE v1.7 Compliance**: Enforce hardware-attested reasoning-effort and token budget persistence across mission resumptions. (Added: 2026-06-21)
-
-### Upcoming: [2026-06-21]
-- **[P0] Mailbox Injection Shield (MIS)**: Implement TPM 2.0 message signing and manifest validation for teammate mailboxes. (Added: 2026-06-21)
-- **[P0] Mission-Root Continuity Provider (MRCP)**: Implement hardware-bound stateful resumption for long-running missions. (Added: 2026-06-21)
-- **[P1] ARE v1.7 Compliance**: Enforce hardware-attested reasoning-effort and token budget persistence across mission resumptions. (Added: 2026-06-21)
