@@ -7,23 +7,6 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-/**
- * BlackboardDashboard component for managing shared blackboard keys.
- *
- * Summary: Displays a list of shared agent blackboard variables.
- *
- * Parameters:
- *   - None.
- *
- * Returns:
- *   - JSX.Element: The rendered dashboard component.
- *
- * Errors/Throws:
- *   - None explicitly thrown by the component itself.
- *
- * Side Effects:
- *   - Uses local React state to manage keys.
- */
 export function BlackboardDashboard() {
     const [keys, setKeys] = useState([
         { id: "1", agentId: "agent-a", key: "session_token", value: "abc-123", intent: "auth" },

@@ -10,8 +10,6 @@ import (
 )
 
 // MonitorAgent represents a security/policy validator in the quorum.
-//
-// Summary: Evaluates a request and returns a cryptographically bound signature.
 type MonitorAgent interface {
 	// ValidateRequest evaluates a request and returns a cryptographically bound
 	// signature if approved, or an error if rejected.
@@ -21,8 +19,7 @@ type MonitorAgent interface {
 }
 
 // CAHAdapter acts as the central arbiter for verifying agent interactions.
-//
-// Summary: Manages a decentralized quorum of MonitorAgents to collect approvals.
+// It manages a decentralized quorum of MonitorAgents to collect approvals.
 type CAHAdapter struct {
 	monitors        []MonitorAgent
 	quorumThreshold int
@@ -30,8 +27,6 @@ type CAHAdapter struct {
 }
 
 // NewCAHAdapter creates a new Cognitive Attestation Hub (CAH) Adapter.
-//
-// Summary: Initializes and returns a new CAHAdapter instance.
 //
 // Parameters:
 //   - monitors: A list of MonitorAgent instances that form the quorum.
@@ -63,8 +58,6 @@ func NewCAHAdapter(monitors []MonitorAgent, threshold int, timeout time.Duration
 }
 
 // ValidateWithQuorum initiates a consensus gathering process for a given request.
-//
-// Summary: Starts a consensus gathering process among the monitor quorum.
 //
 // Parameters:
 //   - ctx: The context for the request.
