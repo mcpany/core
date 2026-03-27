@@ -39,22 +39,23 @@ test.describe('Onboarding Flow', () => {
   });
 
   test('shows dashboard when services exist', async ({ page, request }) => {
-    // 1. We inject a reliable mocked endpoint for /api/v1/services directly to bypass
-    // database seeding eventual consistency, guaranteeing we get the "dashboard" state
-    await page.route('**/api/v1/services', async route => {
-        await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify([{
-                "id": "svc_test",
-                "name": "Test Service",
-                "status": "UP",
-                "command_line_service": { "command": "echo" }
-            }])
-        });
-    });
+    // Seed real service via database to strictly adhere to "Real Data Law"
+    await seedServices(request);
 
-    // 2. Login
+    // Poll the backend API continuously to ensure eventual consistency
+    // before making the frontend navigate to the dashboard
+    await expect.poll(async () => {
+        const response = await request.get('/api/v1/services');
+        if (!response.ok()) return false;
+        const data = await response.json();
+        return data && data.length > 0;
+    }, {
+        message: 'wait for seeded service to appear in API',
+        timeout: 15000,
+        intervals: [1000, 2000]
+    }).toBeTruthy();
+
+    // Login
     await page.goto('/login');
     await page.fill('input[name="username"]', 'e2e-admin-onboarding');
     await page.fill('input[name="password"]', 'password');
