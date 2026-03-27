@@ -52,9 +52,7 @@ jobs:
             curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.64.5
             export PATH=$PATH:$(go env GOPATH)/bin
             cd server
-            go mod edit -dropreplace github.com/mcpany/core/proto || true
-            go mod edit -replace github.com/mcpany/core/proto=../proto || true
-            go get -u github.com/mcpany/core/proto@latest || true
+            go mod edit -replace github.com/mcpany/core/proto=github.com/mcpany/core/proto@main || true
             go mod tidy || true
             golangci-lint run --timeout 10m
       - save_cache:
