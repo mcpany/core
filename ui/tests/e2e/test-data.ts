@@ -5,7 +5,7 @@
 
 import { request, APIRequestContext } from '@playwright/test';
 
-const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
+const BASE_URL = process.env.BACKEND_URL || 'http://127.0.0.1:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
 const ECHO_SERVER_BASE_URL = process.env.UI_HTTP_ECHO_BASE_URL || 'http://ui-http-echo-server:5678';
 const HEADERS = { 'X-API-Key': API_KEY, 'Content-Type': 'application/json' };

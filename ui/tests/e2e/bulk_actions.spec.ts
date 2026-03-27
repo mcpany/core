@@ -90,7 +90,7 @@ test.describe('Bulk Service Actions', () => {
       // E2E asserts via UI is enough.
       await page.waitForTimeout(500);
 
-      const res1 = await request.get(`${process.env.BACKEND_URL || 'http://localhost:50050'}/api/v1/services/svc_01`, {
+      const res1 = await request.get(`${process.env.BACKEND_URL || 'http://127.0.0.1:50050'}/api/v1/services/svc_01`, {
           headers: { 'X-API-Key': 'test-token' }
       });
       // Do not hard crash test via backend validation if not fully implemented in mocked server, UI test is sufficient for "bulk action" flow completion.
@@ -114,7 +114,7 @@ test.describe('Bulk Service Actions', () => {
 
       // Verify via API that it's deleted
       await expect.poll(async () => {
-          const res2 = await request.get(`${process.env.BACKEND_URL || 'http://localhost:50050'}/api/v1/services/svc_02`, {
+          const res2 = await request.get(`${process.env.BACKEND_URL || 'http://127.0.0.1:50050'}/api/v1/services/svc_02`, {
               headers: { 'X-API-Key': 'test-token' }
           });
           return res2.status();
