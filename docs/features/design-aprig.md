@@ -55,3 +55,10 @@ MCP Any needs to act as the final gate for any tool call that generates or modif
 
 ## 7. Evolutionary Changelog
 *   **2026-05-28:** Initial Document Creation.
+
+### Update: 2026-03-28 - Addressing Command and Prompt Injection in PR Audits
+**Context:** Today's market sync revealed critical injection vulnerabilities in Gemini CLI and an 87% vulnerability rate in agent-generated code.
+**Architecture Adjustment:**
+*   **Specialized Injection Auditors**: Introducing a new auditor sub-type within APRIG specifically trained to detect command and prompt injection patterns.
+*   **Mandatory Schema-Aware Scanning**: Auditors will now cross-reference proposed code changes against the schemas of the tools the agent is authorized to call.
+**Security Impact:** Prevents "Ghost-Execution" and neutralizing supply chain attacks embedded in generated pull requests.

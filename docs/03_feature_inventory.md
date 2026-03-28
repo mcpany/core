@@ -1723,3 +1723,13 @@
 ### Priority Shifts
 - **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
 - **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.
+
+## Evolution: [2026-03-28] Updates
+
+### Proposed Additions
+- **Plugin Market Ingestion Adapter**: (P1) Secure bridge for importing and profiling tools from third-party markets like OpenClaw, ensuring local policy compliance.
+- **Injection-Aware PR Auditor**: (P0) Specialized security auditor for the APRIG middleware that performs deep semantic scanning for command and prompt injection vulnerabilities in agent-generated code.
+
+### Priority Shifts
+- **Autonomous PR Integrity Gate (APRIG)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Injection-Aware** auditing.
+- **Structural Metadata Sanitizer**: (Re-affirmed P0) Designated as the primary gate for **Plugin Market Ingestion** to neutralize instruction injection in schemas.

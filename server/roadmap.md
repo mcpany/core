@@ -933,3 +933,7 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Zero-Copy BSH Transport**: Shared-memory based state transfer for sub-millisecond swarm handoffs. (Added: 2026-03-25)
 *   **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited Recursive Intent Delegation. (Added: 2026-03-25)
 *   **[P1] Predictive Resource Locking**: Intent-aware concurrency control for the Shared Blackboard. (Added: 2026-03-25)
+
+#### Upcoming (2026-03-28 Evolution)
+*   **[P0] Injection-Aware PR Auditor**: Specialized security auditor for APRIG detecting command and prompt injection in agent code. (Added: 2026-03-28)
+*   **[P1] Plugin Market Ingestion Adapter**: Secure bridge for importing and profiling tools from third-party markets like OpenClaw. (Added: 2026-03-28)
