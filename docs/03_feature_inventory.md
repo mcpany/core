@@ -1723,3 +1723,14 @@
 ### Priority Shifts
 - **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
 - **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.
+
+## Evolution: [2026-07-09] Updates
+
+### Proposed Additions
+- **Mesh-Resident Policy Synthesizer (MRPS)**: (P0) Authoritative local service that dynamically generates hardware-attested security policies based on real-time mesh behavior.
+- **Post-Quantum Mesh Handshake (PQMH) Provider**: (P0) Security service implementing NIST-standard post-quantum resistant algorithms for long-term mesh integrity.
+- **Bidding-War Deadlock Resolver**: (P0) High-speed arbiter for the DCA broker enforcing exponential backoff and intent-prioritization for bidding subagents.
+
+### Priority Shifts
+- **DCA Negotiation Guard**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Bidding-War** deadlock resolution.
+- **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving to support **Higher-Dimensional** verification including inference-path entropy.

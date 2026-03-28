@@ -933,3 +933,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Zero-Copy BSH Transport**: Shared-memory based state transfer for sub-millisecond swarm handoffs. (Added: 2026-03-25)
 *   **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited Recursive Intent Delegation. (Added: 2026-03-25)
 *   **[P1] Predictive Resource Locking**: Intent-aware concurrency control for the Shared Blackboard. (Added: 2026-03-25)
+
+#### Upcoming (2026-07-09 Evolution)
+* **[P0] Mesh-Resident Policy Synthesizer (MRPS)**: Authoritative local service for dynamic, hardware-attested policy generation. (Added: 2026-07-09)
+* **[P0] Post-Quantum Mesh Handshake (PQMH)**: Transition A2A transport to NIST-standard quantum-resistant algorithms (Kyber/Dilithium). (Added: 2026-07-09)
+* **[P0] Bidding-War Deadlock Resolver**: High-speed arbiter for DCA broker enforcing exponential backoff for bidding subagents. (Added: 2026-07-09)
