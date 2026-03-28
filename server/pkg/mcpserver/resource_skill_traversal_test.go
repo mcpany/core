@@ -27,12 +27,12 @@ func TestSkillResource_PathTraversal(t *testing.T) {
 
 	// Create a secret file outside the skill directory
 	secretFile := filepath.Join(tmpDir, "secret.txt")
-	err = os.WriteFile(secretFile, []byte("super secret"), 0600)
+	err = os.WriteFile(secretFile, []byte("super secret"), 0644)
 	require.NoError(t, err)
 
 	// Create a valid skill asset
 	assetFile := filepath.Join(skillDir, "asset.txt")
-	err = os.WriteFile(assetFile, []byte("public asset"), 0600)
+	err = os.WriteFile(assetFile, []byte("public asset"), 0644)
 	require.NoError(t, err)
 
 	s := &skill.Skill{

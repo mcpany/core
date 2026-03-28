@@ -977,7 +977,7 @@ func validateWebrtcService(webrtcService *configv1.WebrtcUpstreamService) error 
 	return nil
 }
 
-func validateUpstreamAuthentication(ctx context.Context, authConfig *configv1.Authentication, _ AuthValidationContext) error {
+func validateUpstreamAuthentication(ctx context.Context, authConfig *configv1.Authentication, authCtx AuthValidationContext) error {
 	switch authConfig.WhichAuthMethod() {
 	case configv1.Authentication_ApiKey_case:
 		return validateAPIKeyAuth(ctx, authConfig.GetApiKey(), authCtx)

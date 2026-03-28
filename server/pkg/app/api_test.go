@@ -1229,11 +1229,8 @@ func TestHandleLogsWS(t *testing.T) {
 	defer ts.Close()
 
 	u := "ws" + strings.TrimPrefix(ts.URL, "http")
-	ws, resp, err := websocket.DefaultDialer.Dial(u, nil)
+	ws, _, err := websocket.DefaultDialer.Dial(u, nil)
 	require.NoError(t, err)
-	if resp != nil {
-		resp.Body.Close()
-	}
 	defer ws.Close()
 
 	time.Sleep(100 * time.Millisecond)
