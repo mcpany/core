@@ -237,6 +237,7 @@ func InitStandardMiddlewares(
 	debuggerConfig *configv1.DebuggerConfig,
 	smartRecoveryConfig *configv1.SmartRecoveryConfig,
 	cfiaConfig *CFIAConfig,
+	ccigConfig *CCIGConfig,
 ) (*StandardMiddlewares, error) {
 	// 1. Logging
 	RegisterMCP("logging", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
@@ -508,6 +509,47 @@ func InitStandardMiddlewares(
 						return mcpResult, nil
 					}
 					return &mcp.CallToolResult{}, nil
+				}
+			}
+		})
+	}
+
+	// CI/CD Cache Integrity Guard (CCIG)
+	var ccigMiddleware *CCIGMiddleware
+	if ccigConfig != nil && ccigConfig.Enabled {
+		ccigMiddleware = NewCCIGMiddleware(*ccigConfig)
+		RegisterMCP("ccig", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
+			return func(next mcp.MethodHandler) mcp.MethodHandler {
+				return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+					if method != "tools/call" {
+						return next(ctx, method, req)
+					}
+
+					callReq, ok := req.(*mcp.CallToolRequest)
+					if !ok {
+						return next(ctx, method, req)
+					}
+
+					var args map[string]interface{}
+					if callReq.Params.Arguments != nil {
+						// Attempt to unmarshal json.RawMessage to map[string]interface{}
+						_ = json.Unmarshal(callReq.Params.Arguments, &args)
+					}
+
+					executionReq := &tool.ExecutionRequest{
+						ToolName:  callReq.Params.Name,
+						Arguments: args,
+					}
+
+					var res mcp.Result
+					var mErr error
+					_, mErr = ccigMiddleware.Execute(ctx, executionReq, func(c context.Context, tr *tool.ExecutionRequest) (any, error) {
+						// Pass to next middleware/handler
+						res, mErr = next(c, method, req)
+						return res, mErr
+					})
+
+					return res, mErr
 				}
 			}
 		})
