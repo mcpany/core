@@ -50,6 +50,7 @@ go_test(
         "oauth2_test.go",
         "oauth_config_test.go",
         "oauth_test.go",
+        "oauth_test_server_test.go",
         "oidc_callback_test.go",
         "oidc_cookie_test.go",
         "oidc_test.go",
