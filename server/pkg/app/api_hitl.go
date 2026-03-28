@@ -9,17 +9,28 @@ import (
 
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/middleware"
 )
+
+// Define structures locally to avoid circular dependency
+type hitlApprovalRequest struct {
+	ExecutionID string `json:"execution_id"`
+	ToolName    string `json:"tool_name"`
+	RequireMFA  bool   `json:"require_mfa"`
+}
+
+type hitlApprovalResponse struct {
+	ExecutionID string `json:"execution_id"`
+	Approved    bool   `json:"approved"`
+}
 
 type HITLState struct {
 	mu        sync.RWMutex
-	approvals map[string]middleware.HITLApprovalRequest
+	approvals map[string]hitlApprovalRequest
 }
 
 func newHITLState() *HITLState {
 	return &HITLState{
-		approvals: make(map[string]middleware.HITLApprovalRequest),
+		approvals: make(map[string]hitlApprovalRequest),
 	}
 }
 
@@ -28,12 +39,12 @@ var globalHITLState = newHITLState()
 func init() {
 	// Seed some initial data for testing/UI purposes
 	globalHITLState.mu.Lock()
-	globalHITLState.approvals["1"] = middleware.HITLApprovalRequest{
+	globalHITLState.approvals["1"] = hitlApprovalRequest{
 		ExecutionID: "1",
 		ToolName:    "database.drop_table",
 		RequireMFA:  true,
 	}
-	globalHITLState.approvals["2"] = middleware.HITLApprovalRequest{
+	globalHITLState.approvals["2"] = hitlApprovalRequest{
 		ExecutionID: "2",
 		ToolName:    "aws.terminate_instance",
 		RequireMFA:  false,
@@ -43,9 +54,13 @@ func init() {
 
 func (a *Application) mountHITL(mux *http.ServeMux) {
 	// First, subscribe to hitl.requests
-	reqBus, err := bus.GetBus[middleware.HITLApprovalRequest](a.bus, "hitl.requests")
+	if a.busProvider == nil {
+		logging.GetLogger().Warn("mountHITL: busProvider is nil")
+		return
+	}
+	reqBus, err := bus.GetBus[hitlApprovalRequest](a.busProvider, "hitl.requests")
 	if err == nil {
-		reqBus.Subscribe(context.Background(), "hitl.requests", func(req middleware.HITLApprovalRequest) {
+		reqBus.Subscribe(context.Background(), "hitl.requests", func(req hitlApprovalRequest) {
 			globalHITLState.mu.Lock()
 			globalHITLState.approvals[req.ExecutionID] = req
 			globalHITLState.mu.Unlock()
@@ -115,7 +130,7 @@ func (a *Application) mountHITL(mux *http.ServeMux) {
 		// In a real app we'd verify the MFA code here against the user profile
 
 		// Publish the response
-		resBus, err := bus.GetBus[middleware.HITLApprovalResponse](a.bus, "hitl.responses."+id)
+		resBus, err := bus.GetBus[hitlApprovalResponse](a.busProvider, "hitl.responses."+id)
 		if err != nil {
 			http.Error(w, "Internal error", http.StatusInternalServerError)
 			return
@@ -123,7 +138,7 @@ func (a *Application) mountHITL(mux *http.ServeMux) {
 
 		approved := reqBody.Action == "approved"
 
-		err = resBus.Publish(r.Context(), "hitl.responses."+id, middleware.HITLApprovalResponse{
+		err = resBus.Publish(r.Context(), "hitl.responses."+id, hitlApprovalResponse{
 			ExecutionID: id,
 			Approved:    approved,
 		})
