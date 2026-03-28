@@ -34,6 +34,7 @@ type Span struct {
 	Output       map[string]any `json:"output,omitempty"`
 	ErrorMessage string         `json:"errorMessage,omitempty"`
 	Children     []Span         `json:"children,omitempty"`
+	Attributes   map[string]any `json:"attributes,omitempty"`
 }
 
 // Trace represents a full trace.
@@ -97,15 +98,29 @@ func toTrace(entry audit.Entry) *Trace {
 		Input:        input,
 		Output:       output,
 		ErrorMessage: entry.Error,
+		Attributes:   make(map[string]any),
+	}
+
+	// For the new UI: populate rootSpan.attributes['mcp.request_payload']
+	// and rootSpan.attributes['mcp.response_payload']
+	if len(entry.Arguments) > 0 {
+		span.Attributes["mcp.request_payload"] = string(entry.Arguments)
+	}
+
+	if entry.Result != nil {
+		if b, err := json.Marshal(entry.Result); err == nil {
+			span.Attributes["mcp.response_payload"] = string(b)
+		}
+	}
+
+	if entry.Error != "" {
+		span.Attributes["error.message"] = entry.Error
 	}
 
 	// Inject mock diff for seeding
 	if entry.ToolName == "code-refactor" {
 		if span.Output != nil && span.Output["diff"] != nil {
-			if span.Input == nil {
-				span.Input = make(map[string]any)
-			}
-			span.Input["mcp.response_diff"] = span.Output["diff"]
+			span.Attributes["mcp.response_diff"] = span.Output["diff"]
 		}
 	}
 
@@ -319,6 +334,14 @@ func generateMockAuditEntries() []audit.Entry {
 	child2Args, _ := json.Marshal(map[string]any{
 		"files": []string{"data_q3.xlsx"},
 	})
+	complexArgs, _ := json.Marshal(map[string]any{
+		"context": "high-priority",
+		"filters": map[string]any{
+			"region": "US",
+			"tags": []string{"urgent", "finance"},
+		},
+		"query": "Select top 5 accounts by revenue",
+	})
 
 	entries := []audit.Entry{
 		{
@@ -398,6 +421,39 @@ func generateMockAuditEntries() []audit.Entry {
 			Error:      "Timeout: Query exceeded 5000ms limit",
 			Duration:   "5005ms",
 			DurationMs: 5005,
+		},
+		{
+			Timestamp:  now.Add(1500 * time.Millisecond),
+			ToolName:   "complex-analysis-tool",
+			UserID:     "system",
+			ProfileID:  "default",
+			TraceID:    traceID,
+			SpanID:     traceID + "-5",
+			ParentID:   traceID + "-0",
+			Arguments:  json.RawMessage(complexArgs),
+			Result: map[string]any{
+				"status": "success",
+				"data": []map[string]any{
+					{
+						"id": "ACC-001",
+						"name": "Acme Corp",
+						"revenue": 1000000,
+						"active": true,
+					},
+					{
+						"id": "ACC-002",
+						"name": "GlobalTech",
+						"revenue": 850000,
+						"active": false,
+					},
+				},
+				"metadata": map[string]any{
+					"processingTimeMs": 45,
+					"cached": false,
+				},
+			},
+			Duration:   "145ms",
+			DurationMs: 145,
 		},
 	}
 	return entries
