@@ -102,7 +102,7 @@ const mapUpstreamServiceConfig = (s: any): UpstreamServiceConfig => ({
     connectionPool: s.connection_pool,
     httpService: s.http_service ? HttpUpstreamService.fromJSON(s.http_service) : undefined,
     grpcService: s.grpc_service,
-    commandLineService: s.command_line_service,
+    commandLineService: s.command_line_service ? CommandLineUpstreamService.fromJSON(s.command_line_service) : undefined,
     mcpService: s.mcp_service,
     upstreamAuth: s.upstream_auth,
     preCallHooks: s.pre_call_hooks,
@@ -1238,7 +1238,7 @@ export const apiClient = {
      *
      * Side Effects: Makes a GET request to /api/v1/resources.
      */
-    listResources: async () => {
+    listResources: async (): Promise<{ resources: ResourceDefinition[] }> => {
         const res = await fetchWithAuth('/api/v1/resources');
         if (!res.ok) throw new Error('Failed to list resources');
         return res.json();

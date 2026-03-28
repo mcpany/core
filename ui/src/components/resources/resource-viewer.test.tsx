@@ -24,6 +24,13 @@ vi.mock('react-syntax-highlighter/dist/esm/light', () => {
     };
 });
 
+// Mock RichResultViewer to maintain consistency in tests
+vi.mock('@/components/tools/rich-result-viewer', () => ({
+  RichResultViewer: ({ result }: { result: any }) => (
+    <pre data-testid="code-block">{JSON.stringify(result)}</pre>
+  ),
+}));
+
 describe('ResourceViewer', () => {
   it('renders loading state', () => {
     render(<ResourceViewer content={null} loading={true} />);
@@ -42,7 +49,8 @@ describe('ResourceViewer', () => {
         text: '{"foo": "bar"}'
     };
     render(<ResourceViewer content={content} loading={false} />);
-    expect(screen.getByTestId('code-block')).toHaveTextContent('{"foo": "bar"}');
+    const codeBlock = screen.getByTestId('code-block');
+    expect(codeBlock.textContent?.replace(/\s/g, '')).toBe('{"foo":"bar"}');
   });
 
   it('renders Markdown content', () => {

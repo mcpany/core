@@ -9,6 +9,13 @@ import { ResourcePreviewModal } from './resource-preview-modal';
 import { apiClient, ResourceDefinition, ResourceContent } from '@/lib/client';
 import { useToast } from '@/hooks/use-toast';
 
+// Mock RichResultViewer to maintain consistency in tests
+vi.mock('@/components/tools/rich-result-viewer', () => ({
+  RichResultViewer: ({ result }: { result: any }) => (
+    <pre data-testid="code-block">{JSON.stringify(result)}</pre>
+  ),
+}));
+
 // Mock dependencies
 vi.mock('@/lib/client', () => ({
   apiClient: {
@@ -87,7 +94,8 @@ describe('ResourcePreviewModal', () => {
       />
     );
     expect(screen.getByText('test.json')).toBeInTheDocument();
-    expect(screen.getByTestId('code-block')).toHaveTextContent('{"foo": "bar"}');
+    const codeBlock = screen.getByTestId('code-block');
+    expect(codeBlock.textContent?.replace(/\s/g, '')).toBe('{"foo":"bar"}');
     expect(apiClient.readResource).not.toHaveBeenCalled();
   });
 
@@ -106,7 +114,8 @@ describe('ResourcePreviewModal', () => {
     expect(screen.getByText('Loading content...')).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(screen.getByTestId('code-block')).toHaveTextContent('{"foo": "bar"}');
+      const codeBlock = screen.getByTestId('code-block');
+      expect(codeBlock.textContent?.replace(/\s/g, '')).toBe('{"foo":"bar"}');
     });
 
     expect(apiClient.readResource).toHaveBeenCalledWith(mockResource.uri);
