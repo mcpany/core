@@ -43,6 +43,8 @@ jobs:
              python3 -m venv venv
              . venv/bin/activate
              pip install pre-commit
+             which shellcheck
+             shellcheck --version
       - run:
           name: Install Node.js
           command: |
