@@ -24,7 +24,7 @@ test.describe('Resource Explorer Rich Result Viewer', () => {
               name: 'JSON Data',
               mimeType: 'application/json',
               static: {
-                text_content: JSON.stringify([
+                textContent: JSON.stringify([
                   { name: 'Alice', role: 'Admin', id: 1 },
                   { name: 'Bob', role: 'User', id: 2 }
                 ])
@@ -35,7 +35,7 @@ test.describe('Resource Explorer Rich Result Viewer', () => {
               name: 'Invalid JSON',
               mimeType: 'application/json',
               static: {
-                text_content: '{ invalid json '
+                textContent: '{ invalid json '
               }
             }
           ]

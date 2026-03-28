@@ -45,7 +45,7 @@ describe('ResourceViewer', () => {
 
     // RichResultViewer uses tabs, check for JSON tab
     await waitFor(() => {
-        expect(screen.getByText(/JSON/i)).toBeInTheDocument();
+        expect(screen.getByRole('tab', { name: /JSON/i })).toBeInTheDocument();
     });
   });
 

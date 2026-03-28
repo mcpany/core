@@ -90,7 +90,7 @@ describe('ResourcePreviewModal', () => {
 
     // It might render RichResultViewer table or json view since it is application/json
     await waitFor(() => {
-        expect(screen.getByText(/JSON/i)).toBeInTheDocument();
+        expect(screen.getByRole('tab', { name: /JSON/i })).toBeInTheDocument();
     });
 
     expect(apiClient.readResource).not.toHaveBeenCalled();
@@ -111,7 +111,7 @@ describe('ResourcePreviewModal', () => {
     expect(screen.getByText('Loading content...')).toBeInTheDocument();
 
     await waitFor(() => {
-       expect(screen.getByText(/JSON/i)).toBeInTheDocument();
+       expect(screen.getByRole('tab', { name: /JSON/i })).toBeInTheDocument();
     });
 
     expect(apiClient.readResource).toHaveBeenCalledWith(mockResource.uri);

@@ -96,7 +96,7 @@ describe('ResourceExplorer', () => {
 
     await waitFor(() => {
         expect(apiClient.readResource).toHaveBeenCalledWith('file:///app/config.json');
-        expect(screen.getByText(/JSON/i)).toBeInTheDocument();
+        expect(screen.getByRole('tab', { name: /JSON/i })).toBeInTheDocument();
     });
   });
 });
