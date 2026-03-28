@@ -12,6 +12,16 @@
 - **WASM-BSH State Sanitizer**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Action-Chain** validation integration.
 - **A2A Authenticated Handshake Provider**: (Re-affirmed P0) Designated as the primary integration point for **PQMH** transition.
 
+## Evolution: [2026-07-09] Updates
+
+### Proposed Additions
+- **Reasoning-Path Watermarker (RPW)**: (P0) Authoritative security service that embeds hardware-attested cryptographic watermarks into the reasoning token stream.
+- **Ephemeral Context Grafter (ECG)**: (P0) Coordination service for atomic grafting and reaping of task-specific environment mounts.
+
+### Priority Shifts
+- **Hardware-Attested Attention Locking (HAAL)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Stylometric Salt** injection to counter AAM.
+- **Discovery Sandbox Middleware**: (Re-affirmed P0) Evolving into the primary enforcement point for **ECG-compliant** graft isolation.
+
 ## Evolution: [2026-07-08] Updates
 
 ### Proposed Additions

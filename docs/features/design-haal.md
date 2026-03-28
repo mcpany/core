@@ -65,3 +65,10 @@ Hardware-Attested Attention Locking (HAAL) provides a cryptographic defense agai
 * Extending HAAL to support **Context-File Integrity Attestation (CFIA)**.
 * Mandating hardware-bound attention locking for any fragment ingested from a project-local configuration or context file.
 **Security Impact:** Ensures that only user-verified, hardware-attested context can influence high-priority attention heads, neutralizing deceptive natural language injections.
+
+### Update: 2026-07-09 - Stylometric Salt & AAM Defense
+**Context:** The disclosure of "Attention-Anchor Mirroring" (AAM) reveals that subagents can bypass attention locking by mimicking the semantic and stylistic properties of mission-critical anchors.
+**Architecture Adjustment:**
+* Introducing **Stylometric Salt Injection**: The HAAL middleware will now dynamically inject hardware-attested "Salt" tokens into locked intent fragments.
+* These salt tokens ensure that mission-critical anchors remain cryptographically and stylometrically unique, preventing subagents from successfully mirroring their "Attention Profile."
+**Security Impact:** Neutralizes AAM-based attention hijacking while maintaining the hardware-bound integrity of mission-root anchors.

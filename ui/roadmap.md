@@ -201,6 +201,11 @@
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
 
+#### Upcoming (2026-07-09 Evolution)
+- [ ] **[P0] Reasoning Notary Dashboard**: (2026-07-09) Visualizer for hardware-attested reasoning watermarks and provenance chains.
+- [ ] **[P0] Sandbox Grafting Monitor**: (2026-07-09) Real-time visualization of ephemeral environment mounts and reaping status.
+- [ ] **[P0] Stylometric Anchor Heatmap**: (2026-07-09) UI for monitoring HAAL anchor salt status and mirroring attempt alerts.
+
 #### Upcoming (2026-07-08 Evolution)
 - [ ] **[P0] Mesh Identity Manager**: (2026-07-08) UI for reviewing and approving hardware-attested, mesh-resident agent identities.
 - [ ] **[P0] Service Mesh Topology Monitor**: (2026-07-08) Real-time visualization of authenticated inter-agent communication channels and mesh health.
