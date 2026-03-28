@@ -12,42 +12,19 @@ test.describe('Resource Explorer Rich Result Viewer', () => {
     // Clean up
     await request.delete(`/api/v1/services/${serviceName}`).catch(() => { });
 
-    // Seed service
+    // Mock the resources fetch endpoint so we don't need a real MCP backend
     const response = await request.post('/api/v1/services', {
       data: {
         name: serviceName,
         command_line_service: {
-          command: 'echo',
-          resources: [
-            { uri: 'test://data.json', name: 'JSON Data', mimeType: 'application/json' },
-            { uri: 'test://invalid.json', name: 'Invalid JSON', mimeType: 'application/json' }
-          ],
-          reads: {
-            'test://data.json': {
-              contents: [
-                {
-                  uri: 'test://data.json',
-                  mimeType: 'application/json',
-                  text: JSON.stringify([
-                    { name: 'Alice', role: 'Admin', id: 1 },
-                    { name: 'Bob', role: 'User', id: 2 }
-                  ])
-                }
-              ]
-            },
-            'test://invalid.json': {
-              contents: [
-                {
-                  uri: 'test://invalid.json',
-                  mimeType: 'application/json',
-                  text: '{ invalid json '
-                }
-              ]
-            }
-          }
+          command: 'echo'
         }
       }
     });
+    // We don't need the service to actually run, just exist. We will intercept the calls.
+    if (!response.ok()) {
+      console.error(await response.text());
+    }
     expect(response.ok()).toBeTruthy();
   });
 
@@ -56,6 +33,41 @@ test.describe('Resource Explorer Rich Result Viewer', () => {
   });
 
   test('Resource viewer renders rich table result for JSON data', async ({ page }) => {
+    await page.route('**/api/v1/resources', async (route) => {
+      await route.fulfill({
+        json: {
+          resources: [
+            { uri: 'test://data.json', name: 'JSON Data', mimeType: 'application/json' },
+            { uri: 'test://invalid.json', name: 'Invalid JSON', mimeType: 'application/json' }
+          ]
+        }
+      });
+    });
+
+    await page.route('**/api/v1/resources/read*', async (route) => {
+      const urlObj = new URL(route.request().url());
+      const uri = urlObj.searchParams.get('uri');
+
+      if (uri === 'test://data.json') {
+        await route.fulfill({
+          json: {
+            contents: [
+              {
+                uri: 'test://data.json',
+                mimeType: 'application/json',
+                text: JSON.stringify([
+                  { name: 'Alice', role: 'Admin', id: 1 },
+                  { name: 'Bob', role: 'User', id: 2 }
+                ])
+              }
+            ]
+          }
+        });
+      } else {
+        await route.continue();
+      }
+    });
+
     await page.goto('/resources');
 
     // Search for the test resource
@@ -81,6 +93,38 @@ test.describe('Resource Explorer Rich Result Viewer', () => {
   });
 
   test('Resource viewer falls back to raw text for invalid JSON', async ({ page }) => {
+    await page.route('**/api/v1/resources', async (route) => {
+      await route.fulfill({
+        json: {
+          resources: [
+            { uri: 'test://data.json', name: 'JSON Data', mimeType: 'application/json' },
+            { uri: 'test://invalid.json', name: 'Invalid JSON', mimeType: 'application/json' }
+          ]
+        }
+      });
+    });
+
+    await page.route('**/api/v1/resources/read*', async (route) => {
+      const urlObj = new URL(route.request().url());
+      const uri = urlObj.searchParams.get('uri');
+
+      if (uri === 'test://invalid.json') {
+        await route.fulfill({
+          json: {
+            contents: [
+              {
+                uri: 'test://invalid.json',
+                mimeType: 'application/json',
+                text: '{ invalid json '
+              }
+            ]
+          }
+        });
+      } else {
+        await route.continue();
+      }
+    });
+
     await page.goto('/resources');
 
     // Search for the test resource
