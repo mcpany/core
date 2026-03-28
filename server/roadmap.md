@@ -167,6 +167,11 @@
 *   **[P0] Metadata Sanitization Gateway (MSG)**: Real-time semantic deconstruction of ingested metadata to neutralize instruction injection. (Added: 2026-03-26)
 *   **[P1] Post-Quantum Mesh Handshake (PQMH)**: Transition inter-agent transport to NIST-standard quantum-resistant algorithms. (Added: 2026-03-26)
 
+#### Upcoming (2026-07-09 Evolution)
+*   **[P0] Reflection-as-a-Service (RaaS) Broker**: Authoritative service for orchestrating Agent Reflection Quorums (ARQs) to peer-validate reasoning traces. (Added: 2026-07-09)
+*   **[P0] Universal Identity Mapping (UIM) Middleware**: Sovereign bridge reconciling trust levels across disparate framework identities (Claude, Gemini, OpenClaw). (Added: 2026-07-09)
+*   **[P0] HAMD-Native Discovery Proxy**: Discovery hub enforcing hardware-root (TPM/SEP) signatures for all agent capability cards. (Added: 2026-07-09)
+
 #### Upcoming (2026-03-25 Evolution)
 *   **[P0] Hardware-Attested Monotonic Depth-Counters**: physical constraint enforcement for recursive delegations to prevent infinite resource loops. (Added: 2026-03-25)
 *   **[P0] Relational PoI Chain Validator**: cryptographic lineage verification for every tool call to neutralize "Intent Ghosting" vulnerabilities. (Added: 2026-03-25)

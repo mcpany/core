@@ -736,6 +736,11 @@
 - [ ] **[P0] Attention Masking Interface**: (2026-07-04) UI for configuring hardware-locked attention masks for mission-root intents.
 - [ ] **[P1] Context Compaction Quorum Viewer**: (2026-07-04) Visual tracker for summarizer agent consensus and compaction savings.
 
+#### Upcoming (2026-07-09 Evolution)
+- [ ] **[P0] Reflection Quorum Workspace**: Visualizer for monitoring multi-agent reflection quorums and reasoning trace approvals. (Added: 2026-07-09)
+- [ ] **[P0] Universal Identity Heatmap**: Dashboard for visualizing active framework-specific identities and their mapped mesh-trust levels. (Added: 2026-07-09)
+- [ ] **[P0] HAMD Discovery Status Widget**: Real-time indicator for hardware-attested capability cards and mesh-discovery health. (Added: 2026-07-09)
+
 #### Upcoming (2026-03-25 Evolution)
 - [ ] **[P0] Relational Intent Tracer**: visual debugger for verifying the cryptographic lineage of tool-bound intents back to the mission root. (Added: 2026-03-25)
 - [ ] **[P0] Memfd Shard Inspector**: real-time visualization of shared memory mappings and byte-level sanitization status. (Added: 2026-03-25)

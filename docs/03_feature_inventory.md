@@ -1723,3 +1723,15 @@
 ### Priority Shifts
 - **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
 - **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.
+
+## Evolution: [2026-07-09] Updates
+
+### Proposed Additions
+- **Reflection-as-a-Service (RaaS) Broker**: (P0) Authoritative service for orchestrating Agent Reflection Quorums (ARQs) to peer-validate reasoning traces before state commits.
+- **Universal Identity Mapping (UIM) Middleware**: (P0) Sovereign bridge reconciling trust levels across disparate framework identities (Claude, Gemini, OpenClaw) to prevent privilege shadowing.
+- **HAMD-Native Discovery Proxy**: (P0) Discovery hub enforcing hardware-root (TPM/SEP) signatures for all agent capability cards.
+- **Teammate Kernel-Isolation Bridge**: (P1) Secure coordination service facilitating sanitized and audited data flow between teammates running in isolated kernel namespaces.
+
+### Priority Shifts
+- **Zero-Trust Agent Identity Hub**: (Re-affirmed P0) Now elevated with the requirement for **Universal Identity Mapping** integration.
+- **Autonomous Service Mesh Gateway**: (Re-affirmed P0) Designated as the primary integration point for **HAMD-native** discovery.
