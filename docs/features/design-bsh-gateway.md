@@ -60,3 +60,11 @@ As agent swarms grow in depth and complexity, the overhead of transferring massi
     **Architecture Adjustment:** * Transitioning to Protobuf-based Binary State Handoffs (BSH).
     * Introducing a high-speed "BSH State Buffer" using memory-mapped regions.
     **Performance Impact:** Eliminates JSON serialization overhead and reduces inter-agent latency by 50%.
+
+### Update: 2026-07-09 - Atomic Fragment Sanitization (CVE-2026-41012)
+**Context:** Today's market sync revealed the "Context Smearing" vulnerability, where malicious "Ghost Fragments" in binary state can bypass surface-level sanitizers.
+**Architecture Adjustment:**
+* Integrating the **Atomic Fragment Sanitizer (AFS)** into the BSH Gateway middleware.
+* Binary state handoffs now undergo fragment-level semantic validation *before* re-composition.
+* Mandating **Reasoning Lineage Tracking** for all BSH buffers to ensure binary state remains anchored to a verified cognitive path.
+**Security Impact:** Prevents dormant prompt injections from "smearing" into the high-attention window of parent agents during state handoffs.

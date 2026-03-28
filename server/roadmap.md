@@ -937,3 +937,8 @@ These features represent the next logical steps for the product, focusing on Ent
 #### Upcoming (2026-03-28 Evolution)
 *   **[P0] Injection-Aware PR Auditor**: Specialized security auditor for APRIG detecting command and prompt injection in agent code. (Added: 2026-03-28)
 *   **[P1] Plugin Market Ingestion Adapter**: Secure bridge for importing and profiling tools from third-party markets like OpenClaw. (Added: 2026-03-28)
+
+#### Upcoming (2026-07-09 Evolution)
+*   **[P0] NHI Lifecycle Governance Provider**: Automated identity rotation and hardware-locked revocation for long-running autonomous swarms. (Added: 2026-07-09)
+*   **[P0] Atomic Fragment Sanitizer (AFS)**: Fragment-level semantic validation for BSH buffers to neutralize "Context Smearing" vulnerabilities. (Added: 2026-07-09)
+*   **[P1] Binary State Transparency Engine**: Audit and visualization service for BSH reasoning lineage. (Added: 2026-07-09)

@@ -2627,7 +2627,6 @@ func startGrpcServer(
 	}()
 }
 
-
 // GetAuditMiddleware returns the current audit middleware.
 //
 // Summary: Returns the active audit middleware.

@@ -1733,3 +1733,14 @@
 ### Priority Shifts
 - **Autonomous PR Integrity Gate (APRIG)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Injection-Aware** auditing.
 - **Structural Metadata Sanitizer**: (Re-affirmed P0) Designated as the primary gate for **Plugin Market Ingestion** to neutralize instruction injection in schemas.
+
+## Evolution: [2026-07-09] Updates
+
+### Proposed Additions
+- **NHI Lifecycle Governance Provider**: (P0) Authoritative identity management service providing automated, mission-bound rotation and hardware-locked revocation for Non-Human Identities.
+- **Atomic Fragment Sanitizer (AFS)**: (P0) Advanced security extension for the BSH Gateway that performs fragment-level semantic validation of binary state handoffs.
+- **Binary State Transparency Engine**: (P1) Audit and visualization service for the BSH Gateway that surfaces the semantic reasoning lineage embedded in binary state transfers.
+
+### Priority Shifts
+- **NHI Lifecycle Governance Provider**: (Promoted to P0) Critical requirement for neutralizing "Stale Token" exploits in long-running autonomous swarms.
+- **WASM-BSH State Sanitizer**: (Re-affirmed P0) Now elevated with the requirement for mandatory **AFS** integration to counter "Context Smearing" vulnerabilities.
