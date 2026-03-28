@@ -193,6 +193,61 @@ func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Side Effects:
 //   - None.
+//
+// IsStreaming returns true if the tool supports streaming.
+//
+// Summary: Checks if the tool supports streaming execution.
+//
+// Returns:
+//   - bool: True if streaming is supported.
+func (t *Tool) IsStreaming() bool {
+	return false
+}
+
+// StreamExecute executes the tool in streaming mode.
+//
+// Summary: Executes the tool in streaming mode.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - req: *ExecutionRequest. The request object containing parameters.
+//
+// Returns:
+//   - <-chan any: A channel that emits streaming results.
+//   - error: An error if the operation fails or streaming is not supported.
+func (t *Tool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
+	ch := make(chan any, 1)
+	go func() {
+		defer close(ch)
+		res, err := t.Execute(ctx, req)
+		if err != nil {
+			ch <- err
+		} else {
+			ch <- res
+		}
+	}()
+	return ch, nil
+}
+
+// Execute executes the SQL tool with the provided request.
+//
+// Summary: Executes the SQL query with the given inputs.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*tool.ExecutionRequest): The execution request containing parameters.
+//
+// Returns:
+//   - any: The query results (a list of row maps).
+//   - error: An error if execution fails.
+//
+// Errors:
+//   - Returns an error if policy evaluation fails or blocks execution.
+//   - Returns an error if input unmarshalling fails.
+//   - Returns an error if the database query fails.
+//
+// Side Effects:
+//   - Executes a query on the database.
 func (t *Tool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError

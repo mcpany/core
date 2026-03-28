@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { RefreshCw, Scan, Radio } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { usePolling } from "@/hooks/use-polling";
 
 /**
  * ProviderStatus represents the status of a specific auto-discovery provider.
@@ -48,9 +49,11 @@ export function DiscoveryStatus() {
 
     useEffect(() => {
         fetchStatus();
-        const interval = setInterval(fetchStatus, 5000);
-        return () => clearInterval(interval);
     }, []);
+
+    // ⚡ BOLT: [Render Optimization] Use usePolling hook instead of raw setInterval
+    // Randomized Selection from Top 5 High-Impact Targets
+    usePolling(fetchStatus, 5000);
 
     const handleScan = async () => {
         setScanning(true);
