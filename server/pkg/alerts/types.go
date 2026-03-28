@@ -43,12 +43,13 @@ const (
 type Alert struct {
 	ID        string    `json:"id"`
 	Title     string    `json:"title"`
-	Message   string    `json:"message"`
-	Severity  Severity  `json:"severity"`
-	Status    Status    `json:"status"`
-	Service   string    `json:"service"`
-	Source    string    `json:"source"`
-	Timestamp time.Time `json:"timestamp"`
+	Message    string     `json:"message"`
+	Severity   Severity   `json:"severity"`
+	Status     Status     `json:"status"`
+	Service    string     `json:"service"`
+	Source     string     `json:"source"`
+	Timestamp  time.Time  `json:"timestamp"`
+	ResolvedAt *time.Time `json:"resolved_at,omitempty"`
 }
 
 // AlertRule defines a condition for triggering an alert.

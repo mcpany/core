@@ -19,11 +19,11 @@ test.describe('Alerts Page', () => {
     await expect(page.getByText('MTTR (Today)')).toBeVisible();
     await expect(page.getByText('Total Incidents')).toBeVisible();
 
-    // Check that stats values are fetched from the API and rendered
-    // The backend mock data has Active Critical: 1, Active Warning: 1, MTTR: 14m, Total: >0 (we can just verify it's rendered)
-    await expect(page.getByText('14m')).toBeVisible();
+    // Wait for the stats to load and MTTR should be 0s initially (no resolved alerts)
+    await expect(page.getByText('0s').first()).toBeVisible();
 
-    // Check table content (mock data)
+    // The backend mock data has Active Critical: 1, Active Warning: 1
+    // We expect these to be populated
     await expect(page.getByText('High CPU Usage')).toBeVisible();
     await expect(page.getByText('API Latency Spike')).toBeVisible();
   });
@@ -73,20 +73,31 @@ test.describe('Alerts Page', () => {
     await expect(row.getByText('acknowledged')).toBeVisible();
   });
 
-  test('should resolve alert via dropdown', async ({ page }) => {
+  test('should resolve alert via dropdown and update MTTR', async ({ page }) => {
     await page.goto('/alerts');
 
-    // Find an acknowledged or active alert
-    const row = page.getByRole('row').filter({ hasText: 'Disk Space Low' });
+    // Make sure initial MTTR is 0s
+    await expect(page.getByText('0s').first()).toBeVisible();
+
+    // Find an active alert to resolve
+    const row = page.getByRole('row').filter({ hasText: 'High CPU Usage' });
+
+    // Ensure it exists first
+    await expect(row).toBeVisible();
 
     // Click "More Actions"
     await row.getByRole('button', { name: 'Open menu' }).click();
 
+    // Wait for the dropdown menu
+    await expect(page.getByRole('menuitem', { name: 'Resolve' })).toBeVisible();
     // Click "Resolve"
     await page.getByRole('menuitem', { name: 'Resolve' }).click();
 
     // Verify status changes to "resolved"
     await expect(row.getByText('resolved')).toBeVisible();
+
+    // After resolving an alert, MTTR should be > 0s since timestamp of generation is in the past
+    await expect(page.getByText('0s').first()).toBeHidden({ timeout: 5000 });
   });
 
   test('should delete alert via dropdown', async ({ page }) => {

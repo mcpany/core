@@ -293,6 +293,9 @@ func (m *Manager) GetAlertStats() *AlertStats {
 	now := time.Now()
 	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
 
+	var totalResolutionTime time.Duration
+	var resolvedCount int
+
 	for _, a := range m.alerts {
 		if a.Timestamp.After(today) {
 			stats.TotalToday++
@@ -305,15 +308,30 @@ func (m *Manager) GetAlertStats() *AlertStats {
 				stats.ActiveWarning++
 			}
 		}
+
+		if a.Status == StatusResolved && a.ResolvedAt != nil && a.ResolvedAt.After(today) {
+			duration := a.ResolvedAt.Sub(a.Timestamp)
+			if duration > 0 {
+				totalResolutionTime += duration
+				resolvedCount++
+			}
+		}
 	}
 
-	// Mock MTTR for now as calculating true MTTR requires alert state transition history
-	stats.MTTR = "14m"
+	if resolvedCount > 0 {
+		avgResolutionTime := totalResolutionTime / time.Duration(resolvedCount)
+		stats.MTTR = avgResolutionTime.Round(time.Minute).String()
+		if stats.MTTR == "0s" {
+			stats.MTTR = avgResolutionTime.Round(time.Second).String()
+		}
+	} else {
+		stats.MTTR = "0s"
+	}
 
-	stats.ActiveCriticalTrend = "+1 since last hour"
-	stats.ActiveWarningTrend = "-2 since last hour"
-	stats.MTTRTrend = "-2m from yesterday"
-	stats.TotalTodayTrend = "+12% from average"
+	stats.ActiveCriticalTrend = ""
+	stats.ActiveWarningTrend = ""
+	stats.MTTRTrend = ""
+	stats.TotalTodayTrend = ""
 
 	return stats
 }
@@ -392,6 +410,10 @@ func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 	}
 	// Update fields
 	if alert.Status != "" {
+		if alert.Status == StatusResolved && existing.Status != StatusResolved && existing.ResolvedAt == nil {
+			now := time.Now()
+			existing.ResolvedAt = &now
+		}
 		existing.Status = alert.Status
 	}
 	// Can add more updatable fields here
