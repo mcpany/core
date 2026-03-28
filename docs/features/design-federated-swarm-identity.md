@@ -68,3 +68,10 @@ FSI provides a local, hardware-attested "Identity Mint" that issues cross-framew
 *   **Revocation Propagation Middleware**: Adding a real-time "Broadcast Bus" for FSI token revocation.
 *   **Capability Masking Protocol**: Transitioning from cleartext "Capability Cards" to hardware-attested, ZK-ready skill proofs.
 **Security Impact:** Prevents a compromised agent from "shadowing" a high-trust capability after its FSI token has been revoked by a different framework's root authority.
+
+### Update: 2026-07-09 - Transition to Fast-Path Identity Leases
+**Context:** Gemini CLI v0.47.0 has standardized Hardware-Bound Fast-Path (HBFP) to address "Attestation Fatigue" in deep swarms.
+**Architecture Adjustment:**
+*   **Trust Lease Issuer**: Evolving the Mint service to support time-bound "Trust Leases" signed by the host TPM.
+*   **Mesh-Resident Token Storage**: Implementing isolated, kernel-bound memory regions for storing active leases, accessible to subagents without repeated full handshakes.
+**Security Impact:** Reduces the frequency of high-latency signing operations while maintaining hardware-bound non-repudiability.

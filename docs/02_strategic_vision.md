@@ -1368,3 +1368,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **CI/CD Cache Integrity Guard (CCIG)**: To neutralize "Agentic Social Engineering" in build pipelines, we are mandating CCIG. All agent-accessible caches must be cryptographically signed, ensuring that poisoned metadata cannot compromise the mission-root supply chain.
 - **Post-Quantum Mesh Handshake (PQMH)**: Supporting the NIST FIPS 203/204/205 standards, we are introducing PQMH. All inter-agent and node-to-node communications will transition to post-quantum resistant algorithms to ensure long-term mesh integrity.
 - **Metadata Sanitization Gateway (MSG)**: To counter instruction injection via external metadata (GitHub issues, Slack messages), MCP Any will implement MSG. This layer will perform real-time semantic sanitization of all ingested metadata before it reaches the agent's reasoning loop.
+
+---
+
+## Strategic Evolution: [2026-07-09]
+### Focus: Speculative Sovereignty & Attention Window Governance
+**Context**: The release of OpenClaw v3.5.0 (Speculative Coordination) and Claude Code v2.5.0 (Attention-Locked Reasoning) reveal that **Latency** and **Attention Density** are the new primary attack vectors. As agents move toward speculative branching to maintain mesh speed, infrastructure must prevent the permanent commit of un-attested state. Simultaneously, as context windows scale to 2M+ tokens, "Attention Drift" allows malicious subagents to "shadow" parent instructions.
+**Strategic Pivot**:
+- **Speculative Task Broker (STB)**: MCP Any will evolve to host "Speculative State Buffers." We will implement the STB, providing isolated, transactional memory regions where agents can speculatively execute tasks while identity handshakes complete in the background, ensuring atomic rollbacks on attestation failure.
+- **Attention-Window Guard (AWG)**: To neutralize "Attention-Splicing" attacks, we are introducing the AWG. MCP Any will act as the authoritative enforcer of hardware-attested attention-locking headers (aligning with `x-claude-attention-lock`), ensuring that mission-root safety fragments remain pinned in the high-attention reasoning window.
+- **Fast-Path Identity Attestation**: We are evolving the FSI Provider to support "Trust Leases." Leveraging Gemini CLI v0.47.0 patterns, MCP Any will issue TPM-signed, time-bound leases that allow high-frequency inter-agent tool calls without the coordination tax of full handshake signatures.
+- **Speculative Reward Attestation**: Supporting RL-driven speculative swarms, we are introducing Speculative Rewards. MCP Any will provide "Soft Attestations" for tool outputs, allowing subagents to speculatively proceed while the formal validation quorum executes asynchronously.

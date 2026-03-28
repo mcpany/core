@@ -211,6 +211,12 @@
 *   **[P0] CI/CD Cache Integrity Guard (CCIG)**: Mandatory cryptographic signing and verification for all build caches. (Added: 2026-07-08)
 *   **[P0] Action-Chain Sovereignty Monitor (ACSM)**: Real-time validation of agent workflow sequences against mission-root intents. (Added: 2026-07-08)
 
+#### Upcoming (2026-07-09 Evolution)
+*   **[P0] Speculative Task Broker (STB)**: Coordination service providing isolated state buffers for OpenClaw-compliant speculative execution. (Added: 2026-07-09)
+*   **[P0] Attention-Window Guard (AWG)**: Authoritative enforcer of hardware-attested attention-locking headers to prevent instruction shadowing. (Added: 2026-07-09)
+*   **[P1] Speculative Reward Attestation**: Safety service providing "Soft Attestations" for tool outputs during speculative reasoning. (Added: 2026-07-09)
+*   **[P0] Fast-Path Identity Provider**: Upgrade for FSI supporting TPM-signed "Trust Leases" to reduce mesh coordination latency. (Added: 2026-07-09)
+
 #### Upcoming (2026-06-27 Evolution)
 *   **[P0] Zero-Knowledge Discovery (ZKD) Proxy**: Authoritative discovery gateway implementing ZK-Capability Proofs for pre-flight masking. (Added: 2026-06-27)
 *   **[P0] CRDT-Native Mailbox Sharding**: Transition to full CRDT-native mailbox shards for lock-free horizontal scaling. (Added: 2026-06-27)

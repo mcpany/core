@@ -207,6 +207,11 @@
 - [ ] **[P0] Cache Integrity Auditor**: (2026-07-08) Visual workspace for verifying cryptographic signatures of CI/CD build caches.
 - [ ] **[P0] Action-Chain Sovereignty Monitor**: (2026-07-08) Real-time visualization of automated workflow sequences and interdiction events.
 
+#### Upcoming (2026-07-09 Evolution)
+- [ ] **[P0] Speculative Coordination Monitor**: (2026-07-09) Visual tracker for transactional state buffers and speculative commit/rollback events.
+- [ ] **[P0] Attention-Locking Heatmap**: (2026-07-09) High-fidelity visualization of hardware-attested attention anchors and noise-to-utility scores.
+- [ ] **[P1] Fast-Path Lease Manager**: (2026-07-09) Dashboard for monitoring TPM-signed trust leases and their mesh-wide propagation.
+
 #### Upcoming (2026-07-07 Evolution)
 - [ ] **[P1] Automated Remediation Tracer**: (2026-07-07) Verifiable audit trail viewer for AI-powered fix suggestions and SSDF compliance.
 

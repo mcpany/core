@@ -1723,3 +1723,14 @@
 ### Priority Shifts
 - **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
 - **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.
+
+## Evolution: [2026-07-09] Updates
+
+### Proposed Additions
+- **Speculative Task Broker (STB)**: (P0) Coordination service providing transactional state buffers for speculative agent execution during background handshakes.
+- **Attention-Window Guard (AWG)**: (P0) Authoritative security middleware enforcing hardware-attested attention-locking headers to prevent instruction shadowing.
+- **Speculative Reward Attestation Provider**: (P1) Safety service providing "Soft Attestations" for tool outputs to enable speculative RL-driven reasoning.
+
+### Priority Shifts
+- **Federated Swarm Identity (FSI) Provider**: (Re-affirmed P0) Now evolving into the **Fast-Path Identity Provider** with support for TPM-signed trust leases (Gemini CLI v0.47 compliance).
+- **NHI Lifecycle Governance Provider**: (Promoted to P0) Critical for managing the rotation and expiration of speculative identity tokens.
