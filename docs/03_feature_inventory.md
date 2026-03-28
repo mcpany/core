@@ -1744,3 +1744,15 @@
 ### Priority Shifts
 - **NHI Lifecycle Governance Provider**: (Promoted to P0) Critical requirement for neutralizing "Stale Token" exploits in long-running autonomous swarms.
 - **WASM-BSH State Sanitizer**: (Re-affirmed P0) Now elevated with the requirement for mandatory **AFS** integration to counter "Context Smearing" vulnerabilities.
+
+## Evolution: [2026-07-10] Updates
+
+### Proposed Additions
+- **Zero-Knowledge State Attestation (ZKSA) Provider**: (P0) Authoritative proof broker enabling subagents to provide cryptographic proofs of state conformance without revealing raw reasoning data.
+- **Hardware-Locked Attention Persistence (HLAP) Middleware**: (P1) Security service utilizing TPM monotonic timers to normalize state-update micro-timing and neutralize "Context-Echoing" vulnerabilities.
+- **Unified Teammate Discovery (UTD) Gateway**: (P0) High-speed, authenticated discovery hub for horizontal swarm formation using session-bound capability beacons.
+- **Hierarchical Provenance Validator**: (P0) Security extension for SRM Provider mandating hardware-signed, parent-linked reasoning fragments for recursive accountability.
+
+### Priority Shifts
+- **SRM Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Hierarchical Provenance** validation.
+- **Asynchronous Mailbox Sharding (AMS)**: (Re-affirmed P0) Now elevated with the requirement for **HLAP-compliant** timing normalization.

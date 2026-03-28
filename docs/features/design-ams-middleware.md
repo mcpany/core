@@ -78,3 +78,11 @@ The AMS Middleware solves this by sharding the inter-agent mailbox based on the 
 * **State Streaming**: Utilizing the BSH (Binary State Handoff) gateway to stream delta-CRDT updates instead of full-state syncs.
 * **Deterministic Tie-Breaking**: Hardware-attested identity priority is now the primary tie-breaker for concurrent task claims, eliminating the need for any back-and-forth lock negotiation.
 **Security Impact:** Prevents "Mailbox Splicing" (CVE-2026-81042) by mandating that every CRDT mutation be signed with an IFA token.
+
+### Update: 2026-07-10 - Priority-Aware Shard Preemption
+**Context:** Today's market sync and disclosure of the "Context-Echoing" side-channel reveal that static mailbox sharding allows subagents to map mission-root intent via micro-timing variations. Additionally, high-density swarms require faster resolution for safety-critical tasks.
+**Architecture Adjustment:**
+* Introducing **Priority-Aware Shard Preemption**: High-priority safety intents can now preempt existing shard operations using hardware-attested "Interrupt Tokens."
+* Implementing **HLAP-Compliant Jitter**: Normalizing update micro-timing for mailbox shards using TPM monotonic timers to neutralize side-channel leakage.
+* Integrating with the **ZKSA Provider** to allow shards to verify task completion via Zero-Knowledge proofs, further isolating the central bus from raw teammate state.
+**Security Impact:** Prevents side-channel intent mapping and ensures that critical safety interventions bypass coordination locks instantly.
