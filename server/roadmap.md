@@ -933,3 +933,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Zero-Copy BSH Transport**: Shared-memory based state transfer for sub-millisecond swarm handoffs. (Added: 2026-03-25)
 *   **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited Recursive Intent Delegation. (Added: 2026-03-25)
 *   **[P1] Predictive Resource Locking**: Intent-aware concurrency control for the Shared Blackboard. (Added: 2026-03-25)
+
+#### Upcoming (2026-07-09 Evolution)
+*   **[P0] Secure Discovery CLI Validator**: Real-time semantic analysis and path allow-listing for CLI-based tool discovery. (Added: 2026-07-09)
+*   **[P0] Mesh-Resident Identity Mint (MRIM)**: Native mesh issuance of hardware-attested session fragments for low-latency coordination. (Added: 2026-07-09)
+*   **[P1] Persistent Discovery Sandbox**: Isolation service maintaining tool manifest integrity throughout the mission lifecycle. (Added: 2026-07-09)

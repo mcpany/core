@@ -8,6 +8,13 @@
 - **Metadata Sanitization Gateway (MSG)**: (P0) Real-time semantic sanitizer for agent-ingested external metadata (GitHub, Slack) to neutralize instruction injection.
 - **Post-Quantum Mesh Handshake (PQMH) Provider**: (P1) Security service implementing NIST-standard post-quantum resistant algorithms (FIPS 203/204/205) for long-term mesh integrity.
 
+## Evolution: [2026-07-09] Updates
+
+### Proposed Additions
+- **Secure Discovery CLI Validator**: (P0) Real-time semantic analysis and path allow-listing service for CLI-based tool discovery to neutralize "cliPath" injection (CVE-2026-25593).
+- **Mesh-Resident Identity Mint (MRIM)**: (P0) Advanced identity service issuing hardware-attested, session-fragment tokens natively within the mesh transport for low-latency coordination.
+- **Persistent Discovery Sandbox**: (P1) Isolation service that maintains the integrity of the tool manifest throughout the mission lifecycle, preventing post-boot configuration swaps.
+
 ### Priority Shifts
 - **WASM-BSH State Sanitizer**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Action-Chain** validation integration.
 - **A2A Authenticated Handshake Provider**: (Re-affirmed P0) Designated as the primary integration point for **PQMH** transition.

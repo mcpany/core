@@ -156,6 +156,8 @@
 - [ ] **[P0] Skill Grafting Attestation UI**: (2026-03-23) Multi-signature approval flow for dynamic tool loading and skill grafting.
 - [ ] **[P0] Binary Handoff Performance Monitor**: (2026-03-23) Real-time metrics for BSH transport. (Promoted to P0 on 2026-03-24)
 - [ ] **[P0] Relational Intent Chain Viewer**: (2026-03-24) Visual debugger for verifying the lineage and relational scoping of agent intents.
+- [ ] **[P0] Secure Discovery Audit Dashboard**: (2026-07-09) Visualize blocked CLI discovery attempts and manage the trust manifest.
+- [ ] **[P0] Mesh Identity Resident Monitor**: (2026-07-09) Real-time visualization of natively issued mesh identity fragments.
 - [ ] **[P0] Ghost Shell Safety Reporter**: (2026-03-24) UI for viewing behavioral profiling results and safety scores for un-attested configuration hooks.
 - [ ] **[P1] BSH Delta Debugger**: (2026-03-24) Developer tool for inspecting binary state differentials during agent handoffs.
 - [ ] **[P0] WASM-BSH Sanitizer Dashboard**: (2026-03-25) UI for managing WASM sanitization rules and viewing rejected binary context fragments.

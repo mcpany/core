@@ -68,3 +68,10 @@ FSI provides a local, hardware-attested "Identity Mint" that issues cross-framew
 *   **Revocation Propagation Middleware**: Adding a real-time "Broadcast Bus" for FSI token revocation.
 *   **Capability Masking Protocol**: Transitioning from cleartext "Capability Cards" to hardware-attested, ZK-ready skill proofs.
 **Security Impact:** Prevents a compromised agent from "shadowing" a high-trust capability after its FSI token has been revoked by a different framework's root authority.
+
+### Update: 2026-07-09 - Transitioning to Mesh-Resident Identity Mints (MRIM)
+**Context:** Today's market sync revealed that per-interaction centralized attestation is creating a "Cognitive Stall" in high-density meshes.
+**Architecture Adjustment:**
+*   **Mesh-Resident Minting**: Evolving the FSI Provider to support MRIM, issuing hardware-attested, session-fragment tokens natively within the mesh transport.
+*   **Fragment-Level Attestation**: Transitioning from monolithic JWTs to sharded attestation fragments that can be verified locally by peers without a centralized round-trip.
+**Security Impact:** Reduces mesh coordination latency while maintaining zero-trust hardware-bound identity sovereignty.

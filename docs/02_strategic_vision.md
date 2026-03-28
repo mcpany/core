@@ -1368,3 +1368,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **CI/CD Cache Integrity Guard (CCIG)**: To neutralize "Agentic Social Engineering" in build pipelines, we are mandating CCIG. All agent-accessible caches must be cryptographically signed, ensuring that poisoned metadata cannot compromise the mission-root supply chain.
 - **Post-Quantum Mesh Handshake (PQMH)**: Supporting the NIST FIPS 203/204/205 standards, we are introducing PQMH. All inter-agent and node-to-node communications will transition to post-quantum resistant algorithms to ensure long-term mesh integrity.
 - **Metadata Sanitization Gateway (MSG)**: To counter instruction injection via external metadata (GitHub issues, Slack messages), MCP Any will implement MSG. This layer will perform real-time semantic sanitization of all ingested metadata before it reaches the agent's reasoning loop.
+
+---
+
+## Strategic Evolution: [2026-07-09]
+### Focus: Secure Discovery & Mesh Identity Sovereignty
+**Context**: The disclosure of CVE-2026-25593 confirms that the tool discovery phase, specifically the setting of executable paths, is a critical RCE vector. Simultaneously, the transition to high-density autonomous service meshes has reached a performance ceiling due to the latency of per-interaction authentication. We must now move toward **Secure Discovery Validation** and **Mesh-Resident Identity Minting**.
+**Strategic Pivot**:
+- **Secure Discovery CLI Validator**: MCP Any will implement real-time semantic analysis and strict path allow-listing for all discovery-time configuration changes. This neutralizes "cliPath" style command injection by ensuring that any executable path defined during tool discovery is pre-validated against a system-level trust manifest.
+- **Mesh-Resident Identity Mint (MRIM)**: To solve "Mesh-Resident Identity" needs, we are evolving the FSI Provider into an MRIM. Identities will be issued and verified natively within the mesh transport, utilizing hardware-attested session fragments to eliminate the 100ms+ round-trip tax for centralized attestation during high-frequency teammate coordination.
+- **Discovery Sandbox Persistence**: We are mandating that all tool discovery hooks execute in a persistent, low-latency sandbox that maintains the integrity of the tool manifest throughout the mission lifecycle, preventing "rug-pull" configuration swaps after the initial boot.
