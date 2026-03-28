@@ -33,7 +33,7 @@ if [ -z "$GOLANGCI_LINT_BIN" ]; then
     exit 1
 fi
 
-(cd server && "$PROJECT_ROOT/$GOLANGCI_LINT_BIN" run --timeout 20m --fix ./cmd/... ./pkg/... ./tests/... ./examples/...)
+"$GOLANGCI_LINT_BIN" run --timeout 20m --fix ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
 
 echo "Running pre-commit..."
 if command -v pre-commit >/dev/null 2>&1; then
