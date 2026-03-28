@@ -100,12 +100,22 @@ func toTrace(entry audit.Entry) *Trace {
 	}
 
 	// Inject mock diff for seeding
-	if entry.ToolName == "code-refactor" {
+	if entry.ToolName == "code-refactor" || entry.ToolName == "complex-payload-fetcher" {
 		if span.Output != nil && span.Output["diff"] != nil {
 			if span.Input == nil {
 				span.Input = make(map[string]any)
 			}
 			span.Input["mcp.response_diff"] = span.Output["diff"]
+		} else if span.Output != nil {
+			// check nested output
+			if procData, ok := span.Output["processed_data"].(map[string]any); ok {
+				if procData["diff"] != nil {
+					if span.Input == nil {
+						span.Input = make(map[string]any)
+					}
+					span.Input["mcp.response_diff"] = procData["diff"]
+				}
+			}
 		}
 	}
 
@@ -398,6 +408,27 @@ func generateMockAuditEntries() []audit.Entry {
 			Error:      "Timeout: Query exceeded 5000ms limit",
 			Duration:   "5005ms",
 			DurationMs: 5005,
+		},
+		{
+			Timestamp:  now.Add(1500 * time.Millisecond),
+			ToolName:   "complex-payload-fetcher",
+			UserID:     "system",
+			ProfileID:  "default",
+			TraceID:    traceID,
+			SpanID:     traceID + "-5",
+			ParentID:   traceID + "-0",
+			Arguments:  json.RawMessage(`{"data": {"nested": {"values": [1, 2, 3]}, "long_string": "This is a very long string that should be readable in the UI but shouldn't break the layout. We want to test how the premium timeline handles rich JSON responses. It should format them nicely."}}`),
+			Result: map[string]any{
+				"status": "success",
+				"processed_data": map[string]any{
+					"nested": map[string]any{
+						"values": []int{2, 4, 6},
+					},
+					"diff": "--- a/config.json\n+++ b/config.json\n@@ -10,3 +10,3 @@\n-  \"enabled\": false\n+  \"enabled\": true\n",
+				},
+			},
+			Duration:   "250ms",
+			DurationMs: 250,
 		},
 	}
 	return entries
