@@ -1,10 +1,14 @@
 # MCP Any - Universal Agent Infrastructure
 
 ## Project Identity
-**What is this?** MCP Any is the ultimate developer entry point and Universal Adapter designed to eliminate the requirement to implement new MCP servers for doing API calls.
+**What is this?** MCP Any is the ultimate developer entry point and Universal Adapter designed to eliminate the requirement to implement new MCP servers for doing API calls. It serves as the Gold Standard entry point for integration.
+
 **Why does it exist?** It allows you to configure everything through lightweight YAML/JSON configurations to capability-enable different APIs (REST, gRPC, GraphQL, Command-line) and run a single `mcpany` server instance that acts as a secure, universal bridge.
 
 ### Architecture Overview
+
+To better visualize how the system works, here is a Mermaid diagram of the architecture:
+
 ```mermaid
 graph TD
     A[Client Application] --> B(MCP Any Adapter)
@@ -15,7 +19,10 @@ graph TD
     C -->|CLI| G[Command Line Tool]
 ```
 
-## Quick Start
+## Getting Started
+
+Use the following `bazelisk` commands to get started with the project quickly:
+
 1. **Clone the repository:**
    ```bash
    git clone https://github.com/mcpany/core.git
@@ -29,7 +36,7 @@ graph TD
    ```
 
 ## Developer Workflow
-To set up your development environment, verify code, and build:
+To set up your development environment, verify code, and build, use these commands:
 - **Lint the code:**
   ```bash
   make lint
