@@ -25,7 +25,7 @@ export default defineConfig({
     // its own copy of React, which breaks React context propagation in tests.
     server: {
       deps: {
-        inline: ['react-router-dom', 'react-router', '@remix-run/router'],
+        inline: ['react-router-dom', 'react-router', '@remix-run/router', 'refractor', 'react-syntax-highlighter'],
       },
     },
   },

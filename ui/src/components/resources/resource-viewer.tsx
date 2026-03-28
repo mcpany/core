@@ -10,13 +10,16 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ResourceContent } from "@/lib/client";
 import { RichResultViewer } from "@/components/tools/rich-result-viewer";
 
-import ReactSyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light';
-import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
-import yaml from 'react-syntax-highlighter/dist/esm/languages/hljs/yaml';
-import xml from 'react-syntax-highlighter/dist/esm/languages/hljs/xml';
-import markdown from 'react-syntax-highlighter/dist/esm/languages/hljs/markdown';
-import plaintext from 'react-syntax-highlighter/dist/esm/languages/hljs/plaintext';
-import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
+import { PrismLight as ReactSyntaxHighlighter } from 'react-syntax-highlighter';
+import json from 'react-syntax-highlighter/dist/esm/languages/prism/json';
+import yaml from 'react-syntax-highlighter/dist/esm/languages/prism/yaml';
+import markdown from 'react-syntax-highlighter/dist/esm/languages/prism/markdown';
+
+
+
+
+
+
 
 ReactSyntaxHighlighter.registerLanguage('json', json);
 ReactSyntaxHighlighter.registerLanguage('yaml', yaml);
