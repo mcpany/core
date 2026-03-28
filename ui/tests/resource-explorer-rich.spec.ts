@@ -16,39 +16,47 @@ test.describe('Resource Explorer Rich Result Viewer', () => {
     const response = await request.post('/api/v1/services', {
       data: {
         name: serviceName,
-        command_line_service: {
-          command: 'echo',
+        http_service: {
+          address: 'http://127.0.0.1:8080',
           resources: [
             { uri: 'test://data.json', name: 'JSON Data', mimeType: 'application/json' },
             { uri: 'test://invalid.json', name: 'Invalid JSON', mimeType: 'application/json' }
-          ],
-          reads: {
-            'test://data.json': {
-              contents: [
-                {
-                  uri: 'test://data.json',
-                  mimeType: 'application/json',
-                  text: JSON.stringify([
-                    { name: 'Alice', role: 'Admin', id: 1 },
-                    { name: 'Bob', role: 'User', id: 2 }
-                  ])
-                }
-              ]
-            },
-            'test://invalid.json': {
-              contents: [
-                {
-                  uri: 'test://invalid.json',
-                  mimeType: 'application/json',
-                  text: '{ invalid json '
-                }
-              ]
-            }
-          }
+          ]
         }
       }
     });
     expect(response.ok()).toBeTruthy();
+
+    // Seed traffic/mock content for these URIs since we can't easily mock readResource in Playwright
+    // We'll use a debug endpoint if available to inject resource content.
+    // Based on api.go, there's /api/v1/debug/seed
+    await request.post('/api/v1/debug/seed', {
+      data: {
+        resources: {
+          'test://data.json': {
+            contents: [
+              {
+                uri: 'test://data.json',
+                mimeType: 'application/json',
+                text: JSON.stringify([
+                  { name: 'Alice', role: 'Admin', id: 1 },
+                  { name: 'Bob', role: 'User', id: 2 }
+                ])
+              }
+            ]
+          },
+          'test://invalid.json': {
+            contents: [
+              {
+                uri: 'test://invalid.json',
+                mimeType: 'application/json',
+                text: '{ invalid json '
+              }
+            ]
+          }
+        }
+      }
+    });
   });
 
   test.afterAll(async ({ request }) => {
@@ -65,10 +73,10 @@ test.describe('Resource Explorer Rich Result Viewer', () => {
     // Click on the resource
     await page.getByText('JSON Data').first().click();
 
-    // Verify RichResultViewer is rendered
-    // Wait for the Table tab to be visible
-    const tableTab = page.getByRole('tab', { name: 'Table' });
-    await expect(tableTab).toBeVisible({ timeout: 10000 });
+    // Verify RichResultViewer is rendered via JsonView
+    // Wait for the Table tab/button to be visible (JsonView toolbar)
+    const tableBtn = page.getByRole('button', { name: 'Table' });
+    await expect(tableBtn).toBeVisible({ timeout: 10000 });
 
     // Verify content in table
     const table = page.getByRole('table');

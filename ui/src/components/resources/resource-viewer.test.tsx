@@ -23,6 +23,13 @@ vi.mock('react-syntax-highlighter/dist/esm/light', () => {
         default: MockHighlighter
     };
 });
+// Mock RichResultViewer to use the same data-testid as MockHighlighter
+vi.mock('@/components/tools/rich-result-viewer', () => ({
+    RichResultViewer: ({ result }: { result: any }) => (
+        <pre data-testid="code-block">{JSON.stringify(result)}</pre>
+    ),
+}));
+
 
 describe('ResourceViewer', () => {
   it('renders loading state', () => {
@@ -42,7 +49,7 @@ describe('ResourceViewer', () => {
         text: '{"foo": "bar"}'
     };
     render(<ResourceViewer content={content} loading={false} />);
-    expect(screen.getByTestId('code-block')).toHaveTextContent('{"foo": "bar"}');
+    expect(screen.getByTestId('code-block')).toHaveTextContent(/\{.*"foo":.*"bar".*\}/);
   });
 
   it('renders Markdown content', () => {

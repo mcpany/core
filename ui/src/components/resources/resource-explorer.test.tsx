@@ -37,6 +37,13 @@ vi.mock('react-syntax-highlighter/dist/esm/light', () => {
         default: MockHighlighter
     };
 });
+// Mock RichResultViewer to use the same data-testid as MockHighlighter
+vi.mock('@/components/tools/rich-result-viewer', () => ({
+    RichResultViewer: ({ result }: { result: any }) => (
+        <pre data-testid="code-block">{JSON.stringify(result)}</pre>
+    ),
+}));
+
 
 describe('ResourceExplorer', () => {
   it('renders loading state initially', async () => {
@@ -96,7 +103,7 @@ describe('ResourceExplorer', () => {
 
     await waitFor(() => {
         expect(apiClient.readResource).toHaveBeenCalledWith('file:///app/config.json');
-        expect(screen.getByTestId('code-block')).toHaveTextContent('{"test": true}');
+        expect(screen.getByTestId('code-block')).toHaveTextContent(/\{.*"test":.*true.*\}/);
     });
   });
 });
