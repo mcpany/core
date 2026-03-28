@@ -78,6 +78,14 @@ var fastJSONNumber = jsoniter.Config{
 	UseNumber:              true,
 }.Froze()
 
+// ⚡ Bolt Optimization: Pool for byte slices used in keyword checks
+var keywordCheckBufferPool = sync.Pool{
+	New: func() interface{} {
+		buf := make([]byte, 0, 128)
+		return &buf
+	},
+}
+
 // Tool is the fundamental interface for any executable tool in the system.
 //
 // Summary: Interface for defining and executing tools.
@@ -1457,7 +1465,7 @@ func (t *HTTPTool) prepareBody(ctx context.Context, inputs map[string]any, metho
 		if !inputsModified && len(originalInputs) > 0 {
 			body = bytes.NewReader(originalInputs)
 		} else {
-			jsonBytes, err := fastJSON.Marshal(inputs)
+			jsonBytes, err := util.FastMarshal(inputs)
 			if err != nil {
 				return nil, "", fmt.Errorf("failed to marshal tool inputs to json: %w", err)
 			}
@@ -1823,7 +1831,7 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 		responseBytes = []byte(textContent.Text)
 	} else {
 		// Fallback for other content types - marshal the whole content part
-		responseBytes, err = fastJSON.Marshal(result.Content)
+		responseBytes, err = util.FastMarshal(result.Content)
 		if err != nil {
 			return nil, fmt.Errorf("failed to marshal tool output: %w", err)
 		}
@@ -2153,7 +2161,7 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			// Fallback for unexpected case
 			return nil, fmt.Errorf("input template configured but not cached (initialization error?)")
 		default:
-			jsonBytes, err := fastJSON.Marshal(inputs)
+			jsonBytes, err := util.FastMarshal(inputs)
 			if err != nil {
 				return "", fmt.Errorf("failed to marshal tool inputs to json: %w", err)
 			}
@@ -2808,8 +2816,8 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		}()
 
 		var unmarshaledInputs map[string]interface{}
-		decoder := fastJSON.NewDecoder(bytes.NewReader(req.ToolInputs))
-		decoder.UseNumber()
+		decoder := fastJSONNumber.NewDecoder(bytes.NewReader(req.ToolInputs))
+
 		if err := decoder.Decode(&unmarshaledInputs); err != nil {
 			_ = stdin.Close()
 			return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
@@ -2824,7 +2832,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		}()
 
 		var result map[string]interface{}
-		if err := fastJSON.NewDecoder(io.LimitReader(stdout, limit)).Decode(&result); err != nil {
+		if err := fastJSONNumber.NewDecoder(io.LimitReader(stdout, limit)).Decode(&result); err != nil {
 			<-stderrDone
 			// 🛡️ Sentinel Security Update: Prevent Information Leakage
 			// Do not leak raw stderr to the client. Log it server-side instead.
@@ -3296,8 +3304,8 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		}()
 
 		var unmarshaledInputs map[string]interface{}
-		decoder := fastJSON.NewDecoder(bytes.NewReader(req.ToolInputs))
-		decoder.UseNumber()
+		decoder := fastJSONNumber.NewDecoder(bytes.NewReader(req.ToolInputs))
+
 		if err := decoder.Decode(&unmarshaledInputs); err != nil {
 			_ = stdin.Close()
 			return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
@@ -3312,7 +3320,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		}()
 
 		var result map[string]interface{}
-		if err := fastJSON.NewDecoder(io.LimitReader(stdout, limit)).Decode(&result); err != nil {
+		if err := fastJSONNumber.NewDecoder(io.LimitReader(stdout, limit)).Decode(&result); err != nil {
 			<-stderrDone
 			// 🛡️ Sentinel Security Update: Prevent Information Leakage
 			// Do not leak raw stderr to the client. Log it server-side instead.
@@ -4090,8 +4098,11 @@ func checkInterpreterFunctionCalls(val, language string) error {
 func checkContextualKeywords(val string, keywords []string, suffixes []rune) error {
 	var state quoteState
 	// ⚡ Bolt Optimization: Use []byte buffer to avoid string allocations
-	wordBuf := make([]byte, 0, 64)
+	bufPtr := keywordCheckBufferPool.Get().(*[]byte)
+	wordBuf := (*bufPtr)[:0]
+	defer keywordCheckBufferPool.Put(bufPtr)
 	inWord := false
+
 	runes := []rune(val)
 
 	isSuffix := func(r rune) bool {
@@ -4161,7 +4172,9 @@ func checkUnquotedKeywords(val string, keywords []string) error {
 	escaped := false
 
 	// ⚡ Bolt Optimization: Use []byte buffer to avoid string allocations
-	wordBuf := make([]byte, 0, 64)
+	bufPtr := keywordCheckBufferPool.Get().(*[]byte)
+	wordBuf := (*bufPtr)[:0]
+	defer keywordCheckBufferPool.Put(bufPtr)
 	lastChar := rune(0) // Last non-whitespace char before current word
 	var lastWord []byte // Last word seen before current word (separated only by whitespace)
 

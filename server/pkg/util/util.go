@@ -655,6 +655,7 @@ func toStringRecursive(v any, depth int) string {
 			}
 			return toStringRecursive(rVal.Elem().Interface(), depth+1)
 		}
+
 		return fmt.Sprintf("%v", v)
 	}
 }

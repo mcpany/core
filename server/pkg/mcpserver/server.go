@@ -1247,7 +1247,9 @@ func convertMapToCallToolResult(m map[string]any) (*mcp.CallToolResult, error) {
 		return nil, fmt.Errorf("content is not a list")
 	}
 
-	contents := make([]mcp.Content, 0, len(contentList))
+	// Calculate capacity up front to avoid slice reallocation
+	capacity := len(contentList)
+	contents := make([]mcp.Content, 0, capacity)
 	for _, c := range contentList {
 		cMap, ok := c.(map[string]any)
 		if !ok {
