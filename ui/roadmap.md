@@ -768,3 +768,9 @@
 - [ ] **[P0] NHI Lifecycle Dashboard**: (2026-07-09) Visual tracker for agent identity rotation, hardware binding, and revocation events.
 - [ ] **[P0] Atomic Sanitization Monitor**: (2026-07-09) Real-time visualization of fragment-level BSH validation and "Ghost Fragment" detection.
 - [ ] **[P1] Binary Lineage Explorer**: (2026-07-09) Interactive debugger for visualizing the reasoning lineage embedded in binary state transfers.
+
+#### Upcoming (2026-07-10 Evolution)
+- [ ] **[P0] ZKSA Proof Monitor**: (2026-07-10) Visual tracker for Zero-Knowledge state attestation events and verification status.
+- [ ] **[P1] Attention Jitter Visualizer**: (2026-07-10) Real-time heatmap of HLAP-normalized state update micro-timing.
+- [ ] **[P0] UTD Mesh Topology**: (2026-07-10) Interactive map of teammate discovery beacons and horizontal swarm formation.
+- [ ] **[P0] Hierarchical Lineage Tracer**: (2026-07-10) Visual debugger for recursive, hardware-signed reasoning sub-steps.

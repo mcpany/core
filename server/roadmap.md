@@ -942,3 +942,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] NHI Lifecycle Governance Provider**: Automated identity rotation and hardware-locked revocation for long-running autonomous swarms. (Added: 2026-07-09)
 *   **[P0] Atomic Fragment Sanitizer (AFS)**: Fragment-level semantic validation for BSH buffers to neutralize "Context Smearing" vulnerabilities. (Added: 2026-07-09)
 *   **[P1] Binary State Transparency Engine**: Audit and visualization service for BSH reasoning lineage. (Added: 2026-07-09)
+
+#### Upcoming (2026-07-10 Evolution)
+*   **[P0] Zero-Knowledge State Attestation (ZKSA) Provider**: Proof-broker enabling subagents to provide cryptographic proofs of state conformance. (Added: 2026-07-10)
+*   **[P1] Hardware-Locked Attention Persistence (HLAP)**: TPM-bound monotonic timers for normalizing state-update micro-timing. (Added: 2026-07-10)
+*   **[P0] Unified Teammate Discovery (UTD) Gateway**: High-speed, authenticated discovery hub for horizontal mesh formation. (Added: 2026-07-10)
+*   **[P0] Hierarchical Provenance Validator**: Implementation of Gemini-compliant recursive "Chain-of-Thought" hardware signing. (Added: 2026-07-10)
