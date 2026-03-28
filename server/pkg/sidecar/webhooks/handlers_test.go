@@ -238,6 +238,30 @@ func TestTruncateHandler_Errors(t *testing.T) {
 		handler.Handle(w, req)
 		assert.Equal(t, http.StatusMethodNotAllowed, w.Code)
 	})
+
+	t.Run("Invalid Body", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodPost, "/truncate", bytes.NewReader([]byte("invalid")))
+		w := httptest.NewRecorder()
+		handler.Handle(w, req)
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+	})
+
+	t.Run("Invalid Data Type", func(t *testing.T) {
+		event := cloudevents.NewEvent()
+		event.SetID("id")
+		event.SetSource("src")
+		event.SetType("type")
+		err := event.SetData(cloudevents.ApplicationJSON, "just a string")
+		require.NoError(t, err)
+
+		body, _ := json.Marshal(event)
+		req := httptest.NewRequest(http.MethodPost, "/truncate", bytes.NewReader(body))
+		req.Header.Set("Content-Type", "application/cloudevents+json")
+
+		w := httptest.NewRecorder()
+		handler.Handle(w, req)
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+	})
 }
 
 func TestPaginateHandler_Errors(t *testing.T) {
@@ -248,6 +272,30 @@ func TestPaginateHandler_Errors(t *testing.T) {
 		w := httptest.NewRecorder()
 		handler.Handle(w, req)
 		assert.Equal(t, http.StatusMethodNotAllowed, w.Code)
+	})
+
+	t.Run("Invalid Body", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodPost, "/paginate", bytes.NewReader([]byte("invalid")))
+		w := httptest.NewRecorder()
+		handler.Handle(w, req)
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+	})
+
+	t.Run("Invalid Data Type", func(t *testing.T) {
+		event := cloudevents.NewEvent()
+		event.SetID("id")
+		event.SetSource("src")
+		event.SetType("type")
+		err := event.SetData(cloudevents.ApplicationJSON, "just a string")
+		require.NoError(t, err)
+
+		body, _ := json.Marshal(event)
+		req := httptest.NewRequest(http.MethodPost, "/paginate", bytes.NewReader(body))
+		req.Header.Set("Content-Type", "application/cloudevents+json")
+
+		w := httptest.NewRecorder()
+		handler.Handle(w, req)
+		assert.Equal(t, http.StatusBadRequest, w.Code)
 	})
 }
 
