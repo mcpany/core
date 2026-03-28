@@ -16,13 +16,21 @@ const localProto = path.join(__dirname, "proto");
 const bazelBinProto = path.join(__dirname, "../bazel-bin/proto");
 const fallbackBazelProto = path.join(__dirname, "../bazel-out/k8-fastbuild/bin/proto");
 const rootProto = path.join(__dirname, "../proto");
-const protoPath = fs.existsSync(fallbackBazelProto) ? fallbackBazelProto : (fs.existsSync(localProto)
-  ? localProto
-  : fs.existsSync(bazelBinProto)
-    ? bazelBinProto
-    : fs.existsSync(path.join(__dirname, "../../bazel-out/k8-fastbuild/bin/proto"))
-        ? path.join(__dirname, "../../bazel-out/k8-fastbuild/bin/proto")
-        : rootProto);
+
+let protoPath = rootProto;
+if (process.env.TEST_WORKSPACE) {
+    // We are running inside a Bazel test sandbox.
+    // The runfiles directory places `ui/` side-by-side with `proto/`
+    protoPath = path.join(__dirname, "../proto");
+} else {
+    protoPath = fs.existsSync(fallbackBazelProto) ? fallbackBazelProto : (fs.existsSync(localProto)
+        ? localProto
+        : fs.existsSync(bazelBinProto)
+            ? bazelBinProto
+            : fs.existsSync(path.join(__dirname, "../../bazel-out/k8-fastbuild/bin/proto"))
+                ? path.join(__dirname, "../../bazel-out/k8-fastbuild/bin/proto")
+                : rootProto);
+}
 
 // Resolve the @bufbuild/protobuf/wire sub-path (needed by generated proto files)
 const bufbuildWirePath = path.join(

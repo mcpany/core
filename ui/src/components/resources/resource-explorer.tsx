@@ -194,13 +194,35 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
         }
     }, []);
 
+    const loadResourceContent = useCallback(async (uri: string) => {
+        setContentLoading(true);
+        try {
+            const res = await apiClient.readResource(uri);
+            if (res?.contents && res.contents.length > 0) {
+                setResourceContent(res.contents[0]);
+            } else {
+                setResourceContent(null);
+            }
+        } catch (e) {
+            console.error("Failed to read resource", e);
+            toast({
+                title: "Error",
+                description: "Failed to read resource content.",
+                variant: "destructive"
+            });
+            setResourceContent(null);
+        } finally {
+            setContentLoading(false);
+        }
+    }, [toast]);
+
     useEffect(() => {
         if (selectedUri) {
             loadResourceContent(selectedUri);
         } else {
             setResourceContent(null);
         }
-    }, [selectedUri]);
+    }, [selectedUri, loadResourceContent]);
 
     const loadResources = useCallback(async () => {
         setLoading(true);
@@ -226,28 +248,6 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
             });
         } finally {
             setLoading(false);
-        }
-    }, [toast]);
-
-    const loadResourceContent = useCallback(async (uri: string) => {
-        setContentLoading(true);
-        try {
-            const res = await apiClient.readResource(uri);
-            if (res?.contents && res.contents.length > 0) {
-                setResourceContent(res.contents[0]);
-            } else {
-                setResourceContent(null);
-            }
-        } catch (e) {
-            console.error("Failed to read resource", e);
-            toast({
-                title: "Error",
-                description: "Failed to read resource content.",
-                variant: "destructive"
-            });
-            setResourceContent(null);
-        } finally {
-            setContentLoading(false);
         }
     }, [toast]);
 
