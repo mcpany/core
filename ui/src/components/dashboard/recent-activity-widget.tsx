@@ -14,7 +14,7 @@ import { CheckCircle2, XCircle, Clock, ArrowRight, Activity, Loader2, ChevronDow
 import { apiClient } from "@/lib/client";
 import { cn } from "@/lib/utils";
 import { usePolling } from "@/hooks/use-polling";
-import { RichResultViewer } from "@/components/tools/rich-result-viewer";
+import { JsonView } from "@/components/ui/json-view";
 
 const formatTime = (timestamp: string) => {
   const date = new Date(timestamp);
@@ -220,7 +220,7 @@ export function RecentActivityWidget() {
                                                         <Code2 className="h-3 w-3" /> Request
                                                     </div>
                                                     <div className="bg-muted/50 rounded-md border border-border/50 overflow-hidden">
-                                                        <RichResultViewer result={safeParsePayload(trace.rootSpan.attributes['mcp.request_payload'])} />
+                                                        <JsonView data={safeParsePayload(trace.rootSpan.attributes['mcp.request_payload'])} maxHeight={400} smartTable={true} />
                                                     </div>
                                                 </div>
                                             )}
@@ -246,7 +246,7 @@ export function RecentActivityWidget() {
                                                         <CheckCircle2 className="h-3 w-3" /> Response
                                                     </div>
                                                     <div className="bg-emerald-500/5 rounded-md border border-emerald-500/20 overflow-hidden">
-                                                        <RichResultViewer result={safeParsePayload(trace.rootSpan.attributes['mcp.response_payload'])} />
+                                                        <JsonView data={safeParsePayload(trace.rootSpan.attributes['mcp.response_payload'])} maxHeight={400} smartTable={true} />
                                                     </div>
                                                 </div>
                                             )}
