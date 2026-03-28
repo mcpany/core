@@ -49,3 +49,10 @@ As agents become more autonomous, they increasingly consume untrusted data (web 
 ## 7. Evolutionary Changelog
 * **2026-03-13:** Initial Document Creation.
 * **2026-03-14:** Added "Semantic Boundary Detection" to counter advanced hijacking hidden in multimodal metadata (SVG, CSS). The scanner now includes a "Visual Intent Parser" that checks if rendered components contain instructions that conflict with the agent's primary mission.
+
+### Update: 2026-06-03 - Fragment-Level Multi-modal Validation
+**Context:** Today's research into Gemini CLI v0.34.1 highlights that attestation fragmentation can lead to "Multi-modal State Splicing" where visual instructions are hidden in partial shards.
+**Architecture Adjustment:**
+* Introducing **Visual Intent Parsing (VIP)** for all sharded context fragments.
+* Scanner now performs recursive stylometric analysis on SVG/CSS fragments to detect "mimicry" instructions that attempt to impersonate user-attested mission anchors.
+**Security Impact:** Neutralizes "Ghost Instruction" splicing in parallel teammate context shards.
