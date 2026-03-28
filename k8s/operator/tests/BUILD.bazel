@@ -16,12 +16,3 @@ go_test(
     },
     tags = ["integration"],
 )
-
-go_test(
-    name = "tests_test",
-    srcs = ["e2e_test.go"],
-    deps = [
-        "//k8s/operator/api/v1alpha1:go_default_library",
-        "//k8s/operator/controllers:go_default_library",
-    ],
-)

@@ -107,17 +107,6 @@
 
 ---
 
-## Evolution: [2026-05-06] Updates
-### Proposed Additions
-- **RAMS Shard Extension**: (P0) Advanced temporal memory isolation for the RAMS Hub, binding shard lifecycle to hardware-attested reasoning traces to mitigate Shadow Memory Exfiltration (SME).
-- **Reasoning-Bound WebSocket (RBW) Controller**: (P0) Mandatory handshake protocol for persistent connections, requiring verifiable "Reasoning Proofs" before upgrading to high-privilege status.
-- **Dynamic Capability Pruning (DCP) Middleware**: (P1) Just-in-time tool schema modification service that prunes irrelevant capabilities based on the active subagent task lifecycle.
-
-### Priority Shifts
-- **RAMS Hub**: (Re-affirmed P0) Now elevated with the requirement for "Temporal Isolation" to counter SME exploits.
-- **Same-Origin Policy (SOP) Enforcer**: (Re-affirmed P0) Expanded to integrate with the RBW Controller for origin-locked reasoning proofs.
-
-
 ## Evolution: [2026-04-26] Updates
 
 ### Proposed Additions
@@ -855,3 +844,13 @@
 ### Priority Shifts
 - **Verifiable Task Delegation (VTD)**: (Re-affirmed P0) Now elevated as the primary solution for the "Approval Fatigue" scaling bottleneck.
 - **Pluggable Context Bridge**: (Re-affirmed P0) Expanded to support the new Standardized Context Sidecar Interface.
+
+## Evolution: [2026-05-06] Updates
+### Proposed Additions
+- **RAMS Shard Extension**: (P0) Advanced temporal memory isolation for the RAMS Hub, binding shard lifecycle to hardware-attested reasoning traces to mitigate Shadow Memory Exfiltration (SME).
+- **Reasoning-Bound WebSocket (RBW) Controller**: (P0) Mandatory handshake protocol for persistent connections, requiring verifiable "Reasoning Proofs" before upgrading to high-privilege status.
+- **Dynamic Capability Pruning (DCP) Middleware**: (P1) Just-in-time tool schema modification service that prunes irrelevant capabilities based on the active subagent task lifecycle.
+
+### Priority Shifts
+- **RAMS Hub**: (Re-affirmed P0) Now elevated with the requirement for "Temporal Isolation" to counter SME exploits.
+- **Same-Origin Policy (SOP) Enforcer**: (Re-affirmed P0) Expanded to integrate with the RBW Controller for origin-locked reasoning proofs.

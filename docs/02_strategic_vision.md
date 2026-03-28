@@ -10,15 +10,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-05-06]
-### Focus: Temporal Memory Isolation & Reasoning-Bound handshakes
-**Context**: The discovery of Shadow Memory Exfiltration (SME) and the draft of the Reasoning-Bound WebSocket (RBW) protocol reveal that shared memory is no longer a safe default for swarms. We must move toward "Temporal Isolation," where memory and connection lifecycle are bound to verifiable reasoning traces.
-**Strategic Pivot**:
-- **Temporal Memory Isolation**: MCP Any will evolve the RAMS Hub to support "Reasoning-Aware Sharding." Memory segments will be ephemeral and bound to a specific, hardware-attested reasoning trace, neutralizing the SME exploit vector.
-- **Reasoning-Bound WebSocket (RBW)**: We are adopting the RBW standard for all high-privilege connections. Every WebSocket upgrade request must carry a "Reasoning Proof" handshake, ensuring that persistent connections are only granted for justified mission-critical intents.
-- **Just-in-Time (JIT) Capability Pruning**: MCP Any will implement DCP middleware. Tools will be dynamically pruned from the agent's schema based on the active task lifecycle, reducing both token costs and the attack surface for prompt injection.
-
-
 ## Strategic Evolution: [2026-05-05]
 ### Focus: Reasoning-Aware Memory Segmentation (RAMS)
 **Context**: OpenClaw's prototyping of "Intent-Bound Memory Isolation" and the emergence of "Recursive Context Splicing" (RCS) exploits reveal that shared state is the new primary attack surface. As swarms become more complex, "Memory Smearing" and "Ghost Fragment" injection demand a move from simple isolation to "Active Reasoning Segmentation."
@@ -609,3 +600,11 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Universal Context Sidecar Hub**: MCP Any will evolve to act as the primary host for framework-agnostic Context Sidecars. By implementing a standardized "Context Bus," we will allow agents from disparate frameworks (OpenClaw, AutoGen) to share specialized state strategies (e.g., long-term memory, vector retrieval) securely.
 - **Hardware-Attested Boot Integrity**: We are moving from signed manifests to "Hardware-Locked Deterministic Boot." MCP Any will mandate that any project-local configuration be cryptographically bound to a Trusted Platform Module (TPM) or Secure Enclave, ensuring that cloned repositories cannot execute malicious hooks without explicit, hardware-bound user re-attestation.
 - **VTD-Powered Automation**: To break the "Approval Fatigue" bottleneck, we are accelerating the deployment of the Verifiable Task Delegation (VTD) layer, enabling autonomous A2A handoffs for verified low-risk operations.
+
+## Strategic Evolution: [2026-05-06]
+### Focus: Temporal Memory Isolation & Reasoning-Bound Handshakes
+**Context**: The discovery of Shadow Memory Exfiltration (SME) and the draft of the Reasoning-Bound WebSocket (RBW) protocol reveal that shared memory is no longer a safe default for swarms. We must move toward "Temporal Isolation," where memory and connection lifecycle are bound to verifiable reasoning traces.
+**Strategic Pivot**:
+- **Temporal Memory Isolation**: MCP Any will evolve the RAMS Hub to support "Reasoning-Aware Sharding." Memory segments will be ephemeral and bound to a specific, hardware-attested reasoning trace, neutralizing the SME exploit vector.
+- **Reasoning-Bound WebSocket (RBW)**: We are adopting the RBW standard for all high-privilege connections. Every WebSocket upgrade request must carry a "Reasoning Proof" handshake, ensuring that persistent connections are only granted for justified mission-critical intents.
+- **Just-in-Time (JIT) Capability Pruning**: MCP Any will implement DCP middleware. Tools will be dynamically pruned from the agent's schema based on the active task lifecycle, reducing both token costs and the attack surface for prompt injection.

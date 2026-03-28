@@ -47,8 +47,8 @@ func TestOperatorE2E(t *testing.T) {
 
 	// 3. Clean up existing cluster to ensure fresh state and free ports.
 	if clusterExists(t, ctx, clusterName) {
-		t.Logf("Deleting existing cluster %s to ensure clean state.", clusterName)
-		_ = runCommand(t, ctx, rootDir, "kind", "delete", "cluster", "--name", clusterName)
+		t.Logf("Deleting existing cluster %s to ensure clean state...", clusterName)
+		runCommand(t, ctx, rootDir, "kind", "delete", "cluster", "--name", clusterName)
 	}
 
 	// 4. Get a free port for the host side of NodePort.
@@ -59,7 +59,7 @@ func TestOperatorE2E(t *testing.T) {
 	t.Logf("Using host port %d for UI access (mapped to NodePort 30000)", hostPort)
 
 	// 5. Create Kind Cluster.
-	t.Logf("Creating Kind cluster %s.", clusterName)
+	t.Logf("Creating Kind cluster %s...", clusterName)
 	// Generate temporary kind config with port mapping.
 	kindConfigContent := fmt.Sprintf(`kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
@@ -88,7 +88,7 @@ nodes:
 	ensureBazelImageLoaded(t, filepath.Join("server", "cmd", "server", "server_tarball.sh"), "mcpany/server")
 	ensureBazelImageLoaded(t, filepath.Join("server", "tests", "integration", "cmd", "mocks", "http_echo_server", "http_echo_server_tarball.sh"), "mcpany/http-echo-server")
 	if os.Getenv("SKIP_IMAGE_BUILD") != "true" {
-		t.Logf("Building Docker images with tag %s.", tag)
+		t.Logf("Building Docker images with tag %s...", tag)
 		if err := runCommand(t, ctx, rootDir, "docker", "build", "-t", fmt.Sprintf("mcpany/operator:%s", tag), "-f", "k8s/operator/Dockerfile", "."); err != nil {
 			t.Fatalf("Failed to build operator image: %v", err)
 		}
@@ -100,7 +100,7 @@ nodes:
 	}
 
 	// 7. Load Images into Kind.
-	t.Log("Loading images into Kind.")
+	t.Log("Loading images into Kind...")
 	if err := runCommand(t, ctx, rootDir, "kind", "load", "docker-image", fmt.Sprintf("mcpany/server:%s", tag), "--name", clusterName); err != nil {
 		t.Fatalf("Failed to load server image: %v", err)
 	}
@@ -115,7 +115,7 @@ nodes:
 	}
 
 	// 6. Install Helm Chart.
-	t.Log("Installing Helm chart.")
+	t.Log("Installing Helm chart...")
 	// Helm upgrade --install.
 	if err := runCommand(t, ctx, rootDir, "helm", "upgrade", "--install", "mcpany", "k8s/helm/mcpany",
 		"--namespace", namespace,
@@ -146,12 +146,12 @@ nodes:
 	t.Log("Deployment successful!")
 
 	// 7. Verify Pods.
-	t.Log("Verifying pods.")
+	t.Log("Verifying pods...")
 	if err := runCommand(t, ctx, rootDir, "kubectl", "wait", "--for=condition=ready", "pod", "-l", "app.kubernetes.io/name=mcpany", "-n", namespace, "--timeout=60s"); err != nil {
 		t.Fatalf("Failed to wait for pods: %v", err)
 	}
 
-	t.Log("Deploying http-echo-server.")
+	t.Log("Deploying http-echo-server...")
 	if err := runCommand(t, ctx, rootDir, "kubectl", "run", "ui-http-echo-server", "--image=mcpany/http-echo-server:latest", "--image-pull-policy=Never", "--restart=Always", "-n", namespace); err != nil {
 		t.Fatalf("Failed to deploy http-echo-server: %v", err)
 	}
@@ -194,9 +194,9 @@ nodes:
 
 	t.Log("Executing npx playwright test in", uiDir)
 	if err := playwrightCmd.Run(); err != nil {
-		cmd := exec.Command("sh", "-c", "kubectl get pods -n mcp-system; kubectl logs -n mcp-system -l app.kubernetes.io/name=server --all-containers=true --tail=1000")
-		out, _ := cmd.CombinedOutput()
-		t.Logf("Server Logs:\n%s", out)
+						cmd := exec.Command("sh", "-c", "kubectl get pods -n mcp-system; kubectl logs -n mcp-system -l app.kubernetes.io/name=server --all-containers=true --tail=1000")
+						out, _ := cmd.CombinedOutput()
+						t.Logf("Server Logs:\n%s", out)
 		t.Fatalf("UI Tests failed: %v", err)
 	}
 }
@@ -325,7 +325,7 @@ func waitForPort(t *testing.T, ctx context.Context, addr string, timeout time.Du
 	timeoutTimer := time.NewTimer(timeout)
 	defer timeoutTimer.Stop()
 
-	t.Logf("Waiting for %s to become available.", addr)
+	t.Logf("Waiting for %s to become available...", addr)
 	for {
 		select {
 		case <-ctx.Done():
@@ -335,7 +335,7 @@ func waitForPort(t *testing.T, ctx context.Context, addr string, timeout time.Du
 		case <-ticker.C:
 			conn, err := net.DialTimeout("tcp", addr, 500*time.Millisecond)
 			if err == nil {
-				_ = conn.Close()
+				conn.Close()
 				t.Logf("Successfully connected to %s", addr)
 				return nil
 			}
@@ -353,6 +353,6 @@ func getFreePort() (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	defer func() { _ = l.Close() }()
+	defer l.Close()
 	return l.Addr().(*net.TCPAddr).Port, nil
 }

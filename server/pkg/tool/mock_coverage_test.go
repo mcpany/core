@@ -1,4 +1,4 @@
-// Copyright 2025 Author(s) of MCP Any.
+// Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
 package tool
@@ -37,7 +37,7 @@ func TestMockToolCoverage(t *testing.T) {
 	assert.Equal(t, "ok", res)
 	assert.NoError(t, err)
 
-	// GetCacheConfig.
+	// GetCacheConfig
 	assert.Nil(t, mt.GetCacheConfig())
 }
 

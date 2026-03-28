@@ -7,42 +7,39 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
-// NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
-
 // MCPServerSpec defines the desired state of MCPServer.
+//
+// Summary: Specification for MCPServer resource.
+//
+// +kubebuilder:object:generate=true
 type MCPServerSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster.
-	// Important: Run "make" to regenerate code after modifying this file.
-
-	// Image is the container image to run for the MCP server.
-	Image string `json:"image"`
-
-	// Replicas is the number of instances of the server to run.
+	// Replicas is the number of replicas for the server
 	Replicas *int32 `json:"replicas,omitempty"`
-
-	// ConfigMap is the name of the ConfigMap containing the server configuration.
-	ConfigMap string `json:"configMap"`
-
-	// ServiceType defines the type of service to create (ClusterIP, NodePort, LoadBalancer).
-	// +kubebuilder:validation:Enum=ClusterIP;NodePort;LoadBalancer
-	// +kubebuilder:default=ClusterIP
+	// Image is the container image to use
+	Image string `json:"image,omitempty"`
+	// ServiceType is the type of Kubernetes Service to expose (ClusterIP, LoadBalancer, NodePort)
 	ServiceType string `json:"serviceType,omitempty"`
+	// ConfigMap is the name of the ConfigMap containing config.yaml
+	// +kubebuilder:validation:Required
+	ConfigMap string `json:"configMap"`
 }
 
 // MCPServerStatus defines the observed state of MCPServer.
+//
+// Summary: Status of MCPServer resource.
+//
+// +kubebuilder:object:generate=true
 type MCPServerStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster.
-	// Important: Run "make" to regenerate code after modifying this file.
-
-	// AvailableReplicas is the number of healthy replicas currently running.
+	// AvailableReplicas is the number of available replicas
 	AvailableReplicas int32 `json:"availableReplicas"`
 }
 
-//+kubebuilder:object:root=true
-//+kubebuilder:subresource:status
+// +kubebuilder:object:root=true
+// +kubebuilder:subresource:status
 
 // MCPServer is the Schema for the mcpservers API.
+//
+// Summary: MCPServer resource definition.
 type MCPServer struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -51,9 +48,11 @@ type MCPServer struct {
 	Status MCPServerStatus `json:"status,omitempty"`
 }
 
-//+kubebuilder:object:root=true
+// +kubebuilder:object:root=true
 
 // MCPServerList contains a list of MCPServer.
+//
+// Summary: List of MCPServer resources.
 type MCPServerList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`

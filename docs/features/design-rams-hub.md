@@ -4,7 +4,7 @@
  -->
 
 # Design Doc: RAMS Hub (Reasoning-Aware Memory Segmentation)
-**Status:** Draft | In Review | Approved
+**Status:** Draft
 **Created:** 2026-05-06
 
 ## 1. Context and Scope
@@ -48,4 +48,8 @@ MCP Any needs a way to manage shared context across multiple agents in a swarm w
 
 ## 7. Evolutionary Changelog
 * **2026-05-06:** Initial Document Creation.
-* **2026-05-06 Update: Mitigating Shadow Memory Exfiltration (SME)**: Introducing temporal isolation where memory segments are bound to the hardware-attested Reasoning Trace lifecycle.
+* ### Update: 2026-05-06 - Mitigating Shadow Memory Exfiltration (SME)
+**Context:** Today's market sync revealed a new exploit pattern in subagent memory probing.
+**Architecture Adjustment:** * Deprecating persistent shared memory.
+* Introducing temporal isolation where memory segments are bound to the hardware-attested Reasoning Trace lifecycle.
+**Security Impact:** Mitigates SME by ensuring memory availability is strictly synchronized with the reasoning progression.

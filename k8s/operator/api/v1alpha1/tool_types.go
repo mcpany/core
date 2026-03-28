@@ -7,37 +7,47 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
-// NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
-
 // ToolSpec defines the desired state of Tool.
+//
+// Summary: Specification for Tool resource.
+//
+// +kubebuilder:object:generate=true
 type ToolSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster.
-	// Important: Run "make" to regenerate code after modifying this file.
+	// Type is the type of tool (e.g., "container", "binary", "script")
+	// +kubebuilder:validation:Enum=container;binary;script
+	Type string `json:"type"`
 
-	// Description is a human-readable description of the tool's purpose.
-	Description string `json:"description"`
+	// Image is the container image to use (for type "container")
+	Image string `json:"image,omitempty"`
 
-	// Image is the container image to run for the tool.
-	Image string `json:"image"`
+	// Command is the command to run (for type "binary" or "script")
+	Command []string `json:"command,omitempty"`
 
-	// ConfigMap is the name of the ConfigMap containing the tool's configuration.
-	ConfigMap string `json:"configMap"`
+	// Args are the arguments to pass to the command
+	Args []string `json:"args,omitempty"`
+
+	// Content is the inline content (for type "script")
+	Content string `json:"content,omitempty"`
 }
 
 // ToolStatus defines the observed state of Tool.
+//
+// Summary: Status of Tool resource.
+//
+// +kubebuilder:object:generate=true
 type ToolStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster.
-	// Important: Run "make" to regenerate code after modifying this file.
-
-	// State represents the current state of the tool (Ready, NotReady, etc).
-	State string `json:"state"`
+	// Ready indicates if the tool is ready to be used
+	Ready bool `json:"ready"`
+	// Message provides details about the status
+	Message string `json:"message,omitempty"`
 }
 
-//+kubebuilder:object:root=true
-//+kubebuilder:subresource:status
+// +kubebuilder:object:root=true
+// +kubebuilder:subresource:status
 
 // Tool is the Schema for the tools API.
+//
+// Summary: Tool resource definition.
 type Tool struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -46,9 +56,11 @@ type Tool struct {
 	Status ToolStatus `json:"status,omitempty"`
 }
 
-//+kubebuilder:object:root=true
+// +kubebuilder:object:root=true
 
 // ToolList contains a list of Tool.
+//
+// Summary: List of Tool resources.
 type ToolList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
