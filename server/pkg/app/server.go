@@ -2628,7 +2628,12 @@ func startGrpcServer(
 }
 
 
-// GetAuditMiddleware returns the current audit middleware
+// GetAuditMiddleware returns the current audit middleware.
+//
+// Summary: Returns the active audit middleware.
+//
+// Returns:
+//   - *middleware.AuditMiddleware: The current audit middleware instance.
 func (a *Application) GetAuditMiddleware() *middleware.AuditMiddleware {
 	a.configMu.Lock()
 	defer a.configMu.Unlock()
