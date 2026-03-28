@@ -23,6 +23,15 @@ type WrappedServerStream struct {
 //
 // Returns:
 //   - context.Context: The modified context.
+// Parameters:
+//   - w: input parameter for Context.
+//
+// Errors:
+//   - No specific errors documented.
+//
+// Side Effects:
+//   - None known.
+//
 func (w *WrappedServerStream) Context() context.Context {
 	return w.Ctx
 }

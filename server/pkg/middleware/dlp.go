@@ -21,6 +21,12 @@ import (
 //
 // Returns:
 //   - mcp.Middleware: The configured middleware function.
+// Errors:
+//   - No specific errors documented.
+//
+// Side Effects:
+//   - None known.
+//
 func DLPMiddleware(config *configv1.DLPConfig, log *slog.Logger) mcp.Middleware {
 	redactor := NewRedactor(config, log)
 	if redactor == nil {

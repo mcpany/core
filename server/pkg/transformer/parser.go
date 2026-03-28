@@ -49,6 +49,9 @@ var (
 //
 // Side Effects:
 //   - Initializes the singleton on first call.
+// Errors:
+//   - No specific errors documented.
+//
 func NewTextParser() *TextParser {
 	defaultTextParserOnce.Do(func() {
 		defaultTextParser = &TextParser{
@@ -70,6 +73,12 @@ func NewTextParser() *TextParser {
 // Returns:
 //   - []byte: The rendered output.
 //   - error: An error if transformation fails.
+// Errors:
+//   - No specific errors documented.
+//
+// Side Effects:
+//   - None known.
+//
 func (p *TextParser) Transform(templateStr string, data any) ([]byte, error) {
 	return p.transformer.Transform(templateStr, data)
 }
@@ -93,6 +102,9 @@ func (p *TextParser) Transform(templateStr string, data any) ([]byte, error) {
 //   - Returns error if input format is invalid.
 //   - Returns error if extraction rules fail.
 //   - Returns "unsupported input type" for unknown types.
+// Side Effects:
+//   - None known.
+//
 func (p *TextParser) Parse(inputType string, input []byte, config map[string]string, jqQuery string) (any, error) {
 	switch strings.ToLower(inputType) {
 	case "json":

@@ -314,6 +314,12 @@ type statsCacheEntry struct {
 //
 // Returns:
 //   - (*Application): The initialized application.
+// Errors:
+//   - No specific errors documented.
+//
+// Side Effects:
+//   - None known.
+//
 func NewApplication() *Application {
 	busProvider, _ := bus.NewProvider(nil)
 	return &Application{
@@ -350,6 +356,9 @@ func NewApplication() *Application {
 //   - Loads configuration.
 //
 //nolint:gocyclo // Run is the main entry point and setup function, expected to be complex
+// Errors:
+//   - Returns an error if the underlying operation fails or inputs are invalid.
+//
 func (a *Application) Run(opts RunOptions) error {
 	log := logging.GetLogger()
 	fs, err := setup(opts.Fs)
@@ -932,6 +941,9 @@ func (a *Application) Run(opts RunOptions) error {
 // Side Effects:
 //   - Reads configuration files.
 //   - Updates global settings, user auth, profiles, and service registry.
+// Errors:
+//   - Returns an error if the underlying operation fails or inputs are invalid.
+//
 func (a *Application) ReloadConfig(ctx context.Context, fs afero.Fs, configPaths []string) error {
 	log := logging.GetLogger()
 	start := time.Now()
@@ -1364,6 +1376,12 @@ func (a *Application) generateConfigDiff(oldConfig, newConfig map[string]string)
 //
 // Returns:
 //   - (error): nil if startup completes successfully, or a context error if canceled.
+// Errors:
+//   - Returns an error if the underlying operation fails or inputs are invalid.
+//
+// Side Effects:
+//   - None known.
+//
 func (a *Application) WaitForStartup(ctx context.Context) error {
 	select {
 	case <-a.startupCh:
@@ -1494,6 +1512,12 @@ func (a *Application) filesystemHealthCheck(_ context.Context) health.CheckResul
 //
 // Returns:
 //   - (error): nil if healthy, or an error if the health check fails.
+// Errors:
+//   - Returns an error if the underlying operation fails or inputs are invalid.
+//
+// Side Effects:
+//   - None known.
+//
 func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -1515,6 +1539,12 @@ func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 //
 // Returns:
 //   - (error): nil if healthy, or an error if the health check fails.
+// Errors:
+//   - No specific errors documented.
+//
+// Side Effects:
+//   - None known.
+//
 func HealthCheckWithContext(
 	ctx context.Context,
 	out io.Writer,
@@ -2546,6 +2576,12 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 //
 // Returns:
 //   - (http.Handler): The wrapped handler.
+// Errors:
+//   - No specific errors documented.
+//
+// Side Effects:
+//   - Makes external network requests.
+//
 func (a *Application) HTTPRequestContextMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := context.WithValue(r.Context(), middleware.HTTPRequestContextKey, r)
@@ -2629,6 +2665,20 @@ func startGrpcServer(
 
 
 // GetAuditMiddleware returns the current audit middleware
+// Summary: Handles the GetAuditMiddleware logic.
+//
+// Parameters:
+//   - a: input parameter for GetAuditMiddleware.
+//
+// Returns:
+//   - result of GetAuditMiddleware.
+//
+// Errors:
+//   - No specific errors documented.
+//
+// Side Effects:
+//   - None known.
+//
 func (a *Application) GetAuditMiddleware() *middleware.AuditMiddleware {
 	a.configMu.Lock()
 	defer a.configMu.Unlock()

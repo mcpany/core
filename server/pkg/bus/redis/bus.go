@@ -254,6 +254,15 @@ func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T
 //
 // Returns:
 //   - error: An error if closing fails.
+// Parameters:
+//   - b: input parameter for Close.
+//
+// Errors:
+//   - Returns an error if the underlying operation fails or inputs are invalid.
+//
+// Side Effects:
+//   - None known.
+//
 func (b *Bus[T]) Close() error {
 	return b.client.Close()
 }

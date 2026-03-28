@@ -28,6 +28,12 @@ type RedisStrategy struct {
 //
 // Returns:
 //   - *RedisStrategy: The initialized strategy.
+// Errors:
+//   - No specific errors documented.
+//
+// Side Effects:
+//   - None known.
+//
 func NewRedisStrategy() *RedisStrategy {
 	return &RedisStrategy{}
 }

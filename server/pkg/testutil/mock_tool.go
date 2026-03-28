@@ -26,6 +26,15 @@ type MockTool struct {
 //
 // Returns:
 //   - *v1.Tool: A minimal tool definition.
+// Parameters:
+//   - m: input parameter for Tool.
+//
+// Errors:
+//   - No specific errors documented.
+//
+// Side Effects:
+//   - None known.
+//
 func (m *MockTool) Tool() *v1.Tool {
 	return v1.Tool_builder{
 		Name: proto.String("mock-tool"),
@@ -46,6 +55,9 @@ func (m *MockTool) Tool() *v1.Tool {
 //
 // Side Effects:
 //   - Invokes the injected ExecuteFunc.
+// Errors:
+//   - No specific errors documented.
+//
 func (m *MockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	if m.ExecuteFunc != nil {
 		return m.ExecuteFunc(ctx, req)
@@ -59,6 +71,15 @@ func (m *MockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any
 //
 // Returns:
 //   - *configv1.CacheConfig: Always nil.
+// Parameters:
+//   - m: input parameter for GetCacheConfig.
+//
+// Errors:
+//   - No specific errors documented.
+//
+// Side Effects:
+//   - None known.
+//
 func (m *MockTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }

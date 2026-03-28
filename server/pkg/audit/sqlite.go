@@ -171,6 +171,9 @@ func ensureColumn(db *sql.DB, colName string) error {
 //
 // Side Effects:
 //   - Inserts a row into the audit_logs table.
+// Errors:
+//   - Returns an error if the underlying operation fails or inputs are invalid.
+//
 func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -242,6 +245,9 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 //
 // Side Effects:
 //   - Executes a SELECT query on the database.
+// Errors:
+//   - No specific errors documented.
+//
 func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -383,6 +389,12 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 //
 // Side Effects:
 //   - Closes the DB connection.
+// Parameters:
+//   - s: input parameter for Close.
+//
+// Errors:
+//   - Returns an error if the underlying operation fails or inputs are invalid.
+//
 func (s *SQLiteAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

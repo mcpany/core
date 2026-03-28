@@ -82,6 +82,15 @@ func New[T any](config *bus.NatsBus) (*Bus[T], error) {
 // Returns:
 //
 //	None.
+// Parameters:
+//   - b: input parameter for Close.
+//
+// Errors:
+//   - No specific errors documented.
+//
+// Side Effects:
+//   - None known.
+//
 func (b *Bus[T]) Close() {
 	if b.nc != nil {
 		b.nc.Close()

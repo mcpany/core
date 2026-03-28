@@ -109,6 +109,9 @@ type TrafficPoint struct {
 //
 // Side Effects:
 //   - Starts the background process loop.
+// Errors:
+//   - No specific errors documented.
+//
 func NewManager(registry serviceregistry.ServiceRegistryInterface, tm tool.ManagerInterface) *Manager {
 	m := &Manager{
 		sessions:        make(map[string]*SessionStats),
@@ -263,6 +266,12 @@ func (m *Manager) handleActivity(event activityEvent) {
 //
 // Side Effects:
 //   - Sends an activity event to the processing channel (non-blocking).
+// Returns:
+//   - result of RecordActivity.
+//
+// Errors:
+//   - No specific errors documented.
+//
 func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, latency time.Duration, isError bool, serviceID string, responseLen int64) {
 	// ⚡ BOLT: Shallow copy meta to prevent race conditions as map is passed by reference
 	metaCopy := make(map[string]interface{}, len(meta))
@@ -295,6 +304,9 @@ func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, 
 //
 // Side Effects:
 //   - Closes the shutdown channel, stopping the background loop.
+// Errors:
+//   - No specific errors documented.
+//
 func (m *Manager) Close() {
 	close(m.shutdownCh)
 }
@@ -311,6 +323,9 @@ func (m *Manager) Close() {
 //
 // Side Effects:
 //   - None.
+// Errors:
+//   - No specific errors documented.
+//
 func (m *Manager) GetStats(serviceID string) Stats {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -363,6 +378,9 @@ func (m *Manager) GetStats(serviceID string) Stats {
 //
 // Side Effects:
 //   - None.
+// Errors:
+//   - No specific errors documented.
+//
 func (m *Manager) GetRecentServiceStats(serviceID string, window time.Duration) (avgLatency time.Duration, errorRate float64) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -416,6 +434,9 @@ func (m *Manager) GetRecentServiceStats(serviceID string, window time.Duration) 
 //
 // Side Effects:
 //   - None.
+// Errors:
+//   - No specific errors documented.
+//
 func (m *Manager) GetTrafficHistory(serviceID string) []TrafficPoint {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -480,6 +501,9 @@ func (m *Manager) GetTrafficHistory(serviceID string) []TrafficPoint {
 // Side Effects:
 //   - Modifies the internal traffic history state.
 //   - Updates the "seed-data" session stats.
+// Errors:
+//   - No specific errors documented.
+//
 func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -549,6 +573,9 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 //
 // Side Effects:
 //   - Fetches all services and tools (may involve I/O).
+// Errors:
+//   - No specific errors documented.
+//
 func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 	// ⚡ BOLT: Fetch external data OUTSIDE lock to prevent blocking the event loop.
 	// Randomized Selection from Top 5 High-Impact Targets

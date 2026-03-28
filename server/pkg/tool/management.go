@@ -279,6 +279,9 @@ type Manager struct {
 //
 // Side Effects:
 //   - Allocates memory for internal maps and indices.
+// Errors:
+//   - No specific errors documented.
+//
 func NewManager(bus *bus.Provider) *Manager {
 	return &Manager{
 		bus:                  bus,
@@ -305,6 +308,9 @@ func NewManager(bus *bus.Provider) *Manager {
 //
 // Side Effects:
 //   - Updates internal profile definitions and caches.
+// Errors:
+//   - No specific errors documented.
+//
 func (tm *Manager) SetProfiles(enabled []string, defs []*configv1.ProfileDefinition) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
@@ -413,6 +419,12 @@ func (tm *Manager) toolMatchesProfile(t *v1.Tool, profileName string) bool {
 //
 // Returns:
 //   - bool: True if the service is allowed, false otherwise.
+// Errors:
+//   - No specific errors documented.
+//
+// Side Effects:
+//   - None known.
+//
 func (tm *Manager) IsServiceAllowed(serviceID, profileID string) bool {
 	tm.mu.RLock()
 	defer tm.mu.RUnlock()
@@ -445,6 +457,12 @@ func (tm *Manager) IsServiceAllowed(serviceID, profileID string) bool {
 //
 // Returns:
 //   - bool: True if the tool matches the profile, false otherwise.
+// Errors:
+//   - No specific errors documented.
+//
+// Side Effects:
+//   - None known.
+//
 func (tm *Manager) ToolMatchesProfile(tool Tool, profileID string) bool {
 	tm.mu.RLock()
 	defer tm.mu.RUnlock()
@@ -463,6 +481,12 @@ func (tm *Manager) ToolMatchesProfile(tool Tool, profileID string) bool {
 // Returns:
 //   - map[string]bool: A map of allowed service IDs.
 //   - bool: True if the profile exists and has cached allowed services.
+// Errors:
+//   - No specific errors documented.
+//
+// Side Effects:
+//   - None known.
+//
 func (tm *Manager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
 	tm.mu.RLock()
 	defer tm.mu.RUnlock()
@@ -482,6 +506,12 @@ func (tm *Manager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool
 //
 // Returns:
 //   - int: The number of active tools for the service.
+// Errors:
+//   - No specific errors documented.
+//
+// Side Effects:
+//   - None known.
+//
 func (tm *Manager) GetToolCountForService(serviceID string) int {
 	// ⚡ Bolt Optimization: Check health status first without locking the main mutex.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -581,6 +611,9 @@ func (tm *Manager) matchesProperties(annotations *v1.ToolAnnotations, props map[
 //
 // Side Effects:
 //   - Appends middleware to the internal list.
+// Errors:
+//   - No specific errors documented.
+//
 func (tm *Manager) AddMiddleware(middleware ExecutionMiddleware) {
 	tm.middlewares = append(tm.middlewares, middleware)
 }
@@ -596,6 +629,9 @@ func (tm *Manager) AddMiddleware(middleware ExecutionMiddleware) {
 //
 // Side Effects:
 //   - Updates the internal mcpServer reference.
+// Errors:
+//   - No specific errors documented.
+//
 func (tm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
@@ -790,6 +826,9 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 //
 // Side Effects:
 //   - Stores service info in the internal map.
+// Errors:
+//   - No specific errors documented.
+//
 func (tm *Manager) AddServiceInfo(serviceID string, info *ServiceInfo) {
 	if info.Config != nil {
 		var preHooks []PreCallHook
@@ -840,6 +879,12 @@ func (tm *Manager) AddServiceInfo(serviceID string, info *ServiceInfo) {
 // Returns:
 //   - *ServiceInfo: The service information.
 //   - bool: True if the service was found, false otherwise.
+// Errors:
+//   - No specific errors documented.
+//
+// Side Effects:
+//   - None known.
+//
 func (tm *Manager) GetServiceInfo(serviceID string) (*ServiceInfo, bool) {
 	info, ok := tm.serviceInfo.Load(serviceID)
 	if !ok {
@@ -862,6 +907,15 @@ func (tm *Manager) GetServiceInfo(serviceID string) (*ServiceInfo, bool) {
 //
 // Returns:
 //   - []*ServiceInfo: A slice of ServiceInfo structs.
+// Parameters:
+//   - tm: input parameter for ListServices.
+//
+// Errors:
+//   - No specific errors documented.
+//
+// Side Effects:
+//   - None known.
+//
 func (tm *Manager) ListServices() []*ServiceInfo {
 	var services []*ServiceInfo
 	tm.serviceInfo.Range(func(_ string, value *ServiceInfo) bool {
@@ -1070,6 +1124,12 @@ func (tm *Manager) AddTool(tool Tool) error {
 // Returns:
 //   - Tool: The tool instance.
 //   - bool: True if the tool was found, false otherwise.
+// Errors:
+//   - No specific errors documented.
+//
+// Side Effects:
+//   - None known.
+//
 func (tm *Manager) GetTool(toolName string) (Tool, bool) {
 	// Try direct lookup (if client sends ID)
 	tool, ok := tm.tools.Load(toolName)
@@ -1095,6 +1155,15 @@ func (tm *Manager) GetTool(toolName string) (Tool, bool) {
 //
 // Returns:
 //   - []Tool: A slice of Tool instances.
+// Parameters:
+//   - tm: input parameter for ListTools.
+//
+// Errors:
+//   - No specific errors documented.
+//
+// Side Effects:
+//   - None known.
+//
 func (tm *Manager) ListTools() []Tool {
 	tm.toolsMutex.RLock()
 	if tm.cachedTools != nil {
@@ -1149,6 +1218,12 @@ func (tm *Manager) rebuildCachedTools() []Tool {
 //
 // Side Effects:
 //   - Updates internal caches if they are invalid.
+// Parameters:
+//   - tm: input parameter for ListMCPTools.
+//
+// Errors:
+//   - No specific errors documented.
+//
 func (tm *Manager) ListMCPTools() []*mcp.Tool {
 	tm.toolsMutex.RLock()
 	if tm.cachedMCPTools != nil {
@@ -1202,6 +1277,9 @@ func (tm *Manager) ListMCPTools() []*mcp.Tool {
 // Side Effects:
 //   - Removes entries from the tools map and secondary indices.
 //   - Invalidates internal caches.
+// Errors:
+//   - No specific errors documented.
+//
 func (tm *Manager) ClearToolsForService(serviceID string) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()

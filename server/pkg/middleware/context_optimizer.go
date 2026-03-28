@@ -30,6 +30,12 @@ type ContextOptimizer struct {
 //
 // Returns:
 //   - *ContextOptimizer: The initialized optimizer.
+// Errors:
+//   - No specific errors documented.
+//
+// Side Effects:
+//   - None known.
+//
 func NewContextOptimizer(maxChars int) *ContextOptimizer {
 	return &ContextOptimizer{
 		MaxChars: maxChars,
@@ -58,6 +64,9 @@ var bufferPool = sync.Pool{
 //   - Buffers the entire response body.
 //   - Modifies the response body if it contains JSON strings exceeding MaxChars.
 //   - Updates the Content-Length header.
+// Errors:
+//   - No specific errors documented.
+//
 func (co *ContextOptimizer) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		wb := bufferPool.Get().(*responseBuffer)
@@ -203,6 +212,9 @@ func (w *responseBuffer) checkBuffer() {
 // Side Effects:
 //   - Appends to the body buffer if buffering is enabled.
 //   - Writes to the underlying ResponseWriter otherwise.
+// Errors:
+//   - No specific errors documented.
+//
 func (w *responseBuffer) Write(b []byte) (int, error) {
 	w.checkBuffer()
 
@@ -226,6 +238,9 @@ func (w *responseBuffer) Write(b []byte) (int, error) {
 // Side Effects:
 //   - Sets the internal status code.
 //   - Checks content-type headers to determine if buffering is needed.
+// Errors:
+//   - No specific errors documented.
+//
 func (w *responseBuffer) WriteHeader(statusCode int) {
 	if w.wroteHeader {
 		return

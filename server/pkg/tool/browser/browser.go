@@ -52,6 +52,12 @@ type Provider struct {
 //
 // Returns:
 //   - *Provider: The initialized provider.
+// Errors:
+//   - No specific errors documented.
+//
+// Side Effects:
+//   - None known.
+//
 func NewProvider() *Provider {
 	return &Provider{}
 }
@@ -71,6 +77,9 @@ func NewProvider() *Provider {
 // Errors:
 //   - Returns "url is required" if url is empty.
 //   - Returns "failed to start playwright" or "failed to launch browser" if the browser fails to start.
+// Side Effects:
+//   - None known.
+//
 func (b *Provider) BrowsePage(ctx context.Context, url string) (string, error) {
 	if url == "" {
 		return "", fmt.Errorf("url is required")
@@ -92,6 +101,15 @@ func (b *Provider) BrowsePage(ctx context.Context, url string) (string, error) {
 //
 // Returns:
 //   - map[string]interface{}: The JSON schema definition of the tool.
+// Parameters:
+//   - b: input parameter for ToolDefinition.
+//
+// Errors:
+//   - No specific errors documented.
+//
+// Side Effects:
+//   - None known.
+//
 func (b *Provider) ToolDefinition() map[string]interface{} {
 	return map[string]interface{}{
 		"name":        "browse_page",
@@ -154,6 +172,9 @@ type defaultPlaywrightRunner struct{}
 //
 // Errors:
 //   - Returns error if any.
+// Side Effects:
+//   - None known.
+//
 func (d *defaultPlaywrightRunner) Run() (playwrightImpl, error) {
 	pw, err := playwright.Run()
 	if err != nil {
@@ -173,6 +194,12 @@ type realPlaywright struct{ pw *playwright.Playwright }
 //
 // Errors:
 //   - Returns error if any.
+// Parameters:
+//   - r: input parameter for Stop.
+//
+// Side Effects:
+//   - None known.
+//
 func (r *realPlaywright) Stop() error { return r.pw.Stop() }
 
 // Chromium returns the chromium browser type.
@@ -181,6 +208,15 @@ func (r *realPlaywright) Stop() error { return r.pw.Stop() }
 //
 // Returns:
 //   - playwrightBrowserType: The chromium browser type.
+// Parameters:
+//   - r: input parameter for Chromium.
+//
+// Errors:
+//   - No specific errors documented.
+//
+// Side Effects:
+//   - None known.
+//
 func (r *realPlaywright) Chromium() playwrightBrowserType {
 	return &realBrowserType{r.pw.Chromium}
 }
@@ -200,6 +236,9 @@ type realBrowserType struct{ bt playwright.BrowserType }
 //
 // Errors:
 //   - Returns error if any.
+// Side Effects:
+//   - None known.
+//
 func (r *realBrowserType) Launch(options ...playwright.BrowserTypeLaunchOptions) (playwrightBrowser, error) {
 	b, err := r.bt.Launch(options...)
 	if err != nil {
@@ -219,6 +258,12 @@ type realBrowser struct{ b playwright.Browser }
 //
 // Errors:
 //   - Returns error if any.
+// Parameters:
+//   - r: input parameter for Close.
+//
+// Side Effects:
+//   - None known.
+//
 func (r *realBrowser) Close() error { return r.b.Close() }
 
 // NewPage creates a new page in the browser.
@@ -234,6 +279,9 @@ func (r *realBrowser) Close() error { return r.b.Close() }
 //
 // Errors:
 //   - Returns error if any.
+// Side Effects:
+//   - None known.
+//
 func (r *realBrowser) NewPage(options ...playwright.BrowserNewPageOptions) (playwrightPage, error) {
 	p, err := r.b.NewPage(options...)
 	if err != nil {
@@ -258,6 +306,9 @@ type realPage struct{ p playwright.Page }
 //
 // Errors:
 //   - Returns error if any.
+// Side Effects:
+//   - None known.
+//
 func (r *realPage) Goto(url string, options ...playwright.PageGotoOptions) (playwright.Response, error) {
 	return r.p.Goto(url, options...)
 }
@@ -272,6 +323,12 @@ func (r *realPage) Goto(url string, options ...playwright.PageGotoOptions) (play
 //
 // Returns:
 //   - playwrightLocator: The new locator.
+// Errors:
+//   - No specific errors documented.
+//
+// Side Effects:
+//   - None known.
+//
 func (r *realPage) Locator(selector string, options ...playwright.PageLocatorOptions) playwrightLocator {
 	return &realLocator{r.p.Locator(selector, options...)}
 }
@@ -291,6 +348,9 @@ type realLocator struct{ l playwright.Locator }
 //
 // Errors:
 //   - Returns error if any.
+// Side Effects:
+//   - None known.
+//
 func (r *realLocator) TextContent(options ...playwright.LocatorTextContentOptions) (string, error) {
 	return r.l.TextContent(options...)
 }
