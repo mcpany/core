@@ -1,0 +1,22 @@
+# A simple "Hello World" configuration for MCP Any
+# This example proxies the public https://httpbin.org/get endpoint.
+#
+# To run this example:
+#   ./bazelisk run //server/cmd/server:server -- run --config-path examples/hello_world.yaml
+#
+# To verify connectivity:
+#   ./bazelisk run //server/cmd/server:server -- doctor --config-path examples/hello_world.yaml
+
+upstream_services:
+- name: hello-world-service
+  http_service:
+    address: "https://httpbin.org"
+    tools:
+    - name: "hello"
+      description: "A simple tool that calls httpbin GET to say hello."
+      call_id: "hello_call"
+    calls:
+      hello_call:
+        id: "hello_call"
+        endpoint_path: "/get"
+        method: "HTTP_METHOD_GET"

@@ -22,10 +22,10 @@ graph TD
    cd core
    ```
 2. **Install Dependencies:**
-   Ensure `bazelisk` and `make` are in your PATH.
+   Ensure `bazelisk` and `make` are in your PATH (a `bazelisk` binary is provided in this repository).
 3. **Run the App:**
    ```bash
-   bazelisk run //server/cmd/mcpany -- -config examples/hello_world.yaml
+   ./bazelisk run //server/cmd/server:server -- run --config-path examples/hello_world.yaml
    ```
 
 ## Developer Workflow
@@ -36,11 +36,11 @@ To set up your development environment, verify code, and build:
   ```
 - **Run the tests:**
   ```bash
-  bazelisk test //...
+  ./bazelisk test //...
   ```
 - **Build the binary:**
   ```bash
-  bazelisk build //server/cmd/mcpany
+  ./bazelisk build //server/cmd/server:server
   ```
 
 ## Architecture
