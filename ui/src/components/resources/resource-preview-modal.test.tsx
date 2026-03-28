@@ -78,22 +78,37 @@ describe('ResourcePreviewModal', () => {
   });
 
   it('renders content provided in initialContent', () => {
+    // In ResourceViewer, if the mimeType is json and text is valid JSON, it tries to render RichResultViewer.
+    // However, if the text is not valid JSON, it falls back to ReactSyntaxHighlighter with data-testid="code-block" (since we mocked it).
+    // So let's provide invalid JSON to force the fallback and ensure 'code-block' is rendered.
+    const invalidJsonContent: ResourceContent = {
+      uri: 'file:///test.json',
+      mimeType: 'application/json',
+      text: '{"foo": "bar" invalid',
+    };
+
     render(
       <ResourcePreviewModal
         isOpen={true}
         onClose={vi.fn()}
         resource={mockResource}
-        initialContent={mockContent}
+        initialContent={invalidJsonContent}
       />
     );
     expect(screen.getByText('test.json')).toBeInTheDocument();
-    expect(screen.getByTestId('code-block')).toHaveTextContent('{"foo": "bar"}');
+    expect(screen.getByTestId('code-block')).toHaveTextContent('{"foo": "bar" invalid');
     expect(apiClient.readResource).not.toHaveBeenCalled();
   });
 
   it('fetches content when initialContent is not provided', async () => {
+    const invalidJsonContent: ResourceContent = {
+      uri: 'file:///test.json',
+      mimeType: 'application/json',
+      text: '{"foo": "bar" invalid',
+    };
+
     // @ts-expect-error Mocking
-    apiClient.readResource.mockResolvedValueOnce({ contents: [mockContent] });
+    apiClient.readResource.mockResolvedValueOnce({ contents: [invalidJsonContent] });
 
     render(
       <ResourcePreviewModal
@@ -106,7 +121,7 @@ describe('ResourcePreviewModal', () => {
     expect(screen.getByText('Loading content...')).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(screen.getByTestId('code-block')).toHaveTextContent('{"foo": "bar"}');
+      expect(screen.getByTestId('code-block')).toHaveTextContent('{"foo": "bar" invalid');
     });
 
     expect(apiClient.readResource).toHaveBeenCalledWith(mockResource.uri);

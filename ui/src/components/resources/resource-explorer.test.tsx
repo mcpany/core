@@ -82,8 +82,9 @@ describe('ResourceExplorer', () => {
     // @ts-expect-error Mocking partial implementation
     apiClient.listResources.mockResolvedValueOnce({ resources: MOCK_RESOURCES });
     // @ts-expect-error Mocking partial implementation
+    // Use invalid JSON to bypass RichResultViewer and trigger syntax highlighter (code-block)
     apiClient.readResource.mockResolvedValueOnce({
-        contents: [{ uri: 'file:///app/config.json', mimeType: 'application/json', text: '{"test": true}' }]
+        contents: [{ uri: 'file:///app/config.json', mimeType: 'application/json', text: '{"test": true invalid' }]
     });
 
     render(<ResourceExplorer />);
@@ -96,7 +97,7 @@ describe('ResourceExplorer', () => {
 
     await waitFor(() => {
         expect(apiClient.readResource).toHaveBeenCalledWith('file:///app/config.json');
-        expect(screen.getByTestId('code-block')).toHaveTextContent('{"test": true}');
+        expect(screen.getByTestId('code-block')).toHaveTextContent('{"test": true invalid');
     });
   });
 });

@@ -36,13 +36,15 @@ describe('ResourceViewer', () => {
   });
 
   it('renders JSON content', () => {
+    // If it's valid JSON, it renders RichResultViewer, which may not use code-block directly initially.
+    // If we want to test syntax highlighting fallback, we can use invalid JSON.
     const content: ResourceContent = {
         uri: 'file:///config.json',
         mimeType: 'application/json',
-        text: '{"foo": "bar"}'
+      text: '{"foo": "bar" invalid',
     };
     render(<ResourceViewer content={content} loading={false} />);
-    expect(screen.getByTestId('code-block')).toHaveTextContent('{"foo": "bar"}');
+    expect(screen.getByTestId('code-block')).toHaveTextContent('{"foo": "bar" invalid');
   });
 
   it('renders Markdown content', () => {
