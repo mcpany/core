@@ -3,7 +3,7 @@
 
 run:
   timeout: 5m
-  tests: false
+  tests: true
   go: '1.24'
 
 linters:
