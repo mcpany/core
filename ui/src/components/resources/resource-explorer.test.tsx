@@ -96,7 +96,9 @@ describe('ResourceExplorer', () => {
 
     await waitFor(() => {
         expect(apiClient.readResource).toHaveBeenCalledWith('file:///app/config.json');
-        expect(screen.getByTestId('code-block')).toHaveTextContent('{"test": true}');
+        // Since it's JSON, RichResultViewer is used. It will format the object.
+        expect(screen.getByText(/test/)).toBeInTheDocument();
+        expect(screen.getByText(/true/)).toBeInTheDocument();
     });
   });
 });

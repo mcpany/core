@@ -42,7 +42,10 @@ describe('ResourceViewer', () => {
         text: '{"foo": "bar"}'
     };
     render(<ResourceViewer content={content} loading={false} />);
-    expect(screen.getByTestId('code-block')).toHaveTextContent('{"foo": "bar"}');
+    // The component uses RichResultViewer for valid JSON which renders a structured view
+    // The JSON viewer component formats the keys and values separately.
+    expect(screen.getByText(/foo/)).toBeInTheDocument();
+    expect(screen.getByText(/bar/)).toBeInTheDocument();
   });
 
   it('renders Markdown content', () => {
