@@ -938,3 +938,4 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Non-Repudiable Intent Logger (NRIL)**: Hardware-attested "Mission Notary" service for cryptographically binding tool calls to authorized intents. (Added: 2026-07-09)
 *   **[P1] Lock-Free Workspace Overlay (LFWO)**: Ephemeral filesystem overlay to eliminate Git-lock contention in parallel Agent Teams. (Added: 2026-07-09)
 *   **[P0] Attention-Sovereignty Enforcer (ASE)**: Cognitive security middleware to prioritize mission-root anchors and neutralize attention-shadowing. (Added: 2026-07-09)
+*   **[P0] Recursive Configuration Guard (RCG)**: Security service mandating cryptographic attestation for project-local configurations in all repository subdirectories. (Added: 2026-07-09)

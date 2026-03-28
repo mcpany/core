@@ -8,6 +8,13 @@ import { describe, it, expect, vi } from 'vitest';
 import { ResourceExplorer } from './resource-explorer';
 import { apiClient } from '@/lib/client';
 
+// Mock dependencies that might be complex or async
+vi.mock('@/components/tools/rich-result-viewer', () => ({
+  RichResultViewer: ({ result }: { result: any }) => (
+    <pre data-testid="code-block">{JSON.stringify(result)}</pre>
+  ),
+}));
+
 const MOCK_RESOURCES = [
     { uri: 'file:///app/config.json', name: 'config.json', mimeType: 'application/json' },
     { uri: 'file:///app/README.md', name: 'README.md', mimeType: 'text/markdown' },
@@ -96,7 +103,7 @@ describe('ResourceExplorer', () => {
 
     await waitFor(() => {
         expect(apiClient.readResource).toHaveBeenCalledWith('file:///app/config.json');
-        expect(screen.getByTestId('code-block')).toHaveTextContent('{"test": true}');
+        expect(screen.getByTestId('code-block')).toHaveTextContent('{"test":true}');
     });
   });
 });

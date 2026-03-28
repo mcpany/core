@@ -764,3 +764,4 @@
 - [ ] **[P0] Mission Notary Auditor**: (2026-07-09) Visual workspace for reviewing the hardware-attested, hash-chained NRIL audit logs.
 - [ ] **[P1] Workspace Contention Visualizer**: (2026-07-09) Real-time monitor for LFWO transactional overlays and simultaneous workspace mutations.
 - [ ] **[P0] Attention Sovereignty Heatmap**: (2026-07-09) Dashboard for visualizing mission-root anchor strength and ASE-blocked noise injections.
+- [ ] **[P0] Recursive Configuration Guard UI**: (2026-07-09) Security interface for reviewing hardware-attested configurations in repository subdirectories.
