@@ -31,16 +31,16 @@ import (
 // Side Effects:
 //   - None
 //
-// Summary: Executes UnaryClientInterceptor operation.
+// Summary: Executes UnaryClientInterceptor with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - retryConfig (*configv1.RetryConfig): The retryConfig parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

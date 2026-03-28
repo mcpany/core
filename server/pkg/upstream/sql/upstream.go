@@ -38,16 +38,16 @@ type Upstream struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Initializes NewUpstream operation.
+// Summary: Initializes Upstream with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -69,16 +69,16 @@ func NewUpstream() *Upstream {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Shutdown operation.
+// Summary: Executes Upstream with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

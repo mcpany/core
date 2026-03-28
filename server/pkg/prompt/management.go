@@ -76,16 +76,16 @@ type Manager struct {
 // Returns:
 //   - *Manager: A pointer to the newly created Manager.
 //
-// Summary: Initializes NewManager operation.
+// Summary: Initializes Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -100,16 +100,16 @@ func NewManager() *Manager {
 // Parameters:
 //   - mcpServer: MCPServerProvider. The MCP server provider.
 //
-// Summary: Updates SetMCPServer operation.
+// Summary: Updates Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - mcpServer (MCPServerProvider): The mcpServer parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -131,16 +131,16 @@ func (pm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 //   - Updates the internal prompt registry.
 //   - Invalidates the list cache.
 //
-// Summary: Executes AddPrompt operation.
+// Summary: Executes Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - prompt (Prompt): The prompt parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -169,16 +169,16 @@ func (pm *Manager) AddPrompt(prompt Prompt) {
 //   - Updates the internal prompt registry.
 //   - Invalidates the list cache.
 //
-// Summary: Executes UpdatePrompt operation.
+// Summary: Modifies Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - prompt (Prompt): The prompt parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -198,16 +198,17 @@ func (pm *Manager) UpdatePrompt(prompt Prompt) {
 //   - Prompt: The prompt instance.
 //   - bool: True if found, false otherwise.
 //
-// Summary: Retrieves GetPrompt operation.
+// Summary: Retrieves Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name (string): The name parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Prompt: The resulting Prompt.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -223,16 +224,16 @@ func (pm *Manager) GetPrompt(name string) (Prompt, bool) {
 // Returns:
 //   - []Prompt: A slice of currently registered prompts.
 //
-// Summary: Executes ListPrompts operation.
+// Summary: Executes Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -283,16 +284,16 @@ func (pm *Manager) ListPrompts() []Prompt {
 //   - Removes matching prompts from the registry.
 //   - Invalidates the list cache.
 //
-// Summary: Executes ClearPromptsForService operation.
+// Summary: Executes Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - serviceID (string): The serviceID parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

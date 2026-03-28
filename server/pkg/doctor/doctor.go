@@ -76,16 +76,17 @@ type CheckResult struct {
 // Side Effects:
 //   - Performs network I/O to connect to upstream services.
 //
-// Summary: Executes RunChecks operation.
+// Summary: Executes RunChecks with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - config (*configv1.McpAnyServerConfig): The config parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -128,16 +129,17 @@ func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []Check
 // Side Effects:
 //   - Performs network I/O to connect to the upstream service.
 //
-// Summary: Executes CheckService operation.
+// Summary: Executes CheckService with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - service (*configv1.UpstreamServiceConfig): The service parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

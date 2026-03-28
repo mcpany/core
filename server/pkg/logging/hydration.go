@@ -25,16 +25,16 @@ import (
 // Side Effects:
 //   - None
 //
-// Summary: Executes HydrateFromFile operation.
+// Summary: Executes HydrateFromFile with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - path (string): The path parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

@@ -52,16 +52,17 @@ type BroadcastHandler struct {
 // Side Effects:
 //   - None
 //
-// Summary: Initializes NewBroadcastHandler operation.
+// Summary: Initializes BroadcastHandler with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - broadcaster (*Broadcaster): The broadcaster parameter.
+//   - level (slog.Leveler): The level parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -87,16 +88,17 @@ func NewBroadcastHandler(broadcaster *Broadcaster, level slog.Leveler) *Broadcas
 // Side Effects:
 //   - None
 //
-// Summary: Executes Enabled operation.
+// Summary: Executes BroadcastHandler with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): The _ parameter.
+//   - level (slog.Level): The level parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -119,16 +121,17 @@ func (h *BroadcastHandler) Enabled(_ context.Context, level slog.Level) bool {
 // Side Effects:
 //   - None
 //
-// Summary: Executes Handle operation.
+// Summary: Executes BroadcastHandler with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): The _ parameter.
+//   - r (slog.Record): The r parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -219,16 +222,16 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 // Side Effects:
 //   - None
 //
-// Summary: Executes WithAttrs operation.
+// Summary: Executes BroadcastHandler with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - attrs ([]slog.Attr): The attrs parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -262,16 +265,16 @@ func (h *BroadcastHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 // Side Effects:
 //   - None
 //
-// Summary: Executes WithGroup operation.
+// Summary: Executes BroadcastHandler with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name (string): The name parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -312,16 +315,16 @@ type TeeHandler struct {
 // Side Effects:
 //   - None
 //
-// Summary: Initializes NewTeeHandler operation.
+// Summary: Initializes TeeHandler with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - handlers (...slog.Handler): The handlers parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -344,16 +347,17 @@ func NewTeeHandler(handlers ...slog.Handler) *TeeHandler {
 // Side Effects:
 //   - None
 //
-// Summary: Executes Enabled operation.
+// Summary: Executes TeeHandler with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - level (slog.Level): The level parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -381,16 +385,17 @@ func (h *TeeHandler) Enabled(ctx context.Context, level slog.Level) bool {
 // Side Effects:
 //   - None
 //
-// Summary: Executes Handle operation.
+// Summary: Executes TeeHandler with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - r (slog.Record): The r parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -420,16 +425,16 @@ func (h *TeeHandler) Handle(ctx context.Context, r slog.Record) error {
 // Side Effects:
 //   - None
 //
-// Summary: Executes WithAttrs operation.
+// Summary: Executes TeeHandler with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - attrs ([]slog.Attr): The attrs parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -455,16 +460,16 @@ func (h *TeeHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 // Side Effects:
 //   - None
 //
-// Summary: Executes WithGroup operation.
+// Summary: Executes TeeHandler with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name (string): The name parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

@@ -41,16 +41,17 @@ type ServiceRegistrationWorker struct {
 // Returns:
 //   - *ServiceRegistrationWorker: A new service registration worker.
 //
-// Summary: Initializes NewServiceRegistrationWorker operation.
+// Summary: Initializes ServiceRegistrationWorker with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - bus (*bus.Provider): The bus parameter.
+//   - serviceRegistry (serviceregistry.ServiceRegistryInterface): The serviceRegistry parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -67,16 +68,16 @@ func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregi
 // Parameters:
 //   - d: The duration to wait before retrying.
 //
-// Summary: Updates SetRetryDelay operation.
+// Summary: Updates ServiceRegistrationWorker with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - d (time.Duration): The d parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -91,16 +92,16 @@ func (w *ServiceRegistrationWorker) SetRetryDelay(d time.Duration) {
 // Parameters:
 //   - ctx: The context that controls the lifecycle of the worker.
 //
-// Summary: Executes Start operation.
+// Summary: Executes ServiceRegistrationWorker with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -339,16 +340,16 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 // Side Effects:
 //   - None
 //
-// Summary: Executes Stop operation.
+// Summary: Executes ServiceRegistrationWorker with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

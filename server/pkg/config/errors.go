@@ -34,16 +34,16 @@ type ActionableError struct {
 // Side Effects:
 //   - None
 //
-// Summary: Executes Error operation.
+// Summary: Executes ActionableError with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -65,16 +65,16 @@ func (e *ActionableError) Error() string {
 // Side Effects:
 //   - None
 //
-// Summary: Executes Unwrap operation.
+// Summary: Executes ActionableError with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -98,6 +98,9 @@ func (e *ActionableError) Unwrap() error {
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - None
 func WrapActionableError(context string, err error) error {
 	if err == nil {
 		return nil

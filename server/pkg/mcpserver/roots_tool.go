@@ -34,16 +34,16 @@ type RootsTool struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Initializes NewRootsTool operation.
+// Summary: Initializes RootsTool with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -76,16 +76,16 @@ func NewRootsTool() *RootsTool {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Tool operation.
+// Summary: Executes RootsTool with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -101,16 +101,16 @@ func (t *RootsTool) Tool() *v1.Tool {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes MCPTool operation.
+// Summary: Executes RootsTool with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -134,16 +134,16 @@ func (t *RootsTool) MCPTool() *mcp.Tool {
 // Side Effects:
 //   - Sends a "roots/list" request to the client.
 //
-// Summary: Executes Execute operation.
+// Summary: Executes RootsTool with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -228,16 +228,16 @@ func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any,
 // Side Effects:
 //   - None.
 //
-// Summary: Retrieves GetCacheConfig operation.
+// Summary: Retrieves RootsTool with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

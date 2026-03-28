@@ -31,16 +31,17 @@ type RedactingWriter struct {
 // Side Effects:
 //   - None
 //
-// Summary: Updates Write operation.
+// Summary: Executes RedactingWriter with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - p ([]byte): The p parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - int: The resulting int.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

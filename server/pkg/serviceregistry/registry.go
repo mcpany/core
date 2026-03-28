@@ -136,16 +136,20 @@ type ServiceRegistry struct {
 // Side Effects:
 //   - Allocates memory for internal maps.
 //
-// Summary: Initializes New operation.
+// Summary: Initializes operation with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - factory (factory.Factory): The factory parameter.
+//   - toolManager (tool.ManagerInterface): The toolManager parameter.
+//   - promptManager (prompt.ManagerInterface): The promptManager parameter.
+//   - resourceManager (resource.ManagerInterface): The resourceManager parameter.
+//   - authManager (*auth.Manager): The authManager parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -194,16 +198,20 @@ func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManag
 //   - Initiates network connections to upstream services.
 //   - Registers tools, prompts, and resources with their respective managers.
 //
-// Summary: Executes RegisterService operation.
+// Summary: Executes ServiceRegistry with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - serviceConfig (*config.UpstreamServiceConfig): The serviceConfig parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - string: The resulting string.
+//   - []*config.ToolDefinition: The resulting []config.ToolDefinition.
+//   - []*config.ResourceDefinition: The resulting []config.ResourceDefinition.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -343,16 +351,17 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 // Side Effects:
 //   - Updates the internal service info map.
 //
-// Summary: Executes AddServiceInfo operation.
+// Summary: Executes ServiceRegistry with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - serviceID (string): The serviceID parameter.
+//   - info (*tool.ServiceInfo): The info parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -374,16 +383,17 @@ func (r *ServiceRegistry) AddServiceInfo(serviceID string, info *tool.ServiceInf
 // Side Effects:
 //   - None.
 //
-// Summary: Retrieves GetServiceInfo operation.
+// Summary: Retrieves ServiceRegistry with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - serviceID (string): The serviceID parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *tool.ServiceInfo: The resulting tool.ServiceInfo.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -418,16 +428,17 @@ func (r *ServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 // Side Effects:
 //   - None.
 //
-// Summary: Retrieves GetServiceConfig operation.
+// Summary: Retrieves ServiceRegistry with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - serviceID (string): The serviceID parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *config.UpstreamServiceConfig: The resulting config.UpstreamServiceConfig.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -462,16 +473,17 @@ func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamSe
 //   - Removes service data from internal maps.
 //   - Clears associated tools, prompts, and resources from managers.
 //
-// Summary: Executes UnregisterService operation.
+// Summary: Executes ServiceRegistry with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - serviceName (string): The serviceName parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -520,16 +532,17 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 // Side Effects:
 //   - None.
 //
-// Summary: Retrieves GetServiceError operation.
+// Summary: Retrieves ServiceRegistry with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - serviceID (string): The serviceID parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - string: The resulting string.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -552,16 +565,17 @@ func (r *ServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 // Side Effects:
 //   - Starts a background goroutine.
 //
-// Summary: Executes StartHealthChecks operation.
+// Summary: Executes ServiceRegistry with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - interval (time.Duration): The interval parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -652,16 +666,16 @@ func (r *ServiceRegistry) checkAllHealth(ctx context.Context) {
 // Side Effects:
 //   - Shuts down all upstream services.
 //
-// Summary: Executes Close operation.
+// Summary: Executes ServiceRegistry with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -691,16 +705,17 @@ func (r *ServiceRegistry) Close(ctx context.Context) error {
 // Side Effects:
 //   - None.
 //
-// Summary: Retrieves GetAllServices operation.
+// Summary: Retrieves ServiceRegistry with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - []*config.UpstreamServiceConfig: The resulting []config.UpstreamServiceConfig.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

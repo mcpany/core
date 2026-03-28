@@ -52,16 +52,17 @@ type Manager struct {
 // Side Effects:
 //   - None
 //
-// Summary: Initializes NewManager operation.
+// Summary: Initializes Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - rootDir (string): The rootDir parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *Manager: The resulting Manager.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -89,16 +90,17 @@ func NewManager(rootDir string) (*Manager, error) {
 // Side Effects:
 //   - None
 //
-// Summary: Executes ListSkills operation.
+// Summary: Executes Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - []*Skill: The resulting []Skill.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -157,16 +159,17 @@ func (m *Manager) ListSkills() ([]*Skill, error) {
 // Side Effects:
 //   - None
 //
-// Summary: Retrieves GetSkill operation.
+// Summary: Retrieves Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name (string): The name parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *Skill: The resulting Skill.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -190,16 +193,16 @@ func (m *Manager) GetSkill(name string) (*Skill, error) {
 // Side Effects:
 //   - None
 //
-// Summary: Initializes CreateSkill operation.
+// Summary: Creates Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - skill (*Skill): The skill parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -246,16 +249,17 @@ func (m *Manager) CreateSkill(skill *Skill) error {
 // Side Effects:
 //   - None
 //
-// Summary: Executes UpdateSkill operation.
+// Summary: Modifies Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - originalName (string): The originalName parameter.
+//   - skill (*Skill): The skill parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -304,16 +308,16 @@ func (m *Manager) UpdateSkill(originalName string, skill *Skill) error {
 // Side Effects:
 //   - None
 //
-// Summary: Executes DeleteSkill operation.
+// Summary: Removes Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name (string): The name parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -349,16 +353,18 @@ func (m *Manager) DeleteSkill(name string) error {
 // Side Effects:
 //   - None
 //
-// Summary: Executes SaveAsset operation.
+// Summary: Executes Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - skillName (string): The skillName parameter.
+//   - relPath (string): The relPath parameter.
+//   - content ([]byte): The content parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

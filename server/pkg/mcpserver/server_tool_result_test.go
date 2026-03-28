@@ -48,7 +48,6 @@ func (m *mockMapResultTool) Tool() *v1.Tool {
 	}.Build()
 }
 
-
 func (m *mockMapResultTool) IsStreaming() bool {
 	return false
 }

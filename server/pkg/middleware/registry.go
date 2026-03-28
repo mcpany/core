@@ -48,16 +48,17 @@ var (
 //   - name (string): The name of the resource.
 //   - factory (Factory): The factory.
 //
-// Summary: Executes Register operation.
+// Summary: Executes Register with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name (string): The name parameter.
+//   - factory (Factory): The factory parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -73,16 +74,17 @@ func Register(name string, factory Factory) {
 //   - name (string): The name of the resource.
 //   - factory (MCPFactory): The factory.
 //
-// Summary: Executes RegisterMCP operation.
+// Summary: Executes RegisterMCP with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name (string): The name parameter.
+//   - factory (MCPFactory): The factory parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -100,16 +102,16 @@ func RegisterMCP(name string, factory MCPFactory) {
 // Returns:
 //   - ([]func(http.Handler) http.Handler): The result.
 //
-// Summary: Retrieves GetHTTPMiddlewares operation.
+// Summary: Retrieves HTTPMiddlewares with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - configs ([]*configv1.Middleware): The configs parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -144,16 +146,16 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 // Returns:
 //   - ([]func(mcp.MethodHandler) mcp.MethodHandler): The result.
 //
-// Summary: Retrieves GetMCPMiddlewares operation.
+// Summary: Retrieves MCPMiddlewares with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - configs ([]*configv1.Middleware): The configs parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

@@ -34,16 +34,18 @@ type OAuth2Authenticator struct {
 //   - A new OAuth2Authenticator.
 //   - An error if the OIDC provider cannot be initialized.
 //
-// Summary: Initializes NewOAuth2Authenticator operation.
+// Summary: Initializes OAuth2Authenticator with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - config (*OAuth2Config): The config parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *OAuth2Authenticator: The resulting OAuth2Authenticator.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -87,16 +89,18 @@ func NewOAuth2Authenticator(ctx context.Context, config *OAuth2Config) (*OAuth2A
 //   - The context with the user's identity (email) on success.
 //   - An error if authentication fails.
 //
-// Summary: Executes Authenticate operation.
+// Summary: Executes OAuth2Authenticator with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - r (*http.Request): The r parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - context.Context: The resulting context.Context.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

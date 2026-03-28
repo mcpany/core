@@ -175,7 +175,7 @@ func TestRegisterDynamicResources(t *testing.T) {
 
 		resources := []*configv1.ResourceDefinition{
 			configv1.ResourceDefinition_builder{
-				Name: proto.String("myResource"),
+				Name:    proto.String("myResource"),
 				Dynamic: configv1.DynamicResource_builder{
 					// Missing CallDefinition
 				}.Build(),
@@ -231,7 +231,6 @@ func (m *MockTool) Tool() *v1.Tool {
 func (m *MockTool) MCPTool() *mcp.Tool {
 	return nil
 }
-
 
 func (m *MockTool) IsStreaming() bool {
 	return false

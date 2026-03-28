@@ -32,16 +32,16 @@ type ConnectionFactory struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Initializes NewConnectionFactory operation.
+// Summary: Initializes ConnectionFactory with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -63,16 +63,18 @@ func NewConnectionFactory() *ConnectionFactory {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes WithDialer operation.
+// Summary: Executes ConnectionFactory with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - dialer (string): The dialer parameter.
+//   - func(context.Context (string): The func(context.Context parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - net.Conn: The resulting net.Conn.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -98,16 +100,18 @@ func (f *ConnectionFactory) WithDialer(dialer func(context.Context, string) (net
 // Side Effects:
 //   - None.
 //
-// Summary: Initializes NewConnection operation.
+// Summary: Initializes ConnectionFactory with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): The _ parameter.
+//   - targetAddress (string): The targetAddress parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *grpc.ClientConn: The resulting grpc.ClientConn.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

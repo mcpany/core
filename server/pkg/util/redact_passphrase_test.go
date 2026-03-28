@@ -10,9 +10,9 @@ import (
 
 func TestRedactSensitiveKeys(t *testing.T) {
 	data := map[string]string{
-		"passphrase":  "secret_value_1",
-		"passphrases": "secret_value_2",
-		"ssh_key":     "secret_value_3",
+		"passphrase":   "secret_value_1",
+		"passphrases":  "secret_value_2",
+		"ssh_key":      "secret_value_3",
 		"bearer_token": "secret_token",
 	}
 	b, err := json.Marshal(data)

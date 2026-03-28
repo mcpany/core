@@ -39,16 +39,16 @@ var (
 // Side Effects:
 //   - None
 //
-// Summary: Initializes NewBroadcaster operation.
+// Summary: Initializes Broadcaster with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -74,16 +74,16 @@ func NewBroadcaster() *Broadcaster {
 // Side Effects:
 //   - None
 //
-// Summary: Executes Reset operation.
+// Summary: Executes Broadcaster with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -110,16 +110,16 @@ func (b *Broadcaster) Reset() {
 // Side Effects:
 //   - None
 //
-// Summary: Executes Subscribe operation.
+// Summary: Executes Broadcaster with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -141,16 +141,16 @@ func (b *Broadcaster) Subscribe() chan any {
 // Side Effects:
 //   - None
 //
-// Summary: Executes SubscribeBuffered operation.
+// Summary: Executes Broadcaster with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - size (int): The size parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -177,16 +177,17 @@ func (b *Broadcaster) SubscribeBuffered(size int) chan any {
 // Side Effects:
 //   - None
 //
-// Summary: Executes SubscribeWithHistory operation.
+// Summary: Executes Broadcaster with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - any: The resulting any.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -209,16 +210,17 @@ func (b *Broadcaster) SubscribeWithHistory() (chan any, []any) {
 // Side Effects:
 //   - None
 //
-// Summary: Executes SubscribeWithHistoryBuffered operation.
+// Summary: Executes Broadcaster with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - size (int): The size parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - any: The resulting any.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -269,16 +271,17 @@ func (b *Broadcaster) SubscribeWithHistoryBuffered(size int) (chan any, []any) {
 // Side Effects:
 //   - None
 //
-// Summary: Executes Unsubscribe operation.
+// Summary: Executes Broadcaster with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ch (any): The ch parameter.
+//   - chan (any): The chan parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -305,16 +308,16 @@ func (b *Broadcaster) Unsubscribe(ch chan any) {
 // Side Effects:
 //   - None
 //
-// Summary: Executes Broadcast operation.
+// Summary: Executes Broadcaster with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - msg (any): The msg parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -347,16 +350,16 @@ func (b *Broadcaster) Broadcast(msg any) {
 
 // ClearHistory clears the history of the broadcaster without removing subscribers.
 //
-// Summary: Executes ClearHistory operation.
+// Summary: Executes Broadcaster with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -382,16 +385,16 @@ func (b *Broadcaster) ClearHistory() {
 // Side Effects:
 //   - None
 //
-// Summary: Retrieves GetHistory operation.
+// Summary: Retrieves Broadcaster with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -436,16 +439,16 @@ func (b *Broadcaster) GetHistory() []any {
 // Side Effects:
 //   - None
 //
-// Summary: Executes Hydrate operation.
+// Summary: Executes Broadcaster with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - messages ([]any): The messages parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

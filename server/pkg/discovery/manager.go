@@ -46,16 +46,16 @@ type Manager struct {
 // Side Effects:
 //   - None
 //
-// Summary: Initializes NewManager operation.
+// Summary: Initializes Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -79,16 +79,16 @@ func NewManager() *Manager {
 // Side Effects:
 //   - None
 //
-// Summary: Executes RegisterProvider operation.
+// Summary: Executes Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - p (Provider): The p parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -116,16 +116,16 @@ func (m *Manager) RegisterProvider(p Provider) {
 // Side Effects:
 //   - None
 //
-// Summary: Executes Run operation.
+// Summary: Executes Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -190,16 +190,16 @@ func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 // Side Effects:
 //   - None
 //
-// Summary: Retrieves GetStatuses operation.
+// Summary: Retrieves Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -233,16 +233,17 @@ func (m *Manager) GetStatuses() []*ProviderStatus {
 // Side Effects:
 //   - None
 //
-// Summary: Retrieves GetProviderStatus operation.
+// Summary: Retrieves Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name (string): The name parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *ProviderStatus: The resulting ProviderStatus.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

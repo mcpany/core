@@ -77,16 +77,18 @@ func New[T any]() *DefaultBus[T] {
 //   - topic: The topic to publish the message to.
 //   - msg: The message to be sent.
 //
-// Summary: Executes Publish operation.
+// Summary: Executes DefaultBus[T] with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): The _ parameter.
+//   - topic (string): The topic parameter.
+//   - msg (T): The msg parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting output.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -137,16 +139,18 @@ func (b *DefaultBus[T]) Publish(_ context.Context, topic string, msg T) error {
 // subscription. When called, it removes the subscriber from the bus and closes
 // its channel, terminating the associated goroutine.
 //
-// Summary: Executes Subscribe operation.
+// Summary: Executes DefaultBus[T] with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): The _ parameter.
+//   - topic (string): The topic parameter.
+//   - handler (func(T): The handler parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -206,16 +210,18 @@ func (b *DefaultBus[T]) Subscribe(_ context.Context, topic string, handler func(
 // Returns a function that can be used to unsubscribe before the handler is
 // invoked.
 //
-// Summary: Executes SubscribeOnce operation.
+// Summary: Executes DefaultBus[T] with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - topic (string): The topic parameter.
+//   - handler (func(T): The handler parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

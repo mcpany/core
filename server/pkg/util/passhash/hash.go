@@ -19,16 +19,17 @@ import (
 //   - string: The hashed password.
 //   - error: An error if the hashing fails.
 //
-// Summary: Executes Password operation.
+// Summary: Executes Password with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - password (string): The password parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - string: The resulting string.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -51,16 +52,17 @@ func Password(password string) (string, error) {
 // Returns:
 //   - bool: True if the password matches the hash, false otherwise.
 //
-// Summary: Executes CheckPassword operation.
+// Summary: Executes CheckPassword with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - password: The parameter.
+//   - hash (string): The hash parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

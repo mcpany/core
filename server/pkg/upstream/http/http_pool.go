@@ -34,16 +34,16 @@ type httpPool struct {
 // Side Effects:
 //   - Closes idle network connections.
 //
-// Summary: Executes Close operation.
+// Summary: Executes httpPool with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

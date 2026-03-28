@@ -30,16 +30,16 @@ import (
 //   - Logs request start and end.
 //   - Updates metrics.
 //
-// Summary: Executes LoggingMiddleware operation.
+// Summary: Executes LoggingMiddleware with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - log (*slog.Logger): The log parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

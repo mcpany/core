@@ -51,16 +51,17 @@ const MaxRecursionDepth = 10
 //   - *structpb.Struct: The properties structure for the input schema.
 //   - error: An error if the conversion fails.
 //
-// Summary: Executes MethodDescriptorToProtoProperties operation.
+// Summary: Executes MethodDescriptorToProtoProperties with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - methodDesc (protoreflect.MethodDescriptor): The methodDesc parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *structpb.Struct: The resulting structpb.Struct.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -79,16 +80,17 @@ func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor)
 //   - *structpb.Struct: The properties structure for the output schema.
 //   - error: An error if the conversion fails.
 //
-// Summary: Executes MethodOutputDescriptorToProtoProperties operation.
+// Summary: Executes MethodOutputDescriptorToProtoProperties with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - methodDesc (protoreflect.MethodDescriptor): The methodDesc parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *structpb.Struct: The resulting structpb.Struct.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

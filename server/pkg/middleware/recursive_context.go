@@ -46,16 +46,16 @@ type RecursiveContextManager struct {
 // Side Effects:
 //   - Allocates memory for the manager and its internal session map.
 //
-// Summary: Initializes NewRecursiveContextManager operation.
+// Summary: Initializes RecursiveContextManager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -81,16 +81,17 @@ func NewRecursiveContextManager() *RecursiveContextManager {
 //   - Modifies the internal sessions map by adding a new session.
 //   - Performs a cleanup of expired sessions during insertion, removing them from the map.
 //
-// Summary: Initializes CreateSession operation.
+// Summary: Creates RecursiveContextManager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - data (map[string]interface{}): The data parameter.
+//   - ttl (time.Duration): The ttl parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -133,16 +134,17 @@ func (m *RecursiveContextManager) CreateSession(data map[string]interface{}, ttl
 // Side Effects:
 //   - None.
 //
-// Summary: Retrieves GetSession operation.
+// Summary: Retrieves RecursiveContextManager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - id (string): The unique identifier.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *SessionState: The resulting SessionState.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -175,16 +177,16 @@ func (m *RecursiveContextManager) GetSession(id string) (*SessionState, bool) {
 //   - Modifies the HTTP response writer based on the request logic, including sending JSON responses and error codes.
 //   - When processing a POST request, creates a new session in the manager.
 //
-// Summary: Executes APIHandler operation.
+// Summary: Executes RecursiveContextManager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -271,16 +273,16 @@ const (
 //   - Modifies the request context by injecting session data if a valid context ID is found.
 //   - Logs debug or warning messages depending on the presence and validity of the context session.
 //
-// Summary: Executes HandleContext operation.
+// Summary: Executes RecursiveContextManager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - next (http.Handler): The next parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

@@ -49,16 +49,16 @@ type BaseMessage struct {
 // Side Effects:
 //   - None
 //
-// Summary: Executes CorrelationID operation.
+// Summary: Executes BaseMessage with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -80,16 +80,16 @@ func (m *BaseMessage) CorrelationID() string {
 // Side Effects:
 //   - None
 //
-// Summary: Updates SetCorrelationID operation.
+// Summary: Updates BaseMessage with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - id (string): The unique identifier.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

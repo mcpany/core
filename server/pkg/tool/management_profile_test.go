@@ -53,7 +53,7 @@ func TestManager_Profiles(t *testing.T) {
 	// Test ToolMatchesProfile
 	tool1 := v1.Tool_builder{
 		ServiceId: proto.String("s1"),
-		Tags: []string{"tag1"},
+		Tags:      []string{"tag1"},
 	}.Build()
 	// Mock tool wrapper
 	mTool1 := &MockTool{ToolFunc: func() *v1.Tool { return tool1 }}
@@ -63,7 +63,7 @@ func TestManager_Profiles(t *testing.T) {
 
 	tool2 := v1.Tool_builder{
 		ServiceId: proto.String("s3"),
-		Tags: []string{"allowed"},
+		Tags:      []string{"allowed"},
 	}.Build()
 	mTool2 := &MockTool{ToolFunc: func() *v1.Tool { return tool2 }}
 
@@ -72,79 +72,79 @@ func TestManager_Profiles(t *testing.T) {
 
 	tool3 := v1.Tool_builder{
 		ServiceId: proto.String("s3"),
-		Tags: []string{"forbidden"},
+		Tags:      []string{"forbidden"},
 	}.Build()
 	mTool3 := &MockTool{ToolFunc: func() *v1.Tool { return tool3 }}
 
 	// p2 does not select "forbidden"
 	assert.False(t, tm.ToolMatchesProfile(mTool3, "p2"))
 
-    // Test matchesProperties
-    p3 := configv1.ProfileDefinition_builder{
+	// Test matchesProperties
+	p3 := configv1.ProfileDefinition_builder{
 		Name: proto.String("p3"),
 		Selector: configv1.ProfileSelector_builder{
 			ToolProperties: map[string]string{
-                "read_only": "true",
-            },
+				"read_only": "true",
+			},
 		}.Build(),
 	}.Build()
-    // Update profiles
-    tm.SetProfiles([]string{"p1", "p2", "p3"}, []*configv1.ProfileDefinition{p1, p2, p3})
+	// Update profiles
+	tm.SetProfiles([]string{"p1", "p2", "p3"}, []*configv1.ProfileDefinition{p1, p2, p3})
 
-    tool4 := v1.Tool_builder{
-        Annotations: v1.ToolAnnotations_builder{
-            ReadOnlyHint: proto.Bool(true),
-        }.Build(),
-    }.Build()
-    mTool4 := &MockTool{ToolFunc: func() *v1.Tool { return tool4 }}
-    assert.True(t, tm.ToolMatchesProfile(mTool4, "p3"))
+	tool4 := v1.Tool_builder{
+		Annotations: v1.ToolAnnotations_builder{
+			ReadOnlyHint: proto.Bool(true),
+		}.Build(),
+	}.Build()
+	mTool4 := &MockTool{ToolFunc: func() *v1.Tool { return tool4 }}
+	assert.True(t, tm.ToolMatchesProfile(mTool4, "p3"))
 
-    tool5 := v1.Tool_builder{
-        Annotations: v1.ToolAnnotations_builder{
-            ReadOnlyHint: proto.Bool(false),
-        }.Build(),
-    }.Build()
-    mTool5 := &MockTool{ToolFunc: func() *v1.Tool { return tool5 }}
-    assert.False(t, tm.ToolMatchesProfile(mTool5, "p3"))
+	tool5 := v1.Tool_builder{
+		Annotations: v1.ToolAnnotations_builder{
+			ReadOnlyHint: proto.Bool(false),
+		}.Build(),
+	}.Build()
+	mTool5 := &MockTool{ToolFunc: func() *v1.Tool { return tool5 }}
+	assert.False(t, tm.ToolMatchesProfile(mTool5, "p3"))
 }
 
 // Add test for isToolAllowed (internal method)
 func TestManager_IsToolAllowed_Indirect(t *testing.T) {
-     tm := NewManager(nil)
+	tm := NewManager(nil)
 
-     p1 := configv1.ProfileDefinition_builder{
+	p1 := configv1.ProfileDefinition_builder{
 		Name: proto.String("p1"),
-        ServiceConfig: map[string]*configv1.ProfileServiceConfig{
+		ServiceConfig: map[string]*configv1.ProfileServiceConfig{
 			"s1": configv1.ProfileServiceConfig_builder{Enabled: proto.Bool(true)}.Build(),
 		},
 	}.Build()
-    tm.SetProfiles([]string{"p1"}, []*configv1.ProfileDefinition{p1})
+	tm.SetProfiles([]string{"p1"}, []*configv1.ProfileDefinition{p1})
 
-    // Tool allowed
-    t1 := v1.Tool_builder{ServiceId: proto.String("s1"), Name: proto.String("t1")}.Build()
-    _ = &MockTool{ToolFunc: func() *v1.Tool { return t1 }}
+	// Tool allowed
+	t1 := v1.Tool_builder{ServiceId: proto.String("s1"), Name: proto.String("t1")}.Build()
+	_ = &MockTool{ToolFunc: func() *v1.Tool { return t1 }}
 
-    assert.True(t, tm.isToolAllowed(t1))
+	assert.True(t, tm.isToolAllowed(t1))
 
-    t2 := v1.Tool_builder{ServiceId: proto.String("s2"), Name: proto.String("t2")}.Build()
-    assert.False(t, tm.isToolAllowed(t2))
+	t2 := v1.Tool_builder{ServiceId: proto.String("s2"), Name: proto.String("t2")}.Build()
+	assert.False(t, tm.isToolAllowed(t2))
 }
 
 func TestManager_GetTool_Inconsistent(t *testing.T) {
 	tm := NewManager(nil)
-    // Manually corrupt the map (using implementation details)
-    tm.nameMap.Store("alias", "realID")
-    // But "realID" is NOT in tm.tools
+	// Manually corrupt the map (using implementation details)
+	tm.nameMap.Store("alias", "realID")
+	// But "realID" is NOT in tm.tools
 
-    tool, ok := tm.GetTool("alias")
-    assert.False(t, ok)
-    assert.Nil(t, tool)
+	tool, ok := tm.GetTool("alias")
+	assert.False(t, ok)
+	assert.Nil(t, tool)
 }
 
 func TestIsSensitiveHeader(t *testing.T) {
-    assert.True(t, isSensitiveHeader("Authorization"))
-    assert.True(t, isSensitiveHeader("X-My-Token"))
-    assert.False(t, isSensitiveHeader("Content-Type"))
+	assert.True(t, isSensitiveHeader("Authorization"))
+	assert.True(t, isSensitiveHeader("X-My-Token"))
+	assert.False(t, isSensitiveHeader("Content-Type"))
 }
 
 func TestManager_Profile_GranularToolDisabling(t *testing.T) {

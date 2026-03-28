@@ -75,16 +75,16 @@ type McpField struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Retrieves GetName operation.
+// Summary: Retrieves McpField with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -100,16 +100,16 @@ func (f *McpField) GetName() string {
 // Side Effects:
 //   - None.
 //
-// Summary: Retrieves GetDescription operation.
+// Summary: Retrieves McpField with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -125,16 +125,16 @@ func (f *McpField) GetDescription() string {
 // Side Effects:
 //   - None.
 //
-// Summary: Retrieves GetType operation.
+// Summary: Retrieves McpField with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -150,16 +150,16 @@ func (f *McpField) GetType() string {
 // Side Effects:
 //   - None.
 //
-// Summary: Retrieves GetIsRepeated operation.
+// Summary: Retrieves McpField with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -450,16 +450,18 @@ type McpResource struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes ParseProtoByReflection operation.
+// Summary: Executes ParseProtoByReflection with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - target (string): The target parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *descriptorpb.FileDescriptorSet: The resulting descriptorpb.FileDescriptorSet.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -662,16 +664,17 @@ func getFileDescriptorByFilename(stream reflectpb.ServerReflection_ServerReflect
 // Side Effects:
 //   - None.
 //
-// Summary: Executes ExtractMcpDefinitions operation.
+// Summary: Executes ExtractMcpDefinitions with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - fds (*descriptorpb.FileDescriptorSet): The fds parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *ParsedMcpAnnotations: The resulting ParsedMcpAnnotations.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

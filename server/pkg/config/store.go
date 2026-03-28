@@ -98,6 +98,12 @@ type ConfigurableEngine interface {
 // Returns:
 //   - (Engine): An initialized Engine implementation.
 //   - (error): An error if the file extension is not supported.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None.
 func NewEngine(path string) (Engine, error) {
 	ext := strings.ToLower(filepath.Ext(path))
 	switch ext {
@@ -129,16 +135,16 @@ type yamlEngine struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Updates SetSkipValidation operation.
+// Summary: Updates yamlEngine with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - skip (bool): The skip parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -157,16 +163,16 @@ func (e *yamlEngine) SetSkipValidation(skip bool) {
 // Side Effects:
 //   - None.
 //
-// Summary: Updates SetIgnoreEnv operation.
+// Summary: Updates yamlEngine with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ignore (bool): The ignore parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -189,16 +195,17 @@ func (e *yamlEngine) SetIgnoreEnv(ignore bool) {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Unmarshal operation.
+// Summary: Executes yamlEngine with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - b ([]byte): The b parameter.
+//   - v (proto.Message): The v parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -236,16 +243,18 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes UnmarshalFromMap operation.
+// Summary: Executes yamlEngine with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - yamlMap (map[string]interface{}): The yamlMap parameter.
+//   - v (proto.Message): The v parameter.
+//   - originalBytes ([]byte): The originalBytes parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -368,16 +377,17 @@ type textprotoEngine struct{}
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Unmarshal operation.
+// Summary: Executes textprotoEngine with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - b ([]byte): The b parameter.
+//   - v (proto.Message): The v parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -403,16 +413,17 @@ type jsonEngine struct{}
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Unmarshal operation.
+// Summary: Executes jsonEngine with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - b ([]byte): The b parameter.
+//   - v (proto.Message): The v parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -748,16 +759,16 @@ type FileStore struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Updates SetSkipValidation operation.
+// Summary: Updates FileStore with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - skip (bool): The skip parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -773,16 +784,16 @@ func (s *FileStore) SetSkipValidation(skip bool) {
 // Side Effects:
 //   - None.
 //
-// Summary: Updates SetIgnoreMissingEnv operation.
+// Summary: Updates FileStore with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ignore (bool): The ignore parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -800,6 +811,12 @@ func (s *FileStore) SetIgnoreMissingEnv(ignore bool) {
 //
 // Returns:
 //   - (*FileStore): A new instance of FileStore.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None.
 func NewFileStore(fs afero.Fs, paths []string) *FileStore {
 	return &FileStore{fs: fs, paths: paths}
 }
@@ -814,6 +831,12 @@ func NewFileStore(fs afero.Fs, paths []string) *FileStore {
 //
 // Returns:
 //   - (*FileStore): A new instance of FileStore.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None.
 func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 	return &FileStore{fs: fs, paths: paths, skipErrors: true}
 }
@@ -832,16 +855,16 @@ func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 // Side Effects:
 //   - None
 //
-// Summary: Checks HasConfigSources operation.
+// Summary: Executes FileStore with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -859,6 +882,12 @@ func (s *FileStore) HasConfigSources() bool {
 // Returns:
 //   - (*configv1.McpAnyServerConfig): The merged configuration.
 //   - (error): An error if loading or merging fails.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None.
 func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	filePaths, err := s.collectFilePaths()
 	if err != nil {
@@ -1356,6 +1385,12 @@ type MultiStore struct {
 //
 // Returns:
 //   - *MultiStore: A new instance of MultiStore.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None.
 func NewMultiStore(stores ...Store) *MultiStore {
 	return &MultiStore{stores: stores}
 }
@@ -1370,6 +1405,12 @@ func NewMultiStore(stores ...Store) *MultiStore {
 // Returns:
 //   - *configv1.McpAnyServerConfig: The merged configuration.
 //   - error: An error if loading fails.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None.
 func (ms *MultiStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	mergedConfig := configv1.McpAnyServerConfig_builder{}.Build()
 	for _, s := range ms.stores {
@@ -1473,16 +1514,16 @@ func collectFieldNames(md protoreflect.MessageDescriptor, candidates map[string]
 // Side Effects:
 //   - None
 //
-// Summary: Checks HasConfigSources operation.
+// Summary: Executes MultiStore with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

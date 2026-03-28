@@ -2,8 +2,8 @@ package interop_test
 
 import (
 	"context"
-	"testing"
 	"github.com/mcpany/core/src/interop"
+	"testing"
 )
 
 // TestInteropE2EFlow simulates an end-to-end execution utilizing the interop mechanism

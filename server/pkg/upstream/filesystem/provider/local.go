@@ -39,16 +39,20 @@ type LocalProvider struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Initializes NewLocalProvider operation.
+// Summary: Initializes LocalProvider with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (*configv1.OsFs): The _ parameter.
+//   - rootPaths (map[string]string): The rootPaths parameter.
+//   - allowedPaths: The parameter.
+//   - deniedPaths ([]string): The deniedPaths parameter.
+//   - symlinkMode (configv1.FilesystemUpstreamService_SymlinkMode): The symlinkMode parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -70,16 +74,16 @@ func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string, allowedPath
 // Side Effects:
 //   - None.
 //
-// Summary: Retrieves GetFs operation.
+// Summary: Retrieves LocalProvider with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -102,16 +106,17 @@ func (p *LocalProvider) GetFs() afero.Fs {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes ResolvePath operation.
+// Summary: Executes LocalProvider with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - virtualPath (string): The virtualPath parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - string: The resulting string.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -375,16 +380,16 @@ func (p *LocalProvider) containsSymlink(virtualPath, bestMatchVirtual, bestMatch
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Close operation.
+// Summary: Executes LocalProvider with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

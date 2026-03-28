@@ -39,16 +39,16 @@ type VectorEntry struct {
 // Returns:
 //   - *SimpleVectorStore: A pointer to the newly created SimpleVectorStore.
 //
-// Summary: Initializes NewSimpleVectorStore operation.
+// Summary: Initializes SimpleVectorStore with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -71,16 +71,20 @@ func NewSimpleVectorStore() *SimpleVectorStore {
 // Returns:
 //   - error: An error if the operation fails (currently always nil).
 //
-// Summary: Executes Add operation.
+// Summary: Executes SimpleVectorStore with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): The _ parameter.
+//   - key (string): The key parameter.
+//   - vector ([]float32): The vector parameter.
+//   - result (any): The result parameter.
+//   - ttl (time.Duration): The ttl parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -122,16 +126,20 @@ func (s *SimpleVectorStore) Add(_ context.Context, key string, vector []float32,
 //   - float32: The similarity score (cosine similarity).
 //   - bool: True if a match was found, false otherwise.
 //
-// Summary: Executes Search operation.
+// Summary: Executes SimpleVectorStore with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): The _ parameter.
+//   - key (string): The key parameter.
+//   - query ([]float32): The query parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - any: The resulting any.
+//   - float32: The resulting float32.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -175,16 +183,17 @@ func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float3
 // Parameters:
 //   - key: The key to prune entries for.
 //
-// Summary: Executes Prune operation.
+// Summary: Executes SimpleVectorStore with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): The _ parameter.
+//   - key (string): The key parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

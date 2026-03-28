@@ -95,16 +95,17 @@ var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 //	*Provider: The created Provider.
 //	error: An error if creation fails.
 //
-// Summary: Initializes NewProvider operation.
+// Summary: Initializes Provider with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - messageBus (*bus.MessageBus): The messageBus parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *Provider: The resulting Provider.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

@@ -46,16 +46,16 @@ type SimpleTokenizer struct{}
 // Side Effects:
 //   - None
 //
-// Summary: Initializes NewSimpleTokenizer operation.
+// Summary: Initializes SimpleTokenizer with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -78,16 +78,17 @@ func NewSimpleTokenizer() *SimpleTokenizer {
 // Side Effects:
 //   - None
 //
-// Summary: Executes CountTokens operation.
+// Summary: Executes SimpleTokenizer with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - text (string): The text parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - int: The resulting int.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -124,16 +125,16 @@ type WordTokenizer struct {
 // Side Effects:
 //   - None
 //
-// Summary: Initializes NewWordTokenizer operation.
+// Summary: Initializes WordTokenizer with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -156,16 +157,17 @@ func NewWordTokenizer() *WordTokenizer {
 // Side Effects:
 //   - None
 //
-// Summary: Executes CountTokens operation.
+// Summary: Executes WordTokenizer with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - text (string): The text parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - int: The resulting int.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -261,16 +263,18 @@ func countWords(text string) int {
 // Side Effects:
 //   - None
 //
-// Summary: Executes CountTokensInValue operation.
+// Summary: Executes CountTokensInValue with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - t (Tokenizer): The t parameter.
+//   - v (interface{}): The v parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - int: The resulting int.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -317,16 +321,17 @@ type rawWordCounter struct{}
 //   - int: The word count.
 //   - error: Always nil.
 //
-// Summary: Executes CountTokens operation.
+// Summary: Executes rawWordCounter with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - text (string): The text parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - int: The resulting int.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

@@ -30,16 +30,16 @@ import (
 //   - Registers flags on the provided Cobra command.
 //   - Exits the application on error.
 //
-// Summary: Executes BindRootFlags operation.
+// Summary: Executes BindRootFlags with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - cmd (*cobra.Command): The cmd parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -108,16 +108,16 @@ func BindRootFlags(cmd *cobra.Command) {
 //   - Registers flags on the provided Cobra command.
 //   - Exits the application on error.
 //
-// Summary: Executes BindServerFlags operation.
+// Summary: Executes BindServerFlags with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - cmd (*cobra.Command): The cmd parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -171,16 +171,16 @@ func BindServerFlags(cmd *cobra.Command) {
 //   - Modifies the global Viper configuration state.
 //   - Registers flags on the provided Cobra command.
 //
-// Summary: Executes BindFlags operation.
+// Summary: Executes BindFlags with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - cmd (*cobra.Command): The cmd parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

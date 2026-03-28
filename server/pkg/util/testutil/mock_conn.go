@@ -28,16 +28,16 @@ type MockClientConn struct {
 // Returns:
 //   - *MockClientConn: A new mock client connection.
 //
-// Summary: Initializes NewMockClientConn operation.
+// Summary: Initializes MockClientConn with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - t (*testing.T): The t parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -54,16 +54,17 @@ func NewMockClientConn(t *testing.T) *MockClientConn {
 //   - method: The method to mock.
 //   - client: The mock client implementation.
 //
-// Summary: Updates SetClient operation.
+// Summary: Updates MockClientConn with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - method (string): The method parameter.
+//   - client (interface{}): The client parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -83,16 +84,20 @@ func (m *MockClientConn) SetClient(method string, client interface{}) {
 // Returns:
 //   - error: An error if the invocation fails.
 //
-// Summary: Executes Invoke operation.
+// Summary: Executes MockClientConn with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): The _ parameter.
+//   - _ (string): The _ parameter.
+//   - _ (interface{}): The _ parameter.
+//   - _ (interface{}): The _ parameter.
+//   - _ (...grpc.CallOption): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -113,16 +118,20 @@ func (m *MockClientConn) Invoke(_ context.Context, _ string, _ interface{}, _ in
 //   - grpc.ClientStream: The client stream.
 //   - error: An error if the stream creation fails.
 //
-// Summary: Initializes NewStream operation.
+// Summary: Initializes MockClientConn with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): The _ parameter.
+//   - _ (*grpc.StreamDesc): The _ parameter.
+//   - method (string): The method parameter.
+//   - _ (...grpc.CallOption): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - grpc.ClientStream: The resulting grpc.ClientStream.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

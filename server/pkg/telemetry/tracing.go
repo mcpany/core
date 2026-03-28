@@ -48,16 +48,21 @@ const (
 // Side Effects:
 //   - None
 //
-// Summary: Executes InitTelemetry operation.
+// Summary: Executes InitTelemetry with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - serviceName (string): The serviceName parameter.
+//   - version (string): The version parameter.
+//   - cfg (*config_v1.TelemetryConfig): The cfg parameter.
+//   - writer (io.Writer): The writer parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
 //   - None.

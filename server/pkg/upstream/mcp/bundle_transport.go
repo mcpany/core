@@ -38,16 +38,16 @@ type transportError struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Error operation.
+// Summary: Executes transportError with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -87,16 +87,17 @@ type BundleDockerTransport struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Connect operation.
+// Summary: Executes BundleDockerTransport with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - mcp.Connection: The resulting mcp.Connection.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -225,16 +226,17 @@ type bundleDockerConn struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Retrieves Read operation.
+// Summary: Executes bundleDockerConn with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - jsonrpc.Message: The resulting jsonrpc.Message.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -381,16 +383,17 @@ func setUnexportedID(idPtr interface{}, val interface{}) error {
 // Side Effects:
 //   - None.
 //
-// Summary: Updates Write operation.
+// Summary: Executes bundleDockerConn with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): The _ parameter.
+//   - msg (jsonrpc.Message): The msg parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -524,16 +527,16 @@ func fixIDExtracted(val interface{}) interface{} {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Close operation.
+// Summary: Executes bundleDockerConn with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -549,16 +552,16 @@ func (c *bundleDockerConn) Close() error {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes SessionID operation.
+// Summary: Executes bundleDockerConn with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -587,16 +590,17 @@ type bundleSlogWriter struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Updates Write operation.
+// Summary: Executes bundleSlogWriter with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - p ([]byte): The p parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - int: The resulting int.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

@@ -46,16 +46,18 @@ var newStorageClient = storage.NewClient
 // Side Effects:
 //   - None.
 //
-// Summary: Initializes NewGcsProvider operation.
+// Summary: Initializes GcsProvider with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): The _ parameter.
+//   - config (*configv1.GcsFs): The config parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *GcsProvider: The resulting GcsProvider.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -83,16 +85,16 @@ func NewGcsProvider(_ context.Context, config *configv1.GcsFs) (*GcsProvider, er
 // Side Effects:
 //   - None.
 //
-// Summary: Retrieves GetFs operation.
+// Summary: Retrieves GcsProvider with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -115,16 +117,17 @@ func (p *GcsProvider) GetFs() afero.Fs {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes ResolvePath operation.
+// Summary: Executes GcsProvider with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - virtualPath (string): The virtualPath parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - string: The resulting string.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -150,16 +153,16 @@ func (p *GcsProvider) ResolvePath(virtualPath string) (string, error) {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Close operation.
+// Summary: Executes GcsProvider with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -193,16 +196,17 @@ type gcsFs struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Initializes Create operation.
+// Summary: Creates gcsFs with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name (string): The name parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - afero.File: The resulting afero.File.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -225,16 +229,17 @@ func (fs *gcsFs) Create(name string) (afero.File, error) {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Mkdir operation.
+// Summary: Executes gcsFs with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (string): The _ parameter.
+//   - _ (os.FileMode): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -257,16 +262,17 @@ func (fs *gcsFs) Mkdir(_ string, _ os.FileMode) error {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes MkdirAll operation.
+// Summary: Executes gcsFs with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (string): The _ parameter.
+//   - _ (os.FileMode): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -289,16 +295,17 @@ func (fs *gcsFs) MkdirAll(_ string, _ os.FileMode) error {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Open operation.
+// Summary: Executes gcsFs with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name (string): The name parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - afero.File: The resulting afero.File.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -323,16 +330,19 @@ func (fs *gcsFs) Open(name string) (afero.File, error) {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes OpenFile operation.
+// Summary: Executes gcsFs with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name (string): The name parameter.
+//   - flag (int): The flag parameter.
+//   - _ (os.FileMode): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - afero.File: The resulting afero.File.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -375,16 +385,16 @@ func (fs *gcsFs) OpenFile(name string, flag int, _ os.FileMode) (afero.File, err
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Remove operation.
+// Summary: Executes gcsFs with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name (string): The name parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -406,16 +416,16 @@ func (fs *gcsFs) Remove(name string) error {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes RemoveAll operation.
+// Summary: Executes gcsFs with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - path (string): The path parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -452,16 +462,17 @@ func (fs *gcsFs) RemoveAll(path string) error {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Rename operation.
+// Summary: Executes gcsFs with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - oldname: The parameter.
+//   - newname (string): The newname parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -490,16 +501,17 @@ func (fs *gcsFs) Rename(oldname, newname string) error {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Stat operation.
+// Summary: Executes gcsFs with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name (string): The name parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - os.FileInfo: The resulting os.FileInfo.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -527,16 +539,16 @@ func (fs *gcsFs) Stat(name string) (os.FileInfo, error) {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Name operation.
+// Summary: Executes gcsFs with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -559,16 +571,17 @@ func (fs *gcsFs) Name() string {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Chmod operation.
+// Summary: Executes gcsFs with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (string): The _ parameter.
+//   - _ (os.FileMode): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -592,16 +605,18 @@ func (fs *gcsFs) Chmod(_ string, _ os.FileMode) error {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Chown operation.
+// Summary: Executes gcsFs with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (string): The _ parameter.
+//   - _: The parameter.
+//   - _ (int): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -625,16 +640,18 @@ func (fs *gcsFs) Chown(_ string, _, _ int) error {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Chtimes operation.
+// Summary: Executes gcsFs with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (string): The _ parameter.
+//   - _: The parameter.
+//   - _ (time.Time): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -660,16 +677,16 @@ type gcsFile struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Close operation.
+// Summary: Executes gcsFile with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -698,16 +715,17 @@ func (f *gcsFile) Close() error {
 // Side Effects:
 //   - None.
 //
-// Summary: Retrieves Read operation.
+// Summary: Executes gcsFile with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - p ([]byte): The p parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - int: The resulting int.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -734,16 +752,18 @@ func (f *gcsFile) Read(p []byte) (n int, err error) {
 // Side Effects:
 //   - None.
 //
-// Summary: Retrieves ReadAt operation.
+// Summary: Executes gcsFile with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - p ([]byte): The p parameter.
+//   - off (int64): The off parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - int: The resulting int.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -775,16 +795,18 @@ func (f *gcsFile) ReadAt(p []byte, off int64) (n int, err error) {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Seek operation.
+// Summary: Executes gcsFile with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (int64): The _ parameter.
+//   - _ (int): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - int64: The resulting int64.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -807,16 +829,17 @@ func (f *gcsFile) Seek(_ int64, _ int) (int64, error) {
 // Side Effects:
 //   - None.
 //
-// Summary: Updates Write operation.
+// Summary: Executes gcsFile with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - p ([]byte): The p parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - int: The resulting int.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -843,16 +866,18 @@ func (f *gcsFile) Write(p []byte) (n int, err error) {
 // Side Effects:
 //   - None.
 //
-// Summary: Updates WriteAt operation.
+// Summary: Executes gcsFile with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ ([]byte): The _ parameter.
+//   - _ (int64): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - int: The resulting int.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -868,16 +893,16 @@ func (f *gcsFile) WriteAt(_ []byte, _ int64) (n int, err error) {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Name operation.
+// Summary: Executes gcsFile with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -901,16 +926,17 @@ func (f *gcsFile) Name() string {
 // Side Effects:
 //   - None.
 //
-// Summary: Retrieves Readdir operation.
+// Summary: Executes gcsFile with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (int): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - []os.FileInfo: The resulting []os.FileInfo.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -972,16 +998,17 @@ func (f *gcsFile) Readdir(_ int) ([]os.FileInfo, error) {
 // Side Effects:
 //   - None.
 //
-// Summary: Retrieves Readdirnames operation.
+// Summary: Executes gcsFile with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - n (int): The n parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - []string: The resulting []string.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -1009,16 +1036,17 @@ func (f *gcsFile) Readdirnames(n int) ([]string, error) {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Stat operation.
+// Summary: Executes gcsFile with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - os.FileInfo: The resulting os.FileInfo.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -1054,16 +1082,16 @@ func (f *gcsFile) Stat() (os.FileInfo, error) {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Sync operation.
+// Summary: Executes gcsFile with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -1085,16 +1113,16 @@ func (f *gcsFile) Sync() error {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Truncate operation.
+// Summary: Executes gcsFile with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (int64): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -1117,16 +1145,17 @@ func (f *gcsFile) Truncate(_ int64) error {
 // Side Effects:
 //   - None.
 //
-// Summary: Updates WriteString operation.
+// Summary: Executes gcsFile with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - s (string): The s parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - int: The resulting int.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -1149,16 +1178,16 @@ type gcsFileInfo struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Name operation.
+// Summary: Executes gcsFileInfo with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -1174,16 +1203,16 @@ func (fi *gcsFileInfo) Name() string {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Size operation.
+// Summary: Executes gcsFileInfo with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -1199,16 +1228,16 @@ func (fi *gcsFileInfo) Size() int64 {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Mode operation.
+// Summary: Executes gcsFileInfo with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -1227,16 +1256,16 @@ func (fi *gcsFileInfo) Mode() os.FileMode {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes ModTime operation.
+// Summary: Executes gcsFileInfo with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -1252,16 +1281,16 @@ func (fi *gcsFileInfo) ModTime() time.Time {
 // Side Effects:
 //   - None.
 //
-// Summary: Checks IsDir operation.
+// Summary: Executes gcsFileInfo with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -1277,16 +1306,16 @@ func (fi *gcsFileInfo) IsDir() bool {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Sys operation.
+// Summary: Executes gcsFileInfo with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

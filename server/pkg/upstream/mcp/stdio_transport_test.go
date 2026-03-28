@@ -111,8 +111,8 @@ func TestStdioTransport_ConnectAndReadWrite(t *testing.T) {
 
 	// Write a message
 	msg := &jsonrpc.Request{
-		Method:  "test/method",
-		Params:  []byte(`{"foo":"bar"}`),
+		Method: "test/method",
+		Params: []byte(`{"foo":"bar"}`),
 	}
 
 	err = conn.Write(ctx, msg)
@@ -185,7 +185,7 @@ func TestStdioTransport_Close(t *testing.T) {
 }
 
 func TestStdioTransport_ReadBadJSON(t *testing.T) {
-    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	cmd := exec.CommandContext(ctx, "echo", "not json")
@@ -198,7 +198,7 @@ func TestStdioTransport_ReadBadJSON(t *testing.T) {
 	require.NoError(t, err)
 	defer conn.Close()
 
-    // Read should fail
-    _, err = conn.Read(ctx)
-    assert.Error(t, err)
+	// Read should fail
+	_, err = conn.Read(ctx)
+	assert.Error(t, err)
 }

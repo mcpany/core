@@ -42,16 +42,17 @@ type SmartRecoveryMiddleware struct {
 // Side Effects:
 //   - None
 //
-// Summary: Initializes NewSmartRecoveryMiddleware operation.
+// Summary: Initializes SmartRecoveryMiddleware with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - config (*configv1.SmartRecoveryConfig): The config parameter.
+//   - toolManager (tool.ManagerInterface): The toolManager parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -79,16 +80,19 @@ func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManage
 // Side Effects:
 //   - None
 //
-// Summary: Executes Execute operation.
+// Summary: Executes SmartRecoveryMiddleware with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - req (*tool.ExecutionRequest): The request payload.
+//   - next (tool.ExecutionFunc): The next parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - any: The resulting any.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

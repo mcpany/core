@@ -80,16 +80,16 @@ type Manager struct {
 // Side Effects:
 //   - None
 //
-// Summary: Initializes NewManager operation.
+// Summary: Initializes Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -130,16 +130,16 @@ func (m *Manager) seedData() {
 // Side Effects:
 //   - None
 //
-// Summary: Executes ListAlerts operation.
+// Summary: Executes Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -171,16 +171,16 @@ func (m *Manager) ListAlerts() []*Alert {
 // Side Effects:
 //   - None
 //
-// Summary: Retrieves GetAlert operation.
+// Summary: Retrieves Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - id (string): The unique identifier.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -204,16 +204,16 @@ func (m *Manager) GetAlert(id string) *Alert {
 // Side Effects:
 //   - None
 //
-// Summary: Initializes CreateAlert operation.
+// Summary: Creates Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - alert (*Alert): The alert parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -272,16 +272,16 @@ func (m *Manager) CreateAlert(alert *Alert) *Alert {
 // Side Effects:
 //   - None
 //
-// Summary: Retrieves GetAlertStats operation.
+// Summary: Retrieves Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -332,16 +332,16 @@ func (m *Manager) GetAlertStats() *AlertStats {
 // Side Effects:
 //   - None
 //
-// Summary: Executes DeleteAlert operation.
+// Summary: Removes Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - id (string): The unique identifier.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -370,16 +370,17 @@ func (m *Manager) DeleteAlert(id string) error {
 // Side Effects:
 //   - None
 //
-// Summary: Executes UpdateAlert operation.
+// Summary: Modifies Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - id (string): The unique identifier.
+//   - alert (*Alert): The alert parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -442,16 +443,16 @@ func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 // Side Effects:
 //   - None
 //
-// Summary: Retrieves GetWebhookURL operation.
+// Summary: Retrieves Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -475,16 +476,16 @@ func (m *Manager) GetWebhookURL() string {
 // Side Effects:
 //   - None
 //
-// Summary: Updates SetWebhookURL operation.
+// Summary: Updates Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - url (string): The url parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -508,16 +509,16 @@ func (m *Manager) SetWebhookURL(url string) {
 // Side Effects:
 //   - None
 //
-// Summary: Executes ListRules operation.
+// Summary: Executes Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -548,16 +549,16 @@ func (m *Manager) ListRules() []*AlertRule {
 // Side Effects:
 //   - None
 //
-// Summary: Retrieves GetRule operation.
+// Summary: Retrieves Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - id (string): The unique identifier.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -581,16 +582,16 @@ func (m *Manager) GetRule(id string) *AlertRule {
 // Side Effects:
 //   - None
 //
-// Summary: Initializes CreateRule operation.
+// Summary: Creates Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - rule (*AlertRule): The rule parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -620,16 +621,17 @@ func (m *Manager) CreateRule(rule *AlertRule) *AlertRule {
 // Side Effects:
 //   - None
 //
-// Summary: Executes UpdateRule operation.
+// Summary: Modifies Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - id (string): The unique identifier.
+//   - rule (*AlertRule): The rule parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -665,16 +667,16 @@ func (m *Manager) UpdateRule(id string, rule *AlertRule) *AlertRule {
 // Side Effects:
 //   - None
 //
-// Summary: Executes DeleteRule operation.
+// Summary: Removes Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - id (string): The unique identifier.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

@@ -45,16 +45,16 @@ type Worker struct {
 // Side Effects:
 //   - None
 //
-// Summary: Initializes New operation.
+// Summary: Initializes operation with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - config (Config): The config parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -84,16 +84,16 @@ func New(config Config) *Worker {
 // Side Effects:
 //   - None
 //
-// Summary: Executes Start operation.
+// Summary: Executes Worker with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

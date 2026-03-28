@@ -8,6 +8,9 @@ import (
 	"encoding/json"
 	"testing"
 
+	bus_pb "github.com/mcpany/core/proto/bus"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/mcpserver"
@@ -18,9 +21,6 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream/factory"
 	"github.com/mcpany/core/server/pkg/util"
-	bus_pb "github.com/mcpany/core/proto/bus"
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -36,7 +36,6 @@ type featureSamplingTool struct {
 func (m *featureSamplingTool) Tool() *v1.Tool {
 	return m.tool
 }
-
 
 func (m *featureSamplingTool) IsStreaming() bool {
 	return false
@@ -57,7 +56,7 @@ func (m *featureSamplingTool) Execute(ctx context.Context, _ *tool.ExecutionRequ
 	res, err := sampler.CreateMessage(ctx, &mcp.CreateMessageParams{
 		Messages: []*mcp.SamplingMessage{
 			{
-				Role:    "user",
+				Role: "user",
 				Content: &mcp.TextContent{
 					Text: "hello from tool",
 				},

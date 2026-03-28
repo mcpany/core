@@ -37,16 +37,17 @@ type MilvusClient struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Initializes NewMilvusClient operation.
+// Summary: Initializes MilvusClient with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - config (*configv1.MilvusVectorDB): The config parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *MilvusClient: The resulting MilvusClient.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -105,16 +106,21 @@ func NewMilvusClient(config *configv1.MilvusVectorDB) (*MilvusClient, error) {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Query operation.
+// Summary: Executes MilvusClient with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - vector ([]float32): The vector parameter.
+//   - topK (int64): The topK parameter.
+//   - filter (map[string]interface{}): The filter parameter.
+//   - namespace (string): The namespace parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - map[string]interface{}: The resulting map[string]interface{}.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -242,16 +248,19 @@ func (c *MilvusClient) Query(ctx context.Context, vector []float32, topK int64, 
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Upsert operation.
+// Summary: Executes MilvusClient with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - vectors ([]map[string]interface{}): The vectors parameter.
+//   - namespace (string): The namespace parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - map[string]interface{}: The resulting map[string]interface{}.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -472,16 +481,20 @@ func fillMetadataColumn(col entity.Column, i int, val interface{}) {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Delete operation.
+// Summary: Removes MilvusClient with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - ids ([]string): The ids parameter.
+//   - namespace (string): The namespace parameter.
+//   - filter (map[string]interface{}): The filter parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - map[string]interface{}: The resulting map[string]interface{}.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -555,16 +568,18 @@ func (c *MilvusClient) Delete(ctx context.Context, ids []string, namespace strin
 // Side Effects:
 //   - None.
 //
-// Summary: Executes DescribeIndexStats operation.
+// Summary: Executes MilvusClient with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - _ (map[string]interface{}): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - map[string]interface{}: The resulting map[string]interface{}.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

@@ -19,16 +19,16 @@ type GRPCProvider struct {
 
 // Name returns the name of the provider.
 //
-// Summary: Executes Name operation.
+// Summary: Executes GRPCProvider with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -38,16 +38,17 @@ func (p *GRPCProvider) Name() string {
 
 // Discover attempts to find services and return their configurations.
 //
-// Summary: Executes Discover operation.
+// Summary: Executes GRPCProvider with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - []*configv1.UpstreamServiceConfig: The resulting []configv1.UpstreamServiceConfig.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

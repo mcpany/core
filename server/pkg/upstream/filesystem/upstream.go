@@ -49,16 +49,16 @@ type Upstream struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Initializes NewUpstream operation.
+// Summary: Initializes Upstream with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -80,16 +80,16 @@ func NewUpstream() upstream.Upstream {
 //   - Stops the health checker.
 //   - Closes all registered filesystem providers.
 //
-// Summary: Executes Shutdown operation.
+// Summary: Executes Upstream with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -266,6 +266,12 @@ type fsCallable struct {
 // Returns:
 //   - any: The result of the execution.
 //   - error: An error if execution fails.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None.
 func (c *fsCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	args := req.Arguments
 	if args == nil && len(req.ToolInputs) > 0 {

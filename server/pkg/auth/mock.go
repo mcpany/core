@@ -26,16 +26,16 @@ type MockUpstreamAuthenticator struct {
 // Side Effects:
 //   - None
 //
-// Summary: Executes Authenticate operation.
+// Summary: Executes MockUpstreamAuthenticator with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - req (*http.Request): The request payload.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

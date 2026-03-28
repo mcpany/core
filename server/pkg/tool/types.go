@@ -246,6 +246,12 @@ const toolContextKey = contextKey("tool")
 //
 // Returns:
 //   - context.Context: A new context containing the tool.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None.
 func NewContextWithTool(ctx context.Context, t Tool) context.Context {
 	return context.WithValue(ctx, toolContextKey, t)
 }
@@ -260,6 +266,12 @@ func NewContextWithTool(ctx context.Context, t Tool) context.Context {
 // Returns:
 //   - Tool: The tool instance from the context.
 //   - bool: True if a tool was found, false otherwise.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None.
 func GetFromContext(ctx context.Context) (Tool, bool) {
 	t, ok := ctx.Value(toolContextKey).(Tool)
 	return t, ok
@@ -342,6 +354,12 @@ const cacheControlContextKey = contextKey("cache_control")
 //
 // Returns:
 //   - context.Context: A new context containing the CacheControl.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None.
 func NewContextWithCacheControl(ctx context.Context, cc *CacheControl) context.Context {
 	return context.WithValue(ctx, cacheControlContextKey, cc)
 }
@@ -356,6 +374,12 @@ func NewContextWithCacheControl(ctx context.Context, cc *CacheControl) context.C
 // Returns:
 //   - *CacheControl: The CacheControl instance if found.
 //   - bool: True if CacheControl exists, false otherwise.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None.
 func GetCacheControl(ctx context.Context) (*CacheControl, bool) {
 	cc, ok := ctx.Value(cacheControlContextKey).(*CacheControl)
 	return cc, ok
@@ -412,6 +436,12 @@ type GRPCTool struct {
 //
 // Returns:
 //   - *GRPCTool: The initialized GRPCTool.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None.
 func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, method protoreflect.MethodDescriptor, callDefinition *configv1.GrpcCallDefinition, resilienceConfig *configv1.ResilienceConfig) *GRPCTool {
 	return &GRPCTool{
 		tool:              tool,
@@ -429,16 +459,16 @@ func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, met
 // Returns:
 //   - *v1.Tool: The underlying protobuf definition.
 //
-// Summary: Executes Tool operation.
+// Summary: Executes GRPCTool with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -453,16 +483,16 @@ func (t *GRPCTool) Tool() *v1.Tool {
 // Returns:
 //   - *mcp.Tool: The MCP tool definition.
 //
-// Summary: Executes MCPTool operation.
+// Summary: Executes GRPCTool with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -482,16 +512,16 @@ func (t *GRPCTool) MCPTool() *mcp.Tool {
 // Returns:
 //   - *configv1.CacheConfig: The cache configuration, if any.
 //
-// Summary: Retrieves GetCacheConfig operation.
+// Summary: Retrieves GRPCTool with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -525,6 +555,9 @@ func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns:
 //   - bool: True if streaming is supported.
+//
+// Errors:
+//   - None
 func (t *GRPCTool) IsStreaming() bool {
 	return false
 }
@@ -540,6 +573,12 @@ func (t *GRPCTool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None.
 func (t *GRPCTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -695,6 +734,12 @@ type HTTPTool struct {
 //
 // Returns:
 //   - *HTTPTool: The initialized HTTPTool.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None.
 func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.HttpCallDefinition, cfg *configv1.ResilienceConfig, policies []*configv1.CallPolicy, callID string) *HTTPTool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -800,16 +845,16 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 // Returns:
 //   - *v1.Tool: The underlying protobuf definition.
 //
-// Summary: Executes Tool operation.
+// Summary: Executes HTTPTool with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -824,16 +869,16 @@ func (t *HTTPTool) Tool() *v1.Tool {
 // Returns:
 //   - *mcp.Tool: The MCP tool definition.
 //
-// Summary: Executes MCPTool operation.
+// Summary: Executes HTTPTool with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -853,16 +898,16 @@ func (t *HTTPTool) MCPTool() *mcp.Tool {
 // Returns:
 //   - *configv1.CacheConfig: The cache configuration, if any.
 //
-// Summary: Retrieves GetCacheConfig operation.
+// Summary: Retrieves HTTPTool with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -896,6 +941,9 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns:
 //   - bool: True if streaming is supported.
+//
+// Errors:
+//   - None
 func (t *HTTPTool) IsStreaming() bool {
 	return false
 }
@@ -911,6 +959,12 @@ func (t *HTTPTool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None.
 func (t *HTTPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -1569,6 +1623,12 @@ type MCPTool struct {
 //
 // Returns:
 //   - *MCPTool: The initialized MCPTool.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None.
 func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1.MCPCallDefinition) *MCPTool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -1608,16 +1668,16 @@ func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1
 // Returns:
 //   - *v1.Tool: The underlying protobuf definition.
 //
-// Summary: Executes Tool operation.
+// Summary: Executes MCPTool with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -1632,16 +1692,16 @@ func (t *MCPTool) Tool() *v1.Tool {
 // Returns:
 //   - *mcp.Tool: The MCP tool definition.
 //
-// Summary: Executes MCPTool operation.
+// Summary: Executes MCPTool with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -1661,16 +1721,16 @@ func (t *MCPTool) MCPTool() *mcp.Tool {
 // Returns:
 //   - *configv1.CacheConfig: The cache configuration, if any.
 //
-// Summary: Retrieves GetCacheConfig operation.
+// Summary: Retrieves MCPTool with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -1703,6 +1763,9 @@ func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns:
 //   - bool: True if streaming is supported.
+//
+// Errors:
+//   - None
 func (t *MCPTool) IsStreaming() bool {
 	return false
 }
@@ -1718,6 +1781,12 @@ func (t *MCPTool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None.
 func (t *MCPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -1906,6 +1975,12 @@ type OpenAPITool struct {
 //
 // Returns:
 //   - *OpenAPITool: The initialized OpenAPITool.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None.
 func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[string]string, method, url string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.OpenAPICallDefinition) *OpenAPITool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -1949,16 +2024,16 @@ func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[s
 // Returns:
 //   - *v1.Tool: The underlying protobuf definition.
 //
-// Summary: Executes Tool operation.
+// Summary: Executes OpenAPITool with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -1973,16 +2048,16 @@ func (t *OpenAPITool) Tool() *v1.Tool {
 // Returns:
 //   - *mcp.Tool: The MCP tool definition.
 //
-// Summary: Executes MCPTool operation.
+// Summary: Executes OpenAPITool with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -2002,16 +2077,16 @@ func (t *OpenAPITool) MCPTool() *mcp.Tool {
 // Returns:
 //   - *configv1.CacheConfig: The cache configuration, if any.
 //
-// Summary: Retrieves GetCacheConfig operation.
+// Summary: Retrieves OpenAPITool with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -2044,6 +2119,9 @@ func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns:
 //   - bool: True if streaming is supported.
+//
+// Errors:
+//   - None
 func (t *OpenAPITool) IsStreaming() bool {
 	return false
 }
@@ -2059,6 +2137,12 @@ func (t *OpenAPITool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None.
 func (t *OpenAPITool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -2290,6 +2374,12 @@ type CommandTool struct {
 //
 // Returns:
 //   - Tool: The created CommandTool.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None.
 func NewCommandTool(
 	tool *v1.Tool,
 	service *configv1.CommandLineUpstreamService,
@@ -2355,6 +2445,12 @@ type LocalCommandTool struct {
 //
 // Returns:
 //   - Tool: The created LocalCommandTool.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None.
 func NewLocalCommandTool(
 	tool *v1.Tool,
 	service *configv1.CommandLineUpstreamService,
@@ -2413,16 +2509,16 @@ func NewLocalCommandTool(
 // Returns:
 //   - *v1.Tool: The underlying protobuf definition.
 //
-// Summary: Executes Tool operation.
+// Summary: Executes LocalCommandTool with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -2437,16 +2533,16 @@ func (t *LocalCommandTool) Tool() *v1.Tool {
 // Returns:
 //   - *mcp.Tool: The MCP tool definition.
 //
-// Summary: Executes MCPTool operation.
+// Summary: Executes LocalCommandTool with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -2466,16 +2562,16 @@ func (t *LocalCommandTool) MCPTool() *mcp.Tool {
 // Returns:
 //   - *configv1.CacheConfig: The cache configuration, if any.
 //
-// Summary: Retrieves GetCacheConfig operation.
+// Summary: Retrieves LocalCommandTool with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -2512,6 +2608,9 @@ func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns:
 //   - bool: True if streaming is supported.
+//
+// Errors:
+//   - None
 func (t *LocalCommandTool) IsStreaming() bool {
 	return false
 }
@@ -2527,6 +2626,12 @@ func (t *LocalCommandTool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None.
 func (t *LocalCommandTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -2892,16 +2997,16 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 // Returns:
 //   - *v1.Tool: The underlying protobuf definition.
 //
-// Summary: Executes Tool operation.
+// Summary: Executes CommandTool with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -2916,16 +3021,16 @@ func (t *CommandTool) Tool() *v1.Tool {
 // Returns:
 //   - *mcp.Tool: The MCP tool definition.
 //
-// Summary: Executes MCPTool operation.
+// Summary: Executes CommandTool with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -2945,16 +3050,16 @@ func (t *CommandTool) MCPTool() *mcp.Tool {
 // Returns:
 //   - *configv1.CacheConfig: The cache configuration, if any.
 //
-// Summary: Retrieves GetCacheConfig operation.
+// Summary: Retrieves CommandTool with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -2991,6 +3096,9 @@ func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns:
 //   - bool: True if streaming is supported.
+//
+// Errors:
+//   - None
 func (t *CommandTool) IsStreaming() bool {
 	return false
 }
@@ -3006,6 +3114,12 @@ func (t *CommandTool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None.
 func (t *CommandTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -3389,16 +3503,17 @@ type threadSafeBuffer struct {
 //   - n: The number of bytes written.
 //   - err: An error if one occurred.
 //
-// Summary: Updates Write operation.
+// Summary: Executes threadSafeBuffer with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - p ([]byte): The p parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - int: The resulting int.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -3413,16 +3528,16 @@ func (tsb *threadSafeBuffer) Write(p []byte) (n int, err error) {
 // Returns:
 //   - string: The contents of the buffer.
 //
-// Summary: Executes String operation.
+// Summary: Executes threadSafeBuffer with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

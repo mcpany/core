@@ -4,13 +4,13 @@
 package logging
 
 import (
-	"os"
-	"github.com/mcpany/core/server/pkg/validation"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"bytes"
 	"context"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/validation"
 	"io"
 	"log/slog"
+	"os"
 	"strings"
 	"testing"
 

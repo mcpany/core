@@ -57,16 +57,18 @@ type GrpcClientWrapper struct {
 // Side Effects:
 //   - None
 //
-// Summary: Initializes NewGrpcClientWrapper operation.
+// Summary: Initializes GrpcClientWrapper with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - conn (Conn): The conn parameter.
+//   - config (*configv1.UpstreamServiceConfig): The config parameter.
+//   - checker (health.Checker): The checker parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -96,16 +98,16 @@ func NewGrpcClientWrapper(conn Conn, config *configv1.UpstreamServiceConfig, che
 // Side Effects:
 //   - None
 //
-// Summary: Checks IsHealthy operation.
+// Summary: Executes GrpcClientWrapper with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -136,16 +138,16 @@ func (w *GrpcClientWrapper) IsHealthy(ctx context.Context) bool {
 // Side Effects:
 //   - None
 //
-// Summary: Executes Close operation.
+// Summary: Executes GrpcClientWrapper with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

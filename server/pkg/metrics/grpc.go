@@ -34,16 +34,17 @@ type GrpcStatsHandler struct {
 // Returns:
 //   - The context, potentially modified with new tags.
 //
-// Summary: Executes TagRPC operation.
+// Summary: Executes GrpcStatsHandler with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - info (*stats.RPCTagInfo): The info parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -60,16 +61,17 @@ func (h *GrpcStatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) c
 //   - ctx: The context of the RPC.
 //   - s: The RPC stats.
 //
-// Summary: Executes HandleRPC operation.
+// Summary: Executes GrpcStatsHandler with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - s (stats.RPCStats): The s parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -94,16 +96,17 @@ func (h *GrpcStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 // Returns:
 //   - The context, potentially modified with new tags.
 //
-// Summary: Executes TagConn operation.
+// Summary: Executes GrpcStatsHandler with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - info (*stats.ConnTagInfo): The info parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -120,16 +123,17 @@ func (h *GrpcStatsHandler) TagConn(ctx context.Context, info *stats.ConnTagInfo)
 //   - ctx: The context of the connection.
 //   - s: The connection stats.
 //
-// Summary: Executes HandleConn operation.
+// Summary: Executes GrpcStatsHandler with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - s (stats.ConnStats): The s parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

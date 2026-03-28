@@ -96,16 +96,18 @@ func NewWithClient[T any](client *redis.Client) *Bus[T] {
 // Returns:
 //   - error: An error if marshaling or publishing fails.
 //
-// Summary: Executes Publish operation.
+// Summary: Executes Bus[T] with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - topic (string): The topic parameter.
+//   - msg (T): The msg parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting output.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -130,16 +132,18 @@ func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 // Returns:
 //   - func(): A function that unsubscribes the handler when called.
 //
-// Summary: Executes Subscribe operation.
+// Summary: Executes Bus[T] with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - topic (string): The topic parameter.
+//   - handler (func(T): The handler parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -204,16 +208,18 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 // Returns:
 //   - func(): A function that unsubscribes the handler if called before the message is received.
 //
-// Summary: Executes SubscribeOnce operation.
+// Summary: Executes Bus[T] with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - topic (string): The topic parameter.
+//   - handler (func(T): The handler parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -254,6 +260,15 @@ func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T
 //
 // Returns:
 //   - error: An error if closing fails.
+//
+// Parameters:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) Close() error {
 	return b.client.Close()
 }

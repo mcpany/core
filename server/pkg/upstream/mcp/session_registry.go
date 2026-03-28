@@ -27,16 +27,16 @@ type SessionRegistry struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Initializes NewSessionRegistry operation.
+// Summary: Initializes SessionRegistry with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -58,16 +58,17 @@ func NewSessionRegistry() *SessionRegistry {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Register operation.
+// Summary: Executes SessionRegistry with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - upstreamSession (mcp.Session): The upstreamSession parameter.
+//   - downstreamSession (tool.Session): The downstreamSession parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -88,16 +89,16 @@ func (r *SessionRegistry) Register(upstreamSession mcp.Session, downstreamSessio
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Unregister operation.
+// Summary: Executes SessionRegistry with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - upstreamSession (mcp.Session): The upstreamSession parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -119,16 +120,17 @@ func (r *SessionRegistry) Unregister(upstreamSession mcp.Session) {
 // Side Effects:
 //   - None.
 //
-// Summary: Retrieves Get operation.
+// Summary: Retrieves SessionRegistry with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - upstreamSession (mcp.Session): The upstreamSession parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - tool.Session: The resulting tool.Session.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

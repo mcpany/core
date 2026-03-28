@@ -62,16 +62,16 @@ type Upstream struct {
 // Side Effects:
 //   - Performs a health check RPC.
 //
-// Summary: Executes CheckHealth operation.
+// Summary: Executes Upstream with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -101,16 +101,16 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 // Side Effects:
 //   - Starts a background cache cleaner.
 //
-// Summary: Initializes NewUpstream operation.
+// Summary: Initializes Upstream with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - poolManager (*pool.Manager): The poolManager parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -140,16 +140,16 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 //   - Stops the reflection cache.
 //   - Deregisters the connection pool.
 //
-// Summary: Executes Shutdown operation.
+// Summary: Executes Upstream with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

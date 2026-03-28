@@ -41,16 +41,17 @@ type PineconeClient struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Initializes NewPineconeClient operation.
+// Summary: Initializes PineconeClient with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - config (*configv1.PineconeVectorDB): The config parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *PineconeClient: The resulting PineconeClient.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -149,16 +150,21 @@ func (c *PineconeClient) doRequest(ctx context.Context, method, path string, bod
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Query operation.
+// Summary: Executes PineconeClient with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - vector ([]float32): The vector parameter.
+//   - topK (int64): The topK parameter.
+//   - filter (map[string]interface{}): The filter parameter.
+//   - namespace (string): The namespace parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - map[string]interface{}: The resulting map[string]interface{}.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -192,16 +198,19 @@ func (c *PineconeClient) Query(ctx context.Context, vector []float32, topK int64
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Upsert operation.
+// Summary: Executes PineconeClient with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - vectors ([]map[string]interface{}): The vectors parameter.
+//   - namespace (string): The namespace parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - map[string]interface{}: The resulting map[string]interface{}.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -230,16 +239,20 @@ func (c *PineconeClient) Upsert(ctx context.Context, vectors []map[string]interf
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Delete operation.
+// Summary: Removes PineconeClient with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - ids ([]string): The ids parameter.
+//   - namespace (string): The namespace parameter.
+//   - filter (map[string]interface{}): The filter parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - map[string]interface{}: The resulting map[string]interface{}.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -274,16 +287,18 @@ func (c *PineconeClient) Delete(ctx context.Context, ids []string, namespace str
 // Side Effects:
 //   - None.
 //
-// Summary: Executes DescribeIndexStats operation.
+// Summary: Executes PineconeClient with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - filter (map[string]interface{}): The filter parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - map[string]interface{}: The resulting map[string]interface{}.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

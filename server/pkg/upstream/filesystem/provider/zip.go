@@ -38,16 +38,17 @@ type ZipProvider struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Initializes NewZipProvider operation.
+// Summary: Initializes ZipProvider with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - config (*configv1.ZipFs): The config parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *ZipProvider: The resulting ZipProvider.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -89,16 +90,16 @@ func NewZipProvider(config *configv1.ZipFs) (*ZipProvider, error) {
 // Side Effects:
 //   - None.
 //
-// Summary: Retrieves GetFs operation.
+// Summary: Retrieves ZipProvider with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -121,16 +122,17 @@ func (p *ZipProvider) GetFs() afero.Fs {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes ResolvePath operation.
+// Summary: Executes ZipProvider with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - virtualPath (string): The virtualPath parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - string: The resulting string.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -150,16 +152,16 @@ func (p *ZipProvider) ResolvePath(virtualPath string) (string, error) {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Close operation.
+// Summary: Executes ZipProvider with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

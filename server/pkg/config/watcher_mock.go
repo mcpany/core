@@ -19,16 +19,16 @@ type MockWatcher struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Initializes NewMockWatcher operation.
+// Summary: Initializes MockWatcher with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -51,16 +51,17 @@ func NewMockWatcher() *MockWatcher {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Watch operation.
+// Summary: Executes MockWatcher with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - paths ([]string): The paths parameter.
+//   - reloadFunc (func(): The reloadFunc parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -79,16 +80,16 @@ func (m *MockWatcher) Watch(paths []string, reloadFunc func()) error {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Close operation.
+// Summary: Executes MockWatcher with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

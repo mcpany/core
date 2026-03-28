@@ -37,16 +37,17 @@ type Updater struct {
 // Returns:
 //   - *Updater: A new Updater instance.
 //
-// Summary: Initializes NewUpdater operation.
+// Summary: Initializes r with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - httpClient (*http.Client): The httpClient parameter.
+//   - githubAPIURL (string): The githubAPIURL parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -82,16 +83,21 @@ func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 //   - bool: True if a newer version is available, false otherwise.
 //   - error: An error if the check fails (e.g., network error, API rate limit).
 //
-// Summary: Executes CheckForUpdate operation.
+// Summary: Executes Updater with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - owner: The parameter.
+//   - repo: The parameter.
+//   - currentVersion (string): The currentVersion parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *github.RepositoryRelease: The resulting github.RepositoryRelease.
+//   - bool: The resulting bool.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -127,16 +133,21 @@ func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersio
 //   - Writes temporary files to disk.
 //   - Modifies the executable file on disk.
 //
-// Summary: Executes UpdateTo operation.
+// Summary: Modifies Updater with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - fs (afero.Fs): The fs parameter.
+//   - executablePath (string): The executablePath parameter.
+//   - release (*github.RepositoryRelease): The release parameter.
+//   - assetName: The parameter.
+//   - checksumsAssetName (string): The checksumsAssetName parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

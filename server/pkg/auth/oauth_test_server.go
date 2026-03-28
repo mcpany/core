@@ -41,16 +41,16 @@ type MockOAuth2Server struct {
 // Side Effects:
 //   - None
 //
-// Summary: Initializes NewMockOAuth2Server operation.
+// Summary: Initializes MockOAuth2Server with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - t (*testing.T): The t parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -139,16 +139,17 @@ func NewMockOAuth2Server(t *testing.T) *MockOAuth2Server {
 // Side Effects:
 //   - None
 //
-// Summary: Initializes NewIDToken operation.
+// Summary: Initializes MockOAuth2Server with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - t (*testing.T): The t parameter.
+//   - claims (jwt.MapClaims): The claims parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

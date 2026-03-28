@@ -58,16 +58,16 @@ type OpenAPIUpstream struct { //nolint:revive
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Shutdown operation.
+// Summary: Executes OpenAPIUpstream with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -91,16 +91,16 @@ func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 // Side Effects:
 //   - None.
 //
-// Summary: Initializes NewOpenAPIUpstream operation.
+// Summary: Initializes OpenAPIUpstream with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -346,16 +346,17 @@ type httpClientImpl struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Do operation.
+// Summary: Executes httpClientImpl with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - req (*http.Request): The request payload.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *http.Response: The resulting http.Response.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

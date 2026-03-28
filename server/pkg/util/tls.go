@@ -28,16 +28,17 @@ import (
 //   - *http.Client: A configured *http.Client.
 //   - error: An error if the TLS configuration is invalid or files cannot be read.
 //
-// Summary: Initializes NewHTTPClientWithTLS operation.
+// Summary: Initializes HTTPClientWithTLS with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - tlsConfig (*configv1.TLSConfig): The tlsConfig parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *http.Client: The resulting http.Client.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

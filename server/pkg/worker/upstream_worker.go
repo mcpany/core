@@ -36,16 +36,17 @@ type UpstreamWorker struct {
 // Returns:
 //   - *UpstreamWorker: A new upstream worker.
 //
-// Summary: Initializes NewUpstreamWorker operation.
+// Summary: Initializes UpstreamWorker with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - bus (*bus.Provider): The bus parameter.
+//   - toolManager (tool.ManagerInterface): The toolManager parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -63,16 +64,16 @@ func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *Up
 // Parameters:
 //   - ctx: The context that controls the lifecycle of the worker.
 //
-// Summary: Executes Start operation.
+// Summary: Executes UpstreamWorker with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -141,16 +142,16 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 // Side Effects:
 //   - None
 //
-// Summary: Executes Stop operation.
+// Summary: Executes UpstreamWorker with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

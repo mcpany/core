@@ -39,16 +39,16 @@ type poolWithChecker[T pool.ClosableClient] struct {
 // Side Effects:
 //   - Stops the health checker.
 //
-// Summary: Executes Close operation.
+// Summary: Executes poolWithChecker[T] with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting output.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

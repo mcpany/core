@@ -64,16 +64,16 @@ type MockRuntime struct{}
 // Returns:
 //   - *MockRuntime: A new mock runtime instance.
 //
-// Summary: Initializes NewMockRuntime operation.
+// Summary: Initializes MockRuntime with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -91,16 +91,18 @@ func NewMockRuntime() *MockRuntime {
 //   - Plugin: A mock plugin.
 //   - error: An error if the bytecode is empty.
 //
-// Summary: Executes LoadPlugin operation.
+// Summary: Executes MockRuntime with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): The _ parameter.
+//   - bytecode ([]byte): The bytecode parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Plugin: The resulting Plugin.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -116,16 +118,16 @@ func (m *MockRuntime) LoadPlugin(_ context.Context, bytecode []byte) (Plugin, er
 // Returns:
 //   - error: Always returns nil.
 //
-// Summary: Executes Close operation.
+// Summary: Executes MockRuntime with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -149,16 +151,19 @@ type MockPlugin struct{}
 //   - []byte: The result ("success").
 //   - error: An error if the function name is "error".
 //
-// Summary: Executes Execute operation.
+// Summary: Executes MockPlugin with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): The _ parameter.
+//   - function (string): The function parameter.
+//   - _ (...[]byte): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - []byte: The resulting []byte.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -174,16 +179,16 @@ func (p *MockPlugin) Execute(_ context.Context, function string, _ ...[]byte) ([
 // Returns:
 //   - error: Always returns nil.
 //
-// Summary: Executes Close operation.
+// Summary: Executes MockPlugin with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

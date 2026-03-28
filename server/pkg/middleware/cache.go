@@ -65,16 +65,16 @@ type CachingMiddleware struct {
 // Side Effects:
 //   - None
 //
-// Summary: Initializes NewCachingMiddleware operation.
+// Summary: Initializes CachingMiddleware with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - toolManager (tool.ManagerInterface): The toolManager parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -150,16 +150,16 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 // Side Effects:
 //   - None
 //
-// Summary: Updates SetProviderFactory operation.
+// Summary: Updates CachingMiddleware with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - factory (ProviderFactory): The factory parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -184,16 +184,19 @@ func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 // Side Effects:
 //   - None
 //
-// Summary: Executes Execute operation.
+// Summary: Executes CachingMiddleware with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - req (*tool.ExecutionRequest): The request payload.
+//   - next (tool.ExecutionFunc): The next parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - any: The resulting any.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -503,16 +506,16 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 // Side Effects:
 //   - None
 //
-// Summary: Executes Clear operation.
+// Summary: Executes CachingMiddleware with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

@@ -40,16 +40,17 @@ type StdioTransport struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Connect operation.
+// Summary: Executes StdioTransport with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - mcp.Connection: The resulting mcp.Connection.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -130,16 +131,17 @@ type stdioConn struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Retrieves Read operation.
+// Summary: Executes stdioConn with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - jsonrpc.Message: The resulting jsonrpc.Message.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -244,16 +246,17 @@ func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 // Side Effects:
 //   - None.
 //
-// Summary: Updates Write operation.
+// Summary: Executes stdioConn with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): The _ parameter.
+//   - msg (jsonrpc.Message): The msg parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -307,16 +310,16 @@ func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Close operation.
+// Summary: Executes stdioConn with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -343,16 +346,16 @@ func (c *stdioConn) Close() error {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes SessionID operation.
+// Summary: Executes stdioConn with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

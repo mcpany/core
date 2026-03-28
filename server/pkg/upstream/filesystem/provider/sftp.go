@@ -40,16 +40,17 @@ type SftpProvider struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Initializes NewSftpProvider operation.
+// Summary: Initializes SftpProvider with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - config (*configv1.SftpFs): The config parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *SftpProvider: The resulting SftpProvider.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -113,16 +114,16 @@ func NewSftpProvider(config *configv1.SftpFs) (*SftpProvider, error) {
 // Side Effects:
 //   - None.
 //
-// Summary: Retrieves GetFs operation.
+// Summary: Retrieves SftpProvider with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -145,16 +146,17 @@ func (p *SftpProvider) GetFs() afero.Fs {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes ResolvePath operation.
+// Summary: Executes SftpProvider with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - virtualPath (string): The virtualPath parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - string: The resulting string.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -178,16 +180,16 @@ func (p *SftpProvider) ResolvePath(virtualPath string) (string, error) {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Close operation.
+// Summary: Executes SftpProvider with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -222,16 +224,17 @@ type sftpFs struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Initializes Create operation.
+// Summary: Creates sftpFs with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name (string): The name parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - afero.File: The resulting afero.File.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -258,16 +261,17 @@ func (s *sftpFs) Create(name string) (afero.File, error) {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Mkdir operation.
+// Summary: Executes sftpFs with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name (string): The name parameter.
+//   - _ (os.FileMode): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -290,16 +294,17 @@ func (s *sftpFs) Mkdir(name string, _ os.FileMode) error {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes MkdirAll operation.
+// Summary: Executes sftpFs with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - path (string): The path parameter.
+//   - _ (os.FileMode): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -322,16 +327,17 @@ func (s *sftpFs) MkdirAll(path string, _ os.FileMode) error {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Open operation.
+// Summary: Executes sftpFs with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name (string): The name parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - afero.File: The resulting afero.File.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -360,16 +366,19 @@ func (s *sftpFs) Open(name string) (afero.File, error) {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes OpenFile operation.
+// Summary: Executes sftpFs with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name (string): The name parameter.
+//   - flag (int): The flag parameter.
+//   - _ (os.FileMode): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - afero.File: The resulting afero.File.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -395,16 +404,16 @@ func (s *sftpFs) OpenFile(name string, flag int, _ os.FileMode) (afero.File, err
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Remove operation.
+// Summary: Executes sftpFs with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name (string): The name parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -426,16 +435,16 @@ func (s *sftpFs) Remove(name string) error {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes RemoveAll operation.
+// Summary: Executes sftpFs with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - path (string): The path parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -459,16 +468,17 @@ func (s *sftpFs) RemoveAll(path string) error {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Rename operation.
+// Summary: Executes sftpFs with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - oldname: The parameter.
+//   - newname (string): The newname parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -491,16 +501,17 @@ func (s *sftpFs) Rename(oldname, newname string) error {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Stat operation.
+// Summary: Executes sftpFs with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name (string): The name parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - os.FileInfo: The resulting os.FileInfo.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -516,16 +527,16 @@ func (s *sftpFs) Stat(name string) (os.FileInfo, error) {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Name operation.
+// Summary: Executes sftpFs with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -548,16 +559,17 @@ func (s *sftpFs) Name() string {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Chmod operation.
+// Summary: Executes sftpFs with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name (string): The name parameter.
+//   - mode (os.FileMode): The mode parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -581,16 +593,18 @@ func (s *sftpFs) Chmod(name string, mode os.FileMode) error {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Chown operation.
+// Summary: Executes sftpFs with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name (string): The name parameter.
+//   - uid: The parameter.
+//   - gid (int): The gid parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -614,16 +628,18 @@ func (s *sftpFs) Chown(name string, uid, gid int) error {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Chtimes operation.
+// Summary: Executes sftpFs with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name (string): The name parameter.
+//   - atime (time.Time): The atime parameter.
+//   - mtime (time.Time): The mtime parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -647,16 +663,16 @@ type sftpFile struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Close operation.
+// Summary: Executes sftpFile with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -679,16 +695,17 @@ func (f *sftpFile) Close() error {
 // Side Effects:
 //   - None.
 //
-// Summary: Retrieves Read operation.
+// Summary: Executes sftpFile with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - p ([]byte): The p parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - int: The resulting int.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -712,16 +729,18 @@ func (f *sftpFile) Read(p []byte) (n int, err error) {
 // Side Effects:
 //   - None.
 //
-// Summary: Retrieves ReadAt operation.
+// Summary: Executes sftpFile with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - p ([]byte): The p parameter.
+//   - off (int64): The off parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - int: The resulting int.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -745,16 +764,18 @@ func (f *sftpFile) ReadAt(p []byte, off int64) (n int, err error) {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Seek operation.
+// Summary: Executes sftpFile with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - offset (int64): The offset parameter.
+//   - whence (int): The whence parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - int64: The resulting int64.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -777,16 +798,17 @@ func (f *sftpFile) Seek(offset int64, whence int) (int64, error) {
 // Side Effects:
 //   - None.
 //
-// Summary: Updates Write operation.
+// Summary: Executes sftpFile with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - p ([]byte): The p parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - int: The resulting int.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -810,16 +832,18 @@ func (f *sftpFile) Write(p []byte) (n int, err error) {
 // Side Effects:
 //   - None.
 //
-// Summary: Updates WriteAt operation.
+// Summary: Executes sftpFile with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - p ([]byte): The p parameter.
+//   - off (int64): The off parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - int: The resulting int.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -835,16 +859,16 @@ func (f *sftpFile) WriteAt(p []byte, off int64) (n int, err error) {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Name operation.
+// Summary: Executes sftpFile with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -868,16 +892,17 @@ func (f *sftpFile) Name() string {
 // Side Effects:
 //   - None.
 //
-// Summary: Retrieves Readdir operation.
+// Summary: Executes sftpFile with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (int): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - []os.FileInfo: The resulting []os.FileInfo.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -900,16 +925,17 @@ func (f *sftpFile) Readdir(_ int) ([]os.FileInfo, error) {
 // Side Effects:
 //   - None.
 //
-// Summary: Retrieves Readdirnames operation.
+// Summary: Executes sftpFile with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - n (int): The n parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - []string: The resulting []string.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -937,16 +963,17 @@ func (f *sftpFile) Readdirnames(n int) ([]string, error) {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Stat operation.
+// Summary: Executes sftpFile with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - os.FileInfo: The resulting os.FileInfo.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -965,16 +992,16 @@ func (f *sftpFile) Stat() (os.FileInfo, error) {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Sync operation.
+// Summary: Executes sftpFile with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -996,16 +1023,16 @@ func (f *sftpFile) Sync() error {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Truncate operation.
+// Summary: Executes sftpFile with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - size (int64): The size parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -1028,16 +1055,17 @@ func (f *sftpFile) Truncate(size int64) error {
 // Side Effects:
 //   - None.
 //
-// Summary: Updates WriteString operation.
+// Summary: Executes sftpFile with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - s (string): The s parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - int: The resulting int.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

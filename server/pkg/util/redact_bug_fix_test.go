@@ -4,8 +4,8 @@
 package util
 
 import (
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestExtractIP_Hunter(t *testing.T) {
@@ -66,8 +66,8 @@ func TestRedactDSN_Hunter(t *testing.T) {
 
 func TestRedactJSON_Hunter(t *testing.T) {
 	tests := []struct {
-		name string
-		input string
+		name         string
+		input        string
 		wantRedacted bool
 	}{
 		{"simple", `{"token": "secret"}`, true},

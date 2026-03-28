@@ -56,16 +56,16 @@ type Upstream struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes CheckHealth operation.
+// Summary: Executes Upstream with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -93,16 +93,16 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 // Returns:
 //   - error: An error if the shutdown operation fails, or nil on success.
 //
-// Summary: Executes Shutdown operation.
+// Summary: Executes Upstream with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -128,16 +128,16 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // Returns:
 //   - upstream.Upstream: A new Upstream instance for WebSocket services.
 //
-// Summary: Initializes NewUpstream operation.
+// Summary: Initializes Upstream with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - poolManager (*pool.Manager): The poolManager parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

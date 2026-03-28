@@ -39,7 +39,6 @@ func (m *mockBypassTool) MCPTool() *mcp.Tool {
 	return t
 }
 
-
 func (m *mockBypassTool) IsStreaming() bool {
 	return false
 }
@@ -80,7 +79,7 @@ func TestServer_CallTool_ProfileBypass_Repro(t *testing.T) {
 	restrictedProfileID := "admin-profile"
 
 	serviceInfo := &tool.ServiceInfo{
-		Name: restrictedServiceID,
+		Name:   restrictedServiceID,
 		Config: configv1.UpstreamServiceConfig_builder{}.Build(),
 	}
 	tm.AddServiceInfo(restrictedServiceID, serviceInfo)
@@ -130,7 +129,7 @@ func TestServer_CallTool_ProfileBypass_Repro(t *testing.T) {
 	userCtx := auth.ContextWithProfileID(ctx, userProfileID)
 
 	execReq := &tool.ExecutionRequest{
-		ToolName: restrictedServiceID + "." + "restricted-tool",
+		ToolName:   restrictedServiceID + "." + "restricted-tool",
 		ToolInputs: []byte("{}"),
 	}
 

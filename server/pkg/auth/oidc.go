@@ -50,16 +50,18 @@ type OIDCProvider struct {
 // Side Effects:
 //   - None
 //
-// Summary: Initializes NewOIDCProvider operation.
+// Summary: Initializes OIDCProvider with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - config (OIDCConfig): The config parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *OIDCProvider: The resulting OIDCProvider.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -102,16 +104,17 @@ func NewOIDCProvider(ctx context.Context, config OIDCConfig) (*OIDCProvider, err
 // Side Effects:
 //   - None
 //
-// Summary: Executes HandleLogin operation.
+// Summary: Executes OIDCProvider with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - w (http.ResponseWriter): The w parameter.
+//   - r (*http.Request): The r parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -152,16 +155,17 @@ func (p *OIDCProvider) HandleLogin(w http.ResponseWriter, r *http.Request) {
 // Side Effects:
 //   - None
 //
-// Summary: Executes HandleCallback operation.
+// Summary: Executes OIDCProvider with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - w (http.ResponseWriter): The w parameter.
+//   - r (*http.Request): The r parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

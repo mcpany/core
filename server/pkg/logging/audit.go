@@ -38,16 +38,17 @@ type AuditHandler struct {
 // Side Effects:
 //   - None
 //
-// Summary: Initializes NewAuditHandler operation.
+// Summary: Initializes AuditHandler with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - next (slog.Handler): The next parameter.
+//   - config (*configv1.AuditConfig): The config parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -110,16 +111,17 @@ func (h *AuditHandler) initializeStore(config *configv1.AuditConfig) {
 // Side Effects:
 //   - None
 //
-// Summary: Executes Enabled operation.
+// Summary: Executes AuditHandler with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - level (slog.Level): The level parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -142,16 +144,17 @@ func (h *AuditHandler) Enabled(ctx context.Context, level slog.Level) bool {
 // Side Effects:
 //   - None
 //
-// Summary: Executes Handle operation.
+// Summary: Executes AuditHandler with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - r (slog.Record): The r parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -179,16 +182,16 @@ func (h *AuditHandler) Handle(ctx context.Context, r slog.Record) error {
 // Side Effects:
 //   - None
 //
-// Summary: Executes WithAttrs operation.
+// Summary: Executes AuditHandler with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - attrs ([]slog.Attr): The attrs parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -214,16 +217,16 @@ func (h *AuditHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 // Side Effects:
 //   - None
 //
-// Summary: Executes WithGroup operation.
+// Summary: Executes AuditHandler with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name (string): The name parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -250,16 +253,17 @@ func (h *AuditHandler) WithGroup(name string) slog.Handler {
 // Side Effects:
 //   - None
 //
-// Summary: Executes Export operation.
+// Summary: Executes AuditHandler with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - r (slog.Record): The r parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

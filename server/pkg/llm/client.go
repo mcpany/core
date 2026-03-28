@@ -86,16 +86,17 @@ type OpenAIClient struct {
 // Side Effects:
 //   - None
 //
-// Summary: Initializes NewOpenAIClient operation.
+// Summary: Initializes OpenAIClient with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - apiKey (string): The apiKey parameter.
+//   - baseURL (string): The baseURL parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -142,16 +143,18 @@ type openAIChatResponse struct {
 // Side Effects:
 //   - None
 //
-// Summary: Executes ChatCompletion operation.
+// Summary: Executes OpenAIClient with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - req (ChatRequest): The request payload.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *ChatResponse: The resulting ChatResponse.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

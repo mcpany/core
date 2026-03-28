@@ -37,16 +37,22 @@ import (
 // Side Effects:
 //   - None
 //
-// Summary: Executes InitiateOAuth operation.
+// Summary: Executes Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - userID: The parameter.
+//   - serviceID: The parameter.
+//   - credentialID: The parameter.
+//   - redirectURL (string): The redirectURL parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - string: The resulting string.
+//   - string: The resulting string.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -167,16 +173,21 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 // Side Effects:
 //   - None
 //
-// Summary: Executes HandleOAuthCallback operation.
+// Summary: Executes Manager with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - userID: The parameter.
+//   - serviceID: The parameter.
+//   - credentialID: The parameter.
+//   - code: The parameter.
+//   - redirectURL (string): The redirectURL parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

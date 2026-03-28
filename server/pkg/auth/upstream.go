@@ -64,16 +64,17 @@ type UpstreamAuthenticator interface {
 //   - An `UpstreamAuthenticator` implementation, or nil if no auth is configured.
 //   - An error if the configuration is invalid.
 //
-// Summary: Initializes NewUpstreamAuthenticator operation.
+// Summary: Initializes UpstreamAuthenticator with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - authConfig (*configv1.Authentication): The authConfig parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - UpstreamAuthenticator: The resulting UpstreamAuthenticator.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -158,16 +159,16 @@ type APIKeyAuth struct {
 // Returns:
 //   - nil on success, or an error if the secret cannot be resolved.
 //
-// Summary: Executes Authenticate operation.
+// Summary: Executes APIKeyAuth with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - req (*http.Request): The request payload.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -214,16 +215,16 @@ type BearerTokenAuth struct {
 // Returns:
 //   - nil on success, or an error if the secret cannot be resolved.
 //
-// Summary: Executes Authenticate operation.
+// Summary: Executes BearerTokenAuth with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - req (*http.Request): The request payload.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -256,16 +257,16 @@ type BasicAuth struct {
 // Returns:
 //   - nil on success, or an error if the secret cannot be resolved.
 //
-// Summary: Executes Authenticate operation.
+// Summary: Executes BasicAuth with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - req (*http.Request): The request payload.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -324,16 +325,16 @@ func (o *OAuth2Auth) getTokenURL(ctx context.Context) (string, error) {
 // Returns:
 //   - nil on success, or an error if the token cannot be obtained.
 //
-// Summary: Executes Authenticate operation.
+// Summary: Executes OAuth2Auth with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - req (*http.Request): The request payload.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

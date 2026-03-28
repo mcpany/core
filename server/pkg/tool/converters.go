@@ -27,16 +27,17 @@ import (
 //   - *pb.Tool: The corresponding protobuf tool definition.
 //   - error: An error if conversion fails (e.g. invalid schema).
 //
-// Summary: Executes ConvertMCPToolToProto operation.
+// Summary: Executes ConvertMCPToolToProto with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - tool (*mcp.Tool): The tool parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *pb.Tool: The resulting pb.Tool.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -130,16 +131,17 @@ func convertJSONSchemaToStruct(schema any) (*structpb.Struct, error) {
 //   - *structpb.Struct: A struct representing the properties JSON schema.
 //   - error: An error if conversion fails.
 //
-// Summary: Executes ConvertMcpFieldsToInputSchemaProperties operation.
+// Summary: Executes ConvertMcpFieldsToInputSchemaProperties with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - fields ([]*protobufparser.McpField): The fields parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *structpb.Struct: The resulting structpb.Struct.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -178,16 +180,19 @@ func ConvertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) 
 //   - *pb.Tool: The protobuf tool definition.
 //   - error: An error if conversion fails.
 //
-// Summary: Executes ConvertToolDefinitionToProto operation.
+// Summary: Executes ConvertToolDefinitionToProto with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - toolDef (*configv1.ToolDefinition): The toolDef parameter.
+//   - inputSchema: The parameter.
+//   - outputSchema (*structpb.Struct): The outputSchema parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *pb.Tool: The resulting pb.Tool.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -242,16 +247,18 @@ func ConvertToolDefinitionToProto(toolDef *configv1.ToolDefinition, inputSchema,
 //   - *jsonschema.Schema: The generated JSON schema.
 //   - error: An error if the scalar type is unsupported.
 //
-// Summary: Retrieves GetJSONSchemaForScalarType operation.
+// Summary: Retrieves JSONSchemaForScalarType with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - scalarType: The parameter.
+//   - description (string): The description parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *jsonschema.Schema: The resulting jsonschema.Schema.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -290,16 +297,17 @@ func GetJSONSchemaForScalarType(scalarType, description string) (*jsonschema.Sch
 //   - *mcp.Tool: The corresponding MCP tool definition.
 //   - error: An error if conversion fails.
 //
-// Summary: Executes ConvertProtoToMCPTool operation.
+// Summary: Executes ConvertProtoToMCPTool with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - pbTool (*pb.Tool): The pbTool parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *mcp.Tool: The resulting mcp.Tool.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

@@ -25,16 +25,17 @@ import (
 // Side Effects:
 //   - Writes formatted text to the provided writer.
 //
-// Summary: Executes PrintResults operation.
+// Summary: Executes PrintResults with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - w (io.Writer): The w parameter.
+//   - results ([]CheckResult): The results parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

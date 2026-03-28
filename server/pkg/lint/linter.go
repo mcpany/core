@@ -40,16 +40,16 @@ const (
 // Returns:
 //   - string: The string representation of the severity.
 //
-// Summary: Executes String operation.
+// Summary: Executes Severity with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -89,16 +89,16 @@ type Result struct {
 // Returns:
 //   - string: A formatted string containing severity, service, path, and message.
 //
-// Summary: Executes String operation.
+// Summary: Executes Result with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -131,16 +131,16 @@ type Linter struct {
 // Returns:
 //   - *Linter: A new Linter instance initialized with the provided configuration.
 //
-// Summary: Initializes NewLinter operation.
+// Summary: Initializes Linter with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - cfg (*configv1.McpAnyServerConfig): The cfg parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -160,16 +160,17 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 //   - []Result: A list of linting findings.
 //   - error: An error if the linting process encounters a fatal issue (currently always nil).
 //
-// Summary: Executes Run operation.
+// Summary: Executes Linter with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - []Result: The resulting []Result.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

@@ -31,16 +31,16 @@ var (
 // Side Effects:
 //   - Updates the global log level atomic variable.
 //
-// Summary: Updates SetLevel operation.
+// Summary: Updates Level with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - level (slog.Level): The level parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -62,16 +62,16 @@ func SetLevel(level slog.Level) {
 // Side Effects:
 //   - None
 //
-// Summary: Executes ForTestsOnlyResetLogger operation.
+// Summary: Executes ForTestsOnlyResetLogger with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -99,16 +99,19 @@ func ForTestsOnlyResetLogger() {
 //   - Sets the global logger instance.
 //   - May open a file for writing.
 //
-// Summary: Executes Init operation.
+// Summary: Executes Init with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - level (slog.Level): The level parameter.
+//   - output (io.Writer): The output parameter.
+//   - logFilePath (string): The logFilePath parameter.
+//   - format (...string): The format parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -189,16 +192,16 @@ func Init(level slog.Level, output io.Writer, logFilePath string, format ...stri
 // Side Effects:
 //   - May initialize the default logger if not already set.
 //
-// Summary: Retrieves GetLogger operation.
+// Summary: Retrieves Logger with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -232,16 +235,16 @@ func GetLogger() *slog.Logger {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes ToSlogLevel operation.
+// Summary: Executes ToSlogLevel with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - level (configv1.GlobalSettings_LogLevel): The level parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

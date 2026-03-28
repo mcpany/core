@@ -53,16 +53,16 @@ var (
 // Side Effects:
 //   - Updates a global variable protected by a mutex.
 //
-// Summary: Updates SetGlobalAlertConfig operation.
+// Summary: Updates GlobalAlertConfig with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - cfg (*configv1.AlertConfig): The cfg parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -102,16 +102,16 @@ type HTTPServiceWithHealthCheck interface {
 // Side Effects:
 //   - Registers metrics for the health check.
 //
-// Summary: Initializes NewChecker operation.
+// Summary: Initializes Checker with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - uc (*configv1.UpstreamServiceConfig): The uc parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

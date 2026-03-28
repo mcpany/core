@@ -40,16 +40,16 @@ type Upstream struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Initializes NewUpstream operation.
+// Summary: Initializes Upstream with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -83,16 +83,16 @@ func defaultClientFactory(config *configv1.VectorUpstreamService) (Client, error
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Shutdown operation.
+// Summary: Executes Upstream with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -250,16 +250,18 @@ type vectorCallable struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Call operation.
+// Summary: Executes vectorCallable with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - req (*tool.ExecutionRequest): The request payload.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - any: The resulting any.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

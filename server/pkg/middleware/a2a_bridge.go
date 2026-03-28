@@ -35,16 +35,16 @@ type A2ABridgeMiddleware struct {
 // Side Effects:
 //   - Allocates memory for the middleware struct.
 //
-// Summary: Initializes NewA2ABridgeMiddleware operation.
+// Summary: Initializes A2ABridgeMiddleware with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - contextManager (*RecursiveContextManager): The contextManager parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -72,16 +72,20 @@ func NewA2ABridgeMiddleware(contextManager *RecursiveContextManager) *A2ABridgeM
 // Side Effects:
 //   - May create a new session in the RecursiveContextManager if intercepted.
 //
-// Summary: Executes Execute operation.
+// Summary: Executes A2ABridgeMiddleware with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - method (string): The method parameter.
+//   - req (mcp.Request): The request payload.
+//   - next (mcp.MethodHandler): The next parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - mcp.Result: The resulting mcp.Result.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

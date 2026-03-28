@@ -2,8 +2,8 @@ package interop_test
 
 import (
 	"context"
-	"testing"
 	"github.com/mcpany/core/src/interop"
+	"testing"
 )
 
 // TestInteropIntegration verifies the interop hub using the actual implementations

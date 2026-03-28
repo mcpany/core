@@ -39,16 +39,16 @@ type Generator struct {
 // Side Effects:
 //   - None
 //
-// Summary: Initializes NewGenerator operation.
+// Summary: Initializes Generator with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -73,16 +73,17 @@ func NewGenerator() *Generator {
 // Side Effects:
 //   - None
 //
-// Summary: Executes Generate operation.
+// Summary: Executes Generator with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - []byte: The resulting []byte.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

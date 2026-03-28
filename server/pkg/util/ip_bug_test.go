@@ -13,11 +13,11 @@ func TestIsPrivateIP_IPv4Compatible(t *testing.T) {
 		ip       string
 		expected bool
 	}{
-		{"::127.0.0.1", true},   // IPv4-compatible Loopback
-		{"::169.254.1.1", true}, // IPv4-compatible Link-local
-		{"::192.168.1.1", true}, // IPv4-compatible Private
-		{"::10.0.0.1", true},    // IPv4-compatible Private
-		{"::1.1.1.1", false},    // IPv4-compatible Public
+		{"::127.0.0.1", true},      // IPv4-compatible Loopback
+		{"::169.254.1.1", true},    // IPv4-compatible Link-local
+		{"::192.168.1.1", true},    // IPv4-compatible Private
+		{"::10.0.0.1", true},       // IPv4-compatible Private
+		{"::1.1.1.1", false},       // IPv4-compatible Public
 		{"::1:192.168.1.1", false}, // Not compatible (has non-zero prefix)
 	}
 

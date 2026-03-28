@@ -29,16 +29,16 @@ import (
 // Side Effects:
 //   - Modifies the context to include authenticated user info.
 //
-// Summary: Executes AuthMiddleware operation.
+// Summary: Executes AuthMiddleware with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - authManager (*auth.Manager): The authManager parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

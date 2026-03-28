@@ -35,16 +35,17 @@ type BundleLocalTransport struct {
 // Side Effects:
 //   - Starts a local process.
 //
-// Summary: Executes Connect operation.
+// Summary: Executes BundleLocalTransport with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - mcp.Connection: The resulting mcp.Connection.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

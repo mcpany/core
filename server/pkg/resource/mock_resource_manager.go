@@ -45,16 +45,16 @@ type MockManagerInterfaceMockRecorder struct {
 // Side Effects:
 //   - None
 //
-// Summary: Initializes NewMockManagerInterface operation.
+// Summary: Initializes MockManagerInterface with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctrl (*gomock.Controller): The ctrl parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -78,16 +78,16 @@ func NewMockManagerInterface(ctrl *gomock.Controller) *MockManagerInterface {
 // Side Effects:
 //   - None
 //
-// Summary: Executes EXPECT operation.
+// Summary: Executes MockManagerInterface with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -109,16 +109,16 @@ func (m *MockManagerInterface) EXPECT() *MockManagerInterfaceMockRecorder {
 // Side Effects:
 //   - None
 //
-// Summary: Executes AddResource operation.
+// Summary: Executes MockManagerInterface with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - resource (Resource): The resource parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -141,16 +141,16 @@ func (m *MockManagerInterface) AddResource(resource Resource) {
 // Side Effects:
 //   - None
 //
-// Summary: Executes AddResource operation.
+// Summary: Executes MockManagerInterfaceMockRecorder with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - resource (any): The resource parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -173,16 +173,16 @@ func (mr *MockManagerInterfaceMockRecorder) AddResource(resource any) *gomock.Ca
 // Side Effects:
 //   - None
 //
-// Summary: Executes Clear operation.
+// Summary: Executes MockManagerInterface with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -205,16 +205,16 @@ func (m *MockManagerInterface) Clear() {
 // Side Effects:
 //   - None
 //
-// Summary: Executes Clear operation.
+// Summary: Executes MockManagerInterfaceMockRecorder with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -237,16 +237,16 @@ func (mr *MockManagerInterfaceMockRecorder) Clear() *gomock.Call {
 // Side Effects:
 //   - None
 //
-// Summary: Executes ClearResourcesForService operation.
+// Summary: Executes MockManagerInterface with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - serviceID (string): The serviceID parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -269,16 +269,16 @@ func (m *MockManagerInterface) ClearResourcesForService(serviceID string) {
 // Side Effects:
 //   - None
 //
-// Summary: Executes ClearResourcesForService operation.
+// Summary: Executes MockManagerInterfaceMockRecorder with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - serviceID (any): The serviceID parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -302,16 +302,17 @@ func (mr *MockManagerInterfaceMockRecorder) ClearResourcesForService(serviceID a
 // Side Effects:
 //   - None
 //
-// Summary: Retrieves GetResource operation.
+// Summary: Retrieves MockManagerInterface with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - uri (string): The uri parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Resource: The resulting Resource.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -337,16 +338,16 @@ func (m *MockManagerInterface) GetResource(uri string) (Resource, bool) {
 // Side Effects:
 //   - None
 //
-// Summary: Retrieves GetResource operation.
+// Summary: Retrieves MockManagerInterfaceMockRecorder with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - uri (any): The uri parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -369,16 +370,16 @@ func (mr *MockManagerInterfaceMockRecorder) GetResource(uri any) *gomock.Call {
 // Side Effects:
 //   - None
 //
-// Summary: Executes ListResources operation.
+// Summary: Executes MockManagerInterface with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -403,16 +404,16 @@ func (m *MockManagerInterface) ListResources() []Resource {
 // Side Effects:
 //   - None
 //
-// Summary: Executes ListResources operation.
+// Summary: Executes MockManagerInterfaceMockRecorder with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -435,16 +436,16 @@ func (mr *MockManagerInterfaceMockRecorder) ListResources() *gomock.Call {
 // Side Effects:
 //   - None
 //
-// Summary: Executes OnListChanged operation.
+// Summary: Executes MockManagerInterface with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - arg0 (func(): The arg0 parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -467,16 +468,16 @@ func (m *MockManagerInterface) OnListChanged(arg0 func()) {
 // Side Effects:
 //   - None
 //
-// Summary: Executes OnListChanged operation.
+// Summary: Executes MockManagerInterfaceMockRecorder with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - arg0 (any): The arg0 parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -499,16 +500,16 @@ func (mr *MockManagerInterfaceMockRecorder) OnListChanged(arg0 any) *gomock.Call
 // Side Effects:
 //   - None
 //
-// Summary: Executes RemoveResource operation.
+// Summary: Executes MockManagerInterface with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - uri (string): The uri parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -531,16 +532,16 @@ func (m *MockManagerInterface) RemoveResource(uri string) {
 // Side Effects:
 //   - None
 //
-// Summary: Executes RemoveResource operation.
+// Summary: Executes MockManagerInterfaceMockRecorder with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - uri (any): The uri parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

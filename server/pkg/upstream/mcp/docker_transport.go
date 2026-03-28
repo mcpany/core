@@ -68,16 +68,17 @@ type DockerTransport struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Connect operation.
+// Summary: Executes DockerTransport with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - mcp.Connection: The resulting mcp.Connection.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -235,16 +236,17 @@ type dockerConn struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Retrieves Read operation.
+// Summary: Executes dockerConn with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - jsonrpc.Message: The resulting jsonrpc.Message.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -342,16 +344,17 @@ func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 // Side Effects:
 //   - None.
 //
-// Summary: Updates Write operation.
+// Summary: Executes dockerConn with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): The _ parameter.
+//   - msg (jsonrpc.Message): The msg parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -405,16 +408,16 @@ func (c *dockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Close operation.
+// Summary: Executes dockerConn with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -430,16 +433,16 @@ func (c *dockerConn) Close() error {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes SessionID operation.
+// Summary: Executes dockerConn with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -466,16 +469,16 @@ type dockerReadWriteCloser struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Close operation.
+// Summary: Executes dockerReadWriteCloser with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -523,16 +526,17 @@ type slogWriter struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Updates Write operation.
+// Summary: Executes slogWriter with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - p ([]byte): The p parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - int: The resulting int.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -566,16 +570,17 @@ type tailBuffer struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Updates Write operation.
+// Summary: Executes tailBuffer with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - p ([]byte): The p parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - int: The resulting int.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -599,16 +604,16 @@ func (b *tailBuffer) Write(p []byte) (n int, err error) {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes String operation.
+// Summary: Executes tailBuffer with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

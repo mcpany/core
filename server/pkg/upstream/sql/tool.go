@@ -51,16 +51,20 @@ type Tool struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Initializes NewTool operation.
+// Summary: Initializes Tool with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - t (*v1.Tool): The t parameter.
+//   - db (*sql.DB): The db parameter.
+//   - callDef (*configv1.SqlCallDefinition): The callDef parameter.
+//   - policies ([]*configv1.CallPolicy): The policies parameter.
+//   - callID (string): The callID parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -87,16 +91,16 @@ func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, polici
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Tool operation.
+// Summary: Executes Tool with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -112,16 +116,16 @@ func (t *Tool) Tool() *v1.Tool {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes MCPTool operation.
+// Summary: Executes Tool with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -144,16 +148,16 @@ func (t *Tool) MCPTool() *mcp.Tool {
 // Side Effects:
 //   - None.
 //
-// Summary: Retrieves GetCacheConfig operation.
+// Summary: Retrieves Tool with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -180,16 +184,16 @@ func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Execute operation.
+// Summary: Executes Tool with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -215,6 +219,12 @@ func (t *Tool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None.
 func (t *Tool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {

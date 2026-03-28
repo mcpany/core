@@ -52,16 +52,16 @@ var _ resource.Resource = &SkillResource{}
 // Side Effects:
 //   - None.
 //
-// Summary: Initializes NewSkillResource operation.
+// Summary: Initializes SkillResource with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - s (*skill.Skill): The s parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -85,16 +85,17 @@ func NewSkillResource(s *skill.Skill) *SkillResource {
 // Side Effects:
 //   - None.
 //
-// Summary: Initializes NewSkillAssetResource operation.
+// Summary: Initializes SkillAssetResource with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - s (*skill.Skill): The s parameter.
+//   - assetPath (string): The assetPath parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -113,16 +114,16 @@ func NewSkillAssetResource(s *skill.Skill, assetPath string) *SkillResource {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes URI operation.
+// Summary: Executes SkillResource with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -141,16 +142,16 @@ func (r *SkillResource) URI() string {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Name operation.
+// Summary: Executes SkillResource with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -169,16 +170,16 @@ func (r *SkillResource) Name() string {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Service operation.
+// Summary: Executes SkillResource with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -194,16 +195,16 @@ func (r *SkillResource) Service() string {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Resource operation.
+// Summary: Executes SkillResource with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -289,16 +290,17 @@ func (r *SkillResource) resolvePath() (string, error) {
 //   - Reads file content from disk.
 //   - Updates internal cache.
 //
-// Summary: Retrieves Read operation.
+// Summary: Executes SkillResource with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *mcp.ReadResourceResult: The resulting mcp.ReadResourceResult.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -398,16 +400,16 @@ func isTextMime(mimeType string) bool {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Subscribe operation.
+// Summary: Executes SkillResource with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -431,16 +433,17 @@ func (r *SkillResource) Subscribe(_ context.Context) error {
 // Side Effects:
 //   - Registers resources with the manager.
 //
-// Summary: Executes RegisterSkillResources operation.
+// Summary: Executes RegisterSkillResources with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - rm (resource.ManagerInterface): The rm parameter.
+//   - sm (*skill.Manager): The sm parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

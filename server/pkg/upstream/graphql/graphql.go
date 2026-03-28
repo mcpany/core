@@ -101,16 +101,16 @@ type Upstream struct{}
 // Side Effects:
 //   - None.
 //
-// Summary: Initializes NewGraphQLUpstream operation.
+// Summary: Initializes GraphQLUpstream with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -132,16 +132,16 @@ func NewGraphQLUpstream() upstream.Upstream {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Shutdown operation.
+// Summary: Executes Upstream with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -252,16 +252,18 @@ type Callable struct {
 // Side Effects:
 //   - None.
 //
-// Summary: Executes Call operation.
+// Summary: Executes Callable with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The execution context.
+//   - req (*tool.ExecutionRequest): The request payload.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - any: The resulting any.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

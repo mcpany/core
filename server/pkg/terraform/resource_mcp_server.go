@@ -28,16 +28,16 @@ type ResourceMCPServer struct {
 // Side Effects:
 //   - None
 //
-// Summary: Executes Schema operation.
+// Summary: Executes Schema with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -77,16 +77,16 @@ func Schema() map[string]interface{} {
 // Side Effects:
 //   - None
 //
-// Summary: Initializes Create operation.
+// Summary: Creates operation with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (*ResourceMCPServer): The _ parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -110,16 +110,17 @@ func Create(_ *ResourceMCPServer) error {
 // Side Effects:
 //   - None
 //
-// Summary: Retrieves Read operation.
+// Summary: Executes Read with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name (string): The name parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *ResourceMCPServer: The resulting ResourceMCPServer.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.

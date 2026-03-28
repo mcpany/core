@@ -14,11 +14,11 @@ import (
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/storage/memory"
-	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/stretchr/testify/require"
+	"github.com/mcpany/core/server/pkg/storage"
+	"github.com/mcpany/core/server/pkg/storage/memory"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -236,22 +236,22 @@ func TestWithRetry(t *testing.T) {
 
 func TestClearData(t *testing.T) {
 	tests := []struct {
-		name       string
-		setupStore func(store *mockStore)
-		wantErr    bool
+		name        string
+		setupStore  func(store *mockStore)
+		wantErr     bool
 		errContains string
 	}{
 		{
-			name: "Success empty database",
+			name:       "Success empty database",
 			setupStore: func(store *mockStore) {},
-			wantErr: false,
+			wantErr:    false,
 		},
 		{
 			name: "Failed to list services",
 			setupStore: func(store *mockStore) {
 				store.ListServicesErr = errors.New("db error")
 			},
-			wantErr: true,
+			wantErr:     true,
 			errContains: "failed to list services",
 		},
 		{
@@ -338,133 +338,133 @@ func TestSeedData(t *testing.T) {
 	validTpl, _ := protojson.Marshal(configv1.ServiceTemplate_builder{Id: proto.String("t1")}.Build())
 
 	tests := []struct {
-		name       string
-		req        SeedRequest
-		setupStore func(store *mockStore)
-		wantErr    bool
+		name        string
+		req         SeedRequest
+		setupStore  func(store *mockStore)
+		wantErr     bool
 		errContains string
 	}{
 		{
-			name: "Success empty request",
-			req: SeedRequest{},
+			name:       "Success empty request",
+			req:        SeedRequest{},
 			setupStore: func(store *mockStore) {},
-			wantErr: false,
+			wantErr:    false,
 		},
 		{
 			name: "Success all entities",
 			req: SeedRequest{
-				ServicesRaw: []json.RawMessage{validSvc},
+				ServicesRaw:    []json.RawMessage{validSvc},
 				CredentialsRaw: []json.RawMessage{validCred},
-				SecretsRaw: []json.RawMessage{validSec},
-				ProfilesRaw: []json.RawMessage{validProf},
-				UsersRaw: []json.RawMessage{validUser},
-				TemplatesRaw: []json.RawMessage{validTpl},
+				SecretsRaw:     []json.RawMessage{validSec},
+				ProfilesRaw:    []json.RawMessage{validProf},
+				UsersRaw:       []json.RawMessage{validUser},
+				TemplatesRaw:   []json.RawMessage{validTpl},
 			},
 			setupStore: func(store *mockStore) {},
-			wantErr: false,
+			wantErr:    false,
 		},
 		{
 			name: "Recover from lock when seeding services",
-			req: SeedRequest{ServicesRaw: []json.RawMessage{validSvc}},
+			req:  SeedRequest{ServicesRaw: []json.RawMessage{validSvc}},
 			setupStore: func(store *mockStore) {
 				store.SaveServiceErr = errors.New("database is locked")
 			},
 			wantErr: false,
 		},
 		{
-			name: "Invalid JSON for service",
-			req: SeedRequest{ServicesRaw: []json.RawMessage{[]byte(`{bad json}`)}},
-			setupStore: func(store *mockStore) {},
-			wantErr: true,
+			name:        "Invalid JSON for service",
+			req:         SeedRequest{ServicesRaw: []json.RawMessage{[]byte(`{bad json}`)}},
+			setupStore:  func(store *mockStore) {},
+			wantErr:     true,
 			errContains: "invalid json",
 		},
 		{
 			name: "Store save failure for service",
-			req: SeedRequest{ServicesRaw: []json.RawMessage{validSvc}},
+			req:  SeedRequest{ServicesRaw: []json.RawMessage{validSvc}},
 			setupStore: func(store *mockStore) {
 				store.SaveServiceErr = errors.New("hard error 1")
 			},
-			wantErr: true,
+			wantErr:     true,
 			errContains: "failed to save service s1",
 		},
 		{
-			name: "Invalid JSON for credential",
-			req: SeedRequest{CredentialsRaw: []json.RawMessage{[]byte(`{bad json}`)}},
-			setupStore: func(store *mockStore) {},
-			wantErr: true,
+			name:        "Invalid JSON for credential",
+			req:         SeedRequest{CredentialsRaw: []json.RawMessage{[]byte(`{bad json}`)}},
+			setupStore:  func(store *mockStore) {},
+			wantErr:     true,
 			errContains: "invalid json",
 		},
 		{
 			name: "Store save failure for credential",
-			req: SeedRequest{CredentialsRaw: []json.RawMessage{validCred}},
+			req:  SeedRequest{CredentialsRaw: []json.RawMessage{validCred}},
 			setupStore: func(store *mockStore) {
 				store.SaveCredentialErr = errors.New("hard error 2")
 			},
-			wantErr: true,
+			wantErr:     true,
 			errContains: "failed to save credential",
 		},
 		{
-			name: "Invalid JSON for secret",
-			req: SeedRequest{SecretsRaw: []json.RawMessage{[]byte(`{bad json}`)}},
-			setupStore: func(store *mockStore) {},
-			wantErr: true,
+			name:        "Invalid JSON for secret",
+			req:         SeedRequest{SecretsRaw: []json.RawMessage{[]byte(`{bad json}`)}},
+			setupStore:  func(store *mockStore) {},
+			wantErr:     true,
 			errContains: "invalid json",
 		},
 		{
 			name: "Store save failure for secret",
-			req: SeedRequest{SecretsRaw: []json.RawMessage{validSec}},
+			req:  SeedRequest{SecretsRaw: []json.RawMessage{validSec}},
 			setupStore: func(store *mockStore) {
 				store.SaveSecretErr = errors.New("hard error 3")
 			},
-			wantErr: true,
+			wantErr:     true,
 			errContains: "failed to save secret",
 		},
 		{
-			name: "Invalid JSON for profile",
-			req: SeedRequest{ProfilesRaw: []json.RawMessage{[]byte(`{bad json}`)}},
-			setupStore: func(store *mockStore) {},
-			wantErr: true,
+			name:        "Invalid JSON for profile",
+			req:         SeedRequest{ProfilesRaw: []json.RawMessage{[]byte(`{bad json}`)}},
+			setupStore:  func(store *mockStore) {},
+			wantErr:     true,
 			errContains: "invalid json",
 		},
 		{
 			name: "Store save failure for profile",
-			req: SeedRequest{ProfilesRaw: []json.RawMessage{validProf}},
+			req:  SeedRequest{ProfilesRaw: []json.RawMessage{validProf}},
 			setupStore: func(store *mockStore) {
 				store.SaveProfileErr = errors.New("hard error 4")
 			},
-			wantErr: true,
+			wantErr:     true,
 			errContains: "failed to save profile",
 		},
 		{
-			name: "Invalid JSON for user",
-			req: SeedRequest{UsersRaw: []json.RawMessage{[]byte(`{bad json}`)}},
-			setupStore: func(store *mockStore) {},
-			wantErr: true,
+			name:        "Invalid JSON for user",
+			req:         SeedRequest{UsersRaw: []json.RawMessage{[]byte(`{bad json}`)}},
+			setupStore:  func(store *mockStore) {},
+			wantErr:     true,
 			errContains: "invalid json",
 		},
 		{
 			name: "Store save failure for user",
-			req: SeedRequest{UsersRaw: []json.RawMessage{validUser}},
+			req:  SeedRequest{UsersRaw: []json.RawMessage{validUser}},
 			setupStore: func(store *mockStore) {
 				store.CreateUserErr = errors.New("hard error 5")
 			},
-			wantErr: true,
+			wantErr:     true,
 			errContains: "failed to create user",
 		},
 		{
-			name: "Invalid JSON for template",
-			req: SeedRequest{TemplatesRaw: []json.RawMessage{[]byte(`{bad json}`)}},
-			setupStore: func(store *mockStore) {},
-			wantErr: true,
+			name:        "Invalid JSON for template",
+			req:         SeedRequest{TemplatesRaw: []json.RawMessage{[]byte(`{bad json}`)}},
+			setupStore:  func(store *mockStore) {},
+			wantErr:     true,
 			errContains: "invalid json",
 		},
 		{
 			name: "Store save failure for template",
-			req: SeedRequest{TemplatesRaw: []json.RawMessage{validTpl}},
+			req:  SeedRequest{TemplatesRaw: []json.RawMessage{validTpl}},
 			setupStore: func(store *mockStore) {
 				store.SaveServiceTemplateErr = errors.New("hard error 6")
 			},
-			wantErr: true,
+			wantErr:     true,
 			errContains: "failed to save service template",
 		},
 	}

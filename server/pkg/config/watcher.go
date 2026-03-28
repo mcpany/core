@@ -47,16 +47,17 @@ type Watcher struct {
 // Side Effects:
 //   - None
 //
-// Summary: Initializes NewWatcher operation.
+// Summary: Initializes Watcher with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *Watcher: The resulting Watcher.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
@@ -206,16 +207,16 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 // Parameters:
 //   - None.
 //
-// Summary: Executes Close operation.
+// Summary: Executes Watcher with specified constraints.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None
 //
 // Returns:
-//   - TODO: Document returns.
+//   - {: The resulting {.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None
 //
 // Side Effects:
 //   - None.
