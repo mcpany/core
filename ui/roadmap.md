@@ -759,3 +759,8 @@
 - [ ] **[P0] Programmatic SDK Monitor**: Real-time visualization of SDK-driven agent interactions and Zero-Trust gate status. (Added: 2026-03-25)
 - [ ] **[P1] Session Sovereignty Dashboard**: UI for monitoring hardware-bound SQLite session state and attestation status. (Added: 2026-03-25)
 - [ ] **[P0] Pre-Flight Manifest Reviewer**: Visual workspace for reviewing and approving cryptographically signed mission-root manifests for non-interactive execution. (Added: 2026-03-25)
+
+#### Upcoming (2026-07-09 Evolution)
+- [ ] **[P0] Mission Notary Auditor**: (2026-07-09) Visual workspace for reviewing the hardware-attested, hash-chained NRIL audit logs.
+- [ ] **[P1] Workspace Contention Visualizer**: (2026-07-09) Real-time monitor for LFWO transactional overlays and simultaneous workspace mutations.
+- [ ] **[P0] Attention Sovereignty Heatmap**: (2026-07-09) Dashboard for visualizing mission-root anchor strength and ASE-blocked noise injections.

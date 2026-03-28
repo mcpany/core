@@ -1723,3 +1723,14 @@
 ### Priority Shifts
 - **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
 - **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.
+
+## Evolution: [2026-07-09] Updates
+
+### Proposed Additions
+- **Non-Repudiable Intent Logger (NRIL)**: (P0) Authoritative "Mission Notary" service utilizing hash-chained audit logs to cryptographically bind tool calls to authorized intents.
+- **Lock-Free Workspace Overlay (LFWO)**: (P1) Ephemeral filesystem overlay service to resolve "Git-Lock Contention" in parallel horizontal Agent Teams.
+- **Attention-Sovereignty Enforcer (ASE)**: (P0) Advanced cognitive security middleware prioritizing mission-root anchors at the attention-head level.
+
+### Priority Shifts
+- **Autonomous Task Reaper (ATR)**: (Promoted to P0) Critical for neutralizing "Identity Squatting" and reclaiming mesh resources in high-density swarms.
+- **Attention-Density Firewall (ADF)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **ASE** integration.
