@@ -763,3 +763,8 @@
 #### Upcoming (2026-03-28 Evolution)
 - [ ] **[P0] Injection Vulnerability Alert Center**: (2026-03-28) UI for reviewing agent-generated code flagged by the Injection-Aware Auditor.
 - [ ] **[P1] Plugin Market Ingestion Dashboard**: (2026-03-28) Workspace for managing and profiling tools imported from third-party marketplaces.
+
+#### Upcoming (2026-07-09 Evolution)
+- [ ] **[P0] NHI Lifecycle Dashboard**: (2026-07-09) Visual tracker for agent identity rotation, hardware binding, and revocation events.
+- [ ] **[P0] Atomic Sanitization Monitor**: (2026-07-09) Real-time visualization of fragment-level BSH validation and "Ghost Fragment" detection.
+- [ ] **[P1] Binary Lineage Explorer**: (2026-07-09) Interactive debugger for visualizing the reasoning lineage embedded in binary state transfers.
