@@ -201,6 +201,12 @@
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
 
+#### Upcoming (2026-07-09 Evolution)
+- [ ] **[P0] Swarm Kill-Switch Controller**: (2026-07-09) High-priority UI component for manual and automated ASKS-driven capability revocation.
+- [ ] **[P0] Reputation Drift Visualizer**: (2026-07-09) Heatmap showing real-time reputation score changes and SHAQ re-attestation events.
+- [ ] **[P0] Mission Continuity Manager**: (2026-07-09) UI for managing Mission-Root v2.0 session resumption and state snapshots.
+- [ ] **[P0] Priority Interrupt Monitor**: (2026-07-09) Real-time tracker for IAMS-prioritized coordination signals.
+
 #### Upcoming (2026-07-08 Evolution)
 - [ ] **[P0] Mesh Identity Manager**: (2026-07-08) UI for reviewing and approving hardware-attested, mesh-resident agent identities.
 - [ ] **[P0] Service Mesh Topology Monitor**: (2026-07-08) Real-time visualization of authenticated inter-agent communication channels and mesh health.

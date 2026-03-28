@@ -8,6 +8,18 @@
 - **Metadata Sanitization Gateway (MSG)**: (P0) Real-time semantic sanitizer for agent-ingested external metadata (GitHub, Slack) to neutralize instruction injection.
 - **Post-Quantum Mesh Handshake (PQMH) Provider**: (P1) Security service implementing NIST-standard post-quantum resistant algorithms (FIPS 203/204/205) for long-term mesh integrity.
 
+## Evolution: [2026-07-09] Updates
+
+### Proposed Additions
+- **Self-Healing Attestation Quorum (SHAQ)**: (P0) Distributed security service enabling swarms to automatically re-verify mission-root integrity and reputation if "Shadow-Context" or intent drift is detected.
+- **Autonomous Swarm Kill-Switch (ASKS)**: (P0) Authoritative provider for immediate, hardware-attested mesh-wide capability revocation in response to anomaly triggers.
+- **Mission-Root Continuity Hub (v2.0)**: (P0) Authoritative resumption service supporting the OpenClaw v2.0 protocol for hardware-attested state persistence across cold-boots.
+- **Interrupt-Aware Mailbox Sharding (IAMS)**: (P0) High-priority coordination extension allowing urgent mission-root instructions to bypass standard coordination queues.
+
+### Priority Shifts
+- **Zero-Trust Agent Identity Hub**: (Re-affirmed P0) Now elevated with mandatory support for **SHAQ-compliant** reputation scoring.
+- **Autonomous Service Mesh Gateway**: (Re-affirmed P0) Designated as the primary enforcement point for the **ASKS** kill-switch protocol.
+
 ### Priority Shifts
 - **WASM-BSH State Sanitizer**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Action-Chain** validation integration.
 - **A2A Authenticated Handshake Provider**: (Re-affirmed P0) Designated as the primary integration point for **PQMH** transition.

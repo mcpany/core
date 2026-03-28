@@ -69,3 +69,11 @@ The **Mission-Root Continuity Provider (MRCP)** is an infrastructure layer for M
 *   Resumption tokens now require a TPM-signed monotonic counter to prevent replay and leakage.
 *   Deprecating plain environment variables for identity transport in favor of kernel-bound HLES buffers.
 **Security Impact:** Prevents subagents from "squatting" on stale resumption tokens and ensures environmental sovereignty for headless handoffs.
+
+### Update: 2026-07-09 - v2.0: Dynamic Mission-Root Attestation
+**Context:** Today's research on OpenClaw v2.0 confirms that long-running missions require seamless state persistence across cold-boots and framework-neutral handoffs.
+**Architecture Adjustment:**
+*   **Mission-Root Continuity Hub (v2.0)**: Upgrading the MRCP Hub to support the OpenClaw v2.0 "Resumption Protocol" in Section 4.
+*   **Cross-Framework Handshake**: Implementing hardware-attested intent transfers that allow an agent in Framework A (e.g., Claude Code) to resume a mission started in Framework B (e.g., OpenClaw) using a unified resumption token.
+*   **Atomic Continuity Snapshots**: Continuity state now includes a full, hardware-signed snapshot of the Blackboard state fragments bound to the specific mission-root.
+**Security Impact:** Neutralizes the "Attestation Tax" for multi-day swarms while maintaining absolute mission-root sovereignty across disparate execution environments.

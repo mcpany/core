@@ -78,3 +78,11 @@ The AMS Middleware solves this by sharding the inter-agent mailbox based on the 
 * **State Streaming**: Utilizing the BSH (Binary State Handoff) gateway to stream delta-CRDT updates instead of full-state syncs.
 * **Deterministic Tie-Breaking**: Hardware-attested identity priority is now the primary tie-breaker for concurrent task claims, eliminating the need for any back-and-forth lock negotiation.
 **Security Impact:** Prevents "Mailbox Splicing" (CVE-2026-81042) by mandating that every CRDT mutation be signed with an IFA token.
+
+### Update: 2026-07-09 - Interrupt-Aware Mailbox Sharding (IAMS)
+**Context:** Production feedback on high-density horizontal swarms (10+ agents) indicates that git-based mailbox systems and standard sharding queues lead to "Coordination Stall" during mission-critical corrections.
+**Architecture Adjustment:**
+* **Priority Lane Implementation**: Introducing the **Interrupt-Aware Mailbox Sharding (IAMS)** protocol in Section 4.
+* **Mission-Root Bypassing**: Allowing specific coordination fragments tagged with "Mission-Root Correction" to bypass standard shard-level queues and git-locks.
+* **Pre-emptive Synchronization**: IAMS-tagged updates trigger an immediate, high-priority broadcast to all connected teammate inboxes, pre-empting standard reasoning cycles.
+**Security Impact:** Ensures that user-initiated "Kill-Switch" (ASKS) signals and safety-critical intent corrections are delivered with sub-millisecond latency, regardless of mesh congestion.

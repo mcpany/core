@@ -167,6 +167,12 @@
 *   **[P0] Metadata Sanitization Gateway (MSG)**: Real-time semantic deconstruction of ingested metadata to neutralize instruction injection. (Added: 2026-03-26)
 *   **[P1] Post-Quantum Mesh Handshake (PQMH)**: Transition inter-agent transport to NIST-standard quantum-resistant algorithms. (Added: 2026-03-26)
 
+#### Upcoming (2026-07-09 Evolution)
+*   **[P0] Self-Healing Attestation Quorum (SHAQ)**: distributed security service enabling swarms to automatically re-verify mission-root integrity and reputation. (Added: 2026-07-09)
+*   **[P0] Autonomous Swarm Kill-Switch (ASKS)**: authoritative provider for immediate, hardware-attested mesh-wide capability revocation. (Added: 2026-07-09)
+*   **[P0] Mission-Root Continuity Hub (v2.0)**: authoritative resumption service supporting the OpenClaw v2.0 protocol for hardware-attested state persistence. (Added: 2026-07-09)
+*   **[P0] Interrupt-Aware Mailbox Sharding (IAMS)**: high-priority coordination extension allowing urgent mission-root instructions to bypass standard queues. (Added: 2026-07-09)
+
 #### Upcoming (2026-03-25 Evolution)
 *   **[P0] Hardware-Attested Monotonic Depth-Counters**: physical constraint enforcement for recursive delegations to prevent infinite resource loops. (Added: 2026-03-25)
 *   **[P0] Relational PoI Chain Validator**: cryptographic lineage verification for every tool call to neutralize "Intent Ghosting" vulnerabilities. (Added: 2026-03-25)
