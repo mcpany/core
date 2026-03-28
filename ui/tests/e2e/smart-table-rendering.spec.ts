@@ -24,9 +24,14 @@ test.describe('SmartTable Rendering and Real Data Validation', () => {
         // Find the tool in the list
         await page.getByPlaceholder('Search tools...').fill(toolName);
 
-        // Let's use getByText to locate the tool instead of the strict td matching
-        // to be more robust against nested spans/icons in the table cell
-        await page.getByText(toolName, { exact: true }).first().click();
+        // Let's use a very permissive locator since the table cell might contain icons/badges
+        // We'll look for a table cell that contains the toolName text and click it
+        const toolRow = page.locator('tr', { hasText: toolName }).first();
+        await expect(toolRow).toBeVisible({ timeout: 15000 });
+
+        // Click the button inside the row that opens the inspector, or just the row if it's clickable
+        // Usually there's an "Inspect" or "Play" button in the actions column. Let's click that to be safe.
+        await toolRow.getByRole('button', { name: /inspect/i }).click();
 
         // Wait for inspector
         await expect(page.getByRole('dialog')).toBeVisible();
