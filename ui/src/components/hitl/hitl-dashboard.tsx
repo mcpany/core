@@ -6,6 +6,8 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 /**
  * Intent: Document HitlDashboard
@@ -32,13 +34,68 @@ import { Button } from "@/components/ui/button";
  * Side Effects:
  *   - Uses local React state to manage approval statuses.
  */
+interface HITLApproval {
+    id: string;
+    tool: string;
+    intent: string;
+    status: string;
+    requireMfa: boolean;
+}
+
 export function HitlDashboard() {
-    const [approvals, setApprovals] = useState([
-        { id: "1", tool: "database.drop_table", intent: "Drop users table", status: "pending" }
-    ]);
+    const [approvals, setApprovals] = React.useState<HITLApproval[]>([]);
+    const [mfaDialogOpen, setMfaDialogOpen] = useState(false);
+    const [mfaCode, setMfaCode] = useState("");
+    const [pendingApprovalId, setPendingApprovalId] = useState<string | null>(null);
+
+    React.useEffect(() => {
+        fetchApprovals();
+        const interval = setInterval(fetchApprovals, 3000);
+        return () => clearInterval(interval);
+    }, []);
+
+    const fetchApprovals = async () => {
+        try {
+            const res = await fetch("/api/v1/hitl/approvals");
+            if (res.ok) {
+                const data = await res.json();
+                setApprovals(data || []);
+            }
+        } catch (err) {
+            console.error("Failed to fetch HITL approvals", err);
+        }
+    };
 
     const handleAction = (id: string, action: "approved" | "denied") => {
-        setApprovals(prev => prev.map(a => a.id === id ? { ...a, status: action } : a));
+        const approval = approvals.find(a => a.id === id);
+        if (action === "approved" && approval?.requireMfa) {
+            setPendingApprovalId(id);
+            setMfaDialogOpen(true);
+            return;
+        }
+        executeAction(id, action);
+    };
+
+    const executeAction = async (id: string, action: "approved" | "denied", code?: string) => {
+        try {
+            await fetch(`/api/v1/hitl/approvals/${id}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action, mfaCode: code || "" })
+            });
+            fetchApprovals();
+        } catch (err) {
+            console.error("Action failed", err);
+        }
+    };
+
+    const handleMfaSubmit = () => {
+        if (pendingApprovalId && mfaCode.length > 0) {
+            executeAction(pendingApprovalId, "approved", mfaCode);
+            setMfaDialogOpen(false);
+            setMfaCode("");
+            setPendingApprovalId(null);
+        }
     };
 
     return (
@@ -63,6 +120,33 @@ export function HitlDashboard() {
                     </CardContent>
                 </Card>
             ))}
+
+            <Dialog open={mfaDialogOpen} onOpenChange={setMfaDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Multi-Factor Authentication Required</DialogTitle>
+                        <DialogDescription>
+                            Please enter your MFA code to approve this sensitive action.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <Input
+                        type="text"
+                        placeholder="MFA Code"
+                        value={mfaCode}
+                        onChange={(e) => setMfaCode(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                handleMfaSubmit();
+                            }
+                        }}
+                        autoFocus
+                    />
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setMfaDialogOpen(false)}>Cancel</Button>
+                        <Button onClick={handleMfaSubmit} disabled={mfaCode.length === 0}>Verify & Approve</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

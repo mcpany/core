@@ -195,6 +195,9 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/alerts/rules/", a.handleAlertRuleDetail())
 	mux.HandleFunc("/alerts/", a.handleAlertDetail())
 
+	// Mount HITL
+	a.mountHITL(mux)
+
 	mux.HandleFunc("/traces", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
