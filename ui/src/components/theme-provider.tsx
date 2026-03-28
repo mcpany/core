@@ -6,6 +6,20 @@ import * as React from "react"
 import { ThemeProvider as NextThemesProvider } from "next-themes"
 
 /**
+ * Intent: Document ThemeProvider
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Provides theme context to the application using next-themes.
  *
  * @param props - The properties for the ThemeProvider, including children and theme settings.

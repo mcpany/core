@@ -29,6 +29,20 @@ interface McpContent {
 }
 
 /**
+ * Intent: Document SmartResultRenderer
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Renders the result of a tool execution in a smart, tabular format if possible,
  * falling back to a raw JSON view.
  */
@@ -142,7 +156,17 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                     <div key={idx} className="flex flex-col gap-2">
                         {item.type === 'text' && (
                             <div className="whitespace-pre-wrap font-mono text-sm bg-muted/30 p-3 rounded-md border border-white/5">
-                                {item.text}
+                                {(() => {
+                                    try {
+                                        if (item.text) {
+                                            const parsed = JSON.parse(item.text);
+                                            if (typeof parsed === 'object' && parsed !== null) {
+                                                return <JsonView data={parsed} maxHeight={400} />;
+                                            }
+                                        }
+                                    } catch (e) {}
+                                    return item.text;
+                                })()}
                             </div>
                         )}
                         {item.type === 'image' && item.data && (

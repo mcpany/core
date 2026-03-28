@@ -17,6 +17,20 @@ interface DebuggerControlsProps {
 }
 
 /**
+ * Intent: Document DebuggerControls
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * DebuggerControls provides play/pause and step controls for the debugger.
  * @param props - The component props.
  * @param props.isPlaying - Whether the debugger is currently playing.

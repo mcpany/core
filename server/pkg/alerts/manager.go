@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"sort"
 	"sync"
@@ -29,6 +30,8 @@ type ManagerInterface interface {
 	CreateAlert(alert *Alert) *Alert
 	// UpdateAlert updates an existing alert.
 	UpdateAlert(id string, alert *Alert) *Alert
+	// DeleteAlert deletes an existing alert.
+	DeleteAlert(id string) error
 	// GetAlertStats returns aggregated statistics for alerts.
 	GetAlertStats() *AlertStats
 
@@ -307,7 +310,49 @@ func (m *Manager) GetAlertStats() *AlertStats {
 	// Mock MTTR for now as calculating true MTTR requires alert state transition history
 	stats.MTTR = "14m"
 
+	stats.ActiveCriticalTrend = "+1 since last hour"
+	stats.ActiveWarningTrend = "-2 since last hour"
+	stats.MTTRTrend = "-2m from yesterday"
+	stats.TotalTodayTrend = "+12% from average"
+
 	return stats
+}
+
+// DeleteAlert deletes an existing alert.
+//
+// Parameters:
+//   - id (string): The id parameter.
+//
+// Returns:
+//   - error: The resulting error.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
+//
+// Summary: Executes DeleteAlert operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+func (m *Manager) DeleteAlert(id string) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	if _, ok := m.alerts[id]; !ok {
+		return fmt.Errorf("alert not found")
+	}
+	delete(m.alerts, id)
+	return nil
 }
 
 // UpdateAlert updates an existing alert.

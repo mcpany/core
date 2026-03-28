@@ -310,6 +310,8 @@ message OpenapiUpstreamService {
 message CommandLineUpstreamService {
   // The command to execute the service.
   string command = 1;
+  // Arguments to the command.
+  repeated string args = 2;
   // The working directory for the command.
   string working_directory = 3 [json_name = "working_directory"];
   // Manually defined mappings from MCP tools to command line commands.

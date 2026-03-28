@@ -14,6 +14,20 @@ import { toast } from "sonner";
 import { defineDraculaTheme } from "@/lib/monaco-theme";
 
 /**
+ * Intent: Document ConfigValidatorPage
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * ConfigValidatorPage allows users to validate their YAML or JSON configuration
  * against the server schema using an interactive editor.
  * @returns The Config Validator page component.

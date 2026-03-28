@@ -11,14 +11,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { ToolDefinition, apiClient, ToolAnalytics } from "@/lib/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { PlayCircle, Loader2, Zap, Activity, History as HistoryIcon, RefreshCw, Code, Terminal, Coins, ArrowRightLeft } from "lucide-react";
+import { PlayCircle, Loader2, Zap, Activity, History as HistoryIcon, RefreshCw, Code, Terminal, Coins, ArrowRightLeft, Download } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip as ChartTooltip, XAxis, YAxis, CartesianGrid } from "recharts";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SchemaViewer } from "@/components/tools/schema-viewer";
 import { UniversalSchemaForm as SchemaForm, Schema } from "@/components/shared/universal-schema-form";
-import { JsonView } from "@/components/ui/json-view";
 import { RichResultViewer } from "@/components/tools/rich-result-viewer";
 import { Switch } from "@/components/ui/switch";
 import { generateCurlCommand, generatePythonCode } from "@/lib/code-generator";
@@ -49,6 +48,20 @@ interface AuditLogEntry {
 }
 
 /**
+ * Intent: Document ToolRunner
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * ToolRunner is a component that provides an interface for executing tools
  * and viewing their results, metrics, and schema.
  *
@@ -297,9 +310,31 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
                               )}
                           </div>
                           {output && (
-                              <Badge variant={output.isError || output.error ? "destructive" : "outline"} className={cn("text-[10px]", output.isError || output.error ? "" : "text-green-600 border-green-200 bg-green-50")}>
-                                  {output.isError || output.error ? "Failed" : "Success"}
-                              </Badge>
+                              <div className="flex items-center gap-2">
+                                  <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-6 w-6 text-muted-foreground hover:text-foreground hover:bg-muted"
+                                      onClick={() => {
+                                          const blob = new Blob([JSON.stringify(output, null, 2)], { type: 'application/json' });
+                                          const url = URL.createObjectURL(blob);
+                                          const a = document.createElement('a');
+                                          a.href = url;
+                                          a.download = `${tool.name}-result.json`;
+                                          document.body.appendChild(a);
+                                          a.click();
+                                          document.body.removeChild(a);
+                                          URL.revokeObjectURL(url);
+                                          toast({ title: "Result Downloaded", description: `Saved as ${tool.name}-result.json` });
+                                      }}
+                                      title="Download Result JSON"
+                                  >
+                                      <Download className="h-3.5 w-3.5" />
+                                  </Button>
+                                  <Badge variant={output.isError || output.error ? "destructive" : "outline"} className={cn("text-[10px]", output.isError || output.error ? "" : "text-green-600 border-green-200 bg-green-50")}>
+                                      {output.isError || output.error ? "Failed" : "Success"}
+                                  </Badge>
+                              </div>
                           )}
                       </div>
                       <div className="flex-1 overflow-y-auto p-4">
@@ -404,7 +439,7 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
                       </TabsContent>
                       <TabsContent value="json" className="flex-1 overflow-hidden rounded-md border bg-muted/50 mt-0">
                         <ScrollArea className="h-full w-full p-4">
-                            <JsonView data={tool.inputSchema} />
+                            <pre className="text-xs font-mono">{JSON.stringify(tool.inputSchema, null, 2)}</pre>
                         </ScrollArea>
                       </TabsContent>
                     </Tabs>
