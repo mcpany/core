@@ -19,32 +19,26 @@ test.describe('Resource Explorer Rich Result Viewer', () => {
         command_line_service: {
           command: 'echo',
           resources: [
-            { uri: 'test://data.json', name: 'JSON Data', mimeType: 'application/json' },
-            { uri: 'test://invalid.json', name: 'Invalid JSON', mimeType: 'application/json' }
-          ],
-          reads: {
-            'test://data.json': {
-              contents: [
-                {
-                  uri: 'test://data.json',
-                  mimeType: 'application/json',
-                  text: JSON.stringify([
-                    { name: 'Alice', role: 'Admin', id: 1 },
-                    { name: 'Bob', role: 'User', id: 2 }
-                  ])
-                }
-              ]
+            {
+              uri: 'test://data.json',
+              name: 'JSON Data',
+              mimeType: 'application/json',
+              static: {
+                textContent: JSON.stringify([
+                  { name: 'Alice', role: 'Admin', id: 1 },
+                  { name: 'Bob', role: 'User', id: 2 }
+                ])
+              }
             },
-            'test://invalid.json': {
-              contents: [
-                {
-                  uri: 'test://invalid.json',
-                  mimeType: 'application/json',
-                  text: '{ invalid json '
-                }
-              ]
+            {
+              uri: 'test://invalid.json',
+              name: 'Invalid JSON',
+              mimeType: 'application/json',
+              static: {
+                textContent: '{ invalid json '
+              }
             }
-          }
+          ]
         }
       }
     });

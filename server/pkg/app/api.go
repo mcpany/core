@@ -863,8 +863,27 @@ func (a *Application) handleResources() http.HandlerFunc {
 		switch r.Method {
 		case http.MethodGet:
 			resources := a.ResourceManager.ListResources()
+			// Map to a structure with explicit JSON tags to ensure the UI receives valid data.
+			// The underlying implementations (StaticResource/DynamicResource) do not export
+			// fields, so they would marshal to empty objects otherwise.
+			type resourceMetadata struct {
+				URI         string `json:"uri"`
+				Name        string `json:"name"`
+				Description string `json:"description,omitempty"`
+				MIMEType    string `json:"mimeType,omitempty"`
+			}
+			list := make([]resourceMetadata, 0, len(resources))
+			for _, r := range resources {
+				m := r.Resource()
+				list = append(list, resourceMetadata{
+					URI:         m.URI,
+					Name:        m.Name,
+					Description: m.Description,
+					MIMEType:    m.MIMEType,
+				})
+			}
 			w.Header().Set("Content-Type", "application/json")
-			_ = json.NewEncoder(w).Encode(resources)
+			_ = json.NewEncoder(w).Encode(list)
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}

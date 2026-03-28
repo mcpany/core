@@ -86,23 +86,28 @@ func (r *StaticResource) Service() string {
 //   - Performs an HTTP GET request to the resource URI (if not inline content).
 func (r *StaticResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
 	if r.staticContent != nil {
-		var blob []byte
 		switch r.staticContent.WhichContentType() {
 		case configv1.StaticResource_TextContent_case:
-			blob = []byte(r.staticContent.GetTextContent())
-		case configv1.StaticResource_BinaryContent_case:
-			blob = r.staticContent.GetBinaryContent()
-		}
-
-		return &mcp.ReadResourceResult{
-			Contents: []*mcp.ResourceContents{
-				{
-					URI:      r.resource.URI,
-					Blob:     blob,
-					MIMEType: r.resource.MIMEType,
+			return &mcp.ReadResourceResult{
+				Contents: []*mcp.ResourceContents{
+					{
+						URI:      r.resource.URI,
+						Text:     r.staticContent.GetTextContent(),
+						MIMEType: r.resource.MIMEType,
+					},
 				},
-			},
-		}, nil
+			}, nil
+		case configv1.StaticResource_BinaryContent_case:
+			return &mcp.ReadResourceResult{
+				Contents: []*mcp.ResourceContents{
+					{
+						URI:      r.resource.URI,
+						Blob:     r.staticContent.GetBinaryContent(),
+						MIMEType: r.resource.MIMEType,
+					},
+				},
+			}, nil
+		}
 	}
 
 	// Simple HTTP get for now
