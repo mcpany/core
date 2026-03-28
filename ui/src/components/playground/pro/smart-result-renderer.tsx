@@ -29,6 +29,20 @@ interface McpContent {
 }
 
 /**
+ * Intent: Document SmartResultRenderer
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Renders the result of a tool execution in a smart, tabular format if possible,
  * falling back to a raw JSON view.
  */

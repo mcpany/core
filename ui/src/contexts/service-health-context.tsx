@@ -10,6 +10,20 @@ import { Graph, NodeStatus } from '@/types/topology';
 import { usePolling } from '@/hooks/use-polling';
 
 /**
+ * Intent: Document MetricPoint
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * MetricPoint represents a single data point for service health metrics at a specific time.
  */
 export interface MetricPoint {
@@ -47,6 +61,20 @@ const MAX_HISTORY_POINTS = 30;
 const POLLING_INTERVAL = 5000;
 
 /**
+ * Intent: Document ServiceHealthProvider
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * ServiceHealthProvider component.
  * @param props - The component props.
  * @param props.children - The child components.
@@ -196,6 +224,20 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
 }
 
 /**
+ * Intent: Document useServiceHealth
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - Documented below.
+ *
+ * Side Effects:
+ *   - None
+ *
  * useServiceHealth is a hook to access service health history and current status.
  * @returns The service health context.
  * @throws Error if used outside of a ServiceHealthProvider.
@@ -209,6 +251,20 @@ export function useServiceHealth() {
 }
 
 /**
+ * Intent: Document useTopology
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - Documented below.
+ *
+ * Side Effects:
+ *   - None
+ *
  * useTopology is a hook to access network topology.
  * It is optimized to not re-render when health metrics update.
  * @returns The topology context.

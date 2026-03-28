@@ -41,6 +41,20 @@ const settingsSchema = z.object({
 type SettingsValues = z.infer<typeof settingsSchema>;
 
 /**
+ * Intent: Document GlobalSettingsForm
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * GlobalSettingsForm component.
  * @returns The rendered component.
  */

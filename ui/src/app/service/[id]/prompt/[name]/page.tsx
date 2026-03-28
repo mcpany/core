@@ -12,6 +12,20 @@ import { UpstreamServiceConfig } from "@/lib/types";
 import { useServiceSiblings } from "@/hooks/use-siblings";
 
 /**
+ * Intent: Document PromptDetailPage
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * PromptDetailPage component.
  * @returns The rendered component.
  */

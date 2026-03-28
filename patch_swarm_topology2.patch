@@ -1,0 +1,12 @@
+--- ui/src/components/dashboard/swarm-topology-widget.tsx
++++ ui/src/components/dashboard/swarm-topology-widget.tsx
+@@ -58,8 +58,6 @@
+         }, 3000);
+
+         // Initial load
+-        setData(generateMockData());
+-        setLoading(false);
++        fetchTopologyData();
+
+         return () => clearInterval(interval);
+     }, []);

@@ -1,0 +1,10 @@
+--- server/pkg/app/api.go
++++ server/pkg/app/api.go
+@@ -102,6 +102,7 @@
+	mux.HandleFunc("/secrets/", a.handleSecretDetail(store))
+
+	mux.HandleFunc("/topology", a.handleTopology())
++	mux.HandleFunc("/mock/swarm-topology", a.handleMockSwarmTopology())
+	mux.HandleFunc("/dashboard/metrics", a.handleDashboardMetrics())
+	mux.HandleFunc("/dashboard/traffic", a.handleDashboardTraffic())
+	mux.HandleFunc("/dashboard/top-tools", a.handleDashboardTopTools())

@@ -1,32 +1,34 @@
 # Truth Reconciliation Audit Report
 
-## 1. Executive Summary
+## Executive Summary
+A comprehensive 10-file truth reconciliation audit was performed spanning documentation, roadmap items, and current codebase implementations. The audit confirmed strong alignment across 90% of the surveyed surfaces, with the UI correctly implementing advanced topologies, traces, and system diagnostics as outlined. However, one discrepancy was identified and remediated regarding the "Browser-Side HTTP Connectivity Check" documentation. The system is now 100% aligned with the sampled Product Roadmap.
 
-A "Truth Reconciliation Audit" was performed on the MCP Any project to verify perfect synchronization between the Documentation (`ui/docs`, `server/docs`), the Codebase (Implementation), and the Product Roadmap. A randomized sample of 10 diverse documentation files spanning both UI flows, backend APIs, and configurations was selected and evaluated.
-
-**High-Level Health:** The 10 sampled features exhibit **100% alignment** with the Roadmap and the Codebase. Both backend infrastructure and UI implementations perfectly match the documented capabilities. No documentation drift or roadmap debt was detected in the sample.
-
-## 2. Verification Matrix
+## Verification Matrix
 
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `ui/docs/features/tool_analytics.md` | Aligned | Verified codebase | `ui/src/components/stats/analytics-dashboard.tsx` implements Tool Analytics |
-| `server/docs/prompt_workbench.md` | Aligned | Verified codebase | `ui/src/components/prompts/prompt-workbench.tsx` implements Prompt Workbench |
-| `server/docs/features.md` | Aligned | Verified codebase | Index document is up-to-date with features |
-| `ui/docs/features/stack-composer.md` | Aligned | Verified codebase | `ui/src/components/stacks/stack-editor.tsx` implements Stack Composer |
-| `server/docs/features/wasm.md` | Aligned | Verified codebase | `server/pkg/wasm/runtime.go` implements WASM Runtime |
-| `server/docs/features/sampling.md` | Aligned | Verified codebase | `server/pkg/tool/sampling.go` implements MCP Sampling |
-| `server/docs/features/audit_logging.md` | Aligned | Verified codebase | `server/pkg/middleware/audit.go` implements Datadog, Webhook, and Splunk Audit logging |
-| `server/docs/feature/merge_strategy.md` | Aligned | Verified codebase | `proto/config/v1/tool.proto` and `config.proto` implement MergeStrategy |
-| `server/docs/verify.md` | Aligned | Verified codebase | Verification result doc |
-| `ui/docs/features/test_connection.md` | Aligned | Verified codebase | `ui/src/components/diagnostics/connection-diagnostic.tsx` implements Diagnostics tool |
+| `ui/docs/features/tool-diff.md` | Aligned | Verified UI Implementation | `ReplayDiffDialog` and diffing views are present in `ui/src/components/traces/replay-diff-dialog.tsx`. |
+| `ui/docs/features/diagnostics.md` | Aligned | Verified UI Implementation | `SystemHealth` provides diagnostic cards in `ui/src/components/diagnostics/system-health.tsx`. |
+| `ui/docs/features/network.md` | Aligned | Verified UI Implementation | `NetworkGraphClient` correctly uses ReactFlow in `ui/src/components/network/network-graph-client.tsx`. |
+| `ui/docs/features/recursive_context.md` | Aligned | Verified Server/UI Implementation | Recursive Context Protocol is managed via `RecursiveContextManager` in `server/pkg/middleware/recursive_context.go`. |
+| `server/docs/features/sso.md` | Aligned | Verified Server Implementation | SSO capabilities implemented via `server/pkg/middleware/sso.go`. |
+| `server/docs/features/guardrails.md` | Aligned | Verified Server Implementation | Prompt injection guardrails exist via `server/pkg/middleware/guardrails.go`. |
+| `server/docs/features/audit_logging.md` | Aligned | Verified Server Implementation | Diverse audit storage patterns exist in `server/pkg/audit/*.go`. |
+| `ui/docs/features/hitl.md` | Aligned | Verified Server/UI Implementation | HITL dashboards and middleware are present (`hitl-dashboard.tsx`, `hitl.go`). |
+| `ui/docs/features/connect-client-center.md` | Aligned | Verified UI Implementation | `ConnectClientDialog` effectively handles connection strings in `ui/src/components/connect-client-button.tsx`. |
+| `ui/docs/features/browser_connectivity_check.md` | **Diverged** | Engineered Missing Implementation | Added browser `fetch` with `mode: 'no-cors'` to `ui/src/components/diagnostics/connection-diagnostic.tsx`. |
 
-## 3. Remediation Log
+## Remediation Log
+**Case B: Roadmap Debt (Code is Missing)**
+The documentation `ui/docs/features/browser_connectivity_check.md` clearly states that the Connection Diagnostics interface must use a `fetch` with `mode: 'no-cors'` from the browser to determine client-side vs server-side connectivity issues (especially useful for Docker/VPN boundaries).
 
-*   **Code Fixes:** None required. The codebase matches the roadmap and documentation exactly for the sampled files.
-*   **Documentation Updates:** None required. The documentation accurately reflects the current state of the implementation.
+This logic was missing from the actual component (`ui/src/components/diagnostics/connection-diagnostic.tsx`).
 
-## 4. Security Scrub
+**Engineering Fix:**
+- Injected `Browser Connectivity Check` as step 1.5 in the diagnostics workflow when `service.httpService.address` is present.
+- Implemented a `fetch(service.httpService.address, { mode: 'no-cors', method: 'GET' })` call with performance benchmarking.
+- Added strict error handling with a context-aware severity diagnostic result on failure.
+- Updated `ui/src/components/diagnostics/connection-diagnostic.test.tsx` to assert the newly introduced step to conform to TDD standards. `make test` passes successfully.
 
-*   **PII/Secrets:** No Personally Identifiable Information (PII) or plaintext secrets are present in this report.
-*   **Internal IPs:** No internal IP addresses or sensitive infrastructure details are included.
+## Security Scrub
+This report has been reviewed and contains NO PII, secrets, API keys, or internal Google IP structures.
