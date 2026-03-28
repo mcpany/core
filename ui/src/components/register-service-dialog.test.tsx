@@ -114,5 +114,4 @@ describe('RegisterServiceDialog', () => {
         expect(screen.getByText('Valid Configuration')).toBeInTheDocument();
     });
   });
-
 });

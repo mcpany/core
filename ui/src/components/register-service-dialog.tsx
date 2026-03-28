@@ -637,9 +637,6 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                                                         description: `Draft configuration saved. Proceeding to authenticate...`
                                                     });
                                                     serviceId = res?.service?.id || res?.service?.sanitizedName || res?.service?.name || configToSave.name;
-
-                                                    // Give the backend a brief moment to stabilize the new registration
-                                                    await new Promise(r => setTimeout(r, 500));
                                                 } catch (e: unknown) {
                                                     toast({
                                                         title: "Registration Failed",

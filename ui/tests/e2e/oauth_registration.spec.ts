@@ -65,6 +65,6 @@ test.describe('Service Registration with OAuth', () => {
     expect(registerRes.status()).toBe(200);
 
     const oauthRes = await oauthPromise;
-    expect(oauthRes.status()).toBeDefined();
+    expect(oauthRes.status()).toBe(200);
   });
 });
