@@ -69,3 +69,11 @@ The **Mission-Root Continuity Provider (MRCP)** is an infrastructure layer for M
 *   Resumption tokens now require a TPM-signed monotonic counter to prevent replay and leakage.
 *   Deprecating plain environment variables for identity transport in favor of kernel-bound HLES buffers.
 **Security Impact:** Prevents subagents from "squatting" on stale resumption tokens and ensures environmental sovereignty for headless handoffs.
+
+### Update: 2026-03-28 - Scaling for 48-hour Missions
+**Context:** Today's research confirms that OpenClaw v2026.3.22 has increased the default agent timeout to 48 hours, demanding higher state durability.
+**Architecture Adjustment:**
+*   Implementing **Long-Running Mission Persistence (LRMP)**.
+*   Transitioning continuity storage from in-memory caches to a distributed SQLite backend with periodic hardware-attested snapshots.
+*   Enabling "Mission Resumption Tickets" that remain valid across multi-day teammate rotations.
+**Security Impact:** Prevents mission-root drift during extended execution and ensures sub-missions remain bound to the 48-hour mission lifecycle.

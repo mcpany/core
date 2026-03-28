@@ -1,15 +1,32 @@
 # Market Sync: 2026-03-28
 
-## Ecosystem Shifts & Findings
+## Ecosystem Updates
 
-### 1. OpenClaw v2026.3.28: Atomic State Rollbacks (ASR)
-OpenClaw has just released a preview of **Atomic State Rollbacks**. This feature allows a parent agent to "checkpoint" the collective state of its subagent swarm. If a specialized subagent fails or produces a hallucination, the entire swarm's state (including Blackboard entries and Context Shards) can be rolled back to a known-good state. This is critical for maintaining "Swarm Sanity" in complex reasoning tasks.
+### OpenClaw
+- **Version 2026.3.22**: Transitioned from AI assistant to "AI Agent Platform".
+- **ClawHub Marketplace**: Officially replaced npm as the primary skill source, hosting 4,000+ community skills.
+- **Long-Running Missions**: Default timeout increased to 48 hours for complex batch jobs.
+- **Remote Execution**: Introduced pluggable sandbox backends (OpenShell, SSH) for secure remote task execution.
 
-### 2. UACO v1.9 Draft: Multi-Agent Quorum (MAQ)
-The UACO working group has fast-tracked the **Multi-Agent Quorum (MAQ)** extension. Building on the consensus models pioneered by Claude Code, MAQ standardizes the "Approval Token" format, allowing agents from different frameworks (e.g., an OpenClaw Monitor and an AutoGen Auditor) to participate in a single consensus-based tool validation flow.
+### Gemini CLI
+- **Version 0.35.0**:
+    - `SandboxManager` introduced for isolated process-spawning tools (bubblewrap/seccomp).
+    - JIT context discovery for filesystem tools.
+- **Version 0.33.0/0.34.0 (Recent)**:
+    - HTTP authentication for A2A remote agents.
+    - Authenticated A2A agent card discovery.
+    - Plan Mode enabled by default.
+    - Native gVisor (runsc) and LXC support.
 
-### 3. Vulnerability Alert: "Context Smearing" (CVE-2026-41012)
-A new vulnerability, **Context Smearing**, has been identified in BSH (Binary State Handoff) implementations. Malicious subagents can craft "Ghost Fragments" in binary state that are ignored by shallow sanitizers but "smear" into the parent agent's high-attention window during decompression, leading to indirect prompt injection.
+### Claude Code
+- **Agent Teams**: Experimental feature `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`.
+- **Collaborative Orchestration**: Move from isolated subagents to teammates sharing a "Shared Task List" and direct messaging.
 
-### 4. Market Pain Point: The "Attestation Tax"
-Enterprise users are reporting significant latency (100ms+) in multi-agent workflows due to repeated cryptographic attestation of intents. There is a growing demand for **Session-Bound Fast-Path Attestation**, where once a "Mission Intent" is verified, subsequent sub-calls within that session can use hardware-accelerated "Lightweight Proofs" instead of full RSA/ECDSA signatures.
+## Autonomous Agent Pain Points & Vulnerabilities
+- **Memory Injection (Sleeper Agents)**: Vulnerability where indirect prompt injection poisons long-term memory, creating persistent false security beliefs.
+- **Uncontrolled Retrieval**: Agents inadvertently exposing PII or IP due to lack of semantic validation during RAG/retrieval.
+- **Coordination Lock-in**: High latency and bottlenecks in multi-agent coordination when using synchronous locks.
+
+## Unique Findings
+- The shift from "isolated subagents" to "integrated teammate meshes" is now the dominant architectural pattern (Claude Code, OpenClaw).
+- Security is moving from "per-call" to "environment-attested" and "long-term memory integrity".

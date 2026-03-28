@@ -50,3 +50,11 @@ The emergence of "Ghost-Execution" exploits in the Gemini CLI ecosystem has high
 * Mandating "Isolated Discovery Environments" for all project-local configurations.
 * Introducing a "Discovery Quarantine" where tool schemas are held until a hardware-attested user signal is received.
 **Security Impact:** Neutralizes startup-time RCE in cloned repositories and prevents "Context Poisoning" during the discovery phase.
+
+### Update: 2026-03-28 - ClawHub-Native Attestation
+**Context:** The shift from npm to ClawHub as the primary agent skill source (OpenClaw v2026.3.22) introduces new supply-chain risks from unverified community skills.
+**Architecture Adjustment:**
+*   Mandating **Ghost Shell Behavioral Profiling** for all skills discovered via ClawHub.
+*   Introducing a "Discovery Sandbox" that executes `discoveryCommand` in a network-isolated gVisor container.
+*   Enforcing hardware-bound attestation for the resulting tool manifest before it is deemed "Loadable."
+**Security Impact:** Prevents "Rug-Pull" attacks and ensures that community-sourced skills cannot execute unauthorized host commands during the discovery phase.

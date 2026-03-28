@@ -1368,3 +1368,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **CI/CD Cache Integrity Guard (CCIG)**: To neutralize "Agentic Social Engineering" in build pipelines, we are mandating CCIG. All agent-accessible caches must be cryptographically signed, ensuring that poisoned metadata cannot compromise the mission-root supply chain.
 - **Post-Quantum Mesh Handshake (PQMH)**: Supporting the NIST FIPS 203/204/205 standards, we are introducing PQMH. All inter-agent and node-to-node communications will transition to post-quantum resistant algorithms to ensure long-term mesh integrity.
 - **Metadata Sanitization Gateway (MSG)**: To counter instruction injection via external metadata (GitHub issues, Slack messages), MCP Any will implement MSG. This layer will perform real-time semantic sanitization of all ingested metadata before it reaches the agent's reasoning loop.
+
+---
+## Strategic Evolution: [2026-03-28] (Iteration 2)
+### Focus: Long-Running Mission Persistence & Horizontal Teammate Sovereignty
+**Context**: The emergence of 48-hour missions in OpenClaw and the shift toward horizontal "Agent Teams" in Claude Code confirm that the "Universal Agent Bus" must now move beyond session-bound trust. We must now protect the **persistence of mission intent** over multi-day spans and provide **horizontal sovereignty** for parallel teammates. As retrieval becomes the primary data vector, "Uncontrolled Retrieval" and "Memory Injection" demand active **Semantic Retrieval Guarding**.
+**Strategic Pivot**:
+- **Mission-Root Trust Continuity (MRTC)**: MCP Any will evolve to act as the authoritative "Trust Anchor" for long-running missions. We will implement MRTC, facilitating hardware-locked mission resumption that maintains cryptographically signed reasoning-paths across 48+ hour teammate rotations.
+- **Horizontal Coordination Hub (HCH)**: Supporting the shift to Agent Teams, we are introducing the HCH. This service will provide lock-free, CRDT-based synchronization for "Shared Task Lists," ensuring parallel teammates coordinate without global state bottlenecks.
+- **Semantic Retrieval Guard (SRG)**: To neutralize uncontrolled retrieval and memory injection, we are mandating SRG. This layer will perform real-time, semantic PII/IP scrubbing and instruction-injection scanning on all data retrieved by RAG or filesystem tools before context ingestion.
+- **ClawHub-Native Skill Attestation**: Following the transition to ClawHub, MCP Any will act as the authoritative "Marketplace Proxy," ensuring all community-sourced skills are profiled in the Ghost Shell and signed before being exposed to the discovery bus.

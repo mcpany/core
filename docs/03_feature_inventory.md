@@ -1723,3 +1723,15 @@
 ### Priority Shifts
 - **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
 - **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.
+
+## Evolution: [2026-03-28] Updates
+
+### Proposed Additions
+- **Mission-Root Trust Continuity (MRTC) Hub**: (P0) Authoritative trust anchor for 48+ hour missions, facilitating hardware-locked reasoning-path persistence across teammate rotations.
+- **Horizontal Coordination Hub (HCH)**: (P0) Lock-free, CRDT-based synchronization service for "Shared Task Lists" and inter-teammate messaging in horizontal swarms.
+- **Semantic Retrieval Guard (SRG)**: (P0) Real-time PII/IP scrubbing and instruction-injection scanning for RAG/filesystem tool outputs to prevent "Memory Injection" and uncontrolled retrieval.
+- **ClawHub-Native Skill Attestation Proxy**: (P1) Authoritative security proxy for community-sourced skills, mandating Ghost Shell profiling and hardware-bound signing before discovery exposure.
+
+### Priority Shifts
+- **Lock-Free Teammate Coordination (LFTC)**: (Re-affirmed P0) Evolving into the **Horizontal Coordination Hub (HCH)** to support broader teammate mesh patterns and long-running mission state.
+- **Discovery-Phase Sandbox Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory **ClawHub-native** attestation logic.

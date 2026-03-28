@@ -759,3 +759,9 @@
 - [ ] **[P0] Programmatic SDK Monitor**: Real-time visualization of SDK-driven agent interactions and Zero-Trust gate status. (Added: 2026-03-25)
 - [ ] **[P1] Session Sovereignty Dashboard**: UI for monitoring hardware-bound SQLite session state and attestation status. (Added: 2026-03-25)
 - [ ] **[P0] Pre-Flight Manifest Reviewer**: Visual workspace for reviewing and approving cryptographically signed mission-root manifests for non-interactive execution. (Added: 2026-03-25)
+
+#### Upcoming (2026-03-28 Evolution - v2)
+- [ ] **[P0] Long-Running Mission Dashboard**: (2026-03-28) Visualize mission continuity tokens, session age, and hardware-attested checkpoint history.
+- [ ] **[P0] Teammate Coordination Mesh**: (2026-03-28) Real-time visualizer for CRDT task claiming and horizontal message flow.
+- [ ] **[P0] Retrieval Integrity Monitor**: (2026-03-28) Security dashboard for reviewing semantically sanitized context fragments and blocked IP/PII exfiltration.
+- [ ] **[P1] ClawHub Security Explorer**: (2026-03-28) Marketplace UI for browsing community skills with integrated safety scores and Ghost Shell reports.

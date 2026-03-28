@@ -933,3 +933,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Zero-Copy BSH Transport**: Shared-memory based state transfer for sub-millisecond swarm handoffs. (Added: 2026-03-25)
 *   **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited Recursive Intent Delegation. (Added: 2026-03-25)
 *   **[P1] Predictive Resource Locking**: Intent-aware concurrency control for the Shared Blackboard. (Added: 2026-03-25)
+
+#### Upcoming (2026-03-28 Evolution - v2)
+*   **[P0] Mission-Root Trust Continuity (MRTC) Hub**: Authoritative trust anchor for 48+ hour missions with SQLite-backed state. (Added: 2026-03-28)
+*   **[P0] Horizontal Coordination Hub (HCH)**: Lock-free, CRDT-based synchronization for horizontal teammate meshes. (Added: 2026-03-28)
+*   **[P0] Semantic Retrieval Guard (SRG)**: Real-time PII/IP scrubbing and instruction-injection scanning for tool outputs. (Added: 2026-03-28)
+*   **[P1] ClawHub-Native Skill Proxy**: Hardware-attested security bridge for community-sourced skills from ClawHub. (Added: 2026-03-28)
