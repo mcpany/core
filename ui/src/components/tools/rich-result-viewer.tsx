@@ -148,22 +148,31 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
             return { isTableEligible: true, tableData: content };
         }
 
-        // 2. Object with a single key that is an array of objects
+        // 2. Object containing an array of objects. We aggressively scan the top 2 levels.
         if (content && typeof content === 'object' && !Array.isArray(content) && content !== null) {
-            const keys = Object.keys(content);
-            if (keys.length === 1) {
-                const innerData = content[keys[0]];
-                if (Array.isArray(innerData) && innerData.length > 0 && typeof innerData[0] === 'object' && innerData[0] !== null) {
-                    return { isTableEligible: true, tableData: innerData };
-                }
-            }
+            let largestArray: any[] = [];
 
-            // 3. Heuristic: Object with exactly one array of objects, and other simple properties (e.g. metadata)
-            const arrayProps = Object.entries(content).filter(([_, val]) =>
-                Array.isArray(val) && val.length > 0 && typeof val[0] === 'object' && val[0] !== null
-            );
-            if (arrayProps.length === 1) {
-                 return { isTableEligible: true, tableData: arrayProps[0][1] as any[] };
+            // Level 1 scan
+            Object.values(content).forEach(val => {
+                 if (Array.isArray(val) && val.length > 0 && typeof val[0] === 'object' && val[0] !== null) {
+                     if (val.length > largestArray.length) {
+                         largestArray = val;
+                     }
+                 }
+                 // Level 2 scan
+                 else if (val && typeof val === 'object' && !Array.isArray(val)) {
+                      Object.values(val).forEach(nestedVal => {
+                           if (Array.isArray(nestedVal) && nestedVal.length > 0 && typeof nestedVal[0] === 'object' && nestedVal[0] !== null) {
+                               if (nestedVal.length > largestArray.length) {
+                                   largestArray = nestedVal;
+                               }
+                           }
+                      });
+                 }
+            });
+
+            if (largestArray.length > 0) {
+                 return { isTableEligible: true, tableData: largestArray };
             }
         }
 

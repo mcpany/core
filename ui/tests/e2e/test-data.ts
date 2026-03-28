@@ -91,11 +91,20 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                         description: "Echoes back input",
                         input_schema: { type: "object" },
                         call_id: "echo_call"
+                    },
+                    {
+                        name: "get_users",
+                        description: "Returns a list of users in a table",
+                        input_schema: { type: "object" },
+                        call_id: "get_users_call"
                     }
                 ],
                 calls: {
                     echo_call: {
                         args: ["echoed_output"]
+                    },
+                    get_users_call: {
+                        args: ['{"users": [{"id": 1, "name": "Alice", "role": "Admin", "active": true, "long_text": "This is a very long text that should be truncated in the table cell to prevent layout blowouts."}, {"id": 2, "name": "Bob", "role": "User", "active": false, "long_text": "Short text"}, {"id": 3, "name": "Charlie", "role": "Manager", "active": true, "long_text": "Another long text string here that should be handled gracefully by the new SmartTable styling."}]}']
                     }
                 }
             }

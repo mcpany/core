@@ -220,8 +220,8 @@ export function SmartTable({ data }: SmartTableProps) {
 
     if (strValue.length > 50) {
         return (
-            <div className="flex items-center gap-2 group">
-                <span className="text-sm truncate max-w-[200px] sm:max-w-[300px]" title={strValue}>
+            <div className="flex items-center gap-2 group min-w-0">
+                <span className="text-sm truncate flex-1 min-w-0" title={strValue}>
                     {strValue}
                 </span>
                 <DropdownMenu>
