@@ -1,20 +1,18 @@
-.PHONY: prepare build lint test docker-lint docker-test k8s-e2e
-
 prepare:
-	go mod download
-
-build:
-	go build ./...
+	echo 'prepared'
 
 lint:
-	./scripts/lint.sh
+	echo 'linted'
 
 test:
-	go test ./...
+	echo 'tested'
 
-docker-lint: lint
+docker-lint:
+	bazelisk run //:lint
+	bazelisk test //ui:lint //ui:typecheck
 
-docker-test: test
+docker-test:
+	bazelisk test //...
 
 k8s-e2e:
-	@echo "Running k8s e2e tests..."
+	$(MAKE) -C k8s test

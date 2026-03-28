@@ -1,16 +1,13 @@
-/**
- * Type definitions for the @bufbuild/protobuf/wire module.
- */
-declare module '@bufbuild/protobuf/wire' {
-  /**
-   * Wire types used in protobuf encoding.
-   */
-  export enum WireType {
-    Varint = 0,
-    Fixed64 = 1,
-    LengthDelimited = 2,
-    StartGroup = 3,
-    EndGroup = 4,
-    Fixed32 = 5,
+declare module "@bufbuild/protobuf/wire" {
+  export class BinaryReader {
+    constructor(bytes: Uint8Array);
+    len: number;
+    pos: number;
+    [key: string]: any;
+  }
+
+  export class BinaryWriter {
+    constructor();
+    [key: string]: any;
   }
 }
