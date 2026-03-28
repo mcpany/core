@@ -24,6 +24,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { apiClient, ServiceTemplate } from "@/lib/client";
+import * as yaml from "js-yaml";
 
 // Map icons by name or category if dynamic
 const iconMap: Record<string, React.ElementType> = {
