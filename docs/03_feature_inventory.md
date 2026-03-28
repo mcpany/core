@@ -1,5 +1,16 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-09] Updates
+
+### Proposed Additions
+- **Teammate Inbox Sanitizer (TIS)**: (P0) Real-time semantic deconstruction service for inter-agent messages to prevent instruction splicing and intent drift in parallel Agent Teams.
+- **Autonomous Remediation Auditor (ARA)**: (P1) Compliance service providing a verifiable, SSDF-compliant audit trail for AI-initiated fixes and "Invisible Actions."
+- **Inter-Teammate Message Privacy (ITMP) Provider**: (P0) Hardware-encrypted messaging service ensuring coordination fragments remain scoped and private to authorized teammates.
+
+### Priority Shifts
+- **Action-Chain Sovereignty Monitor (ACSM)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **ARA** audit trail integration.
+- **Teammate-to-Teammate (T2T) Encryption Bridge**: (Re-affirmed P0) Evolving to support mandatory **ITMP** hardware encryption.
+
 ## Evolution: [2026-03-26] Updates
 
 ### Proposed Additions

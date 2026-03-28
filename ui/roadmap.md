@@ -201,6 +201,11 @@
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
 
+#### Upcoming (2026-07-09 Evolution)
+- [ ] **[P0] Teammate Inbox Inspector**: (2026-07-09) Real-time visualization of deconstructed inter-agent messages and TIS-redacted instructions.
+- [ ] **[P1] Autonomous Action Audit Log**: (2026-07-09) Verifiable audit trail viewer for AI-initiated fixes and "Invisible Actions."
+- [ ] **[P0] ITMP Privacy Widget**: (2026-07-09) Status indicator for hardware-encrypted teammate coordinate fragments.
+
 #### Upcoming (2026-07-08 Evolution)
 - [ ] **[P0] Mesh Identity Manager**: (2026-07-08) UI for reviewing and approving hardware-attested, mesh-resident agent identities.
 - [ ] **[P0] Service Mesh Topology Monitor**: (2026-07-08) Real-time visualization of authenticated inter-agent communication channels and mesh health.

@@ -205,6 +205,11 @@
 *   **[P0] Lock-Free Sharded Mailbox Hub**: High-speed, non-blocking teammate coordination using CRDT-based mailbox shards. (Added: 2026-06-24)
 *   **[P1] Zero-Knowledge Discovery (ZKD) Proxy**: Cryptographic capability masking for agent tool schemas until mission-bound handshake. (Added: 2026-06-24)
 
+#### Upcoming (2026-07-09 Evolution)
+*   **[P0] Teammate Inbox Sanitizer (TIS)**: Real-time semantic deconstruction of inter-agent messages to prevent instruction splicing. (Added: 2026-07-09)
+*   **[P1] Autonomous Remediation Auditor (ARA)**: Verifiable audit trail service for AI-initiated fixes to ensure SSDF compliance. (Added: 2026-07-09)
+*   **[P0] ITMP Hardware Encryption Provider**: Scoped, hardware-encrypted messaging for inter-teammate coordination fragments. (Added: 2026-07-09)
+
 #### Upcoming (2026-07-08 Evolution)
 *   **[P0] Zero-Trust Agent Identity Hub**: Authoritative local identity service issuing hardware-attested, mesh-resident tokens. (Added: 2026-07-08)
 *   **[P0] Autonomous Service Mesh Gateway**: Secure, authenticated transport and discovery layer for mesh-based coordination. (Added: 2026-07-08)
