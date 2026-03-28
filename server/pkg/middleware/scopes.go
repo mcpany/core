@@ -47,7 +47,6 @@ func NewScopesMiddleware(config ScopesConfig) *ScopesMiddleware {
 	}
 }
 
-type contextKey string
 
 const agentRoleKey contextKey = "agent_role"
 

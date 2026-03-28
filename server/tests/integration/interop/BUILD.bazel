@@ -11,3 +11,12 @@ go_test(
         "//src/interop",
     ],
 )
+
+go_test(
+    name = "interop_test",
+    srcs = [
+        "e2e_interop_test.go",
+        "interop_test.go",
+    ],
+    deps = ["//src/interop"],
+)
