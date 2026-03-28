@@ -55,3 +55,10 @@ The Active Subagent Reaper is a mandatory lifecycle management layer in MCP Any 
 * Extending the **Reaper Daemon** to track OS-level Process Groups (PGRPs) associated with a `Branch-Lease-ID`.
 * Implementing mandatory "Namespace Pinning" for containerized subagents to ensure total resource isolation upon lease expiration.
 **Security Impact:** Prevents "Dirty State" mutations from orphaned local executors that bypass A2A lifecycle hooks.
+
+### Update: 2026-03-28 - Addressing Ghost Reasoning in Speculative Plugin-Sourced Skills
+**Context:** The emergence of the OpenClaw plugin market increases the risk of speculative skills performing unauthorized background reasoning.
+**Architecture Adjustment:**
+*   **Plugin-Bound Leases**: Every tool imported from a third-party marketplace is assigned a mandatory, short-lived `Plugin-Lease-ID`.
+*   **Continuous Intent Re-Attestation**: Speculative branches using marketplace skills must re-attest their intent every 60s to remain active.
+**Security Impact:** Prevents "Ghost Reasoning" from unauthorized third-party capabilities and ensures marketplace skills remain strictly bound to supervised intent.
