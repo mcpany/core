@@ -1,4 +1,4 @@
-# docs/research/BUILD.bazel
+# docs/features/BUILD.bazel
 filegroup(
     name = "docs",
     srcs = glob(["*.md"]),
