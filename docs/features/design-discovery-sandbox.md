@@ -50,3 +50,11 @@ The emergence of "Ghost-Execution" exploits in the Gemini CLI ecosystem has high
 * Mandating "Isolated Discovery Environments" for all project-local configurations.
 * Introducing a "Discovery Quarantine" where tool schemas are held until a hardware-attested user signal is received.
 **Security Impact:** Neutralizes startup-time RCE in cloned repositories and prevents "Context Poisoning" during the discovery phase.
+
+### Update: 2026-03-28 - Pre-Flight Execution Sovereignty
+**Context:** Today's market sync revealed that Gemini CLI's `discoveryCommand` can be exploited for startup-time RCE in untrusted repositories.
+**Architecture Adjustment:**
+* Transitioning from elective to mandatory ephemeral sandboxing for all discovery-phase commands.
+* Implementing "Argument-Level Semantic Validation" (ALSV) to block shell-metacharacters in discovery hooks.
+* Integration with the T2T Mailbox Broker for notifying teammates of new (sandboxed) tool availability.
+**Security Impact:** Prevents host-level compromise during the pre-flight phase and ensures all discovered capabilities are attested before mesh-wide exposure.

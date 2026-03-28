@@ -122,6 +122,10 @@
 *   **[P0] Multi-Signature Skill Attestation**: Security mechanism for dynamic skill grafting to prevent "Skill-Squatting." (Added: 2026-03-23)
 *   **[P0] Binary State Handoff (BSH) Gateway**: High-performance binary transport layer for agent state transfer. (Added: 2026-03-23 - Promoted to P0 on 2026-03-24)
 
+#### Upcoming (2026-03-28 Evolution)
+*   **[P0] Discovery-Phase Sandbox Middleware**: Ephemeral runtime for discovery hooks to neutralize startup-time RCE. (Added: 2026-03-28)
+*   **[P0] Teammate-to-Teammate (T2T) Mailbox Broker**: Secure inter-agent coordination and message passing. (Added: 2026-03-28)
+
 #### Upcoming (2026-03-24 Evolution)
 *   **[P0] Relational PoI Enforcement**: Advanced intent-chain validation to prevent "Context-Mirroring" attacks. (Added: 2026-03-24)
 *   **[P0] Ghost Shell Hook Profiler**: Instrumented sandbox for behavioral profiling of un-attested configuration hooks. (Added: 2026-03-24)

@@ -1723,3 +1723,14 @@
 ### Priority Shifts
 - **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
 - **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.
+
+## Evolution: [2026-03-28] Updates
+
+### Proposed Additions
+- **Discovery-Phase Sandbox Middleware**: (P0) A secure, ephemeral execution environment for MCP discovery commands (e.g., Gemini's `discoveryCommand`), preventing host-level "Ghost-Execution" exploits.
+- **Teammate-to-Teammate (T2T) Mailbox Broker**: (P0) A secure, framework-agnostic messaging service for horizontal agent coordination, facilitating direct and broadcast message passing.
+- **Lock-Free Mailbox Synchronization**: (P1) High-performance coordination mechanism using sharded state or CRDTs to resolve "Mailbox Lock" bottlenecks in high-density swarms.
+
+### Priority Shifts
+- **Isolated Named-Pipe Transport Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory **T2T Mailbox** integration.
+- **Discovery Sandbox Middleware**: (Promoted to P0) Critical requirement for neutralizing startup-time RCE in agent environments.
