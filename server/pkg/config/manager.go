@@ -57,6 +57,12 @@ type UpstreamServiceManager struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - enabledProfiles: []string.
+//
+// Returns:
+//   - *UpstreamServiceManager.
 func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager {
 	if len(enabledProfiles) == 0 {
 		enabledProfiles = []string{"default"}
@@ -87,6 +93,14 @@ func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - config: *configv1.McpAnyServerConfig.
+//
+// Returns:
+//   - []*configv1.UpstreamServiceConfig.
+//   - error.
 func (m *UpstreamServiceManager) LoadAndMergeServices(ctx context.Context, config *configv1.McpAnyServerConfig) ([]*configv1.UpstreamServiceConfig, error) {
 	// Respect merge strategy
 	if strategy := config.GetMergeStrategy(); strategy != nil {

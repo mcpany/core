@@ -42,6 +42,13 @@ type ServiceRegistrationWorker struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - bus: *bus.Provider.
+//   - serviceRegistry: serviceregistry.ServiceRegistryInterface.
+//
+// Returns:
+//   - *ServiceRegistrationWorker.
 func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregistry.ServiceRegistryInterface) *ServiceRegistrationWorker {
 	return &ServiceRegistrationWorker{
 		bus:             bus,
@@ -59,6 +66,12 @@ func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregi
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - d: time.Duration.
+//
+// Returns:
+//   - None.
 func (w *ServiceRegistrationWorker) SetRetryDelay(d time.Duration) {
 	w.retryDelay = d
 }
@@ -71,6 +84,12 @@ func (w *ServiceRegistrationWorker) SetRetryDelay(d time.Duration) {
 //   - ctx: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
 //   - None.
 func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 	w.wg.Add(1)
@@ -301,6 +320,12 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 //   - None.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
 //   - None.
 func (w *ServiceRegistrationWorker) Stop() {
 	w.wg.Wait()

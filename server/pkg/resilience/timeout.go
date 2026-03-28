@@ -25,6 +25,12 @@ type Timeout struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - duration: *durationpb.Duration.
+//
+// Returns:
+//   - *Timeout.
 func NewTimeout(duration *durationpb.Duration) *Timeout {
 	return &Timeout{
 		duration: duration,
@@ -41,6 +47,13 @@ func NewTimeout(duration *durationpb.Duration) *Timeout {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - work func(context.Context): error.
+//
+// Returns:
+//   - error.
 func (t *Timeout) Execute(ctx context.Context, work func(context.Context) error) error {
 	ctx, cancel := context.WithTimeout(ctx, t.duration.AsDuration())
 	defer cancel()

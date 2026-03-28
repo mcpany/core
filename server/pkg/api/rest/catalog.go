@@ -28,6 +28,12 @@ type CatalogServer struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - manager: *catalog.Manager.
+//
+// Returns:
+//   - *CatalogServer.
 func NewCatalogServer(manager *catalog.Manager) *CatalogServer {
 	return &CatalogServer{manager: manager}
 }
@@ -42,6 +48,14 @@ func NewCatalogServer(manager *catalog.Manager) *CatalogServer {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - _: *apiv1.ListCatalogServicesRequest.
+//
+// Returns:
+//   - *apiv1.ListCatalogServicesResponse.
+//   - error.
 func (s *CatalogServer) ListServices(ctx context.Context, _ *apiv1.ListCatalogServicesRequest) (*apiv1.ListCatalogServicesResponse, error) {
 	services, err := s.manager.ListServices(ctx)
 	if err != nil {

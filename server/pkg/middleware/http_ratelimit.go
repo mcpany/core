@@ -39,6 +39,12 @@ type HTTPRateLimitOption func(*HTTPRateLimitMiddleware)
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - trust: bool.
+//
+// Returns:
+//   - HTTPRateLimitOption.
 func WithTrustProxy(trust bool) HTTPRateLimitOption {
 	return func(m *HTTPRateLimitMiddleware) {
 		m.trustProxy = trust
@@ -56,6 +62,14 @@ func WithTrustProxy(trust bool) HTTPRateLimitOption {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - rps: float64.
+//   - burst: int.
+//   - opts: ...HTTPRateLimitOption.
+//
+// Returns:
+//   - *HTTPRateLimitMiddleware.
 func NewHTTPRateLimitMiddleware(rps float64, burst int, opts ...HTTPRateLimitOption) *HTTPRateLimitMiddleware {
 	// ⚡ BOLT: Prevented unbounded memory growth by enforcing a capacity limit on the rate limiter cache.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -87,6 +101,12 @@ func NewHTTPRateLimitMiddleware(rps float64, burst int, opts ...HTTPRateLimitOpt
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - next: http.Handler.
+//
+// Returns:
+//   - http.Handler.
 func (m *HTTPRateLimitMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ip := util.ExtractIP(r.RemoteAddr)

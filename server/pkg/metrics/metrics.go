@@ -1,5 +1,5 @@
-// Copyright 2025 Author(s) of MCP Any.
-// SPDX-License-Identifier: Apache-2.0.
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
 // Package metrics provides utilities for collecting and exposing application metrics.
 package metrics
@@ -17,50 +17,54 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-// Label represents a key-value pair for labeling metrics.
+// Label is an alias for metrics.Label. It represents a key-value pair for labeling metrics.
 //
-// Summary: Represents a metrics label.
+// Summary: Represents a Label.
 type Label = metrics.Label
 
-// NewPrometheusSink provides newprometheussink functionality.
+// NewPrometheusSink creates a new Prometheus sink for metrics collection.
 //
-// Summary: NewPrometheusSink.
+// Summary: Creates a Prometheus sink.
 //
-// Parameters.
+// Returns:.
+//   - *prometheus.PrometheusSink: The initialized Prometheus sink.
+//   - error: An error if the sink creation fails.
+//
+// Parameters:.
 //   - None.
-//
-// Returns.
-//   - result: The result.
 func NewPrometheusSink() (*prometheus.PrometheusSink, error) {
 	return prometheus.NewPrometheusSink()
 }
 
 var initOnce sync.Once
 
-// Initialize provides initialize functionality.
+// Initialize prepares the metrics system with a Prometheus sink.
 //
-// Summary: Initialize.
+// Summary: Initializes the global metrics collector.
 //
-// Parameters.
+// It sets up a global metrics collector that can be used throughout the application.
+// The metrics are exposed on the /metrics endpoint.
+//
+// Returns:.
+//   - error: An error if the initialization fails.
+//
+// Parameters:.
 //   - None.
-//
-// Returns.
-//   - result: The result.
 func Initialize() error {
 	var err error
 	initOnce.Do(func() {
-		// Create a Prometheus sink.
+		// Create a Prometheus sink
 		var sink *prometheus.PrometheusSink
 		sink, err = NewPrometheusSink()
 		if err != nil {
 			return
 		}
 
-		// Create a metrics configuration.
+		// Create a metrics configuration
 		conf := metrics.DefaultConfig("mcpany")
 		conf.EnableHostname = false
 
-		// Initialize the metrics system.
+		// Initialize the metrics system
 		if _, err = metrics.NewGlobal(conf, sink); err != nil {
 			return
 		}
@@ -68,28 +72,28 @@ func Initialize() error {
 	return err
 }
 
-// Handler provides handler functionality.
+// Handler returns an http.Handler for the /metrics endpoint.
 //
-// Summary: Handler.
+// Summary: Retrieves the metrics HTTP handler.
 //
-// Parameters.
+// Returns:.
+//   - http.Handler: An http.Handler that serves the Prometheus metrics.
+//
+// Parameters:.
 //   - None.
-//
-// Returns.
-//   - result: The result.
 func Handler() http.Handler {
 	return promhttp.Handler()
 }
 
-// StartServer provides startserver functionality.
+// StartServer starts an HTTP server to expose the metrics.
 //
-// Summary: StartServer.
+// Summary: Starts the metrics server.
 //
-// Parameters.
-//   - addr: The parameter.
+// Parameters:.
+//   - addr: string. The address to listen on (e.g., ":8080").
 //
-// Returns.
-//   - result: The result.
+// Returns:.
+//   - error: An error if the server fails to start.
 func StartServer(addr string) error {
 	mux := http.NewServeMux()
 	mux.Handle("/metrics", Handler())
@@ -101,7 +105,7 @@ func StartServer(addr string) error {
 	}
 
 	if tcpAddr, ok := ln.Addr().(*net.TCPAddr); ok {
-		// Log to stdout so E2E tests can parse the dynamically assigned port.
+		// Log to stdout so E2E tests can parse the dynamically assigned port
 		fmt.Printf("Metrics server listening on port %d\n", tcpAddr.Port)
 	}
 
@@ -115,16 +119,16 @@ func StartServer(addr string) error {
 	return server.Serve(ln)
 }
 
-// SetGauge provides setgauge functionality.
+// SetGauge sets the value of a gauge.
 //
-// Summary: SetGauge.
+// Summary: Sets a gauge metric.
 //
-// Parameters.
-//   - name: The parameter.
-//   - val: The parameter.
-//   - labels: The parameter.
+// Parameters:.
+//   - name: string. The name of the gauge.
+//   - val: float32. The value to set.
+//   - labels: ...string. A list of labels to apply to the gauge.
 //
-// Returns.
+// Returns:.
 //   - None.
 func SetGauge(name string, val float32, labels ...string) {
 	var metricLabels []metrics.Label
@@ -136,88 +140,88 @@ func SetGauge(name string, val float32, labels ...string) {
 	metrics.SetGaugeWithLabels([]string{name}, val, metricLabels)
 }
 
-// IncrCounter provides incrcounter functionality.
+// IncrCounter increments a counter.
 //
-// Summary: IncrCounter.
+// Summary: Increments a counter metric.
 //
-// Parameters.
-//   - name: The parameter.
-//   - val: The parameter.
+// Parameters:.
+//   - name: []string. The name of the counter (as a path).
+//   - val: float32. The amount to increment.
 //
-// Returns.
+// Returns:.
 //   - None.
 func IncrCounter(name []string, val float32) {
 	metrics.IncrCounter(name, val)
 }
 
-// IncrCounterWithLabels provides incrcounterwithlabels functionality.
+// IncrCounterWithLabels increments a counter with labels.
 //
-// Summary: IncrCounterWithLabels.
+// Summary: Increments a labeled counter metric.
 //
-// Parameters.
-//   - name: The parameter.
-//   - val: The parameter.
-//   - labels: The parameter.
+// Parameters:.
+//   - name: []string. The name of the counter (as a path).
+//   - val: float32. The amount to increment.
+//   - labels: []metrics.Label. The labels to apply.
 //
-// Returns.
+// Returns:.
 //   - None.
 func IncrCounterWithLabels(name []string, val float32, labels []metrics.Label) {
 	metrics.IncrCounterWithLabels(name, val, labels)
 }
 
-// MeasureSince provides measuresince functionality.
+// MeasureSince measures the time since a given start time and records it.
 //
-// Summary: MeasureSince.
+// Summary: Records latency metric.
 //
-// Parameters.
-//   - name: The parameter.
-//   - start: The parameter.
+// Parameters:.
+//   - name: []string. The name of the metric (as a path).
+//   - start: time.Time. The start time.
 //
-// Returns.
+// Returns:.
 //   - None.
 func MeasureSince(name []string, start time.Time) {
 	metrics.MeasureSince(name, start)
 }
 
-// MeasureSinceWithLabels provides measuresincewithlabels functionality.
+// MeasureSinceWithLabels measures the time since a given start time and records it with labels.
 //
-// Summary: MeasureSinceWithLabels.
+// Summary: Records labeled latency metric.
 //
-// Parameters.
-//   - name: The parameter.
-//   - start: The parameter.
-//   - labels: The parameter.
+// Parameters:.
+//   - name: []string. The name of the metric (as a path).
+//   - start: time.Time. The start time.
+//   - labels: []metrics.Label. The labels to apply.
 //
-// Returns.
+// Returns:.
 //   - None.
 func MeasureSinceWithLabels(name []string, start time.Time, labels []metrics.Label) {
 	metrics.MeasureSinceWithLabels(name, start, labels)
 }
 
-// AddSample provides addsample functionality.
+// AddSample adds a sample to a histogram/summary.
 //
-// Summary: AddSample.
+// Summary: Adds a sample to a metric.
 //
-// Parameters.
-//   - name: The parameter.
-//   - val: The parameter.
+// Parameters:.
+//   - name: []string. The name of the metric (as a path).
+//   - val: float32. The value to sample.
 //
-// Returns.
+// Returns:.
 //   - None.
 func AddSample(name []string, val float32) {
 	metrics.AddSample(name, val)
 }
 
-// AddSampleWithLabels provides addsamplewithlabels functionality.
+// AddSampleWithLabels adds a sample to a histogram/summary with labels.
 //
-// Summary: AddSampleWithLabels.
+// Summary: Adds a labeled sample to a metric.
 //
-// Parameters.
-//   - name: The parameter.
-//   - val: The parameter.
-//   - labels: The parameter.
+// Parameters:.
+//   - name: []string. The name of the metric (as a path).
+//   - val: float32. The value to sample.
+//   - labels: []metrics.Label. The labels to apply.
 //
-// Returns.
+// Returns:.
 //   - None.
 func AddSampleWithLabels(name []string, val float32, labels []metrics.Label) {
 	metrics.AddSampleWithLabels(name, val, labels)

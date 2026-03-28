@@ -38,6 +38,12 @@ type peerConnectionWrapper struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - error.
 func (w *peerConnectionWrapper) Close() error {
 	if w.PeerConnection == nil {
 		return nil
@@ -54,6 +60,12 @@ func (w *peerConnectionWrapper) Close() error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//
+// Returns:
+//   - bool.
 func (w *peerConnectionWrapper) IsHealthy(_ context.Context) bool {
 	if w.PeerConnection == nil {
 		return false
@@ -162,6 +174,12 @@ func (t *WebrtcTool) newPeerConnection(_ context.Context) (*peerConnectionWrappe
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *v1.Tool.
 func (t *WebrtcTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -175,6 +193,12 @@ func (t *WebrtcTool) Tool() *v1.Tool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *mcp.Tool.
 func (t *WebrtcTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -195,6 +219,12 @@ func (t *WebrtcTool) MCPTool() *mcp.Tool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.CacheConfig.
 func (t *WebrtcTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -209,6 +239,14 @@ func (t *WebrtcTool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - req: *ExecutionRequest.
+//
+// Returns:
+//   - any.
+//   - error.
 func (t *WebrtcTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.webrtcPool == nil {
 		// Fallback to creating a new connection if the pool is not initialized
@@ -365,6 +403,12 @@ func (t *WebrtcTool) executeWithPeerConnection(ctx context.Context, req *Executi
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - error.
 func (t *WebrtcTool) Close() error {
 	if t.webrtcPool != nil {
 		_ = t.webrtcPool.Close()

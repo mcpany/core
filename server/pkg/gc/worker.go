@@ -40,6 +40,12 @@ type Worker struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - config: Config.
+//
+// Returns:
+//   - *Worker.
 func New(config Config) *Worker {
 	if config.Interval <= 0 {
 		config.Interval = 1 * time.Hour // Default 1 hour
@@ -60,6 +66,12 @@ func New(config Config) *Worker {
 //   - ctx: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
 //   - None.
 func (w *Worker) Start(ctx context.Context) {
 	if !w.config.Enabled {

@@ -54,6 +54,12 @@ type CircuitBreaker struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - config: *configv1.CircuitBreakerConfig.
+//
+// Returns:
+//   - *CircuitBreaker.
 func NewCircuitBreaker(config *configv1.CircuitBreakerConfig) *CircuitBreaker {
 	return &CircuitBreaker{
 		config: config,
@@ -71,6 +77,13 @@ func NewCircuitBreaker(config *configv1.CircuitBreakerConfig) *CircuitBreaker {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - work func(context.Context): error.
+//
+// Returns:
+//   - error.
 func (cb *CircuitBreaker) Execute(ctx context.Context, work func(context.Context) error) error {
 	originState := StateClosed
 
@@ -236,6 +249,12 @@ type CircuitBreakerOpenError struct{}
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string.
 func (e *CircuitBreakerOpenError) Error() string {
 	return "circuit breaker is open"
 }

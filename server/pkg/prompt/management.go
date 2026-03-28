@@ -80,6 +80,12 @@ type Manager struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *Manager.
 func NewManager() *Manager {
 	return &Manager{
 		prompts: xsync.NewMap[string, Prompt](),
@@ -95,6 +101,12 @@ func NewManager() *Manager {
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - mcpServer: MCPServerProvider.
+//
+// Returns:
+//   - None.
 func (pm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 	pm.mu.Lock()
 	defer pm.mu.Unlock()
@@ -109,6 +121,12 @@ func (pm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 //   - prompt: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - prompt: Prompt.
+//
+// Returns:
 //   - None.
 func (pm *Manager) AddPrompt(prompt Prompt) {
 	promptName := prompt.Prompt().Name
@@ -133,6 +151,12 @@ func (pm *Manager) AddPrompt(prompt Prompt) {
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - prompt: Prompt.
+//
+// Returns:
+//   - None.
 func (pm *Manager) UpdatePrompt(prompt Prompt) {
 	pm.prompts.Store(prompt.Prompt().Name, prompt)
 	pm.mu.Lock()
@@ -149,6 +173,13 @@ func (pm *Manager) UpdatePrompt(prompt Prompt) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - name: string.
+//
+// Returns:
+//   - Prompt.
+//   - bool.
 func (pm *Manager) GetPrompt(name string) (Prompt, bool) {
 	prompt, ok := pm.prompts.Load(name)
 	return prompt, ok
@@ -163,6 +194,12 @@ func (pm *Manager) GetPrompt(name string) (Prompt, bool) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []Prompt.
 func (pm *Manager) ListPrompts() []Prompt {
 	// ⚡ Bolt: Use a read-through cache to avoid repeated map iteration and slice allocation.
 	// The cache is invalidated on any write operation (Add/Update/Clear).
@@ -209,6 +246,12 @@ func (pm *Manager) ListPrompts() []Prompt {
 //   - serviceID: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - serviceID: string.
+//
+// Returns:
 //   - None.
 func (pm *Manager) ClearPromptsForService(serviceID string) {
 	changed := false

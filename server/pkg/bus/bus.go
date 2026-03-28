@@ -92,6 +92,13 @@ var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - messageBus: *bus.MessageBus.
+//
+// Returns:
+//   - *Provider.
+//   - error.
 func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 	if NewProviderHook != nil {
 		return NewProviderHook(messageBus)

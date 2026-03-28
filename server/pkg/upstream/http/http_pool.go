@@ -35,6 +35,12 @@ type httpPool struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - error.
 func (p *httpPool) Close() error {
 	if err := p.Pool.Close(); err != nil {
 		return err

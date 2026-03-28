@@ -27,6 +27,12 @@ var jsonSizeVisitedPool = sync.Pool{
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - v: interface{}.
+//
+// Returns:
+//   - int.
 func EstimateJSONSize(v interface{}) int {
 	visited := jsonSizeVisitedPool.Get().(map[uintptr]bool)
 	size := estimateJSONSizeRecursive(v, visited)

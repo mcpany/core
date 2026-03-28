@@ -106,6 +106,13 @@ type TrafficPoint struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - registry: serviceregistry.ServiceRegistryInterface.
+//   - tm: tool.ManagerInterface.
+//
+// Returns:
+//   - *Manager.
 func NewManager(registry serviceregistry.ServiceRegistryInterface, tm tool.ManagerInterface) *Manager {
 	m := &Manager{
 		sessions:        make(map[string]*SessionStats),
@@ -258,6 +265,17 @@ func (m *Manager) handleActivity(event activityEvent) {
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - sessionID: string.
+//   - meta: map[string]interface{}.
+//   - latency: time.Duration.
+//   - isError: bool.
+//   - serviceID: string.
+//   - responseLen: int64.
+//
+// Returns:
+//   - None.
 func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, latency time.Duration, isError bool, serviceID string, responseLen int64) {
 	// ⚡ BOLT: Shallow copy meta to prevent race conditions as map is passed by reference
 	metaCopy := make(map[string]interface{}, len(meta))
@@ -290,6 +308,12 @@ func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, 
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
 func (m *Manager) Close() {
 	close(m.shutdownCh)
 }
@@ -303,6 +327,12 @@ func (m *Manager) Close() {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - serviceID: string.
+//
+// Returns:
+//   - Stats.
 func (m *Manager) GetStats(serviceID string) Stats {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -350,6 +380,14 @@ func (m *Manager) GetStats(serviceID string) Stats {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - serviceID: string.
+//   - window: time.Duration.
+//
+// Returns:
+//   - avgLatency time.Duration.
+//   - errorRate float64.
 func (m *Manager) GetRecentServiceStats(serviceID string, window time.Duration) (avgLatency time.Duration, errorRate float64) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -400,6 +438,12 @@ func (m *Manager) GetRecentServiceStats(serviceID string, window time.Duration) 
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - serviceID: string.
+//
+// Returns:
+//   - []TrafficPoint.
 func (m *Manager) GetTrafficHistory(serviceID string) []TrafficPoint {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -461,6 +505,12 @@ func (m *Manager) GetTrafficHistory(serviceID string) []TrafficPoint {
 //   - points: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - points: []TrafficPoint.
+//
+// Returns:
 //   - None.
 func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 	m.mu.Lock()
@@ -528,6 +578,12 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//
+// Returns:
+//   - *topologyv1.Graph.
 func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 	// ⚡ BOLT: Fetch external data OUTSIDE lock to prevent blocking the event loop.
 	// Randomized Selection from Top 5 High-Impact Targets

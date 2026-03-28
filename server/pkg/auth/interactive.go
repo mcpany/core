@@ -30,6 +30,18 @@ import (
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - userID: unknown.
+//   - serviceID: unknown.
+//   - credentialID: unknown.
+//   - redirectURL: string.
+//
+// Returns:
+//   - string.
+//   - string.
+//   - error.
 func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credentialID, redirectURL string) (string, string, error) {
 	// Fix for unused userID:
 	_ = userID
@@ -142,6 +154,17 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - userID: unknown.
+//   - serviceID: unknown.
+//   - credentialID: unknown.
+//   - code: unknown.
+//   - redirectURL: string.
+//
+// Returns:
+//   - error.
 func (am *Manager) HandleOAuthCallback(ctx context.Context, userID, serviceID, credentialID, code, redirectURL string) error {
 	am.mu.RLock()
 	storage := am.storage

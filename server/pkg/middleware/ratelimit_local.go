@@ -28,6 +28,13 @@ type LocalLimiter struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//
+// Returns:
+//   - bool.
+//   - error.
 func (l *LocalLimiter) Allow(_ context.Context) (bool, error) {
 	return l.Limiter.Allow(), nil
 }
@@ -42,6 +49,14 @@ func (l *LocalLimiter) Allow(_ context.Context) (bool, error) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//   - n: int.
+//
+// Returns:
+//   - bool.
+//   - error.
 func (l *LocalLimiter) AllowN(_ context.Context, n int) (bool, error) {
 	return l.Limiter.AllowN(time.Now(), n), nil
 }
@@ -55,6 +70,13 @@ func (l *LocalLimiter) AllowN(_ context.Context, n int) (bool, error) {
 //   - burst: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - rps: float64.
+//   - burst: int.
+//
+// Returns:
 //   - None.
 func (l *LocalLimiter) Update(rps float64, burst int) {
 	limit := rate.Limit(rps)
@@ -80,6 +102,12 @@ type LocalStrategy struct{}
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *LocalStrategy.
 func NewLocalStrategy() *LocalStrategy {
 	return &LocalStrategy{}
 }
@@ -97,6 +125,17 @@ func NewLocalStrategy() *LocalStrategy {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//   - _: unknown.
+//   - _: unknown.
+//   - _: string.
+//   - config: *configv1.RateLimitConfig.
+//
+// Returns:
+//   - Limiter.
+//   - error.
 func (s *LocalStrategy) Create(_ context.Context, _, _, _ string, config *configv1.RateLimitConfig) (Limiter, error) {
 	rps := config.GetRequestsPerSecond()
 	burst := int(config.GetBurst())

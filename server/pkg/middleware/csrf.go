@@ -30,6 +30,12 @@ type CSRFMiddleware struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - allowedOrigins: []string.
+//
+// Returns:
+//   - *CSRFMiddleware.
 func NewCSRFMiddleware(allowedOrigins []string) *CSRFMiddleware {
 	m := &CSRFMiddleware{
 		allowedOrigins: make(map[string]bool),
@@ -46,6 +52,12 @@ func NewCSRFMiddleware(allowedOrigins []string) *CSRFMiddleware {
 //   - origins: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - origins: []string.
+//
+// Returns:
 //   - None.
 func (m *CSRFMiddleware) Update(origins []string) {
 	m.mu.Lock()
@@ -65,6 +77,12 @@ func (m *CSRFMiddleware) Update(origins []string) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - next: http.Handler.
+//
+// Returns:
+//   - http.Handler.
 func (m *CSRFMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// 1. Safe Methods are always allowed

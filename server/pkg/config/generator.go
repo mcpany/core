@@ -34,6 +34,12 @@ type Generator struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *Generator.
 func NewGenerator() *Generator {
 	return &Generator{
 		Reader: bufio.NewReader(os.Stdin),
@@ -49,6 +55,13 @@ func NewGenerator() *Generator {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []byte.
+//   - error.
 func (g *Generator) Generate() ([]byte, error) {
 	serviceType, err := g.prompt("🤖 Enter service type (http, grpc, openapi, graphql): ")
 	if err != nil {

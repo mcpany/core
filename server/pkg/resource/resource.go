@@ -137,6 +137,12 @@ type Manager struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *Manager.
 func NewManager() *Manager {
 	return &Manager{
 		resources: make(map[string]Resource),
@@ -152,6 +158,13 @@ func NewManager() *Manager {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - uri: string.
+//
+// Returns:
+//   - Resource.
+//   - bool.
 func (rm *Manager) GetResource(uri string) (Resource, bool) {
 	rm.mu.RLock()
 	defer rm.mu.RUnlock()
@@ -167,6 +180,12 @@ func (rm *Manager) GetResource(uri string) (Resource, bool) {
 //   - resource: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - resource: Resource.
+//
+// Returns:
 //   - None.
 func (rm *Manager) AddResource(resource Resource) {
 	var callback func()
@@ -189,6 +208,12 @@ func (rm *Manager) AddResource(resource Resource) {
 //   - uri: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - uri: string.
+//
+// Returns:
 //   - None.
 func (rm *Manager) RemoveResource(uri string) {
 	var callback func()
@@ -214,6 +239,12 @@ func (rm *Manager) RemoveResource(uri string) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []Resource.
 func (rm *Manager) ListResources() []Resource {
 	// ⚡ Bolt: Use a read-through cache to avoid repeated map iteration and slice allocation.
 	// The cache is invalidated on any write operation (Add/Remove).
@@ -260,6 +291,12 @@ func (rm *Manager) ListResources() []Resource {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - f: func().
+//
+// Returns:
+//   - None.
 func (rm *Manager) OnListChanged(f func()) {
 	rm.mu.Lock()
 	defer rm.mu.Unlock()
@@ -276,6 +313,13 @@ func (rm *Manager) OnListChanged(f func()) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - uri: string.
+//
+// Returns:
+//   - error.
 func (rm *Manager) Subscribe(ctx context.Context, uri string) error {
 	resource, ok := rm.GetResource(uri)
 	if !ok {
@@ -292,6 +336,12 @@ func (rm *Manager) Subscribe(ctx context.Context, uri string) error {
 //   - serviceID: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - serviceID: string.
+//
+// Returns:
 //   - None.
 func (rm *Manager) ClearResourcesForService(serviceID string) {
 	var callback func()

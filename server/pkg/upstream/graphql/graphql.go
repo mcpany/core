@@ -102,6 +102,12 @@ type Upstream struct{}
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - upstream.Upstream.
 func NewGraphQLUpstream() upstream.Upstream {
 	return &Upstream{}
 }
@@ -115,6 +121,12 @@ func NewGraphQLUpstream() upstream.Upstream {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//
+// Returns:
+//   - error.
 func (g *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
@@ -216,6 +228,14 @@ type Callable struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - req: *tool.ExecutionRequest.
+//
+// Returns:
+//   - any.
+//   - error.
 func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	graphqlReq := graphql.NewRequest(c.query)
 	for key, value := range req.Arguments {

@@ -27,6 +27,12 @@ type RBACMiddleware struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *RBACMiddleware.
 func NewRBACMiddleware() *RBACMiddleware {
 	return &RBACMiddleware{
 		enforcer: auth.NewRBACEnforcer(),
@@ -42,6 +48,12 @@ func NewRBACMiddleware() *RBACMiddleware {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - role string): func(http.Handler.
+//
+// Returns:
+//   - http.Handler.
 func (m *RBACMiddleware) RequireRole(role string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -73,6 +85,12 @@ func (m *RBACMiddleware) RequireRole(role string) func(http.Handler) http.Handle
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - roles ...string): func(http.Handler.
+//
+// Returns:
+//   - http.Handler.
 func (m *RBACMiddleware) RequireAnyRole(roles ...string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -106,6 +124,12 @@ func (m *RBACMiddleware) RequireAnyRole(roles ...string) func(http.Handler) http
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _ func(user *configv1.User) bool): func(http.Handler.
+//
+// Returns:
+//   - http.Handler.
 func (m *RBACMiddleware) EnforcePolicy(_ func(user *configv1.User) bool) func(http.Handler) http.Handler {
 	return func(_ http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {

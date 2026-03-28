@@ -277,6 +277,12 @@ type Manager struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - bus: *bus.Provider.
+//
+// Returns:
+//   - *Manager.
 func NewManager(bus *bus.Provider) *Manager {
 	return &Manager{
 		bus:                  bus,
@@ -299,6 +305,13 @@ func NewManager(bus *bus.Provider) *Manager {
 //   - defs: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - enabled: []string.
+//   - defs: []*configv1.ProfileDefinition.
+//
+// Returns:
 //   - None.
 func (tm *Manager) SetProfiles(enabled []string, defs []*configv1.ProfileDefinition) {
 	tm.mu.Lock()
@@ -408,6 +421,13 @@ func (tm *Manager) toolMatchesProfile(t *v1.Tool, profileName string) bool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - serviceID: unknown.
+//   - profileID: string.
+//
+// Returns:
+//   - bool.
 func (tm *Manager) IsServiceAllowed(serviceID, profileID string) bool {
 	tm.mu.RLock()
 	defer tm.mu.RUnlock()
@@ -438,6 +458,13 @@ func (tm *Manager) IsServiceAllowed(serviceID, profileID string) bool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - tool: Tool.
+//   - profileID: string.
+//
+// Returns:
+//   - bool.
 func (tm *Manager) ToolMatchesProfile(tool Tool, profileID string) bool {
 	tm.mu.RLock()
 	defer tm.mu.RUnlock()
@@ -453,6 +480,13 @@ func (tm *Manager) ToolMatchesProfile(tool Tool, profileID string) bool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - profileID: string.
+//
+// Returns:
+//   - map[string]bool.
+//   - bool.
 func (tm *Manager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
 	tm.mu.RLock()
 	defer tm.mu.RUnlock()
@@ -470,6 +504,12 @@ func (tm *Manager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - serviceID: string.
+//
+// Returns:
+//   - int.
 func (tm *Manager) GetToolCountForService(serviceID string) int {
 	// ⚡ Bolt Optimization: Check health status first without locking the main mutex.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -567,6 +607,12 @@ func (tm *Manager) matchesProperties(annotations *v1.ToolAnnotations, props map[
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - middleware: ExecutionMiddleware.
+//
+// Returns:
+//   - None.
 func (tm *Manager) AddMiddleware(middleware ExecutionMiddleware) {
 	tm.middlewares = append(tm.middlewares, middleware)
 }
@@ -579,6 +625,12 @@ func (tm *Manager) AddMiddleware(middleware ExecutionMiddleware) {
 //   - mcpServer: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - mcpServer: MCPServerProvider.
+//
+// Returns:
 //   - None.
 func (tm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 	tm.mu.Lock()
@@ -596,6 +648,14 @@ func (tm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - req: *ExecutionRequest.
+//
+// Returns:
+//   - any.
+//   - error.
 func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error) {
 	log := logging.GetLogger().With("toolName", req.ToolName)
 	log.Debug("Executing tool")
@@ -754,6 +814,13 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - serviceID: string.
+//   - info: *ServiceInfo.
+//
+// Returns:
+//   - None.
 func (tm *Manager) AddServiceInfo(serviceID string, info *ServiceInfo) {
 	if info.Config != nil {
 		var preHooks []PreCallHook
@@ -800,6 +867,13 @@ func (tm *Manager) AddServiceInfo(serviceID string, info *ServiceInfo) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - serviceID: string.
+//
+// Returns:
+//   - *ServiceInfo.
+//   - bool.
 func (tm *Manager) GetServiceInfo(serviceID string) (*ServiceInfo, bool) {
 	info, ok := tm.serviceInfo.Load(serviceID)
 	if !ok {
@@ -823,6 +897,12 @@ func (tm *Manager) GetServiceInfo(serviceID string) (*ServiceInfo, bool) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []*ServiceInfo.
 func (tm *Manager) ListServices() []*ServiceInfo {
 	var services []*ServiceInfo
 	tm.serviceInfo.Range(func(_ string, value *ServiceInfo) bool {
@@ -847,6 +927,12 @@ func (tm *Manager) ListServices() []*ServiceInfo {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - tool: Tool.
+//
+// Returns:
+//   - error.
 func (tm *Manager) AddTool(tool Tool) error {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
@@ -1015,6 +1101,13 @@ func (tm *Manager) AddTool(tool Tool) error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - toolName: string.
+//
+// Returns:
+//   - Tool.
+//   - bool.
 func (tm *Manager) GetTool(toolName string) (Tool, bool) {
 	// Try direct lookup (if client sends ID)
 	tool, ok := tm.tools.Load(toolName)
@@ -1041,6 +1134,12 @@ func (tm *Manager) GetTool(toolName string) (Tool, bool) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []Tool.
 func (tm *Manager) ListTools() []Tool {
 	tm.toolsMutex.RLock()
 	if tm.cachedTools != nil {
@@ -1092,6 +1191,12 @@ func (tm *Manager) rebuildCachedTools() []Tool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []*mcp.Tool.
 func (tm *Manager) ListMCPTools() []*mcp.Tool {
 	tm.toolsMutex.RLock()
 	if tm.cachedMCPTools != nil {
@@ -1141,6 +1246,12 @@ func (tm *Manager) ListMCPTools() []*mcp.Tool {
 //   - serviceID: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - serviceID: string.
+//
+// Returns:
 //   - None.
 func (tm *Manager) ClearToolsForService(serviceID string) {
 	tm.mu.Lock()

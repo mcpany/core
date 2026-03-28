@@ -229,6 +229,13 @@ func (p *poolImpl[T]) release(n int64) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
+//   - T.
+//   - error.
 func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 	var zero T
 
@@ -405,6 +412,12 @@ func (p *poolImpl[T]) isHealthySafe(ctx context.Context, client T) bool {
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - client: T.
+//
+// Returns:
+//   - None.
 func (p *poolImpl[T]) Put(client T) {
 	v := reflect.ValueOf(client)
 	if !v.IsValid() || ((v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil()) {
@@ -455,6 +468,12 @@ func (p *poolImpl[T]) Put(client T) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - error.
 func (p *poolImpl[T]) Close() error {
 	// We use the mutex here to ensure that we don't close the channel multiple times
 	// or have races with other Close calls. Get/Put check p.closed via atomic which is fast.
@@ -494,6 +513,12 @@ func (p *poolImpl[T]) Close() error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - int.
 func (p *poolImpl[T]) Len() int {
 	return len(p.clients)
 }
@@ -529,6 +554,12 @@ type Manager struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *Manager.
 func NewManager() *Manager {
 	return &Manager{
 		pools: make(map[string]any),
@@ -544,6 +575,13 @@ func NewManager() *Manager {
 //   - pool: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - name: string.
+//   - pool: any.
+//
+// Returns:
 //   - None.
 func (m *Manager) Register(name string, pool any) {
 	m.mu.Lock()
@@ -568,6 +606,12 @@ func (m *Manager) Register(name string, pool any) {
 //   - name: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - name: string.
+//
+// Returns:
 //   - None.
 func (m *Manager) Deregister(name string) {
 	m.mu.Lock()
@@ -614,6 +658,12 @@ func Get[T ClosableClient](m *Manager, name string) (Pool[T], bool) {
 //   - None.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
 //   - None.
 func (m *Manager) CloseAll() {
 	m.mu.Lock()

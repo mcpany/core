@@ -30,6 +30,12 @@ type Service struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - promptManager: ManagerInterface.
+//
+// Returns:
+//   - *Service.
 func NewService(promptManager ManagerInterface) *Service {
 	s := &Service{
 		promptManager: promptManager,
@@ -46,6 +52,12 @@ func NewService(promptManager ManagerInterface) *Service {
 //   - mcpServer: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - mcpServer: *mcp.Server.
+//
+// Returns:
 //   - None.
 func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 	s.mcpServer = mcpServer

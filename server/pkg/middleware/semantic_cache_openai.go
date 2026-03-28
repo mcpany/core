@@ -33,6 +33,13 @@ type OpenAIEmbeddingProvider struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - apiKey: unknown.
+//   - model: string.
+//
+// Returns:
+//   - *OpenAIEmbeddingProvider.
 func NewOpenAIEmbeddingProvider(apiKey, model string) *OpenAIEmbeddingProvider {
 	if model == "" {
 		model = "text-embedding-3-small"
@@ -70,6 +77,14 @@ type openAIEmbeddingResponse struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - text: string.
+//
+// Returns:
+//   - []float32.
+//   - error.
 func (p *OpenAIEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
 	reqBody := openAIEmbeddingRequest{
 		Input:          text,

@@ -40,6 +40,12 @@ type poolWithChecker[T pool.ClosableClient] struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - error.
 func (p *poolWithChecker[T]) Close() error {
 	if p.checker != nil {
 		p.checker.Stop()

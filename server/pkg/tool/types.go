@@ -222,6 +222,13 @@ const toolContextKey = contextKey("tool")
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - t: Tool.
+//
+// Returns:
+//   - context.Context.
 func NewContextWithTool(ctx context.Context, t Tool) context.Context {
 	return context.WithValue(ctx, toolContextKey, t)
 }
@@ -235,6 +242,13 @@ func NewContextWithTool(ctx context.Context, t Tool) context.Context {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
+//   - Tool.
+//   - bool.
 func GetFromContext(ctx context.Context) (Tool, bool) {
 	t, ok := ctx.Value(toolContextKey).(Tool)
 	return t, ok
@@ -299,6 +313,13 @@ const cacheControlContextKey = contextKey("cache_control")
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - cc: *CacheControl.
+//
+// Returns:
+//   - context.Context.
 func NewContextWithCacheControl(ctx context.Context, cc *CacheControl) context.Context {
 	return context.WithValue(ctx, cacheControlContextKey, cc)
 }
@@ -312,6 +333,13 @@ func NewContextWithCacheControl(ctx context.Context, cc *CacheControl) context.C
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
+//   - *CacheControl.
+//   - bool.
 func GetCacheControl(ctx context.Context) (*CacheControl, bool) {
 	cc, ok := ctx.Value(cacheControlContextKey).(*CacheControl)
 	return cc, ok
@@ -368,6 +396,17 @@ type GRPCTool struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - tool: *v1.Tool.
+//   - poolManager: *pool.Manager.
+//   - serviceID: string.
+//   - method: protoreflect.MethodDescriptor.
+//   - callDefinition: *configv1.GrpcCallDefinition.
+//   - resilienceConfig: *configv1.ResilienceConfig.
+//
+// Returns:
+//   - *GRPCTool.
 func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, method protoreflect.MethodDescriptor, callDefinition *configv1.GrpcCallDefinition, resilienceConfig *configv1.ResilienceConfig) *GRPCTool {
 	return &GRPCTool{
 		tool:              tool,
@@ -389,6 +428,12 @@ func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, met
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *v1.Tool.
 func (t *GRPCTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -402,6 +447,12 @@ func (t *GRPCTool) Tool() *v1.Tool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *mcp.Tool.
 func (t *GRPCTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -422,6 +473,12 @@ func (t *GRPCTool) MCPTool() *mcp.Tool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.CacheConfig.
 func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -436,6 +493,14 @@ func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - req: *ExecutionRequest.
+//
+// Returns:
+//   - any.
+//   - error.
 func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -557,6 +622,19 @@ type HTTPTool struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - tool: *v1.Tool.
+//   - poolManager: *pool.Manager.
+//   - serviceID: string.
+//   - authenticator: auth.UpstreamAuthenticator.
+//   - callDefinition: *configv1.HttpCallDefinition.
+//   - cfg: *configv1.ResilienceConfig.
+//   - policies: []*configv1.CallPolicy.
+//   - callID: string.
+//
+// Returns:
+//   - *HTTPTool.
 func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.HttpCallDefinition, cfg *configv1.ResilienceConfig, policies []*configv1.CallPolicy, callID string) *HTTPTool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -666,6 +744,12 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *v1.Tool.
 func (t *HTTPTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -679,6 +763,12 @@ func (t *HTTPTool) Tool() *v1.Tool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *mcp.Tool.
 func (t *HTTPTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -699,6 +789,12 @@ func (t *HTTPTool) MCPTool() *mcp.Tool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.CacheConfig.
 func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -713,6 +809,14 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - req: *ExecutionRequest.
+//
+// Returns:
+//   - any.
+//   - error.
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -1334,6 +1438,14 @@ type MCPTool struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - tool: *v1.Tool.
+//   - client: client.MCPClient.
+//   - callDefinition: *configv1.MCPCallDefinition.
+//
+// Returns:
+//   - *MCPTool.
 func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1.MCPCallDefinition) *MCPTool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -1377,6 +1489,12 @@ func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *v1.Tool.
 func (t *MCPTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -1390,6 +1508,12 @@ func (t *MCPTool) Tool() *v1.Tool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *mcp.Tool.
 func (t *MCPTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -1410,6 +1534,12 @@ func (t *MCPTool) MCPTool() *mcp.Tool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.CacheConfig.
 func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -1424,6 +1554,14 @@ func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - req: *ExecutionRequest.
+//
+// Returns:
+//   - any.
+//   - error.
 func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError
@@ -1577,6 +1715,18 @@ type OpenAPITool struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - tool: *v1.Tool.
+//   - client: client.HTTPClient.
+//   - parameterDefs: map[string]string.
+//   - method: unknown.
+//   - url: string.
+//   - authenticator: auth.UpstreamAuthenticator.
+//   - callDefinition: *configv1.OpenAPICallDefinition.
+//
+// Returns:
+//   - *OpenAPITool.
 func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[string]string, method, url string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.OpenAPICallDefinition) *OpenAPITool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -1624,6 +1774,12 @@ func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[s
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *v1.Tool.
 func (t *OpenAPITool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -1637,6 +1793,12 @@ func (t *OpenAPITool) Tool() *v1.Tool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *mcp.Tool.
 func (t *OpenAPITool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -1657,6 +1819,12 @@ func (t *OpenAPITool) MCPTool() *mcp.Tool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.CacheConfig.
 func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -1671,6 +1839,14 @@ func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - req: *ExecutionRequest.
+//
+// Returns:
+//   - any.
+//   - error.
 func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -1988,6 +2164,12 @@ func NewLocalCommandTool(
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *v1.Tool.
 func (t *LocalCommandTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -2001,6 +2183,12 @@ func (t *LocalCommandTool) Tool() *v1.Tool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *mcp.Tool.
 func (t *LocalCommandTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -2021,6 +2209,12 @@ func (t *LocalCommandTool) MCPTool() *mcp.Tool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.CacheConfig.
 func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDefinition == nil {
 		return nil
@@ -2038,6 +2232,14 @@ func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - req: *ExecutionRequest.
+//
+// Returns:
+//   - any.
+//   - error.
 func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -2368,6 +2570,12 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *v1.Tool.
 func (t *CommandTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -2381,6 +2589,12 @@ func (t *CommandTool) Tool() *v1.Tool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *mcp.Tool.
 func (t *CommandTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -2401,6 +2615,12 @@ func (t *CommandTool) MCPTool() *mcp.Tool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.CacheConfig.
 func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDefinition == nil {
 		return nil
@@ -2418,6 +2638,14 @@ func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - req: *ExecutionRequest.
+//
+// Returns:
+//   - any.
+//   - error.
 func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -2762,6 +2990,13 @@ type threadSafeBuffer struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - p: []byte.
+//
+// Returns:
+//   - n int.
+//   - err error.
 func (tsb *threadSafeBuffer) Write(p []byte) (n int, err error) {
 	tsb.mu.Lock()
 	defer tsb.mu.Unlock()
@@ -2777,6 +3012,12 @@ func (tsb *threadSafeBuffer) Write(p []byte) (n int, err error) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string.
 func (tsb *threadSafeBuffer) String() string {
 	tsb.mu.Lock()
 	defer tsb.mu.Unlock()

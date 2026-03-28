@@ -37,6 +37,16 @@ type LocalProvider struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: *configv1.OsFs.
+//   - rootPaths: map[string]string.
+//   - allowedPaths: unknown.
+//   - deniedPaths: []string.
+//   - symlinkMode: configv1.FilesystemUpstreamService_SymlinkMode.
+//
+// Returns:
+//   - *LocalProvider.
 func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string, allowedPaths, deniedPaths []string, symlinkMode configv1.FilesystemUpstreamService_SymlinkMode) *LocalProvider {
 	return &LocalProvider{
 		fs:           afero.NewOsFs(),
@@ -56,6 +66,12 @@ func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string, allowedPath
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - afero.Fs.
 func (p *LocalProvider) GetFs() afero.Fs {
 	return p.fs
 }
@@ -69,6 +85,13 @@ func (p *LocalProvider) GetFs() afero.Fs {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - virtualPath: string.
+//
+// Returns:
+//   - string.
+//   - error.
 func (p *LocalProvider) ResolvePath(virtualPath string) (string, error) {
 	if len(p.rootPaths) == 0 {
 		return "", fmt.Errorf("no root paths defined")
@@ -327,6 +350,12 @@ func (p *LocalProvider) containsSymlink(virtualPath, bestMatchVirtual, bestMatch
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - error.
 func (p *LocalProvider) Close() error {
 	return nil
 }

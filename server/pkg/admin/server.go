@@ -97,6 +97,14 @@ func NewServer(
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - _: *pb.ClearCacheRequest.
+//
+// Returns:
+//   - *pb.ClearCacheResponse.
+//   - error.
 func (s *Server) ClearCache(ctx context.Context, _ *pb.ClearCacheRequest) (*pb.ClearCacheResponse, error) {
 	if s.cache == nil {
 		return nil, status.Error(codes.FailedPrecondition, "caching is not enabled")
@@ -117,6 +125,14 @@ func (s *Server) ClearCache(ctx context.Context, _ *pb.ClearCacheRequest) (*pb.C
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//   - _: *pb.ListServicesRequest.
+//
+// Returns:
+//   - *pb.ListServicesResponse.
+//   - error.
 func (s *Server) ListServices(_ context.Context, _ *pb.ListServicesRequest) (*pb.ListServicesResponse, error) {
 	var services []*configv1.UpstreamServiceConfig
 	var serviceStates []*pb.ServiceState
@@ -173,6 +189,14 @@ func (s *Server) ListServices(_ context.Context, _ *pb.ListServicesRequest) (*pb
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//   - req: *pb.GetServiceRequest.
+//
+// Returns:
+//   - *pb.GetServiceResponse.
+//   - error.
 func (s *Server) GetService(_ context.Context, req *pb.GetServiceRequest) (*pb.GetServiceResponse, error) {
 	if s.serviceRegistry != nil {
 		cfg, ok := s.serviceRegistry.GetServiceConfig(req.GetServiceId())
@@ -225,6 +249,14 @@ func (s *Server) GetService(_ context.Context, req *pb.GetServiceRequest) (*pb.G
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//   - _: *pb.ListToolsRequest.
+//
+// Returns:
+//   - *pb.ListToolsResponse.
+//   - error.
 func (s *Server) ListTools(_ context.Context, _ *pb.ListToolsRequest) (*pb.ListToolsResponse, error) {
 	tools := s.toolManager.ListTools()
 	responseTools := make([]*mcprouterv1.Tool, 0, len(tools))
@@ -244,6 +276,14 @@ func (s *Server) ListTools(_ context.Context, _ *pb.ListToolsRequest) (*pb.ListT
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//   - req: *pb.GetToolRequest.
+//
+// Returns:
+//   - *pb.GetToolResponse.
+//   - error.
 func (s *Server) GetTool(_ context.Context, req *pb.GetToolRequest) (*pb.GetToolResponse, error) {
 	t, ok := s.toolManager.GetTool(req.GetToolName())
 	if !ok {
@@ -262,6 +302,14 @@ func (s *Server) GetTool(_ context.Context, req *pb.GetToolRequest) (*pb.GetTool
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - req: *pb.CreateUserRequest.
+//
+// Returns:
+//   - *pb.CreateUserResponse.
+//   - error.
 func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
 	if !req.HasUser() {
 		return nil, status.Error(codes.InvalidArgument, "user is required")
@@ -297,6 +345,14 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - req: *pb.GetUserRequest.
+//
+// Returns:
+//   - *pb.GetUserResponse.
+//   - error.
 func (s *Server) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUserResponse, error) {
 	user, err := s.storage.GetUser(ctx, req.GetUserId())
 	if err != nil {
@@ -321,6 +377,14 @@ func (s *Server) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUs
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - _: *pb.ListUsersRequest.
+//
+// Returns:
+//   - *pb.ListUsersResponse.
+//   - error.
 func (s *Server) ListUsers(ctx context.Context, _ *pb.ListUsersRequest) (*pb.ListUsersResponse, error) {
 	users, err := s.storage.ListUsers(ctx)
 	if err != nil {
@@ -347,6 +411,14 @@ func (s *Server) ListUsers(ctx context.Context, _ *pb.ListUsersRequest) (*pb.Lis
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - req: *pb.UpdateUserRequest.
+//
+// Returns:
+//   - *pb.UpdateUserResponse.
+//   - error.
 func (s *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.UpdateUserResponse, error) {
 	if !req.HasUser() {
 		return nil, status.Error(codes.InvalidArgument, "user is required")
@@ -382,6 +454,14 @@ func (s *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - req: *pb.DeleteUserRequest.
+//
+// Returns:
+//   - *pb.DeleteUserResponse.
+//   - error.
 func (s *Server) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb.DeleteUserResponse, error) {
 	if err := s.storage.DeleteUser(ctx, req.GetUserId()); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete user: %v", err)
@@ -399,6 +479,14 @@ func (s *Server) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//   - _: *pb.GetDiscoveryStatusRequest.
+//
+// Returns:
+//   - *pb.GetDiscoveryStatusResponse.
+//   - error.
 func (s *Server) GetDiscoveryStatus(_ context.Context, _ *pb.GetDiscoveryStatusRequest) (*pb.GetDiscoveryStatusResponse, error) {
 	if s.discoveryManager == nil {
 		return &pb.GetDiscoveryStatusResponse{}, nil
@@ -431,6 +519,14 @@ func (s *Server) GetDiscoveryStatus(_ context.Context, _ *pb.GetDiscoveryStatusR
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - req: *pb.ListAuditLogsRequest.
+//
+// Returns:
+//   - *pb.ListAuditLogsResponse.
+//   - error.
 func (s *Server) ListAuditLogs(ctx context.Context, req *pb.ListAuditLogsRequest) (*pb.ListAuditLogsResponse, error) {
 	if s.auditMiddleware == nil {
 		return nil, status.Error(codes.FailedPrecondition, "audit logging is not enabled")

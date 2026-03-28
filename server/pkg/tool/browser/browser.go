@@ -55,6 +55,12 @@ type Provider struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *Provider.
 func NewProvider() *Provider {
 	return &Provider{}
 }
@@ -69,6 +75,14 @@ func NewProvider() *Provider {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - url: string.
+//
+// Returns:
+//   - string.
+//   - error.
 func (b *Provider) BrowsePage(ctx context.Context, url string) (string, error) {
 	if url == "" {
 		return "", fmt.Errorf("url is required")
@@ -93,6 +107,12 @@ func (b *Provider) BrowsePage(ctx context.Context, url string) (string, error) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - map[string]interface.
 func (b *Provider) ToolDefinition() map[string]interface{} {
 	return map[string]interface{}{
 		"name":        "browse_page",
@@ -123,6 +143,14 @@ type playwrightFetcher struct{}
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//   - url: string.
+//
+// Returns:
+//   - string.
+//   - error.
 func (f *playwrightFetcher) FetchText(_ context.Context, url string) (string, error) {
 	pw, err := playwright.Run()
 	if err != nil {

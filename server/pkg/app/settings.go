@@ -32,6 +32,14 @@ type GlobalSettingsManager struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - apiKey: string.
+//   - allowedIPs: []string.
+//   - allowedOrigins: []string.
+//
+// Returns:
+//   - *GlobalSettingsManager.
 func NewGlobalSettingsManager(apiKey string, allowedIPs []string, allowedOrigins []string) *GlobalSettingsManager {
 	m := &GlobalSettingsManager{}
 	m.apiKey.Store(apiKey)
@@ -54,6 +62,13 @@ func NewGlobalSettingsManager(apiKey string, allowedIPs []string, allowedOrigins
 //   - explicitAPIKey: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - settings: *config_v1.GlobalSettings.
+//   - explicitAPIKey: string.
+//
+// Returns:
 //   - None.
 func (m *GlobalSettingsManager) Update(settings *config_v1.GlobalSettings, explicitAPIKey string) {
 	m.mu.Lock()
@@ -92,6 +107,12 @@ func (m *GlobalSettingsManager) Update(settings *config_v1.GlobalSettings, expli
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string.
 func (m *GlobalSettingsManager) GetAPIKey() string {
 	val := m.apiKey.Load()
 	if val == nil {
@@ -109,6 +130,12 @@ func (m *GlobalSettingsManager) GetAPIKey() string {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []string.
 func (m *GlobalSettingsManager) GetAllowedIPs() []string {
 	val := m.allowedIPs.Load()
 	if val == nil {
@@ -126,6 +153,12 @@ func (m *GlobalSettingsManager) GetAllowedIPs() []string {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []string.
 func (m *GlobalSettingsManager) GetAllowedOrigins() []string {
 	val := m.allowedOrigins.Load()
 	if val == nil {

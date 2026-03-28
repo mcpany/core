@@ -30,6 +30,12 @@ type A2ABridgeMiddleware struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - contextManager: *RecursiveContextManager.
+//
+// Returns:
+//   - *A2ABridgeMiddleware.
 func NewA2ABridgeMiddleware(contextManager *RecursiveContextManager) *A2ABridgeMiddleware {
 	return &A2ABridgeMiddleware{
 		contextManager: contextManager,
@@ -48,6 +54,16 @@ func NewA2ABridgeMiddleware(contextManager *RecursiveContextManager) *A2ABridgeM
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - method: string.
+//   - req: mcp.Request.
+//   - next: mcp.MethodHandler.
+//
+// Returns:
+//   - mcp.Result.
+//   - error.
 func (m *A2ABridgeMiddleware) Execute(ctx context.Context, method string, req mcp.Request, next mcp.MethodHandler) (mcp.Result, error) {
 	if method != "tools/call" {
 		return next(ctx, method, req)

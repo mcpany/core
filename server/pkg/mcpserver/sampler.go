@@ -27,6 +27,12 @@ type MCPSession struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - session: *mcp.ServerSession.
+//
+// Returns:
+//   - *MCPSession.
 func NewMCPSession(session *mcp.ServerSession) *MCPSession {
 	return &MCPSession{session: session}
 }
@@ -40,6 +46,12 @@ func NewMCPSession(session *mcp.ServerSession) *MCPSession {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - session: *mcp.ServerSession.
+//
+// Returns:
+//   - *MCPSession.
 func NewMCPSampler(session *mcp.ServerSession) *MCPSession {
 	return NewMCPSession(session)
 }
@@ -54,6 +66,14 @@ func NewMCPSampler(session *mcp.ServerSession) *MCPSession {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - params: *mcp.CreateMessageParams.
+//
+// Returns:
+//   - *mcp.CreateMessageResult.
+//   - error.
 func (s *MCPSession) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
 	if s.session == nil {
 		return nil, fmt.Errorf("no active session available for sampling")
@@ -70,6 +90,13 @@ func (s *MCPSession) CreateMessage(ctx context.Context, params *mcp.CreateMessag
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
+//   - *mcp.ListRootsResult.
+//   - error.
 func (s *MCPSession) ListRoots(ctx context.Context) (*mcp.ListRootsResult, error) {
 	if s.session == nil {
 		return nil, fmt.Errorf("no active session available for roots inspection")

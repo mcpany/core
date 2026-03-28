@@ -19,6 +19,14 @@ import (
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - toolName: string.
+//
+// Returns:
+//   - namespace string.
+//   - tool string.
+//   - err error.
 func ParseToolName(toolName string) (namespace string, tool string, err error) {
 	namespace, tool, found := strings.Cut(toolName, consts.ToolNameServiceSeparator)
 	if !found {
@@ -44,6 +52,13 @@ func ParseToolName(toolName string) (namespace string, tool string, err error) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - serviceID: unknown.
+//   - methodName: string.
+//
+// Returns:
+//   - string.
 func GetFullyQualifiedToolName(serviceID, methodName string) string {
 	return fmt.Sprintf("%s%s%s", serviceID, consts.ToolNameServiceSeparator, methodName)
 }

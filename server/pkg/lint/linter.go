@@ -42,6 +42,12 @@ const (
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string.
 func (s Severity) String() string {
 	switch s {
 	case Error:
@@ -80,6 +86,12 @@ type Result struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string.
 func (r Result) String() string {
 	pathStr := ""
 	if r.Path != "" {
@@ -110,6 +122,12 @@ type Linter struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - cfg: *configv1.McpAnyServerConfig.
+//
+// Returns:
+//   - *Linter.
 func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 	return &Linter{cfg: cfg}
 }
@@ -123,6 +141,13 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
+//   - []Result.
+//   - error.
 func (l *Linter) Run(ctx context.Context) ([]Result, error) {
 	// Pre-allocate to avoid performance warnings, though initial size is a guess.
 	results := make([]Result, 0, 10)

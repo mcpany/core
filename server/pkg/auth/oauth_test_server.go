@@ -36,6 +36,12 @@ type MockOAuth2Server struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - t: *testing.T.
+//
+// Returns:
+//   - *MockOAuth2Server.
 func NewMockOAuth2Server(t *testing.T) *MockOAuth2Server {
 	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
 	require.NoError(t, err)
@@ -116,6 +122,13 @@ func NewMockOAuth2Server(t *testing.T) *MockOAuth2Server {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - t: *testing.T.
+//   - claims: jwt.MapClaims.
+//
+// Returns:
+//   - string.
 func (s *MockOAuth2Server) NewIDToken(t *testing.T, claims jwt.MapClaims) string {
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
 	signedToken, err := token.SignedString(s.PrivateKey)

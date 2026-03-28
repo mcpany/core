@@ -39,6 +39,12 @@ type ConfigFile struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
+//   - error.
 func (s *Seeder) Seed(ctx context.Context) error {
 	entries, err := os.ReadDir(s.ExamplesDir)
 	if err != nil {

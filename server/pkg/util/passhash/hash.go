@@ -19,6 +19,13 @@ import (
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - password: string.
+//
+// Returns:
+//   - string.
+//   - error.
 func Password(password string) (string, error) {
 	// Increase cost to 12 for better security (default is 10)
 	const cost = 12
@@ -39,6 +46,13 @@ func Password(password string) (string, error) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - password: unknown.
+//   - hash: string.
+//
+// Returns:
+//   - bool.
 func CheckPassword(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil

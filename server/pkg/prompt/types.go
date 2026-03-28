@@ -86,6 +86,14 @@ type TemplatedPrompt struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - definition: *configv1.PromptDefinition.
+//   - serviceID: string.
+//
+// Returns:
+//   - *TemplatedPrompt.
+//   - error.
 func NewTemplatedPrompt(definition *configv1.PromptDefinition, serviceID string) (*TemplatedPrompt, error) {
 	// ⚡ BOLT: Pre-compile templates to avoid parsing on every request.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -116,6 +124,12 @@ func NewTemplatedPrompt(definition *configv1.PromptDefinition, serviceID string)
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *mcp.Prompt.
 func (p *TemplatedPrompt) Prompt() *mcp.Prompt {
 	args := make([]*mcp.PromptArgument, 0)
 	if p.definition.GetInputSchema() != nil {
@@ -178,6 +192,12 @@ func (p *TemplatedPrompt) Prompt() *mcp.Prompt {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string.
 func (p *TemplatedPrompt) Service() string {
 	return p.serviceID
 }
@@ -191,6 +211,12 @@ func (p *TemplatedPrompt) Service() string {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.PromptDefinition.
 func (p *TemplatedPrompt) Definition() *configv1.PromptDefinition {
 	return p.definition
 }
@@ -205,6 +231,14 @@ func (p *TemplatedPrompt) Definition() *configv1.PromptDefinition {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//   - args: json.RawMessage.
+//
+// Returns:
+//   - *mcp.GetPromptResult.
+//   - error.
 func (p *TemplatedPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
 	var inputs map[string]any
 	if err := json.Unmarshal(args, &inputs); err != nil {
@@ -243,6 +277,14 @@ func (p *TemplatedPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.Get
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - definition: *configv1.PromptDefinition.
+//   - serviceID: string.
+//
+// Returns:
+//   - Prompt.
+//   - error.
 func NewPromptFromConfig(definition *configv1.PromptDefinition, serviceID string) (Prompt, error) {
 	return NewTemplatedPrompt(definition, serviceID)
 }

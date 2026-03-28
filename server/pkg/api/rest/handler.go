@@ -25,6 +25,13 @@ import (
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - w: http.ResponseWriter.
+//   - r: *http.Request.
+//
+// Returns:
+//   - None.
 func ValidateConfigHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		respondWithJSONError(w, http.StatusMethodNotAllowed, "Method not allowed")

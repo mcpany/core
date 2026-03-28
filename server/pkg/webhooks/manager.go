@@ -50,6 +50,12 @@ type Manager struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *Manager.
 func NewManager() *Manager {
 	return &Manager{
 		webhooks:   make(map[string]*WebhookConfig),
@@ -66,6 +72,12 @@ func NewManager() *Manager {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []*WebhookConfig.
 func (m *Manager) ListWebhooks() []*WebhookConfig {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -84,6 +96,12 @@ func (m *Manager) ListWebhooks() []*WebhookConfig {
 //   - w: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - w: *WebhookConfig.
+//
+// Returns:
 //   - None.
 func (m *Manager) AddWebhook(w *WebhookConfig) {
 	m.mu.Lock()
@@ -104,6 +122,13 @@ func (m *Manager) AddWebhook(w *WebhookConfig) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - id: string.
+//
+// Returns:
+//   - *WebhookConfig.
+//   - bool.
 func (m *Manager) GetWebhook(id string) (*WebhookConfig, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -119,6 +144,12 @@ func (m *Manager) GetWebhook(id string) (*WebhookConfig, bool) {
 //   - id: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - id: string.
+//
+// Returns:
 //   - None.
 func (m *Manager) DeleteWebhook(id string) {
 	m.mu.Lock()
@@ -136,6 +167,13 @@ func (m *Manager) DeleteWebhook(id string) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - id: string.
+//
+// Returns:
+//   - error.
 func (m *Manager) TestWebhook(ctx context.Context, id string) error {
 	w, ok := m.GetWebhook(id)
 	if !ok {

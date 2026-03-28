@@ -23,6 +23,13 @@ import (
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - tlsConfig: *configv1.TLSConfig.
+//
+// Returns:
+//   - *http.Client.
+//   - error.
 func NewHTTPClientWithTLS(tlsConfig *configv1.TLSConfig) (*http.Client, error) {
 	var tlsClientConfig *tls.Config
 

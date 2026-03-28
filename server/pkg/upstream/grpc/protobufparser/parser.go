@@ -76,6 +76,12 @@ type McpField struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string.
 func (f *McpField) GetName() string {
 	return f.Name
 }
@@ -89,6 +95,12 @@ func (f *McpField) GetName() string {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string.
 func (f *McpField) GetDescription() string {
 	return f.Description
 }
@@ -102,6 +114,12 @@ func (f *McpField) GetDescription() string {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string.
 func (f *McpField) GetType() string {
 	return f.Type
 }
@@ -115,6 +133,12 @@ func (f *McpField) GetType() string {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - bool.
 func (f *McpField) GetIsRepeated() bool {
 	return f.IsRepeated
 }
@@ -391,6 +415,14 @@ type McpResource struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - target: string.
+//
+// Returns:
+//   - *descriptorpb.FileDescriptorSet.
+//   - error.
 func ParseProtoByReflection(ctx context.Context, target string) (*descriptorpb.FileDescriptorSet, error) {
 	// Create a context with a timeout for the entire reflection process
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
@@ -582,6 +614,13 @@ func getFileDescriptorByFilename(stream reflectpb.ServerReflection_ServerReflect
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - fds: *descriptorpb.FileDescriptorSet.
+//
+// Returns:
+//   - *ParsedMcpAnnotations.
+//   - error.
 func ExtractMcpDefinitions(fds *descriptorpb.FileDescriptorSet) (*ParsedMcpAnnotations, error) {
 	if fds == nil {
 		return nil, fmt.Errorf("FileDescriptorSet is nil")

@@ -1,5 +1,5 @@
-// Copyright 2025 Author(s) of MCP Any.
-// SPDX-License-Identifier: Apache-2.0.
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
 package audit
 
@@ -25,15 +25,27 @@ type SQLiteAuditStore struct {
 	mu sync.Mutex
 }
 
-// NewSQLiteAuditStore provides newsqliteauditstore functionality.
+// NewSQLiteAuditStore creates a new SQLiteAuditStore.
 //
-// Summary: NewSQLiteAuditStore.
+// Summary: Initializes a new SQLiteAuditStore.
 //
-// Parameters.
-//   - path: The parameter.
+// Parameters:.
+//   - path: string. The file path to the SQLite database.
 //
-// Returns.
-//   - result: The result.
+// Returns:.
+//   - *SQLiteAuditStore: The initialized store.
+//   - error: An error if the path is invalid or database initialization fails.
+//
+// Errors:
+//   - Returns error if path validation fails.
+//   - Returns error if database connection fails.
+//   - Returns error if schema creation fails.
+//
+// Side Effects:
+//   - Opens (or creates) the SQLite database file.
+//   - Creates the 'audit_logs' table.
+//   - Optimizes database with PRAGMA settings.
+//   - Adds missing columns if schema migration is needed.
 func NewSQLiteAuditStore(path string) (*SQLiteAuditStore, error) {
 	if path == "" {
 		return nil, fmt.Errorf("sqlite path is required")
@@ -48,7 +60,7 @@ func NewSQLiteAuditStore(path string) (*SQLiteAuditStore, error) {
 		return nil, fmt.Errorf("failed to open sqlite database: %w", err)
 	}
 
-	// Create table if not exists.
+	// Create table if not exists
 	schema := `
 	CREATE TABLE IF NOT EXISTS audit_logs (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -74,7 +86,7 @@ func NewSQLiteAuditStore(path string) (*SQLiteAuditStore, error) {
 		return nil, fmt.Errorf("failed to create audit_logs table: %w", err)
 	}
 
-	// Set pragmas for performance.
+	// Set pragmas for performance
 	ctxPragma, cancelPragma := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancelPragma()
 	if _, err := db.ExecContext(ctxPragma, "PRAGMA journal_mode=WAL;"); err != nil {
@@ -90,7 +102,7 @@ func NewSQLiteAuditStore(path string) (*SQLiteAuditStore, error) {
 		return nil, fmt.Errorf("failed to set busy_timeout: %w", err)
 	}
 
-	// Ensure columns exist (for migration).
+	// Ensure columns exist (for migration)
 	if err := ensureColumns(db); err != nil {
 		_ = db.Close()
 		return nil, fmt.Errorf("failed to ensure columns: %w", err)
@@ -121,23 +133,23 @@ func ensureColumns(db *sql.DB) error {
 }
 
 func ensureColumn(db *sql.DB, colName string) error {
-	// Whitelist valid column names to prevent SQL injection even from internal calls.
+	// Whitelist valid column names to prevent SQL injection even from internal calls
 	switch colName {
 	case "prev_hash", "hash", "trace_id", "span_id", "parent_id":
-		// Allowed.
+		// Allowed
 	default:
 		return fmt.Errorf("invalid column name: %s", colName)
 	}
 
-	// Check if column exists.
-	//nolint:gosec // colName is validated above.
+	// Check if column exists
+	//nolint:gosec // colName is validated above
 	query := fmt.Sprintf("SELECT %s FROM audit_logs LIMIT 1", colName)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if _, err := db.ExecContext(ctx, query); err == nil {
 		return nil
 	}
-	// Add column.
+	// Add column
 
 	query = fmt.Sprintf("ALTER TABLE audit_logs ADD COLUMN %s TEXT DEFAULT ''", colName)
 	ctxAlter, cancelAlter := context.WithTimeout(context.Background(), 10*time.Second)
@@ -146,21 +158,24 @@ func ensureColumn(db *sql.DB, colName string) error {
 	return err
 }
 
-// Write provides write functionality.
+// Write writes an audit entry to the database.
 //
-// Summary: Write.
+// Summary: Writes a single audit entry with cryptographic hash chaining.
 //
-// Parameters.
-//   - ctx: The parameter.
-//   - entry: The parameter.
+// Parameters:.
+//   - ctx: context.Context. The request context.
+//   - entry: Entry. The audit entry to write.
 //
-// Returns.
-//   - result: The result.
+// Returns:.
+//   - error: An error if the write fails.
+//
+// Side Effects:
+//   - Inserts a row into the audit_logs table.
 func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	// Marshal complex types.
+	// Marshal complex types
 	argsJSON := "{}"
 	if len(entry.Arguments) > 0 {
 		argsJSON = string(entry.Arguments)
@@ -175,9 +190,9 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 
 	ts := entry.Timestamp.Format(time.RFC3339Nano)
 
-	// Get previous hash.
+	// Get previous hash
 	var prevHash string
-	// Order by ID desc to get the last entry.
+	// Order by ID desc to get the last entry
 	err := s.db.QueryRowContext(ctx, "SELECT hash FROM audit_logs ORDER BY id DESC LIMIT 1").Scan(&prevHash)
 	if err != nil && err != sql.ErrNoRows {
 		return fmt.Errorf("failed to get previous hash: %w", err)
@@ -186,7 +201,7 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 		prevHash = "" // First entry
 	}
 
-	// Compute hash.
+	// Compute hash
 	hash := computeHash(ts, entry.ToolName, entry.UserID, entry.ProfileID, argsJSON, resultJSON, entry.Error, entry.DurationMs, prevHash)
 
 	query := `
@@ -213,16 +228,20 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 	return err
 }
 
-// Read provides read functionality.
+// Read reads audit entries from the database based on the filter.
 //
-// Summary: Read.
+// Summary: Retrieves audit entries matching the specified filter criteria.
 //
-// Parameters.
-//   - ctx: The parameter.
-//   - filter: The parameter.
+// Parameters:.
+//   - ctx: context.Context. The request context.
+//   - filter: Filter. The filtering criteria (time range, tool name, user ID, etc.).
 //
-// Returns.
-//   - result: The result.
+// Returns:.
+//   - []Entry: A slice of matching audit entries.
+//   - error: An error if the query fails.
+//
+// Side Effects:
+//   - Executes a SELECT query on the database.
 func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -292,15 +311,22 @@ func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, er
 	return entries, nil
 }
 
-// Verify provides verify functionality.
+// Verify checks the integrity of the audit logs.
 //
-// Summary: Verify.
+// Summary: Validates the cryptographic hash chain of all audit entries.
 //
-// Parameters.
+// Returns:.
+//   - bool: True if the chain is valid, false otherwise.
+//   - error: An error if verification fails or data is corrupted.
+//
+// Errors:
+//   - Returns error if a hash mismatch is detected.
+//
+// Side Effects:
+//   - Scans the entire audit_logs table.
+//
+// Parameters:
 //   - None.
-//
-// Returns.
-//   - result: The result.
 func (s *SQLiteAuditStore) Verify() (bool, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -327,12 +353,12 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 			return false, fmt.Errorf("integrity violation at id %d: prev_hash mismatch (expected %q, got %q)", id, expectedPrevHash, prevHash)
 		}
 
-		// Check hash version.
+		// Check hash version
 		var calculatedHash string
 		if len(hash) > 3 && hash[:3] == "v1:" {
 			calculatedHash = computeHash(ts, toolName, userID, profileID, args, result, errorMsg, durationMs, prevHash)
 		} else {
-			// Fallback to legacy.
+			// Fallback to legacy
 			calculatedHash = computeHashV0(ts, toolName, userID, profileID, args, result, errorMsg, durationMs, prevHash)
 		}
 
@@ -348,15 +374,18 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 	return true, nil
 }
 
-// Close provides close functionality.
+// Close closes the database connection.
 //
-// Summary: Close.
+// Summary: Closes the SQLite database connection.
 //
-// Parameters.
+// Returns:.
+//   - error: An error if closing fails.
+//
+// Side Effects:
+//   - Closes the DB connection.
+//
+// Parameters:
 //   - None.
-//
-// Returns.
-//   - result: The result.
 func (s *SQLiteAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

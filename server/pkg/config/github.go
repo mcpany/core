@@ -65,6 +65,14 @@ type GitHub struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//   - rawURL: string.
+//
+// Returns:
+//   - *GitHub.
+//   - error.
 func NewGitHub(_ context.Context, rawURL string) (*GitHub, error) {
 	parsedURL, err := url.Parse(rawURL)
 	if err != nil {
@@ -117,6 +125,12 @@ func isGitHubURL(rawURL string) bool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string.
 func (g *GitHub) ToRawContentURL() string {
 	return fmt.Sprintf("%s/%s/%s/%s/%s", g.rawContentURL, g.Owner, g.Repo, g.Ref, g.Path)
 }
@@ -147,6 +161,14 @@ type Content struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - auth: *configv1.Authentication.
+//
+// Returns:
+//   - []Content.
+//   - error.
 func (g *GitHub) List(ctx context.Context, auth *configv1.Authentication) ([]Content, error) {
 	apiURL := fmt.Sprintf("%s/repos/%s/%s/contents/%s", g.apiURL, g.Owner, g.Repo, g.Path)
 	if g.Ref != "" {

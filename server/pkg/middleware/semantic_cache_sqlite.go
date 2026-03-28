@@ -32,6 +32,13 @@ type SQLiteVectorStore struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - path: string.
+//
+// Returns:
+//   - *SQLiteVectorStore.
+//   - error.
 func NewSQLiteVectorStore(path string) (*SQLiteVectorStore, error) {
 	if path == "" {
 		return nil, fmt.Errorf("sqlite path is required")
@@ -177,6 +184,16 @@ func (s *SQLiteVectorStore) loadFromDB(ctx context.Context) error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - key: string.
+//   - vector: []float32.
+//   - result: any.
+//   - ttl: time.Duration.
+//
+// Returns:
+//   - error.
 func (s *SQLiteVectorStore) Add(ctx context.Context, key string, vector []float32, result any, ttl time.Duration) error {
 	// Add to memory first
 	if err := s.memoryStore.Add(ctx, key, vector, result, ttl); err != nil {
@@ -228,6 +245,16 @@ func (s *SQLiteVectorStore) Add(ctx context.Context, key string, vector []float3
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - key: string.
+//   - query: []float32.
+//
+// Returns:
+//   - any.
+//   - float32.
+//   - bool.
 func (s *SQLiteVectorStore) Search(ctx context.Context, key string, query []float32) (any, float32, bool) {
 	return s.memoryStore.Search(ctx, key, query)
 }
@@ -241,6 +268,13 @@ func (s *SQLiteVectorStore) Search(ctx context.Context, key string, query []floa
 //   - key: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - key: string.
+//
+// Returns:
 //   - None.
 func (s *SQLiteVectorStore) Prune(ctx context.Context, key string) {
 	s.memoryStore.Prune(ctx, key)
@@ -258,6 +292,12 @@ func (s *SQLiteVectorStore) Prune(ctx context.Context, key string) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - error.
 func (s *SQLiteVectorStore) Close() error {
 	return s.db.Close()
 }

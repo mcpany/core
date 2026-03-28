@@ -41,6 +41,12 @@ type Router struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *Router.
 func NewRouter() *Router {
 	return &Router{
 		handlers: make(map[string]MethodHandler),
@@ -57,6 +63,13 @@ func NewRouter() *Router {
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - method: string.
+//   - handler: MethodHandler.
+//
+// Returns:
+//   - None.
 func (r *Router) Register(method string, handler MethodHandler) {
 	r.handlers[method] = handler
 }
@@ -70,6 +83,13 @@ func (r *Router) Register(method string, handler MethodHandler) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - method: string.
+//
+// Returns:
+//   - MethodHandler.
+//   - bool.
 func (r *Router) GetHandler(method string) (MethodHandler, bool) {
 	handler, ok := r.handlers[method]
 	return handler, ok

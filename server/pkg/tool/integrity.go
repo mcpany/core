@@ -22,6 +22,12 @@ import (
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - t: *v1.Tool.
+//
+// Returns:
+//   - error.
 func VerifyIntegrity(t *v1.Tool) error {
 	if !t.HasIntegrity() {
 		return nil // No integrity check required
@@ -52,6 +58,12 @@ func VerifyIntegrity(t *v1.Tool) error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - t: *configv1.ToolDefinition.
+//
+// Returns:
+//   - error.
 func VerifyConfigIntegrity(t *configv1.ToolDefinition) error {
 	if t.GetIntegrity() == nil {
 		return nil // No integrity check required
@@ -82,6 +94,13 @@ func VerifyConfigIntegrity(t *configv1.ToolDefinition) error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - t: *v1.Tool.
+//
+// Returns:
+//   - string.
+//   - error.
 func CalculateHash(t *v1.Tool) (string, error) {
 	// Create a copy of the tool without the integrity field to calculate the hash
 	toolCopy := proto.Clone(t).(*v1.Tool)
@@ -109,6 +128,13 @@ func CalculateHash(t *v1.Tool) (string, error) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - t: *configv1.ToolDefinition.
+//
+// Returns:
+//   - string.
+//   - error.
 func CalculateConfigHash(t *configv1.ToolDefinition) (string, error) {
 	// Create a copy of the tool to calculate the hash
 	toolCopy := proto.Clone(t).(*configv1.ToolDefinition)

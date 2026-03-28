@@ -31,6 +31,17 @@ type CallableTool struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - toolDef: *configv1.ToolDefinition.
+//   - serviceConfig: *configv1.UpstreamServiceConfig.
+//   - callable: Callable.
+//   - inputSchema: unknown.
+//   - outputSchema: *structpb.Struct.
+//
+// Returns:
+//   - *CallableTool.
+//   - error.
 func NewCallableTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.UpstreamServiceConfig, callable Callable, inputSchema, outputSchema *structpb.Struct) (*CallableTool, error) {
 	base, err := newBaseTool(toolDef, serviceConfig, callable, inputSchema, outputSchema)
 	if err != nil {
@@ -49,6 +60,14 @@ func NewCallableTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.U
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - req: *ExecutionRequest.
+//
+// Returns:
+//   - any.
+//   - error.
 func (t *CallableTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	return t.callable.Call(ctx, req)
 }
@@ -62,6 +81,12 @@ func (t *CallableTool) Execute(ctx context.Context, req *ExecutionRequest) (any,
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - Callable.
 func (t *CallableTool) Callable() Callable {
 	return t.callable
 }

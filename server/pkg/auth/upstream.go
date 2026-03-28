@@ -39,6 +39,13 @@ type UpstreamAuthenticator interface {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - authConfig: *configv1.Authentication.
+//
+// Returns:
+//   - UpstreamAuthenticator.
+//   - error.
 func NewUpstreamAuthenticator(authConfig *configv1.Authentication) (UpstreamAuthenticator, error) {
 	if authConfig == nil {
 		return nil, nil
@@ -121,6 +128,12 @@ type APIKeyAuth struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - req: *http.Request.
+//
+// Returns:
+//   - error.
 func (a *APIKeyAuth) Authenticate(req *http.Request) error {
 	if a.Value == nil {
 		return errors.New("api key secret is not configured")
@@ -165,6 +178,12 @@ type BearerTokenAuth struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - req: *http.Request.
+//
+// Returns:
+//   - error.
 func (b *BearerTokenAuth) Authenticate(req *http.Request) error {
 	if b.Token == nil {
 		return errors.New("bearer token secret is not configured")
@@ -195,6 +214,12 @@ type BasicAuth struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - req: *http.Request.
+//
+// Returns:
+//   - error.
 func (b *BasicAuth) Authenticate(req *http.Request) error {
 	if b.Password == nil {
 		return errors.New("basic auth password secret is not configured")
@@ -251,6 +276,12 @@ func (o *OAuth2Auth) getTokenURL(ctx context.Context) (string, error) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - req: *http.Request.
+//
+// Returns:
+//   - error.
 func (o *OAuth2Auth) Authenticate(req *http.Request) error {
 	tokenURL, err := o.getTokenURL(req.Context())
 	if err != nil {

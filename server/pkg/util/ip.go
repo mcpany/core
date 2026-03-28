@@ -27,6 +27,13 @@ const remoteIPContextKey = contextKey("remote_ip")
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - ip: string.
+//
+// Returns:
+//   - context.Context.
 func ContextWithRemoteIP(ctx context.Context, ip string) context.Context {
 	return context.WithValue(ctx, remoteIPContextKey, ip)
 }
@@ -40,6 +47,12 @@ func ContextWithRemoteIP(ctx context.Context, ip string) context.Context {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - addr: string.
+//
+// Returns:
+//   - string.
 func ExtractIP(addr string) string {
 	ipStr, _, err := net.SplitHostPort(addr)
 	if err != nil {
@@ -71,6 +84,13 @@ func ExtractIP(addr string) string {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - r: *http.Request.
+//   - trustProxy: bool.
+//
+// Returns:
+//   - string.
 func GetClientIP(r *http.Request, trustProxy bool) string {
 	if trustProxy {
 		// Prefer X-Real-IP as it is usually a single IP set by the trusted proxy.
@@ -106,6 +126,13 @@ func GetClientIP(r *http.Request, trustProxy bool) string {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
+//   - string.
+//   - bool.
 func RemoteIPFromContext(ctx context.Context) (string, bool) {
 	ip, ok := ctx.Value(remoteIPContextKey).(string)
 	return ip, ok
@@ -120,6 +147,12 @@ func RemoteIPFromContext(ctx context.Context) (string, bool) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ip: net.IP.
+//
+// Returns:
+//   - bool.
 func IsPrivateNetworkIP(ip net.IP) bool {
 	return validation.IsPrivateNetworkIP(ip)
 }
@@ -133,6 +166,12 @@ func IsPrivateNetworkIP(ip net.IP) bool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ip: net.IP.
+//
+// Returns:
+//   - bool.
 func IsPrivateIP(ip net.IP) bool {
 	return validation.IsPrivateIP(ip)
 }

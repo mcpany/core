@@ -20,6 +20,14 @@ import (
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - path: string.
+//   - n: int.
+//
+// Returns:
+//   - [][]byte.
+//   - error.
 func ReadLastNLines(path string, n int) ([][]byte, error) {
 	if n <= 0 {
 		return nil, nil

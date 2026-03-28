@@ -54,6 +54,12 @@ var (
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *Settings.
 func GlobalSettings() *Settings {
 	once.Do(func() {
 		globalSettings = &Settings{
@@ -72,6 +78,12 @@ func GlobalSettings() *Settings {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.GlobalSettings.
 func (s *Settings) ToProto() *configv1.GlobalSettings {
 	return s.proto
 }
@@ -86,6 +98,13 @@ func (s *Settings) ToProto() *configv1.GlobalSettings {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - cmd: *cobra.Command.
+//   - fs: afero.Fs.
+//
+// Returns:
+//   - error.
 func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	s.cmd = cmd
 	s.fs = fs
@@ -187,6 +206,12 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - configv1.GlobalSettings_LogFormat.
 func (s *Settings) LogFormat() configv1.GlobalSettings_LogFormat {
 	format := viper.GetString("log-format")
 	key := "LOG_FORMAT_" + strings.ToUpper(format)
@@ -205,6 +230,12 @@ func (s *Settings) LogFormat() configv1.GlobalSettings_LogFormat {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string.
 func (s *Settings) GRPCPort() string {
 	return s.grpcPort
 }
@@ -218,6 +249,12 @@ func (s *Settings) GRPCPort() string {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string.
 func (s *Settings) MCPListenAddress() string {
 	return s.proto.GetMcpListenAddress()
 }
@@ -231,6 +268,12 @@ func (s *Settings) MCPListenAddress() string {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string.
 func (s *Settings) MetricsListenAddress() string {
 	return viper.GetString("metrics-listen-address")
 }
@@ -244,6 +287,12 @@ func (s *Settings) MetricsListenAddress() string {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - bool.
 func (s *Settings) Stdio() bool {
 	return s.stdio
 }
@@ -257,6 +306,12 @@ func (s *Settings) Stdio() bool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []string.
 func (s *Settings) ConfigPaths() []string {
 	return s.configPaths
 }
@@ -270,6 +325,12 @@ func (s *Settings) ConfigPaths() []string {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - bool.
 func (s *Settings) IsDebug() bool {
 	return s.debug
 }
@@ -283,6 +344,12 @@ func (s *Settings) IsDebug() bool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string.
 func (s *Settings) LogFile() string {
 	return s.logFile
 }
@@ -296,6 +363,12 @@ func (s *Settings) LogFile() string {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string.
 func (s *Settings) PersistentLog() string {
 	return s.persistentLog
 }
@@ -309,6 +382,12 @@ func (s *Settings) PersistentLog() string {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - time.Duration.
 func (s *Settings) ShutdownTimeout() time.Duration {
 	return s.shutdownTimeout
 }
@@ -322,6 +401,12 @@ func (s *Settings) ShutdownTimeout() time.Duration {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string.
 func (s *Settings) APIKey() string {
 	if s.proto.GetApiKey() != "" {
 		return s.proto.GetApiKey()
@@ -338,6 +423,12 @@ func (s *Settings) APIKey() string {
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - key: string.
+//
+// Returns:
+//   - None.
 func (s *Settings) SetAPIKey(key string) {
 	s.proto.SetApiKey(key)
 }
@@ -350,6 +441,12 @@ func (s *Settings) SetAPIKey(key string) {
 //   - middlewares: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - middlewares: []*configv1.Middleware.
+//
+// Returns:
 //   - None.
 func (s *Settings) SetMiddlewares(middlewares []*configv1.Middleware) {
 	s.proto.SetMiddlewares(middlewares)
@@ -364,6 +461,12 @@ func (s *Settings) SetMiddlewares(middlewares []*configv1.Middleware) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []string.
 func (s *Settings) Profiles() []string {
 	if viper.IsSet("profiles") {
 		return getStringSlice("profiles")
@@ -383,6 +486,12 @@ func (s *Settings) Profiles() []string {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - configv1.GlobalSettings_LogLevel.
 func (s *Settings) LogLevel() configv1.GlobalSettings_LogLevel {
 	if s.IsDebug() {
 		return configv1.GlobalSettings_LOG_LEVEL_DEBUG
@@ -419,6 +528,12 @@ func (s *Settings) LogLevel() configv1.GlobalSettings_LogLevel {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string.
 func (s *Settings) DBPath() string {
 	return s.dbPath
 }
@@ -432,6 +547,12 @@ func (s *Settings) DBPath() string {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []string.
 func (s *Settings) SetValues() []string {
 	return s.setValues
 }
@@ -445,6 +566,12 @@ func (s *Settings) SetValues() []string {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string.
 func (s *Settings) GetDbDsn() string {
 	return s.proto.GetDbDsn()
 }
@@ -458,6 +585,12 @@ func (s *Settings) GetDbDsn() string {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string.
 func (s *Settings) GetDbDriver() string {
 	return s.proto.GetDbDriver()
 }
@@ -471,6 +604,12 @@ func (s *Settings) GetDbDriver() string {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []*configv1.Middleware.
 func (s *Settings) Middlewares() []*configv1.Middleware {
 	return s.proto.GetMiddlewares()
 }
@@ -484,6 +623,12 @@ func (s *Settings) Middlewares() []*configv1.Middleware {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.DLPConfig.
 func (s *Settings) GetDlp() *configv1.DLPConfig {
 	return s.proto.GetDlp()
 }
@@ -496,6 +641,12 @@ func (s *Settings) GetDlp() *configv1.DLPConfig {
 //   - dlp: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - dlp: *configv1.DLPConfig.
+//
+// Returns:
 //   - None.
 func (s *Settings) SetDlp(dlp *configv1.DLPConfig) {
 	s.proto.SetDlp(dlp)
@@ -510,6 +661,12 @@ func (s *Settings) SetDlp(dlp *configv1.DLPConfig) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.OIDCConfig.
 func (s *Settings) GetOidc() *configv1.OIDCConfig {
 	return s.proto.GetOidc()
 }
@@ -523,6 +680,12 @@ func (s *Settings) GetOidc() *configv1.OIDCConfig {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []*configv1.ProfileDefinition.
 func (s *Settings) GetProfileDefinitions() []*configv1.ProfileDefinition {
 	return s.proto.GetProfileDefinitions()
 }
@@ -536,6 +699,12 @@ func (s *Settings) GetProfileDefinitions() []*configv1.ProfileDefinition {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string.
 func (s *Settings) GithubAPIURL() string {
 	return s.proto.GetGithubApiUrl()
 }

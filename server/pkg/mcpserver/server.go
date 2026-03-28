@@ -85,6 +85,12 @@ type Server struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *mcp.Server.
 func (s *Server) Server() *mcp.Server {
 	if AddReceivingMiddlewareHook != nil {
 		// This is a test hook to allow inspection of the middleware chain.
@@ -474,6 +480,14 @@ func (s *Server) ListPrompts(
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - params: *mcp.CreateMessageParams.
+//
+// Returns:
+//   - *mcp.CreateMessageResult.
+//   - error.
 func (s *Server) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
 	// Attempt to retrieve session from context, which is populated during request handling
 	if session, ok := tool.GetSession(ctx); ok {
@@ -638,6 +652,12 @@ func (s *Server) ReadResource(
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *auth.Manager.
 func (s *Server) AuthManager() *auth.Manager {
 	return s.authManager
 }
@@ -651,6 +671,12 @@ func (s *Server) AuthManager() *auth.Manager {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - tool.ManagerInterface.
 func (s *Server) ToolManager() tool.ManagerInterface {
 	return s.toolManager
 }
@@ -664,6 +690,12 @@ func (s *Server) ToolManager() tool.ManagerInterface {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - prompt.ManagerInterface.
 func (s *Server) PromptManager() prompt.ManagerInterface {
 	return s.promptManager
 }
@@ -677,6 +709,12 @@ func (s *Server) PromptManager() prompt.ManagerInterface {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - resource.ManagerInterface.
 func (s *Server) ResourceManager() resource.ManagerInterface {
 	return s.resourceManager
 }
@@ -690,6 +728,12 @@ func (s *Server) ResourceManager() resource.ManagerInterface {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *serviceregistry.ServiceRegistry.
 func (s *Server) ServiceRegistry() *serviceregistry.ServiceRegistry {
 	return s.serviceRegistry
 }
@@ -704,6 +748,13 @@ func (s *Server) ServiceRegistry() *serviceregistry.ServiceRegistry {
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - serviceID: string.
+//   - info: *tool.ServiceInfo.
+//
+// Returns:
+//   - None.
 func (s *Server) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	s.toolManager.AddServiceInfo(serviceID, info)
 }
@@ -717,6 +768,13 @@ func (s *Server) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - toolName: string.
+//
+// Returns:
+//   - tool.Tool.
+//   - bool.
 func (s *Server) GetTool(toolName string) (tool.Tool, bool) {
 	return s.toolManager.GetTool(toolName)
 }
@@ -730,6 +788,12 @@ func (s *Server) GetTool(toolName string) (tool.Tool, bool) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []tool.Tool.
 func (s *Server) ListTools() []tool.Tool {
 	logging.GetLogger().Info("Listing tools...")
 	metrics.IncrCounter(metricToolsListTotal, 1)
@@ -746,6 +810,14 @@ func (s *Server) ListTools() []tool.Tool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - req: *tool.ExecutionRequest.
+//
+// Returns:
+//   - any.
+//   - error.
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	logger := logging.GetLogger()
 	// ⚡ Bolt Optimization: Check if logging is enabled to avoid unnecessary allocations.
@@ -894,6 +966,12 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - mcpServer: tool.MCPServerProvider.
+//
+// Returns:
+//   - None.
 func (s *Server) SetMCPServer(mcpServer tool.MCPServerProvider) {
 	s.toolManager.SetMCPServer(mcpServer)
 }
@@ -907,6 +985,12 @@ func (s *Server) SetMCPServer(mcpServer tool.MCPServerProvider) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - t: tool.Tool.
+//
+// Returns:
+//   - error.
 func (s *Server) AddTool(t tool.Tool) error {
 	return s.toolManager.AddTool(t)
 }
@@ -920,6 +1004,13 @@ func (s *Server) AddTool(t tool.Tool) error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - serviceID: string.
+//
+// Returns:
+//   - *tool.ServiceInfo.
+//   - bool.
 func (s *Server) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	return s.toolManager.GetServiceInfo(serviceID)
 }
@@ -937,6 +1028,12 @@ func (s *Server) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - serviceKey: string.
+//
+// Returns:
+//   - None.
 func (s *Server) ClearToolsForService(serviceKey string) {
 	s.toolManager.ClearToolsForService(serviceKey)
 }
@@ -950,6 +1047,12 @@ func (s *Server) ClearToolsForService(serviceKey string) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - f func(context.Context): error.
+//
+// Returns:
+//   - None.
 func (s *Server) SetReloadFunc(f func(context.Context) error) {
 	s.reloadFunc = f
 }
@@ -963,6 +1066,12 @@ func (s *Server) SetReloadFunc(f func(context.Context) error) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
+//   - error.
 func (s *Server) Reload(ctx context.Context) error {
 	if s.reloadFunc != nil {
 		return s.reloadFunc(ctx)
@@ -1086,6 +1195,12 @@ type LazyRedact []byte
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - slog.Value.
 func (l LazyRedact) LogValue() slog.Value {
 	return slog.StringValue(util.BytesToString(util.RedactJSON(l)))
 }
@@ -1109,6 +1224,12 @@ type LazyLogResult struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - slog.Value.
 func (r LazyLogResult) LogValue() slog.Value {
 	if r.Value == nil {
 		return slog.StringValue("<nil>")

@@ -29,6 +29,12 @@ type Manager struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - profiles: []*configv1.ProfileDefinition.
+//
+// Returns:
+//   - *Manager.
 func NewManager(profiles []*configv1.ProfileDefinition) *Manager {
 	m := &Manager{
 		profiles: make(map[string]*configv1.ProfileDefinition),
@@ -45,6 +51,12 @@ func NewManager(profiles []*configv1.ProfileDefinition) *Manager {
 //   - profiles: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - profiles: []*configv1.ProfileDefinition.
+//
+// Returns:
 //   - None.
 func (m *Manager) Update(profiles []*configv1.ProfileDefinition) {
 	newProfiles := make(map[string]*configv1.ProfileDefinition)
@@ -65,6 +77,13 @@ func (m *Manager) Update(profiles []*configv1.ProfileDefinition) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - name: string.
+//
+// Returns:
+//   - *configv1.ProfileDefinition.
+//   - bool.
 func (m *Manager) GetProfileDefinition(name string) (*configv1.ProfileDefinition, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -81,6 +100,14 @@ func (m *Manager) GetProfileDefinition(name string) (*configv1.ProfileDefinition
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - profileName: string.
+//
+// Returns:
+//   - map[string]*configv1.ProfileServiceConfig.
+//   - map[string]*configv1.SecretValue.
+//   - error.
 func (m *Manager) ResolveProfile(profileName string) (map[string]*configv1.ProfileServiceConfig, map[string]*configv1.SecretValue, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

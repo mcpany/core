@@ -62,6 +62,13 @@ type UpstreamServiceFactory struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - poolManager: *pool.Manager.
+//   - globalSettings: *configv1.GlobalSettings.
+//
+// Returns:
+//   - Factory.
 func NewUpstreamServiceFactory(poolManager *pool.Manager, globalSettings *configv1.GlobalSettings) Factory {
 	return &UpstreamServiceFactory{
 		poolManager:    poolManager,
@@ -78,6 +85,13 @@ func NewUpstreamServiceFactory(poolManager *pool.Manager, globalSettings *config
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - config: *configv1.UpstreamServiceConfig.
+//
+// Returns:
+//   - upstream.Upstream.
+//   - error.
 func (f *UpstreamServiceFactory) NewUpstream(config *configv1.UpstreamServiceConfig) (upstream.Upstream, error) {
 	if config == nil {
 		return nil, fmt.Errorf("upstream service config cannot be nil")

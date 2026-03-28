@@ -34,6 +34,13 @@ type StdioTransport struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//
+// Returns:
+//   - mcp.Connection.
+//   - error.
 func (t *StdioTransport) Connect(_ context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
 
@@ -105,6 +112,13 @@ type stdioConn struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//
+// Returns:
+//   - jsonrpc.Message.
+//   - error.
 func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
 	if err := c.decoder.Decode(&raw); err != nil {
@@ -201,6 +215,13 @@ func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//   - msg: jsonrpc.Message.
+//
+// Returns:
+//   - error.
 func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	var method string
 	var params any
@@ -249,6 +270,12 @@ func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - error.
 func (c *stdioConn) Close() error {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
@@ -273,6 +300,12 @@ func (c *stdioConn) Close() error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string.
 func (c *stdioConn) SessionID() string {
 	return "stdio-session"
 }

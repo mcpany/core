@@ -43,6 +43,12 @@ var initDockerClientDefault = func() {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - bool.
 func IsDockerSocketAccessible() bool {
 	return IsDockerSocketAccessibleFunc()
 }
@@ -55,6 +61,12 @@ func IsDockerSocketAccessible() bool {
 //   - None.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
 //   - None.
 func CloseDockerClient() {
 	if dockerClient != nil {

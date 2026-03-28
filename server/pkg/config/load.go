@@ -26,6 +26,15 @@ import (
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - store: Store.
+//   - binaryType: string.
+//
+// Returns:
+//   - *configv1.McpAnyServerConfig.
+//   - error.
 func LoadServices(ctx context.Context, store Store, binaryType string) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 
@@ -111,6 +120,14 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - store: Store.
+//
+// Returns:
+//   - *configv1.McpAnyServerConfig.
+//   - error.
 func LoadResolvedConfig(ctx context.Context, store Store) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 

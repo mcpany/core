@@ -22,6 +22,12 @@ import (
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - log: *slog.Logger.
+//
+// Returns:
+//   - mcp.Middleware.
 func LoggingMiddleware(log *slog.Logger) mcp.Middleware {
 	if log == nil {
 		log = logging.GetLogger()

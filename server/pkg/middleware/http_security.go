@@ -17,6 +17,12 @@ import (
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - next: http.Handler.
+//
+// Returns:
+//   - http.Handler.
 func HTTPSecurityHeadersMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("X-Content-Type-Options", "nosniff")

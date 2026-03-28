@@ -42,6 +42,13 @@ type AuditMiddleware struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - auditConfig: *configv1.AuditConfig.
+//
+// Returns:
+//   - *AuditMiddleware.
+//   - error.
 func NewAuditMiddleware(auditConfig *configv1.AuditConfig) (*AuditMiddleware, error) {
 	m := &AuditMiddleware{
 		config:      auditConfig,
@@ -100,6 +107,12 @@ func (m *AuditMiddleware) initializeStore(config *configv1.AuditConfig) error {
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - store: audit.Store.
+//
+// Returns:
+//   - None.
 func (m *AuditMiddleware) SetStore(store audit.Store) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -115,6 +128,12 @@ func (m *AuditMiddleware) SetStore(store audit.Store) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - auditConfig: *configv1.AuditConfig.
+//
+// Returns:
+//   - error.
 func (m *AuditMiddleware) UpdateConfig(auditConfig *configv1.AuditConfig) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -168,6 +187,15 @@ func (m *AuditMiddleware) UpdateConfig(auditConfig *configv1.AuditConfig) error 
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - req: *tool.ExecutionRequest.
+//   - next: tool.ExecutionFunc.
+//
+// Returns:
+//   - any.
+//   - error.
 func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	m.mu.RLock()
 	auditConfig := m.config
@@ -290,6 +318,12 @@ func (m *AuditMiddleware) writeLog(ctx context.Context, store audit.Store, entry
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
 func (m *AuditMiddleware) ClearHistory() {
 	if m.broadcaster != nil {
 		m.broadcaster.ClearHistory()
@@ -305,6 +339,13 @@ func (m *AuditMiddleware) ClearHistory() {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - chan any.
+//   - []any.
 func (m *AuditMiddleware) SubscribeWithHistory() (chan any, []any) {
 	return m.broadcaster.SubscribeWithHistory()
 }
@@ -318,6 +359,12 @@ func (m *AuditMiddleware) SubscribeWithHistory() (chan any, []any) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []any.
 func (m *AuditMiddleware) GetHistory() []any {
 	return m.broadcaster.GetHistory()
 }
@@ -330,6 +377,12 @@ func (m *AuditMiddleware) GetHistory() []any {
 //   - ch: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - ch chan: any.
+//
+// Returns:
 //   - None.
 func (m *AuditMiddleware) Unsubscribe(ch chan any) {
 	m.broadcaster.Unsubscribe(ch)
@@ -345,6 +398,14 @@ func (m *AuditMiddleware) Unsubscribe(ch chan any) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - filter: audit.Filter.
+//
+// Returns:
+//   - []audit.Entry.
+//   - error.
 func (m *AuditMiddleware) Read(ctx context.Context, filter audit.Filter) ([]audit.Entry, error) {
 	m.mu.RLock()
 	store := m.store
@@ -365,6 +426,12 @@ func (m *AuditMiddleware) Read(ctx context.Context, filter audit.Filter) ([]audi
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - error.
 func (m *AuditMiddleware) Close() error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -384,6 +451,13 @@ func (m *AuditMiddleware) Close() error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - entry: audit.Entry.
+//
+// Returns:
+//   - error.
 func (m *AuditMiddleware) Write(ctx context.Context, entry audit.Entry) error {
 	m.mu.RLock()
 	store := m.store

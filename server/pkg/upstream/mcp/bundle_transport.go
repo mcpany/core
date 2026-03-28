@@ -39,6 +39,12 @@ type transportError struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string.
 func (e *transportError) Error() string {
 	return e.Message
 }
@@ -69,6 +75,13 @@ type BundleDockerTransport struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
+//   - mcp.Connection.
+//   - error.
 func (t *BundleDockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
 
@@ -188,6 +201,13 @@ type bundleDockerConn struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//
+// Returns:
+//   - jsonrpc.Message.
+//   - error.
 func (c *bundleDockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
 	if err := c.decoder.Decode(&raw); err != nil {
@@ -326,6 +346,13 @@ func setUnexportedID(idPtr interface{}, val interface{}) error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//   - msg: jsonrpc.Message.
+//
+// Returns:
+//   - error.
 func (c *bundleDockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	// Workaround: jsonrpc.ID in the SDK marshals to {} because of unexported fields.
 	// We extract the value manually and send an intermediate struct.
@@ -454,6 +481,12 @@ func fixIDExtracted(val interface{}) interface{} {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - error.
 func (c *bundleDockerConn) Close() error {
 	return c.rwc.Close()
 }
@@ -467,6 +500,12 @@ func (c *bundleDockerConn) Close() error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string.
 func (c *bundleDockerConn) SessionID() string {
 	return "bundle-docker"
 }
@@ -486,6 +525,13 @@ type bundleSlogWriter struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - p: []byte.
+//
+// Returns:
+//   - n int.
+//   - err error.
 func (s *bundleSlogWriter) Write(p []byte) (n int, err error) {
 	msg := string(p)
 	s.log.Log(context.Background(), s.level, msg)

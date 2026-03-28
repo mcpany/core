@@ -26,6 +26,12 @@ type WrappedServerStream struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - context.Context.
 func (w *WrappedServerStream) Context() context.Context {
 	return w.Ctx
 }

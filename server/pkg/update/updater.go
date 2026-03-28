@@ -38,6 +38,13 @@ type Updater struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - httpClient: *http.Client.
+//   - githubAPIURL: string.
+//
+// Returns:
+//   - *Updater.
 func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 	if httpClient == nil {
 		httpClient = http.DefaultClient
@@ -67,6 +74,17 @@ func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - owner: unknown.
+//   - repo: unknown.
+//   - currentVersion: string.
+//
+// Returns:
+//   - *github.RepositoryRelease.
+//   - bool.
+//   - error.
 func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersion string) (*github.RepositoryRelease, bool, error) {
 	release, _, err := u.client.Repositories.GetLatestRelease(ctx, owner, repo)
 	if err != nil {
@@ -94,6 +112,17 @@ func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersio
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - fs: afero.Fs.
+//   - executablePath: string.
+//   - release: *github.RepositoryRelease.
+//   - assetName: unknown.
+//   - checksumsAssetName: string.
+//
+// Returns:
+//   - error.
 func (u *Updater) UpdateTo(ctx context.Context, fs afero.Fs, executablePath string, release *github.RepositoryRelease, assetName, checksumsAssetName string) error {
 	var asset *github.ReleaseAsset
 	for _, a := range release.Assets {

@@ -27,6 +27,15 @@ const (
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - traceID: unknown.
+//   - spanID: unknown.
+//   - parentID: string.
+//
+// Returns:
+//   - context.Context.
 func WithTraceContext(ctx context.Context, traceID, spanID, parentID string) context.Context {
 	ctx = context.WithValue(ctx, traceIDKey, traceID)
 	ctx = context.WithValue(ctx, spanIDKey, spanID)
@@ -45,6 +54,12 @@ func WithTraceContext(ctx context.Context, traceID, spanID, parentID string) con
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
+//   - string.
 func GetTraceID(ctx context.Context) string {
 	if v, ok := ctx.Value(traceIDKey).(string); ok {
 		return v
@@ -61,6 +76,12 @@ func GetTraceID(ctx context.Context) string {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
+//   - string.
 func GetSpanID(ctx context.Context) string {
 	if v, ok := ctx.Value(spanIDKey).(string); ok {
 		return v
@@ -77,6 +98,12 @@ func GetSpanID(ctx context.Context) string {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
+//   - string.
 func GetParentID(ctx context.Context) string {
 	if v, ok := ctx.Value(parentIDKey).(string); ok {
 		return v

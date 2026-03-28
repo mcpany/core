@@ -32,6 +32,13 @@ type FileAuditStore struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - path: string.
+//
+// Returns:
+//   - *FileAuditStore.
+//   - error.
 func NewFileAuditStore(path string) (*FileAuditStore, error) {
 	var f *os.File
 	var err error
@@ -60,6 +67,13 @@ func NewFileAuditStore(path string) (*FileAuditStore, error) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//   - entry: Entry.
+//
+// Returns:
+//   - error.
 func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 	// ⚡ BOLT: Serialize JSON outside the lock to reduce critical section duration.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -94,6 +108,14 @@ func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//   - _: Filter.
+//
+// Returns:
+//   - []Entry.
+//   - error.
 func (s *FileAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for file audit store")
 }
@@ -107,6 +129,12 @@ func (s *FileAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - error.
 func (s *FileAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

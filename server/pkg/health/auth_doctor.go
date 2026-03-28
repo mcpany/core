@@ -16,6 +16,12 @@ import (
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - map[string]CheckResult.
 func CheckAuth() map[string]CheckResult {
 	results := make(map[string]CheckResult)
 

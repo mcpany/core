@@ -41,6 +41,12 @@ type Manager struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *Manager.
 func NewManager() *Manager {
 	return &Manager{
 		statuses: make(map[string]*ProviderStatus),
@@ -55,6 +61,12 @@ func NewManager() *Manager {
 //   - p: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - p: Provider.
+//
+// Returns:
 //   - None.
 func (m *Manager) RegisterProvider(p Provider) {
 	m.mu.Lock()
@@ -75,6 +87,12 @@ func (m *Manager) RegisterProvider(p Provider) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
+//   - []*configv1.UpstreamServiceConfig.
 func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 	var allServices []*configv1.UpstreamServiceConfig
 	log := logging.GetLogger()
@@ -131,6 +149,12 @@ func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []*ProviderStatus.
 func (m *Manager) GetStatuses() []*ProviderStatus {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -155,6 +179,13 @@ func (m *Manager) GetStatuses() []*ProviderStatus {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - name: string.
+//
+// Returns:
+//   - *ProviderStatus.
+//   - bool.
 func (m *Manager) GetProviderStatus(name string) (*ProviderStatus, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

@@ -38,6 +38,13 @@ var (
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - serviceName: string.
+//   - status: string.
+//
+// Returns:
+//   - None.
 func AddHealthStatus(serviceName string, status string) {
 	historyMu.Lock()
 	defer historyMu.Unlock()
@@ -82,6 +89,12 @@ func AddHealthStatus(serviceName string, status string) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - map[string][]HistoryPoint.
 func GetHealthHistory() map[string][]HistoryPoint {
 	historyMu.RLock()
 	defer historyMu.RUnlock()

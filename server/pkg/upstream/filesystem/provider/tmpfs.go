@@ -25,6 +25,12 @@ type TmpfsProvider struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *TmpfsProvider.
 func NewTmpfsProvider() *TmpfsProvider {
 	return &TmpfsProvider{
 		fs: afero.NewMemMapFs(),
@@ -40,6 +46,12 @@ func NewTmpfsProvider() *TmpfsProvider {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - afero.Fs.
 func (p *TmpfsProvider) GetFs() afero.Fs {
 	return p.fs
 }
@@ -53,6 +65,13 @@ func (p *TmpfsProvider) GetFs() afero.Fs {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - virtualPath: string.
+//
+// Returns:
+//   - string.
+//   - error.
 func (p *TmpfsProvider) ResolvePath(virtualPath string) (string, error) {
 	// For MemMapFs, just clean the path. It's virtual.
 	return filepath.Clean(virtualPath), nil
@@ -67,6 +86,12 @@ func (p *TmpfsProvider) ResolvePath(virtualPath string) (string, error) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - error.
 func (p *TmpfsProvider) Close() error {
 	return nil
 }

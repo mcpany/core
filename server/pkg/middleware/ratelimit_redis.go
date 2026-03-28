@@ -23,6 +23,12 @@ var redisClientCreator = redis.NewClient
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - creator func(opts *redis.Options): *redis.Client.
+//
+// Returns:
+//   - None.
 func SetRedisClientCreatorForTests(creator func(opts *redis.Options) *redis.Client) {
 	redisClientCreator = creator
 }
@@ -51,6 +57,14 @@ type RedisLimiter struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - serviceID: string.
+//   - config: *configv1.RateLimitConfig.
+//
+// Returns:
+//   - *RedisLimiter.
+//   - error.
 func NewRedisLimiter(serviceID string, config *configv1.RateLimitConfig) (*RedisLimiter, error) {
 	return NewRedisLimiterWithPartition(serviceID, "", "", config)
 }
@@ -67,6 +81,16 @@ func NewRedisLimiter(serviceID string, config *configv1.RateLimitConfig) (*Redis
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - serviceID: unknown.
+//   - limitScopeKey: unknown.
+//   - partitionKey: string.
+//   - config: *configv1.RateLimitConfig.
+//
+// Returns:
+//   - *RedisLimiter.
+//   - error.
 func NewRedisLimiterWithPartition(serviceID, limitScopeKey, partitionKey string, config *configv1.RateLimitConfig) (*RedisLimiter, error) {
 	if config.GetRedis() == nil {
 		return nil, fmt.Errorf("redis config is missing")
@@ -109,6 +133,16 @@ func NewRedisLimiterWithPartition(serviceID, limitScopeKey, partitionKey string,
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - client: *redis.Client.
+//   - serviceID: unknown.
+//   - limitScopeKey: unknown.
+//   - partitionKey: string.
+//   - config: *configv1.RateLimitConfig.
+//
+// Returns:
+//   - *RedisLimiter.
 func NewRedisLimiterWithClient(client *redis.Client, serviceID, limitScopeKey, partitionKey string, config *configv1.RateLimitConfig) *RedisLimiter {
 	key := "ratelimit:" + serviceID
 	if limitScopeKey != "" {
@@ -196,6 +230,13 @@ var redisRateLimitScript = redis.NewScript(RedisRateLimitScript)
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
+//   - bool.
+//   - error.
 func (l *RedisLimiter) Allow(ctx context.Context) (bool, error) {
 	return l.AllowN(ctx, 1)
 }
@@ -210,6 +251,14 @@ func (l *RedisLimiter) Allow(ctx context.Context) (bool, error) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - n: int.
+//
+// Returns:
+//   - bool.
+//   - error.
 func (l *RedisLimiter) AllowN(ctx context.Context, n int) (bool, error) {
 	// ⚡ BOLT: Use server time to prevent clock skew issues in distributed systems.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -238,6 +287,13 @@ func (l *RedisLimiter) AllowN(ctx context.Context, n int) (bool, error) {
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - rps: float64.
+//   - burst: int.
+//
+// Returns:
+//   - None.
 func (l *RedisLimiter) Update(rps float64, burst int) {
 	l.rps = rps
 	l.burst = burst
@@ -252,6 +308,12 @@ func (l *RedisLimiter) Update(rps float64, burst int) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string.
 func (l *RedisLimiter) GetConfigHash() string {
 	return l.configHash
 }
@@ -265,6 +327,12 @@ func (l *RedisLimiter) GetConfigHash() string {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - error.
 func (l *RedisLimiter) Close() error {
 	return l.client.Close()
 }

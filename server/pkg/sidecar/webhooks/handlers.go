@@ -38,6 +38,13 @@ type MarkdownHandler struct{}
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - w: http.ResponseWriter.
+//   - r: *http.Request.
+//
+// Returns:
+//   - None.
 func (h *MarkdownHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -106,6 +113,13 @@ type TruncateHandler struct{}
 //   - r: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - w: http.ResponseWriter.
+//   - r: *http.Request.
+//
+// Returns:
 //   - None.
 func (h *TruncateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
@@ -181,6 +195,13 @@ type PaginateHandler struct{}
 //   - r: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - w: http.ResponseWriter.
+//   - r: *http.Request.
+//
+// Returns:
 //   - None.
 func (h *PaginateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {

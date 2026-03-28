@@ -80,6 +80,12 @@ func NewWebsocketTool(
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *v1.Tool.
 func (t *WebsocketTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -93,6 +99,12 @@ func (t *WebsocketTool) Tool() *v1.Tool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *mcp.Tool.
 func (t *WebsocketTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -113,6 +125,12 @@ func (t *WebsocketTool) MCPTool() *mcp.Tool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.CacheConfig.
 func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -127,6 +145,14 @@ func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - req: *ExecutionRequest.
+//
+// Returns:
+//   - any.
+//   - error.
 func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	wsPool, ok := pool.Get[*client.WebsocketClientWrapper](t.poolManager, t.serviceID)
 	if !ok {

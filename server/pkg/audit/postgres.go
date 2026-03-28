@@ -31,6 +31,13 @@ type PostgresAuditStore struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - dsn: string.
+//
+// Returns:
+//   - *PostgresAuditStore.
+//   - error.
 func NewPostgresAuditStore(dsn string) (*PostgresAuditStore, error) {
 	if dsn == "" {
 		return nil, fmt.Errorf("postgres dsn is required")
@@ -92,6 +99,13 @@ func NewPostgresAuditStore(dsn string) (*PostgresAuditStore, error) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - entry: Entry.
+//
+// Returns:
+//   - error.
 func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 	// We don't need mutex here because we use database transaction for concurrency control.
 	// s.mu.Lock() // removed.
@@ -182,6 +196,14 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//   - _: Filter.
+//
+// Returns:
+//   - []Entry.
+//   - error.
 func (s *PostgresAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for postgres audit store")
 }
@@ -195,6 +217,13 @@ func (s *PostgresAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) 
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - bool.
+//   - error.
 func (s *PostgresAuditStore) Verify() (bool, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -267,6 +296,12 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - error.
 func (s *PostgresAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

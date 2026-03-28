@@ -47,6 +47,13 @@ type BroadcastHandler struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - broadcaster: *Broadcaster.
+//   - level: slog.Leveler.
+//
+// Returns:
+//   - *BroadcastHandler.
 func NewBroadcastHandler(broadcaster *Broadcaster, level slog.Leveler) *BroadcastHandler {
 	return &BroadcastHandler{
 		broadcaster: broadcaster,
@@ -64,6 +71,13 @@ func NewBroadcastHandler(broadcaster *Broadcaster, level slog.Leveler) *Broadcas
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//   - level: slog.Level.
+//
+// Returns:
+//   - bool.
 func (h *BroadcastHandler) Enabled(_ context.Context, level slog.Level) bool {
 	return level >= h.level.Level()
 }
@@ -78,6 +92,13 @@ func (h *BroadcastHandler) Enabled(_ context.Context, level slog.Level) bool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//   - r: slog.Record.
+//
+// Returns:
+//   - error.
 func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 	entry := LogEntry{
 		ID:        uuid.New().String(),
@@ -160,6 +181,12 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - attrs: []slog.Attr.
+//
+// Returns:
+//   - slog.Handler.
 func (h *BroadcastHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	h.mu.Lock()
 	defer h.mu.Unlock()
@@ -185,6 +212,12 @@ func (h *BroadcastHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - name: string.
+//
+// Returns:
+//   - slog.Handler.
 func (h *BroadcastHandler) WithGroup(name string) slog.Handler {
 	h.mu.Lock()
 	defer h.mu.Unlock()
@@ -217,6 +250,12 @@ type TeeHandler struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - handlers: ...slog.Handler.
+//
+// Returns:
+//   - *TeeHandler.
 func NewTeeHandler(handlers ...slog.Handler) *TeeHandler {
 	return &TeeHandler{handlers: handlers}
 }
@@ -231,6 +270,13 @@ func NewTeeHandler(handlers ...slog.Handler) *TeeHandler {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - level: slog.Level.
+//
+// Returns:
+//   - bool.
 func (h *TeeHandler) Enabled(ctx context.Context, level slog.Level) bool {
 	for _, handler := range h.handlers {
 		if handler.Enabled(ctx, level) {
@@ -250,6 +296,13 @@ func (h *TeeHandler) Enabled(ctx context.Context, level slog.Level) bool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - r: slog.Record.
+//
+// Returns:
+//   - error.
 func (h *TeeHandler) Handle(ctx context.Context, r slog.Record) error {
 	var err error
 	for _, handler := range h.handlers {
@@ -271,6 +324,12 @@ func (h *TeeHandler) Handle(ctx context.Context, r slog.Record) error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - attrs: []slog.Attr.
+//
+// Returns:
+//   - slog.Handler.
 func (h *TeeHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	handlers := make([]slog.Handler, len(h.handlers))
 	for i, handler := range h.handlers {
@@ -288,6 +347,12 @@ func (h *TeeHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - name: string.
+//
+// Returns:
+//   - slog.Handler.
 func (h *TeeHandler) WithGroup(name string) slog.Handler {
 	handlers := make([]slog.Handler, len(h.handlers))
 	for i, handler := range h.handlers {

@@ -96,6 +96,12 @@ type ValidationError struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string.
 func (e *ValidationError) Error() string {
 	return fmt.Sprintf("service %q: %v", e.ServiceName, e.Err)
 }
@@ -111,6 +117,14 @@ func (e *ValidationError) Error() string {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - config: *configv1.McpAnyServerConfig.
+//   - binaryType: BinaryType.
+//
+// Returns:
+//   - []ValidationError.
 func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryType BinaryType) []ValidationError {
 	var validationErrors []ValidationError
 	serviceNames := make(map[string]bool)
@@ -517,6 +531,13 @@ func validateGlobalSettings(ctx context.Context, gs *configv1.GlobalSettings, bi
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - service: *configv1.UpstreamServiceConfig.
+//
+// Returns:
+//   - error.
 func ValidateOrError(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
 	return validateUpstreamService(ctx, service)
 }

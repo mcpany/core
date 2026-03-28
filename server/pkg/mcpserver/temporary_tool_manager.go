@@ -33,6 +33,12 @@ type TemporaryToolManager struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *TemporaryToolManager.
 func NewTemporaryToolManager() *TemporaryToolManager {
 	return &TemporaryToolManager{
 		serviceInfo: make(map[string]*tool.ServiceInfo),
@@ -49,6 +55,13 @@ func NewTemporaryToolManager() *TemporaryToolManager {
 //   - info: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - serviceID: string.
+//   - info: *tool.ServiceInfo.
+//
+// Returns:
 //   - None.
 func (m *TemporaryToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	m.mu.Lock()
@@ -68,6 +81,13 @@ func (m *TemporaryToolManager) AddServiceInfo(serviceID string, info *tool.Servi
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - serviceID: string.
+//
+// Returns:
+//   - *tool.ServiceInfo.
+//   - bool.
 func (m *TemporaryToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -87,6 +107,12 @@ func (m *TemporaryToolManager) GetServiceInfo(serviceID string) (*tool.ServiceIn
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - t: tool.Tool.
+//
+// Returns:
+//   - error.
 func (m *TemporaryToolManager) AddTool(t tool.Tool) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -118,6 +144,13 @@ func (m *TemporaryToolManager) AddTool(t tool.Tool) error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - toolName: string.
+//
+// Returns:
+//   - tool.Tool.
+//   - bool.
 func (m *TemporaryToolManager) GetTool(toolName string) (tool.Tool, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -137,6 +170,12 @@ func (m *TemporaryToolManager) GetTool(toolName string) (tool.Tool, bool) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []tool.Tool.
 func (m *TemporaryToolManager) ListTools() []tool.Tool {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -159,6 +198,12 @@ func (m *TemporaryToolManager) ListTools() []tool.Tool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - serviceID: string.
+//
+// Returns:
+//   - int.
 func (m *TemporaryToolManager) GetToolCountForService(serviceID string) int {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

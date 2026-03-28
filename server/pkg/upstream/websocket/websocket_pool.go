@@ -30,6 +30,15 @@ type Pool = pool.Pool[*client.WebsocketClientWrapper]
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - maxSize: int.
+//   - idleTimeout: time.Duration.
+//   - address: string.
+//
+// Returns:
+//   - Pool.
+//   - error.
 func NewPool(maxSize int, idleTimeout time.Duration, address string) (Pool, error) {
 	factory := func(_ context.Context) (*client.WebsocketClientWrapper, error) {
 		conn, resp, err := websocket.DefaultDialer.Dial(address, nil)

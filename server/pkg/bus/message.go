@@ -44,6 +44,12 @@ type BaseMessage struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string.
 func (m *BaseMessage) CorrelationID() string {
 	return m.CID
 }
@@ -56,6 +62,12 @@ func (m *BaseMessage) CorrelationID() string {
 //   - id: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - id: string.
+//
+// Returns:
 //   - None.
 func (m *BaseMessage) SetCorrelationID(id string) {
 	m.CID = id

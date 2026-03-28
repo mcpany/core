@@ -116,6 +116,12 @@ func init() {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - input: []byte.
+//
+// Returns:
+//   - []byte.
 func RedactJSON(input []byte) []byte {
 	// Check if input looks like JSON object or array.
 	// We skip whitespace and comments to find the first significant character.
@@ -142,6 +148,12 @@ func RedactJSON(input []byte) []byte {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - m: map[string]interface{}.
+//
+// Returns:
+//   - map[string]interface.
 func RedactMap(m map[string]interface{}) map[string]interface{} {
 	redacted, changed := redactMapMaybe(m)
 	if changed {
@@ -257,6 +269,12 @@ var sensitiveKeys = []string{
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - key: string.
+//
+// Returns:
+//   - bool.
 func IsSensitiveKey(key string) bool {
 	// Use the optimized byte-based scanner for keys as well.
 	// Avoid allocation using zero-copy conversion.
@@ -493,6 +511,12 @@ var dsnInvalidPortRegex = regexp.MustCompile(`invalid port "(:[^"]+)"`)
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - dsn: string.
+//
+// Returns:
+//   - string.
 func RedactDSN(dsn string) string {
 	u, err := url.Parse(dsn)
 	if err == nil && u.User != nil {
@@ -612,6 +636,12 @@ type SecretRedactor struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - secrets: []string.
+//
+// Returns:
+//   - *SecretRedactor.
 func NewSecretRedactor(secrets []string) *SecretRedactor {
 	// ⚡ BOLT: Optimization - Pre-compile the replacer for reuse.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -656,6 +686,12 @@ func NewSecretRedactor(secrets []string) *SecretRedactor {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - text: string.
+//
+// Returns:
+//   - string.
 func (r *SecretRedactor) Redact(text string) string {
 	if text == "" || r.replacer == nil {
 		return text
@@ -673,6 +709,13 @@ func (r *SecretRedactor) Redact(text string) string {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - text: string.
+//   - secrets: []string.
+//
+// Returns:
+//   - string.
 func RedactSecrets(text string, secrets []string) string {
 	// Use the new struct-based implementation for consistency.
 	return NewSecretRedactor(secrets).Redact(text)

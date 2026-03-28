@@ -39,6 +39,13 @@ type Manager struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - fs: afero.Fs.
+//   - catalogPath: string.
+//
+// Returns:
+//   - *Manager.
 func NewManager(fs afero.Fs, catalogPath string) *Manager {
 	return &Manager{
 		fs:          fs,
@@ -55,6 +62,12 @@ func NewManager(fs afero.Fs, catalogPath string) *Manager {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
+//   - error.
 func (m *Manager) Load(ctx context.Context) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -132,6 +145,13 @@ func (m *Manager) Load(ctx context.Context) error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//
+// Returns:
+//   - []*configv1.UpstreamServiceConfig.
+//   - error.
 func (m *Manager) ListServices(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

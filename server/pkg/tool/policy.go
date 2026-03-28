@@ -24,6 +24,13 @@ var exportRegexCache sync.Map
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - name: string.
+//   - policy: *configv1.ExportPolicy.
+//
+// Returns:
+//   - bool.
 func ShouldExport(name string, policy *configv1.ExportPolicy) bool {
 	if policy == nil {
 		// Default to Allow/Export if no policy is present?
@@ -78,6 +85,16 @@ func ShouldExport(name string, policy *configv1.ExportPolicy) bool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - policies: []*configv1.CallPolicy.
+//   - toolName: unknown.
+//   - callID: string.
+//   - arguments: []byte.
+//
+// Returns:
+//   - bool.
+//   - error.
 func EvaluateCallPolicy(policies []*configv1.CallPolicy, toolName, callID string, arguments []byte) (bool, error) {
 	// Fallback to slower implementation if not using compiled policies
 	for _, policy := range policies {
@@ -155,6 +172,13 @@ type CompiledCallPolicy struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - policies: []*configv1.CallPolicy.
+//
+// Returns:
+//   - []*CompiledCallPolicy.
+//   - error.
 func CompileCallPolicies(policies []*configv1.CallPolicy) ([]*CompiledCallPolicy, error) {
 	compiled := make([]*CompiledCallPolicy, 0, len(policies))
 	for _, p := range policies {
@@ -179,6 +203,13 @@ func CompileCallPolicies(policies []*configv1.CallPolicy) ([]*CompiledCallPolicy
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - policy: *configv1.CallPolicy.
+//
+// Returns:
+//   - *CompiledCallPolicy.
+//   - error.
 func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, error) {
 	compiledRules := make([]compiledCallPolicyRule, len(policy.GetRules()))
 	for i, rule := range policy.GetRules() {
@@ -231,6 +262,16 @@ func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, er
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - policies: []*CompiledCallPolicy.
+//   - toolName: unknown.
+//   - callID: string.
+//   - arguments: []byte.
+//
+// Returns:
+//   - bool.
+//   - error.
 func EvaluateCompiledCallPolicy(policies []*CompiledCallPolicy, toolName, callID string, arguments []byte) (bool, error) {
 	for _, policy := range policies {
 		policyBlocked := false

@@ -37,6 +37,13 @@ type SmartRecoveryMiddleware struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - config: *configv1.SmartRecoveryConfig.
+//   - toolManager: tool.ManagerInterface.
+//
+// Returns:
+//   - *SmartRecoveryMiddleware.
 func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManager tool.ManagerInterface) *SmartRecoveryMiddleware {
 	return &SmartRecoveryMiddleware{
 		config:      config,
@@ -55,6 +62,15 @@ func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManage
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - req: *tool.ExecutionRequest.
+//   - next: tool.ExecutionFunc.
+//
+// Returns:
+//   - any.
+//   - error.
 func (m *SmartRecoveryMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	if m.config == nil || !m.config.GetEnabled() {
 		return next(ctx, req)

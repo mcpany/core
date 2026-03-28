@@ -37,6 +37,14 @@ const maxSecretRecursionDepth = 10
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - secret: *configv1.SecretValue.
+//
+// Returns:
+//   - string.
+//   - error.
 func ResolveSecret(ctx context.Context, secret *configv1.SecretValue) (string, error) {
 	return resolveSecretRecursive(ctx, secret, 0)
 }
@@ -306,6 +314,15 @@ func resolveSecretImpl(ctx context.Context, secret *configv1.SecretValue, depth 
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - secretMap: map[string]*configv1.SecretValue.
+//   - plainMap: map[string]string.
+//
+// Returns:
+//   - map[string]string.
+//   - error.
 func ResolveSecretMap(ctx context.Context, secretMap map[string]*configv1.SecretValue, plainMap map[string]string) (map[string]string, error) {
 	result := make(map[string]string)
 	for k, v := range plainMap {

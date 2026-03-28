@@ -33,6 +33,12 @@ type Transformer struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *Transformer.
 func NewTransformer() *Transformer {
 	return &Transformer{
 		pool: sync.Pool{
@@ -53,6 +59,14 @@ func NewTransformer() *Transformer {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - templateStr: string.
+//   - data: any.
+//
+// Returns:
+//   - []byte.
+//   - error.
 func (t *Transformer) Transform(templateStr string, data any) ([]byte, error) {
 	var tmpl *template.Template
 	var err error

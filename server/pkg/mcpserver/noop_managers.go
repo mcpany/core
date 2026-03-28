@@ -27,6 +27,12 @@ type NoOpToolManager struct{}
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: tool.Tool.
+//
+// Returns:
+//   - error.
 func (m *NoOpToolManager) AddTool(_ tool.Tool) error { return nil }
 
 // GetTool provides gettool functionality.
@@ -38,6 +44,13 @@ func (m *NoOpToolManager) AddTool(_ tool.Tool) error { return nil }
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: string.
+//
+// Returns:
+//   - tool.Tool.
+//   - bool.
 func (m *NoOpToolManager) GetTool(_ string) (tool.Tool, bool) { return nil, false }
 
 // ListTools provides listtools functionality.
@@ -49,6 +62,12 @@ func (m *NoOpToolManager) GetTool(_ string) (tool.Tool, bool) { return nil, fals
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []tool.Tool.
 func (m *NoOpToolManager) ListTools() []tool.Tool { return nil }
 
 // ListMCPTools provides listmcptools functionality.
@@ -60,6 +79,12 @@ func (m *NoOpToolManager) ListTools() []tool.Tool { return nil }
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []*mcp.Tool.
 func (m *NoOpToolManager) ListMCPTools() []*mcp.Tool { return nil }
 
 // ClearToolsForService provides cleartoolsforservice functionality.
@@ -70,6 +95,12 @@ func (m *NoOpToolManager) ListMCPTools() []*mcp.Tool { return nil }
 //   - _: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - _: string.
+//
+// Returns:
 //   - None.
 func (m *NoOpToolManager) ClearToolsForService(_ string) {}
 
@@ -83,6 +114,14 @@ func (m *NoOpToolManager) ClearToolsForService(_ string) {}
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//   - _: *tool.ExecutionRequest.
+//
+// Returns:
+//   - any.
+//   - error.
 func (m *NoOpToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	return nil, nil
 }
@@ -96,6 +135,12 @@ func (m *NoOpToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionReques
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - _: tool.MCPServerProvider.
+//
+// Returns:
+//   - None.
 func (m *NoOpToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
 
 // AddMiddleware provides addmiddleware functionality.
@@ -106,6 +151,12 @@ func (m *NoOpToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
 //   - _: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - _: tool.ExecutionMiddleware.
+//
+// Returns:
 //   - None.
 func (m *NoOpToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {}
 
@@ -119,6 +170,13 @@ func (m *NoOpToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {}
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - _: string.
+//   - _: *tool.ServiceInfo.
+//
+// Returns:
+//   - None.
 func (m *NoOpToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
 
 // GetServiceInfo provides getserviceinfo functionality.
@@ -130,6 +188,13 @@ func (m *NoOpToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: string.
+//
+// Returns:
+//   - *tool.ServiceInfo.
+//   - bool.
 func (m *NoOpToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) { return nil, false }
 
 // ListServices provides listservices functionality.
@@ -141,6 +206,12 @@ func (m *NoOpToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) { r
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []*tool.ServiceInfo.
 func (m *NoOpToolManager) ListServices() []*tool.ServiceInfo { return nil }
 
 // SetProfiles provides setprofiles functionality.
@@ -152,6 +223,13 @@ func (m *NoOpToolManager) ListServices() []*tool.ServiceInfo { return nil }
 //   - _: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - _: []string.
+//   - _: []*configv1.ProfileDefinition.
+//
+// Returns:
 //   - None.
 func (m *NoOpToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
 
@@ -165,6 +243,13 @@ func (m *NoOpToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinitio
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: unknown.
+//   - _: string.
+//
+// Returns:
+//   - bool.
 func (m *NoOpToolManager) IsServiceAllowed(_, _ string) bool { return true }
 
 // ToolMatchesProfile provides toolmatchesprofile functionality.
@@ -177,6 +262,13 @@ func (m *NoOpToolManager) IsServiceAllowed(_, _ string) bool { return true }
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: tool.Tool.
+//   - _: string.
+//
+// Returns:
+//   - bool.
 func (m *NoOpToolManager) ToolMatchesProfile(_ tool.Tool, _ string) bool { return true }
 
 // GetAllowedServiceIDs provides getallowedserviceids functionality.
@@ -188,6 +280,13 @@ func (m *NoOpToolManager) ToolMatchesProfile(_ tool.Tool, _ string) bool { retur
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: string.
+//
+// Returns:
+//   - map[string]bool.
+//   - bool.
 func (m *NoOpToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool) {
 	return nil, false
 }
@@ -201,6 +300,12 @@ func (m *NoOpToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool)
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: string.
+//
+// Returns:
+//   - int.
 func (m *NoOpToolManager) GetToolCountForService(_ string) int {
 	return 0
 }
@@ -219,6 +324,12 @@ type NoOpPromptManager struct{}
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - _: prompt.Prompt.
+//
+// Returns:
+//   - None.
 func (m *NoOpPromptManager) AddPrompt(_ prompt.Prompt) {}
 
 // UpdatePrompt provides updateprompt functionality.
@@ -229,6 +340,12 @@ func (m *NoOpPromptManager) AddPrompt(_ prompt.Prompt) {}
 //   - _: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - _: prompt.Prompt.
+//
+// Returns:
 //   - None.
 func (m *NoOpPromptManager) UpdatePrompt(_ prompt.Prompt) {}
 
@@ -241,6 +358,13 @@ func (m *NoOpPromptManager) UpdatePrompt(_ prompt.Prompt) {}
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: string.
+//
+// Returns:
+//   - prompt.Prompt.
+//   - bool.
 func (m *NoOpPromptManager) GetPrompt(_ string) (prompt.Prompt, bool) { return nil, false }
 
 // ListPrompts provides listprompts functionality.
@@ -252,6 +376,12 @@ func (m *NoOpPromptManager) GetPrompt(_ string) (prompt.Prompt, bool) { return n
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []prompt.Prompt.
 func (m *NoOpPromptManager) ListPrompts() []prompt.Prompt { return nil }
 
 // ClearPromptsForService provides clearpromptsforservice functionality.
@@ -263,6 +393,12 @@ func (m *NoOpPromptManager) ListPrompts() []prompt.Prompt { return nil }
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - _: string.
+//
+// Returns:
+//   - None.
 func (m *NoOpPromptManager) ClearPromptsForService(_ string) {}
 
 // SetMCPServer provides setmcpserver functionality.
@@ -273,6 +409,12 @@ func (m *NoOpPromptManager) ClearPromptsForService(_ string) {}
 //   - _: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - _: prompt.MCPServerProvider.
+//
+// Returns:
 //   - None.
 func (m *NoOpPromptManager) SetMCPServer(_ prompt.MCPServerProvider) {}
 
@@ -290,6 +432,13 @@ type NoOpResourceManager struct{}
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: string.
+//
+// Returns:
+//   - resource.Resource.
+//   - bool.
 func (m *NoOpResourceManager) GetResource(_ string) (resource.Resource, bool) { return nil, false }
 
 // AddResource provides addresource functionality.
@@ -300,6 +449,12 @@ func (m *NoOpResourceManager) GetResource(_ string) (resource.Resource, bool) { 
 //   - _: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - _: resource.Resource.
+//
+// Returns:
 //   - None.
 func (m *NoOpResourceManager) AddResource(_ resource.Resource) {}
 
@@ -312,6 +467,12 @@ func (m *NoOpResourceManager) AddResource(_ resource.Resource) {}
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - _: string.
+//
+// Returns:
+//   - None.
 func (m *NoOpResourceManager) RemoveResource(_ string) {}
 
 // ListResources provides listresources functionality.
@@ -323,6 +484,12 @@ func (m *NoOpResourceManager) RemoveResource(_ string) {}
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []resource.Resource.
 func (m *NoOpResourceManager) ListResources() []resource.Resource { return nil }
 
 // OnListChanged provides onlistchanged functionality.
@@ -334,6 +501,12 @@ func (m *NoOpResourceManager) ListResources() []resource.Resource { return nil }
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: func().
+//
+// Returns:
+//   - None.
 func (m *NoOpResourceManager) OnListChanged(_ func()) {}
 
 // ClearResourcesForService provides clearresourcesforservice functionality.
@@ -344,5 +517,11 @@ func (m *NoOpResourceManager) OnListChanged(_ func()) {}
 //   - _: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - _: string.
+//
+// Returns:
 //   - None.
 func (m *NoOpResourceManager) ClearResourcesForService(_ string) {}

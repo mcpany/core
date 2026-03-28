@@ -26,6 +26,12 @@ type GraphQLProvider struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string.
 func (p *GraphQLProvider) Name() string {
 	return "graphql"
 }
@@ -39,6 +45,13 @@ func (p *GraphQLProvider) Name() string {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//
+// Returns:
+//   - []*configv1.UpstreamServiceConfig.
+//   - error.
 func (p *GraphQLProvider) Discover(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	if p.Endpoint == "" {
 		return nil, nil

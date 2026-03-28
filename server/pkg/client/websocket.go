@@ -27,6 +27,12 @@ type WebsocketClientWrapper struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//
+// Returns:
+//   - bool.
 func (w *WebsocketClientWrapper) IsHealthy(_ context.Context) bool {
 	// Send a ping to check the connection.
 	// A short deadline is used to prevent blocking.
@@ -43,6 +49,12 @@ func (w *WebsocketClientWrapper) IsHealthy(_ context.Context) bool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - error.
 func (w *WebsocketClientWrapper) Close() error {
 	return w.Conn.Close()
 }

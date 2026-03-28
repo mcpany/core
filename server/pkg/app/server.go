@@ -317,6 +317,12 @@ type statsCacheEntry struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *Application.
 func NewApplication() *Application {
 	busProvider, _ := bus.NewProvider(nil)
 	return &Application{
@@ -346,6 +352,12 @@ func NewApplication() *Application {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - opts: RunOptions.
+//
+// Returns:
+//   - error.
 func (a *Application) Run(opts RunOptions) error {
 	log := logging.GetLogger()
 	fs, err := setup(opts.Fs)
@@ -922,6 +934,14 @@ func (a *Application) Run(opts RunOptions) error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - fs: afero.Fs.
+//   - configPaths: []string.
+//
+// Returns:
+//   - error.
 func (a *Application) ReloadConfig(ctx context.Context, fs afero.Fs, configPaths []string) error {
 	log := logging.GetLogger()
 	start := time.Now()
@@ -1352,6 +1372,12 @@ func (a *Application) generateConfigDiff(oldConfig, newConfig map[string]string)
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
+//   - error.
 func (a *Application) WaitForStartup(ctx context.Context) error {
 	select {
 	case <-a.startupCh:
@@ -1478,6 +1504,14 @@ func (a *Application) filesystemHealthCheck(_ context.Context) health.CheckResul
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - out: io.Writer.
+//   - addr: string.
+//   - timeout: time.Duration.
+//
+// Returns:
+//   - error.
 func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -2533,6 +2567,12 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - next: http.Handler.
+//
+// Returns:
+//   - http.Handler.
 func (a *Application) HTTPRequestContextMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := context.WithValue(r.Context(), middleware.HTTPRequestContextKey, r)

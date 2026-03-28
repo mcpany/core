@@ -41,6 +41,13 @@ type Watcher struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *Watcher.
+//   - error.
 func NewWatcher() (*Watcher, error) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -63,6 +70,13 @@ func NewWatcher() (*Watcher, error) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - paths: []string.
+//   - reloadFunc: func().
+//
+// Returns:
+//   - error.
 func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 	// Map of parent directory -> list of filenames to watch in that directory
 	watchedFiles := make(map[string][]string)
@@ -183,6 +197,12 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 //   - None.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
 //   - None.
 func (w *Watcher) Close() {
 	close(w.done)

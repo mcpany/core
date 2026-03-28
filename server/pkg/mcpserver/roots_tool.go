@@ -35,6 +35,12 @@ type RootsTool struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *RootsTool.
 func NewRootsTool() *RootsTool {
 	inputSchema := &structpb.Struct{
 		Fields: map[string]*structpb.Value{
@@ -65,6 +71,12 @@ func NewRootsTool() *RootsTool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *v1.Tool.
 func (t *RootsTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -78,6 +90,12 @@ func (t *RootsTool) Tool() *v1.Tool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *mcp.Tool.
 func (t *RootsTool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
@@ -92,6 +110,14 @@ func (t *RootsTool) MCPTool() *mcp.Tool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - _: *tool.ExecutionRequest.
+//
+// Returns:
+//   - any.
+//   - error.
 func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 	session, ok := tool.GetSession(ctx)
 	if !ok {
@@ -115,6 +141,12 @@ func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any,
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.CacheConfig.
 func (t *RootsTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }

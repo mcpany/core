@@ -47,6 +47,12 @@ type Upstream struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//
+// Returns:
+//   - error.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -66,6 +72,12 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - upstream.Upstream.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{}
 }

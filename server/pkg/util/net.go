@@ -87,6 +87,12 @@ type SafeDialer struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *SafeDialer.
 func NewSafeDialer() *SafeDialer {
 	return &SafeDialer{
 		AllowLoopback:  false,
@@ -106,6 +112,15 @@ func NewSafeDialer() *SafeDialer {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - network: unknown.
+//   - addr: string.
+//
+// Returns:
+//   - net.Conn.
+//   - error.
 func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net.Conn, error) {
 	host, port, err := net.SplitHostPort(addr)
 	if err != nil {
@@ -177,6 +192,15 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - network: unknown.
+//   - addr: string.
+//
+// Returns:
+//   - net.Conn.
+//   - error.
 func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error) {
 	return NewSafeDialer().DialContext(ctx, network, addr)
 }
@@ -190,6 +214,12 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *http.Client.
 func NewSafeHTTPClient() *http.Client {
 	dialer := NewSafeDialer()
 	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
@@ -222,6 +252,13 @@ func NewSafeHTTPClient() *http.Client {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - address: string.
+//
+// Returns:
+//   - error.
 func CheckConnection(ctx context.Context, address string) error {
 	var target string
 	if strings.Contains(address, "://") {
@@ -292,6 +329,15 @@ func CheckConnection(ctx context.Context, address string) error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - network: unknown.
+//   - address: string.
+//
+// Returns:
+//   - net.Listener.
+//   - error.
 func ListenWithRetry(ctx context.Context, network, address string) (net.Listener, error) {
 	var lis net.Listener
 	var err error

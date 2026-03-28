@@ -30,6 +30,13 @@ type JSONExecutor struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - in: io.Writer.
+//   - out: io.Reader.
+//
+// Returns:
+//   - *JSONExecutor.
 func NewJSONExecutor(in io.Writer, out io.Reader) *JSONExecutor {
 	return &JSONExecutor{
 		in:  in,
@@ -47,6 +54,13 @@ func NewJSONExecutor(in io.Writer, out io.Reader) *JSONExecutor {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - data: unknown.
+//   - result: any.
+//
+// Returns:
+//   - error.
 func (e *JSONExecutor) Execute(data, result any) error {
 	if err := json.NewEncoder(e.in).Encode(data); err != nil {
 		return fmt.Errorf("failed to encode data: %w", err)

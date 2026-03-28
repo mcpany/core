@@ -15,6 +15,13 @@ import "unicode/utf8"
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - s1: unknown.
+//   - s2: string.
+//
+// Returns:
+//   - int.
 func LevenshteinDistance(s1, s2 string) int {
 	// Pass a very large limit so it behaves like the unbounded version.
 	// The maximum possible distance is max(len(s1), len(s2)).
@@ -33,6 +40,14 @@ func LevenshteinDistance(s1, s2 string) int {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - s1: unknown.
+//   - s2: string.
+//   - limit: int.
+//
+// Returns:
+//   - int.
 func LevenshteinDistanceWithLimit(s1, s2 string, limit int) int {
 	// Optimization: If both strings are ASCII, we can avoid rune conversion
 	// and use stack-based allocation for small strings.

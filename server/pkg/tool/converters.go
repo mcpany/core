@@ -25,6 +25,13 @@ import (
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - tool: *mcp.Tool.
+//
+// Returns:
+//   - *pb.Tool.
+//   - error.
 func ConvertMCPToolToProto(tool *mcp.Tool) (*pb.Tool, error) {
 	if tool == nil {
 		return nil, fmt.Errorf("cannot convert nil mcp tool to proto")
@@ -113,6 +120,13 @@ func convertJSONSchemaToStruct(schema any) (*structpb.Struct, error) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - fields: []*protobufparser.McpField.
+//
+// Returns:
+//   - *structpb.Struct.
+//   - error.
 func ConvertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) (*structpb.Struct, error) {
 	properties := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
 	for _, field := range fields {
@@ -147,6 +161,15 @@ func ConvertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) 
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - toolDef: *configv1.ToolDefinition.
+//   - inputSchema: unknown.
+//   - outputSchema: *structpb.Struct.
+//
+// Returns:
+//   - *pb.Tool.
+//   - error.
 func ConvertToolDefinitionToProto(toolDef *configv1.ToolDefinition, inputSchema, outputSchema *structpb.Struct) (*pb.Tool, error) {
 	if toolDef == nil {
 		return nil, fmt.Errorf("cannot convert nil tool definition to proto")
@@ -196,6 +219,14 @@ func ConvertToolDefinitionToProto(toolDef *configv1.ToolDefinition, inputSchema,
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - scalarType: unknown.
+//   - description: string.
+//
+// Returns:
+//   - *jsonschema.Schema.
+//   - error.
 func GetJSONSchemaForScalarType(scalarType, description string) (*jsonschema.Schema, error) {
 	s := &jsonschema.Schema{
 		Description: description,
@@ -229,6 +260,13 @@ func GetJSONSchemaForScalarType(scalarType, description string) (*jsonschema.Sch
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - pbTool: *pb.Tool.
+//
+// Returns:
+//   - *mcp.Tool.
+//   - error.
 func ConvertProtoToMCPTool(pbTool *pb.Tool) (*mcp.Tool, error) {
 	if pbTool == nil {
 		return nil, fmt.Errorf("cannot convert nil pb tool to mcp tool")

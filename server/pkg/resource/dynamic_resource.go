@@ -33,6 +33,14 @@ type DynamicResource struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - def: *configv1.ResourceDefinition.
+//   - t: tool.Tool.
+//
+// Returns:
+//   - *DynamicResource.
+//   - error.
 func NewDynamicResource(def *configv1.ResourceDefinition, t tool.Tool) (*DynamicResource, error) {
 	if def == nil {
 		return nil, fmt.Errorf("resource definition is nil")
@@ -62,6 +70,12 @@ func NewDynamicResource(def *configv1.ResourceDefinition, t tool.Tool) (*Dynamic
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *mcp.Resource.
 func (r *DynamicResource) Resource() *mcp.Resource {
 	return r.resource
 }
@@ -75,6 +89,12 @@ func (r *DynamicResource) Resource() *mcp.Resource {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string.
 func (r *DynamicResource) Service() string {
 	return r.tool.Tool().GetServiceId()
 }
@@ -88,6 +108,13 @@ func (r *DynamicResource) Service() string {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
+//   - *mcp.ReadResourceResult.
+//   - error.
 func (r *DynamicResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
 	// For now, we'll just execute the tool with no inputs.
 	// In the future, we may need to pass inputs to the tool.
@@ -149,6 +176,12 @@ func (r *DynamicResource) Read(ctx context.Context) (*mcp.ReadResourceResult, er
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//
+// Returns:
+//   - error.
 func (r *DynamicResource) Subscribe(_ context.Context) error {
 	return fmt.Errorf("subscribing to dynamic resources is not yet implemented")
 }

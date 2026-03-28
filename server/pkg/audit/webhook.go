@@ -43,6 +43,13 @@ type WebhookAuditStore struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - webhookURL: string.
+//   - headers: map[string]string.
+//
+// Returns:
+//   - *WebhookAuditStore.
 func NewWebhookAuditStore(webhookURL string, headers map[string]string) *WebhookAuditStore {
 	store := &WebhookAuditStore{
 		webhookURL: webhookURL,
@@ -108,6 +115,13 @@ func (s *WebhookAuditStore) worker() {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//   - entry: Entry.
+//
+// Returns:
+//   - error.
 func (s *WebhookAuditStore) Write(_ context.Context, entry Entry) error {
 	select {
 	case s.queue <- entry:
@@ -162,6 +176,14 @@ func (s *WebhookAuditStore) sendBatch(batch []Entry) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//   - _: Filter.
+//
+// Returns:
+//   - []Entry.
+//   - error.
 func (s *WebhookAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for webhook audit store")
 }
@@ -175,6 +197,12 @@ func (s *WebhookAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - error.
 func (s *WebhookAuditStore) Close() error {
 	if s.done != nil {
 		close(s.done)

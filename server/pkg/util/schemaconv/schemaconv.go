@@ -49,6 +49,13 @@ const MaxRecursionDepth = 10
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - methodDesc: protoreflect.MethodDescriptor.
+//
+// Returns:
+//   - *structpb.Struct.
+//   - error.
 func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor) (*structpb.Struct, error) {
 	return fieldsToProperties(methodDesc.Input().Fields(), 0)
 }
@@ -62,6 +69,13 @@ func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor)
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - methodDesc: protoreflect.MethodDescriptor.
+//
+// Returns:
+//   - *structpb.Struct.
+//   - error.
 func MethodOutputDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor) (*structpb.Struct, error) {
 	return fieldsToProperties(methodDesc.Output().Fields(), 0)
 }

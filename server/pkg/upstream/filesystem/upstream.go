@@ -50,6 +50,12 @@ type Upstream struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - upstream.Upstream.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{
 		closers: make([]io.Closer, 0),
@@ -65,6 +71,12 @@ func NewUpstream() upstream.Upstream {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//
+// Returns:
+//   - error.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -234,6 +246,14 @@ type fsCallable struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - req: *tool.ExecutionRequest.
+//
+// Returns:
+//   - any.
+//   - error.
 func (c *fsCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	args := req.Arguments
 	if args == nil && len(req.ToolInputs) > 0 {

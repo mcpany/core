@@ -134,6 +134,16 @@ type ServiceRegistry struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - factory: factory.Factory.
+//   - toolManager: tool.ManagerInterface.
+//   - promptManager: prompt.ManagerInterface.
+//   - resourceManager: resource.ManagerInterface.
+//   - authManager: *auth.Manager.
+//
+// Returns:
+//   - *ServiceRegistry.
 func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManager prompt.ManagerInterface, resourceManager resource.ManagerInterface, authManager *auth.Manager) *ServiceRegistry {
 	return &ServiceRegistry{
 		serviceConfigs:  make(map[string]*config.UpstreamServiceConfig),
@@ -159,6 +169,16 @@ func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManag
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - serviceConfig: *config.UpstreamServiceConfig.
+//
+// Returns:
+//   - string.
+//   - []*config.ToolDefinition.
+//   - []*config.ResourceDefinition.
+//   - error.
 func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) (string, []*config.ToolDefinition, []*config.ResourceDefinition, error) {
 	r.mu.Lock()
 
@@ -296,6 +316,13 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - serviceID: string.
+//   - info: *tool.ServiceInfo.
+//
+// Returns:
+//   - None.
 func (r *ServiceRegistry) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -311,6 +338,13 @@ func (r *ServiceRegistry) AddServiceInfo(serviceID string, info *tool.ServiceInf
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - serviceID: string.
+//
+// Returns:
+//   - *tool.ServiceInfo.
+//   - bool.
 func (r *ServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -339,6 +373,13 @@ func (r *ServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - serviceID: string.
+//
+// Returns:
+//   - *config.UpstreamServiceConfig.
+//   - bool.
 func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamServiceConfig, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -362,6 +403,13 @@ func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamSe
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - serviceName: string.
+//
+// Returns:
+//   - error.
 func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -404,6 +452,13 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - serviceID: string.
+//
+// Returns:
+//   - string.
+//   - bool.
 func (r *ServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -423,6 +478,13 @@ func (r *ServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 //   - interval: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - interval: time.Duration.
+//
+// Returns:
 //   - None.
 func (r *ServiceRegistry) StartHealthChecks(ctx context.Context, interval time.Duration) {
 	go func() {
@@ -506,6 +568,12 @@ func (r *ServiceRegistry) checkAllHealth(ctx context.Context) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
+//   - error.
 func (r *ServiceRegistry) Close(ctx context.Context) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -532,6 +600,13 @@ func (r *ServiceRegistry) Close(ctx context.Context) error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []*config.UpstreamServiceConfig.
+//   - error.
 func (r *ServiceRegistry) GetAllServices() ([]*config.UpstreamServiceConfig, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()

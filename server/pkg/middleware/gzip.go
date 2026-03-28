@@ -67,6 +67,12 @@ var byteBufferPool = sync.Pool{
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - next: http.Handler.
+//
+// Returns:
+//   - http.Handler.
 func GzipCompressionMiddleware(next http.Handler) http.Handler {
 	pool := sync.Pool{
 		New: func() interface{} {
@@ -121,6 +127,13 @@ type gzipResponseWriter struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - b: []byte.
+//
+// Returns:
+//   - int.
+//   - error.
 func (w *gzipResponseWriter) Write(b []byte) (int, error) {
 	// If we are already compressing, write to gzip writer
 	if w.writer != nil {
@@ -179,6 +192,12 @@ func (w *gzipResponseWriter) Write(b []byte) (int, error) {
 //   - code: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - code: int.
+//
+// Returns:
 //   - None.
 func (w *gzipResponseWriter) WriteHeader(code int) {
 	if w.headerWritten {
@@ -265,6 +284,12 @@ func (w *gzipResponseWriter) flushBuffer(startGzip bool) error {
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
 func (w *gzipResponseWriter) Flush() {
 	// If we haven't written headers yet, we are still buffering.
 	// Force flush the buffer to start gzip stream (even if small).
@@ -292,6 +317,12 @@ func (w *gzipResponseWriter) Flush() {
 //   - None.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
 //   - None.
 func (w *gzipResponseWriter) Close() {
 	if w.writer != nil {

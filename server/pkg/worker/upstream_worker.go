@@ -37,6 +37,13 @@ type UpstreamWorker struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - bus: *bus.Provider.
+//   - toolManager: tool.ManagerInterface.
+//
+// Returns:
+//   - *UpstreamWorker.
 func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *UpstreamWorker {
 	return &UpstreamWorker{
 		bus:         bus,
@@ -52,6 +59,12 @@ func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *Up
 //   - ctx: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
 //   - None.
 func (w *UpstreamWorker) Start(ctx context.Context) {
 	w.wg.Add(1)
@@ -112,6 +125,12 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 //   - None.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
 //   - None.
 func (w *UpstreamWorker) Stop() {
 	w.wg.Wait()

@@ -56,6 +56,12 @@ type Debugger struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - size: int.
+//
+// Returns:
+//   - *Debugger.
 func NewDebugger(size int) *Debugger {
 	d := &Debugger{
 		ring:        ring.New(size),
@@ -88,6 +94,12 @@ func (d *Debugger) process() {
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
 func (d *Debugger) Close() {
 	close(d.ingress)
 	<-d.done
@@ -111,6 +123,13 @@ type bodyLogWriter struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - b: []byte.
+//
+// Returns:
+//   - int.
+//   - error.
 func (w *bodyLogWriter) Write(b []byte) (int, error) {
 	if !w.wroteHeader {
 		w.WriteHeader(http.StatusOK)
@@ -140,6 +159,12 @@ func (w *bodyLogWriter) Write(b []byte) (int, error) {
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - statusCode: int.
+//
+// Returns:
+//   - None.
 func (w *bodyLogWriter) WriteHeader(statusCode int) {
 	if w.wroteHeader {
 		return
@@ -164,6 +189,12 @@ type readCloserWrapper struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - next: http.Handler.
+//
+// Returns:
+//   - http.Handler.
 func (d *Debugger) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
@@ -292,6 +323,12 @@ func isTextContent(contentType string) bool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []DebugEntry.
 func (d *Debugger) Entries() []DebugEntry {
 	d.mu.RLock()
 	defer d.mu.RUnlock()
@@ -314,6 +351,12 @@ func (d *Debugger) Entries() []DebugEntry {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - http.HandlerFunc.
 func (d *Debugger) APIHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

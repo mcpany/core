@@ -62,6 +62,13 @@ type DockerTransport struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
+//   - mcp.Connection.
+//   - error.
 func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
 	cli, err := newDockerClient(client.FromEnv, client.WithAPIVersionNegotiation())
@@ -210,6 +217,13 @@ type dockerConn struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//
+// Returns:
+//   - jsonrpc.Message.
+//   - error.
 func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
 	if err := c.decoder.Decode(&raw); err != nil {
@@ -299,6 +313,13 @@ func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//   - msg: jsonrpc.Message.
+//
+// Returns:
+//   - error.
 func (c *dockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	var method string
 	var params any
@@ -347,6 +368,12 @@ func (c *dockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - error.
 func (c *dockerConn) Close() error {
 	return c.rwc.Close()
 }
@@ -360,6 +387,12 @@ func (c *dockerConn) Close() error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string.
 func (c *dockerConn) SessionID() string {
 	return "docker-transport-session"
 }
@@ -381,6 +414,12 @@ type dockerReadWriteCloser struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - error.
 func (c *dockerReadWriteCloser) Close() error {
 	err := c.WriteCloser.Close()
 
@@ -418,6 +457,13 @@ type slogWriter struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - p: []byte.
+//
+// Returns:
+//   - n int.
+//   - err error.
 func (s *slogWriter) Write(p []byte) (n int, err error) {
 	scanner := bufio.NewScanner(strings.NewReader(string(p)))
 	for scanner.Scan() {
@@ -442,6 +488,13 @@ type tailBuffer struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - p: []byte.
+//
+// Returns:
+//   - n int.
+//   - err error.
 func (b *tailBuffer) Write(p []byte) (n int, err error) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -463,6 +516,12 @@ func (b *tailBuffer) Write(p []byte) (n int, err error) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string.
 func (b *tailBuffer) String() string {
 	b.mu.Lock()
 	defer b.mu.Unlock()

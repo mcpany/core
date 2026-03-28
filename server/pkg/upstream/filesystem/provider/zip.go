@@ -32,6 +32,13 @@ type ZipProvider struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - config: *configv1.ZipFs.
+//
+// Returns:
+//   - *ZipProvider.
+//   - error.
 func NewZipProvider(config *configv1.ZipFs) (*ZipProvider, error) {
 	if err := validation.IsAllowedPath(config.GetFilePath()); err != nil {
 		return nil, fmt.Errorf("zip file path not allowed: %w", err)
@@ -71,6 +78,12 @@ func NewZipProvider(config *configv1.ZipFs) (*ZipProvider, error) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - afero.Fs.
 func (p *ZipProvider) GetFs() afero.Fs {
 	return p.fs
 }
@@ -84,6 +97,13 @@ func (p *ZipProvider) GetFs() afero.Fs {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - virtualPath: string.
+//
+// Returns:
+//   - string.
+//   - error.
 func (p *ZipProvider) ResolvePath(virtualPath string) (string, error) {
 	// For ZipFs, just clean the path. It's virtual (based on zip contents).
 	return filepath.Clean(virtualPath), nil
@@ -98,6 +118,12 @@ func (p *ZipProvider) ResolvePath(virtualPath string) (string, error) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - error.
 func (p *ZipProvider) Close() error {
 	if p.closer != nil {
 		return p.closer.Close()

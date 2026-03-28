@@ -30,6 +30,13 @@ type PostgresVectorStore struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - dsn: string.
+//
+// Returns:
+//   - *PostgresVectorStore.
+//   - error.
 func NewPostgresVectorStore(dsn string) (*PostgresVectorStore, error) {
 	if dsn == "" {
 		return nil, fmt.Errorf("postgres dsn is required")
@@ -58,6 +65,13 @@ func NewPostgresVectorStore(dsn string) (*PostgresVectorStore, error) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - db: *sql.DB.
+//
+// Returns:
+//   - *PostgresVectorStore.
+//   - error.
 func NewPostgresVectorStoreWithDB(db *sql.DB) (*PostgresVectorStore, error) {
 	// Verify connection
 	ctxPing, cancelPing := context.WithTimeout(context.Background(), 5*time.Second)
@@ -112,6 +126,16 @@ func NewPostgresVectorStoreWithDB(db *sql.DB) (*PostgresVectorStore, error) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - key: string.
+//   - vector: []float32.
+//   - result: any.
+//   - ttl: time.Duration.
+//
+// Returns:
+//   - error.
 func (s *PostgresVectorStore) Add(ctx context.Context, key string, vector []float32, result any, ttl time.Duration) error {
 	vectorJSON, err := json.Marshal(vector)
 	if err != nil {
@@ -150,6 +174,16 @@ func (s *PostgresVectorStore) Add(ctx context.Context, key string, vector []floa
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - key: string.
+//   - query: []float32.
+//
+// Returns:
+//   - any.
+//   - float32.
+//   - bool.
 func (s *PostgresVectorStore) Search(ctx context.Context, key string, query []float32) (any, float32, bool) {
 	queryJSON, err := json.Marshal(query)
 	if err != nil {
@@ -202,6 +236,13 @@ func (s *PostgresVectorStore) Search(ctx context.Context, key string, query []fl
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - key: string.
+//
+// Returns:
+//   - None.
 func (s *PostgresVectorStore) Prune(ctx context.Context, key string) {
 	query := "DELETE FROM semantic_cache_entries WHERE expires_at <= $1"
 	args := []interface{}{time.Now()}
@@ -223,6 +264,12 @@ func (s *PostgresVectorStore) Prune(ctx context.Context, key string) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - error.
 func (s *PostgresVectorStore) Close() error {
 	return s.db.Close()
 }

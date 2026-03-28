@@ -97,6 +97,13 @@ type ConfigurableEngine interface {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - path: string.
+//
+// Returns:
+//   - Engine.
+//   - error.
 func NewEngine(path string) (Engine, error) {
 	ext := strings.ToLower(filepath.Ext(path))
 	switch ext {
@@ -126,6 +133,12 @@ type yamlEngine struct {
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - skip: bool.
+//
+// Returns:
+//   - None.
 func (e *yamlEngine) SetSkipValidation(skip bool) {
 	e.skipValidation = skip
 }
@@ -138,6 +151,12 @@ func (e *yamlEngine) SetSkipValidation(skip bool) {
 //   - ignore: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - ignore: bool.
+//
+// Returns:
 //   - None.
 func (e *yamlEngine) SetIgnoreEnv(ignore bool) {
 	e.ignoreEnv = ignore
@@ -153,6 +172,13 @@ func (e *yamlEngine) SetIgnoreEnv(ignore bool) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - b: []byte.
+//   - v: proto.Message.
+//
+// Returns:
+//   - error.
 func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	// First, unmarshal YAML into a generic map.
 	var yamlMap map[string]interface{}
@@ -182,6 +208,14 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - yamlMap: map[string]interface{}.
+//   - v: proto.Message.
+//   - originalBytes: []byte.
+//
+// Returns:
+//   - error.
 func (e *yamlEngine) UnmarshalFromMap(yamlMap map[string]interface{}, v proto.Message, originalBytes []byte) error {
 	return e.unmarshalInternal(yamlMap, v, originalBytes)
 }
@@ -296,6 +330,13 @@ type textprotoEngine struct{}
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - b: []byte.
+//   - v: proto.Message.
+//
+// Returns:
+//   - error.
 func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
 	return prototext.Unmarshal(b, v)
 }
@@ -313,6 +354,13 @@ type jsonEngine struct{}
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - b: []byte.
+//   - v: proto.Message.
+//
+// Returns:
+//   - error.
 func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 	if err := protojson.Unmarshal(b, v); err != nil {
 		// Detect if the user is using Claude Desktop config format
@@ -646,6 +694,12 @@ type FileStore struct {
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - skip: bool.
+//
+// Returns:
+//   - None.
 func (s *FileStore) SetSkipValidation(skip bool) {
 	s.skipValidation = skip
 }
@@ -658,6 +712,12 @@ func (s *FileStore) SetSkipValidation(skip bool) {
 //   - ignore: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - ignore: bool.
+//
+// Returns:
 //   - None.
 func (s *FileStore) SetIgnoreMissingEnv(ignore bool) {
 	s.IgnoreMissingEnv = ignore
@@ -673,6 +733,13 @@ func (s *FileStore) SetIgnoreMissingEnv(ignore bool) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - fs: afero.Fs.
+//   - paths: []string.
+//
+// Returns:
+//   - *FileStore.
 func NewFileStore(fs afero.Fs, paths []string) *FileStore {
 	return &FileStore{fs: fs, paths: paths}
 }
@@ -687,6 +754,13 @@ func NewFileStore(fs afero.Fs, paths []string) *FileStore {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - fs: afero.Fs.
+//   - paths: []string.
+//
+// Returns:
+//   - *FileStore.
 func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 	return &FileStore{fs: fs, paths: paths, skipErrors: true}
 }
@@ -700,6 +774,12 @@ func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - bool.
 func (s *FileStore) HasConfigSources() bool {
 	return len(s.paths) > 0
 }
@@ -713,6 +793,13 @@ func (s *FileStore) HasConfigSources() bool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
+//   - *configv1.McpAnyServerConfig.
+//   - error.
 func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	filePaths, err := s.collectFilePaths()
 	if err != nil {
@@ -1210,6 +1297,12 @@ type MultiStore struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - stores: ...Store.
+//
+// Returns:
+//   - *MultiStore.
 func NewMultiStore(stores ...Store) *MultiStore {
 	return &MultiStore{stores: stores}
 }
@@ -1223,6 +1316,13 @@ func NewMultiStore(stores ...Store) *MultiStore {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
+//   - *configv1.McpAnyServerConfig.
+//   - error.
 func (ms *MultiStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	mergedConfig := configv1.McpAnyServerConfig_builder{}.Build()
 	for _, s := range ms.stores {
@@ -1321,6 +1421,12 @@ func collectFieldNames(md protoreflect.MessageDescriptor, candidates map[string]
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - bool.
 func (ms *MultiStore) HasConfigSources() bool {
 	for _, s := range ms.stores {
 		if s.HasConfigSources() {

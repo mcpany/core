@@ -28,6 +28,12 @@ type SessionRegistry struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *SessionRegistry.
 func NewSessionRegistry() *SessionRegistry {
 	return &SessionRegistry{
 		sessions: make(map[mcp.Session]tool.Session),
@@ -44,6 +50,13 @@ func NewSessionRegistry() *SessionRegistry {
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - upstreamSession: mcp.Session.
+//   - downstreamSession: tool.Session.
+//
+// Returns:
+//   - None.
 func (r *SessionRegistry) Register(upstreamSession mcp.Session, downstreamSession tool.Session) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -58,6 +71,12 @@ func (r *SessionRegistry) Register(upstreamSession mcp.Session, downstreamSessio
 //   - upstreamSession: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - upstreamSession: mcp.Session.
+//
+// Returns:
 //   - None.
 func (r *SessionRegistry) Unregister(upstreamSession mcp.Session) {
 	r.mu.Lock()
@@ -74,6 +93,13 @@ func (r *SessionRegistry) Unregister(upstreamSession mcp.Session) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - upstreamSession: mcp.Session.
+//
+// Returns:
+//   - tool.Session.
+//   - bool.
 func (r *SessionRegistry) Get(upstreamSession mcp.Session) (tool.Session, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()

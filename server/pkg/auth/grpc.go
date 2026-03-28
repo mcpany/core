@@ -30,6 +30,12 @@ type PerRPCCredentials struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - authenticator: UpstreamAuthenticator.
+//
+// Returns:
+//   - credentials.PerRPCCredentials.
 func NewPerRPCCredentials(authenticator UpstreamAuthenticator) credentials.PerRPCCredentials {
 	if authenticator == nil {
 		return nil
@@ -47,6 +53,14 @@ func NewPerRPCCredentials(authenticator UpstreamAuthenticator) credentials.PerRP
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - _: ...string.
+//
+// Returns:
+//   - map[string]string.
+//   - error.
 func (c *PerRPCCredentials) GetRequestMetadata(ctx context.Context, _ ...string) (map[string]string, error) {
 	if c.authenticator == nil {
 		return nil, nil
@@ -80,6 +94,12 @@ func (c *PerRPCCredentials) GetRequestMetadata(ctx context.Context, _ ...string)
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - bool.
 func (c *PerRPCCredentials) RequireTransportSecurity() bool {
 	// This should be true if TLS is enabled for the gRPC connection.
 	// For now, returning false to align with the current insecure setup.

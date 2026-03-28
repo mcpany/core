@@ -20,6 +20,12 @@ import (
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - path: string.
+//
+// Returns:
+//   - error.
 func HydrateFromFile(path string) error {
 	lines, err := util.ReadLastNLines(path, 1000)
 	if err != nil {

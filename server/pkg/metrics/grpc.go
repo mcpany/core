@@ -35,6 +35,13 @@ type GrpcStatsHandler struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - info: *stats.RPCTagInfo.
+//
+// Returns:
+//   - context.Context.
 func (h *GrpcStatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) context.Context {
 	if h.Wrapped != nil {
 		ctx = h.Wrapped.TagRPC(ctx, info)
@@ -51,6 +58,13 @@ func (h *GrpcStatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) c
 //   - s: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - s: stats.RPCStats.
+//
+// Returns:
 //   - None.
 func (h *GrpcStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 	if h.Wrapped != nil {
@@ -74,6 +88,13 @@ func (h *GrpcStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - info: *stats.ConnTagInfo.
+//
+// Returns:
+//   - context.Context.
 func (h *GrpcStatsHandler) TagConn(ctx context.Context, info *stats.ConnTagInfo) context.Context {
 	if h.Wrapped != nil {
 		ctx = h.Wrapped.TagConn(ctx, info)
@@ -90,6 +111,13 @@ func (h *GrpcStatsHandler) TagConn(ctx context.Context, info *stats.ConnTagInfo)
 //   - s: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - s: stats.ConnStats.
+//
+// Returns:
 //   - None.
 func (h *GrpcStatsHandler) HandleConn(ctx context.Context, s stats.ConnStats) {
 	if h.Wrapped != nil {

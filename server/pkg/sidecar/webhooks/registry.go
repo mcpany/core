@@ -46,6 +46,12 @@ type Registry struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *Registry.
 func NewRegistry() *Registry {
 	return &Registry{
 		hooks: make(map[string]Handler),
@@ -62,6 +68,13 @@ func NewRegistry() *Registry {
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - name: string.
+//   - handler: Handler.
+//
+// Returns:
+//   - None.
 func (r *Registry) Register(name string, handler Handler) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -77,6 +90,13 @@ func (r *Registry) Register(name string, handler Handler) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - name: string.
+//
+// Returns:
+//   - Handler.
+//   - bool.
 func (r *Registry) Get(name string) (Handler, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()

@@ -33,6 +33,13 @@ type AuditHandler struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - next: slog.Handler.
+//   - config: *configv1.AuditConfig.
+//
+// Returns:
+//   - *AuditHandler.
 func NewAuditHandler(next slog.Handler, config *configv1.AuditConfig) *AuditHandler {
 	h := &AuditHandler{
 		next:   next,
@@ -87,6 +94,13 @@ func (h *AuditHandler) initializeStore(config *configv1.AuditConfig) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - level: slog.Level.
+//
+// Returns:
+//   - bool.
 func (h *AuditHandler) Enabled(ctx context.Context, level slog.Level) bool {
 	return h.next.Enabled(ctx, level)
 }
@@ -101,6 +115,13 @@ func (h *AuditHandler) Enabled(ctx context.Context, level slog.Level) bool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - r: slog.Record.
+//
+// Returns:
+//   - error.
 func (h *AuditHandler) Handle(ctx context.Context, r slog.Record) error {
 	// 1. Export the record
 	if err := h.Export(ctx, r); err != nil {
@@ -120,6 +141,12 @@ func (h *AuditHandler) Handle(ctx context.Context, r slog.Record) error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - attrs: []slog.Attr.
+//
+// Returns:
+//   - slog.Handler.
 func (h *AuditHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	return &AuditHandler{
 		next:   h.next.WithAttrs(attrs),
@@ -137,6 +164,12 @@ func (h *AuditHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - name: string.
+//
+// Returns:
+//   - slog.Handler.
 func (h *AuditHandler) WithGroup(name string) slog.Handler {
 	return &AuditHandler{
 		next:   h.next.WithGroup(name),
@@ -155,6 +188,13 @@ func (h *AuditHandler) WithGroup(name string) slog.Handler {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - r: slog.Record.
+//
+// Returns:
+//   - error.
 func (h *AuditHandler) Export(ctx context.Context, r slog.Record) error {
 	if h.store == nil {
 		return nil

@@ -46,6 +46,13 @@ type Manager struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - rootDir: string.
+//
+// Returns:
+//   - *Manager.
+//   - error.
 func NewManager(rootDir string) (*Manager, error) {
 	if err := os.MkdirAll(rootDir, 0755); err != nil {
 		return nil, fmt.Errorf("failed to create skill root directory: %w", err)
@@ -64,6 +71,13 @@ func NewManager(rootDir string) (*Manager, error) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []*Skill.
+//   - error.
 func (m *Manager) ListSkills() ([]*Skill, error) {
 	// ⚡ BOLT: Optimization - Cached skill listing to avoid redundant I/O.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -113,6 +127,13 @@ func (m *Manager) ListSkills() ([]*Skill, error) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - name: string.
+//
+// Returns:
+//   - *Skill.
+//   - error.
 func (m *Manager) GetSkill(name string) (*Skill, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -128,6 +149,12 @@ func (m *Manager) GetSkill(name string) (*Skill, error) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - skill: *Skill.
+//
+// Returns:
+//   - error.
 func (m *Manager) CreateSkill(skill *Skill) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -166,6 +193,13 @@ func (m *Manager) CreateSkill(skill *Skill) error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - originalName: string.
+//   - skill: *Skill.
+//
+// Returns:
+//   - error.
 func (m *Manager) UpdateSkill(originalName string, skill *Skill) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -206,6 +240,12 @@ func (m *Manager) UpdateSkill(originalName string, skill *Skill) error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - name: string.
+//
+// Returns:
+//   - error.
 func (m *Manager) DeleteSkill(name string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -233,6 +273,14 @@ func (m *Manager) DeleteSkill(name string) error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - skillName: string.
+//   - relPath: string.
+//   - content: []byte.
+//
+// Returns:
+//   - error.
 func (m *Manager) SaveAsset(skillName string, relPath string, content []byte) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()

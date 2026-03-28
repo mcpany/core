@@ -34,6 +34,12 @@ var (
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *Broadcaster.
 func NewBroadcaster() *Broadcaster {
 	return &Broadcaster{
 		subscribers: make(map[chan any]struct{}),
@@ -51,6 +57,12 @@ func NewBroadcaster() *Broadcaster {
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
 func (b *Broadcaster) Reset() {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -67,8 +79,8 @@ func (b *Broadcaster) Reset() {
 // Parameters.
 //   - None.
 //
-// Returns.
-//   - result: The result.
+// Returns:
+//   - chan any: The result.
 func (b *Broadcaster) Subscribe() chan any {
 	return b.SubscribeBuffered(100)
 }
@@ -77,11 +89,11 @@ func (b *Broadcaster) Subscribe() chan any {
 //
 // Summary: SubscribeBuffered.
 //
-// Parameters.
-//   - size: The parameter.
+// Parameters:
+//   - size: int. The parameter.
 //
-// Returns.
-//   - result: The result.
+// Returns:
+//   - chan any: The result.
 func (b *Broadcaster) SubscribeBuffered(size int) chan any {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -99,6 +111,13 @@ func (b *Broadcaster) SubscribeBuffered(size int) chan any {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - chan any.
+//   - []any.
 func (b *Broadcaster) SubscribeWithHistory() (chan any, []any) {
 	return b.SubscribeWithHistoryBuffered(100)
 }
@@ -112,6 +131,13 @@ func (b *Broadcaster) SubscribeWithHistory() (chan any, []any) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - size: int.
+//
+// Returns:
+//   - chan any.
+//   - []any.
 func (b *Broadcaster) SubscribeWithHistoryBuffered(size int) (chan any, []any) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -154,6 +180,12 @@ func (b *Broadcaster) SubscribeWithHistoryBuffered(size int) (chan any, []any) {
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - ch chan: any.
+//
+// Returns:
+//   - None.
 func (b *Broadcaster) Unsubscribe(ch chan any) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -171,6 +203,12 @@ func (b *Broadcaster) Unsubscribe(ch chan any) {
 //   - msg: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - msg: any.
+//
+// Returns:
 //   - None.
 func (b *Broadcaster) Broadcast(msg any) {
 	// ⚡ BOLT: Optimized Broadcast to use interface{} (any) instead of []byte.
@@ -208,6 +246,12 @@ func (b *Broadcaster) Broadcast(msg any) {
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
 func (b *Broadcaster) ClearHistory() {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -225,6 +269,12 @@ func (b *Broadcaster) ClearHistory() {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []any.
 func (b *Broadcaster) GetHistory() []any {
 	b.mu.RLock()
 	defer b.mu.RUnlock()
@@ -260,6 +310,12 @@ func (b *Broadcaster) GetHistory() []any {
 //   - messages: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - messages: []any.
+//
+// Returns:
 //   - None.
 func (b *Broadcaster) Hydrate(messages []any) {
 	b.mu.Lock()

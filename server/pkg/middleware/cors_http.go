@@ -29,6 +29,12 @@ type HTTPCORSMiddleware struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - allowedOrigins: []string.
+//
+// Returns:
+//   - *HTTPCORSMiddleware.
 func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
 	m := &HTTPCORSMiddleware{}
 	m.updateInternal(allowedOrigins)
@@ -43,6 +49,12 @@ func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
 //   - allowedOrigins: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - allowedOrigins: []string.
+//
+// Returns:
 //   - None.
 func (m *HTTPCORSMiddleware) Update(allowedOrigins []string) {
 	m.mu.Lock()
@@ -74,6 +86,12 @@ func (m *HTTPCORSMiddleware) updateInternal(origins []string) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - next: http.Handler.
+//
+// Returns:
+//   - http.Handler.
 func (m *HTTPCORSMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")

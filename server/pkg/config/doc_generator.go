@@ -31,6 +31,14 @@ import (
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - cfg: *configv1.McpAnyServerConfig.
+//
+// Returns:
+//   - string.
+//   - error.
 func GenerateDocumentation(ctx context.Context, cfg *configv1.McpAnyServerConfig) (string, error) {
 	busProvider, _ := bus.NewProvider(nil)
 	toolManager := tool.NewManager(busProvider)

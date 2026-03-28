@@ -49,6 +49,12 @@ var (
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *TextParser.
 func NewTextParser() *TextParser {
 	defaultTextParserOnce.Do(func() {
 		defaultTextParser = &TextParser{
@@ -68,6 +74,14 @@ func NewTextParser() *TextParser {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - templateStr: string.
+//   - data: any.
+//
+// Returns:
+//   - []byte.
+//   - error.
 func (p *TextParser) Transform(templateStr string, data any) ([]byte, error) {
 	return p.transformer.Transform(templateStr, data)
 }
@@ -84,6 +98,16 @@ func (p *TextParser) Transform(templateStr string, data any) ([]byte, error) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - inputType: string.
+//   - input: []byte.
+//   - config: map[string]string.
+//   - jqQuery: string.
+//
+// Returns:
+//   - any.
+//   - error.
 func (p *TextParser) Parse(inputType string, input []byte, config map[string]string, jqQuery string) (any, error) {
 	switch strings.ToLower(inputType) {
 	case "json":

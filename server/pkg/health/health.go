@@ -48,6 +48,12 @@ var (
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - cfg: *configv1.AlertConfig.
+//
+// Returns:
+//   - None.
 func SetGlobalAlertConfig(cfg *configv1.AlertConfig) {
 	globalAlertConfigMu.Lock()
 	defer globalAlertConfigMu.Unlock()
@@ -79,6 +85,12 @@ type HTTPServiceWithHealthCheck interface {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - uc: *configv1.UpstreamServiceConfig.
+//
+// Returns:
+//   - health.Checker.
 func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 	if uc == nil {
 		return nil

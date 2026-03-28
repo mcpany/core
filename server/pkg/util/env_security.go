@@ -18,6 +18,12 @@ import (
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - name: string.
+//
+// Returns:
+//   - bool.
 func IsEnvVarAllowed(name string) bool {
 	// 1. Check Allowlist
 	allowedEnv := os.Getenv("MCPANY_ALLOWED_ENV")

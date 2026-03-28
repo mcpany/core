@@ -23,6 +23,12 @@ type ResourceMCPServer struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - map[string]interface.
 func Schema() map[string]interface{} {
 	return map[string]interface{}{
 		"name": map[string]interface{}{
@@ -54,6 +60,12 @@ func Schema() map[string]interface{} {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: *ResourceMCPServer.
+//
+// Returns:
+//   - error.
 func Create(_ *ResourceMCPServer) error {
 	// Simulate API call to provision resources
 	return nil
@@ -68,6 +80,13 @@ func Create(_ *ResourceMCPServer) error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - name: string.
+//
+// Returns:
+//   - *ResourceMCPServer.
+//   - error.
 func Read(name string) (*ResourceMCPServer, error) {
 	return &ResourceMCPServer{
 		Name:    name,

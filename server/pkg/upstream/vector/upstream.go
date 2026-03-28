@@ -41,6 +41,12 @@ type Upstream struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - upstream.Upstream.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{
 		clientFactory: defaultClientFactory,
@@ -66,6 +72,12 @@ func defaultClientFactory(config *configv1.VectorUpstreamService) (Client, error
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//
+// Returns:
+//   - error.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
@@ -209,6 +221,14 @@ type vectorCallable struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - req: *tool.ExecutionRequest.
+//
+// Returns:
+//   - any.
+//   - error.
 func (c *vectorCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return c.handler(ctx, req.Arguments)
 }

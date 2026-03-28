@@ -20,6 +20,13 @@ import (
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - w: io.Writer.
+//   - results: []CheckResult.
+//
+// Returns:
+//   - None.
 func PrintResults(w io.Writer, results []CheckResult) {
 	if w == nil {
 		w = os.Stdout

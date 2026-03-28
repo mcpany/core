@@ -25,6 +25,12 @@ import (
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - s: string.
+//
+// Returns:
+//   - error.
 func IsValidBindAddress(s string) error {
 	_, port, err := net.SplitHostPort(s)
 	if err != nil {
@@ -145,6 +151,12 @@ var (
 //   - paths: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - paths: []string.
+//
+// Returns:
 //   - None.
 func SetAllowedPaths(paths []string) {
 	allowedPaths = paths
@@ -328,6 +340,12 @@ var allowedOpaqueSchemes = map[string]bool{
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - s: string.
+//
+// Returns:
+//   - bool.
 func IsValidURL(s string) bool {
 	if len(s) > 2048 || strings.TrimSpace(s) != s {
 		return false
@@ -381,6 +399,12 @@ func IsValidURL(s string) bool {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - def: *configv1.HttpCallDefinition.
+//
+// Returns:
+//   - error.
 func ValidateHTTPServiceDefinition(def *configv1.HttpCallDefinition) error {
 	if def == nil {
 		return fmt.Errorf("http call definition cannot be nil")

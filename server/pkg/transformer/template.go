@@ -35,6 +35,15 @@ type TextTemplate struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - templateString: unknown.
+//   - startTag: unknown.
+//   - endTag: string.
+//
+// Returns:
+//   - *TextTemplate.
+//   - error.
 func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error) {
 	tpl, err := fasttemplate.NewTemplate(templateString, startTag, endTag)
 	if err != nil {
@@ -68,6 +77,13 @@ func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error)
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - params: map[string]any.
+//
+// Returns:
+//   - string.
+//   - error.
 func (t *TextTemplate) Render(params map[string]any) (string, error) {
 	return t.template.ExecuteFuncStringWithErr(func(w io.Writer, tag string) (int, error) {
 		val, ok := params[tag]

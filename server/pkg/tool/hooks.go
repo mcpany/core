@@ -45,6 +45,12 @@ type PolicyHook struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - policy: *configv1.CallPolicy.
+//
+// Returns:
+//   - *PolicyHook.
 func NewPolicyHook(policy *configv1.CallPolicy) *PolicyHook {
 	compiledRules := make([]compiledRule, len(policy.GetRules()))
 	for i, rule := range policy.GetRules() {
@@ -166,6 +172,12 @@ type WebhookClient struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - config: *configv1.WebhookConfig.
+//
+// Returns:
+//   - *WebhookClient.
 func NewWebhookClient(config *configv1.WebhookConfig) *WebhookClient {
 	timeout := 5 * time.Second
 	if t := config.GetTimeout(); t != nil {
@@ -208,6 +220,15 @@ func NewWebhookClient(config *configv1.WebhookConfig) *WebhookClient {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - eventType: string.
+//   - data: any.
+//
+// Returns:
+//   - *cloudevents.Event.
+//   - error.
 func (c *WebhookClient) Call(ctx context.Context, eventType string, data any) (*cloudevents.Event, error) {
 	event := cloudevents.NewEvent()
 	event.SetID(uuid.New().String())
@@ -261,6 +282,12 @@ type WebhookHook struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - config: *configv1.WebhookConfig.
+//
+// Returns:
+//   - *WebhookHook.
 func NewWebhookHook(config *configv1.WebhookConfig) *WebhookHook {
 	return &WebhookHook{
 		client: NewWebhookClient(config),
@@ -442,6 +469,13 @@ type SigningRoundTripper struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - req: *http.Request.
+//
+// Returns:
+//   - *http.Response.
+//   - error.
 func (s *SigningRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	if s.signer != nil {
 		payload := []byte{} // Signing requires payload, but request body might be stream.

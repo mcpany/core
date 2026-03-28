@@ -19,6 +19,13 @@ import (
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//
+// Returns:
+//   - []*configv1.ServiceTemplate.
+//   - error.
 func (s *Store) ListServiceTemplates(_ context.Context) ([]*configv1.ServiceTemplate, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -39,6 +46,14 @@ func (s *Store) ListServiceTemplates(_ context.Context) ([]*configv1.ServiceTemp
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//   - id: string.
+//
+// Returns:
+//   - *configv1.ServiceTemplate.
+//   - error.
 func (s *Store) GetServiceTemplate(_ context.Context, id string) (*configv1.ServiceTemplate, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -58,6 +73,13 @@ func (s *Store) GetServiceTemplate(_ context.Context, id string) (*configv1.Serv
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//   - template: *configv1.ServiceTemplate.
+//
+// Returns:
+//   - error.
 func (s *Store) SaveServiceTemplate(_ context.Context, template *configv1.ServiceTemplate) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -75,6 +97,13 @@ func (s *Store) SaveServiceTemplate(_ context.Context, template *configv1.Servic
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//   - id: string.
+//
+// Returns:
+//   - error.
 func (s *Store) DeleteServiceTemplate(_ context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

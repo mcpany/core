@@ -45,6 +45,12 @@ type GlobalRateLimitMiddleware struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - config: *configv1.RateLimitConfig.
+//
+// Returns:
+//   - *GlobalRateLimitMiddleware.
 func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateLimitMiddleware {
 	return &GlobalRateLimitMiddleware{
 		config:   config,
@@ -60,6 +66,12 @@ func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateL
 //   - config: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - config: *configv1.RateLimitConfig.
+//
+// Returns:
 //   - None.
 func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfig) {
 	m.mu.Lock()
@@ -82,6 +94,16 @@ func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfi
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - method: string.
+//   - req: mcp.Request.
+//   - next: mcp.MethodHandler.
+//
+// Returns:
+//   - mcp.Result.
+//   - error.
 func (m *GlobalRateLimitMiddleware) Execute(ctx context.Context, method string, req mcp.Request, next mcp.MethodHandler) (mcp.Result, error) {
 	m.mu.RLock()
 	config := m.config

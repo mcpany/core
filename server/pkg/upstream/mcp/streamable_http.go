@@ -109,6 +109,15 @@ type ClientSession interface {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - f func(client *mcp.Client: client.MCPClient.
+//   - stdioConfig *configv1.McpStdioConnection: client.MCPClient.
+//   - httpAddress string: client.MCPClient.
+//   - httpClient *http.Client): client.MCPClient.
+//
+// Returns:
+//   - None.
 func SetNewClientImplForTesting(f func(client *mcp.Client, stdioConfig *configv1.McpStdioConnection, httpAddress string, httpClient *http.Client) client.MCPClient) {
 	newClientImplForTesting = f
 }
@@ -122,6 +131,12 @@ func SetNewClientImplForTesting(f func(client *mcp.Client, stdioConfig *configv1
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - f func(impl *mcp.Implementation): *mcp.Client.
+//
+// Returns:
+//   - None.
 func SetNewClientForTesting(f func(impl *mcp.Implementation) *mcp.Client) {
 	newClientForTesting = f
 }
@@ -135,6 +150,16 @@ func SetNewClientForTesting(f func(impl *mcp.Implementation) *mcp.Client) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - f func(client *mcp.Client: []mcp.Root.
+//   - ctx context.Context: []mcp.Root.
+//   - transport mcp.Transport: []mcp.Root.
+//   - roots: []mcp.Root.
+//
+// Returns:
+//   - ClientSession.
+//   - error).
 func SetConnectForTesting(f func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error)) {
 	connectForTesting = f
 }
@@ -165,6 +190,12 @@ type Upstream struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
+//   - error.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -189,6 +220,12 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//
+// Returns:
+//   - error.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.RLock()
 	serviceID := u.serviceID
@@ -223,6 +260,12 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - globalSettings: *configv1.GlobalSettings.
+//
+// Returns:
+//   - upstream.Upstream.
 func NewUpstream(globalSettings *configv1.GlobalSettings) upstream.Upstream {
 	return &Upstream{
 		sessionRegistry: NewSessionRegistry(),
@@ -248,6 +291,12 @@ type mcpPrompt struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *mcp.Prompt.
 func (p *mcpPrompt) Prompt() *mcp.Prompt {
 	return p.mcpPrompt
 }
@@ -261,6 +310,12 @@ func (p *mcpPrompt) Prompt() *mcp.Prompt {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string.
 func (p *mcpPrompt) Service() string {
 	return p.service
 }
@@ -274,6 +329,12 @@ func (p *mcpPrompt) Service() string {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.PromptDefinition.
 func (p *mcpPrompt) Definition() *configv1.PromptDefinition {
 	// Construct a partial definition from p.mcpPrompt
 	properties := make(map[string]*structpb.Value)
@@ -320,6 +381,14 @@ func (p *mcpPrompt) Definition() *configv1.PromptDefinition {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - args: json.RawMessage.
+//
+// Returns:
+//   - *mcp.GetPromptResult.
+//   - error.
 func (p *mcpPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
 	var arguments map[string]string
 	if args != nil {
@@ -367,6 +436,12 @@ type mcpResource struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *mcp.Resource.
 func (r *mcpResource) Resource() *mcp.Resource {
 	return r.mcpResource
 }
@@ -380,6 +455,12 @@ func (r *mcpResource) Resource() *mcp.Resource {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - string.
 func (r *mcpResource) Service() string {
 	return r.service
 }
@@ -393,6 +474,13 @@ func (r *mcpResource) Service() string {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
+//   - *mcp.ReadResourceResult.
+//   - error.
 func (r *mcpResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
 	var result *mcp.ReadResourceResult
 	err := r.withMCPClientSession(ctx, func(cs ClientSession) error {
@@ -414,6 +502,12 @@ func (r *mcpResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error)
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//
+// Returns:
+//   - error.
 func (r *mcpResource) Subscribe(_ context.Context) error {
 	return fmt.Errorf("subscribing to resources on mcp upstreams is not yet implemented")
 }
@@ -619,6 +713,14 @@ func (c *mcpConnection) withMCPClientSession(ctx context.Context, f func(cs Clie
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - params: *mcp.CallToolParams.
+//
+// Returns:
+//   - *mcp.CallToolResult.
+//   - error.
 func (c *mcpConnection) CallTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
 	var result *mcp.CallToolResult
 	err := c.withMCPClientSession(ctx, func(cs ClientSession) error {
@@ -1275,6 +1377,13 @@ type authenticatedRoundTripper struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - req: *http.Request.
+//
+// Returns:
+//   - *http.Response.
+//   - error.
 func (rt *authenticatedRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	if rt.authenticator != nil {
 		if err := rt.authenticator.Authenticate(req); err != nil {
@@ -1307,6 +1416,13 @@ type StreamableHTTP struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - req: *http.Request.
+//
+// Returns:
+//   - *http.Response.
+//   - error.
 func (t *StreamableHTTP) RoundTrip(req *http.Request) (*http.Response, error) {
 	if t.Client == nil {
 		t.Client = http.DefaultClient

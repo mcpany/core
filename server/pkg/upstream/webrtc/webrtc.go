@@ -51,6 +51,12 @@ type Upstream struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
+//   - error.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -75,6 +81,12 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//
+// Returns:
+//   - error.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -95,6 +107,12 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - poolManager: *pool.Manager.
+//
+// Returns:
+//   - upstream.Upstream.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager:       poolManager,

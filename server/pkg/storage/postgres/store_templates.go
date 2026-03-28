@@ -23,6 +23,13 @@ import (
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//
+// Returns:
+//   - []*configv1.ServiceTemplate.
+//   - error.
 func (s *Store) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTemplate, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM service_templates")
 	if err != nil {
@@ -59,6 +66,14 @@ func (s *Store) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTe
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - id: string.
+//
+// Returns:
+//   - *configv1.ServiceTemplate.
+//   - error.
 func (s *Store) GetServiceTemplate(ctx context.Context, id string) (*configv1.ServiceTemplate, error) {
 	query := "SELECT config_json FROM service_templates WHERE id = $1"
 	row := s.db.QueryRowContext(ctx, query, id)
@@ -88,6 +103,13 @@ func (s *Store) GetServiceTemplate(ctx context.Context, id string) (*configv1.Se
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctx: context.Context.
+//   - template: *configv1.ServiceTemplate.
+//
+// Returns:
+//   - error.
 func (s *Store) SaveServiceTemplate(ctx context.Context, template *configv1.ServiceTemplate) error {
 	if template.GetId() == "" {
 		return fmt.Errorf("template ID is required")

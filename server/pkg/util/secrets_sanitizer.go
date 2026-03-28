@@ -16,6 +16,12 @@ import (
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - svc: *configv1.UpstreamServiceConfig.
+//
+// Returns:
+//   - None.
 func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 	if svc == nil {
 		return
@@ -73,6 +79,12 @@ func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - profile: *configv1.ProfileDefinition.
+//
+// Returns:
+//   - None.
 func StripSecretsFromProfile(profile *configv1.ProfileDefinition) {
 	if profile == nil {
 		return
@@ -91,6 +103,12 @@ func StripSecretsFromProfile(profile *configv1.ProfileDefinition) {
 //
 // Returns.
 //   - None.
+//
+// Parameters:
+//   - collection: *configv1.Collection.
+//
+// Returns:
+//   - None.
 func StripSecretsFromCollection(collection *configv1.Collection) {
 	if collection == nil {
 		return
@@ -108,6 +126,12 @@ func StripSecretsFromCollection(collection *configv1.Collection) {
 //   - auth: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - auth: *configv1.Authentication.
+//
+// Returns:
 //   - None.
 func StripSecretsFromAuth(auth *configv1.Authentication) {
 	if auth == nil {
@@ -329,6 +353,13 @@ func scrubSecretValue(sv *configv1.SecretValue) {
 //   - secrets: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - svc: *configv1.UpstreamServiceConfig.
+//   - secrets: map[string]*configv1.SecretValue.
+//
+// Returns:
 //   - None.
 func HydrateSecretsInService(svc *configv1.UpstreamServiceConfig, secrets map[string]*configv1.SecretValue) {
 	if svc == nil || len(secrets) == 0 {

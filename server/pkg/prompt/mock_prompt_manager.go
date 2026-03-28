@@ -40,6 +40,12 @@ type MockManagerInterfaceMockRecorder struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - ctrl: *gomock.Controller.
+//
+// Returns:
+//   - *MockManagerInterface.
 func NewMockManagerInterface(ctrl *gomock.Controller) *MockManagerInterface {
 	mock := &MockManagerInterface{ctrl: ctrl}
 	mock.recorder = &MockManagerInterfaceMockRecorder{mock}
@@ -55,6 +61,12 @@ func NewMockManagerInterface(ctrl *gomock.Controller) *MockManagerInterface {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *MockManagerInterfaceMockRecorder.
 func (m *MockManagerInterface) EXPECT() *MockManagerInterfaceMockRecorder {
 	return m.recorder
 }
@@ -67,6 +79,12 @@ func (m *MockManagerInterface) EXPECT() *MockManagerInterfaceMockRecorder {
 //   - prompt: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - prompt: Prompt.
+//
+// Returns:
 //   - None.
 func (m *MockManagerInterface) AddPrompt(prompt Prompt) {
 	m.ctrl.T.Helper()
@@ -82,6 +100,12 @@ func (m *MockManagerInterface) AddPrompt(prompt Prompt) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - prompt: any.
+//
+// Returns:
+//   - *gomock.Call.
 func (mr *MockManagerInterfaceMockRecorder) AddPrompt(prompt any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddPrompt", reflect.TypeOf((*MockManagerInterface)(nil).AddPrompt), prompt)
@@ -95,6 +119,12 @@ func (mr *MockManagerInterfaceMockRecorder) AddPrompt(prompt any) *gomock.Call {
 //   - None.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
 //   - None.
 func (m *MockManagerInterface) Clear() {
 	m.ctrl.T.Helper()
@@ -110,6 +140,12 @@ func (m *MockManagerInterface) Clear() {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *gomock.Call.
 func (mr *MockManagerInterfaceMockRecorder) Clear() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Clear", reflect.TypeOf((*MockManagerInterface)(nil).Clear))
@@ -123,6 +159,12 @@ func (mr *MockManagerInterfaceMockRecorder) Clear() *gomock.Call {
 //   - serviceID: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - serviceID: string.
+//
+// Returns:
 //   - None.
 func (m *MockManagerInterface) ClearPromptsForService(serviceID string) {
 	m.ctrl.T.Helper()
@@ -138,6 +180,12 @@ func (m *MockManagerInterface) ClearPromptsForService(serviceID string) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - serviceID: any.
+//
+// Returns:
+//   - *gomock.Call.
 func (mr *MockManagerInterfaceMockRecorder) ClearPromptsForService(serviceID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ClearPromptsForService", reflect.TypeOf((*MockManagerInterface)(nil).ClearPromptsForService), serviceID)
@@ -152,6 +200,13 @@ func (mr *MockManagerInterfaceMockRecorder) ClearPromptsForService(serviceID any
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - name: string.
+//
+// Returns:
+//   - Prompt.
+//   - bool.
 func (m *MockManagerInterface) GetPrompt(name string) (Prompt, bool) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetPrompt", name)
@@ -169,6 +224,12 @@ func (m *MockManagerInterface) GetPrompt(name string) (Prompt, bool) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - name: any.
+//
+// Returns:
+//   - *gomock.Call.
 func (mr *MockManagerInterfaceMockRecorder) GetPrompt(name any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPrompt", reflect.TypeOf((*MockManagerInterface)(nil).GetPrompt), name)
@@ -183,6 +244,12 @@ func (mr *MockManagerInterfaceMockRecorder) GetPrompt(name any) *gomock.Call {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []Prompt.
 func (m *MockManagerInterface) ListPrompts() []Prompt {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListPrompts")
@@ -199,6 +266,12 @@ func (m *MockManagerInterface) ListPrompts() []Prompt {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *gomock.Call.
 func (mr *MockManagerInterfaceMockRecorder) ListPrompts() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPrompts", reflect.TypeOf((*MockManagerInterface)(nil).ListPrompts))
@@ -212,6 +285,12 @@ func (mr *MockManagerInterfaceMockRecorder) ListPrompts() *gomock.Call {
 //   - mcpServer: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - mcpServer: MCPServerProvider.
+//
+// Returns:
 //   - None.
 func (m *MockManagerInterface) SetMCPServer(mcpServer MCPServerProvider) {
 	m.ctrl.T.Helper()
@@ -227,6 +306,12 @@ func (m *MockManagerInterface) SetMCPServer(mcpServer MCPServerProvider) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - mcpServer: any.
+//
+// Returns:
+//   - *gomock.Call.
 func (mr *MockManagerInterfaceMockRecorder) SetMCPServer(mcpServer any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetMCPServer", reflect.TypeOf((*MockManagerInterface)(nil).SetMCPServer), mcpServer)
@@ -240,6 +325,12 @@ func (mr *MockManagerInterfaceMockRecorder) SetMCPServer(mcpServer any) *gomock.
 //   - prompt: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - prompt: Prompt.
+//
+// Returns:
 //   - None.
 func (m *MockManagerInterface) UpdatePrompt(prompt Prompt) {
 	m.ctrl.T.Helper()
@@ -255,6 +346,12 @@ func (m *MockManagerInterface) UpdatePrompt(prompt Prompt) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - prompt: any.
+//
+// Returns:
+//   - *gomock.Call.
 func (mr *MockManagerInterfaceMockRecorder) UpdatePrompt(prompt any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePrompt", reflect.TypeOf((*MockManagerInterface)(nil).UpdatePrompt), prompt)

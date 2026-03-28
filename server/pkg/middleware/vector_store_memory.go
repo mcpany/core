@@ -42,6 +42,12 @@ type VectorEntry struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *SimpleVectorStore.
 func NewSimpleVectorStore() *SimpleVectorStore {
 	return &SimpleVectorStore{
 		items:      make(map[string][]*VectorEntry),
@@ -62,6 +68,16 @@ func NewSimpleVectorStore() *SimpleVectorStore {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//   - key: string.
+//   - vector: []float32.
+//   - result: any.
+//   - ttl: time.Duration.
+//
+// Returns:
+//   - error.
 func (s *SimpleVectorStore) Add(_ context.Context, key string, vector []float32, result any, ttl time.Duration) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -99,6 +115,16 @@ func (s *SimpleVectorStore) Add(_ context.Context, key string, vector []float32,
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - _: context.Context.
+//   - key: string.
+//   - query: []float32.
+//
+// Returns:
+//   - any.
+//   - float32.
+//   - bool.
 func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float32) (any, float32, bool) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -143,6 +169,13 @@ func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float3
 //   - key: The parameter.
 //
 // Returns.
+//   - None.
+//
+// Parameters:
+//   - _: context.Context.
+//   - key: string.
+//
+// Returns:
 //   - None.
 func (s *SimpleVectorStore) Prune(_ context.Context, key string) {
 	s.mu.Lock()

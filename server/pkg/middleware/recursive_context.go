@@ -41,6 +41,12 @@ type RecursiveContextManager struct {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *RecursiveContextManager.
 func NewRecursiveContextManager() *RecursiveContextManager {
 	return &RecursiveContextManager{
 		sessions: make(map[string]*SessionState),
@@ -57,6 +63,13 @@ func NewRecursiveContextManager() *RecursiveContextManager {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - data: map[string]interface{}.
+//   - ttl: time.Duration.
+//
+// Returns:
+//   - *SessionState.
 func (m *RecursiveContextManager) CreateSession(data map[string]interface{}, ttl time.Duration) *SessionState {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -90,6 +103,13 @@ func (m *RecursiveContextManager) CreateSession(data map[string]interface{}, ttl
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - id: string.
+//
+// Returns:
+//   - *SessionState.
+//   - bool.
 func (m *RecursiveContextManager) GetSession(id string) (*SessionState, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -113,6 +133,12 @@ func (m *RecursiveContextManager) GetSession(id string) (*SessionState, bool) {
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - http.HandlerFunc.
 func (m *RecursiveContextManager) APIHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
@@ -189,6 +215,12 @@ const (
 //
 // Returns.
 //   - result: The result.
+//
+// Parameters:
+//   - next: http.Handler.
+//
+// Returns:
+//   - http.Handler.
 func (m *RecursiveContextManager) HandleContext(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		contextID := r.Header.Get("X-MCP-Parent-Context-ID")
