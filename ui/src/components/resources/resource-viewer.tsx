@@ -100,7 +100,7 @@ export function ResourceViewer({ content, loading }: ResourceViewerProps) {
         try {
             const parsed = JSON.parse(text || "{}");
             return (
-                <div className="h-full p-4 overflow-auto">
+                <div className="h-full p-4 overflow-auto" data-testid="rich-result-viewer">
                     <RichResultViewer result={parsed} />
                 </div>
             );
