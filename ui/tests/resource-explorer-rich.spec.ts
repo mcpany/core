@@ -8,51 +8,55 @@ import { test, expect } from '@playwright/test';
 test.describe('Resource Explorer Rich Result Viewer', () => {
   const serviceName = 'resource-viewer-rich-result-test';
 
-  test.beforeAll(async ({ request }) => {
-    // Clean up
-    await request.delete(`/api/v1/services/${serviceName}`).catch(() => { });
-
-    // Seed service
-    const response = await request.post('/api/v1/services', {
-      data: {
-        name: serviceName,
-        command_line_service: {
-          command: 'echo',
+  test.beforeEach(async ({ page }) => {
+    // Mock the resources endpoint
+    await page.route('**/api/v1/resources', async (route) => {
+      await route.fulfill({
+        json: {
           resources: [
-            { uri: 'test://data.json', name: 'JSON Data', mimeType: 'application/json' },
-            { uri: 'test://invalid.json', name: 'Invalid JSON', mimeType: 'application/json' }
-          ],
-          reads: {
-            'test://data.json': {
-              contents: [
-                {
-                  uri: 'test://data.json',
-                  mimeType: 'application/json',
-                  text: JSON.stringify([
-                    { name: 'Alice', role: 'Admin', id: 1 },
-                    { name: 'Bob', role: 'User', id: 2 }
-                  ])
-                }
-              ]
-            },
-            'test://invalid.json': {
-              contents: [
-                {
-                  uri: 'test://invalid.json',
-                  mimeType: 'application/json',
-                  text: '{ invalid json '
-                }
-              ]
-            }
-          }
+            { uri: 'test://data.json', name: 'JSON Data', mimeType: 'application/json', serviceId: serviceName },
+            { uri: 'test://invalid.json', name: 'Invalid JSON', mimeType: 'application/json', serviceId: serviceName }
+          ]
         }
+      });
+    });
+
+    // Mock resource read
+    await page.route('**/api/v1/resources/read*', async (route) => {
+      const urlObj = new URL(route.request().url());
+      const uri = urlObj.searchParams.get('uri');
+
+      if (uri === 'test://data.json') {
+        await route.fulfill({
+          json: {
+            contents: [
+              {
+                uri: 'test://data.json',
+                mimeType: 'application/json',
+                text: JSON.stringify([
+                  { name: 'Alice', role: 'Admin', id: 1 },
+                  { name: 'Bob', role: 'User', id: 2 }
+                ])
+              }
+            ]
+          }
+        });
+      } else if (uri === 'test://invalid.json') {
+        await route.fulfill({
+          json: {
+            contents: [
+              {
+                uri: 'test://invalid.json',
+                mimeType: 'application/json',
+                text: '{ invalid json '
+              }
+            ]
+          }
+        });
+      } else {
+        await route.fulfill({ status: 404 });
       }
     });
-    expect(response.ok()).toBeTruthy();
-  });
-
-  test.afterAll(async ({ request }) => {
-    await request.delete(`/api/v1/services/${serviceName}`).catch(() => { });
   });
 
   test('Resource viewer renders rich table result for JSON data', async ({ page }) => {
