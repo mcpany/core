@@ -108,9 +108,20 @@ func (m *CSRFMiddleware) Handler(next http.Handler) http.Handler {
 		// This could be a form submission or a simple fetch/xhr.
 		origin := r.Header.Get("Origin")
 		referer := r.Header.Get("Referer")
+		secFetchSite := r.Header.Get("Sec-Fetch-Site")
 
-		if origin == "" && referer == "" {
-			// If both are missing, it's likely not a browser, or privacy tools are stripping headers.
+		// Sec-Fetch-Site Validation for "cross-site" requests
+		if secFetchSite == "cross-site" || secFetchSite == "cross-origin" {
+			// If the request explicitly declares itself as cross-site, it MUST have an allowed Origin.
+			// If not, we block immediately. This hardens local listeners against CSRF/hijacking.
+			if origin == "" {
+				logging.GetLogger().Warn("CSRF blocked: cross-site request missing Origin", "path", r.URL.Path, "host", r.Host)
+				http.Error(w, "Forbidden: Cross-Site Request Blocked", http.StatusForbidden)
+				return
+			}
+		} else if origin == "" && referer == "" {
+			// If both are missing and it's not explicitly cross-site, it's likely not a browser,
+			// or privacy tools are stripping headers.
 			// In a strict mode we might block, but for now we log and allow?
 			// Blocking is safer for CSRF. Non-browser tools usually set headers if required.
 			// But curl doesn't set Origin.
@@ -160,20 +171,6 @@ func (m *CSRFMiddleware) isOriginAllowed(origin string, host string) bool {
 	origin = strings.ToLower(origin)
 	if m.allowedOrigins["*"] || m.allowedOrigins[origin] {
 		return true
-	}
-
-	// If no origins configured (Dev mode), implicitly allow localhost
-	if len(m.allowedOrigins) == 0 {
-		if strings.HasPrefix(origin, "http://localhost:") ||
-			strings.HasPrefix(origin, "https://localhost:") ||
-			strings.HasPrefix(origin, "http://127.0.0.1:") ||
-			strings.HasPrefix(origin, "https://127.0.0.1:") {
-			return true
-		}
-		// Exact match without port (unlikely but possible)
-		if origin == "http://localhost" || origin == "https://localhost" {
-			return true
-		}
 	}
 
 	// Check for Same Origin (Host header match)

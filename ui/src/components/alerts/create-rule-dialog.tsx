@@ -31,6 +31,20 @@ import { apiClient } from "@/lib/client";
 import { Severity } from "./types";
 
 /**
+ * Intent: Document CreateRuleDialog
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * CreateRuleDialog component.
  * @returns The rendered component.
  */

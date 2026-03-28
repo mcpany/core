@@ -5,6 +5,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { Trace } from "@/types/trace";
+import { apiClient } from "@/lib/client";
 
 interface UseTracesOptions {
     initialPaused?: boolean;
@@ -13,6 +14,20 @@ interface UseTracesOptions {
 const MAX_TRACES = 1000;
 
 /**
+ * Intent: Document useTraces
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Hook to manage trace subscriptions via WebSocket.
  *
  * @param options - Configuration options for the trace hook.
@@ -177,7 +192,15 @@ export function useTraces(options: UseTracesOptions = {}) {
         };
     }, []);
 
-    const clearTraces = () => setTraces([]);
+    const clearTraces = async () => {
+        try {
+            await apiClient.clearTraces();
+            setTraces([]);
+            bufferRef.current = [];
+        } catch (e) {
+            console.error("Failed to clear traces", e);
+        }
+    };
 
     const refresh = () => {
         setTraces([]);

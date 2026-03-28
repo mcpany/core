@@ -11,6 +11,20 @@ interface CodeGeneratorOptions {
 }
 
 /**
+ * Intent: Document generateCurlCommand
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Generates a Curl command for executing a tool.
  * @param params - The parameters for generation.
  * @param params.toolName - The name of the tool.
@@ -38,6 +52,20 @@ export function generateCurlCommand({ toolName, args, baseUrl = "http://localhos
 }
 
 /**
+ * Intent: Document generatePythonCode
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Generates Python code for executing a tool using the requests library.
  * @param params - The parameters for generation.
  * @param params.toolName - The name of the tool.

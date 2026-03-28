@@ -18,6 +18,46 @@ export enum WizardStep {
 }
 
 /**
+ * Intent: Document WizardWebhook
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
+ * WizardState type definition.
+ */
+export interface WizardWebhook {
+    name: string;
+    webhook: {
+        url: string;
+        timeout?: string;
+        webhookSecret?: string;
+    };
+}
+
+/**
+ * Intent: Document WizardState
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * WizardState type definition.
  */
 export interface WizardState {
@@ -26,7 +66,7 @@ export interface WizardState {
     // Temporary state for the wizard that might not map 1:1 to config yet
     selectedTemplateId?: string;
     params: Record<string, string>; // Key-Value pairs for parameters/env vars
-    webhooks: any[]; // TODO: Define webhook type
+    webhooks: WizardWebhook[];
     transformers: any[];
     authType?: 'local' | 'new';
     authCredentialId?: string;
@@ -63,6 +103,20 @@ const defaultState: WizardState = {
 const WizardContext = createContext<WizardContextType | undefined>(undefined);
 
 /**
+ * Intent: Document WizardProvider
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * WizardProvider manages the state of the configuration wizard and provides
  * methods to navigate between steps and update the configuration.
  * @param props - The component props.
@@ -123,9 +177,14 @@ export function WizardProvider({ children }: { children: ReactNode }) {
                 }
                 return { valid: true }; // Parameters are usually optional
             case WizardStep.WEBHOOKS:
-                for (const hook of state.webhooks) {
+                for (const hook of (state.config.preCallHooks as WizardWebhook[] || [])) {
                      if (hook.webhook && !hook.webhook.url) {
-                         return { valid: false, error: "Webhook URL is required" };
+                         return { valid: false, error: "Pre-Call Webhook URL is required" };
+                     }
+                }
+                for (const hook of (state.config.postCallHooks as WizardWebhook[] || [])) {
+                     if (hook.webhook && !hook.webhook.url) {
+                         return { valid: false, error: "Post-Call Webhook URL is required" };
                      }
                 }
                 return { valid: true };
@@ -175,6 +234,20 @@ export function WizardProvider({ children }: { children: ReactNode }) {
 }
 
 /**
+ * Intent: Document useWizard
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - Documented below.
+ *
+ * Side Effects:
+ *   - None
+ *
  * useWizard is a hook to access the wizard context.
  * @returns The wizard context containing state and navigation methods.
  * @throws Error if used outside of a WizardProvider.

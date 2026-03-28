@@ -145,6 +145,20 @@ function MetricsCard({ serviceId }: { serviceId: string }) {
 }
 
 /**
+ * Intent: Document ServiceDetail
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * ServiceDetail.
  *
  * @param { serviceId - The { serviceId.

@@ -1,35 +1,25 @@
 # Market Sync: 2026-05-09
 
-## Ecosystem Shifts
+## Ecosystem Shifts & Research Findings
 
-### OpenClaw v2026.3.7
+### 1. OpenClaw: Recursive Subagent Spawning & Context Contamination
+- **Finding**: A new exploit pattern has been identified in OpenClaw swarms where subagents can be coerced into spawning "Shadow Subagents" that inherit parent context without being visible to the primary supervisor. This leads to "Context Contamination" where malicious instructions are persisted across the swarm lifecycle.
+- **Impact**: This emphasizes the need for strict, cryptographically bound lineage tracking and "Recursive Depth Enforcement" at the gateway level.
 
-- **Summary**: Stable release of the pluggable ContextEngine.
+### 2. Gemini CLI: Advanced Reasoning Effort (ARE) & Multi-modal Pinning
+- **Finding**: Gemini CLI v1.3 has introduced ARE headers, allowing agents to signal the "computational intensity" of a reasoning step. Additionally, multi-modal context pinning now allows visual and auditory traces to be anchored to specific "Mission Roots."
+- **Impact**: MCP Any must evolve to support these new metadata headers to allow for better resource allocation and "Multi-modal Integrity" checks.
 
-- **Impact**: Moves context management from the core agent loop to a modular sidecar. This enables "Context Sovereignty" where state can be managed independently of the reasoning model.
-
-- **Strategic Gap**: MCP Any needs a standardized adapter to host these plugins to maintain its status as the universal bus.
-
-### OpenClaw-RL v1.0
-
-- **Summary**: First major release of the Reinforcement Learning feedback framework for agent swarms.
-
-- **Impact**: Introduces high-frequency, asynchronous "Rollout Collection" for policy optimization.
-
-- **Strategic Gap**: Infrastructure must support asynchronous telemetry export without interrupting the real-time tool-execution path.
-
-### Gemini CLI v0.31.0
-
-- **Summary**: Added project-level security policies and "Mission Root" anchoring.
-
-- **Impact**: Hardware-bound attestation is now a prerequisite for local tool access in enterprise environments.
+### 3. Claude Code: Continuous Project Configuration Protection (CPCP)
+- **Finding**: To address Bug #8961, Claude Code has implemented CPCP, which performs real-time, hardware-attested validation of `.claude/settings.json` during every tool call.
+- **Impact**: MCP Any should align with this by providing "Hardware-Enclave Path Attestation (HEPA)" and "Deterministic Permission Guard (DPG)" as standard middleware services.
 
 ## Autonomous Agent Pain Points
 
-- **"Absence-as-Exploit" (CVE-2026-25725)**: A new class of sandbox escapes where agents are coerced into creating restricted files (like .claude/settings.json) that were expected to be absent at boot.
+### 1. Swarm Negotiation Exhaustion (Bidding Deadlocks)
+- **Finding**: Complex agent swarms are increasingly hitting "Negotiation Exhaustion," where agents enter infinite bidding loops for task cards, leading to resource depletion and task stalls.
+- **Impact**: Validates the need for "Autonomous Escalation Resolvers" and "Mission-Aligned Fairness Policies" to break deadlocks in UACO-compliant swarms.
 
-- **"Context Splicing"**: Attackers injecting malicious reasoning fragments into the shared BSH (Binary State Handoff) buffer to hijack subagent intents.
-
-## Unique Findings for Today
-
-- **Continuous Lifecycle Attestation (CLA)**: The industry is moving from "Point-in-Time" boot attestation to background re-verification every 30-60 seconds to mitigate post-boot environment drift.
+### 2. Semantic Side-Channel Leakage in Shared Memory
+- **Finding**: While RAMS provides isolation, "Semantic Side-Channels" still allow subagents to infer state from sibling memory shards via shared resource contention patterns.
+- **Impact**: Drives the requirement for "Active Fragment Sealing" and "Deterministic Memory Shuffling" within the Blackboard.

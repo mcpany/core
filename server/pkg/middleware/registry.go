@@ -5,17 +5,20 @@ package middleware
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"sort"
 	"sync"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/tool"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
 // Registry manages available middlewares.
+//
+// Summary: Represents a Registry.
 type Registry struct {
 	mu           sync.RWMutex
 	factories    map[string]Factory
@@ -23,9 +26,13 @@ type Registry struct {
 }
 
 // Factory is a function that creates a HTTP middleware from configuration.
+//
+// Summary: Represents a Factory.
 type Factory func(config *configv1.Middleware) func(http.Handler) http.Handler
 
 // MCPFactory is a function that creates an MCP middleware from configuration.
+//
+// Summary: Represents a MCPFactory.
 type MCPFactory func(config *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler
 
 var (
@@ -40,6 +47,20 @@ var (
 // Parameters:
 //   - name (string): The name of the resource.
 //   - factory (Factory): The factory.
+//
+// Summary: Executes Register operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func Register(name string, factory Factory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
@@ -51,6 +72,20 @@ func Register(name string, factory Factory) {
 // Parameters:
 //   - name (string): The name of the resource.
 //   - factory (MCPFactory): The factory.
+//
+// Summary: Executes RegisterMCP operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func RegisterMCP(name string, factory MCPFactory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
@@ -64,6 +99,20 @@ func RegisterMCP(name string, factory MCPFactory) {
 //
 // Returns:
 //   - ([]func(http.Handler) http.Handler): The result.
+//
+// Summary: Retrieves GetHTTPMiddlewares operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) http.Handler {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()
@@ -94,6 +143,20 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 //
 // Returns:
 //   - ([]func(mcp.MethodHandler) mcp.MethodHandler): The result.
+//
+// Summary: Retrieves GetMCPMiddlewares operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler) mcp.MethodHandler {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()
@@ -118,6 +181,8 @@ func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler)
 }
 
 // StandardMiddlewares holds the standard middlewares that might need to be updated.
+//
+// Summary: Represents a StandardMiddlewares.
 type StandardMiddlewares struct {
 	Audit            *AuditMiddleware
 	GlobalRateLimit  *GlobalRateLimitMiddleware
@@ -126,6 +191,8 @@ type StandardMiddlewares struct {
 	SmartRecovery    *SmartRecoveryMiddleware
 	RecursiveContext *RecursiveContextManager
 	A2ABridge        *A2ABridgeMiddleware
+	ESB              *ESBMiddleware
+	CFIA             *CFIAMiddleware
 	Cleanup          func() error
 }
 
@@ -145,6 +212,20 @@ type StandardMiddlewares struct {
 // Returns:
 //   - (*StandardMiddlewares): The result.
 //   - (error): An error if the operation fails.
+//
+// Summary: Executes InitStandardMiddlewares operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func InitStandardMiddlewares(
 	authManager *auth.Manager,
 	toolManager tool.ManagerInterface,
@@ -155,6 +236,7 @@ func InitStandardMiddlewares(
 	contextOptimizerConfig *configv1.ContextOptimizerConfig,
 	debuggerConfig *configv1.DebuggerConfig,
 	smartRecoveryConfig *configv1.SmartRecoveryConfig,
+	cfiaConfig *CFIAConfig,
 ) (*StandardMiddlewares, error) {
 	// 1. Logging
 	RegisterMCP("logging", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
@@ -371,6 +453,66 @@ func InitStandardMiddlewares(
 		}
 	})
 
+	esbMiddleware := NewESBMiddleware(nil)
+	RegisterMCP("esb", func(cfg *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
+		if cfg != nil {
+			esbMiddleware = NewESBMiddleware(cfg)
+		} else {
+			esbMiddleware = NewESBMiddleware(nil)
+		}
+		return func(next mcp.MethodHandler) mcp.MethodHandler {
+			return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+				// Call the ESB execute which wraps the next handler
+				return esbMiddleware.Execute(ctx, method, req, next)
+			}
+		}
+	})
+
+	// Context-File Integrity Attestation (CFIA)
+	var cfiaMiddleware *CFIAMiddleware
+	if cfiaConfig != nil && cfiaConfig.Enabled {
+		cfiaMiddleware = NewCFIAMiddleware(*cfiaConfig)
+		RegisterMCP("cfia", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
+			return func(next mcp.MethodHandler) mcp.MethodHandler {
+				return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+					if method != "tools/call" {
+						return next(ctx, method, req)
+					}
+
+					callReq, ok := req.(*mcp.CallToolRequest)
+					if !ok {
+						return next(ctx, method, req)
+					}
+
+					var args map[string]interface{}
+					if callReq.Params.Arguments != nil {
+						// Attempt to unmarshal json.RawMessage to map[string]interface{}
+						_ = json.Unmarshal(callReq.Params.Arguments, &args)
+					}
+
+					executionReq := &tool.ExecutionRequest{
+						ToolName:  callReq.Params.Name,
+						Arguments: args,
+					}
+
+					result, err := cfiaMiddleware.Execute(ctx, executionReq, func(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
+						return next(ctx, method, req)
+					})
+					if err != nil {
+						return nil, err
+					}
+
+					// Convert `any` back to `mcp.Result` safely
+					mcpResult, ok := result.(mcp.Result)
+					if ok {
+						return mcpResult, nil
+					}
+					return &mcp.CallToolResult{}, nil
+				}
+			}
+		})
+	}
+
 	return &StandardMiddlewares{
 		Audit:            audit,
 		GlobalRateLimit:  globalRateLimit,
@@ -379,6 +521,8 @@ func InitStandardMiddlewares(
 		SmartRecovery:    smartRecovery,
 		RecursiveContext: recursiveContext,
 		A2ABridge:        a2aBridge,
+		ESB:              esbMiddleware,
+		CFIA:             cfiaMiddleware,
 		Cleanup:          audit.Close,
 	}, nil
 }

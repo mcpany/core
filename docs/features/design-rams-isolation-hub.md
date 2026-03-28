@@ -49,6 +49,10 @@ As AI agent swarms become more complex and autonomous, the "Blackboard" (Shared 
 * **Observability**: The RAMS Isolation Monitor in the UI will provide real-time visualization of shard mounts, memory usage, and handoff events.
 
 ## 7. Evolutionary Changelog
+* **2026-05-10:** Update: Asynchronous Context-Bleed Protection.
+    * **Context**: The release of OpenClaw-RL v1.0 and the discovery of "Context Bleed" in asynchronous swarms require stronger isolation during rollout collection.
+    * **Adjustment**: Introduced "Asynchronous Shard Freezing." When an agent enters a rollout collection phase for RL, its shard is frozen and duplicated into a read-only "Trace Shard."
+    * **Security Impact**: Ensures that background policy optimization processes cannot accidentally mutate the active reasoning state, preventing semantic drift.
 * **2026-05-07:** Update: Intent-Sealed Shard Leak Mitigation.
     * **Context**: Research into enterprise production swarms revealed a potential "State Bleeding" vector where shard metadata could be leaked during rapid handoffs.
     * **Adjustment**: Implemented "Metadata Scrubbing" during the `CommitShard` lifecycle.

@@ -13,6 +13,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { OpenapiUpstreamService } from '@proto/config/v1/upstream_service';
 
 /**
+ * Intent: Document StepOpenAPI
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * StepOpenAPI component.
  * Allows users to configure an OpenAPI/Swagger upstream service.
  * @returns The rendered component.
