@@ -16,7 +16,7 @@ test.describe('Resource Explorer Rich Result Viewer', () => {
     const response = await request.post('/api/v1/services', {
       data: {
         name: serviceName,
-        command_line_service: {
+        commandLineService: {
           command: 'echo',
           resources: [
             { uri: 'test://data.json', name: 'JSON Data', mimeType: 'application/json' },
@@ -48,6 +48,10 @@ test.describe('Resource Explorer Rich Result Viewer', () => {
         }
       }
     });
+    if (!response.ok()) {
+        const body = await response.text();
+        console.log("Failed to create service:", body);
+    }
     expect(response.ok()).toBeTruthy();
   });
 
