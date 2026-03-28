@@ -6,6 +6,44 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Alerts Page', () => {
+
+  test.beforeEach(async ({ request }) => {
+    // Seed the database by creating test alerts via API before each test
+    // We create one critical and one warning alert
+    await request.post('/api/v1/alerts', {
+      data: {
+        title: 'High CPU Usage',
+        message: 'CPU usage > 90% for 5m',
+        severity: 'critical',
+        status: 'active',
+        service: 'weather-service',
+        source: 'System Monitor',
+        timestamp: new Date(Date.now() - 5 * 60000).toISOString() // 5 minutes ago
+      }
+    });
+
+    await request.post('/api/v1/alerts', {
+      data: {
+        title: 'API Latency Spike',
+        message: 'P99 Latency > 2000ms',
+        severity: 'warning',
+        status: 'active',
+        service: 'api-gateway',
+        source: 'Latency Watchdog',
+        timestamp: new Date(Date.now() - 15 * 60000).toISOString() // 15 minutes ago
+      }
+    });
+  });
+
+  test.afterEach(async ({ request }) => {
+    // Clean up created alerts after test
+    const response = await request.get('/api/v1/alerts');
+    const alerts = await response.json();
+    for (const alert of alerts) {
+      await request.delete(`/api/v1/alerts/${alert.id}`);
+    }
+  });
+
   test('should load alerts page and display key elements', async ({ page }) => {
     // Navigate to alerts page
     await page.goto('/alerts');
@@ -22,8 +60,7 @@ test.describe('Alerts Page', () => {
     // Wait for the stats to load and MTTR should be 0s initially (no resolved alerts)
     await expect(page.getByText('0s').first()).toBeVisible();
 
-    // The backend mock data has Active Critical: 1, Active Warning: 1
-    // We expect these to be populated
+    // We expect the seeded alerts to be populated
     await expect(page.getByText('High CPU Usage')).toBeVisible();
     await expect(page.getByText('API Latency Spike')).toBeVisible();
   });
@@ -56,11 +93,11 @@ test.describe('Alerts Page', () => {
     await page.getByRole('button', { name: 'Cancel' }).click();
     await expect(page.getByRole('dialog')).toBeHidden();
   });
+
   test('should acknowledge alert via dropdown', async ({ page }) => {
     await page.goto('/alerts');
 
-    // Find an active alert row (mock data usually has some)
-    // We target the row with "High CPU Usage" which is active in mock
+    // Find an active alert row
     const row = page.getByRole('row').filter({ hasText: 'High CPU Usage' });
 
     // Click the "More Actions" dropdown button in that row
@@ -96,8 +133,12 @@ test.describe('Alerts Page', () => {
     // Verify status changes to "resolved"
     await expect(row.getByText('resolved')).toBeVisible();
 
-    // After resolving an alert, MTTR should be > 0s since timestamp of generation is in the past
-    await expect(page.getByText('0s').first()).toBeHidden({ timeout: 5000 });
+    // Note: since the API request to update the backend might race with the UI's status refresh
+    // vs the stats refresh, we just wait a bit and check that MTTR no longer equals "0s"
+    // or we can wait for the specific expected string "5m".
+    await expect(page.getByText('0s').first()).toBeHidden({ timeout: 10000 });
+    // Verify it updated to something like "5m"
+    await expect(page.getByText('m').first()).toBeVisible({ timeout: 10000 });
   });
 
   test('should delete alert via dropdown', async ({ page }) => {

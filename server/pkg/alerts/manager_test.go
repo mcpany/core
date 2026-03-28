@@ -30,10 +30,10 @@ func TestManager_CreateAndGet(t *testing.T) {
 
 func TestManager_List(t *testing.T) {
 	m := NewManager()
-	// Should have seeded data (5 items)
+	// Should have seeded data (0 items)
 	list := m.ListAlerts()
-	if len(list) < 5 {
-		t.Errorf("expected at least 5 seeded alerts, got %d", len(list))
+	if len(list) != 0 {
+		t.Errorf("expected 0 seeded alerts, got %d", len(list))
 	}
 }
 
@@ -91,15 +91,15 @@ func TestManager_GetAlertStats(t *testing.T) {
 		t.Error("expected non-nil stats")
 	}
 
-	// With the seeded data, we should have 1 active critical, 1 active warning, and at least some total today
-	if stats.ActiveCritical != 1 {
-		t.Errorf("expected 1 active critical alert, got %d", stats.ActiveCritical)
+	// With no seeded data, we should have 0 active critical, 0 active warning, and 0 total today
+	if stats.ActiveCritical != 0 {
+		t.Errorf("expected 0 active critical alert, got %d", stats.ActiveCritical)
 	}
-	if stats.ActiveWarning != 1 {
-		t.Errorf("expected 1 active warning alert, got %d", stats.ActiveWarning)
+	if stats.ActiveWarning != 0 {
+		t.Errorf("expected 0 active warning alert, got %d", stats.ActiveWarning)
 	}
-	if stats.TotalToday < 1 {
-		t.Errorf("expected >0 total today, got %d", stats.TotalToday)
+	if stats.TotalToday != 0 {
+		t.Errorf("expected 0 total today, got %d", stats.TotalToday)
 	}
 	if stats.MTTR == "" {
 		t.Error("expected non-empty MTTR")
