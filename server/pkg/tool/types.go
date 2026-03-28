@@ -4337,6 +4337,9 @@ func checkAwkInjection(val, base string) error {
 
 		// Awk uses double quotes for string literals. Awk scripts are often passed via
 		// single quotes from bash. We track if we are in an awk string (double quotes).
+		// Wait, if it's passed via bash single quotes, single quotes inside the val are just literal single quotes.
+		// However, in our system, if it's passed via bash single quotes, the val inside might actually break out of it.
+		// Actually, single quotes aren't valid string delimiters inside awk itself, awk only uses double quotes.
 		if char == '"' {
 			inDouble = !inDouble
 			continue
