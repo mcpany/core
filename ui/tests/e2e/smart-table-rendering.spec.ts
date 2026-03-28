@@ -24,8 +24,10 @@ test.describe('SmartTable Rendering and Real Data Validation', () => {
         // Find the tool in the list
         await page.getByPlaceholder('Search tools...').fill(toolName);
 
-        // Click on the tool to open inspector
-        await page.getByRole('cell', { name: toolName, exact: true }).click();
+        // Instead of cell matching the exact toolName which can be problematic depending on other tools/services
+        // Let's click the tool title inside the table using locator
+        // We look for the cell containing exactly the toolname or just matching it
+        await page.locator('td').filter({ hasText: new RegExp(`^${toolName}$`) }).first().click();
 
         // Wait for inspector
         await expect(page.getByRole('dialog')).toBeVisible();
@@ -45,7 +47,7 @@ test.describe('SmartTable Rendering and Real Data Validation', () => {
         }
 
         // Verify the table actually renders
-        const table = page.locator('table');
+        const table = page.locator('table').first();
         await expect(table).toBeVisible();
 
         // Verify headers (id, name, role, active, long_text)
