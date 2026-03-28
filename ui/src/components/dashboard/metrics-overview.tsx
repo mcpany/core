@@ -101,7 +101,6 @@ import { apiClient, Metric } from "@/lib/client";
  * @returns The rendered MetricsOverview component.
  */
 export const MetricsOverview = memo(function MetricsOverview() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [metrics, setMetrics] = useState<Metric[]>([]);
   const [loading, setLoading] = useState(true);
   const { serviceId } = useDashboard();

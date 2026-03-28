@@ -12,6 +12,7 @@ import { Progress } from "@/components/ui/progress";
 import { AlertCircle } from "lucide-react";
 import { apiClient } from "@/lib/client";
 import { useDashboard } from "@/components/dashboard/dashboard-context";
+import { WidgetSkeleton } from "@/components/dashboard/widget-skeleton";
 
 interface ToolFailureRate {
     name: string;
@@ -50,6 +51,10 @@ export function ToolFailureRateWidget() {
 
         fetchStats();
     }, [serviceId]);
+
+    if (loading) {
+        return <WidgetSkeleton title="Tool Failure Rates" type="list" rows={5} className="col-span-3" />;
+    }
 
     return (
         <Card className="col-span-3 backdrop-blur-sm bg-background/50">

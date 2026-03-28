@@ -14,6 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { analyzeConnectionError } from "@/lib/diagnostics-utils";
 import { useServiceHealthHistory, ServiceHealth, HealthHistoryPoint } from "@/hooks/use-service-health-history";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { WidgetSkeleton } from "@/components/dashboard/widget-skeleton";
 
 const getStatusIcon = (status: string) => {
   switch (status) {
@@ -189,18 +190,7 @@ export function ServiceHealthWidget() {
   }, [services]);
 
   if (isLoading) {
-    return (
-        <Card className="col-span-4 backdrop-blur-xl bg-background/60 border border-white/20 shadow-sm">
-             <CardHeader>
-                <CardTitle>System Health</CardTitle>
-             </CardHeader>
-             <CardContent>
-                 <div className="flex items-center justify-center h-48">
-                     <p className="text-muted-foreground animate-pulse">Checking system status...</p>
-                 </div>
-             </CardContent>
-        </Card>
-    )
+    return <WidgetSkeleton title="System Health" type="list" rows={4} className="col-span-4" />;
   }
 
   if (sortedServices.length === 0) {
