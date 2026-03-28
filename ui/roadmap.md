@@ -550,3 +550,6 @@
 - [ ] **[P0] L7 Semantic Inspection Monitor**: (P0) Real-time visualization of high-entropy semantic validation events and REE neutralization. (Added: 2026-06-10)
 - [ ] **[P0] Environment Isolation Dashboard**: (P0) Visual tracker for hardware-attested environment scrubbing and metadata wipe events. (Added: 2026-06-10)
 - [ ] **[P0] Mission-Root Registry Viewer**: (P0) Authoritative UI for reviewing and auditing the hardware-attested Mission-Root Attestation Registry. (Added: 2026-06-10)
+### Upcoming: [2026-06-11]
+- [ ] **[P0] L7 Semantic Inspection Dashboard**: (2026-06-11) Real-time visualization of reasoning trace analysis and REE loop detection events.
+- [ ] **[P0] CoT Lineage Visualizer**: (2026-06-11) UI for inspecting hardware-attested agent reasoning paths across infinite delegation hops.

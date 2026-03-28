@@ -1,6 +1,7 @@
 # Feature Inventory: MCP Any
 
 ## Current Backlog (P0/P1)
+- **Layer-7 Semantic Inspection Hub (L7SIH)**: Deep reasoning chain inspection, loop detection (REE), and intent-based routing. (Priority: P0)
 - **Policy Firewall**: Rego/CEL based hooking for tool calls.
 - **HITL Middleware**: Suspension protocol for user approval flows.
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.

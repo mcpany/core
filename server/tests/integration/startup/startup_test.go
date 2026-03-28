@@ -122,8 +122,8 @@ upstream_services:
 
 	defer cancel()
 
-	httpUrl := fmt.Sprintf("http://127.0.0.1:%d/healthz", jsonrpcPort)
-	integration.WaitForHTTPHealth(t, httpUrl, 10*time.Second)
+	httpURL := fmt.Sprintf("http://127.0.0.1:%d/healthz", jsonrpcPort)
+	integration.WaitForHTTPHealth(t, httpURL, 10*time.Second)
 
 	// Include /mcp and api_key in the endpoint
 	endpoint := fmt.Sprintf("http://127.0.0.1:%d/mcp?api_key=test-api-key", jsonrpcPort)

@@ -1,7 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package config provides configuration management for MCP Any.
+// Package config provides configuration management.
 package config
 
 import (
@@ -212,10 +212,10 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 			if bytes.Contains(b, []byte("\t")) {
 				// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
 
-				return fmt.Errorf("failed to unmarshal yaml: %w\n\nhint: yaml files cannot contain tabs. Please use spaces for indentation", err) //nolint:revive // Long user-facing error message
+				return fmt.Errorf("failed to unmarshal YAML: %w\n\nHint: YAML files cannot contain tabs. Please use spaces for indentation.", err) //nolint:revive // Long user-facing error message
 			}
 		}
-		return fmt.Errorf("failed to unmarshal yaml: %w", err)
+		return fmt.Errorf("failed to unmarshal YAML: %w", err)
 	}
 
 	return e.unmarshalInternal(yamlMap, v, b)
@@ -299,21 +299,21 @@ func (e *yamlEngine) unmarshalInternal(yamlMap map[string]interface{}, v proto.M
 		if strings.Contains(err.Error(), "unknown field \"mcpServers\"") {
 			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
 
-			return fmt.Errorf("%w\n\ndid you mean \"upstream_services\"? it looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure. See documentation for details", err) //nolint:revive // Long user-facing error message
+			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? It looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure. See documentation for details.", err) //nolint:revive // Long user-facing error message
 		}
 
 		// Detect if the user is using "services" which is a common alias for "upstream_services"
 		if strings.Contains(err.Error(), "unknown field \"services\"") {
 			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
 
-			return fmt.Errorf("%w\n\ndid you mean \"upstream_services\"? \"services\" is not a valid top-level key", err) //nolint:revive // Long user-facing error message
+			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? \"services\" is not a valid top-level key.", err) //nolint:revive // Long user-facing error message
 		}
 
 		// Detect invalid use of service_config wrapper (common mistake due to old docs)
 		if strings.Contains(err.Error(), "unknown field \"service_config\"") {
 			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
 
-			return fmt.Errorf("%w\n\nit looks like you are using 'service_config' as a wrapper key. In MCP Any configuration, you should place the service type (e.g., 'http_service', 'grpc_service') directly under the service definition, without a 'service_config' wrapper", err) //nolint:revive // Long user-facing error message
+			return fmt.Errorf("%w\n\nIt looks like you are using 'service_config' as a wrapper key. In MCP Any configuration, you should place the service type (e.g., 'http_service', 'grpc_service') directly under the service definition, without a 'service_config' wrapper.", err) //nolint:revive // Long user-facing error message
 		}
 
 		// Check for unknown fields and suggest fuzzy matches
@@ -423,14 +423,14 @@ func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 		if strings.Contains(err.Error(), "unknown field \"mcpServers\"") {
 			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
 
-			return fmt.Errorf("%w\n\ndid you mean \"upstream_services\"? it looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure. See documentation for details", err) //nolint:revive // Long user-facing error message
+			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? It looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure. See documentation for details.", err) //nolint:revive // Long user-facing error message
 		}
 
 		// Detect if the user is using "services" which is a common alias for "upstream_services"
 		if strings.Contains(err.Error(), "unknown field \"services\"") {
 			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
 
-			return fmt.Errorf("%w\n\ndid you mean \"upstream_services\"? \"services\" is not a valid top-level key", err) //nolint:revive // Long user-facing error message
+			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? \"services\" is not a valid top-level key.", err) //nolint:revive // Long user-facing error message
 		}
 
 		// Check for unknown fields and suggest fuzzy matches
@@ -604,7 +604,7 @@ func expandRecursive(b []byte, depth int) ([]byte, error) {
 	if missingCount > 0 {
 		// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
 
-		return buf.Bytes(), fmt.Errorf("missing environment variables:%s\n    -> fix: set these environment variables in your shell or .env file, or provide a default value (e.g., ${VAR:default})", missingErrBuilder.String())
+		return buf.Bytes(), fmt.Errorf("missing environment variables:%s\n    -> Fix: Set these environment variables in your shell or .env file, or provide a default value (e.g., ${VAR:default}).", missingErrBuilder.String()) //nolint:revive // Long user-facing error message
 	}
 
 	return buf.Bytes(), nil
@@ -1398,7 +1398,7 @@ func suggestFix(unknownField string, root proto.Message) string {
 		"args":      "arguments",
 	}
 	if correction, ok := aliases[strings.ToLower(unknownField)]; ok {
-		return fmt.Sprintf("did you mean %q? (Common alias)", correction)
+		return fmt.Sprintf("Did you mean %q? (Common alias)", correction)
 	}
 
 	candidates := make(map[string]struct{})
@@ -1447,7 +1447,7 @@ func suggestFix(unknownField string, root proto.Message) string {
 	}
 
 	if minDist <= limit {
-		return fmt.Sprintf("did you mean %q?", bestMatch)
+		return fmt.Sprintf("Did you mean %q?", bestMatch)
 	}
 	return ""
 }

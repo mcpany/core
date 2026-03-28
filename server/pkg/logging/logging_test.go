@@ -324,9 +324,9 @@ func TestRedaction(t *testing.T) {
 			logFunc: func(l *slog.Logger) {
 				// Create a complex object
 				type SecretStruct struct {
-					ApiKey string `json:"api_key"`
+					APIKey string `json:"api_key"`
 				}
-				data := SecretStruct{ApiKey: "secret123"}
+				data := SecretStruct{APIKey: "secret123"}
 				l.Info("config loaded", "data", data)
 			},
 			contains: []string{`"api_key":"[REDACTED]"`},
