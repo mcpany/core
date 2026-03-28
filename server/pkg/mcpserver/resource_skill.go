@@ -38,44 +38,66 @@ type SkillResource struct {
 // Ensure SkillResource implements resource.Resource.
 var _ resource.Resource = &SkillResource{}
 
-// NewSkillResource provides newskillresource functionality.
+// NewSkillResource creates a new resource for the main SKILL.md.
 //
-// Summary: NewSkillResource.
-//
-// Parameters.
-//   - s: The parameter.
-//
-// Returns.
-//   - result: The result.
+// It wraps the provided Skill definition into a Resource that serves the skill's
+// documentation file (SKILL.md).
 //
 // Parameters:
-//   - s: *skill.Skill.
+//   - s (*skill.Skill): The skill definition to expose as a resource.
 //
 // Returns:
-//   - *SkillResource.
+//   - *SkillResource: A new instance of SkillResource pointing to the skill's documentation.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Initializes NewSkillResource operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func NewSkillResource(s *skill.Skill) *SkillResource {
 	return &SkillResource{
 		skill: s,
 	}
 }
 
-// NewSkillAssetResource provides newskillassetresource functionality.
+// NewSkillAssetResource creates a new resource for a skill asset.
 //
-// Summary: NewSkillAssetResource.
-//
-// Parameters.
-//   - s: The parameter.
-//   - assetPath: The parameter.
-//
-// Returns.
-//   - result: The result.
+// It wraps a specific asset associated with a skill into a Resource.
 //
 // Parameters:
-//   - s: *skill.Skill.
-//   - assetPath: string.
+//   - s (*skill.Skill): The skill definition the asset belongs to.
+//   - assetPath (string): The relative path to the asset file within the skill's directory.
 //
 // Returns:
-//   - *SkillResource.
+//   - *SkillResource: A new instance of SkillResource pointing to the specified asset.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Initializes NewSkillAssetResource operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func NewSkillAssetResource(s *skill.Skill, assetPath string) *SkillResource {
 	return &SkillResource{
 		skill:     s,
@@ -83,21 +105,27 @@ func NewSkillAssetResource(s *skill.Skill, assetPath string) *SkillResource {
 	}
 }
 
-// URI provides uri functionality.
-//
-// Summary: URI.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
-//
-// Parameters:
-//   - None.
+// URI returns the URI of the resource.
 //
 // Returns:
-//   - string.
+//   - string: The resource URI.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes URI operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (r *SkillResource) URI() string {
 	if r.assetPath == "" {
 		return fmt.Sprintf("skills://%s/SKILL.md", r.skill.Name)
@@ -105,21 +133,27 @@ func (r *SkillResource) URI() string {
 	return fmt.Sprintf("skills://%s/%s", r.skill.Name, r.assetPath)
 }
 
-// Name provides name functionality.
-//
-// Summary: Name.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
-//
-// Parameters:
-//   - None.
+// Name returns the human-readable name of the resource.
 //
 // Returns:
-//   - string.
+//   - string: The resource name.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Name operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (r *SkillResource) Name() string {
 	if r.assetPath == "" {
 		return fmt.Sprintf("Skill: %s", r.skill.Name)
@@ -127,40 +161,52 @@ func (r *SkillResource) Name() string {
 	return fmt.Sprintf("Skill Asset: %s (%s)", r.assetPath, r.skill.Name)
 }
 
-// Service provides service functionality.
-//
-// Summary: Service.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
-//
-// Parameters:
-//   - None.
+// Service returns the service identifier associated with the resource.
 //
 // Returns:
-//   - string.
+//   - string: The service identifier ("skills").
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Service operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (r *SkillResource) Service() string {
 	return "skills"
 }
 
-// Resource provides resource functionality.
-//
-// Summary: Resource.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
-//
-// Parameters:
-//   - None.
+// Resource returns the underlying MCP resource definition.
 //
 // Returns:
-//   - *mcp.Resource.
+//   - *mcp.Resource: The MCP resource definition.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Resource operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (r *SkillResource) Resource() *mcp.Resource {
 	mimeType := "text/markdown"
 	if r.assetPath != "" {
@@ -227,22 +273,35 @@ func (r *SkillResource) resolvePath() (string, error) {
 	return realPath, nil
 }
 
-// Read provides read functionality.
+// Read returns the contents of the resource.
 //
-// Summary: Read.
-//
-// Parameters.
-//   - _: The parameter.
-//
-// Returns.
-//   - result: The result.
+// It reads the file content from disk, verifying that the path is secure and within the
+// allowed skill directory to prevent path traversal attacks.
 //
 // Parameters:
-//   - _: context.Context.
+//   - _ (context.Context): Unused in this implementation.
 //
 // Returns:
-//   - *mcp.ReadResourceResult.
-//   - error.
+//   - *mcp.ReadResourceResult: The result containing the resource content (text or blob).
+//   - error: An error if the file cannot be read or if the path is invalid.
+//
+// Side Effects:
+//   - Reads file content from disk.
+//   - Updates internal cache.
+//
+// Summary: Retrieves Read operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (r *SkillResource) Read(_ context.Context) (*mcp.ReadResourceResult, error) {
 	realPath, err := r.resolvePath()
 	if err != nil {
@@ -325,43 +384,66 @@ func isTextMime(mimeType string) bool {
 	return false
 }
 
-// Subscribe provides subscribe functionality.
+// Subscribe subscribes to changes on the resource.
 //
-// Summary: Subscribe.
-//
-// Parameters.
-//   - _: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Currently, this implementation is a no-op as dynamic updates to skill resources
+// are not yet supported.
 //
 // Parameters:
-//   - _: context.Context.
+//   - _ (context.Context): Unused.
 //
 // Returns:
-//   - error.
+//   - error: Always returns nil.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Subscribe operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (r *SkillResource) Subscribe(_ context.Context) error {
 	// No-op for now
 	return nil
 }
 
-// RegisterSkillResources provides registerskillresources functionality.
+// RegisterSkillResources registers all skills from the manager into the resource manager.
 //
-// Summary: RegisterSkillResources.
-//
-// Parameters.
-//   - rm: The parameter.
-//   - sm: The parameter.
-//
-// Returns.
-//   - result: The result.
+// It iterates through all available skills and registers their documentation (SKILL.md)
+// and associated assets as resources in the provided Resource Manager.
 //
 // Parameters:
-//   - rm: resource.ManagerInterface.
-//   - sm: *skill.Manager.
+//   - rm (resource.ManagerInterface): The resource manager to register resources with.
+//   - sm (*skill.Manager): The skill manager to retrieve skills from.
 //
 // Returns:
-//   - error.
+//   - error: An error if listing skills fails.
+//
+// Side Effects:
+//   - Registers resources with the manager.
+//
+// Summary: Executes RegisterSkillResources operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func RegisterSkillResources(rm resource.ManagerInterface, sm *skill.Manager) error {
 	skills, err := sm.ListSkills()
 	if err != nil {

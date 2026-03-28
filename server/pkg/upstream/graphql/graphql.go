@@ -93,40 +93,58 @@ const introspectionQuery = `
 // Summary: Represents a Upstream.
 type Upstream struct{}
 
-// NewGraphQLUpstream provides newgraphqlupstream functionality.
-//
-// Summary: NewGraphQLUpstream.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
-//
-// Parameters:
-//   - None.
+// NewGraphQLUpstream creates a new GraphQL upstream.
 //
 // Returns:
-//   - upstream.Upstream.
+//   - upstream.Upstream: The result.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Initializes NewGraphQLUpstream operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func NewGraphQLUpstream() upstream.Upstream {
 	return &Upstream{}
 }
 
-// Shutdown provides shutdown functionality.
-//
-// Summary: Shutdown.
-//
-// Parameters.
-//   - _: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Shutdown shuts down the upstream.
 //
 // Parameters:
-//   - _: context.Context.
+//   - _ (context.Context): The parameter.
 //
 // Returns:
-//   - error.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Shutdown operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (g *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
@@ -218,24 +236,35 @@ type Callable struct {
 	address       string
 }
 
-// Call provides call functionality.
-//
-// Summary: Call.
-//
-// Parameters.
-//   - ctx: The parameter.
-//   - req: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Call executes the GraphQL query.
 //
 // Parameters:
-//   - ctx: context.Context.
-//   - req: *tool.ExecutionRequest.
+//   - ctx (context.Context): The context for the request.
+//   - req (*tool.ExecutionRequest): The parameter.
 //
 // Returns:
-//   - any.
-//   - error.
+//   - any: The result.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Call operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	graphqlReq := graphql.NewRequest(c.query)
 	for key, value := range req.Arguments {
@@ -260,7 +289,7 @@ func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, e
 
 // Register inspects the GraphQL upstream service and registers its capabilities. ctx is the context for the request. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
 //
-// Parameters.
+// Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
 //   - toolManager (tool.ManagerInterface): The toolManager parameter.
@@ -268,7 +297,7 @@ func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, e
 //   - _ (resource.ManagerInterface): The _ parameter.
 //   - _ (bool): The _ parameter.
 //
-// Returns.
+// Returns:
 //   - string: The resulting string.
 //   - []*configv1.ToolDefinition: The resulting []*configv1.ToolDefinition.
 //   - []*configv1.ResourceDefinition: The resulting []*configv1.ResourceDefinition.
@@ -278,15 +307,18 @@ func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, e
 //   - Returns an error if the operation fails or is invalid.
 //
 // Side Effects:
-//   - None.
+//   - None
 //
 // Summary: Executes Register operation.
 //
-// Parameters: - None.
+// Parameters:
+//   - TODO: Document parameters.
 //
-// Returns: - None.
+// Returns:
+//   - TODO: Document returns.
 //
-// Errors: - None.
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

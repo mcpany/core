@@ -15,15 +15,15 @@ import (
 type Handler interface {
 	// Handle processes the webhook request.
 	//
-	// Parameters: - None.
+	// Parameters:
 	//   w: http.ResponseWriter. The HTTP response writer to write the response to.
 	//   r: *http.Request. The HTTP request containing the webhook payload.
 	//
-	// Returns: - None.
+	// Returns:
 	//
 	//	None.
 	//
-// Side Effects:
+	// Side Effects:
 	//   - Writes the response to the response writer.
 	Handle(w http.ResponseWriter, r *http.Request)
 }
@@ -37,66 +37,58 @@ type Registry struct {
 	hooks map[string]Handler
 }
 
-// NewRegistry provides newregistry functionality.
+// NewRegistry creates and initializes a new Registry instance.
 //
-// Summary: NewRegistry.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
+// Summary: Creates a new webhook registry.
 //
 // Parameters:
 //   - None.
 //
 // Returns:
-//   - *Registry.
+//   - *Registry: A pointer to a new, empty Registry.
+//
+// Side Effects:
+//   - Allocates memory for the registry map.
 func NewRegistry() *Registry {
 	return &Registry{
 		hooks: make(map[string]Handler),
 	}
 }
 
-// Register provides register functionality.
+// Register registers a handler with a specific name.
+// If a handler with the same name already exists, it will be overwritten.
 //
-// Summary: Register.
-//
-// Parameters.
-//   - name: The parameter.
-//   - handler: The parameter.
-//
-// Returns.
-//   - None.
+// Summary: Registers a webhook handler.
 //
 // Parameters:
-//   - name: string.
-//   - handler: Handler.
+//   - name: string. The name/path to register the handler under.
+//   - handler: Handler. The Handler instance to register.
 //
 // Returns:
-//   - None.
+//
+//	None.
+//
+// Side Effects:
+//   - Updates the registry map.
 func (r *Registry) Register(name string, handler Handler) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	r.hooks[name] = handler
 }
 
-// Get provides get functionality.
+// Get retrieves a handler by its name.
 //
-// Summary: Get.
-//
-// Parameters.
-//   - name: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Retrieves a webhook handler by name.
 //
 // Parameters:
-//   - name: string.
+//   - name: string. The name of the handler to retrieve.
 //
 // Returns:
-//   - Handler.
-//   - bool.
+//   - Handler: The registered handler, if found.
+//   - bool: True if the handler exists, false otherwise.
+//
+// Side Effects:
+//   - None.
 func (r *Registry) Get(name string) (Handler, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()

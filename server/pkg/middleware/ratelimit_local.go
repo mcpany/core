@@ -19,65 +19,51 @@ type LocalLimiter struct {
 	*rate.Limiter
 }
 
-// Allow provides allow functionality.
+// Allow checks if the request is allowed (cost 1).
 //
-// Summary: Allow.
-//
-// Parameters.
-//   - _: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Checks if a single event is allowed by the rate limiter.
 //
 // Parameters:
-//   - _: context.Context.
+//   - _: context.Context. Unused.
 //
 // Returns:
-//   - bool.
-//   - error.
+//   - bool: True if allowed, false otherwise.
+//   - error: Always nil.
+//
+// Side Effects:
+//   - Consumes 1 token from the bucket if allowed.
 func (l *LocalLimiter) Allow(_ context.Context) (bool, error) {
 	return l.Limiter.Allow(), nil
 }
 
-// AllowN provides allown functionality.
+// AllowN checks if the request is allowed with a specific cost.
 //
-// Summary: AllowN.
-//
-// Parameters.
-//   - _: The parameter.
-//   - n: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Checks if N events are allowed by the rate limiter.
 //
 // Parameters:
-//   - _: context.Context.
-//   - n: int.
+//   - _: context.Context. Unused.
+//   - n: int. The cost of the event.
 //
 // Returns:
-//   - bool.
-//   - error.
+//   - bool: True if allowed, false otherwise.
+//   - error: Always nil.
+//
+// Side Effects:
+//   - Consumes n tokens from the bucket if allowed.
 func (l *LocalLimiter) AllowN(_ context.Context, n int) (bool, error) {
 	return l.Limiter.AllowN(time.Now(), n), nil
 }
 
-// Update provides update functionality.
+// Update updates the limiter configuration.
 //
-// Summary: Update.
-//
-// Parameters.
-//   - rps: The parameter.
-//   - burst: The parameter.
-//
-// Returns.
-//   - None.
+// Summary: Dynamically updates the rate limit and burst size.
 //
 // Parameters:
-//   - rps: float64.
-//   - burst: int.
+//   - rps: float64. The new requests per second limit.
+//   - burst: int. The new burst size.
 //
-// Returns:
-//   - None.
+// Side Effects:
+//   - Modifies the underlying rate.Limiter state.
 func (l *LocalLimiter) Update(rps float64, burst int) {
 	limit := rate.Limit(rps)
 	if l.Limit() != limit {
@@ -93,49 +79,33 @@ func (l *LocalLimiter) Update(rps float64, burst int) {
 // Summary: Strategy for creating local rate limiters.
 type LocalStrategy struct{}
 
-// NewLocalStrategy provides newlocalstrategy functionality.
+// NewLocalStrategy creates a new LocalStrategy.
 //
-// Summary: NewLocalStrategy.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
-//
-// Parameters:
-//   - None.
+// Summary: Initializes a new LocalStrategy.
 //
 // Returns:
-//   - *LocalStrategy.
+//   - *LocalStrategy: The initialized strategy.
 func NewLocalStrategy() *LocalStrategy {
 	return &LocalStrategy{}
 }
 
-// Create provides create functionality.
+// Create creates a new LocalLimiter.
 //
-// Summary: Create.
-//
-// Parameters.
-//   - _: The parameter.
-//   - _: The parameter.
-//   - _: The parameter.
-//   - _: The parameter.
-//   - config: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Creates a new in-memory rate limiter based on the provided configuration.
 //
 // Parameters:
-//   - _: context.Context.
-//   - _: unknown.
-//   - _: unknown.
-//   - _: string.
-//   - config: *configv1.RateLimitConfig.
+//   - _: context.Context. Unused.
+//   - _: string. Unused (serviceID).
+//   - _: string. Unused (limitScopeKey).
+//   - _: string. Unused (partitionKey).
+//   - config: *configv1.RateLimitConfig. The rate limit configuration.
 //
 // Returns:
-//   - Limiter.
-//   - error.
+//   - Limiter: The created LocalLimiter.
+//   - error: Always nil.
+//
+// Side Effects:
+//   - Sets a minimum burst of 1 if configured lower.
 func (s *LocalStrategy) Create(_ context.Context, _, _, _ string, config *configv1.RateLimitConfig) (Limiter, error) {
 	rps := config.GetRequestsPerSecond()
 	burst := int(config.GetBurst())

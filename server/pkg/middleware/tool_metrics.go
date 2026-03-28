@@ -89,21 +89,19 @@ type ToolMetricsMiddleware struct {
 	tokenizer tokenizer.Tokenizer
 }
 
-// NewToolMetricsMiddleware provides newtoolmetricsmiddleware functionality.
+// NewToolMetricsMiddleware creates a new ToolMetricsMiddleware.
 //
-// Summary: NewToolMetricsMiddleware.
-//
-// Parameters.
-//   - t: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Initializes the tool metrics middleware and registers metrics if not already registered.
 //
 // Parameters:
-//   - t: tokenizer.Tokenizer.
+//   - t: tokenizer.Tokenizer. The tokenizer used to count tokens in tool inputs and outputs.
+//     If nil, a simple default tokenizer is used.
 //
 // Returns:
-//   - *ToolMetricsMiddleware.
+//   - *ToolMetricsMiddleware: A new instance of ToolMetricsMiddleware with metrics registered.
+//
+// Side Effects:
+//   - Registers Prometheus metrics (globally, once).
 func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
 	registerMetricsOnce.Do(func() {
 		// Register metrics with the default registry (which server/pkg/metrics also uses/exposes)
@@ -122,26 +120,22 @@ func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
 	}
 }
 
-// Execute provides execute functionality.
+// Execute executes the tool metrics middleware.
 //
-// Summary: Execute.
-//
-// Parameters.
-//   - ctx: The parameter.
-//   - req: The parameter.
-//   - next: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Wraps tool execution to record latency, size, and token metrics.
 //
 // Parameters:
-//   - ctx: context.Context.
-//   - req: *tool.ExecutionRequest.
-//   - next: tool.ExecutionFunc.
+//   - ctx: context.Context. The execution context.
+//   - req: *tool.ExecutionRequest. The request containing tool execution details.
+//   - next: tool.ExecutionFunc. The next handler in the execution chain.
 //
 // Returns:
-//   - any.
-//   - error.
+//   - any: The result of the tool execution.
+//   - error: An error if the execution fails.
+//
+// Side Effects:
+//   - Updates Prometheus counters, histograms, and gauges.
+//   - Measures execution duration.
 func (m *ToolMetricsMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	// Get Service ID if possible (from context or tool)
 	var serviceID string

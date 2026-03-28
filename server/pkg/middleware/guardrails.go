@@ -19,21 +19,15 @@ type GuardrailsConfig struct {
 	BlockedPhrases []string
 }
 
-// NewGuardrailsMiddleware provides newguardrailsmiddleware functionality.
+// NewGuardrailsMiddleware creates a new Guardrails middleware.
 //
-// Summary: NewGuardrailsMiddleware.
-//
-// Parameters.
-//   - config: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Initializes the guardrails middleware for blocking malicious prompts.
 //
 // Parameters:
-//   - config: GuardrailsConfig.
+//   - config: GuardrailsConfig. The configuration for blocking patterns.
 //
 // Returns:
-//   - gin.HandlerFunc.
+//   - gin.HandlerFunc: The Gin middleware handler.
 func NewGuardrailsMiddleware(config GuardrailsConfig) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Only check POST requests (likely prompt submissions)

@@ -1,5 +1,5 @@
-// Copyright 2025 Author(s) of MCP Any.
-// SPDX-License-Identifier: Apache-2.0.
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
 package middleware
 
@@ -33,22 +33,22 @@ type AuditMiddleware struct {
 	broadcaster *logging.Broadcaster
 }
 
-// NewAuditMiddleware provides newauditmiddleware functionality.
+// NewAuditMiddleware creates a new AuditMiddleware.
 //
-// Summary: NewAuditMiddleware.
-//
-// Parameters.
-//   - auditConfig: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Initializes the audit middleware with the provided configuration.
 //
 // Parameters:
-//   - auditConfig: *configv1.AuditConfig.
+//   - auditConfig (*configv1.AuditConfig): The configuration for audit logging.
 //
 // Returns:
-//   - *AuditMiddleware.
-//   - error.
+//   - *AuditMiddleware: The initialized middleware instance.
+//   - error: An error if the middleware cannot be initialized.
+//
+// Errors:
+//   - Returns error if audit store initialization fails.
+//
+// Side Effects:
+//   - Initializes internal stores and redactor.
 func NewAuditMiddleware(auditConfig *configv1.AuditConfig) (*AuditMiddleware, error) {
 	m := &AuditMiddleware{
 		config:      auditConfig,
@@ -57,7 +57,7 @@ func NewAuditMiddleware(auditConfig *configv1.AuditConfig) (*AuditMiddleware, er
 	if err := m.initializeStore(auditConfig); err != nil {
 		return nil, err
 	}
-	// Initialize redactor with current global settings.
+	// Initialize redactor with current global settings
 	m.redactor = NewRedactor(config.GlobalSettings().GetDlp(), nil)
 	return m, nil
 }
@@ -67,7 +67,7 @@ func (m *AuditMiddleware) initializeStore(config *configv1.AuditConfig) error {
 		var store audit.Store
 		var err error
 
-		// Determine storage type.
+		// Determine storage type
 		storageType := config.GetStorageType()
 		if storageType == configv1.AuditConfig_STORAGE_TYPE_UNSPECIFIED {
 			storageType = configv1.AuditConfig_STORAGE_TYPE_FILE
@@ -98,51 +98,47 @@ func (m *AuditMiddleware) initializeStore(config *configv1.AuditConfig) error {
 	return nil
 }
 
-// SetStore provides setstore functionality.
+// SetStore sets the audit store.
+// This is primarily used for testing.
 //
-// Summary: SetStore.
-//
-// Parameters.
-//   - store: The parameter.
-//
-// Returns.
-//   - None.
+// Summary: Sets the audit store implementation.
 //
 // Parameters:
-//   - store: audit.Store.
+//   - store (audit.Store): The audit store to use.
 //
-// Returns:
-//   - None.
+// Side Effects:
+//   - Replaces the current audit store.
 func (m *AuditMiddleware) SetStore(store audit.Store) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.store = store
 }
 
-// UpdateConfig provides updateconfig functionality.
+// UpdateConfig updates the audit configuration safely.
 //
-// Summary: UpdateConfig.
-//
-// Parameters.
-//   - auditConfig: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Updates the middleware configuration and re-initializes the store if needed.
 //
 // Parameters:
-//   - auditConfig: *configv1.AuditConfig.
+//   - auditConfig (*configv1.AuditConfig): The new configuration.
 //
 // Returns:
-//   - error.
+//   - error: An error if the store re-initialization fails.
+//
+// Errors:
+//   - Returns error if store re-initialization fails.
+//
+// Side Effects:
+//   - May close existing store and open a new one.
+//   - Updates redactor configuration.
 func (m *AuditMiddleware) UpdateConfig(auditConfig *configv1.AuditConfig) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
 	// Update redactor on config update (it uses global DLP config, which might also change,
-	// but UpdateConfig is usually called when config file changes, so good time to refresh).
+	// but UpdateConfig is usually called when config file changes, so good time to refresh)
 	m.redactor = NewRedactor(config.GlobalSettings().GetDlp(), nil)
 
-	// If config is nil, disable audit.
+	// If config is nil, disable audit
 	if auditConfig == nil {
 		if m.store != nil {
 			_ = m.store.Close()
@@ -163,7 +159,7 @@ func (m *AuditMiddleware) UpdateConfig(auditConfig *configv1.AuditConfig) error 
 	}
 
 	if needsReinit {
-		// Close old store.
+		// Close old store
 		if m.store != nil {
 			_ = m.store.Close()
 			m.store = nil
@@ -176,26 +172,21 @@ func (m *AuditMiddleware) UpdateConfig(auditConfig *configv1.AuditConfig) error 
 	return nil
 }
 
-// Execute provides execute functionality.
+// Execute intercepts tool execution to log audit events.
 //
-// Summary: Execute.
-//
-// Parameters.
-//   - ctx: The parameter.
-//   - req: The parameter.
-//   - next: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Intercepts and logs tool execution requests and results.
 //
 // Parameters:
-//   - ctx: context.Context.
-//   - req: *tool.ExecutionRequest.
-//   - next: tool.ExecutionFunc.
+//   - ctx (context.Context): The context for the request.
+//   - req (*tool.ExecutionRequest): The tool execution request.
+//   - next (tool.ExecutionFunc): The next handler in the chain.
 //
 // Returns:
-//   - any.
-//   - error.
+//   - any: The result of the tool execution.
+//   - error: An error if the tool execution fails.
+//
+// Side Effects:
+//   - Writes an audit log entry to the configured store.
 func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	m.mu.RLock()
 	auditConfig := m.config
@@ -209,7 +200,7 @@ func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionReques
 
 	start := time.Now()
 
-	// Trace Context.
+	// Trace Context
 	traceID := GetTraceID(ctx)
 	if traceID == "" {
 		traceID = strings.ReplaceAll(uuid.New().String(), "-", "")
@@ -217,15 +208,15 @@ func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionReques
 	parentID := GetSpanID(ctx) // The parent is the current span in context
 	spanID := strings.ReplaceAll(uuid.New().String(), "-", "")[:16]
 
-	// Update context for downstream (Recursive Tracing).
+	// Update context for downstream (Recursive Tracing)
 	ctx = WithTraceContext(ctx, traceID, spanID, parentID)
 
-	// Execute the tool.
+	// Execute the tool
 	result, err := next(ctx, req)
 
 	duration := time.Since(start)
 
-	// Prepare audit entry.
+	// Prepare audit entry
 	entry := audit.Entry{
 		Timestamp:  start,
 		ToolName:   req.ToolName,
@@ -244,10 +235,10 @@ func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionReques
 	}
 
 	if auditConfig.GetLogArguments() {
-		// Try to marshal arguments to RawMessage to avoid double escaping if it's already structured.
+		// Try to marshal arguments to RawMessage to avoid double escaping if it's already structured
 		argsBytes, marshalErr := json.Marshal(req.ToolInputs)
 		if marshalErr == nil {
-			// Use Redactor to ensure no secrets are logged.
+			// Use Redactor to ensure no secrets are logged
 			if redactor != nil {
 				redactedBytes, err := redactor.RedactJSON(argsBytes)
 				if err == nil {
@@ -263,15 +254,15 @@ func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionReques
 	}
 
 	if auditConfig.GetLogResults() && err == nil {
-		// Use Redactor for result too to ensure structs are handled correctly.
-		// and avoid side effects (modifying the result map if it's a map).
+		// Use Redactor for result too to ensure structs are handled correctly
+		// and avoid side effects (modifying the result map if it's a map)
 		// We marshal to JSON, redact, and then unmarshal or store as RawMessage if entry.Result supports it?
 		// AuditEntry.Result is `any`. If we store redacted map, it's fine.
 		// If we use RedactJSON, we get []byte.
 
 		logResult := result
 		if redactor != nil {
-			// Best effort redaction.
+			// Best effort redaction
 			jsonBytes, err := json.Marshal(result)
 			if err == nil {
 				redactedBytes, err := redactor.RedactJSON(jsonBytes)
@@ -288,14 +279,14 @@ func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionReques
 		entry.Result = logResult
 	}
 
-	// Write log.
+	// Write log
 	m.writeLog(ctx, store, entry)
 
 	return result, err
 }
 
 func (m *AuditMiddleware) writeLog(ctx context.Context, store audit.Store, entry audit.Entry) {
-	// Broadcast first for real-time updates.
+	// Broadcast first for real-time updates
 	if m.broadcaster != nil {
 		// ⚡ BOLT: Pass struct directly to avoid JSON marshaling.
 		m.broadcaster.Broadcast(entry)
@@ -309,103 +300,79 @@ func (m *AuditMiddleware) writeLog(ctx context.Context, store audit.Store, entry
 	}
 }
 
-// ClearHistory provides clearhistory functionality.
+// ClearHistory clears the audit history from the broadcaster.
 //
-// Summary: ClearHistory.
+// Summary: Clears the audit history.
 //
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - None.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
+// Side Effects:
+//   - Clears the history in the broadcaster.
 func (m *AuditMiddleware) ClearHistory() {
 	if m.broadcaster != nil {
 		m.broadcaster.ClearHistory()
 	}
 }
 
-// SubscribeWithHistory provides subscribewithhistory functionality.
+// SubscribeWithHistory returns a channel that will receive broadcast messages,
+// and the current history of messages.
 //
-// Summary: SubscribeWithHistory.
+// Summary: Subscribes to audit events with history.
 //
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
+// Returns:
+//   - chan any: A channel receiving new audit entries.
+//   - []any: A slice of historical audit entries.
 //
 // Parameters:
 //   - None.
 //
-// Returns:
-//   - chan any.
-//   - []any.
+// Side Effects:
+//   - Adds a new subscriber to the broadcaster.
 func (m *AuditMiddleware) SubscribeWithHistory() (chan any, []any) {
 	return m.broadcaster.SubscribeWithHistory()
 }
 
-// GetHistory provides gethistory functionality.
+// GetHistory returns the current broadcast history.
 //
-// Summary: GetHistory.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
-//
-// Parameters:
-//   - None.
+// Summary: Retrieves the audit history from the broadcaster.
 //
 // Returns:
-//   - []any.
+//   - []any: A slice of audit entries.
+//
+// Side Effects:
+//   - None.
 func (m *AuditMiddleware) GetHistory() []any {
 	return m.broadcaster.GetHistory()
 }
 
-// Unsubscribe provides unsubscribe functionality.
+// Unsubscribe removes a subscriber channel.
 //
-// Summary: Unsubscribe.
-//
-// Parameters.
-//   - ch: The parameter.
-//
-// Returns.
-//   - None.
+// Summary: Unsubscribes from audit events.
 //
 // Parameters:
-//   - ch chan: any.
+//   - ch (chan any): The channel to unsubscribe.
 //
-// Returns:
-//   - None.
+// Side Effects:
+//   - Removes the subscriber from the broadcaster.
 func (m *AuditMiddleware) Unsubscribe(ch chan any) {
 	m.broadcaster.Unsubscribe(ch)
 }
 
-// Read provides read functionality.
+// Read reads audit entries from the underlying store.
 //
-// Summary: Read.
-//
-// Parameters.
-//   - ctx: The parameter.
-//   - filter: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Reads historical audit logs from storage.
 //
 // Parameters:
-//   - ctx: context.Context.
-//   - filter: audit.Filter.
+//   - ctx (context.Context): The context for the request.
+//   - filter (audit.Filter): The filter criteria for querying logs.
 //
 // Returns:
-//   - []audit.Entry.
-//   - error.
+//   - []audit.Entry: A slice of audit entries matching the filter.
+//   - error: An error if reading fails.
+//
+// Errors:
+//   - Returns error if store is not initialized.
+//
+// Side Effects:
+//   - Reads from the audit store.
 func (m *AuditMiddleware) Read(ctx context.Context, filter audit.Filter) ([]audit.Entry, error) {
 	m.mu.RLock()
 	store := m.store
@@ -417,21 +384,15 @@ func (m *AuditMiddleware) Read(ctx context.Context, filter audit.Filter) ([]audi
 	return store.Read(ctx, filter)
 }
 
-// Close provides close functionality.
+// Close closes the underlying store.
 //
-// Summary: Close.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
-//
-// Parameters:
-//   - None.
+// Summary: Closes the audit store.
 //
 // Returns:
-//   - error.
+//   - error: An error if the operation fails.
+//
+// Side Effects:
+//   - Closes the audit store connection.
 func (m *AuditMiddleware) Close() error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -441,23 +402,31 @@ func (m *AuditMiddleware) Close() error {
 	return nil
 }
 
-// Write provides write functionality.
-//
-// Summary: Write.
-//
-// Parameters.
-//   - ctx: The parameter.
-//   - entry: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Write writes an audit entry directly to the store.
 //
 // Parameters:
-//   - ctx: context.Context.
-//   - entry: audit.Entry.
+//   - ctx: context.Context for the operation.
+//   - entry: The audit.Entry to write.
 //
 // Returns:
-//   - error.
+//   - error: An error if the write fails, or nil on success.
+//
+// Errors:
+//   - Returns an error if the audit store is not initialized.
+//
+// Summary: Updates Write operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (m *AuditMiddleware) Write(ctx context.Context, entry audit.Entry) error {
 	m.mu.RLock()
 	store := m.store

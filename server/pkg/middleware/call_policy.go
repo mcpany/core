@@ -20,47 +20,42 @@ type CallPolicyMiddleware struct {
 	toolManager tool.ManagerInterface
 }
 
-// NewCallPolicyMiddleware provides newcallpolicymiddleware functionality.
+// NewCallPolicyMiddleware creates a new CallPolicyMiddleware.
 //
-// Summary: NewCallPolicyMiddleware.
-//
-// Parameters.
-//   - toolManager: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Initializes a new CallPolicyMiddleware.
 //
 // Parameters:
-//   - toolManager: tool.ManagerInterface.
+//   - toolManager: tool.ManagerInterface. The tool manager to access tool and service information.
 //
 // Returns:
-//   - *CallPolicyMiddleware.
+//   - *CallPolicyMiddleware: The initialized middleware.
 func NewCallPolicyMiddleware(toolManager tool.ManagerInterface) *CallPolicyMiddleware {
 	return &CallPolicyMiddleware{
 		toolManager: toolManager,
 	}
 }
 
-// Execute provides execute functionality.
+// Execute enforces call policies before proceeding to the next handler.
 //
-// Summary: Execute.
-//
-// Parameters.
-//   - ctx: The parameter.
-//   - req: The parameter.
-//   - next: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Checks if the tool execution is allowed by the service's policies.
 //
 // Parameters:
-//   - ctx: context.Context.
-//   - req: *tool.ExecutionRequest.
-//   - next: tool.ExecutionFunc.
+//   - ctx: context.Context. The execution context.
+//   - req: *tool.ExecutionRequest. The tool execution request.
+//   - next: tool.ExecutionFunc. The next handler in the chain.
 //
 // Returns:
-//   - any.
-//   - error.
+//   - any: The execution result if allowed.
+//   - error: An error if the policy blocks execution or policy evaluation fails.
+//
+// Errors:
+//   - Returns error if service info is not found (fail closed).
+//   - Returns error if policy evaluation fails.
+//   - Returns "execution denied by policy" if the policy denies the request.
+//
+// Side Effects:
+//   - Logs errors if service info is missing or policy evaluation fails.
+//   - Increments a metric counter when a call is blocked.
 func (m *CallPolicyMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

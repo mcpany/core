@@ -36,29 +36,34 @@ type Tool struct {
 	initError   error
 }
 
-// NewTool provides newtool functionality.
-//
-// Summary: NewTool.
-//
-// Parameters.
-//   - t: The parameter.
-//   - db: The parameter.
-//   - callDef: The parameter.
-//   - policies: The parameter.
-//   - callID: The parameter.
-//
-// Returns.
-//   - result: The result.
+// NewTool creates a new SQL Tool.
 //
 // Parameters:
-//   - t: *v1.Tool.
-//   - db: *sql.DB.
-//   - callDef: *configv1.SqlCallDefinition.
-//   - policies: []*configv1.CallPolicy.
-//   - callID: string.
+//   - t (*v1.Tool): The parameter.
+//   - db (*sql.DB): The parameter.
+//   - callDef (*configv1.SqlCallDefinition): The parameter.
+//   - policies ([]*configv1.CallPolicy): The parameter.
+//   - callID (string): The parameter.
 //
 // Returns:
-//   - *Tool.
+//   - *Tool: The result.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Initializes NewTool operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, policies []*configv1.CallPolicy, callID string) *Tool {
 	compiled, err := tool.CompileCallPolicies(policies)
 	to := &Tool{
@@ -74,40 +79,52 @@ func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, polici
 	return to
 }
 
-// Tool provides tool functionality.
-//
-// Summary: Tool.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
-//
-// Parameters:
-//   - None.
+// Tool returns the protobuf definition of the tool.
 //
 // Returns:
-//   - *v1.Tool.
+//   - *v1.Tool: The result.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Tool operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (t *Tool) Tool() *v1.Tool {
 	return t.tool
 }
 
-// MCPTool provides mcptool functionality.
-//
-// Summary: MCPTool.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
-//
-// Parameters:
-//   - None.
+// MCPTool returns the MCP tool definition.
 //
 // Returns:
-//   - *mcp.Tool.
+//   - *mcp.Tool: The result.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes MCPTool operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (t *Tool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -119,21 +136,27 @@ func (t *Tool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
 
-// GetCacheConfig provides getcacheconfig functionality.
-//
-// Summary: GetCacheConfig.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
-//
-// Parameters:
-//   - None.
+// GetCacheConfig returns the cache configuration for the tool.
 //
 // Returns:
-//   - *configv1.CacheConfig.
+//   - *configv1.CacheConfig: The result.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Retrieves GetCacheConfig operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDef == nil {
 		return nil
@@ -141,24 +164,35 @@ func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 	return t.callDef.GetCache()
 }
 
-// Execute provides execute functionality.
-//
-// Summary: Execute.
-//
-// Parameters.
-//   - ctx: The parameter.
-//   - req: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Execute runs the SQL query with the provided inputs.
 //
 // Parameters:
-//   - ctx: context.Context.
-//   - req: *tool.ExecutionRequest.
+//   - ctx (context.Context): The context for the request.
+//   - req (*tool.ExecutionRequest): The parameter.
 //
 // Returns:
-//   - any.
-//   - error.
+//   - any: The result.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Execute operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (t *Tool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError

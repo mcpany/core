@@ -16,82 +16,115 @@ type TmpfsProvider struct {
 	fs afero.Fs
 }
 
-// NewTmpfsProvider provides newtmpfsprovider functionality.
-//
-// Summary: NewTmpfsProvider.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
-//
-// Parameters:
-//   - None.
+// NewTmpfsProvider creates a new TmpfsProvider.
 //
 // Returns:
-//   - *TmpfsProvider.
+//   - *TmpfsProvider: The result.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Initializes NewTmpfsProvider operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func NewTmpfsProvider() *TmpfsProvider {
 	return &TmpfsProvider{
 		fs: afero.NewMemMapFs(),
 	}
 }
 
-// GetFs provides getfs functionality.
-//
-// Summary: GetFs.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
-//
-// Parameters:
-//   - None.
+// GetFs returns the underlying filesystem.
 //
 // Returns:
-//   - afero.Fs.
+//   - afero.Fs: The result.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Retrieves GetFs operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (p *TmpfsProvider) GetFs() afero.Fs {
 	return p.fs
 }
 
-// ResolvePath provides resolvepath functionality.
-//
-// Summary: ResolvePath.
-//
-// Parameters.
-//   - virtualPath: The parameter.
-//
-// Returns.
-//   - result: The result.
+// ResolvePath resolves the virtual path to a real path.
 //
 // Parameters:
-//   - virtualPath: string.
+//   - virtualPath (string): The parameter.
 //
 // Returns:
-//   - string.
-//   - error.
+//   - string: The result.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes ResolvePath operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (p *TmpfsProvider) ResolvePath(virtualPath string) (string, error) {
 	// For MemMapFs, just clean the path. It's virtual.
 	return filepath.Clean(virtualPath), nil
 }
 
-// Close provides close functionality.
-//
-// Summary: Close.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
-//
-// Parameters:
-//   - None.
+// Close closes the provider.
 //
 // Returns:
-//   - error.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Close operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (p *TmpfsProvider) Close() error {
 	return nil
 }

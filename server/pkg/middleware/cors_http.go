@@ -20,42 +20,30 @@ type HTTPCORSMiddleware struct {
 	wildcardAllowed bool
 }
 
-// NewHTTPCORSMiddleware provides newhttpcorsmiddleware functionality.
+// NewHTTPCORSMiddleware creates a new HTTPCORSMiddleware.
 //
-// Summary: NewHTTPCORSMiddleware.
+// Summary: Initializes HTTP CORS middleware.
 //
-// Parameters.
-//   - allowedOrigins: The parameter.
-//
-// Returns.
-//   - result: The result.
+// If allowedOrigins is empty, it defaults to allowing nothing (or behaving like standard Same-Origin).
+// To allow all, pass []string{"*"}.
 //
 // Parameters:
-//   - allowedOrigins: []string.
+//   - allowedOrigins ([]string): The allowed origins.
 //
 // Returns:
-//   - *HTTPCORSMiddleware.
+//   - (*HTTPCORSMiddleware): The initialized middleware.
 func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
 	m := &HTTPCORSMiddleware{}
 	m.updateInternal(allowedOrigins)
 	return m
 }
 
-// Update provides update functionality.
+// Update updates the allowed origins.
 //
-// Summary: Update.
-//
-// Parameters.
-//   - allowedOrigins: The parameter.
-//
-// Returns.
-//   - None.
+// Summary: Updates the allowed origins dynamically.
 //
 // Parameters:
-//   - allowedOrigins: []string.
-//
-// Returns:
-//   - None.
+//   - allowedOrigins ([]string): The new list of allowed origins.
 func (m *HTTPCORSMiddleware) Update(allowedOrigins []string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -77,21 +65,15 @@ func (m *HTTPCORSMiddleware) updateInternal(origins []string) {
 	}
 }
 
-// Handler provides handler functionality.
+// Handler wraps an http.Handler with CORS logic.
 //
-// Summary: Handler.
-//
-// Parameters.
-//   - next: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Middleware to handle CORS headers.
 //
 // Parameters:
-//   - next: http.Handler.
+//   - next (http.Handler): The next handler in the chain.
 //
 // Returns:
-//   - http.Handler.
+//   - (http.Handler): The wrapped handler.
 func (m *HTTPCORSMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")

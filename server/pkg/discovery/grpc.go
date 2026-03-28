@@ -17,41 +17,40 @@ type GRPCProvider struct {
 	Endpoint string // e.g., "localhost:50051"
 }
 
-// Name provides name functionality.
+// Name returns the name of the provider.
 //
-// Summary: Name.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
+// Summary: Executes Name operation.
 //
 // Parameters:
-//   - None.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - string.
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (p *GRPCProvider) Name() string {
 	return "grpc"
 }
 
-// Discover provides discover functionality.
+// Discover attempts to find services and return their configurations.
 //
-// Summary: Discover.
-//
-// Parameters.
-//   - _: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Executes Discover operation.
 //
 // Parameters:
-//   - _: context.Context.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - []*configv1.UpstreamServiceConfig.
-//   - error.
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (p *GRPCProvider) Discover(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	if p.Endpoint == "" {
 		return nil, nil

@@ -18,21 +18,15 @@ type Manager struct {
 	timeout        *Timeout
 }
 
-// NewManager provides newmanager functionality.
+// NewManager creates a new Manager with the given resilience configuration.
 //
-// Summary: NewManager.
-//
-// Parameters.
-//   - config: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Initializes a new Resilience Manager.
 //
 // Parameters:
-//   - config: *configv1.ResilienceConfig.
+//   - config: *configv1.ResilienceConfig. The resilience configuration.
 //
 // Returns:
-//   - *Manager.
+//   - *Manager: The initialized manager, or nil if no resilience features are enabled.
 func NewManager(config *configv1.ResilienceConfig) *Manager {
 	if config == nil {
 		return nil
@@ -64,23 +58,21 @@ func NewManager(config *configv1.ResilienceConfig) *Manager {
 	}
 }
 
-// Execute provides execute functionality.
+// Execute wraps the given function with resilience features.
 //
-// Summary: Execute.
-//
-// Parameters.
-//   - ctx: The parameter.
-//   - work: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Executes the work function with configured resilience policies (timeout, retry, circuit breaker).
 //
 // Parameters:
-//   - ctx: context.Context.
-//   - work func(context.Context): error.
+//   - ctx: context.Context. The context for the request.
+//   - work: func(context.Context) error. The operation to execute.
 //
 // Returns:
-//   - error.
+//   - error: An error if the operation fails after all resilience attempts.
+//
+// Side Effects:
+//   - Applies timeout context.
+//   - Retries operation on failure.
+//   - Checks and updates circuit breaker state.
 func (m *Manager) Execute(ctx context.Context, work func(context.Context) error) error {
 	if m == nil {
 		return work(ctx)

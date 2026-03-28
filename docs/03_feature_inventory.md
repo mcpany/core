@@ -1372,3 +1372,14 @@
 ### Priority Shifts
 - **Reasoning Path Attestation (RPA) Provider**: (Re-affirmed P0) Now designated as a primary input for the **RIA Provider** multi-hop derivation.
 - **Universal Adapter Framework**: (Re-affirmed P0) Evolving to support **IBET-native** transport for all upstream tool calls.
+
+## Evolution: [2026-06-18] Updates
+
+### Proposed Additions
+- **RIA Provider (Recursive Intent Attestation)**: (P0) Authoritative root for multi-hop intent attestation, mathematically deriving sub-intents from verified mission roots.
+- **Mesh-Resident Cognitive Load Balancer (MCLB)**: (P0) Dynamic task redistribution service for the agent mesh, optimizing for real-time cognitive capacity.
+- **Intent-Bound Ephemeral Tunnels (IBET)**: (P0) Secure, task-specific conduits that auto-destruct to prevent intent-grafting.
+- **CoC Lineage Tracker**: (P0) Tamper-proof ledger for absolute provenance of every agentic instruction.
+
+### Priority Shifts
+- **A2A Messaging Hub**: (Re-affirmed P0) Now elevated with mandatory **IBET** requirements for inter-agent tunnels.

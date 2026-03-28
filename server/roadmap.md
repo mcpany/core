@@ -749,10 +749,10 @@ These features represent the next logical steps for the product, focusing on Ent
 - **WASM-Hook Behavioral Profiler**: (P0) Mandatory extension for the SMS that performs sandboxed profiling of AI-generated configuration hooks to counter PR "Logic Bombs." (Added: 2026-06-15)
 
 ### Upcoming: [2026-06-18]
-- RIA Provider (Recursive Intent Attestation): (P0) Authoritative root for multi-hop intent attestation (Added: 2026-06-18).
-- Mesh-Resident Cognitive Load Balancer (MCLB): (P0) Dynamic task redistribution service for mesh balancing (Added: 2026-06-18).
-- IBET (Intent-Bound Ephemeral Tunnels): (P0) Secure, task-specific communication conduits (Added: 2026-06-18).
-- CFIA (Chain-of-Custody Lineage Tracker): (P0) Absolute provenance ledger for agentic hops (Added: 2026-06-18).
+- **RIA Provider (Recursive Intent Attestation)**: (P0) Authoritative root for multi-hop intent attestation (Added: 2026-06-18).
+- **Mesh-Resident Cognitive Load Balancer (MCLB)**: (P0) Dynamic task redistribution service for mesh balancing (Added: 2026-06-18).
+- **IBET (Intent-Bound Ephemeral Tunnels)**: (P0) Secure, task-specific communication conduits (Added: 2026-06-18).
+- **CoC Lineage Tracker (Chain-of-Custody)**: (P0) Absolute provenance ledger for agentic hops (Added: 2026-06-18).
 
 ### Upcoming: [2026-06-17]
 - **Active Intent Alignment (AIA) Broker**: (P0) Authoritative alignment service issuing hardware-attested heartbeats for mission-anchored reasoning (Added: 2026-06-17).

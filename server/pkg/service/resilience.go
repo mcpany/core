@@ -17,21 +17,33 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// UnaryClientInterceptor provides unaryclientinterceptor functionality.
-//
-// Summary: UnaryClientInterceptor.
-//
-// Parameters.
-//   - retryConfig: The parameter.
-//
-// Returns.
-//   - result: The result.
+// UnaryClientInterceptor returns a new unary client interceptor that retries calls. retryConfig is the retryConfig. Returns the result.
 //
 // Parameters:
-//   - retryConfig: *configv1.RetryConfig.
+//   - retryConfig (*configv1.RetryConfig): The retryConfig parameter.
 //
 // Returns:
-//   - grpc.UnaryClientInterceptor.
+//   - grpc.UnaryClientInterceptor: The resulting grpc.UnaryClientInterceptor.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
+//
+// Summary: Executes UnaryClientInterceptor operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func UnaryClientInterceptor(retryConfig *configv1.RetryConfig) grpc.UnaryClientInterceptor {
 	return func(ctx context.Context, method string, req, reply any, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 		b := newBackoff(ctx, retryConfig)

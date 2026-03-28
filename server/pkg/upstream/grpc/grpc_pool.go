@@ -31,21 +31,27 @@ type poolWithChecker[T pool.ClosableClient] struct {
 	checker health.Checker
 }
 
-// Close provides close functionality.
-//
-// Summary: Close.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
-//
-// Parameters:
-//   - None.
+// Close stops the health checker and closes the underlying pool.
 //
 // Returns:
-//   - error.
+//   - error: An error if the operation fails.
+//
+// Side Effects:
+//   - Stops the health checker.
+//
+// Summary: Executes Close operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (p *poolWithChecker[T]) Close() error {
 	if p.checker != nil {
 		p.checker.Stop()
@@ -58,7 +64,7 @@ func (p *poolWithChecker[T]) Close() error {
 // It configures the pool with a factory function that establishes new gRPC connections with the
 // specified address, dialer, and credentials.
 //
-// Parameters.
+// Parameters:
 //   - minSize (int): The initial number of connections to create.
 //   - maxSize (int): The maximum number of connections the pool can hold.
 //   - idleTimeout (time.Duration): The duration after which an idle connection may be closed.
@@ -67,7 +73,7 @@ func (p *poolWithChecker[T]) Close() error {
 //   - config (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
 //   - disableHealthCheck (bool): Whether to disable the health check.
 //
-// Returns.
+// Returns:
 //   - pool.Pool[*client.GrpcClientWrapper]: The created pool.
 //   - error: An error if the pool cannot be created.
 //
@@ -81,11 +87,14 @@ func (p *poolWithChecker[T]) Close() error {
 //
 // Summary: Initializes NewGrpcPool operation.
 //
-// Parameters: - None.
+// Parameters:
+//   - TODO: Document parameters.
 //
-// Returns: - None.
+// Returns:
+//   - TODO: Document returns.
 //
-// Errors: - None.
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

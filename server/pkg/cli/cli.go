@@ -20,23 +20,16 @@ type JSONExecutor struct {
 	out io.Reader
 }
 
-// NewJSONExecutor provides newjsonexecutor functionality.
+// NewJSONExecutor creates a new JSONExecutor with the given writer and reader.  Parameters: - in: io.Writer. The destination for writing JSON requests. - out: io.Reader. The source for reading JSON responses.  Returns: - *JSONExecutor: A new JSONExecutor instance.
 //
-// Summary: NewJSONExecutor.
-//
-// Parameters.
-//   - in: The parameter.
-//   - out: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Creates a new JSONExecutor with the given writer and reader.  Parameters: - in: io.Writer. The destination for writing JSON requests. - out: io.Reader. The source for reading JSON responses.  Returns: - *JSONExecutor: A new JSONExecutor instance.
 //
 // Parameters:
-//   - in: io.Writer.
-//   - out: io.Reader.
+//   - in (io.Writer): Description for in.
+//   - out (io.Reader): Description for out.
 //
 // Returns:
-//   - *JSONExecutor.
+//   - (*JSONExecutor): Result.
 func NewJSONExecutor(in io.Writer, out io.Reader) *JSONExecutor {
 	return &JSONExecutor{
 		in:  in,
@@ -44,23 +37,16 @@ func NewJSONExecutor(in io.Writer, out io.Reader) *JSONExecutor {
 	}
 }
 
-// Execute provides execute functionality.
+// Execute sends the given data as a JSON-encoded message to the writer and decodes the JSON-encoded response from the reader into the given result.
 //
-// Summary: Execute.
-//
-// Parameters.
-//   - data: The parameter.
-//   - result: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Sends the given data as a JSON-encoded message to the writer and decodes the JSON-encoded response from the reader into the given result.
 //
 // Parameters:
-//   - data: unknown.
-//   - result: any.
+//   - data: Parameter.
+//   - result (any): Description for result.
 //
 // Returns:
-//   - error.
+//   - (error): Result.
 func (e *JSONExecutor) Execute(data, result any) error {
 	if err := json.NewEncoder(e.in).Encode(data); err != nil {
 		return fmt.Errorf("failed to encode data: %w", err)

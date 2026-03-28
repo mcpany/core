@@ -24,26 +24,21 @@ type TextTemplate struct {
 	IsJSON   bool
 }
 
-// NewTemplate provides newtemplate functionality.
+// NewTemplate parses a template string and creates a new TextTemplate.
 //
-// Summary: NewTemplate.
-//
-// Parameters.
-//   - templateString: The parameter.
-//   - startTag: The parameter.
-//   - endTag: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Initializes a new TextTemplate.
 //
 // Parameters:
-//   - templateString: unknown.
-//   - startTag: unknown.
-//   - endTag: string.
+//   - templateString: string. The template source.
+//   - startTag: string. The start delimiter (e.g. "{{").
+//   - endTag: string. The end delimiter (e.g. "}}").
 //
 // Returns:
-//   - *TextTemplate.
-//   - error.
+//   - *TextTemplate: The parsed template.
+//   - error: An error if parsing fails.
+//
+// Side Effects:
+//   - Auto-detects if the template output is likely JSON to enable automatic escaping.
 func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error) {
 	tpl, err := fasttemplate.NewTemplate(templateString, startTag, endTag)
 	if err != nil {
@@ -68,22 +63,23 @@ func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error)
 	}, nil
 }
 
-// Render provides render functionality.
+// Render executes the template with the provided parameters and returns the
+// resulting string.
 //
-// Summary: Render.
-//
-// Parameters.
-//   - params: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Renders the template with data.
 //
 // Parameters:
-//   - params: map[string]any.
+//   - params: map[string]any. The data map for variable substitution.
 //
 // Returns:
-//   - string.
-//   - error.
+//   - string: The rendered output.
+//   - error: An error if a key is missing or rendering fails.
+//
+// Errors:
+//   - Returns error if a required tag is missing in params.
+//
+// Side Effects:
+//   - Automatically escapes strings if the template is detected as JSON.
 func (t *TextTemplate) Render(params map[string]any) (string, error) {
 	return t.template.ExecuteFuncStringWithErr(func(w io.Writer, tag string) (int, error) {
 		val, ok := params[tag]

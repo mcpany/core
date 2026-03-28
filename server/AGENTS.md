@@ -44,18 +44,18 @@ Every docstring must follow this structure:
 ```go
 // CalculateTax computes the tax amount for a given transaction.
 //
-// Parameters: - None.
+// Parameters:
 //   - amount (float64): The transaction amount.
 //   - rate (float64): The tax rate as a percentage.
 //
-// Returns: - None.
+// Returns:
 //   - float64: The calculated tax amount.
 //   - error: An error if the rate is negative.
 //
-// Errors: - None.
+// Errors:
 //   - Returns "invalid rate" if the rate is less than 0.
 //
-// Side Effects: - None.
+// Side Effects:
 //   - None.
 func CalculateTax(amount, rate float64) (float64, error) {
     // ...

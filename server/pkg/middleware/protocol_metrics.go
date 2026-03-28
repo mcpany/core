@@ -64,21 +64,33 @@ var (
 	)
 )
 
-// PrometheusMetricsMiddleware provides prometheusmetricsmiddleware functionality.
-//
-// Summary: PrometheusMetricsMiddleware.
-//
-// Parameters.
-//   - t: The parameter.
-//
-// Returns.
-//   - result: The result.
+// PrometheusMetricsMiddleware provides protocol-level metrics for all MCP requests. It intercepts requests to track duration, success/failure counts, payload sizes, and token counts.
 //
 // Parameters:
-//   - t: tokenizer.Tokenizer.
+//   - t (tokenizer.Tokenizer): The t parameter.
 //
 // Returns:
-//   - mcp.Middleware.
+//   - mcp.Middleware: The resulting mcp.Middleware.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
+//
+// Summary: Executes PrometheusMetricsMiddleware operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func PrometheusMetricsMiddleware(t tokenizer.Tokenizer) mcp.Middleware {
 	registerProtocolMetricsOnce.Do(func() {
 		prometheus.MustRegister(mcpOperationDuration)
@@ -224,23 +236,28 @@ func estimateResultTokens(t tokenizer.Tokenizer, res mcp.Result) int {
 	return c
 }
 
-// CalculateToolResultTokens provides calculatetoolresulttokens functionality.
-//
-// Summary: CalculateToolResultTokens.
-//
-// Parameters.
-//   - t: The parameter.
-//   - result: The parameter.
-//
-// Returns.
-//   - result: The result.
+// CalculateToolResultTokens calculates the number of tokens in a tool result.
 //
 // Parameters:
-//   - t: tokenizer.Tokenizer.
-//   - result: any.
+//   - t: tokenizer.Tokenizer. The tokenizer to use for counting.
+//   - result: any. The result object to analyze (can be *mcp.CallToolResult, string, []byte, or others).
 //
 // Returns:
-//   - int.
+//   - int: The estimated token count.
+//
+// Summary: Executes CalculateToolResultTokens operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func CalculateToolResultTokens(t tokenizer.Tokenizer, result any) int {
 	if result == nil {
 		return 0

@@ -27,23 +27,34 @@ type SmartRecoveryMiddleware struct {
 	mu          sync.RWMutex
 }
 
-// NewSmartRecoveryMiddleware provides newsmartrecoverymiddleware functionality.
-//
-// Summary: NewSmartRecoveryMiddleware.
-//
-// Parameters.
-//   - config: The parameter.
-//   - toolManager: The parameter.
-//
-// Returns.
-//   - result: The result.
+// NewSmartRecoveryMiddleware creates a new SmartRecoveryMiddleware.
 //
 // Parameters:
-//   - config: *configv1.SmartRecoveryConfig.
-//   - toolManager: tool.ManagerInterface.
+//   - config (*configv1.SmartRecoveryConfig): The config parameter.
+//   - toolManager (tool.ManagerInterface): The toolManager parameter.
 //
 // Returns:
-//   - *SmartRecoveryMiddleware.
+//   - *SmartRecoveryMiddleware: The resulting *SmartRecoveryMiddleware.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
+//
+// Summary: Initializes NewSmartRecoveryMiddleware operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManager tool.ManagerInterface) *SmartRecoveryMiddleware {
 	return &SmartRecoveryMiddleware{
 		config:      config,
@@ -51,26 +62,36 @@ func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManage
 	}
 }
 
-// Execute provides execute functionality.
-//
-// Summary: Execute.
-//
-// Parameters.
-//   - ctx: The parameter.
-//   - req: The parameter.
-//   - next: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Execute executes the middleware logic.
 //
 // Parameters:
-//   - ctx: context.Context.
-//   - req: *tool.ExecutionRequest.
-//   - next: tool.ExecutionFunc.
+//   - ctx (context.Context): The context for the request.
+//   - req (*tool.ExecutionRequest): The request object.
+//   - next (tool.ExecutionFunc): The next parameter.
 //
 // Returns:
-//   - any.
-//   - error.
+//   - any: The resulting any.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
+//
+// Side Effects:
+//   - None
+//
+// Summary: Executes Execute operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (m *SmartRecoveryMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	if m.config == nil || !m.config.GetEnabled() {
 		return next(ctx, req)

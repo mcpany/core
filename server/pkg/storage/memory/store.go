@@ -39,21 +39,15 @@ type Store struct {
 	logs               []*logging.LogEntry
 }
 
-// NewStore provides newstore functionality.
+// NewStore creates a new memory store.
 //
-// Summary: NewStore.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
-//
-// Parameters:
-//   - None.
+// Summary: Initializes a new, empty in-memory store.
 //
 // Returns:
-//   - *Store.
+//   - *Store: A pointer to the initialized Store.
+//
+// Side Effects:
+//   - Allocates internal maps and slices.
 func NewStore() *Store {
 	return &Store{
 		services:           make(map[string]*configv1.UpstreamServiceConfig),
@@ -68,23 +62,19 @@ func NewStore() *Store {
 	}
 }
 
-// SaveLog provides savelog functionality.
+// SaveLog saves a log entry.
 //
-// Summary: SaveLog.
-//
-// Parameters.
-//   - _: The parameter.
-//   - entry: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Appends a log entry to the in-memory log store.
 //
 // Parameters:
-//   - _: context.Context.
-//   - entry: *logging.LogEntry.
+//   - _: context.Context. Unused.
+//   - entry: *logging.LogEntry. The log entry to save.
 //
 // Returns:
-//   - error.
+//   - error: Always nil.
+//
+// Side Effects:
+//   - Appends to the internal logs slice.
 func (s *Store) SaveLog(_ context.Context, entry *logging.LogEntry) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -92,24 +82,20 @@ func (s *Store) SaveLog(_ context.Context, entry *logging.LogEntry) error {
 	return nil
 }
 
-// GetRecentLogs provides getrecentlogs functionality.
+// GetRecentLogs retrieves recent log entries.
 //
-// Summary: GetRecentLogs.
-//
-// Parameters.
-//   - _: The parameter.
-//   - limit: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Returns the N most recent log entries.
 //
 // Parameters:
-//   - _: context.Context.
-//   - limit: int.
+//   - _: context.Context. Unused.
+//   - limit: int. The maximum number of logs to return.
 //
 // Returns:
-//   - []*logging.LogEntry.
-//   - error.
+//   - []*logging.LogEntry: A slice of log entries.
+//   - error: Always nil.
+//
+// Side Effects:
+//   - Reads from the internal logs slice.
 func (s *Store) GetRecentLogs(_ context.Context, limit int) ([]*logging.LogEntry, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -126,23 +112,19 @@ func (s *Store) GetRecentLogs(_ context.Context, limit int) ([]*logging.LogEntry
 	return result, nil
 }
 
-// SaveToken provides savetoken functionality.
+// SaveToken saves a user token.
 //
-// Summary: SaveToken.
-//
-// Parameters.
-//   - _: The parameter.
-//   - token: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Stores a user token in memory.
 //
 // Parameters:
-//   - _: context.Context.
-//   - token: *configv1.UserToken.
+//   - _: context.Context. Unused.
+//   - token: *configv1.UserToken. The token to save.
 //
 // Returns:
-//   - error.
+//   - error: Always nil.
+//
+// Side Effects:
+//   - Updates the internal tokens map.
 func (s *Store) SaveToken(_ context.Context, token *configv1.UserToken) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -154,26 +136,18 @@ func (s *Store) SaveToken(_ context.Context, token *configv1.UserToken) error {
 	return nil
 }
 
-// GetToken provides gettoken functionality.
+// GetToken retrieves a user token by user ID and service ID.
 //
-// Summary: GetToken.
-//
-// Parameters.
-//   - _: The parameter.
-//   - userID: The parameter.
-//   - serviceID: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Retrieves a stored user token.
 //
 // Parameters:
-//   - _: context.Context.
-//   - userID: unknown.
-//   - serviceID: string.
+//   - _: context.Context. Unused.
+//   - userID: string. The user ID.
+//   - serviceID: string. The service ID.
 //
 // Returns:
-//   - *configv1.UserToken.
-//   - error.
+//   - *configv1.UserToken: The retrieved token, or nil if not found.
+//   - error: Always nil.
 func (s *Store) GetToken(_ context.Context, userID, serviceID string) (*configv1.UserToken, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -187,25 +161,20 @@ func (s *Store) GetToken(_ context.Context, userID, serviceID string) (*configv1
 	return nil, nil
 }
 
-// DeleteToken provides deletetoken functionality.
+// DeleteToken deletes a user token.
 //
-// Summary: DeleteToken.
-//
-// Parameters.
-//   - _: The parameter.
-//   - userID: The parameter.
-//   - serviceID: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Removes a user token from memory.
 //
 // Parameters:
-//   - _: context.Context.
-//   - userID: unknown.
-//   - serviceID: string.
+//   - _: context.Context. Unused.
+//   - userID: string. The user ID.
+//   - serviceID: string. The service ID.
 //
 // Returns:
-//   - error.
+//   - error: Always nil.
+//
+// Side Effects:
+//   - Deletes from the internal tokens map.
 func (s *Store) DeleteToken(_ context.Context, userID, serviceID string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -217,22 +186,16 @@ func (s *Store) DeleteToken(_ context.Context, userID, serviceID string) error {
 	return nil
 }
 
-// Load provides load functionality.
+// Load retrieves the full server configuration.
 //
-// Summary: Load.
-//
-// Parameters.
-//   - _: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Constructs and returns the complete server configuration from stored components.
 //
 // Parameters:
-//   - _: context.Context.
+//   - _: context.Context. Unused.
 //
 // Returns:
-//   - *configv1.McpAnyServerConfig.
-//   - error.
+//   - *configv1.McpAnyServerConfig: The complete configuration object.
+//   - error: Always nil.
 func (s *Store) Load(_ context.Context) (*configv1.McpAnyServerConfig, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -271,23 +234,19 @@ func (s *Store) Load(_ context.Context) (*configv1.McpAnyServerConfig, error) {
 	return cfg, nil
 }
 
-// SaveService provides saveservice functionality.
+// SaveService saves a single upstream service configuration.
 //
-// Summary: SaveService.
-//
-// Parameters.
-//   - _: The parameter.
-//   - service: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Stores an upstream service configuration.
 //
 // Parameters:
-//   - _: context.Context.
-//   - service: *configv1.UpstreamServiceConfig.
+//   - _: context.Context. Unused.
+//   - service: *configv1.UpstreamServiceConfig. The service config to save.
 //
 // Returns:
-//   - error.
+//   - error: Always nil.
+//
+// Side Effects:
+//   - Updates the internal services map.
 func (s *Store) SaveService(_ context.Context, service *configv1.UpstreamServiceConfig) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -295,24 +254,17 @@ func (s *Store) SaveService(_ context.Context, service *configv1.UpstreamService
 	return nil
 }
 
-// GetService provides getservice functionality.
+// GetService retrieves a single upstream service configuration by name.
 //
-// Summary: GetService.
-//
-// Parameters.
-//   - _: The parameter.
-//   - name: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Retrieves an upstream service configuration.
 //
 // Parameters:
-//   - _: context.Context.
-//   - name: string.
+//   - _: context.Context. Unused.
+//   - name: string. The name of the service.
 //
 // Returns:
-//   - *configv1.UpstreamServiceConfig.
-//   - error.
+//   - *configv1.UpstreamServiceConfig: The service config, or nil if not found.
+//   - error: Always nil.
 func (s *Store) GetService(_ context.Context, name string) (*configv1.UpstreamServiceConfig, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -322,22 +274,16 @@ func (s *Store) GetService(_ context.Context, name string) (*configv1.UpstreamSe
 	return nil, nil
 }
 
-// ListServices provides listservices functionality.
+// ListServices lists all upstream service configurations.
 //
-// Summary: ListServices.
-//
-// Parameters.
-//   - _: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Lists all stored upstream service configurations.
 //
 // Parameters:
-//   - _: context.Context.
+//   - _: context.Context. Unused.
 //
 // Returns:
-//   - []*configv1.UpstreamServiceConfig.
-//   - error.
+//   - []*configv1.UpstreamServiceConfig: A list of service configs.
+//   - error: Always nil.
 func (s *Store) ListServices(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -348,23 +294,19 @@ func (s *Store) ListServices(_ context.Context) ([]*configv1.UpstreamServiceConf
 	return list, nil
 }
 
-// DeleteService provides deleteservice functionality.
+// DeleteService deletes an upstream service configuration by name.
 //
-// Summary: DeleteService.
-//
-// Parameters.
-//   - _: The parameter.
-//   - name: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Deletes an upstream service configuration.
 //
 // Parameters:
-//   - _: context.Context.
-//   - name: string.
+//   - _: context.Context. Unused.
+//   - name: string. The name of the service to delete.
 //
 // Returns:
-//   - error.
+//   - error: Always nil.
+//
+// Side Effects:
+//   - Removes from the internal services map.
 func (s *Store) DeleteService(_ context.Context, name string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -372,60 +314,36 @@ func (s *Store) DeleteService(_ context.Context, name string) error {
 	return nil
 }
 
-// Close provides close functionality.
+// Close closes the underlying storage connection.
 //
-// Summary: Close.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
-//
-// Parameters:
-//   - None.
+// Summary: No-op for in-memory store.
 //
 // Returns:
-//   - error.
+//   - error: Always nil.
 func (s *Store) Close() error {
 	return nil
 }
 
-// HasConfigSources provides hasconfigsources functionality.
+// HasConfigSources returns true if the store has configuration sources (e.g., file paths) configured.
 //
-// Summary: HasConfigSources.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
-//
-// Parameters:
-//   - None.
+// Summary: Indicates if the store supports config sources (always true for this mock).
 //
 // Returns:
-//   - bool.
+//   - bool: Always true.
 func (s *Store) HasConfigSources() bool {
 	return true
 }
 
-// GetGlobalSettings provides getglobalsettings functionality.
+// GetGlobalSettings retrieves the global configuration.
 //
-// Summary: GetGlobalSettings.
-//
-// Parameters.
-//   - _: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Retrieves the global settings object.
 //
 // Parameters:
-//   - _: context.Context.
+//   - _: context.Context. Unused.
 //
 // Returns:
-//   - *configv1.GlobalSettings.
-//   - error.
+//   - *configv1.GlobalSettings: The global settings.
+//   - error: Always nil.
 func (s *Store) GetGlobalSettings(_ context.Context) (*configv1.GlobalSettings, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -435,23 +353,19 @@ func (s *Store) GetGlobalSettings(_ context.Context) (*configv1.GlobalSettings, 
 	return proto.Clone(s.globalSettings).(*configv1.GlobalSettings), nil
 }
 
-// SaveGlobalSettings provides saveglobalsettings functionality.
+// SaveGlobalSettings saves the global configuration.
 //
-// Summary: SaveGlobalSettings.
-//
-// Parameters.
-//   - _: The parameter.
-//   - settings: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Persists the global settings.
 //
 // Parameters:
-//   - _: context.Context.
-//   - settings: *configv1.GlobalSettings.
+//   - _: context.Context. Unused.
+//   - settings: *configv1.GlobalSettings. The settings to save.
 //
 // Returns:
-//   - error.
+//   - error: Always nil.
+//
+// Side Effects:
+//   - Updates the internal global settings.
 func (s *Store) SaveGlobalSettings(_ context.Context, settings *configv1.GlobalSettings) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -459,22 +373,16 @@ func (s *Store) SaveGlobalSettings(_ context.Context, settings *configv1.GlobalS
 	return nil
 }
 
-// ListSecrets provides listsecrets functionality.
+// ListSecrets retrieves all secrets.
 //
-// Summary: ListSecrets.
-//
-// Parameters.
-//   - _: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Lists all stored secrets.
 //
 // Parameters:
-//   - _: context.Context.
+//   - _: context.Context. Unused.
 //
 // Returns:
-//   - []*configv1.Secret.
-//   - error.
+//   - []*configv1.Secret: A list of secrets.
+//   - error: Always nil.
 func (s *Store) ListSecrets(_ context.Context) ([]*configv1.Secret, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -485,24 +393,17 @@ func (s *Store) ListSecrets(_ context.Context) ([]*configv1.Secret, error) {
 	return list, nil
 }
 
-// GetSecret provides getsecret functionality.
+// GetSecret retrieves a secret by ID.
 //
-// Summary: GetSecret.
-//
-// Parameters.
-//   - _: The parameter.
-//   - id: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Retrieves a secret by its ID.
 //
 // Parameters:
-//   - _: context.Context.
-//   - id: string.
+//   - _: context.Context. Unused.
+//   - id: string. The secret ID.
 //
 // Returns:
-//   - *configv1.Secret.
-//   - error.
+//   - *configv1.Secret: The secret, or nil if not found.
+//   - error: Always nil.
 func (s *Store) GetSecret(_ context.Context, id string) (*configv1.Secret, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -512,23 +413,19 @@ func (s *Store) GetSecret(_ context.Context, id string) (*configv1.Secret, error
 	return nil, nil
 }
 
-// SaveSecret provides savesecret functionality.
+// SaveSecret saves a secret.
 //
-// Summary: SaveSecret.
-//
-// Parameters.
-//   - _: The parameter.
-//   - secret: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Stores a secret.
 //
 // Parameters:
-//   - _: context.Context.
-//   - secret: *configv1.Secret.
+//   - _: context.Context. Unused.
+//   - secret: *configv1.Secret. The secret to save.
 //
 // Returns:
-//   - error.
+//   - error: Always nil.
+//
+// Side Effects:
+//   - Updates the internal secrets map.
 func (s *Store) SaveSecret(_ context.Context, secret *configv1.Secret) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -536,23 +433,19 @@ func (s *Store) SaveSecret(_ context.Context, secret *configv1.Secret) error {
 	return nil
 }
 
-// DeleteSecret provides deletesecret functionality.
+// DeleteSecret deletes a secret by ID.
 //
-// Summary: DeleteSecret.
-//
-// Parameters.
-//   - _: The parameter.
-//   - id: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Deletes a secret.
 //
 // Parameters:
-//   - _: context.Context.
-//   - id: string.
+//   - _: context.Context. Unused.
+//   - id: string. The secret ID.
 //
 // Returns:
-//   - error.
+//   - error: Always nil.
+//
+// Side Effects:
+//   - Removes from the internal secrets map.
 func (s *Store) DeleteSecret(_ context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -560,23 +453,23 @@ func (s *Store) DeleteSecret(_ context.Context, id string) error {
 	return nil
 }
 
-// CreateUser provides createuser functionality.
+// CreateUser creates a new user.
 //
-// Summary: CreateUser.
-//
-// Parameters.
-//   - _: The parameter.
-//   - user: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Creates a new user entry.
 //
 // Parameters:
-//   - _: context.Context.
-//   - user: *configv1.User.
+//   - _: context.Context. Unused.
+//   - user: *configv1.User. The user to create.
 //
 // Returns:
-//   - error.
+//   - error: An error if the user ID is missing or already exists.
+//
+// Errors:
+//   - Returns "user ID is required" if ID is empty.
+//   - Returns "user already exists" if ID is present.
+//
+// Side Effects:
+//   - Adds to the internal users map.
 func (s *Store) CreateUser(_ context.Context, user *configv1.User) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -590,24 +483,17 @@ func (s *Store) CreateUser(_ context.Context, user *configv1.User) error {
 	return nil
 }
 
-// GetUser provides getuser functionality.
+// GetUser retrieves a user by ID.
 //
-// Summary: GetUser.
-//
-// Parameters.
-//   - _: The parameter.
-//   - id: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Retrieves a user.
 //
 // Parameters:
-//   - _: context.Context.
-//   - id: string.
+//   - _: context.Context. Unused.
+//   - id: string. The user ID.
 //
 // Returns:
-//   - *configv1.User.
-//   - error.
+//   - *configv1.User: The user, or nil if not found.
+//   - error: Always nil.
 func (s *Store) GetUser(_ context.Context, id string) (*configv1.User, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -617,22 +503,16 @@ func (s *Store) GetUser(_ context.Context, id string) (*configv1.User, error) {
 	return nil, nil
 }
 
-// ListUsers provides listusers functionality.
+// ListUsers retrieves all users.
 //
-// Summary: ListUsers.
-//
-// Parameters.
-//   - _: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Lists all users.
 //
 // Parameters:
-//   - _: context.Context.
+//   - _: context.Context. Unused.
 //
 // Returns:
-//   - []*configv1.User.
-//   - error.
+//   - []*configv1.User: A list of users.
+//   - error: Always nil.
 func (s *Store) ListUsers(_ context.Context) ([]*configv1.User, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -643,23 +523,22 @@ func (s *Store) ListUsers(_ context.Context) ([]*configv1.User, error) {
 	return list, nil
 }
 
-// UpdateUser provides updateuser functionality.
+// UpdateUser updates an existing user.
 //
-// Summary: UpdateUser.
-//
-// Parameters.
-//   - _: The parameter.
-//   - user: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Updates an existing user.
 //
 // Parameters:
-//   - _: context.Context.
-//   - user: *configv1.User.
+//   - _: context.Context. Unused.
+//   - user: *configv1.User. The user to update.
 //
 // Returns:
-//   - error.
+//   - error: An error if the user is not found.
+//
+// Errors:
+//   - Returns "user not found" if the user does not exist.
+//
+// Side Effects:
+//   - Updates the internal users map.
 func (s *Store) UpdateUser(_ context.Context, user *configv1.User) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -670,23 +549,19 @@ func (s *Store) UpdateUser(_ context.Context, user *configv1.User) error {
 	return nil
 }
 
-// DeleteUser provides deleteuser functionality.
+// DeleteUser deletes a user by ID.
 //
-// Summary: DeleteUser.
-//
-// Parameters.
-//   - _: The parameter.
-//   - id: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Deletes a user.
 //
 // Parameters:
-//   - _: context.Context.
-//   - id: string.
+//   - _: context.Context. Unused.
+//   - id: string. The user ID.
 //
 // Returns:
-//   - error.
+//   - error: Always nil.
+//
+// Side Effects:
+//   - Removes from the internal users map.
 func (s *Store) DeleteUser(_ context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -696,22 +571,16 @@ func (s *Store) DeleteUser(_ context.Context, id string) error {
 
 // Profiles
 
-// ListProfiles provides listprofiles functionality.
+// ListProfiles retrieves all profile definitions.
 //
-// Summary: ListProfiles.
-//
-// Parameters.
-//   - _: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Lists all stored profile definitions.
 //
 // Parameters:
-//   - _: context.Context.
+//   - _: context.Context. Unused.
 //
 // Returns:
-//   - []*configv1.ProfileDefinition.
-//   - error.
+//   - []*configv1.ProfileDefinition: A list of profiles.
+//   - error: Always nil.
 func (s *Store) ListProfiles(_ context.Context) ([]*configv1.ProfileDefinition, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -722,24 +591,17 @@ func (s *Store) ListProfiles(_ context.Context) ([]*configv1.ProfileDefinition, 
 	return list, nil
 }
 
-// GetProfile provides getprofile functionality.
+// GetProfile retrieves a profile definition by name.
 //
-// Summary: GetProfile.
-//
-// Parameters.
-//   - _: The parameter.
-//   - name: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Retrieves a profile by name.
 //
 // Parameters:
-//   - _: context.Context.
-//   - name: string.
+//   - _: context.Context. Unused.
+//   - name: string. The profile name.
 //
 // Returns:
-//   - *configv1.ProfileDefinition.
-//   - error.
+//   - *configv1.ProfileDefinition: The profile, or nil if not found.
+//   - error: Always nil.
 func (s *Store) GetProfile(_ context.Context, name string) (*configv1.ProfileDefinition, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -749,23 +611,19 @@ func (s *Store) GetProfile(_ context.Context, name string) (*configv1.ProfileDef
 	return nil, nil
 }
 
-// SaveProfile provides saveprofile functionality.
+// SaveProfile saves a profile definition.
 //
-// Summary: SaveProfile.
-//
-// Parameters.
-//   - _: The parameter.
-//   - profile: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Stores a profile definition.
 //
 // Parameters:
-//   - _: context.Context.
-//   - profile: *configv1.ProfileDefinition.
+//   - _: context.Context. Unused.
+//   - profile: *configv1.ProfileDefinition. The profile to save.
 //
 // Returns:
-//   - error.
+//   - error: Always nil.
+//
+// Side Effects:
+//   - Updates the internal profile map.
 func (s *Store) SaveProfile(_ context.Context, profile *configv1.ProfileDefinition) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -773,23 +631,19 @@ func (s *Store) SaveProfile(_ context.Context, profile *configv1.ProfileDefiniti
 	return nil
 }
 
-// DeleteProfile provides deleteprofile functionality.
+// DeleteProfile deletes a profile definition by name.
 //
-// Summary: DeleteProfile.
-//
-// Parameters.
-//   - _: The parameter.
-//   - name: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Deletes a profile.
 //
 // Parameters:
-//   - _: context.Context.
-//   - name: string.
+//   - _: context.Context. Unused.
+//   - name: string. The profile name.
 //
 // Returns:
-//   - error.
+//   - error: Always nil.
+//
+// Side Effects:
+//   - Removes from the internal profile map.
 func (s *Store) DeleteProfile(_ context.Context, name string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -799,22 +653,16 @@ func (s *Store) DeleteProfile(_ context.Context, name string) error {
 
 // Service Collections
 
-// ListServiceCollections provides listservicecollections functionality.
+// ListServiceCollections retrieves all service collections.
 //
-// Summary: ListServiceCollections.
-//
-// Parameters.
-//   - _: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Lists all service collections.
 //
 // Parameters:
-//   - _: context.Context.
+//   - _: context.Context. Unused.
 //
 // Returns:
-//   - []*configv1.Collection.
-//   - error.
+//   - []*configv1.Collection: A list of collections.
+//   - error: Always nil.
 func (s *Store) ListServiceCollections(_ context.Context) ([]*configv1.Collection, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -825,24 +673,17 @@ func (s *Store) ListServiceCollections(_ context.Context) ([]*configv1.Collectio
 	return list, nil
 }
 
-// GetServiceCollection provides getservicecollection functionality.
+// GetServiceCollection retrieves a service collection by name.
 //
-// Summary: GetServiceCollection.
-//
-// Parameters.
-//   - _: The parameter.
-//   - name: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Retrieves a service collection.
 //
 // Parameters:
-//   - _: context.Context.
-//   - name: string.
+//   - _: context.Context. Unused.
+//   - name: string. The collection name.
 //
 // Returns:
-//   - *configv1.Collection.
-//   - error.
+//   - *configv1.Collection: The collection, or nil if not found.
+//   - error: Always nil.
 func (s *Store) GetServiceCollection(_ context.Context, name string) (*configv1.Collection, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -852,23 +693,19 @@ func (s *Store) GetServiceCollection(_ context.Context, name string) (*configv1.
 	return nil, nil
 }
 
-// SaveServiceCollection provides saveservicecollection functionality.
+// SaveServiceCollection saves a service collection.
 //
-// Summary: SaveServiceCollection.
-//
-// Parameters.
-//   - _: The parameter.
-//   - collection: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Stores a service collection.
 //
 // Parameters:
-//   - _: context.Context.
-//   - collection: *configv1.Collection.
+//   - _: context.Context. Unused.
+//   - collection: *configv1.Collection. The collection to save.
 //
 // Returns:
-//   - error.
+//   - error: Always nil.
+//
+// Side Effects:
+//   - Updates the internal collection map.
 func (s *Store) SaveServiceCollection(_ context.Context, collection *configv1.Collection) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -876,23 +713,19 @@ func (s *Store) SaveServiceCollection(_ context.Context, collection *configv1.Co
 	return nil
 }
 
-// DeleteServiceCollection provides deleteservicecollection functionality.
+// DeleteServiceCollection deletes a service collection by name.
 //
-// Summary: DeleteServiceCollection.
-//
-// Parameters.
-//   - _: The parameter.
-//   - name: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Deletes a service collection.
 //
 // Parameters:
-//   - _: context.Context.
-//   - name: string.
+//   - _: context.Context. Unused.
+//   - name: string. The collection name.
 //
 // Returns:
-//   - error.
+//   - error: Always nil.
+//
+// Side Effects:
+//   - Removes from the internal collection map.
 func (s *Store) DeleteServiceCollection(_ context.Context, name string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -902,22 +735,16 @@ func (s *Store) DeleteServiceCollection(_ context.Context, name string) error {
 
 // Credentials
 
-// ListCredentials provides listcredentials functionality.
+// ListCredentials retrieves all credentials.
 //
-// Summary: ListCredentials.
-//
-// Parameters.
-//   - _: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Lists all credentials.
 //
 // Parameters:
-//   - _: context.Context.
+//   - _: context.Context. Unused.
 //
 // Returns:
-//   - []*configv1.Credential.
-//   - error.
+//   - []*configv1.Credential: A list of credentials.
+//   - error: Always nil.
 func (s *Store) ListCredentials(_ context.Context) ([]*configv1.Credential, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -928,24 +755,17 @@ func (s *Store) ListCredentials(_ context.Context) ([]*configv1.Credential, erro
 	return list, nil
 }
 
-// GetCredential provides getcredential functionality.
+// GetCredential retrieves a credential by ID.
 //
-// Summary: GetCredential.
-//
-// Parameters.
-//   - _: The parameter.
-//   - id: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Retrieves a credential by ID.
 //
 // Parameters:
-//   - _: context.Context.
-//   - id: string.
+//   - _: context.Context. Unused.
+//   - id: string. The credential ID.
 //
 // Returns:
-//   - *configv1.Credential.
-//   - error.
+//   - *configv1.Credential: The credential, or nil if not found.
+//   - error: Always nil.
 func (s *Store) GetCredential(_ context.Context, id string) (*configv1.Credential, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -955,23 +775,19 @@ func (s *Store) GetCredential(_ context.Context, id string) (*configv1.Credentia
 	return nil, nil
 }
 
-// SaveCredential provides savecredential functionality.
+// SaveCredential saves a credential.
 //
-// Summary: SaveCredential.
-//
-// Parameters.
-//   - _: The parameter.
-//   - cred: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Stores a credential.
 //
 // Parameters:
-//   - _: context.Context.
-//   - cred: *configv1.Credential.
+//   - _: context.Context. Unused.
+//   - cred: *configv1.Credential. The credential to save.
 //
 // Returns:
-//   - error.
+//   - error: Always nil.
+//
+// Side Effects:
+//   - Updates the internal credential map.
 func (s *Store) SaveCredential(_ context.Context, cred *configv1.Credential) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -979,23 +795,19 @@ func (s *Store) SaveCredential(_ context.Context, cred *configv1.Credential) err
 	return nil
 }
 
-// DeleteCredential provides deletecredential functionality.
+// DeleteCredential deletes a credential by ID.
 //
-// Summary: DeleteCredential.
-//
-// Parameters.
-//   - _: The parameter.
-//   - id: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Deletes a credential.
 //
 // Parameters:
-//   - _: context.Context.
-//   - id: string.
+//   - _: context.Context. Unused.
+//   - id: string. The credential ID.
 //
 // Returns:
-//   - error.
+//   - error: Always nil.
+//
+// Side Effects:
+//   - Removes from the internal credential map.
 func (s *Store) DeleteCredential(_ context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

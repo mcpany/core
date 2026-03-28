@@ -39,31 +39,10 @@ type greeterClient struct {
 	cc grpc.ClientConnInterface
 }
 
-// NewGreeterClient creates a new greeter client.
-//
-// Summary: Creates a new greeter client.
-//
-// Parameters: - None.
-//   - cc (grpc.ClientConnInterface): The cc.
-//
-// Returns: - None.
-//   - GreeterClient: The result.
 func NewGreeterClient(cc grpc.ClientConnInterface) GreeterClient {
 	return &greeterClient{cc}
 }
 
-// SayHello sayHello say hello.
-//
-// Summary: SayHello say hello.
-//
-// Parameters: - None.
-//   - ctx (context.Context): The context for the request.
-//   - in (*HelloRequest): The in.
-//   - opts (...grpc.CallOption): The opts.
-//
-// Returns: - None.
-//   - *HelloReply: The result.
-//   - error: An error if the operation fails.
 func (c *greeterClient) SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(HelloReply)
@@ -92,17 +71,6 @@ type GreeterServer interface {
 // pointer dereference when methods are called.
 type UnimplementedGreeterServer struct{}
 
-// SayHello sayHello say hello.
-//
-// Summary: SayHello say hello.
-//
-// Parameters: - None.
-//   - context.Context (unknown): The context. context.
-//   - *HelloRequest (unknown): The * hello request.
-//
-// Returns: - None.
-//   - *HelloReply: The result.
-//   - error: An error if the operation fails.
 func (UnimplementedGreeterServer) SayHello(context.Context, *HelloRequest) (*HelloReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SayHello not implemented")
 }
@@ -116,16 +84,6 @@ type UnsafeGreeterServer interface {
 	mustEmbedUnimplementedGreeterServer()
 }
 
-// RegisterGreeterServer registerGreeterServer register greeter server.
-//
-// Summary: RegisterGreeterServer register greeter server.
-//
-// Parameters: - None.
-//   - s (grpc.ServiceRegistrar): The s.
-//   - srv (GreeterServer): The srv.
-//
-// Returns: - None.
-//   None.
 func RegisterGreeterServer(s grpc.ServiceRegistrar, srv GreeterServer) {
 	// If the following call pancis, it indicates UnimplementedGreeterServer was
 	// embedded by pointer and is nil.  This will cause panics if an

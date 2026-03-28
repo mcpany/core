@@ -11,42 +11,59 @@ type MockWatcher struct {
 	CloseFunc func()
 }
 
-// NewMockWatcher provides newmockwatcher functionality.
-//
-// Summary: NewMockWatcher.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
-//
-// Parameters:
-//   - None.
+// NewMockWatcher creates a new mock watcher.
 //
 // Returns:
-//   - *MockWatcher.
+//   - *MockWatcher: The result.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Initializes NewMockWatcher operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func NewMockWatcher() *MockWatcher {
 	return &MockWatcher{}
 }
 
-// Watch provides watch functionality.
-//
-// Summary: Watch.
-//
-// Parameters.
-//   - paths: The parameter.
-//   - reloadFunc: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Watch mocks the Watch method.
 //
 // Parameters:
-//   - paths: []string.
-//   - reloadFunc: func().
+//   - paths ([]string): The parameter.
+//   - reloadFunc (func(): The parameter.
 //
 // Returns:
-//   - error.
+//   - ) (error): An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Watch operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (m *MockWatcher) Watch(paths []string, reloadFunc func()) error {
 	if m.WatchFunc != nil {
 		m.WatchFunc(paths, reloadFunc)
@@ -54,20 +71,26 @@ func (m *MockWatcher) Watch(paths []string, reloadFunc func()) error {
 	return nil
 }
 
-// Close provides close functionality.
-//
-// Summary: Close.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - None.
+// Close mocks the Close method.
 //
 // Parameters:
 //   - None.
 //
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Close operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
 // Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
 //   - None.
 func (m *MockWatcher) Close() {
 	if m.CloseFunc != nil {

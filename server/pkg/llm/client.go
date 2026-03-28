@@ -20,20 +20,21 @@ import (
 type Client interface {
 	// ChatCompletion sends a chat request to the LLM and returns the response.
 	//
-	// Summary: Sends a chat completion request to the configured LLM provider.
+	// Summary:
+	//   Sends a chat completion request to the configured LLM provider.
 	//
-// Parameters.
+	// Parameters:
 	//   - ctx: context.Context. The context for the request.
 	//   - req: ChatRequest. The chat request parameters.
 	//
-// Returns.
+	// Returns:
 	//   - *ChatResponse: The chat response from the LLM.
 	//   - error: An error if the request fails or the response is invalid.
 	//
-// Errors:
+	// Errors:
 	//   - Returns error if marshaling fails, network request fails, or API returns non-200 status.
 	//
-// Side Effects:
+	// Side Effects:
 	//   - Makes a network request to the LLM provider.
 	ChatCompletion(ctx context.Context, req ChatRequest) (*ChatResponse, error)
 }
@@ -70,23 +71,34 @@ type OpenAIClient struct {
 	client  *http.Client
 }
 
-// NewOpenAIClient provides newopenaiclient functionality.
-//
-// Summary: NewOpenAIClient.
-//
-// Parameters.
-//   - apiKey: The parameter.
-//   - baseURL: The parameter.
-//
-// Returns.
-//   - result: The result.
+// NewOpenAIClient creates a new OpenAIClient.
 //
 // Parameters:
-//   - apiKey: string.
-//   - baseURL: string.
+//   - apiKey (string): The apiKey parameter.
+//   - baseURL (string): The baseURL parameter.
 //
 // Returns:
-//   - *OpenAIClient.
+//   - *OpenAIClient: The resulting *OpenAIClient.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
+//
+// Summary: Initializes NewOpenAIClient operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func NewOpenAIClient(apiKey string, baseURL string) *OpenAIClient {
 	if baseURL == "" {
 		baseURL = "https://api.openai.com/v1"
@@ -114,24 +126,35 @@ type openAIChatResponse struct {
 	} `json:"error,omitempty"`
 }
 
-// ChatCompletion provides chatcompletion functionality.
-//
-// Summary: ChatCompletion.
-//
-// Parameters.
-//   - ctx: The parameter.
-//   - req: The parameter.
-//
-// Returns.
-//   - result: The result.
+// ChatCompletion performs a chat completion request.
 //
 // Parameters:
-//   - ctx: context.Context.
-//   - req: ChatRequest.
+//   - ctx (context.Context): The context for the request.
+//   - req (ChatRequest): The request object.
 //
 // Returns:
-//   - *ChatResponse.
-//   - error.
+//   - *ChatResponse: The resulting *ChatResponse.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
+//
+// Side Effects:
+//   - None
+//
+// Summary: Executes ChatCompletion operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (c *OpenAIClient) ChatCompletion(ctx context.Context, req ChatRequest) (*ChatResponse, error) {
 	reqBody := openAIChatRequest(req)
 	bodyBytes, err := json.Marshal(reqBody)

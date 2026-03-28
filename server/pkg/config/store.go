@@ -38,11 +38,11 @@ type Engine interface {
 	//
 	// Summary: Parses bytes into a protobuf message.
 	//
-// Parameters.
+	// Parameters:
 	//   - b ([]byte): The raw bytes to parse.
 	//   - v (proto.Message): The destination protobuf message.
 	//
-// Returns.
+	// Returns:
 	//   - (error): An error if parsing fails.
 	Unmarshal(b []byte, v proto.Message) error
 }
@@ -56,12 +56,12 @@ type StructuredEngine interface {
 	//
 	// Summary: Parses a map into a protobuf message.
 	//
-// Parameters.
+	// Parameters:
 	//   - m (map[string]interface{}): The raw map data.
 	//   - v (proto.Message): The destination protobuf message.
 	//   - originalBytes ([]byte): Optional original bytes for error reporting (line numbers).
 	//
-// Returns.
+	// Returns:
 	//   - (error): An error if parsing fails.
 	UnmarshalFromMap(m map[string]interface{}, v proto.Message, originalBytes []byte) error
 }
@@ -75,7 +75,7 @@ type ConfigurableEngine interface {
 	//
 	// Summary: Configures the engine to skip schema validation.
 	//
-// Parameters.
+	// Parameters:
 	//   - skip (bool): True to skip validation.
 	SetSkipValidation(skip bool)
 
@@ -83,27 +83,21 @@ type ConfigurableEngine interface {
 	//
 	// Summary: Configures the engine to ignore environment variables.
 	//
-// Parameters.
+	// Parameters:
 	//   - ignore (bool): True to ignore environment variables.
 	SetIgnoreEnv(ignore bool)
 }
 
-// NewEngine provides newengine functionality.
+// NewEngine returns a configuration engine capable of unmarshaling the format indicated by the file extension.
 //
-// Summary: NewEngine.
-//
-// Parameters.
-//   - path: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Factory function to create the appropriate Engine for a given file path.
 //
 // Parameters:
-//   - path: string.
+//   - path (string): The file path used to determine the configuration format.
 //
 // Returns:
-//   - Engine.
-//   - error.
+//   - (Engine): An initialized Engine implementation.
+//   - (error): An error if the file extension is not supported.
 func NewEngine(path string) (Engine, error) {
 	ext := strings.ToLower(filepath.Ext(path))
 	switch ext {
@@ -124,61 +118,90 @@ type yamlEngine struct {
 	ignoreEnv      bool
 }
 
-// SetSkipValidation provides setskipvalidation functionality.
-//
-// Summary: SetSkipValidation.
-//
-// Parameters.
-//   - skip: The parameter.
-//
-// Returns.
-//   - None.
+// SetSkipValidation sets whether to skip schema validation.
 //
 // Parameters:
-//   - skip: bool.
+//   - skip (bool): The parameter.
 //
 // Returns:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Updates SetSkipValidation operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
 //   - None.
 func (e *yamlEngine) SetSkipValidation(skip bool) {
 	e.skipValidation = skip
 }
 
-// SetIgnoreEnv provides setignoreenv functionality.
-//
-// Summary: SetIgnoreEnv.
-//
-// Parameters.
-//   - ignore: The parameter.
-//
-// Returns.
-//   - None.
+// SetIgnoreEnv sets whether to ignore environment variables.
 //
 // Parameters:
-//   - ignore: bool.
+//   - ignore (bool): The parameter.
 //
 // Returns:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Updates SetIgnoreEnv operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
 //   - None.
 func (e *yamlEngine) SetIgnoreEnv(ignore bool) {
 	e.ignoreEnv = ignore
 }
 
-// Unmarshal provides unmarshal functionality.
-//
-// Summary: Unmarshal.
-//
-// Parameters.
-//   - b: The parameter.
-//   - v: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Unmarshal parses a YAML byte slice into a `proto.Message`.
 //
 // Parameters:
-//   - b: []byte.
-//   - v: proto.Message.
+//   - b ([]byte): The parameter.
+//   - v (proto.Message): The parameter.
 //
 // Returns:
-//   - error.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Unmarshal operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	// First, unmarshal YAML into a generic map.
 	var yamlMap map[string]interface{}
@@ -197,25 +220,35 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	return e.unmarshalInternal(yamlMap, v, b)
 }
 
-// UnmarshalFromMap provides unmarshalfrommap functionality.
-//
-// Summary: UnmarshalFromMap.
-//
-// Parameters.
-//   - yamlMap: The parameter.
-//   - v: The parameter.
-//   - originalBytes: The parameter.
-//
-// Returns.
-//   - result: The result.
+// UnmarshalFromMap populates the provided proto.Message from a raw map.
 //
 // Parameters:
-//   - yamlMap: map[string]interface{}.
-//   - v: proto.Message.
-//   - originalBytes: []byte.
+//   - yamlMap (map[string]interface{}): The parameter.
+//   - v (proto.Message): The parameter.
+//   - originalBytes ([]byte): The parameter.
 //
 // Returns:
-//   - error.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes UnmarshalFromMap operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (e *yamlEngine) UnmarshalFromMap(yamlMap map[string]interface{}, v proto.Message, originalBytes []byte) error {
 	return e.unmarshalInternal(yamlMap, v, originalBytes)
 }
@@ -320,23 +353,34 @@ func (e *yamlEngine) unmarshalInternal(yamlMap map[string]interface{}, v proto.M
 // textprotoEngine implements the Engine interface for textproto configuration files.
 type textprotoEngine struct{}
 
-// Unmarshal provides unmarshal functionality.
-//
-// Summary: Unmarshal.
-//
-// Parameters.
-//   - b: The parameter.
-//   - v: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Unmarshal parses a textproto byte slice into a `proto.Message`.
 //
 // Parameters:
-//   - b: []byte.
-//   - v: proto.Message.
+//   - b ([]byte): The parameter.
+//   - v (proto.Message): The parameter.
 //
 // Returns:
-//   - error.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Unmarshal operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
 	return prototext.Unmarshal(b, v)
 }
@@ -344,23 +388,34 @@ func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
 // jsonEngine implements the Engine interface for JSON configuration files.
 type jsonEngine struct{}
 
-// Unmarshal provides unmarshal functionality.
-//
-// Summary: Unmarshal.
-//
-// Parameters.
-//   - b: The parameter.
-//   - v: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Unmarshal parses a JSON byte slice into a `proto.Message`.
 //
 // Parameters:
-//   - b: []byte.
-//   - v: proto.Message.
+//   - b ([]byte): The parameter.
+//   - v (proto.Message): The parameter.
 //
 // Returns:
-//   - error.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Unmarshal operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 	if err := protojson.Unmarshal(b, v); err != nil {
 		// Detect if the user is using Claude Desktop config format
@@ -401,10 +456,10 @@ type Store interface {
 	//
 	// Summary: Loads the complete server configuration.
 	//
-// Parameters.
+	// Parameters:
 	//   - ctx (context.Context): The context for the request.
 	//
-// Returns.
+	// Returns:
 	//   - (*configv1.McpAnyServerConfig): The loaded configuration.
 	//   - (error): An error if loading fails.
 	Load(ctx context.Context) (*configv1.McpAnyServerConfig, error)
@@ -413,7 +468,7 @@ type Store interface {
 	//
 	// Summary: Checks if the store has any configured sources.
 	//
-// Returns.
+	// Returns:
 	//   - (bool): True if sources are configured, false otherwise.
 	HasConfigSources() bool
 }
@@ -427,11 +482,11 @@ type ServiceStore interface {
 	//
 	// Summary: Persists a service configuration.
 	//
-// Parameters.
+	// Parameters:
 	//   - ctx (context.Context): The context for the request.
 	//   - service (*configv1.UpstreamServiceConfig): The service configuration to save.
 	//
-// Returns.
+	// Returns:
 	//   - (error): An error if the operation fails.
 	SaveService(ctx context.Context, service *configv1.UpstreamServiceConfig) error
 
@@ -439,11 +494,11 @@ type ServiceStore interface {
 	//
 	// Summary: Retrieves a service configuration.
 	//
-// Parameters.
+	// Parameters:
 	//   - ctx (context.Context): The context for the request.
 	//   - name (string): The name of the service to retrieve.
 	//
-// Returns.
+	// Returns:
 	//   - (*configv1.UpstreamServiceConfig): The service configuration.
 	//   - (error): An error if the service is not found or the operation fails.
 	GetService(ctx context.Context, name string) (*configv1.UpstreamServiceConfig, error)
@@ -452,10 +507,10 @@ type ServiceStore interface {
 	//
 	// Summary: Lists all services.
 	//
-// Parameters.
+	// Parameters:
 	//   - ctx (context.Context): The context for the request.
 	//
-// Returns.
+	// Returns:
 	//   - ([]*configv1.UpstreamServiceConfig): A slice of service configurations.
 	//   - (error): An error if the operation fails.
 	ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error)
@@ -464,11 +519,11 @@ type ServiceStore interface {
 	//
 	// Summary: Deletes a service configuration.
 	//
-// Parameters.
+	// Parameters:
 	//   - ctx (context.Context): The context for the request.
 	//   - name (string): The name of the service to delete.
 	//
-// Returns.
+	// Returns:
 	//   - (error): An error if the operation fails.
 	DeleteService(ctx context.Context, name string) error
 }
@@ -481,10 +536,10 @@ const maxExpandRecursionDepth = 100
 //
 // Summary: Expands environment variables in a byte slice.
 //
-// Parameters.
+// Parameters:
 //   - b ([]byte): The bytes containing variable references.
 //
-// Returns.
+// Returns:
 //   - ([]byte): The expanded bytes.
 //   - (error): An error if expansion fails or recursion limit is exceeded.
 func expand(b []byte) ([]byte, error) {
@@ -685,121 +740,125 @@ type FileStore struct {
 	skipValidation   bool
 }
 
-// SetSkipValidation provides setskipvalidation functionality.
-//
-// Summary: SetSkipValidation.
-//
-// Parameters.
-//   - skip: The parameter.
-//
-// Returns.
-//   - None.
-//
-// Parameters:
-//   - skip: bool.
+// SetSkipValidation configures whether to skip schema validation during loading.
 //
 // Returns:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Updates SetSkipValidation operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
 //   - None.
 func (s *FileStore) SetSkipValidation(skip bool) {
 	s.skipValidation = skip
 }
 
-// SetIgnoreMissingEnv provides setignoremissingenv functionality.
-//
-// Summary: SetIgnoreMissingEnv.
-//
-// Parameters.
-//   - ignore: The parameter.
-//
-// Returns.
-//   - None.
-//
-// Parameters:
-//   - ignore: bool.
+// SetIgnoreMissingEnv configures whether to ignore missing environment variables during loading.
 //
 // Returns:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Updates SetIgnoreMissingEnv operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
 //   - None.
 func (s *FileStore) SetIgnoreMissingEnv(ignore bool) {
 	s.IgnoreMissingEnv = ignore
 }
 
-// NewFileStore provides newfilestore functionality.
+// NewFileStore creates a new FileStore with the given filesystem and paths.
 //
-// Summary: NewFileStore.
-//
-// Parameters.
-//   - fs: The parameter.
-//   - paths: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Initializes a new FileStore.
 //
 // Parameters:
-//   - fs: afero.Fs.
-//   - paths: []string.
+//   - fs (afero.Fs): The filesystem to use.
+//   - paths ([]string): The list of paths to scan.
 //
 // Returns:
-//   - *FileStore.
+//   - (*FileStore): A new instance of FileStore.
 func NewFileStore(fs afero.Fs, paths []string) *FileStore {
 	return &FileStore{fs: fs, paths: paths}
 }
 
-// NewFileStoreWithSkipErrors provides newfilestorewithskiperrors functionality.
+// NewFileStoreWithSkipErrors creates a new FileStore that skips malformed config files.
 //
-// Summary: NewFileStoreWithSkipErrors.
-//
-// Parameters.
-//   - fs: The parameter.
-//   - paths: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Initializes a new FileStore that tolerates errors in config files.
 //
 // Parameters:
-//   - fs: afero.Fs.
-//   - paths: []string.
+//   - fs (afero.Fs): The filesystem to use.
+//   - paths ([]string): The list of paths to scan.
 //
 // Returns:
-//   - *FileStore.
+//   - (*FileStore): A new instance of FileStore.
 func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 	return &FileStore{fs: fs, paths: paths, skipErrors: true}
 }
 
-// HasConfigSources provides hasconfigsources functionality.
-//
-// Summary: HasConfigSources.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
+// HasConfigSources returns true if the store has configuration paths configured. Side Effects: - None.
 //
 // Parameters:
-//   - None.
+//   - None
 //
 // Returns:
-//   - bool.
+//   - bool: True if successful, false otherwise.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
+//
+// Summary: Checks HasConfigSources operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (s *FileStore) HasConfigSources() bool {
 	return len(s.paths) > 0
 }
 
-// Load provides load functionality.
+// Load scans the configured paths and merges them into a single configuration.
 //
-// Summary: Load.
-//
-// Parameters.
-//   - ctx: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Loads and merges configurations from all configured paths.
 //
 // Parameters:
-//   - ctx: context.Context.
+//   - ctx (context.Context): The context for the request.
 //
 // Returns:
-//   - *configv1.McpAnyServerConfig.
-//   - error.
+//   - (*configv1.McpAnyServerConfig): The merged configuration.
+//   - (error): An error if loading or merging fails.
 func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	filePaths, err := s.collectFilePaths()
 	if err != nil {
@@ -1288,41 +1347,29 @@ type MultiStore struct {
 	stores []Store
 }
 
-// NewMultiStore provides newmultistore functionality.
+// NewMultiStore creates a new MultiStore with the given stores.
 //
-// Summary: NewMultiStore.
-//
-// Parameters.
-//   - stores: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Initializes a new MultiStore.
 //
 // Parameters:
-//   - stores: ...Store.
+//   - stores: ...Store. The stores to aggregate.
 //
 // Returns:
-//   - *MultiStore.
+//   - *MultiStore: A new instance of MultiStore.
 func NewMultiStore(stores ...Store) *MultiStore {
 	return &MultiStore{stores: stores}
 }
 
-// Load provides load functionality.
+// Load loads configurations from all stores and merges them into a single config.
 //
-// Summary: Load.
-//
-// Parameters.
-//   - ctx: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Loads and merges configurations from all underlying stores.
 //
 // Parameters:
-//   - ctx: context.Context.
+//   - ctx: context.Context. The context for the request.
 //
 // Returns:
-//   - *configv1.McpAnyServerConfig.
-//   - error.
+//   - *configv1.McpAnyServerConfig: The merged configuration.
+//   - error: An error if loading fails.
 func (ms *MultiStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	mergedConfig := configv1.McpAnyServerConfig_builder{}.Build()
 	for _, s := range ms.stores {
@@ -1412,21 +1459,33 @@ func collectFieldNames(md protoreflect.MessageDescriptor, candidates map[string]
 	}
 }
 
-// HasConfigSources provides hasconfigsources functionality.
-//
-// Summary: HasConfigSources.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
+// HasConfigSources returns true if any of the underlying stores have configuration sources. Side Effects: - None.
 //
 // Parameters:
-//   - None.
+//   - None
 //
 // Returns:
-//   - bool.
+//   - bool: True if successful, false otherwise.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
+//
+// Summary: Checks HasConfigSources operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (ms *MultiStore) HasConfigSources() bool {
 	for _, s := range ms.stores {
 		if s.HasConfigSources() {

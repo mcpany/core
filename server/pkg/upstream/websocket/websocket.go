@@ -42,21 +42,33 @@ type Upstream struct {
 	mu          sync.RWMutex
 }
 
-// CheckHealth provides checkhealth functionality.
-//
-// Summary: CheckHealth.
-//
-// Parameters.
-//   - ctx: The parameter.
-//
-// Returns.
-//   - result: The result.
+// CheckHealth performs a health check on the upstream service.
 //
 // Parameters:
-//   - ctx: context.Context.
+//   - ctx (context.Context): The context for the request.
 //
 // Returns:
-//   - error.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes CheckHealth operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -72,21 +84,28 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 	return nil
 }
 
-// Shutdown provides shutdown functionality.
-//
-// Summary: Shutdown.
-//
-// Parameters.
-//   - _: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Shutdown gracefully terminates the WebSocket upstream service by shutting down
+// the associated connection pool.
 //
 // Parameters:
-//   - _: context.Context.
+//   - ctx: The context for the shutdown operation.
 //
 // Returns:
-//   - error.
+//   - error: An error if the shutdown operation fails, or nil on success.
+//
+// Summary: Executes Shutdown operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -101,21 +120,27 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
-// NewUpstream provides newupstream functionality.
-//
-// Summary: NewUpstream.
-//
-// Parameters.
-//   - poolManager: The parameter.
-//
-// Returns.
-//   - result: The result.
+// NewUpstream creates a new instance of WebsocketUpstream.
 //
 // Parameters:
-//   - poolManager: *pool.Manager.
+//   - poolManager: The connection pool manager to be used for managing WebSocket connections.
 //
 // Returns:
-//   - upstream.Upstream.
+//   - upstream.Upstream: A new Upstream instance for WebSocket services.
+//
+// Summary: Initializes NewUpstream operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager: poolManager,
@@ -126,7 +151,7 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 // connection pool and registers tools for each call definition specified in the
 // configuration.
 //
-// Parameters.
+// Parameters:
 //   - ctx: The context for the registration process.
 //   - serviceConfig: The configuration for the upstream service.
 //   - toolManager: The manager where discovered tools will be registered.
@@ -134,7 +159,7 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 //   - resourceManager: The manager where discovered resources will be registered.
 //   - isReload: Indicates whether this is an initial registration or a reload.
 //
-// Returns.
+// Returns:
 //   - string: A unique service key.
 //   - []*configv1.ToolDefinition: A list of discovered tool definitions.
 //   - []*configv1.ResourceDefinition: A list of discovered resource definitions.
@@ -142,11 +167,14 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 //
 // Summary: Executes Register operation.
 //
-// Parameters: - None.
+// Parameters:
+//   - TODO: Document parameters.
 //
-// Returns: - None.
+// Returns:
+//   - TODO: Document returns.
 //
-// Errors: - None.
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

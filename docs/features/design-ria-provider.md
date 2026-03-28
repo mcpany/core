@@ -1,42 +1,51 @@
-# Design Doc: RIA Provider (Recursive Intent Attestation)
+# Design Doc: Recursive Intent Attestation (RIA) Provider
 **Status:** Draft
 **Created:** 2026-06-18
 
 ## 1. Context and Scope
-As agent swarms become deeper (multi-hop delegation), the risk of "Intent-Grafting" increases, where a compromised subagent injects unauthorized instructions into a valid chain. MCP Any needs a way to mathematically prove that every sub-intent in a multi-hop chain is a direct, authorized descendant of the user's root mission.
+As AI agent swarms grow in depth and complexity, the "Intent-Grafting" vulnerability (CVE-2026-65002) has emerged as a critical threat. This exploit allows a subagent to append unauthorized goals to a verified mission root, effectively bypassing parent-imposed sandbox restrictions.
+
+MCP Any needs a mechanism to ensure that every sub-instruction issued by any agent in the mesh is mathematically and cryptographically derived from the original user intent. The RIA Provider solves this by implementing a recursive proof system that validates the entire chain of custody for an intent before any tool execution occurs.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
-    * Implement a cryptographic hash-chaining mechanism for intent lineage.
-    * Provide a verification API for agents to validate peer lineage.
-    * Support hardware-bound (TPM) root signing.
+    * Implement a recursive cryptographic attestation root for all mission intents.
+    * Mathematically derive sub-agent "Intent Tokens" from the verified Mission Root.
+    * Provide sub-millisecond validation of intent lineage during tool calls.
+    * Neutralize the "Intent-Grafting" exploit pattern.
 * **Non-Goals:**
-    * Encrypting the actual intent content (handled by T2T).
-    * Managing LLM context windows (handled by CWP).
+    * This system will NOT perform semantic reasoning (handled by the AID Hub).
+    * It will NOT manage transport-level encryption (handled by TLSB/IBET).
 
 ## 3. Critical User Journey (CUJ)
-* **User Persona:** Security-Conscious Enterprise Architect
-* **Primary Goal:** Ensure that a 3rd-level subagent cannot call a destructive "Delete DB" tool without a verified path from the user.
+* **User Persona:** Enterprise Security Architect
+* **Primary Goal:** Prevent a specialized "Code Search" subagent from being coerced into "Exfiltrating Secrets" via a grafted sub-intent.
 * **The Happy Path (Tasks):**
-    1. Orchestrator creates a TPM-signed Root Intent.
-    2. Subagent A requests a derived sub-intent token from RIA Provider.
-    3. Subagent B receives the token and verifies the chain back to the root before execution.
+    1. The primary orchestrator issues a "Mission Root" token signed by MCP Any.
+    2. The Code Search subagent receives a derived "Sub-Intent" token.
+    3. The subagent attempts to call a `git-clone` tool.
+    4. The RIA Provider validates the token against the Mission Root's derivation path.
+    5. Validation succeeds; tool execution proceeds.
+    6. (Attack Path): A rogue subagent attempts to graft a `curl-upload` sub-intent.
+    7. The RIA Provider detects a derivation mismatch and halts execution immediately.
 
 ## 4. Design & Architecture
 * **System Flow:**
-    `[Mission Root] -> [RIA Token (Depth 0)] -> [Sub-Task A] -> [RIA Token (Depth 1)]`
+    `[Mission Root (User)] -> [MCP Any Master Key] -> [Derived Intent Token (v1)] -> [Sub-Intent Token (v1.1)]`
+    Lineage is verified using HMAC-based Extract-and-Expand (HKDF) or similar one-way derivation chains.
 * **APIs / Interfaces:**
-    * `POST /ria/issue`: Generate a derived token.
-    * `POST /ria/verify`: Validate a multi-hop token chain.
+    * `DeriveIntent(parent_token, sub_goal) -> intent_token`
+    * `VerifyLineage(intent_token) -> bool`
 * **Data Storage/State:**
-    Tokens are stateless but rely on the hardware-bound Root Key for verification.
+    Intent lineage paths are stored in an ephemeral, hardware-bound cache (TPM-backed).
 
 ## 5. Alternatives Considered
-* **Flat JWTs:** Rejected because they don't capture the recursive "derivation" required for multi-hop swarms.
+* **Flat Token Scoping:** Rejected because it cannot handle deep, dynamic swarms where sub-goals are generated at runtime.
+* **Full Semantic Deconstruction (AID):** Too slow for per-hop validation; RIA provides the fast-path cryptographic "permission to thought."
 
 ## 6. Cross-Cutting Concerns
-* **Security (Zero Trust):** Tokens include monotonic nonces to prevent replay attacks.
-* **Observability:** Every RIA derivation is logged in the CoC Lineage Tracker.
+* **Security (Zero Trust):** Lineage proofs are hardware-bound and expire with the session.
+* **Observability:** Every derivation event is logged to the CoC Lineage Tracker for forensic auditing.
 
 ## 7. Evolutionary Changelog
 * **2026-06-18:** Initial Document Creation.

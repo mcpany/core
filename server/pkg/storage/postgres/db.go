@@ -20,44 +20,38 @@ type DB struct {
 	*sql.DB
 }
 
-// NewDB provides newdb functionality.
+// NewDB opens a PostgreSQL database connection.
 //
-// Summary: NewDB.
-//
-// Parameters.
-//   - dsn: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Initializes a PostgreSQL database connection.
 //
 // Parameters:
-//   - dsn: string.
+//   - dsn (string): The data source name (connection string).
 //
 // Returns:
-//   - *DB.
-//   - error.
+//   - *DB: The database connection.
+//   - error: An error if the connection fails.
+//
+// Side Effects:
+//   - Opens a network connection to the database.
 func NewDB(dsn string) (*DB, error) {
 	return NewDBWithDriver("postgres", dsn)
 }
 
-// NewDBWithDriver provides newdbwithdriver functionality.
+// NewDBWithDriver opens a database connection with the specified driver.
 //
-// Summary: NewDBWithDriver.
-//
-// Parameters.
-//   - driver: The parameter.
-//   - dsn: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Initializes a database connection with a custom driver.
 //
 // Parameters:
-//   - driver: unknown.
-//   - dsn: string.
+//   - driver (string): The database driver name.
+//   - dsn (string): The data source name.
 //
 // Returns:
-//   - *DB.
-//   - error.
+//   - *DB: The database connection.
+//   - error: An error if the connection fails.
+//
+// Side Effects:
+//   - Opens a network connection to the database.
+//   - Initializes the schema.
 func NewDBWithDriver(driver, dsn string) (*DB, error) {
 	db, err := sql.Open(driver, dsn)
 	if err != nil {
@@ -84,22 +78,20 @@ func NewDBWithDriver(driver, dsn string) (*DB, error) {
 	return &DB{db}, nil
 }
 
-// NewDBFromSQLDB provides newdbfromsqldb functionality.
+// NewDBFromSQLDB creates a new DB wrapper from an existing sql.DB connection.
 //
-// Summary: NewDBFromSQLDB.
-//
-// Parameters.
-//   - db: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Wraps an existing sql.DB connection.
 //
 // Parameters:
-//   - db: *sql.DB.
+//   - db (*sql.DB): The existing database connection.
 //
 // Returns:
-//   - *DB.
-//   - error.
+//   - *DB: The wrapped database connection.
+//   - error: An error if the connection is invalid (ping fails).
+//
+// Side Effects:
+//   - Pings the database.
+//   - Initializes the schema.
 func NewDBFromSQLDB(db *sql.DB) (*DB, error) {
 	if err := db.PingContext(context.Background()); err != nil {
 		return nil, fmt.Errorf("failed to ping db: %w", err)

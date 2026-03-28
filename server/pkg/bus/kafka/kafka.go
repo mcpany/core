@@ -41,20 +41,23 @@ type Bus[T any] struct {
 
 // New creates and initializes a new KafkaBus.
 //
-// Parameters.
+// Parameters:
 //   - config: *bus.KafkaBus. The configuration settings for the Kafka bus.
 //
-// Returns.
+// Returns:
 //   - *Bus[T]: A pointer to the initialized Kafka bus.
 //   - error: An error if no brokers are provided or initialization fails.
 //
 // Summary: Initializes New operation.
 //
-// Parameters: - None.
+// Parameters:
+//   - TODO: Document parameters.
 //
-// Returns: - None.
+// Returns:
+//   - TODO: Document returns.
 //
-// Errors: - None.
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -80,25 +83,31 @@ func New[T any](config *bus.KafkaBus) (*Bus[T], error) {
 	}, nil
 }
 
-// Publish provides publish functionality.
+// Publish sends a message to a Kafka topic.
 //
-// Summary: Publish.
-//
-// Parameters.
-//   - ctx: The parameter.
-//   - topic: The parameter.
-//   - msg: The parameter.
-//
-// Returns.
-//   - result: The result.
+// The message is marshaled to JSON and sent to the configured topic prefix + topic.
 //
 // Parameters:
-//   - ctx: context.Context.
-//   - topic: string.
-//   - msg: T.
+//   - ctx: context.Context. The context for the request.
+//   - topic: string. The topic to publish to.
+//   - msg: T. The message payload.
 //
 // Returns:
-//   - error.
+//   - error: An error if marshaling or publishing fails.
+//
+// Summary: Executes Publish operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 	payload, err := json.Marshal(msg)
 	if err != nil {
@@ -115,25 +124,32 @@ func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 	return err
 }
 
-// Subscribe provides subscribe functionality.
+// Subscribe subscribes to a Kafka topic.
 //
-// Summary: Subscribe.
-//
-// Parameters.
-//   - ctx: The parameter.
-//   - topic: The parameter.
-//   - handler: The parameter.
-//
-// Returns.
-//   - result: The result.
+// It starts a goroutine that continuously reads messages from the topic and invokes
+// the provided handler.
 //
 // Parameters:
-//   - ctx: context.Context.
-//   - topic: string.
-//   - handler: func(T).
+//   - ctx: context.Context. The context for the subscription.
+//   - topic: string. The topic to subscribe to.
+//   - handler: func(T). The callback function invoked for each message.
 //
 // Returns:
-//   - unsubscribe func().
+//   - func(): A function that unsubscribes the handler when called.
+//
+// Summary: Executes Subscribe operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("kafka bus: handler cannot be nil")
@@ -208,25 +224,31 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 	return unsubscribe
 }
 
-// SubscribeOnce provides subscribeonce functionality.
+// SubscribeOnce subscribes to a topic for a single message.
 //
-// Summary: SubscribeOnce.
-//
-// Parameters.
-//   - ctx: The parameter.
-//   - topic: The parameter.
-//   - handler: The parameter.
-//
-// Returns.
-//   - result: The result.
+// It ensures that the handler is called only once for the next message received.
 //
 // Parameters:
-//   - ctx: context.Context.
-//   - topic: string.
-//   - handler: func(T).
+//   - ctx: context.Context. The context for the subscription.
+//   - topic: string. The topic to subscribe to.
+//   - handler: func(T). The callback function invoked for the single message.
 //
 // Returns:
-//   - unsubscribe func().
+//   - func(): A function that unsubscribes the handler if called before the message is received.
+//
+// Summary: Executes SubscribeOnce operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("kafka bus: handler cannot be nil")
@@ -244,21 +266,12 @@ func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T
 	return unsub
 }
 
-// Close provides close functionality.
+// Close closes the Kafka writer.
 //
-// Summary: Close.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
-//
-// Parameters:
-//   - None.
+// Summary: Closes the Kafka connection.
 //
 // Returns:
-//   - error.
+//   - error: An error if closing fails.
 func (b *Bus[T]) Close() error {
 	return b.writer.Close()
 }

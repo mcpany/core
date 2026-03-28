@@ -44,21 +44,15 @@ type Doctor struct {
 	httpClient *http.Client
 }
 
-// NewDoctor provides newdoctor functionality.
+// NewDoctor creates a new Doctor.
 //
-// Summary: NewDoctor.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
-//
-// Parameters:
-//   - None.
+// Summary: Initializes a new Doctor instance.
 //
 // Returns:
-//   - *Doctor.
+//   - *Doctor: The initialized doctor registry.
+//
+// Side Effects:
+//   - Initializes internal maps and HTTP client.
 func NewDoctor() *Doctor {
 	return &Doctor{
 		checks:     make(map[string]CheckFunc),
@@ -66,44 +60,34 @@ func NewDoctor() *Doctor {
 	}
 }
 
-// AddCheck provides addcheck functionality.
+// AddCheck adds a named health check.
 //
-// Summary: AddCheck.
-//
-// Parameters.
-//   - name: The parameter.
-//   - check: The parameter.
-//
-// Returns.
-//   - None.
+// Summary: Registers a custom health check function.
 //
 // Parameters:
-//   - name: string.
-//   - check: CheckFunc.
+//   - name: string. The unique name of the check.
+//   - check: CheckFunc. The function to execute.
 //
-// Returns:
-//   - None.
+// Side Effects:
+//   - Updates the internal checks map.
 func (d *Doctor) AddCheck(name string, check CheckFunc) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	d.checks[name] = check
 }
 
-// Handler provides handler functionality.
+// Handler returns the http handler.
 //
-// Summary: Handler.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
-//
-// Parameters:
-//   - None.
+// Summary: Returns an HTTP handler that runs all checks and returns a JSON report.
 //
 // Returns:
-//   - http.HandlerFunc.
+//   - http.HandlerFunc: The HTTP handler.
+//
+// Side Effects:
+//   - Executes all registered health checks.
+//   - Makes an external network call to google.com (connectivity check).
+//   - Reads environment variables (Auth checks).
+//   - Writes JSON response to the client.
 func (d *Doctor) Handler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		report := DoctorReport{

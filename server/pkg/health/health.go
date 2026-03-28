@@ -39,20 +39,32 @@ var (
 	globalAlertConfigMu sync.RWMutex
 )
 
-// SetGlobalAlertConfig provides setglobalalertconfig functionality.
+// SetGlobalAlertConfig sets the global alert configuration.
 //
-// Summary: SetGlobalAlertConfig.
-//
-// Parameters.
-//   - cfg: The parameter.
-//
-// Returns.
-//   - None.
+// It updates the thread-safe global configuration used for sending alerts on health status changes.
 //
 // Parameters:
-//   - cfg: *configv1.AlertConfig.
+//   - cfg: *configv1.AlertConfig. The new alert configuration.
 //
 // Returns:
+//
+//	None.
+//
+// Side Effects:
+//   - Updates a global variable protected by a mutex.
+//
+// Summary: Updates SetGlobalAlertConfig operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
 //   - None.
 func SetGlobalAlertConfig(cfg *configv1.AlertConfig) {
 	globalAlertConfigMu.Lock()
@@ -66,31 +78,43 @@ func SetGlobalAlertConfig(cfg *configv1.AlertConfig) {
 type HTTPServiceWithHealthCheck interface {
 	// GetAddress returns the address of the service.
 	//
-// Returns.
+	// Returns:
 	//   - string: The network address of the service.
 	GetAddress() string
 	// GetHealthCheck returns the HTTP health check configuration for the service.
 	//
-// Returns.
+	// Returns:
 	//   - *configv1.HttpHealthCheck: The health check configuration.
 	GetHealthCheck() *configv1.HttpHealthCheck
 }
 
-// NewChecker provides newchecker functionality.
+// NewChecker creates a new health checker for the given upstream service.
 //
-// Summary: NewChecker.
-//
-// Parameters.
-//   - uc: The parameter.
-//
-// Returns.
-//   - result: The result.
+// It determines the type of service (HTTP, gRPC, etc.) and creates an appropriate
+// health check strategy wrapped with latency metrics and status change listeners.
 //
 // Parameters:
-//   - uc: *configv1.UpstreamServiceConfig.
+//   - uc: *configv1.UpstreamServiceConfig. The configuration of the upstream service to check.
 //
 // Returns:
-//   - health.Checker.
+//   - health.Checker: A configured health checker instance. Returns nil if the configuration is nil or invalid.
+//
+// Side Effects:
+//   - Registers metrics for the health check.
+//
+// Summary: Initializes NewChecker operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 	if uc == nil {
 		return nil

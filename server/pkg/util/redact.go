@@ -107,21 +107,16 @@ func init() {
 	redactedValue = json.RawMessage(b)
 }
 
-// RedactJSON provides redactjson functionality.
+// RedactJSON parses a JSON byte slice and redacts sensitive keys.
+// If the input is not valid JSON object or array, it returns the input as is.
 //
-// Summary: RedactJSON.
-//
-// Parameters.
-//   - input: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Redacts sensitive keys in JSON data.
 //
 // Parameters:
-//   - input: []byte.
+//   - input ([]byte): The JSON input to redact.
 //
 // Returns:
-//   - []byte.
+//   - []byte: The redacted JSON output.
 func RedactJSON(input []byte) []byte {
 	// Check if input looks like JSON object or array.
 	// We skip whitespace and comments to find the first significant character.
@@ -139,21 +134,20 @@ func RedactJSON(input []byte) []byte {
 	return redactJSONFast(input)
 }
 
-// RedactMap provides redactmap functionality.
+// RedactMap recursively redacts sensitive keys in a map.
 //
-// Summary: RedactMap.
+// Optimization: This function performs a copy-on-write.
+// If no sensitive keys are found, it returns the original map (zero allocation).
+// If sensitive keys are found, it returns a new map with redacted values (and copies other fields).
+// Note: This aligns with RedactJSON behavior which returns original slice if clean.
 //
-// Parameters.
-//   - m: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Recursively redacts sensitive keys in a map.
 //
 // Parameters:
-//   - m: map[string]interface{}.
+//   - m (map[string]interface{}): The map to redact.
 //
 // Returns:
-//   - map[string]interface.
+//   - map[string]interface{}: The potentially redacted map.
 func RedactMap(m map[string]interface{}) map[string]interface{} {
 	redacted, changed := redactMapMaybe(m)
 	if changed {
@@ -260,21 +254,15 @@ var sensitiveKeys = []string{
 	"passphrase", "passphrases", "ssh_key",
 }
 
-// IsSensitiveKey provides issensitivekey functionality.
+// IsSensitiveKey checks if a key name suggests it contains sensitive information.
 //
-// Summary: IsSensitiveKey.
-//
-// Parameters.
-//   - key: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Checks if a key name implies sensitive data.
 //
 // Parameters:
-//   - key: string.
+//   - key (string): The key name to check.
 //
 // Returns:
-//   - bool.
+//   - bool: True if the key is considered sensitive, false otherwise.
 func IsSensitiveKey(key string) bool {
 	// Use the optimized byte-based scanner for keys as well.
 	// Avoid allocation using zero-copy conversion.
@@ -502,21 +490,16 @@ var dsnFallbackNoAtRegex = regexp.MustCompile(`(://[^:]*):([^/@\s"?]+)`)
 // e.g. parse "...": invalid port ":password".
 var dsnInvalidPortRegex = regexp.MustCompile(`invalid port "(:[^"]+)"`)
 
-// RedactDSN provides redactdsn functionality.
+// RedactDSN redacts the password from a DSN string.
+// Supported formats: postgres://user:password@host...
 //
-// Summary: RedactDSN.
-//
-// Parameters.
-//   - dsn: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Redacts passwords from DSN strings.
 //
 // Parameters:
-//   - dsn: string.
+//   - dsn (string): The DSN string to redact.
 //
 // Returns:
-//   - string.
+//   - string: The redacted DSN string.
 func RedactDSN(dsn string) string {
 	u, err := url.Parse(dsn)
 	if err == nil && u.User != nil {
@@ -627,21 +610,16 @@ type SecretRedactor struct {
 	replacer *strings.Replacer
 }
 
-// NewSecretRedactor provides newsecretredactor functionality.
+// NewSecretRedactor creates a new SecretRedactor with the given secrets.
+// It performs filtering, deduplication, and sorting of secrets to ensure optimal redaction.
 //
-// Summary: NewSecretRedactor.
-//
-// Parameters.
-//   - secrets: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Creates a new SecretRedactor.
 //
 // Parameters:
-//   - secrets: []string.
+//   - secrets ([]string): The list of secrets to redact.
 //
 // Returns:
-//   - *SecretRedactor.
+//   - *SecretRedactor: The configured redactor.
 func NewSecretRedactor(secrets []string) *SecretRedactor {
 	// ⚡ BOLT: Optimization - Pre-compile the replacer for reuse.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -677,21 +655,15 @@ func NewSecretRedactor(secrets []string) *SecretRedactor {
 	}
 }
 
-// Redact provides redact functionality.
+// Redact replaces all occurrences of the configured secrets in the text with [REDACTED].
 //
-// Summary: Redact.
-//
-// Parameters.
-//   - text: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Redacts secrets from text.
 //
 // Parameters:
-//   - text: string.
+//   - text (string): The text to redact.
 //
 // Returns:
-//   - string.
+//   - string: The redacted text.
 func (r *SecretRedactor) Redact(text string) string {
 	if text == "" || r.replacer == nil {
 		return text
@@ -699,23 +671,16 @@ func (r *SecretRedactor) Redact(text string) string {
 	return r.replacer.Replace(text)
 }
 
-// RedactSecrets provides redactsecrets functionality.
+// RedactSecrets replaces all occurrences of the given secrets in the text with [REDACTED].
 //
-// Summary: RedactSecrets.
-//
-// Parameters.
-//   - text: The parameter.
-//   - secrets: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Convenience function to redact secrets from text.
 //
 // Parameters:
-//   - text: string.
-//   - secrets: []string.
+//   - text (string): The text to redact.
+//   - secrets ([]string): A list of secret values to redact from the text.
 //
 // Returns:
-//   - string.
+//   - string: The redacted text.
 func RedactSecrets(text string, secrets []string) string {
 	// Use the new struct-based implementation for consistency.
 	return NewSecretRedactor(secrets).Redact(text)

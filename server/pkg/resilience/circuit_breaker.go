@@ -45,21 +45,18 @@ type CircuitBreaker struct {
 	config *configv1.CircuitBreakerConfig
 }
 
-// NewCircuitBreaker provides newcircuitbreaker functionality.
+// NewCircuitBreaker creates a new CircuitBreaker with the given configuration.
 //
-// Summary: NewCircuitBreaker.
-//
-// Parameters.
-//   - config: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Creates a new circuit breaker.
 //
 // Parameters:
-//   - config: *configv1.CircuitBreakerConfig.
+//   - config (*configv1.CircuitBreakerConfig): The configuration for the circuit breaker.
 //
 // Returns:
-//   - *CircuitBreaker.
+//   - *CircuitBreaker: A new CircuitBreaker instance.
+//
+// Side Effects:
+//   - None.
 func NewCircuitBreaker(config *configv1.CircuitBreakerConfig) *CircuitBreaker {
 	return &CircuitBreaker{
 		config: config,
@@ -67,23 +64,22 @@ func NewCircuitBreaker(config *configv1.CircuitBreakerConfig) *CircuitBreaker {
 	}
 }
 
-// Execute provides execute functionality.
+// Execute runs the provided work function. If the circuit breaker is open, it
+// returns a CircuitBreakerOpenError immediately. If the work function fails,
+// it tracks the failure and may trip the breaker.
 //
-// Summary: Execute.
-//
-// Parameters.
-//   - ctx: The parameter.
-//   - work: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Executes a function protected by the circuit breaker.
 //
 // Parameters:
-//   - ctx: context.Context.
-//   - work func(context.Context): error.
+//   - ctx (context.Context): The context for the request.
+//   - work (func(context.Context) error): The function to execute.
 //
 // Returns:
-//   - error.
+//   - error: An error if the function fails or the breaker is open.
+//
+// Side Effects:
+//   - May change the state of the circuit breaker.
+//   - Executes the provided function.
 func (cb *CircuitBreaker) Execute(ctx context.Context, work func(context.Context) error) error {
 	originState := StateClosed
 
@@ -240,21 +236,18 @@ func (cb *CircuitBreaker) onFailure(originState State) {
 // Summary: Represents a CircuitBreakerOpenError.
 type CircuitBreakerOpenError struct{}
 
-// Error provides error functionality.
+// Error returns the error message for a CircuitBreakerOpenError.
 //
-// Summary: Error.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
+// Summary: Returns the error message.
 //
 // Parameters:
 //   - None.
 //
 // Returns:
-//   - string.
+//   - string: The error message.
+//
+// Side Effects:
+//   - None.
 func (e *CircuitBreakerOpenError) Error() string {
 	return "circuit breaker is open"
 }

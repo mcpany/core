@@ -21,21 +21,15 @@ type Service struct {
 	mcpServer     *mcp.Server
 }
 
-// NewService provides newservice functionality.
+// NewService creates and returns a new Service instance.
 //
-// Summary: NewService.
-//
-// Parameters.
-//   - promptManager: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Initializes a new Prompt Service.
 //
 // Parameters:
-//   - promptManager: ManagerInterface.
+//   - promptManager: ManagerInterface. The manager handling prompt lifecycle.
 //
 // Returns:
-//   - *Service.
+//   - *Service: The initialized service.
 func NewService(promptManager ManagerInterface) *Service {
 	s := &Service{
 		promptManager: promptManager,
@@ -44,21 +38,16 @@ func NewService(promptManager ManagerInterface) *Service {
 	return s
 }
 
-// SetMCPServer provides setmcpserver functionality.
+// SetMCPServer sets the MCP server instance for the service.
 //
-// Summary: SetMCPServer.
-//
-// Parameters.
-//   - mcpServer: The parameter.
-//
-// Returns.
-//   - None.
+// Summary: Configures the underlying MCP server.
 //
 // Parameters:
-//   - mcpServer: *mcp.Server.
+//   - mcpServer: *mcp.Server. The MCP server instance.
 //
 // Returns:
-//   - None.
+//
+//	None.
 func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 	s.mcpServer = mcpServer
 	s.promptManager.SetMCPServer(NewMCPServerProvider(mcpServer))
@@ -76,11 +65,11 @@ func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 //
 // Summary: Lists all available prompts.
 //
-// Parameters.
+// Parameters:
 //   - ctx: context.Context. The context for the request.
 //   - req: *mcp.ListPromptsRequest. The request object.
 //
-// Returns.
+// Returns:
 //   - *mcp.ListPromptsResult: The list of prompts.
 //   - error: An error if the operation fails.
 func (s *Service) ListPrompts(
@@ -101,11 +90,11 @@ func (s *Service) ListPrompts(
 //
 // Summary: Retrieves and executes a specific prompt.
 //
-// Parameters.
+// Parameters:
 //   - ctx: context.Context. The context for the request.
 //   - req: *mcp.GetPromptRequest. The request containing the prompt name and arguments.
 //
-// Returns.
+// Returns:
 //   - *mcp.GetPromptResult: The result of the prompt execution.
 //   - error: An error if the prompt is not found or execution fails.
 //

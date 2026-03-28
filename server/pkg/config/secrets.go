@@ -9,99 +9,108 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 )
 
-// StripSecretsFromService provides stripsecretsfromservice functionality.
+// StripSecretsFromService removes sensitive information from the service configuration.
 //
-// Summary: StripSecretsFromService.
-//
-// Parameters.
-//   - svc: The parameter.
-//
-// Returns.
-//   - None.
+// Summary: Removes sensitive information from service configuration.
 //
 // Parameters:
-//   - svc: *configv1.UpstreamServiceConfig.
+//   - svc (*configv1.UpstreamServiceConfig): The upstream service configuration to modify.
 //
 // Returns:
-//   - None.
+//
+//	None.
+//
+// Errors:
+//
+//	None.
+//
+// Side Effects:
+//   - Modifies the provided service configuration in place.
 func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 	util.StripSecretsFromService(svc)
 }
 
-// StripSecretsFromProfile provides stripsecretsfromprofile functionality.
+// StripSecretsFromProfile removes sensitive information from the profile definition.
 //
-// Summary: StripSecretsFromProfile.
-//
-// Parameters.
-//   - profile: The parameter.
-//
-// Returns.
-//   - None.
+// Summary: Removes sensitive information from profile definition.
 //
 // Parameters:
-//   - profile: *configv1.ProfileDefinition.
+//   - profile (*configv1.ProfileDefinition): The profile definition to modify.
 //
 // Returns:
-//   - None.
+//
+//	None.
+//
+// Errors:
+//
+//	None.
+//
+// Side Effects:
+//   - Modifies the provided profile definition in place.
 func StripSecretsFromProfile(profile *configv1.ProfileDefinition) {
 	util.StripSecretsFromProfile(profile)
 }
 
-// StripSecretsFromCollection provides stripsecretsfromcollection functionality.
+// StripSecretsFromCollection removes sensitive information from the service collection.
 //
-// Summary: StripSecretsFromCollection.
-//
-// Parameters.
-//   - collection: The parameter.
-//
-// Returns.
-//   - None.
+// Summary: Removes sensitive information from service collection.
 //
 // Parameters:
-//   - collection: *configv1.Collection.
+//   - collection (*configv1.Collection): The service collection to modify.
 //
 // Returns:
-//   - None.
+//
+//	None.
+//
+// Errors:
+//
+//	None.
+//
+// Side Effects:
+//   - Modifies the provided service collection in place.
 func StripSecretsFromCollection(collection *configv1.Collection) {
 	util.StripSecretsFromCollection(collection)
 }
 
-// StripSecretsFromAuth provides stripsecretsfromauth functionality.
+// StripSecretsFromAuth removes sensitive values from the authentication config.
 //
-// Summary: StripSecretsFromAuth.
-//
-// Parameters.
-//   - auth: The parameter.
-//
-// Returns.
-//   - None.
+// Summary: Removes sensitive values from authentication config.
 //
 // Parameters:
-//   - auth: *configv1.Authentication.
+//   - auth (*configv1.Authentication): The authentication configuration to modify.
 //
 // Returns:
-//   - None.
+//
+//	None.
+//
+// Errors:
+//
+//	None.
+//
+// Side Effects:
+//   - Modifies the provided authentication configuration in place.
 func StripSecretsFromAuth(auth *configv1.Authentication) {
 	util.StripSecretsFromAuth(auth)
 }
 
-// HydrateSecretsInService provides hydratesecretsinservice functionality.
+// HydrateSecretsInService populates the service configuration with resolved secret values.
 //
-// Summary: HydrateSecretsInService.
-//
-// Parameters.
-//   - svc: The parameter.
-//   - secrets: The parameter.
-//
-// Returns.
-//   - None.
+// Summary: Populates service configuration with resolved secret values.
 //
 // Parameters:
-//   - svc: *configv1.UpstreamServiceConfig.
-//   - secrets: map[string]*configv1.SecretValue.
+//   - svc (*configv1.UpstreamServiceConfig): The upstream service configuration to modify.
+//   - secrets (map[string]*configv1.SecretValue): The resolved secret values map.
 //
 // Returns:
-//   - None.
+//
+//	None.
+//
+// Errors:
+//
+//	None.
+//
+// Side Effects:
+//   - Modifies the provided service configuration in place.
 func HydrateSecretsInService(svc *configv1.UpstreamServiceConfig, secrets map[string]*configv1.SecretValue) {
 	util.HydrateSecretsInService(svc, secrets)
 }

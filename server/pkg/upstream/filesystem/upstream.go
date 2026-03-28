@@ -41,42 +41,58 @@ type Upstream struct {
 	checker health.Checker
 }
 
-// NewUpstream provides newupstream functionality.
-//
-// Summary: NewUpstream.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
-//
-// Parameters:
-//   - None.
+// NewUpstream creates a new instance of FilesystemUpstream.
 //
 // Returns:
-//   - upstream.Upstream.
+//   - upstream.Upstream: A new instance of the filesystem upstream.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Initializes NewUpstream operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{
 		closers: make([]io.Closer, 0),
 	}
 }
 
-// Shutdown provides shutdown functionality.
-//
-// Summary: Shutdown.
-//
-// Parameters.
-//   - _: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Shutdown implements the upstream.Upstream interface.
 //
 // Parameters:
-//   - _: context.Context.
+//   - ctx (context.Context): The context for the shutdown operation (currently unused).
 //
 // Returns:
-//   - error.
+//   - error: Always returns nil.
+//
+// Side Effects:
+//   - Stops the health checker.
+//   - Closes all registered filesystem providers.
+//
+// Summary: Executes Shutdown operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -92,7 +108,7 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 
 // Register processes the configuration for a filesystem service.
 //
-// Parameters.
+// Parameters:
 //   - ctx (context.Context): The context for the registration process.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
 //   - toolManager (tool.ManagerInterface): The manager where discovered tools will be registered.
@@ -100,7 +116,7 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //   - _ (resource.ManagerInterface): Unused resource manager.
 //   - _ (bool): Unused reload flag.
 //
-// Returns.
+// Returns:
 //   - string: The unique service ID.
 //   - []*configv1.ToolDefinition: A list of registered tool definitions.
 //   - []*configv1.ResourceDefinition: Always nil.
@@ -113,11 +129,14 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Summary: Executes Register operation.
 //
-// Parameters: - None.
+// Parameters:
+//   - TODO: Document parameters.
 //
-// Returns: - None.
+// Returns:
+//   - TODO: Document returns.
 //
-// Errors: - None.
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -236,24 +255,17 @@ type fsCallable struct {
 	handler func(ctx context.Context, args map[string]interface{}) (map[string]interface{}, error)
 }
 
-// Call provides call functionality.
+// Call executes the filesystem tool with the provided request arguments.
 //
-// Summary: Call.
-//
-// Parameters.
-//   - ctx: The parameter.
-//   - req: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Executes a filesystem tool.
 //
 // Parameters:
-//   - ctx: context.Context.
-//   - req: *tool.ExecutionRequest.
+//   - ctx: context.Context. The execution context.
+//   - req: *tool.ExecutionRequest. The request containing arguments.
 //
 // Returns:
-//   - any.
-//   - error.
+//   - any: The result of the execution.
+//   - error: An error if execution fails.
 func (c *fsCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	args := req.Arguments
 	if args == nil && len(req.ToolInputs) > 0 {

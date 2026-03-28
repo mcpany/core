@@ -25,22 +25,34 @@ type StdioTransport struct {
 	Command *exec.Cmd
 }
 
-// Connect provides connect functionality.
-//
-// Summary: Connect.
-//
-// Parameters.
-//   - _: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Connect starts the command and returns a connection.
 //
 // Parameters:
-//   - _: context.Context.
+//   - _ (context.Context): The parameter.
 //
 // Returns:
-//   - mcp.Connection.
-//   - error.
+//   - mcp.Connection: The result.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Connect operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (t *StdioTransport) Connect(_ context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
 
@@ -103,22 +115,34 @@ type stdioConn struct {
 	wg            sync.WaitGroup
 }
 
-// Read provides read functionality.
-//
-// Summary: Read.
-//
-// Parameters.
-//   - _: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Read reads a JSON-RPC message from the standard output of the command.
 //
 // Parameters:
-//   - _: context.Context.
+//   - _ (context.Context): The parameter.
 //
 // Returns:
-//   - jsonrpc.Message.
-//   - error.
+//   - jsonrpc.Message: The result.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Retrieves Read operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
 	if err := c.decoder.Decode(&raw); err != nil {
@@ -205,23 +229,34 @@ func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	return msg, nil
 }
 
-// Write provides write functionality.
-//
-// Summary: Write.
-//
-// Parameters.
-//   - _: The parameter.
-//   - msg: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Write writes a JSON-RPC message to the standard input of the command.
 //
 // Parameters:
-//   - _: context.Context.
-//   - msg: jsonrpc.Message.
+//   - _ (context.Context): The parameter.
+//   - msg (jsonrpc.Message): The parameter.
 //
 // Returns:
-//   - error.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Updates Write operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	var method string
 	var params any
@@ -261,21 +296,30 @@ func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	return c.encoder.Encode(wire)
 }
 
-// Close provides close functionality.
-//
-// Summary: Close.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
-//
-// Parameters:
-//   - None.
+// Close terminates the command and closes the streams.
 //
 // Returns:
-//   - error.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes Close operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (c *stdioConn) Close() error {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
@@ -291,21 +335,27 @@ func (c *stdioConn) Close() error {
 	return nil
 }
 
-// SessionID provides sessionid functionality.
-//
-// Summary: SessionID.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
-//
-// Parameters:
-//   - None.
+// SessionID returns a static session ID for the stdio connection.
 //
 // Returns:
-//   - string.
+//   - string: The result.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes SessionID operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (c *stdioConn) SessionID() string {
 	return "stdio-session"
 }

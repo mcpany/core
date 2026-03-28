@@ -22,19 +22,22 @@ type MockClientConn struct {
 
 // NewMockClientConn creates a new mock client connection.
 //
-// Parameters.
+// Parameters:
 //   - t: The testing instance.
 //
-// Returns.
+// Returns:
 //   - *MockClientConn: A new mock client connection.
 //
 // Summary: Initializes NewMockClientConn operation.
 //
-// Parameters: - None.
+// Parameters:
+//   - TODO: Document parameters.
 //
-// Returns: - None.
+// Returns:
+//   - TODO: Document returns.
 //
-// Errors: - None.
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -47,17 +50,20 @@ func NewMockClientConn(t *testing.T) *MockClientConn {
 
 // SetClient sets a mock client for a given type.
 //
-// Parameters.
+// Parameters:
 //   - method: The method to mock.
 //   - client: The mock client implementation.
 //
 // Summary: Updates SetClient operation.
 //
-// Parameters: - None.
+// Parameters:
+//   - TODO: Document parameters.
 //
-// Returns: - None.
+// Returns:
+//   - TODO: Document returns.
 //
-// Errors: - None.
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -67,23 +73,26 @@ func (m *MockClientConn) SetClient(method string, client interface{}) {
 
 // Invoke is a mock implementation of the Invoke method.
 //
-// Parameters.
+// Parameters:
 //   - ctx: The context for the call.
 //   - method: The method being invoked.
 //   - args: The arguments for the method.
 //   - reply: The reply structure to fill.
 //   - opts: The call options.
 //
-// Returns.
+// Returns:
 //   - error: An error if the invocation fails.
 //
 // Summary: Executes Invoke operation.
 //
-// Parameters: - None.
+// Parameters:
+//   - TODO: Document parameters.
 //
-// Returns: - None.
+// Returns:
+//   - TODO: Document returns.
 //
-// Errors: - None.
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -94,23 +103,26 @@ func (m *MockClientConn) Invoke(_ context.Context, _ string, _ interface{}, _ in
 
 // NewStream is a mock implementation of the NewStream method.
 //
-// Parameters.
+// Parameters:
 //   - ctx: The context for the stream.
 //   - desc: The stream description.
 //   - method: The method being called.
 //   - opts: The call options.
 //
-// Returns.
+// Returns:
 //   - grpc.ClientStream: The client stream.
 //   - error: An error if the stream creation fails.
 //
 // Summary: Initializes NewStream operation.
 //
-// Parameters: - None.
+// Parameters:
+//   - TODO: Document parameters.
 //
-// Returns: - None.
+// Returns:
+//   - TODO: Document returns.
 //
-// Errors: - None.
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

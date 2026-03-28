@@ -15,23 +15,26 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// ValidateConfigHandler provides validateconfighandler functionality.
+// ValidateConfigHandler handles requests to validate configuration.
 //
-// Summary: ValidateConfigHandler.
-//
-// Parameters.
-//   - w: The parameter.
-//   - r: The parameter.
-//
-// Returns.
-//   - None.
+// Summary: Validates configuration content against schema and logic.
 //
 // Parameters:
-//   - w: http.ResponseWriter.
-//   - r: *http.Request.
+//   - w (http.ResponseWriter): The response writer.
+//   - r (*http.Request): The HTTP request containing the configuration in the body.
 //
 // Returns:
-//   - None.
+//
+//	None.
+//
+// Errors:
+//   - 405 Method Not Allowed: If method is not POST.
+//   - 400 Bad Request: If body is invalid or content is missing.
+//   - 500 Internal Server Error: If response encoding fails or engine initialization fails.
+//
+// Side Effects:
+//   - Reads the request body.
+//   - Writes JSON response to the response writer.
 func ValidateConfigHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		respondWithJSONError(w, http.StatusMethodNotAllowed, "Method not allowed")

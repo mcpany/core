@@ -29,23 +29,16 @@ type Manager struct {
 	services    []*configv1.UpstreamServiceConfig
 }
 
-// NewManager provides newmanager functionality.
+// NewManager creates a new Catalog Manager.
 //
-// Summary: NewManager.
-//
-// Parameters.
-//   - fs: The parameter.
-//   - catalogPath: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Initializes a new Catalog Manager.
 //
 // Parameters:
-//   - fs: afero.Fs.
-//   - catalogPath: string.
+//   - fs: afero.Fs. The filesystem to scan.
+//   - catalogPath: string. The path to the catalog directory.
 //
 // Returns:
-//   - *Manager.
+//   - *Manager: The initialized manager.
 func NewManager(fs afero.Fs, catalogPath string) *Manager {
 	return &Manager{
 		fs:          fs,
@@ -53,21 +46,19 @@ func NewManager(fs afero.Fs, catalogPath string) *Manager {
 	}
 }
 
-// Load provides load functionality.
+// Load scans the catalog directory and loads all service configurations.
 //
-// Summary: Load.
-//
-// Parameters.
-//   - ctx: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Loads service configurations from the catalog directory.
 //
 // Parameters:
-//   - ctx: context.Context.
+//   - ctx: context.Context. The context for the operation.
 //
 // Returns:
-//   - error.
+//   - error: An error if the directory walk fails (individual config load errors are logged but do not abort).
+//
+// Side Effects:
+//   - Updates the internal list of services.
+//   - Reads files from the filesystem.
 func (m *Manager) Load(ctx context.Context) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -136,22 +127,16 @@ func (m *Manager) Load(ctx context.Context) error {
 	return g.Wait()
 }
 
-// ListServices provides listservices functionality.
+// ListServices returns the list of loaded services.
 //
-// Summary: ListServices.
-//
-// Parameters.
-//   - _: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Retrieves the list of loaded services.
 //
 // Parameters:
-//   - _: context.Context.
+//   - _ context.Context: The context (unused).
 //
 // Returns:
-//   - []*configv1.UpstreamServiceConfig.
-//   - error.
+//   - []*configv1.UpstreamServiceConfig: A slice of service configurations.
+//   - error: Always nil.
 func (m *Manager) ListServices(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

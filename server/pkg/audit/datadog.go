@@ -36,21 +36,18 @@ type DatadogAuditStore struct {
 	done   chan struct{}
 }
 
-// NewDatadogAuditStore provides newdatadogauditstore functionality.
+// NewDatadogAuditStore creates a new DatadogAuditStore.
 //
-// Summary: NewDatadogAuditStore.
-//
-// Parameters.
-//   - config: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Initializes a new DatadogAuditStore with background workers.
 //
 // Parameters:
-//   - config: *configv1.DatadogConfig.
+//   - config: *configv1.DatadogConfig. The Datadog configuration.
 //
 // Returns:
-//   - *DatadogAuditStore.
+//   - *DatadogAuditStore: The initialized store.
+//
+// Side Effects:
+//   - Starts background workers to process the log queue.
 func NewDatadogAuditStore(config *configv1.DatadogConfig) *DatadogAuditStore {
 	if config == nil {
 		config = &configv1.DatadogConfig{}
@@ -117,23 +114,22 @@ func (e *DatadogAuditStore) worker() {
 	}
 }
 
-// Write provides write functionality.
+// Write implements the Store interface.
 //
-// Summary: Write.
-//
-// Parameters.
-//   - _: The parameter.
-//   - entry: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Queues an audit entry for sending to Datadog.
 //
 // Parameters:
-//   - _: context.Context.
-//   - entry: Entry.
+//   - _: context.Context. Unused.
+//   - entry: Entry. The audit entry to log.
 //
 // Returns:
-//   - error.
+//   - error: An error if the queue is full.
+//
+// Errors:
+//   - Returns "audit queue full" if the buffer is exceeded.
+//
+// Side Effects:
+//   - Sends the entry to a buffered channel.
 func (e *DatadogAuditStore) Write(_ context.Context, entry Entry) error {
 	select {
 	case e.queue <- entry:
@@ -188,43 +184,31 @@ func (e *DatadogAuditStore) sendBatch(batch []Entry) {
 	}
 }
 
-// Read provides read functionality.
+// Read implements the Store interface.
 //
-// Summary: Read.
-//
-// Parameters.
-//   - _: The parameter.
-//   - _: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Reads audit entries (Not implemented).
 //
 // Parameters:
-//   - _: context.Context.
-//   - _: Filter.
+//   - _: context.Context. Unused.
+//   - _: Filter. Unused.
 //
 // Returns:
-//   - []Entry.
-//   - error.
+//   - []Entry: Nil.
+//   - error: Always returns "not implemented".
 func (e *DatadogAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for datadog audit store")
 }
 
-// Close provides close functionality.
+// Close closes the queue and waits for workers to finish.
 //
-// Summary: Close.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
-//
-// Parameters:
-//   - None.
+// Summary: Shuts down the Datadog audit store gracefully.
 //
 // Returns:
-//   - error.
+//   - error: Always nil.
+//
+// Side Effects:
+//   - Closes internal channels.
+//   - Flushes pending logs.
 func (e *DatadogAuditStore) Close() error {
 	if e.done != nil {
 		close(e.done)

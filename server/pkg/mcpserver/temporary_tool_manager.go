@@ -24,21 +24,27 @@ type TemporaryToolManager struct {
 	tools       map[string]tool.Tool
 }
 
-// NewTemporaryToolManager provides newtemporarytoolmanager functionality.
-//
-// Summary: NewTemporaryToolManager.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
-//
-// Parameters:
-//   - None.
+// NewTemporaryToolManager creates a new TemporaryToolManager.
 //
 // Returns:
-//   - *TemporaryToolManager.
+//   - *TemporaryToolManager: A new instance of TemporaryToolManager.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Initializes NewTemporaryToolManager operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func NewTemporaryToolManager() *TemporaryToolManager {
 	return &TemporaryToolManager{
 		serviceInfo: make(map[string]*tool.ServiceInfo),
@@ -46,22 +52,27 @@ func NewTemporaryToolManager() *TemporaryToolManager {
 	}
 }
 
-// AddServiceInfo provides addserviceinfo functionality.
-//
-// Summary: AddServiceInfo.
-//
-// Parameters.
-//   - serviceID: The parameter.
-//   - info: The parameter.
-//
-// Returns.
-//   - None.
+// AddServiceInfo implements tool.ManagerInterface.
 //
 // Parameters:
-//   - serviceID: string.
-//   - info: *tool.ServiceInfo.
+//   - serviceID (string): The ID of the service.
+//   - info (*tool.ServiceInfo): The service information.
+//
+// Side Effects:
+//   - Updates the internal service info map.
+//
+// Summary: Executes AddServiceInfo operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
 //
 // Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
 //   - None.
 func (m *TemporaryToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	m.mu.Lock()
@@ -72,22 +83,31 @@ func (m *TemporaryToolManager) AddServiceInfo(serviceID string, info *tool.Servi
 	m.serviceInfo[serviceID] = info
 }
 
-// GetServiceInfo provides getserviceinfo functionality.
-//
-// Summary: GetServiceInfo.
-//
-// Parameters.
-//   - serviceID: The parameter.
-//
-// Returns.
-//   - result: The result.
+// GetServiceInfo implements tool.ManagerInterface.
 //
 // Parameters:
-//   - serviceID: string.
+//   - serviceID (string): The ID of the service.
 //
 // Returns:
-//   - *tool.ServiceInfo.
-//   - bool.
+//   - *tool.ServiceInfo: The service information if found.
+//   - bool: True if the service information exists.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Retrieves GetServiceInfo operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (m *TemporaryToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -98,21 +118,30 @@ func (m *TemporaryToolManager) GetServiceInfo(serviceID string) (*tool.ServiceIn
 	return info, ok
 }
 
-// AddTool provides addtool functionality.
-//
-// Summary: AddTool.
-//
-// Parameters.
-//   - t: The parameter.
-//
-// Returns.
-//   - result: The result.
+// AddTool implements tool.ManagerInterface.
 //
 // Parameters:
-//   - t: tool.Tool.
+//   - t (tool.Tool): The tool to add.
 //
 // Returns:
-//   - error.
+//   - error: An error if the tool service ID is empty or name sanitization fails.
+//
+// Side Effects:
+//   - Updates the internal tool map.
+//
+// Summary: Executes AddTool operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (m *TemporaryToolManager) AddTool(t tool.Tool) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -135,22 +164,31 @@ func (m *TemporaryToolManager) AddTool(t tool.Tool) error {
 	return nil
 }
 
-// GetTool provides gettool functionality.
-//
-// Summary: GetTool.
-//
-// Parameters.
-//   - toolName: The parameter.
-//
-// Returns.
-//   - result: The result.
+// GetTool implements tool.ManagerInterface.
 //
 // Parameters:
-//   - toolName: string.
+//   - toolName (string): The name of the tool.
 //
 // Returns:
-//   - tool.Tool.
-//   - bool.
+//   - tool.Tool: The tool if found.
+//   - bool: True if the tool exists.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Retrieves GetTool operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (m *TemporaryToolManager) GetTool(toolName string) (tool.Tool, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -161,21 +199,27 @@ func (m *TemporaryToolManager) GetTool(toolName string) (tool.Tool, bool) {
 	return t, ok
 }
 
-// ListTools provides listtools functionality.
-//
-// Summary: ListTools.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
-//
-// Parameters:
-//   - None.
+// ListTools implements tool.ManagerInterface.
 //
 // Returns:
-//   - []tool.Tool.
+//   - []tool.Tool: A list of all tools.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Executes ListTools operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (m *TemporaryToolManager) ListTools() []tool.Tool {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -189,21 +233,30 @@ func (m *TemporaryToolManager) ListTools() []tool.Tool {
 	return list
 }
 
-// GetToolCountForService provides gettoolcountforservice functionality.
-//
-// Summary: GetToolCountForService.
-//
-// Parameters.
-//   - serviceID: The parameter.
-//
-// Returns.
-//   - result: The result.
+// GetToolCountForService implements tool.ManagerInterface.
 //
 // Parameters:
-//   - serviceID: string.
+//   - serviceID (string): The ID of the service.
 //
 // Returns:
-//   - int.
+//   - int: The number of tools for the service.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Retrieves GetToolCountForService operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (m *TemporaryToolManager) GetToolCountForService(serviceID string) int {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

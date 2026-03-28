@@ -32,23 +32,16 @@ type Worker struct {
 	wg          sync.WaitGroup
 }
 
-// New provides new functionality.
+// New creates a new Worker.
 //
-// Summary: New.
-//
-// Parameters.
-//   - busProvider: The parameter.
-//   - cfg: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Summary: Initializes a new Worker.
 //
 // Parameters:
-//   - busProvider: *bus.Provider.
-//   - cfg: *Config.
+//   - busProvider: *bus.Provider. The bus provider.
+//   - cfg: *Config. The worker configuration.
 //
 // Returns:
-//   - *Worker.
+//   - *Worker: The initialized worker.
 func New(busProvider *bus.Provider, cfg *Config) *Worker {
 	return &Worker{
 		busProvider: busProvider,
@@ -59,40 +52,43 @@ func New(busProvider *bus.Provider, cfg *Config) *Worker {
 	}
 }
 
-// Start provides start functionality.
+// Start starts the worker and its background tasks.
 //
-// Summary: Start.
-//
-// Parameters.
-//   - ctx: The parameter.
-//
-// Returns.
-//   - None.
+// Summary: Starts the worker processing loop.
 //
 // Parameters:
-//   - ctx: context.Context.
-//
-// Returns:
-//   - None.
+//   - ctx: context.Context. The context for the worker.
 func (w *Worker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	go w.startToolExecutionWorker(ctx)
 }
 
-// Stop provides stop functionality.
-//
-// Summary: Stop.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - None.
+// Stop stops the worker and cleans up resources. Summary: Stops the worker. Side Effects: - Waits for pending jobs. - Unsubscribes from the bus.
 //
 // Parameters:
-//   - None.
+//   - None
 //
 // Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
+//
+// Summary: Executes Stop operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
 //   - None.
 func (w *Worker) Stop() {
 	w.wg.Wait() // Wait for the subscription to be set up

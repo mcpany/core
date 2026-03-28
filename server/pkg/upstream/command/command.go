@@ -38,21 +38,30 @@ type Upstream struct {
 	checker health.Checker
 }
 
-// Shutdown provides shutdown functionality.
-//
-// Summary: Shutdown.
-//
-// Parameters.
-//   - _: The parameter.
-//
-// Returns.
-//   - result: The result.
+// Shutdown implements the upstream.Upstream interface.
 //
 // Parameters:
-//   - _: context.Context.
+//   - ctx (context.Context): The context for the shutdown operation (currently unused).
 //
 // Returns:
-//   - error.
+//   - error: Always returns nil.
+//
+// Side Effects:
+//   - Stops the health checker.
+//
+// Summary: Executes Shutdown operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -63,21 +72,27 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
-// NewUpstream provides newupstream functionality.
-//
-// Summary: NewUpstream.
-//
-// Parameters.
-//   - None.
-//
-// Returns.
-//   - result: The result.
-//
-// Parameters:
-//   - None.
+// NewUpstream creates a new instance of CommandUpstream.
 //
 // Returns:
-//   - upstream.Upstream.
+//   - upstream.Upstream: A new instance of the command upstream.
+//
+// Side Effects:
+//   - None.
+//
+// Summary: Initializes NewUpstream operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{}
 }
@@ -85,7 +100,7 @@ func NewUpstream() upstream.Upstream {
 // Register processes the configuration for a command-line service, creates a
 // new tool for each defined command, and registers them with the tool manager.
 //
-// Parameters.
+// Parameters:
 //   - ctx (context.Context): The context for the registration process.
 //   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
 //   - toolManager (tool.ManagerInterface): The manager where discovered tools will be registered.
@@ -93,7 +108,7 @@ func NewUpstream() upstream.Upstream {
 //   - resourceManager (resource.ManagerInterface): The manager where discovered resources will be registered.
 //   - isReload (bool): Indicates whether this is a configuration reload.
 //
-// Returns.
+// Returns:
 //   - string: The unique service ID.
 //   - []*configv1.ToolDefinition: A list of registered tool definitions.
 //   - []*configv1.ResourceDefinition: A list of registered resource definitions.
@@ -105,11 +120,14 @@ func NewUpstream() upstream.Upstream {
 //
 // Summary: Executes Register operation.
 //
-// Parameters: - None.
+// Parameters:
+//   - TODO: Document parameters.
 //
-// Returns: - None.
+// Returns:
+//   - TODO: Document returns.
 //
-// Errors: - None.
+// Errors:
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

@@ -28,16 +28,20 @@ type DoctorRunner struct {
 	HTTPClient *http.Client
 }
 
-// Run provides run functionality.
+// Run executes the doctor checks.
 //
-// Summary: Run.
+// Summary: Runs a series of health checks (config, connectivity, deep health).
 //
-// Parameters.
-//   - cmd: The parameter.
-//   - _: The parameter.
+// Parameters:
+//   - cmd: *cobra.Command. The command object.
+//   - _: []string. Unused arguments.
 //
-// Returns.
-//   - result: The result.
+// Returns:
+//   - error: An error if a fatal check fails.
+//
+// Side Effects:
+//   - Prints check results to r.Out.
+//   - Makes HTTP requests to the running server.
 func (r *DoctorRunner) Run(cmd *cobra.Command, _ []string) error {
 	ctx := cmd.Context()
 	if ctx == nil {
@@ -190,7 +194,7 @@ func (r *DoctorRunner) Run(cmd *cobra.Command, _ []string) error {
 // This command checks the health of the MCP Any configuration and the running server.
 // It performs configuration validation, server connectivity checks, and invokes the server's doctor endpoint.
 //
-// Returns: - None.
+// Returns:
 //   - *cobra.Command: The configured doctor command.
 func newDoctorCmd() *cobra.Command {
 	return &cobra.Command{
