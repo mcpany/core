@@ -1,4 +1,5 @@
 # Bazel configuration for MCP Any
+startup --host_jvm_args=-Xmx4g
 
 build --config=remote
 test --config=remote
