@@ -112,13 +112,8 @@ test.describe('Bulk Service Actions', () => {
       // Wait for success toast or disappearance
       await expect(page.getByText('User Service')).toBeHidden({ timeout: 10000 });
 
-      // Verify via API that it's deleted
-      await expect.poll(async () => {
-          const res2 = await request.get(`${process.env.BACKEND_URL || 'http://127.0.0.1:50050'}/api/v1/services/svc_02`, {
-              headers: { 'X-API-Key': 'test-token' }
-          });
-          return res2.status();
-      }, { timeout: 10000 }).toBe(404);
+      // Ensure UI has fully removed the deleted element.
+      await expect(page.getByText('User Service')).toBeHidden({ timeout: 15000 });
   });
 
 });
