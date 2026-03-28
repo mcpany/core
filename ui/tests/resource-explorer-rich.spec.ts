@@ -9,14 +9,56 @@ test.describe('Resource Explorer Rich Result Viewer', () => {
   const serviceName = 'resource-viewer-rich-result-test';
 
   test.beforeAll(async ({ request }) => {
-    const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
-    const HEADERS = { 'X-API-Key': API_KEY, 'Content-Type': 'application/json' };
-
     // Clean up
-    await request.delete(`/api/v1/services/${serviceName}`, { headers: HEADERS }).catch(() => { });
+    await request.delete(`/api/v1/services/${serviceName}`).catch(() => { });
 
     // Seed service
     const response = await request.post('/api/v1/services', {
+      data: {
+        name: serviceName,
+        command_line_service: {
+          command: 'echo',
+          resources: [
+            { uri: 'test://data.json', name: 'JSON Data', mimeType: 'application/json' },
+            { uri: 'test://invalid.json', name: 'Invalid JSON', mimeType: 'application/json' }
+          ],
+          reads: {
+            'test://data.json': {
+              contents: [
+                {
+                  uri: 'test://data.json',
+                  mimeType: 'application/json',
+                  text: JSON.stringify([
+                    { name: 'Alice', role: 'Admin', id: 1 },
+                    { name: 'Bob', role: 'User', id: 2 }
+                  ])
+                }
+              ]
+            },
+            'test://invalid.json': {
+              contents: [
+                {
+                  uri: 'test://invalid.json',
+                  mimeType: 'application/json',
+                  text: '{ invalid json '
+                }
+              ]
+            }
+          }
+        }
+      }
+    });
+    // ignore error because we might not have backend running
+  });
+
+  test.afterAll(async ({ request }) => {
+    await request.delete(`/api/v1/services/${serviceName}`).catch(() => { });
+  });
+
+  test('Resource viewer renders rich table result for JSON data', async ({ page, request }) => {
+    const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
+    const HEADERS = { 'X-API-Key': API_KEY, 'Content-Type': 'application/json' };
+    await request.post('/api/v1/services', {
       headers: HEADERS,
       data: {
         name: serviceName,
@@ -51,20 +93,8 @@ test.describe('Resource Explorer Rich Result Viewer', () => {
           }
         }
       }
-    }).catch(() => ({ ok: () => false }));
-    // ignore error because we might not have backend running
-  });
+    }).catch(() => null);
 
-  test.afterAll(async ({ request }) => {
-    await request.delete(`/api/v1/services/${serviceName}`, {
-      headers: {
-        'X-API-Key': process.env.MCPANY_API_KEY || 'test-token',
-        'Content-Type': 'application/json'
-      }
-    }).catch(() => { });
-  });
-
-  test('Resource viewer renders rich table result for JSON data', async ({ page }) => {
     await page.goto('/resources');
 
     // Search for the test resource
@@ -89,7 +119,46 @@ test.describe('Resource Explorer Rich Result Viewer', () => {
     await expect(table.getByText('Admin')).toBeVisible();
   });
 
-  test('Resource viewer falls back to raw text for invalid JSON', async ({ page }) => {
+  test('Resource viewer falls back to raw text for invalid JSON', async ({ page, request }) => {
+    const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
+    const HEADERS = { 'X-API-Key': API_KEY, 'Content-Type': 'application/json' };
+    await request.post('/api/v1/services', {
+      headers: HEADERS,
+      data: {
+        name: serviceName,
+        command_line_service: {
+          command: 'echo',
+          resources: [
+            { uri: 'test://data.json', name: 'JSON Data', mimeType: 'application/json' },
+            { uri: 'test://invalid.json', name: 'Invalid JSON', mimeType: 'application/json' }
+          ],
+          reads: {
+            'test://data.json': {
+              contents: [
+                {
+                  uri: 'test://data.json',
+                  mimeType: 'application/json',
+                  text: JSON.stringify([
+                    { name: 'Alice', role: 'Admin', id: 1 },
+                    { name: 'Bob', role: 'User', id: 2 }
+                  ])
+                }
+              ]
+            },
+            'test://invalid.json': {
+              contents: [
+                {
+                  uri: 'test://invalid.json',
+                  mimeType: 'application/json',
+                  text: '{ invalid json '
+                }
+              ]
+            }
+          }
+        }
+      }
+    }).catch(() => null);
+
     await page.goto('/resources');
 
     // Search for the test resource
