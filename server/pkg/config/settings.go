@@ -105,6 +105,9 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	s.stdio = viper.GetBool("stdio") // Corrected from "std"
 	// Bind config paths
 	s.configPaths = getStringSlice("config-path")
+	if len(s.configPaths) == 0 && viper.IsSet("config") {
+		s.configPaths = getStringSlice("config")
+	}
 	s.debug = viper.GetBool("debug")
 	s.logLevel = viper.GetString("log-level")
 
