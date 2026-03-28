@@ -1835,7 +1835,7 @@ func RegisterWebsocketService(t *testing.T, regClient apiv1.RegistrationServiceC
 	t.Logf("Registering Websocket service '%s' with endpoint: %s", serviceID, baseURL)
 
 	callID := "call-" + operationID
-	callDef := configv1.WebsocketCallDefinition_builder{
+	_ = configv1.HttpCallDefinition_builder{
 		Id: &callID,
 	}.Build()
 
@@ -1878,7 +1878,7 @@ func RegisterWebrtcService(t *testing.T, regClient apiv1.RegistrationServiceClie
 	t.Logf("Registering Webrtc service '%s' with endpoint: %s", serviceID, baseURL)
 
 	callID := "call-" + operationID
-	callDef := configv1.WebrtcCallDefinition_builder{
+	_ = configv1.HttpCallDefinition_builder{
 		Id: &callID,
 	}.Build()
 
@@ -1924,7 +1924,7 @@ func RegisterStreamableMCPService(t *testing.T, regClient apiv1.RegistrationServ
 	}.Build()
 
 	callID := "call-hello"
-	callDef := configv1.MCPCallDefinition_builder{
+	_ = configv1.HttpCallDefinition_builder{
 		Id: &callID,
 	}.Build()
 
