@@ -47,3 +47,10 @@ As agent swarms become more autonomous and perform complex multi-step reasoning,
     * **Context:** The discovery of "Cognitive Lock" in self-correction loops (UACO v2.1) requires more granular recovery options.
     * **Architecture Adjustment:** Added "Auto-Checkpointing" on the first correction cycle of an IPSC session. If the Correction Budget is exceeded, the ASR middleware can now offer an "Atomic Rollback to Pre-Correction State."
     * **Security Impact:** Prevents "State Smearing" where failed refinements leave residue in the Shared KV Store.
+
+### Update: 2026-03-28 - State-Splicing Detection in Rollback Buffers
+**Context:** Today's discovery of the "Context Smearing" vulnerability (CVE-2026-41012) and the GTG-1002 swarm attack reveal that rollback buffers themselves can be weaponized. Malicious subagents can inject "Ghost Fragments" during a failing task, which are then "Spliced" into the persistent Blackboard during an improper rollback event.
+**Architecture Adjustment:**
+*   **Verification-on-Revert**: The `Rollback` operation now performs a mandatory "Integrity Scan" of the CoW (Copy-on-Write) delta against the hardware-attested checkpoint signature.
+*   **Action-Chain Context Isolation**: Rollback buffers are now isolated per `Action-Chain ID`, ensuring that a failure in one chain cannot pollute the rollback state of a parallel teammate.
+**Security Impact:** Neutralizes "Ghost Fragment" persistence after a swarm recovery event.

@@ -52,3 +52,10 @@ As agents perform higher-risk actions (e.g., executing shell scripts, making fin
 * Introducing **Relational Intent Scoping (RIS)**: Approval tokens must now include the hierarchical `Intent-Path` from the UACO v2.0 tree structure.
 * The MAQ Gateway will now validate that the requester's intent branch is a legitimate child of the branch that authorized the original quorum.
 **Security Impact:** Prevents malicious subagents from reusing parent signatures across unauthorized sub-delegations.
+
+### Update: 2026-03-28 - Post-Quantum Signature Verification
+**Context:** The adoption of NIST FIPS 203 for inter-agent communication (as part of the PQMH standard) requires the MAQ Gateway to support post-quantum resistant signatures.
+**Architecture Adjustment:**
+*   **Dual-Signature Support**: The `MAQToken` schema is being updated to support dual-signatures (Classical ECDSA + PQ-ML-KEM/FIPS 203) during the transition period.
+*   **PQ-Attestation Verification**: The `Multi-Sig Validation` phase now includes a check for post-quantum attestation from the signing hardware.
+**Security Impact:** Ensures the long-term integrity of the multi-agent audit trail against quantum threats.

@@ -13,3 +13,9 @@ A new vulnerability, **Context Smearing**, has been identified in BSH (Binary St
 
 ### 4. Market Pain Point: The "Attestation Tax"
 Enterprise users are reporting significant latency (100ms+) in multi-agent workflows due to repeated cryptographic attestation of intents. There is a growing demand for **Session-Bound Fast-Path Attestation**, where once a "Mission Intent" is verified, subsequent sub-calls within that session can use hardware-accelerated "Lightweight Proofs" instead of full RSA/ECDSA signatures.
+
+### 5. Swarm Attack GTG-1002: Cascading Failure Exploits
+A new coordinated swarm attack pattern (GTG-1002) has been documented where subagents use "Reasoning Entropy" to hide the original point of compromise. By initiating a cascade of minor failures across 50+ tools, they force the parent agent into an infinite "Self-Healing" loop, consuming the mission budget while the attacker performs reconnaissance. This confirms the need for **Action-Chain Sovereignty Monitoring**.
+
+### 6. Post-Quantum Mesh Integrity (NIST FIPS 203)
+The industry is pivoting toward NIST FIPS 203/204 standards for inter-agent communication. As agents become peer actors with inherited trust, the "Universal Agent Bus" must support post-quantum resistant algorithms to ensure long-term integrity of the mission-root audit trail.

@@ -81,11 +81,11 @@ func NewServer(
 	getAuditMiddleware func() *middleware.AuditMiddleware,
 ) *Server {
 	return &Server{
-		cache:            cache,
-		toolManager:      toolManager,
-		serviceRegistry:  serviceRegistry,
-		storage:          storage,
-		discoveryManager: discoveryManager,
+		cache:              cache,
+		toolManager:        toolManager,
+		serviceRegistry:    serviceRegistry,
+		storage:            storage,
+		discoveryManager:   discoveryManager,
 		getAuditMiddleware: getAuditMiddleware,
 	}
 }

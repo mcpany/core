@@ -1101,14 +1101,15 @@
 ## Evolution: [2026-03-28] Updates
 
 ### Proposed Additions
+- **Action-Chain Sovereignty Monitor (ACSM)**: (P0) Real-time monitoring service that validates complete agent workflow sequences against mission-root intents to prevent GTG-1002 style cascading failures.
+- **Distributed Trust Lease Broker**: (P0) Security utility implementing UACO v2.5 LFTA to manage time-bound, hardware-attested trust leases, neutralizing the "Attestation Tax."
+- **Post-Quantum Mesh Handshake (PQMH) Provider**: (P1) Security service implementing NIST-standard post-quantum algorithms (FIPS 203) for long-term mesh integrity.
 - **Atomic State Rollback Middleware**: (P0) Enables swarm-wide state checkpoints and rollbacks for the Blackboard and Context Shards.
 - **UACO-MAQ Consensus Gateway**: (P0) Support for UACO v1.9 Multi-Agent Quorum, allowing cross-framework approval tokens for high-risk actions.
-- **Session-Bound Fast-Path Attestation**: (P1) Hardware-accelerated attestation for sub-calls within a verified mission session.
-- **Context Smearing Scanner**: (P1) Binary-level inspection for BSH fragments to detect malicious "Ghost Fragments."
 
 ### Priority Shifts
-- **Consensus Tool Validation Gateway**: Re-affirmed as **P0**. Urgent need to align with UACO v1.9 MAQ.
-- **WASM-BSH State Sanitizer**: (Re-affirmed P0) Expanded to include detection of "Context Smearing" patterns.
+- **Consensus Tool Validation Gateway**: Re-affirmed as **P0**. Urgent need to align with UACO v1.9 MAQ and PQMH requirements.
+- **WASM-BSH State Sanitizer**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Action-Chain** validation integration.
 
 ### Deprecations / Monitoring
 - **Legacy HITL Approval Tokens**: Monitoring for deprecation in favor of UACO-MAQ compliant multi-signature tokens.

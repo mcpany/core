@@ -741,12 +741,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 ## Strategic Evolution: [2026-03-28]
-### Focus: Swarm Sanity & Fast-Path Attestation
-**Context**: Today's findings on Atomic State Rollbacks (ASR) and the UACO v1.9 Multi-Agent Quorum (MAQ) draft confirm that "Swarm Sanity" is the new operational priority. As swarms become deeper, the "Attestation Tax" (latency) and the risk of "Context Smearing" demand a more performant and resilient state-management layer.
+### Focus: Swarm Sanity & Action-Chain Sovereignty
+**Context**: Today's findings on Atomic State Rollbacks (ASR), the GTG-1002 cascading failure exploit, and the NIST FIPS 203 post-quantum standards confirm that "Swarm Sanity" must now include **Temporal Mesh Integrity**. As swarms automate complex pipelines, the security frontier is no longer just the "tool," but the **Action Chain** that defines the agent's multi-step intent.
 **Strategic Pivot**:
 - **Atomic State Rollback Middleware**: MCP Any will evolve to support swarm-wide "Checkpoints." Parent agents can snapshot the state of the Blackboard and Context Shards, enabling full rollbacks if a specialized subagent diverges or fails.
-- **UACO-MAQ Consensus Gateway**: We are promoting the Consensus Hub to support the UACO v1.9 MAQ standard. This allows agents from disparate frameworks (OpenClaw, AutoGen) to provide cryptographically bound approval tokens for a single high-risk action.
-- **Session-Bound Fast-Path Attestation**: To mitigate the Attestation Tax, MCP Any will implement hardware-accelerated "Lightweight Proofs." Once a Mission Intent is verified, subsequent sub-calls within the same session will use low-latency attestation paths, maintaining security without the 100ms signature overhead.
+- **Action-Chain Sovereignty Monitor (ACSM)**: To neutralize GTG-1002 attacks, we are implementing ACSM. This layer will monitor the semantic entropy of tool-call sequences in real-time, blocking chains that exhibit "Failure Smearing" patterns designed to exhaust mission budgets.
+- **Post-Quantum Mesh Handshake (PQMH)**: We are adopting the PQMH standard for all A2A communications. MCP Any will implement NIST-approved algorithms to ensure that long-running agent meshes remain cryptographically secure against future quantum threats.
+- **Distributed Trust Lease Broker**: Leveraging hardware-accelerated "Lightweight Proofs," we will act as the authoritative broker for trust leases. Once a Mission Intent is verified, sub-calls will use low-latency, session-bound leases, neutralizing the "Attestation Tax."
 
 ---
 

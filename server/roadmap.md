@@ -391,10 +391,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] Shard-Aware BSH Buffer**: Extended memory-mapped buffer for granular shard access. (Added: 2026-03-27)
 
 #### Upcoming (2026-03-28 Evolution)
+*   **[P0] Action-Chain Sovereignty Monitor (ACSM)**: Real-time validation of complete agent workflow sequences against mission-root intents to prevent cascading failures. (Added: 2026-03-28)
+*   **[P0] Distributed Trust Lease Broker**: Implementation of UACO v2.5 LFTA to manage time-bound, hardware-attested trust leases. (Added: 2026-03-28)
 *   **[P0] Atomic State Rollback Middleware**: Support for swarm-wide checkpoints and rollbacks for Blackboard and Context Shards. (Added: 2026-03-28)
-*   **[P0] UACO-MAQ Consensus Gateway**: Implementation of UACO v1.9 Multi-Agent Quorum for cross-framework high-risk action approval. (Added: 2026-03-28)
-*   **[P0] Session-Bound Fast-Path Attestation**: Hardware-accelerated "Lightweight Proofs" for low-latency sub-call validation. (Added: 2026-03-28 - Promoted to P0 on 2026-03-29)
-*   **[P1] Context Smearing Scanner**: Binary-level scanner for BSH fragments to detect "Ghost Fragments" in context handoffs. (Added: 2026-03-28)
+*   **[P0] UACO-MAQ Consensus Gateway**: Implementation of UACO v1.9 Multi-Agent Quorum with Post-Quantum dual-signature support. (Added: 2026-03-28)
+*   **[P1] Post-Quantum Mesh Handshake (PQMH) Provider**: NIST FIPS 203 compliant algoritms for long-term mesh integrity. (Added: 2026-03-28)
 
 #### Upcoming (2026-03-29 Evolution)
 *   **[P0] UACO v2.0 RIS Validator**: Implementation of Relational Intent Scoping to prevent Identity Shadowing via hierarchical intent trees. (Added: 2026-03-29)
