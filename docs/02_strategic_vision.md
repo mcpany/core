@@ -20,6 +20,9 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ## Strategic Evolution: [2026-05-23]
 ### Focus: Federated Swarm Identity & Mission-Root Sovereignty
 **Context**: The emergence of "Intent Leakage" via high-frequency reasoning traces and the persistent "Identity Spoofing" in heterogeneous meshes (Claude Code teammates vs. OpenClaw specialists) confirm that transport-layer security is no longer sufficient. We must now protect the **semantic sovereignty** of the mission intent and provide a **federated, hardware-bound identity** that persists across all connected frameworks.
+
+![Traces](screenshots/traces.png)
+
 **Strategic Pivot**:
 - **Federated Swarm Identity (FSI) Provider**: MCP Any will evolve to act as the authoritative "Identity Mint" for all connected agents. We will implement FSI, issuing hardware-attested, cross-framework identity tokens that allow disparate agents (Claude, OpenClaw, AutoGen) to verify each other's lineage and mission-bound authority.
 - **Intent-Leakage Shielding (ILS)**: Supporting the sovereignty of the mission root, we are evolving the MRP middleware to include ILS. This layer will monitor the semantic entropy of subagent reasoning requests, blocking those designed to "probe" and exfiltrate private mission-root constraints.
@@ -1157,6 +1160,9 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Attention-Locked Tooling (ALT)**: To neutralize "Context-Hijacked Exfiltration," we are introducing ALT. High-risk tool calls (e.g., shell, filesystem write) will be cryptographically locked to specific, user-verified "Attention Anchors." If the agent attempts to call a high-risk tool while its reasoning trace shows "Injected Context" as the primary driver, the ALT middleware will interdict the call.
 - **Semantic Lineage Tracking**: Supporting the stability of "Headless Handoffs," MCP Any will implement Semantic Lineage Tracking. This provides a cryptographically signed "Chain of Reason" that verifies the lineage of a tool call back to the mission-root intent, ensuring that "Injected Context" cannot shadow the root authority.
 - **Visual Attention Dashboard**: To counter "Approval Blindness," we are evolving the UI to include a visual "Attention Map." Users will see a real-time heatmap of which context fragments (User, System, Injected) are driving the agent's current tool-call reasoning.
+
+![Dashboard Overview](screenshots/dashboard_overview.png)
+
 
 ## Strategic Evolution: [2026-06-20]
 ### Focus: Context-File Integrity & Attention-Locked Tooling (ALT)

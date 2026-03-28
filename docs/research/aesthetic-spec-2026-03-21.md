@@ -27,4 +27,7 @@ Currently, visualizing what an agent or user just executed feels disjointed and 
 ## 4. Implementation Readiness
 
 *   **Component Update:** Modify `ui/src/components/dashboard/recent-activity-widget.tsx` (or the playground history equivalent) to implement this timeline aesthetic.
+
+![Dashboard Overview](../screenshots/dashboard_overview.png)
+
 *   **Seeding Update:** Enhance `server/pkg/app/seed.go` or `server/tests/integration/seeded_e2e_test.go` (and related mocked data) to ensure the timeline has rich, realistic "Gold Standard" mock data (e.g., long JSON responses, errors, diff examples) for immediate visual verification.

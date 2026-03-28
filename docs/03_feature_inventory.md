@@ -145,6 +145,9 @@
 - **Attention-Locked Tooling (ALT)**: (P0) Security middleware that cryptographically locks high-risk tool calls to user-verified reasoning anchors, neutralizing context-hijacking.
 - **Visual Attention Dashboard**: (P1) Advanced UI component for visualizing reasoning drivers and attention-level heatmaps.
 
+![Dashboard Overview](screenshots/dashboard_overview.png)
+
+
 ### Priority Shifts
 - **Atomic Reasoning Integrity (ARI) Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory **ESB-compliant** state entanglement.
 - **Stylometric Metadata Sanitizer (SMS)**: (Re-affirmed P0) Evolving to support the new **Stylometric Mimicry** defense requirements.
