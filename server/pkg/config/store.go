@@ -1425,7 +1425,14 @@ func suggestFix(unknownField string, root proto.Message) string {
 	bestMatch := ""
 	minDist := 100
 
+	// Sort candidates for deterministic behavior when distances are tied.
+	sortedCandidates := make([]string, 0, len(candidates))
 	for name := range candidates {
+		sortedCandidates = append(sortedCandidates, name)
+	}
+	sort.Strings(sortedCandidates)
+
+	for _, name := range sortedCandidates {
 		// ⚡ BOLT: Replaced inefficient local Levenshtein implementation with optimized utility function.
 		// Randomized Selection from Top 5 High-Impact Targets
 		dist := util.LevenshteinDistance(unknownField, name)
