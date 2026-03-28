@@ -17,6 +17,7 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 	hub.RegisterAdapter(interop.NewOpenClawAdapter())
 	hub.RegisterAdapter(interop.NewCrewAIAdapter())
 	hub.RegisterAdapter(interop.NewAutoGenAdapter())
+	hub.RegisterAdapter(interop.NewACPAdapter())
 
 	// Context for tasks
 	ctx := context.Background()
@@ -153,7 +154,49 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 		}
 	})
 
-	// 5. Error Case: Unsupported Framework
+	// 5. ACP Task: Context Sync Simulation
+	t.Run("ACP_ContextSync", func(t *testing.T) {
+		taskACP := &interop.Task{
+			ID:        "task-acp-001",
+			Framework: "ACP",
+			Intent:    "acp_context_sync",
+			Payload:   map[string]string{"sync_data": "important_context"},
+		}
+
+		resACP, err := hub.RouteTask(ctx, taskACP)
+		if err != nil {
+			t.Fatalf("Failed to execute ACP task: %v", err)
+		}
+
+		if resACP.Status != "success" {
+			t.Errorf("Expected ACP status 'success', got '%s'", resACP.Status)
+		}
+
+		if resACP.Telemetry["protocol"] != "acp" {
+			t.Errorf("Expected ACP protocol 'acp', got '%s'", resACP.Telemetry["protocol"])
+		}
+
+		if resACP.Telemetry["context_syncs"] != "1" {
+			t.Errorf("Expected ACP context syncs '1', got '%s'", resACP.Telemetry["context_syncs"])
+		}
+	})
+
+	t.Run("ACP_UnsupportedCapability", func(t *testing.T) {
+		taskACPUnsupported := &interop.Task{
+			ID:        "task-acp-unsup",
+			Framework: "ACP",
+			Intent:    "unsupported_intent",
+		}
+
+		_, err := hub.RouteTask(ctx, taskACPUnsupported)
+		if err == nil {
+			t.Error("Expected error for unsupported ACP capability, got nil")
+		} else if err.Error() != "ACP does not support capability: unsupported_intent" {
+			t.Errorf("Unexpected error message: %v", err)
+		}
+	})
+
+	// 6. Error Case: Unsupported Framework
 	t.Run("Unsupported_Framework", func(t *testing.T) {
 		taskInvalid := &interop.Task{
 			ID:        "task-inv-004",
@@ -166,7 +209,7 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 		}
 	})
 
-	// 6. UMMB Sync Memory Shard Test
+	// 7. UMMB Sync Memory Shard Test
 	t.Run("UMMB_SyncMemoryShard", func(t *testing.T) {
 		validShard := &interop.MemoryShard{
 			ShardID:           "shard-100",
@@ -184,7 +227,7 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 			Signature:         "", // Missing signature should fail
 		}
 
-		adapters := []string{"OpenClaw", "CrewAI", "AutoGen"}
+		adapters := []string{"OpenClaw", "CrewAI", "AutoGen", "ACP"}
 		for _, name := range adapters {
 			adapter := getAdapterByName(hub, name)
 
@@ -211,6 +254,8 @@ func getAdapterByName(hub *interop.AdapterHub, name string) interop.AgentFramewo
 		return interop.NewCrewAIAdapter()
 	case "AutoGen":
 		return interop.NewAutoGenAdapter()
+	case "ACP":
+		return interop.NewACPAdapter()
 	}
 	return nil
 }

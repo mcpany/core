@@ -4,6 +4,7 @@ load("@rules_go//go:def.bzl", "go_library", "go_test")
 go_library(
     name = "interop",
     srcs = [
+        "acp.go",
         "autogen.go",
         "bridge.go",
         "crewai.go",
