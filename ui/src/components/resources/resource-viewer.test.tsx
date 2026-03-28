@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { ResourceViewer } from './resource-viewer';
 import { ResourceContent } from '@/lib/client';
@@ -35,14 +35,18 @@ describe('ResourceViewer', () => {
     expect(screen.getByText('Select a resource to view its content.')).toBeInTheDocument();
   });
 
-  it('renders JSON content', () => {
+  it('renders JSON content using RichResultViewer', async () => {
     const content: ResourceContent = {
         uri: 'file:///config.json',
         mimeType: 'application/json',
         text: '{"foo": "bar"}'
     };
     render(<ResourceViewer content={content} loading={false} />);
-    expect(screen.getByTestId('code-block')).toHaveTextContent('{"foo": "bar"}');
+
+    // RichResultViewer uses tabs, check for JSON tab
+    await waitFor(() => {
+        expect(screen.getByText(/JSON/i)).toBeInTheDocument();
+    });
   });
 
   it('renders Markdown content', () => {

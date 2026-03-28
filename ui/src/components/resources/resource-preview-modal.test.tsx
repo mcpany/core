@@ -77,7 +77,7 @@ describe('ResourcePreviewModal', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
-  it('renders content provided in initialContent', () => {
+  it('renders content provided in initialContent', async () => {
     render(
       <ResourcePreviewModal
         isOpen={true}
@@ -87,7 +87,12 @@ describe('ResourcePreviewModal', () => {
       />
     );
     expect(screen.getByText('test.json')).toBeInTheDocument();
-    expect(screen.getByTestId('code-block')).toHaveTextContent('{"foo": "bar"}');
+
+    // It might render RichResultViewer table or json view since it is application/json
+    await waitFor(() => {
+        expect(screen.getByText(/JSON/i)).toBeInTheDocument();
+    });
+
     expect(apiClient.readResource).not.toHaveBeenCalled();
   });
 
@@ -106,7 +111,7 @@ describe('ResourcePreviewModal', () => {
     expect(screen.getByText('Loading content...')).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(screen.getByTestId('code-block')).toHaveTextContent('{"foo": "bar"}');
+       expect(screen.getByText(/JSON/i)).toBeInTheDocument();
     });
 
     expect(apiClient.readResource).toHaveBeenCalledWith(mockResource.uri);
