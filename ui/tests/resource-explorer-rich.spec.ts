@@ -23,31 +23,20 @@ test.describe('Resource Explorer Rich Result Viewer', () => {
             { uri: 'test://invalid.json', name: 'Invalid JSON', mimeType: 'application/json' }
           ],
           reads: {
-            'test://data.json': {
-              contents: [
-                {
-                  uri: 'test://data.json',
-                  mimeType: 'application/json',
-                  text: JSON.stringify([
+            'test://data.json': JSON.stringify([
                     { name: 'Alice', role: 'Admin', id: 1 },
                     { name: 'Bob', role: 'User', id: 2 }
-                  ])
-                }
-              ]
-            },
-            'test://invalid.json': {
-              contents: [
-                {
-                  uri: 'test://invalid.json',
-                  mimeType: 'application/json',
-                  text: '{ invalid json '
-                }
-              ]
-            }
+                  ]),
+            'test://invalid.json': '{ invalid json '
           }
         }
       }
     });
+
+    // We expect it to be true, but log the response if it fails
+    if (!response.ok()) {
+      console.error('Failed to seed service:', await response.text());
+    }
     expect(response.ok()).toBeTruthy();
   });
 
