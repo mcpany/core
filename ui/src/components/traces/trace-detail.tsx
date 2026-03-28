@@ -26,6 +26,7 @@ import { SequenceDiagram } from "@/components/traces/sequence-diagram";
 import { estimateTokens, calculateCost, formatCost } from "@/lib/tokens";
 import { LogStream } from "@/components/logs/log-stream";
 import { ReplayDiffDialog } from "@/components/traces/replay-diff-dialog";
+import { TraceCostBreakdown } from "@/components/traces/trace-cost-breakdown";
 
 /**
  * SpanIcon component.
@@ -302,6 +303,7 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                        <TabsTrigger value="overview" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-2">Overview</TabsTrigger>
                        <TabsTrigger value="logs" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-2">Logs</TabsTrigger>
                        <TabsTrigger value="payload" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-2">Payload</TabsTrigger>
+                       <TabsTrigger value="cost" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-2">Tokens & Cost</TabsTrigger>
                    </TabsList>
                 </div>
                 <TabsContent value="overview" className="flex-1 p-0 overflow-hidden m-0">
@@ -409,6 +411,9 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                             </div>
                         </div>
                      </ScrollArea>
+                </TabsContent>
+                <TabsContent value="cost" className="flex-1 p-0 overflow-hidden m-0">
+                    <TraceCostBreakdown trace={trace} />
                 </TabsContent>
             </Tabs>
 
