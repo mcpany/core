@@ -1,6 +1,6 @@
 module example/html_to_md
 
-go 1.24.0
+go 1.25.0
 
 
 require (
