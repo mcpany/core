@@ -48,6 +48,10 @@ test.describe('Resource Explorer Rich Result Viewer', () => {
         }
       }
     });
+    if (!response.ok()) {
+        const body = await response.text();
+        console.error("Failed to seed service:", response.status(), body);
+    }
     expect(response.ok()).toBeTruthy();
   });
 
