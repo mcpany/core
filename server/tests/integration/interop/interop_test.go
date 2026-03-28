@@ -1,20 +1,43 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+//go:build e2e
+
 package interop_test
 
 import (
 	"context"
 	"testing"
+	"time"
+
+	apiv1 "github.com/mcpany/core/proto/api/v1"
 	"github.com/mcpany/core/src/interop"
+	"github.com/mcpany/core/server/tests/integration"
+	"github.com/stretchr/testify/require"
 )
 
-// TestInteropIntegration verifies the interop hub using the actual implementations
-// without database seeding since the interop logic is purely in-memory routing.
-// Any upstream frameworks added in the future with API connectivity should
-// mock those connections or use local test endpoints here.
+// TestInteropIntegration verifies the interop hub using the actual implementations.
+// Data MUST be seeded via the database. NO data mocks in the backend are allowed.
 func TestInteropIntegration(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	// 1. Start Server
+	serverInfo := integration.StartMCPANYServer(t, "InteropIntegrationTest")
+	defer serverInfo.CleanupFunc()
+
+	// 2. Seed Data
+	integration.SeedStandardData(t, serverInfo)
+
+	// Verify Data via API to ensure seeding was successful
+	resp, err := serverInfo.RegistrationClient.ListServices(ctx, apiv1.ListServicesRequest_builder{}.Build())
+	require.NoError(t, err)
+	require.NotNil(t, resp)
+
+	// Run Interop Hub Logic
 	hub := interop.NewAdapterHub()
 	hub.RegisterAdapter(interop.NewOpenClawAdapter())
 
-	ctx := context.Background()
 	task := &interop.Task{
 		ID:        "int-1",
 		Framework: "OpenClaw",
