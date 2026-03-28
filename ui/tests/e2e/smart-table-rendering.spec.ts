@@ -24,10 +24,9 @@ test.describe('SmartTable Rendering and Real Data Validation', () => {
         // Find the tool in the list
         await page.getByPlaceholder('Search tools...').fill(toolName);
 
-        // Instead of cell matching the exact toolName which can be problematic depending on other tools/services
-        // Let's click the tool title inside the table using locator
-        // We look for the cell containing exactly the toolname or just matching it
-        await page.locator('td').filter({ hasText: new RegExp(`^${toolName}$`) }).first().click();
+        // Let's use getByText to locate the tool instead of the strict td matching
+        // to be more robust against nested spans/icons in the table cell
+        await page.getByText(toolName, { exact: true }).first().click();
 
         // Wait for inspector
         await expect(page.getByRole('dialog')).toBeVisible();
