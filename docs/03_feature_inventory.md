@@ -1113,6 +1113,16 @@
 ### Deprecations / Monitoring
 - **Legacy HITL Approval Tokens**: Monitoring for deprecation in favor of UACO-MAQ compliant multi-signature tokens.
 
+## Evolution: [2026-03-28] (Iteration 2) Updates
+
+### Proposed Additions
+- **CI/CD Cache Integrity Guard (CCIG)**: (P0) Authoritative validator for agent-accessible build caches, requiring cryptographic signatures to prevent supply-chain poisoning.
+- **Metadata Sanitization Gateway (MSG)**: (P0) Real-time semantic sanitizer for agent-ingested external metadata (GitHub, Slack) to neutralize instruction injection.
+- **Action-Chain Sovereignty Monitor (ACSM)**: (P0) Real-time monitoring service that validates complete agent workflow sequences against mission-root intents to prevent cascading failures.
+
+### Priority Shifts
+- **Verified Skill Registry**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SHA256 Tool Hashing** to prevent "Rug-Pull" attacks.
+
 ---
 
 ## Evolution: [2026-03-29] Updates

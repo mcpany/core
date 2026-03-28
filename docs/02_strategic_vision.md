@@ -683,6 +683,17 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-03-28] (Iteration 2)
+### Focus: AI-Native CI/CD Sovereignty & Metadata Sanitization
+**Context**: The emergence of "CI/CD Cache Poisoning" via autonomous agents and the discovery of "Settings-as-Shell" exploits in Gemini CLI confirm that the "Universal Agent Bus" must now move beyond session-level security to **Supply-Chain Sovereignty** and **Metadata Sanitization**. As agents become integrated into build pipelines, the security frontier is no longer just the "tool," but the **Cache** they share and the **Metadata** they ingest from external platforms like GitHub.
+**Strategic Pivot**:
+- **CI/CD Cache Integrity Guard (CCIG)**: MCP Any will evolve to act as the authoritative validator for agent-accessible build caches. We will implement CCIG, requiring hardware-attested cryptographic signatures for all cache fragments, ensuring that "Agentic Social Engineering" cannot poison the mission-root supply chain.
+- **Metadata Sanitization Gateway (MSG)**: To counter instruction injection via external metadata (GitHub issues, Slack messages), MCP Any will implement MSG. This layer will perform real-time semantic sanitization of all ingested metadata *before* it reaches the agent's reasoning loop.
+- **Action-Chain Sovereignty Monitor (ACSM)**: Supporting the stability of automated workflows, we are introducing ACSM. This service will monitor the complete sequence of automated actions, revoking capabilities if the action-chain diverges from the verified mission-root intent.
+- **Deterministic Tool Hashing**: Following industry standard, we are mandating SHA256 hashing for all tool definitions. MCP Any will perform real-time integrity checks during discovery, neutralizing "Rug-Pull" attacks on marketplace-sourced skills.
+
+---
+
 ## Strategic Evolution: [2026-03-25]
 ### Focus: Recursive Intent Integrity & WASM-Bound Binary State
 **Context**: Today's leak of UACO v1.8 and the OpenClaw v2.5 roadmap mark a shift toward "Active State Governance." As agent swarms grow deeper, the risk of "Intent Hijacking" and "Binary Context Poisoning" becomes critical. MCP Any must evolve from a passive validator to an active, sandboxed state mediator.

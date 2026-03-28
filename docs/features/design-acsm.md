@@ -42,3 +42,9 @@ Autonomous agents operate at speeds that exceed human intervention capabilities.
 
 ## 7. Evolutionary Changelog
 * **2026-07-08:** Initial Document Creation.
+* **2026-03-28:** Update: Mandatory Intent-Bound Action Mapping.
+    **Context:** Today's market sync revealed coordinated "Chain-of-Failure" exploits in autonomous triage swarms.
+    **Architecture Adjustment:**
+    * Transitioning from passive chain logging to active "Intent-Bound Action Mapping" in Section 4.
+    * Integrating real-time "Semantic Entropy" analysis for multi-step drift detection.
+    **Security Impact:** Prevents "Death by 1,000 Cuts" exfiltration patterns by revoking capabilities upon the first sign of action-chain divergence.

@@ -13,3 +13,18 @@ A new vulnerability, **Context Smearing**, has been identified in BSH (Binary St
 
 ### 4. Market Pain Point: The "Attestation Tax"
 Enterprise users are reporting significant latency (100ms+) in multi-agent workflows due to repeated cryptographic attestation of intents. There is a growing demand for **Session-Bound Fast-Path Attestation**, where once a "Mission Intent" is verified, subsequent sub-calls within that session can use hardware-accelerated "Lightweight Proofs" instead of full RSA/ECDSA signatures.
+
+## Strategic Research: 2026-03-28 (Iteration 2)
+
+### Ecosystem Updates
+- **OpenClaw Security**: CVE-2026-25253 (RCE) and CVE-2026-24763 (Command injection in Docker sandbox) confirmed. These highlight the danger of implicit trust in local environments.
+- **Gemini CLI**: Discovery of "Settings-as-Shell" exploit where `tools.discoveryCommand` is executed from repo-local settings.
+- **Claude Code**: Standardizing on SHA256 hashing for tool definitions to prevent "Rug Pull" attacks.
+
+### Market Trends & Pain Points
+- **CI/CD Supply Chain Attacks**: Attackers are targeting CI/CD automation. GitHub Actions 2026 roadmap confirms a move toward deterministic dependencies.
+- **Regulatory Compliance**: FINRA 2026 and EU AI Act now require "Human Checkpoints before Execution" for high-risk agent actions.
+
+### Strategic Gaps
+- **Cache Integrity**: Need for hardware-attested build caches for agents in CI/CD.
+- **Metadata Sanitization**: Need for semantic scrubbing of external metadata (GitHub/Slack) to prevent injection.

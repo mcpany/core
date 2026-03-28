@@ -42,3 +42,9 @@ The proliferation of AI agents in build pipelines has introduced new supply-chai
 
 ## 7. Evolutionary Changelog
 * **2026-07-08:** Initial Document Creation.
+* **2026-03-28:** Update: Implementing Mandatory Hardware-Bound Signing for Build Caches.
+    **Context:** Today's market sync revealed coordinated "Cache-Poisoning" attacks targeting agentic CI/CD runners.
+    **Architecture Adjustment:**
+    * Transitioning from soft verification to mandatory TPM/SEP-bound cryptographic signatures for all cache fragments.
+    * Integrating the "Action-Chain Sovereignty Monitor" as a real-time auditor for cache modification intents.
+    **Security Impact:** Prevents "Rug-Pull" supply chain attacks where a compromised subagent poisons the build cache to influence sibling deployments.
