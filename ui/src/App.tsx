@@ -63,6 +63,20 @@ const PageFallback = () => (
 );
 
 /**
+ * Intent: Document App
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Root application component with React Router routes.
  * Public routes (login, auth) get a top-level Suspense fallback.
  * Protected routes (wrapped in Layout) have Suspense inside the Layout so the

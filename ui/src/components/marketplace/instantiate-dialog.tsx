@@ -25,6 +25,20 @@ interface InstantiateDialogProps {
 }
 
 /**
+ * Intent: Document InstantiateDialog
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * InstantiateDialog.
  *
  * @param onComplete - The onComplete.

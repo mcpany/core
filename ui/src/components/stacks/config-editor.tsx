@@ -19,6 +19,20 @@ interface ConfigEditorProps {
 }
 
 /**
+ * Intent: Document ConfigEditor
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * ConfigEditor.
  *
  * @param readOnly = false - The readOnly = false.

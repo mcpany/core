@@ -2240,11 +2240,7 @@ func (a *Application) runServerMode(
 	}
 	v1.RegisterRegistrationServiceServer(grpcServer, registrationServer)
 
-	var auditMiddleware *middleware.AuditMiddleware
-	if standardMiddlewares != nil {
-		auditMiddleware = standardMiddlewares.Audit
-	}
-	adminServer := admin.NewServer(cachingMiddleware, a.ToolManager, serviceRegistry, store, a.DiscoveryManager, auditMiddleware)
+	adminServer := admin.NewServer(cachingMiddleware, a.ToolManager, serviceRegistry, store, a.DiscoveryManager, a.GetAuditMiddleware)
 	pb_admin.RegisterAdminServiceServer(grpcServer, adminServer)
 
 	// Register Skill Service
@@ -2629,6 +2625,17 @@ func startGrpcServer(
 		<-shutdownComplete
 		serverLog.Info("Server shut down.")
 	}()
+}
+
+
+// GetAuditMiddleware returns the current audit middleware
+func (a *Application) GetAuditMiddleware() *middleware.AuditMiddleware {
+	a.configMu.Lock()
+	defer a.configMu.Unlock()
+	if a.standardMiddlewares != nil {
+		return a.standardMiddlewares.Audit
+	}
+	return nil
 }
 
 // wrapBindError checks if the error is a port conflict and returns a user-friendly error message.

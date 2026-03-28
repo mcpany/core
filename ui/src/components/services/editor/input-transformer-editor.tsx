@@ -19,6 +19,20 @@ interface InputTransformerEditorProps {
 }
 
 /**
+ * Intent: Document InputTransformerEditor
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Editor for InputTransformer configuration.
  */
 export function InputTransformerEditor({ transformer, onChange, parameters = [] }: InputTransformerEditorProps) {

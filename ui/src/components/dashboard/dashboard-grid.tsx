@@ -35,6 +35,20 @@ import { AddWidgetSheet } from "@/components/dashboard/add-widget-sheet";
 import { fetchWithAuth } from "@/lib/client";
 
 /**
+ * Intent: Document WidgetInstance
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Represents a specific instance of a widget on the dashboard.
  */
 export interface WidgetInstance {
@@ -158,6 +172,20 @@ const MemoizedWidgetCard = React.memo(({ widget, index, updateWidgetSize, toggle
 MemoizedWidgetCard.displayName = "MemoizedWidgetCard";
 
 /**
+ * Intent: Document DashboardGrid
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * DashboardGrid component.
  * Implements a draggable grid for dashboard widgets with resizing and dynamic layout controls.
  * @returns The rendered component.
@@ -168,7 +196,6 @@ export function DashboardGrid() {
     const [loading, setLoading] = useState(true);
     const [isLoaded, setIsLoaded] = useState(false);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const migrateLayout = (parsed: any): WidgetInstance[] => {
         // Migration Logic
         // Case 1: Legacy format (DashboardWidget[]) where id matches type

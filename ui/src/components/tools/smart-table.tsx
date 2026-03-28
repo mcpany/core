@@ -23,6 +23,20 @@ interface SmartTableProps {
 type SortDirection = 'asc' | 'desc' | null;
 
 /**
+ * Intent: Document SmartTable
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * SmartTable renders a table with sorting and filtering.
  *
  * @param props - The component props.

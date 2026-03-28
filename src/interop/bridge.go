@@ -7,7 +7,7 @@ import (
 
 // AgentFramework represents a standardized AI framework to interact with.
 //
-// Summary: Defines the standard interface that all agent frameworks must implement to integrate with the universal bus.
+// Intent: Defines the standard interface that all agent frameworks must implement to integrate with the universal bus.
 //
 // Parameters:
 //   - None.
@@ -23,7 +23,7 @@ import (
 type AgentFramework interface {
 	// Name returns the identifier of the agent framework.
 	//
-	// Summary: Retrieves the unique name of the framework.
+	// Intent: Retrieves the unique name of the framework.
 	//
 	// Parameters:
 	//   - None.
@@ -40,7 +40,7 @@ type AgentFramework interface {
 
 	// HandleTask receives a task from the universal bus, translates it, executes it, and returns the result.
 	//
-	// Summary: Translates and executes a given task within the specific agent framework.
+	// Intent: Translates and executes a given task within the specific agent framework.
 	//
 	// Parameters:
 	//   - ctx (context.Context): The context for controlling cancellation and timeouts.
@@ -59,7 +59,7 @@ type AgentFramework interface {
 
 	// SupportsCapability checks if the framework provides a requested capability.
 	//
-	// Summary: Verifies whether the framework can handle a specific intent or capability.
+	// Intent: Verifies whether the framework can handle a specific intent or capability.
 	//
 	// Parameters:
 	//   - capability (string): The capability or intent to check.
@@ -76,7 +76,7 @@ type AgentFramework interface {
 
 	// SyncMemoryShard synchronizes a hardware-attested multimodal memory shard with the agent framework.
 	//
-	// Summary: Syncs a state shard with the framework, ensuring multimodal trace integrity.
+	// Intent: Syncs a state shard with the framework, ensuring multimodal trace integrity.
 	//
 	// Parameters:
 	//   - ctx (context.Context): The context for controlling cancellation and timeouts.
@@ -95,7 +95,7 @@ type AgentFramework interface {
 
 // MemoryShard represents a hardware-attested, intent-pinned memory fragment.
 //
-// Summary: A data structure that holds text context and an optional multimodal payload, with cryptographic lineage.
+// Intent: A data structure that holds text context and an optional multimodal payload, with cryptographic lineage.
 //
 // Parameters:
 //   - None.
@@ -118,7 +118,7 @@ type MemoryShard struct {
 
 // Task represents a universal task definition for the Agent Bus.
 //
-// Summary: A data structure that holds the definition of a task to be routed to an agent framework.
+// Intent: A data structure that holds the definition of a task to be routed to an agent framework.
 //
 // Parameters:
 //   - None.
@@ -140,7 +140,7 @@ type Task struct {
 
 // TaskResult holds the generalized output from an agent framework.
 //
-// Summary: A data structure that contains the result of an executed task.
+// Intent: A data structure that contains the result of an executed task.
 //
 // Parameters:
 //   - None.
@@ -162,7 +162,7 @@ type TaskResult struct {
 
 // AdapterHub manages the registration and routing of tasks to different agent frameworks.
 //
-// Summary: A central hub that maintains registered agent adapters and routes tasks to the appropriate one.
+// Intent: A central hub that maintains registered agent adapters and routes tasks to the appropriate one.
 //
 // Parameters:
 //   - None.
@@ -181,7 +181,7 @@ type AdapterHub struct {
 
 // NewAdapterHub initializes a new AdapterHub.
 //
-// Summary: Creates and returns a new instance of AdapterHub with an empty registry.
+// Intent: Creates and returns a new instance of AdapterHub with an empty registry.
 //
 // Parameters:
 //   - None.
@@ -202,7 +202,7 @@ func NewAdapterHub() *AdapterHub {
 
 // RegisterAdapter adds a new framework adapter to the hub.
 //
-// Summary: Registers an agent framework adapter with the hub, allowing tasks to be routed to it.
+// Intent: Registers an agent framework adapter with the hub, allowing tasks to be routed to it.
 //
 // Parameters:
 //   - adapter (AgentFramework): The adapter implementation to register.
@@ -221,7 +221,7 @@ func (h *AdapterHub) RegisterAdapter(adapter AgentFramework) {
 
 // RouteTask finds the appropriate adapter for a task and executes it.
 //
-// Summary: Routes a given task to the registered framework adapter and returns the execution result.
+// Intent: Routes a given task to the registered framework adapter and returns the execution result.
 //
 // Parameters:
 //   - ctx (context.Context): The context for controlling cancellation and timeouts.
