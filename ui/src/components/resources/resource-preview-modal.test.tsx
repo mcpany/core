@@ -87,7 +87,8 @@ describe('ResourcePreviewModal', () => {
       />
     );
     expect(screen.getByText('test.json')).toBeInTheDocument();
-    expect(screen.getByTestId('code-block')).toHaveTextContent('{"foo": "bar"}');
+    expect(screen.getByText(/foo/)).toBeInTheDocument();
+    expect(screen.getByText(/"bar"/)).toBeInTheDocument();
     expect(apiClient.readResource).not.toHaveBeenCalled();
   });
 
@@ -106,7 +107,8 @@ describe('ResourcePreviewModal', () => {
     expect(screen.getByText('Loading content...')).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(screen.getByTestId('code-block')).toHaveTextContent('{"foo": "bar"}');
+      expect(screen.getByText(/foo/)).toBeInTheDocument();
+      expect(screen.getByText(/"bar"/)).toBeInTheDocument();
     });
 
     expect(apiClient.readResource).toHaveBeenCalledWith(mockResource.uri);

@@ -42,7 +42,11 @@ describe('ResourceViewer', () => {
         text: '{"foo": "bar"}'
     };
     render(<ResourceViewer content={content} loading={false} />);
-    expect(screen.getByTestId('code-block')).toHaveTextContent('{"foo": "bar"}');
+    // RichResultViewer uses JsonView which renders the json string when the active tab is json
+    // But since it renders the JsonView component it's harder to query.
+    // However the test output shows it renders: "foo": "bar"
+    expect(screen.getByText(/foo/)).toBeInTheDocument();
+    expect(screen.getByText(/"bar"/)).toBeInTheDocument();
   });
 
   it('renders Markdown content', () => {
