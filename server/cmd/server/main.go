@@ -134,7 +134,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 						continue
 					}
 					if _, err := osFs.Stat(path); os.IsNotExist(err) {
-						return fmt.Errorf("❌ Configuration file not found: %s\n\n💡 Tip: You can generate a default configuration using:\n   %s config generate > %s", path, appconsts.Name, path)
+						return fmt.Errorf("❌ Configuration file not found: %s\n\n💡 Tip: You can generate a default configuration using:\n   %s init", path, appconsts.Name)
 					} else if err != nil {
 						return fmt.Errorf("❌ Failed to access configuration file %s: %w", path, err)
 					}
@@ -413,7 +413,6 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 		Use:   "generate",
 		Short: "Generate configuration",
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			_, _ = fmt.Fprintln(cmd.OutOrStdout(), "MCP Any CLI: Configuration Generator")
 
 			generator := config.NewGenerator()
 			configData, err := generator.Generate()
@@ -421,7 +420,6 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				return err
 			}
 
-			_, _ = fmt.Fprintln(cmd.OutOrStdout(), "\nGenerated configuration:")
 			_, _ = fmt.Fprint(cmd.OutOrStdout(), string(configData))
 
 			return nil
@@ -609,8 +607,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			}
 
 			minimalConfig := `global_settings:
-  mcp_listen_address: ":50050"
-  metrics_listen_address: ":9090"
+  mcp_listen_address: "127.0.0.1:50050"
   log_level: "info"
 upstream_services:
   - name: "example-service"

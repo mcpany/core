@@ -25,7 +25,7 @@ graph TD
    Ensure `bazelisk` and `make` are in your PATH.
 3. **Run the App:**
    ```bash
-   bazelisk run //server/cmd/mcpany -- -config examples/hello_world.yaml
+   bazelisk run //server/cmd/server -- run --config-path examples/hello_world.yaml
    ```
 
 ## Developer Workflow
@@ -40,7 +40,7 @@ To set up your development environment, verify code, and build:
   ```
 - **Build the binary:**
   ```bash
-  bazelisk build //server/cmd/mcpany
+  bazelisk build //server/cmd/server
   ```
 
 ## Architecture

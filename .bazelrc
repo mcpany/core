@@ -1,7 +1,7 @@
 # Bazel configuration for MCP Any
 
-build --config=remote
-test --config=remote
+build --config=local
+test --config=local
 
 # Enable disk cache for fast incremental builds
 build --disk_cache=~/.cache/bazel-disk-cache

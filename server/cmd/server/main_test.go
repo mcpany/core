@@ -504,8 +504,6 @@ func TestConfigGenerateCmd(t *testing.T) {
 
 	assert.NoError(t, err)
 	output := string(out)
-	assert.Contains(t, output, "MCP Any CLI: Configuration Generator")
-	assert.Contains(t, output, "Generated configuration:")
 	assert.Contains(t, output, "upstreamServices:")
 	assert.Contains(t, output, "name: \"my-service\"")
 }

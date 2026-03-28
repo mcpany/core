@@ -1,0 +1,18 @@
+global_settings:
+  mcp_listen_address: "127.0.0.1:50050"
+  log_level: "info"
+upstream_services:
+  - name: "example-service"
+    http_service:
+      address: "https://httpbin.org"
+      tools:
+        - name: "get_example"
+          description: "Get example data"
+          call_id: "get-example-call"
+          input_schema:
+            type: "object"
+            properties: {}
+      calls:
+        get-example-call:
+          method: "HTTP_METHOD_GET"
+          endpoint_path: "/get"
