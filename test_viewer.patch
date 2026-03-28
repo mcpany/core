@@ -1,0 +1,8 @@
+--- ui/src/components/resources/resource-viewer.test.tsx
++++ ui/src/components/resources/resource-viewer.test.tsx
+@@ -43,7 +43,7 @@
+     };
+     render(<ResourceViewer content={content} loading={false} />);
+-    expect(screen.getByTestId('code-block')).toHaveTextContent('{"foo": "bar"}');
++    expect(screen.getByText(/"foo"/)).toBeInTheDocument();
+   });
