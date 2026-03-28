@@ -1,0 +1,11 @@
+global_settings:
+  audit:
+    enabled: true
+    storage_type: 2
+    output_path: "audit.db"
+    log_arguments: true
+    log_results: true
+upstream_services:
+  - name: "dummy-service"
+    http_service:
+      address: "https://httpbin.org"
