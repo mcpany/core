@@ -8,6 +8,10 @@ import { describe, it, expect, vi } from 'vitest';
 import { ResourceViewer } from './resource-viewer';
 import { ResourceContent } from '@/lib/client';
 
+vi.mock('@/components/tools/rich-result-viewer', () => ({
+  RichResultViewer: ({ result }: any) => <div data-testid="rich-result">{JSON.stringify(result)}</div>
+}));
+
 // Mock syntax highlighter since it might cause issues in JSDOM
 vi.mock('react-syntax-highlighter/dist/esm/light', () => {
 /**
@@ -42,7 +46,7 @@ describe('ResourceViewer', () => {
         text: '{"foo": "bar"}'
     };
     render(<ResourceViewer content={content} loading={false} />);
-    expect(screen.getByTestId('code-block')).toHaveTextContent('{"foo": "bar"}');
+    expect(screen.getByTestId('rich-result')).toHaveTextContent('{"foo":"bar"}');
   });
 
   it('renders Markdown content', () => {

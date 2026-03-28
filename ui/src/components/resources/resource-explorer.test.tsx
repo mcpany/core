@@ -22,6 +22,10 @@ vi.mock('@/lib/client', () => ({
   },
 }));
 
+vi.mock('@/components/tools/rich-result-viewer', () => ({
+  RichResultViewer: ({ result }: any) => <div data-testid="rich-result">{JSON.stringify(result)}</div>
+}));
+
 // Mock syntax highlighter since it might cause issues in JSDOM
 vi.mock('react-syntax-highlighter/dist/esm/light', () => {
 /**
@@ -96,7 +100,7 @@ describe('ResourceExplorer', () => {
 
     await waitFor(() => {
         expect(apiClient.readResource).toHaveBeenCalledWith('file:///app/config.json');
-        expect(screen.getByTestId('code-block')).toHaveTextContent('{"test": true}');
+        expect(screen.getByTestId('rich-result')).toHaveTextContent('{"test":true}');
     });
   });
 });
