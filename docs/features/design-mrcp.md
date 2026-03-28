@@ -62,6 +62,12 @@ The **Mission-Root Continuity Provider (MRCP)** is an infrastructure layer for M
 ## 7. Evolutionary Changelog
 *   **2026-06-21:** Initial Document Creation.
 
+### Update: 2026-07-09 - Attention-Sovereignty Integration
+**Context:** Today's research into "Attention-Density DoS" and "Intent Ghosting" confirms that mission-root persistence must move beyond transport tokens to active attention-tier protection.
+**Architecture Adjustment:** * Integrating with the ASP Hub to perform "Attention Sealing" for mission fragments during resumption handoffs.
+* Mandating re-attestation of attention anchors every 10 hops.
+**Security Impact:** Ensures that core safety constraints remain the primary driver of behavior across deep, multi-framework swarms.
+
 ### Update: 2026-06-25 - Monotonic Lineage Attestation
 **Context:** Today's market sync revealed "Snapshot Corruption" risks in AMR and "Identity Leakage via Process Environment."
 **Architecture Adjustment:**

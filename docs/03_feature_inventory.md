@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-09] Updates
+
+### Proposed Additions
+- **Adaptive Role-Bound Gating (ARBG)**: (P0) Authoritative role brokerage service that gates autonomous role transitions in horizontal teams using hardware-attested "Role Cards."
+- **Attention-Sovereignty Persistence (ASP) Hub**: (P0) Security service that cryptographically "seals" mission-root anchors into protected attention tiers that persist across infinite delegation hops.
+- **Cross-Swarm State Immunizer (CSSI)**: (P0) High-speed behavioral sanitizer for the Blackboard that neutralizes "State Logic Bombs" as fragments migrate between sibling teams.
+- **Monologue Entropy Monitor (MEM)**: (P1) Stability middleware that performs real-time semantic divergence analysis on subagent reasoning monologues to detect "Ghost Instructions."
+
+### Priority Shifts
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **ASP-compliant** attention sealing.
+- **`TeammateTool` Orchestration Adapter**: (Re-affirmed P0) Evolving to support **ARBG-native** dynamic role swapping.
+
 ## Evolution: [2026-03-26] Updates
 
 ### Proposed Additions

@@ -167,6 +167,12 @@
 *   **[P0] Metadata Sanitization Gateway (MSG)**: Real-time semantic deconstruction of ingested metadata to neutralize instruction injection. (Added: 2026-03-26)
 *   **[P1] Post-Quantum Mesh Handshake (PQMH)**: Transition inter-agent transport to NIST-standard quantum-resistant algorithms. (Added: 2026-03-26)
 
+#### Upcoming (2026-07-09 Evolution)
+*   **[P0] Adaptive Role-Bound Gating (ARBG)**: Authoritative role brokerage for dynamic role-swapping in horizontal teams. (Added: 2026-07-09)
+*   **[P0] Attention-Sovereignty Persistence (ASP) Hub**: Cryptographic "sealing" of mission-root anchors to prevent attention-density DoS. (Added: 2026-07-09)
+*   **[P0] Cross-Swarm State Immunizer (CSSI)**: Behavioral sanitization for shared state migrating between sibling teams. (Added: 2026-07-09)
+*   **[P1] Monologue Entropy Monitor (MEM)**: Real-time semantic divergence analysis for subagent reasoning monologues. (Added: 2026-07-09)
+
 #### Upcoming (2026-03-25 Evolution)
 *   **[P0] Hardware-Attested Monotonic Depth-Counters**: physical constraint enforcement for recursive delegations to prevent infinite resource loops. (Added: 2026-03-25)
 *   **[P0] Relational PoI Chain Validator**: cryptographic lineage verification for every tool call to neutralize "Intent Ghosting" vulnerabilities. (Added: 2026-03-25)

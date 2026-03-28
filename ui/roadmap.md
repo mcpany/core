@@ -201,6 +201,12 @@
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
 
+#### Upcoming (2026-07-09 Evolution)
+- [ ] **[P0] Role-Swap Broker Dashboard**: (2026-07-09) UI for reviewing and gating autonomous agent role transitions in horizontal teams.
+- [ ] **[P0] Attention Sovereignty Heatmap**: (2026-07-09) Real-time visualization of attention-density and sovereign-fragment persistence.
+- [ ] **[P0] Cross-Swarm Immunity Explorer**: (2026-07-09) Visual workspace for monitoring and sanitizing state fragments migrating between swarms.
+- [ ] **[P1] Monologue Entropy Tracker**: (2026-07-09) Dashboard for monitoring semantic divergence in subagent reasoning monologues.
+
 #### Upcoming (2026-07-08 Evolution)
 - [ ] **[P0] Mesh Identity Manager**: (2026-07-08) UI for reviewing and approving hardware-attested, mesh-resident agent identities.
 - [ ] **[P0] Service Mesh Topology Monitor**: (2026-07-08) Real-time visualization of authenticated inter-agent communication channels and mesh health.
