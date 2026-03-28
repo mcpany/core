@@ -46,10 +46,10 @@ global.ResizeObserver = class ResizeObserver {
 
 describe('ResourcePreviewModal', () => {
   const mockResource: ResourceDefinition = {
-    uri: 'file:///test.json',
-    name: 'test.json',
-    mimeType: 'application/json',
-    title: 'test.json',
+    uri: 'file:///test.txt',
+    name: 'test.txt',
+    mimeType: 'text/plain',
+    title: 'test.txt',
     description: '',
     size: 0 as any,
     disable: false,
@@ -57,8 +57,8 @@ describe('ResourcePreviewModal', () => {
   };
 
   const mockContent: ResourceContent = {
-    uri: 'file:///test.json',
-    mimeType: 'application/json',
+    uri: 'file:///test.txt',
+    mimeType: 'text/plain',
     text: '{"foo": "bar"}',
   };
 
@@ -86,7 +86,7 @@ describe('ResourcePreviewModal', () => {
         initialContent={mockContent}
       />
     );
-    expect(screen.getByText('test.json')).toBeInTheDocument();
+    expect(screen.getByText('test.txt')).toBeInTheDocument();
     expect(screen.getByTestId('code-block')).toHaveTextContent('{"foo": "bar"}');
     expect(apiClient.readResource).not.toHaveBeenCalled();
   });

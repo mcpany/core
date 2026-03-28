@@ -37,8 +37,8 @@ describe('ResourceViewer', () => {
 
   it('renders JSON content', () => {
     const content: ResourceContent = {
-        uri: 'file:///config.json',
-        mimeType: 'application/json',
+        uri: 'file:///config.txt',
+        mimeType: 'text/plain',
         text: '{"foo": "bar"}'
     };
     render(<ResourceViewer content={content} loading={false} />);

@@ -863,8 +863,12 @@ func (a *Application) handleResources() http.HandlerFunc {
 		switch r.Method {
 		case http.MethodGet:
 			resources := a.ResourceManager.ListResources()
+			resList := make([]*mcp.Resource, len(resources))
+			for i, res := range resources {
+				resList[i] = res.Resource()
+			}
 			w.Header().Set("Content-Type", "application/json")
-			_ = json.NewEncoder(w).Encode(resources)
+			_ = json.NewEncoder(w).Encode(resList)
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}

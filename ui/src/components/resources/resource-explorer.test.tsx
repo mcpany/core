@@ -83,20 +83,21 @@ describe('ResourceExplorer', () => {
     apiClient.listResources.mockResolvedValueOnce({ resources: MOCK_RESOURCES });
     // @ts-expect-error Mocking partial implementation
     apiClient.readResource.mockResolvedValueOnce({
-        contents: [{ uri: 'file:///app/config.json', mimeType: 'application/json', text: '{"test": true}' }]
+        // Use text/plain so it falls back to syntax highlighter code-block
+        contents: [{ uri: 'file:///app/README.md', mimeType: 'text/plain', text: 'raw data' }]
     });
 
     render(<ResourceExplorer />);
 
     await waitFor(() => {
-        expect(screen.getByText('config.json')).toBeInTheDocument();
+        expect(screen.getByText('README.md')).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText('config.json'));
+    fireEvent.click(screen.getByText('README.md'));
 
     await waitFor(() => {
-        expect(apiClient.readResource).toHaveBeenCalledWith('file:///app/config.json');
-        expect(screen.getByTestId('code-block')).toHaveTextContent('{"test": true}');
+        expect(apiClient.readResource).toHaveBeenCalledWith('file:///app/README.md');
+        expect(screen.getByTestId('code-block')).toHaveTextContent('raw data');
     });
   });
 });
