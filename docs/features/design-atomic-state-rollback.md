@@ -43,6 +43,10 @@ As agent swarms become more autonomous and perform complex multi-step reasoning,
 
 ## 7. Evolutionary Changelog
 * **2026-03-29:** Initial Document Creation.
+* **2026-07-09: Swarm Sanity Integration & OpenClaw Alignment**
+    * **Context:** Market sync reveals OpenClaw v2026.3.28 adoption of ASR for swarm stability.
+    * **Architecture Adjustment:** Integrated with the ARI Hub for "Swarm Sanity" validation during rollback. Rollbacks now require a hardware-attested sanity check to ensure the restore point is not "Poisoned" by the same logic that triggered the failure.
+    * **Security Impact:** Prevents "Replay-Attack" loops where a rollback restores a state that triggers an immediate re-execution of the failing logic.
 * **2026-03-30: IPSC-Triggered Checkpoints**
     * **Context:** The discovery of "Cognitive Lock" in self-correction loops (UACO v2.1) requires more granular recovery options.
     * **Architecture Adjustment:** Added "Auto-Checkpointing" on the first correction cycle of an IPSC session. If the Correction Budget is exceeded, the ASR middleware can now offer an "Atomic Rollback to Pre-Correction State."

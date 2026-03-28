@@ -122,6 +122,12 @@
 *   **[P0] Multi-Signature Skill Attestation**: Security mechanism for dynamic skill grafting to prevent "Skill-Squatting." (Added: 2026-03-23)
 *   **[P0] Binary State Handoff (BSH) Gateway**: High-performance binary transport layer for agent state transfer. (Added: 2026-03-23 - Promoted to P0 on 2026-03-24)
 
+#### Upcoming (2026-07-09 Evolution)
+*   **[P0] Atomic State Rollback (ASR) Middleware**: Authoritative checkpoint and restoration service for swarm-wide stability. (Added: 2026-07-09)
+*   **[P0] Deterministic Workspace Trust (DWT) Enforcer**: Security-critical boot-sequence interceptor to prevent early config loading (CVE-2026-33068 defense). (Added: 2026-07-09)
+*   **[P1] Boot-Sequence Interceptor**: Strict lifecycle management for agent initialization tasks. (Added: 2026-07-09)
+*   **[P0] Swarm Sanity Validator**: State transition integrity checker for sharded meshes and ASR events. (Added: 2026-07-09)
+
 #### Upcoming (2026-03-24 Evolution)
 *   **[P0] Relational PoI Enforcement**: Advanced intent-chain validation to prevent "Context-Mirroring" attacks. (Added: 2026-03-24)
 *   **[P0] Ghost Shell Hook Profiler**: Instrumented sandbox for behavioral profiling of un-attested configuration hooks. (Added: 2026-03-24)

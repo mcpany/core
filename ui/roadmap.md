@@ -3,6 +3,9 @@
 ## Status: Active Development
 
 ### Universal Agent Bus (New Strategic Priorities)
+- [ ] **[P0] Swarm Rollback Console**: Interactive interface for managing swarm-wide checkpoints and reviewing ASR events. (Added: 2026-07-09)
+- [ ] **[P0] Workspace Trust Dialog**: Hardware-attested UI component for DWT Enforcer authorization flows. (Added: 2026-07-09)
+- [ ] **[P1] Boot-Sequence Visualizer**: Debugging tool for monitoring agent initialization order and interceptor status. (Added: 2026-07-09)
 - [ ] **[P0] Recursive Context Dashboard**: Visualize state inheritance and session tokens across agent swarms. (Added: 2026-02-23)
 - [ ] **[P0] Multi-Agent Session Timeline**: Visual tracking of agent handoffs and shared tool state. (Added: 2026-02-24)
 - [ ] **[P1] Unified Discovery Manager**: UI for managing and auto-discovering MCP servers across transports. (Added: 2026-02-24)

@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-09] Updates
+
+### Proposed Additions
+- **Atomic State Rollback (ASR) Middleware**: (P0) High-availability coordination service that enables swarm-wide state checkpoints and atomic rollbacks to known-good states, neutralizing hallucination cascades.
+- **Deterministic Workspace Trust (DWT) Enforcer**: (P0) Security-critical boot-sequence gate that prevents the loading of any project-local configurations, hooks, or environment overrides until hardware-attested trust is confirmed.
+- **Boot-Sequence Interceptor**: (P1) Lifecycle management service that strictly governs the order of agent initialization tasks to ensure the security perimeter is active before untrusted data ingestion.
+- **Swarm Sanity Validator**: (P0) Advanced security extension for the ARI Hub that performs real-time validation of state transition integrity during ASR events.
+
+### Priority Shifts
+- **ARI Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Swarm Sanity** integration for ASR support.
+- **Pre-Flight Sandbox Validator**: (Re-affirmed P0) Evolving to act as the primary integration point for the **DWT Enforcer**.
+
 ## Evolution: [2026-03-26] Updates
 
 ### Proposed Additions
