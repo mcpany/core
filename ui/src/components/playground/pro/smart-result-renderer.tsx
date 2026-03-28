@@ -144,7 +144,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
     }, [userViewMode, tableData, mcpContent]);
 
     const renderRaw = () => (
-        <JsonView data={result} maxHeight={400} />
+        <JsonView data={result} maxHeight={400} smartTable={false} />
     );
 
     const renderRich = () => {
@@ -161,7 +161,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                                         if (item.text) {
                                             const parsed = JSON.parse(item.text);
                                             if (typeof parsed === 'object' && parsed !== null) {
-                                                return <JsonView data={parsed} maxHeight={400} />;
+                                                return <JsonView data={parsed} maxHeight={400} smartTable={false} />;
                                             }
                                         }
                                     } catch (e) {}
