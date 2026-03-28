@@ -399,6 +399,38 @@ func generateMockAuditEntries() []audit.Entry {
 			Duration:   "5005ms",
 			DurationMs: 5005,
 		},
+		{
+			Timestamp: now.Add(1500 * time.Millisecond),
+			ToolName:  "fetch-large-payload",
+			UserID:    "system",
+			ProfileID: "default",
+			TraceID:   traceID,
+			SpanID:    traceID + "-5",
+			ParentID:  traceID + "-0",
+			Arguments: json.RawMessage(`{"endpoint": "/api/v1/config/full"}`),
+			Result: map[string]any{
+				"config": map[string]any{
+					"version": "1.0.0",
+					"features": map[string]bool{
+						"premium_timeline": true,
+						"beta_access":      false,
+						"dark_mode":        true,
+						"auto_save":        true,
+					},
+					"limits": map[string]int{
+						"max_users":  1000,
+						"max_spaces": 50,
+					},
+					"services": []string{"auth", "database", "cache", "search"},
+				},
+				"metadata": map[string]any{
+					"timestamp": "2026-03-21T10:00:00Z",
+					"region":    "us-east-1",
+				},
+			},
+			Duration:   "850ms",
+			DurationMs: 850,
+		},
 	}
 	return entries
 }

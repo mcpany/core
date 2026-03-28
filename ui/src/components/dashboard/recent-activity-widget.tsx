@@ -102,7 +102,7 @@ export function RecentActivityWidget() {
   }, [fetchTraces]);
 
   return (
-    <Card className="col-span-3 bg-background/80 backdrop-blur-md border-muted/50 shadow-sm overflow-hidden flex flex-col">
+    <Card className="col-span-3 bg-background/80 backdrop-blur-md shadow-sm overflow-hidden flex flex-col border border-border/40">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 border-b border-muted/50 bg-muted/10">
         <div className="space-y-1">
             <CardTitle className="text-base font-semibold flex items-center gap-2 tracking-tight">
@@ -138,9 +138,16 @@ export function RecentActivityWidget() {
             <div className="relative z-10 p-4 space-y-4">
                 {traces.map((trace, index) => {
                     const isExpanded = expandedTraceId === trace.id;
-                    const isSuccess = trace.status === 'success';
-                    const isError = trace.status === 'error';
-                    const hasResponseDiff = trace.rootSpan.attributes?.['mcp.response_diff'] !== undefined;
+
+                    const reqPayload = trace.rootSpan.attributes?.['mcp.request_payload'] || trace.rootSpan.input;
+                    const resPayload = trace.rootSpan.attributes?.['mcp.response_payload'] || trace.rootSpan.output;
+                    const errMessage = trace.rootSpan.attributes?.['error.message'] || trace.rootSpan.errorMessage;
+
+                    const isError = trace.status === "error" || trace.rootSpan.status === "error";
+                    const isSuccess = trace.status === "success" || trace.rootSpan.status === "success";
+                    const hasResponseDiff = trace.rootSpan.attributes?.['mcp.response_diff'] !== undefined || (trace.rootSpan.input && trace.rootSpan.input['mcp.response_diff'] !== undefined);
+                    const diffContent = trace.rootSpan.attributes?.['mcp.response_diff'] || (trace.rootSpan.input && trace.rootSpan.input['mcp.response_diff']);
+
 
                     return (
                         <div key={trace.id} className="relative group">
@@ -150,9 +157,10 @@ export function RecentActivityWidget() {
                             )}
                             <div
                                 className={cn(
-                                    "flex flex-col sm:flex-row gap-3 sm:gap-4 p-3 rounded-xl transition-all duration-300 ease-in-out border border-transparent",
-                                    "hover:bg-muted/30 hover:border-border/50 hover:shadow-sm cursor-pointer",
-                                    isExpanded && "bg-muted/30 border-border/50 shadow-sm"
+                                    "flex flex-col sm:flex-row gap-3 sm:gap-4 p-3 rounded-xl transition-all duration-300 ease-in-out border",
+                                    "hover:bg-muted/30 hover:border-border/60 cursor-pointer shadow-sm",
+                                    isExpanded ? "bg-muted/30 border-border/60" : "bg-background/50 border-border/40 hover:scale-[1.01] hover:shadow-md",
+                                    isError && "hover:bg-destructive/5 border-destructive/10 hover:border-destructive/20"
                                 )}
                                 onClick={() => toggleExpand(trace.id)}
                             >
@@ -160,8 +168,8 @@ export function RecentActivityWidget() {
                                 <div className="flex items-start shrink-0 pt-1 relative z-10">
                                     <div className={cn(
                                         "rounded-full p-2 ring-4 ring-background shadow-sm transition-transform duration-300 group-hover:scale-110",
-                                        isSuccess ? "text-emerald-500 bg-emerald-500/10" :
-                                        isError ? "text-destructive bg-destructive/10" : "text-amber-500 bg-amber-500/10"
+                                        isSuccess ? "text-emerald-500 bg-emerald-500/10 border border-emerald-500/20" :
+                                        isError ? "text-destructive bg-destructive/10 border border-destructive/20" : "text-amber-500 bg-amber-500/10 border border-amber-500/20"
                                     )}>
                                         {isSuccess ? <CheckCircle2 className="h-4 w-4" /> :
                                          isError ? <XCircle className="h-4 w-4" /> : <Clock className="h-4 w-4" />}
@@ -169,8 +177,8 @@ export function RecentActivityWidget() {
                                     {/* Pulsating ring for the most recent item */}
                                     {index === 0 && (
                                         <div className={cn(
-                                            "absolute inset-0 rounded-full animate-ping opacity-20",
-                                            isSuccess ? "bg-emerald-500" : isError ? "bg-destructive" : "bg-amber-500"
+                                            "absolute inset-0 rounded-full animate-ping opacity-30",
+                                            isSuccess ? "bg-emerald-400" : isError ? "bg-destructive/80" : "bg-amber-400"
                                         )} />
                                     )}
                                 </div>
@@ -212,41 +220,41 @@ export function RecentActivityWidget() {
                                         "grid transition-all duration-300 ease-in-out",
                                         isExpanded ? "grid-rows-[1fr] mt-3 opacity-100" : "grid-rows-[0fr] opacity-0"
                                     )}>
-                                        <div className="overflow-hidden space-y-3">
+                                        <div className="overflow-hidden space-y-3 pt-1">
                                             {/* Request Payload */}
-                                            {trace.rootSpan.attributes?.['mcp.request_payload'] && (
+                                            {reqPayload && (
                                                 <div className="space-y-1.5">
-                                                    <div className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
-                                                        <Code2 className="h-3 w-3" /> Request
+                                                    <div className="text-[11px] font-semibold tracking-wide uppercase text-muted-foreground flex items-center gap-1.5">
+                                                        <Code2 className="h-3 w-3" /> Request Payload
                                                     </div>
-                                                    <div className="bg-muted/50 rounded-md border border-border/50 overflow-hidden">
-                                                        <RichResultViewer result={safeParsePayload(trace.rootSpan.attributes['mcp.request_payload'])} />
+                                                    <div className="bg-[#1e1e1e] dark:bg-[#0d0d0d] rounded-md border border-border/40 overflow-hidden shadow-inner p-1">
+                                                        <RichResultViewer result={safeParsePayload(reqPayload)} />
                                                     </div>
                                                 </div>
                                             )}
 
                                             {/* Error Message */}
-                                            {isError && trace.rootSpan.attributes?.['error.message'] && (
+                                            {isError && errMessage && (
                                                 <div className="space-y-1.5">
-                                                    <div className="text-xs font-medium text-destructive flex items-center gap-1.5">
+                                                    <div className="text-[11px] font-semibold tracking-wide uppercase text-destructive flex items-center gap-1.5">
                                                         <XCircle className="h-3 w-3" /> Error Details
                                                     </div>
-                                                    <div className="bg-destructive/10 rounded-md p-2 border border-destructive/20 overflow-x-auto text-destructive">
-                                                        <pre className="text-[11px] font-mono whitespace-pre-wrap break-all">
-                                                            {trace.rootSpan.attributes['error.message']}
+                                                    <div className="bg-destructive/10 rounded-md p-3 border border-destructive/20 overflow-x-auto text-destructive">
+                                                        <pre className="text-[12px] font-mono whitespace-pre-wrap break-all leading-relaxed">
+                                                            {errMessage}
                                                         </pre>
                                                     </div>
                                                 </div>
                                             )}
 
                                             {/* Response Payload (if not diff) */}
-                                            {!hasResponseDiff && trace.rootSpan.attributes?.['mcp.response_payload'] && !isError && (
+                                            {!hasResponseDiff && resPayload && !isError && (
                                                 <div className="space-y-1.5">
-                                                    <div className="text-xs font-medium text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-                                                        <CheckCircle2 className="h-3 w-3" /> Response
+                                                    <div className="text-[11px] font-semibold tracking-wide uppercase text-emerald-600 dark:text-emerald-500 flex items-center gap-1.5">
+                                                        <CheckCircle2 className="h-3 w-3" /> Response Payload
                                                     </div>
-                                                    <div className="bg-emerald-500/5 rounded-md border border-emerald-500/20 overflow-hidden">
-                                                        <RichResultViewer result={safeParsePayload(trace.rootSpan.attributes['mcp.response_payload'])} />
+                                                    <div className="bg-[#1e1e1e] dark:bg-[#0d0d0d] rounded-md border border-emerald-500/20 overflow-hidden shadow-inner p-1">
+                                                        <RichResultViewer result={safeParsePayload(resPayload)} />
                                                     </div>
                                                 </div>
                                             )}
@@ -254,32 +262,32 @@ export function RecentActivityWidget() {
                                             {/* Response Diff (Premium Feature) */}
                                             {hasResponseDiff && (
                                                  <div className="space-y-1.5">
-                                                    <div className="text-xs font-medium text-blue-600 dark:text-blue-400 flex items-center gap-1.5">
-                                                        <Activity className="h-3 w-3" /> Response Diff
+                                                    <div className="text-[11px] font-semibold tracking-wide uppercase text-blue-600 dark:text-blue-500 flex items-center gap-1.5">
+                                                        <Activity className="h-3 w-3" /> Inline Diff
                                                     </div>
-                                                    <div className="bg-background rounded-md border border-border overflow-hidden">
-                                                        <pre className="text-[11px] font-mono whitespace-pre-wrap break-all m-0">
-                                                            {/* Mock rendering of a unified diff */}
-                                                            {String(trace.rootSpan.attributes['mcp.response_diff']).split('\n').map((line, i) => {
+                                                    <div className="bg-[#1e1e1e] dark:bg-[#0d0d0d] rounded-md border border-border/50 overflow-hidden shadow-inner">
+                                                        <pre className="text-[12px] font-mono whitespace-pre-wrap break-all m-0 leading-[1.6]">
+                                                            {/* Premium rendering of a unified diff */}
+                                                            {String(diffContent).split('\n').map((line, i) => {
                                                                 if (line.startsWith('+')) {
-                                                                    return <div key={i} className="bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 px-2 py-0.5">{line}</div>;
+                                                                    return <div key={i} className="bg-emerald-500/10 text-emerald-400 px-3 py-0.5 border-l-2 border-emerald-500"><span className="select-none opacity-50 mr-2">+</span>{line.substring(1)}</div>;
                                                                 }
                                                                 if (line.startsWith('-')) {
-                                                                    return <div key={i} className="bg-destructive/20 text-destructive px-2 py-0.5">{line}</div>;
+                                                                    return <div key={i} className="bg-destructive/10 text-destructive-foreground/80 dark:text-red-400 px-3 py-0.5 border-l-2 border-destructive/80"><span className="select-none opacity-50 mr-2">-</span>{line.substring(1)}</div>;
                                                                 }
                                                                 if (line.startsWith('@')) {
-                                                                    return <div key={i} className="bg-blue-500/10 text-blue-600 px-2 py-0.5 opacity-70">{line}</div>;
+                                                                    return <div key={i} className="bg-blue-500/5 text-blue-400 px-3 py-1 opacity-80 text-[11px] mt-1 mb-1 border-t border-b border-border/20"><span className="select-none">{line}</span></div>;
                                                                 }
-                                                                return <div key={i} className="px-2 py-0.5 opacity-80">{line}</div>;
+                                                                return <div key={i} className="px-3 py-0.5 text-foreground/80 opacity-90 border-l-2 border-transparent"><span className="select-none opacity-0 mr-2"> </span>{line}</div>;
                                                             })}
                                                         </pre>
                                                     </div>
                                                 </div>
                                             )}
 
-                                            <div className="flex justify-end pt-2">
-                                                <Button variant="secondary" size="sm" className="h-7 text-xs" asChild>
-                                                    <Link to={`/traces?id=${trace.id}`}>View Full Trace</Link>
+                                            <div className="flex justify-end pt-3 pb-1">
+                                                <Button variant="outline" size="sm" className="h-8 text-xs font-medium shadow-sm" asChild>
+                                                    <Link to={`/traces?id=${trace.id}`}>Inspect Trace Details</Link>
                                                 </Button>
                                             </div>
                                         </div>
