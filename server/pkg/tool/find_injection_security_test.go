@@ -42,7 +42,7 @@ func TestFindInjection(t *testing.T) {
 		input := "foo -exec echo pwned +"
 
 		req := &ExecutionRequest{
-			ToolName:   "find_tool",
+			ToolName: "find_tool",
 			ToolInputs: []byte(fmt.Sprintf(`{"filename": %q}`, input)),
 			Arguments: map[string]interface{}{
 				"filename": input,
@@ -81,7 +81,7 @@ func TestFindInjection(t *testing.T) {
 		input := "foo -delete"
 
 		req := &ExecutionRequest{
-			ToolName:   "find_delete_tool",
+			ToolName: "find_delete_tool",
 			ToolInputs: []byte(fmt.Sprintf(`{"filename": %q}`, input)),
 			Arguments: map[string]interface{}{
 				"filename": input,

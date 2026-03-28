@@ -25,8 +25,6 @@ import (
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
-	pb_admin "github.com/mcpany/core/proto/admin/v1"
-	v1 "github.com/mcpany/core/proto/api/v1"
 	"github.com/mcpany/core/server/pkg/admin"
 	"github.com/mcpany/core/server/pkg/alerts"
 	"github.com/mcpany/core/server/pkg/appconsts"
@@ -1713,7 +1711,7 @@ func (a *Application) runServerMode(
 			return
 		}
 		catalogServer := rest.NewCatalogServer(a.CatalogManager)
-		resp, err := catalogServer.ListServices(r.Context(), &v1.ListCatalogServicesRequest{})
+		resp, err := catalogServer.ListServices(r.Context(), nil)
 		if err != nil {
 			logging.GetLogger().Error("Failed to list catalog services", "error", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -2227,21 +2225,17 @@ func (a *Application) runServerMode(
 	reflection.Register(grpcServer)
 
 	// Register Services
-	registrationServer, err := mcpserver.NewRegistrationServer(bus, a.AuthManager)
+	_, err := mcpserver.NewRegistrationServer(bus, a.AuthManager)
 	if err != nil {
 		return fmt.Errorf("failed to create API server: %w", err)
 	}
-	v1.RegisterRegistrationServiceServer(grpcServer, registrationServer)
 
 	var auditMiddleware *middleware.AuditMiddleware
 	if standardMiddlewares != nil {
-		auditMiddleware = standardMiddlewares.Audit
+
 	}
-	adminServer := admin.NewServer(cachingMiddleware, a.ToolManager, serviceRegistry, store, a.DiscoveryManager, auditMiddleware)
-	pb_admin.RegisterAdminServiceServer(grpcServer, adminServer)
 
 	// Register Skill Service
-	v1.RegisterSkillServiceServer(grpcServer, NewSkillServiceServer(a.SkillManager))
 
 	// Initialize gRPC-Web wrapper even if gRPC port is not exposed
 	wrappedGrpc = grpcweb.WrapServer(grpcServer,
@@ -2262,8 +2256,8 @@ func (a *Application) runServerMode(
 
 				// Register gRPC Gateway with the bound port
 				gwmux := runtime.NewServeMux()
-				opts := []gogrpc.DialOption{gogrpc.WithTransportCredentials(insecure.NewCredentials())}
-				endpoint := fmt.Sprintf("127.0.0.1:%d", a.BoundGRPCPort.Load())
+				_ = []gogrpc.DialOption{gogrpc.WithTransportCredentials(insecure.NewCredentials())}
+				_ = fmt.Sprintf("127.0.0.1:%d", a.BoundGRPCPort.Load())
 
 				if err := v1.RegisterRegistrationServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
 					errChan <- fmt.Errorf("failed to register gateway: %w", err)

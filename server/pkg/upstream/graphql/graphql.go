@@ -139,10 +139,10 @@ type graphQLType struct {
 }
 
 type graphQLTypeWithFields struct {
-	Kind   string                  `json:"kind"`
-	Name   *string                 `json:"name"`
+	Kind   string                 `json:"kind"`
+	Name   *string                `json:"name"`
 	Fields []struct{ Name string } `json:"fields"`
-	OfType *graphQLTypeWithFields  `json:"ofType"`
+	OfType *graphQLTypeWithFields `json:"ofType"`
 }
 
 func getFieldsFromType(t *graphQLTypeWithFields) []struct{ Name string } {

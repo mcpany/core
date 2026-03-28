@@ -6,8 +6,8 @@ package provider
 import (
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
+	"strings"
 
 	"github.com/stretchr/testify/require"
 )
