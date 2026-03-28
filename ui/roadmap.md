@@ -759,3 +759,8 @@
 - [ ] **[P0] Programmatic SDK Monitor**: Real-time visualization of SDK-driven agent interactions and Zero-Trust gate status. (Added: 2026-03-25)
 - [ ] **[P1] Session Sovereignty Dashboard**: UI for monitoring hardware-bound SQLite session state and attestation status. (Added: 2026-03-25)
 - [ ] **[P0] Pre-Flight Manifest Reviewer**: Visual workspace for reviewing and approving cryptographically signed mission-root manifests for non-interactive execution. (Added: 2026-03-25)
+
+#### Upcoming (2026-07-09 Evolution)
+- [ ] **[P0] Dynamic Identity Rotation Dashboard**: (2026-07-09) Visualize high-frequency token rotation and hardware-bound heartbeat status.
+- [ ] **[P0] Collusion-Resistant Audit Log**: (2026-07-09) Cross-agent intent alignment visualization and intent-splicing alerts.
+- [ ] **[P1] Peer Tool Attestation Viewer**: (2026-07-09) UI for reviewing swarm-local tool schema verification results.

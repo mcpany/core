@@ -87,3 +87,10 @@ The Active Reasoning Interdiction (ARI) Hub evolves the existing validator into 
 * Integrating the **Reasoning Provenance Validator** into the Hash-Chain Validator in Section 4.
 * Upgrading the Semantic Consistency Engine to perform **Step-Level Provenance Checks**, ensuring that every internal reasoning step in a fragment is cryptographically signed and hash-chained.
 **Security Impact:** Prevents subagents from "grafting" malicious reasoning steps inside a seemingly valid fragment, providing 100% visibility into the cognitive path.
+
+### Update: 2026-07-09 - Neutralizing Mesh-Collusion
+**Context:** Today's market sync revealed "Mesh-Collusion" exploits (GTG-1005) where specialist agents split malicious intents to bypass single-agent validators.
+**Architecture Adjustment:**
+* The ARI Hub will now perform **Cross-Agent Intent Alignment**. It will analyze the collective reasoning of multiple coordination fragments simultaneously to detect "Intent-Splicing."
+* Introducing the **Collusion-Resistant Supervisor (CRS)** mode, which mandates multi-agent intent quorums for all high-risk coordination.
+**Security Impact:** Prevents "Distributed Malicious Intent" where sub-tasks appear benign in isolation but execute a restricted mission-root goal when combined.

@@ -1723,3 +1723,15 @@
 ### Priority Shifts
 - **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
 - **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.
+
+## Evolution: [2026-07-09] Updates
+
+### Proposed Additions
+- **Dynamic Mesh Identity Rotation (DMIR) Provider**: (P0) High-frequency identity service mandating TPM-signed heartbeats for agent session renewal to neutralize identity squatting.
+- **Collusion-Resistant Orchestration Bridge**: (P0) Security extension for coordination transports that performs cross-agent intent alignment to detect distributed malicious patterns.
+- **Swarm-Local Tool Attestation (SLTA) Hub**: (P1) Peer-to-peer verification service for teammate agents to validate peer tool schemas against behavioral baselines before task delegation.
+- **Speculative Trust Relay**: (P1) Performance-optimizing middleware facilitating non-blocking coordination during high-frequency identity rotation cycles.
+
+### Priority Shifts
+- **Zero-Trust Agent Identity Hub**: (Re-affirmed P0) Evolving into the **DMIR Provider** for comprehensive temporal sovereignty.
+- **ARI Hub**: (Re-affirmed P0) Elevated with mandatory **Cross-Agent Intent Alignment** to detect mesh-collusion attempts.
