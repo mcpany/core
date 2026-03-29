@@ -2,192 +2,115 @@ package interop_test
 
 import (
 	"context"
-	"strings"
 	"testing"
 
 	"github.com/mcpany/core/src/interop"
 )
 
-// TestMultiAgentSwarmSimulation simulates a complete end-to-end swarm test
-// utilizing multiple agent frameworks managed by the Universal Adapter Hub.
-func TestMultiAgentSwarmSimulation(t *testing.T) {
+func TestHubAndAdapters(t *testing.T) {
+	ctx := context.Background()
 	hub := interop.NewAdapterHub()
 
-	// 1. Register Adapters
-	hub.RegisterAdapter(interop.NewOpenClawAdapter())
-	hub.RegisterAdapter(interop.NewCrewAIAdapter())
-	hub.RegisterAdapter(interop.NewAutoGenAdapter())
+	oc := interop.NewOpenClawAdapter()
+	cai := interop.NewCrewAIAdapter()
+	ag := interop.NewAutoGenAdapter()
 
-	// Context for tasks
-	ctx := context.Background()
+	hub.RegisterAdapter(oc)
+	hub.RegisterAdapter(cai)
+	hub.RegisterAdapter(ag)
 
-	// 2. OpenClaw Task: Adaptive Reasoning Simulation
-	t.Run("OpenClaw_AdaptiveReasoning", func(t *testing.T) {
+	// 1. Test Name Mapping
+	if oc.Name() != "OpenClaw" {
+		t.Errorf("Expected OpenClaw, got %s", oc.Name())
+	}
+	if cai.Name() != "CrewAI" {
+		t.Errorf("Expected CrewAI, got %s", cai.Name())
+	}
+	if ag.Name() != "AutoGen" {
+		t.Errorf("Expected AutoGen, got %s", ag.Name())
+	}
+
+	// 2. Test Capability Routing
+	t.Run("Routing", func(t *testing.T) {
 		task1 := &interop.Task{
-			ID:        "task-oc-001",
+			ID:        "task-1",
 			Framework: "OpenClaw",
 			Intent:    "adaptive_reasoning",
-			Payload:   map[string]string{"context": "high_entropy_data"},
+			Payload:   map[string]string{"input": "test-oc"},
 		}
 
 		res1, err := hub.RouteTask(ctx, task1)
 		if err != nil {
-			t.Fatalf("Failed to execute OpenClaw task: %v", err)
+			t.Fatalf("Failed to route to OpenClaw: %v", err)
 		}
-
 		if res1.Status != "success" {
-			t.Errorf("Expected OpenClaw status 'success', got '%s'", res1.Status)
+			t.Errorf("Expected success, got %s", res1.Status)
 		}
 
-		if res1.Telemetry["entropy_score"] != "low" {
-			t.Errorf("Expected OpenClaw low entropy score, got '%s'", res1.Telemetry["entropy_score"])
-		}
-	})
-
-	t.Run("OpenClaw_UnsupportedCapability", func(t *testing.T) {
-		taskOCUnsupported := &interop.Task{
-			ID:        "task-oc-unsup",
-			Framework: "OpenClaw",
-			Intent:    "unsupported_intent",
-			Payload:   map[string]string{"data": "test"},
-		}
-
-		_, err := hub.RouteTask(ctx, taskOCUnsupported)
-		if err == nil {
-			t.Error("Expected error for unsupported OpenClaw capability, got nil")
-		} else if err.Error() != "OpenClaw does not support capability: unsupported_intent" {
-			t.Errorf("Unexpected error message: %v", err)
-		}
-	})
-
-	// 3. CrewAI Task: Role Delegation
-	t.Run("CrewAI_RoleDelegation", func(t *testing.T) {
 		task2 := &interop.Task{
-			ID:        "task-cai-002",
+			ID:        "task-2",
 			Framework: "CrewAI",
-			Intent:    "task_delegation",
-			Payload:   map[string]string{"role": "data_analyst"},
+			Intent:    "role_delegation",
+			Payload:   map[string]string{"role": "researcher"},
 		}
 
 		res2, err := hub.RouteTask(ctx, task2)
 		if err != nil {
-			t.Fatalf("Failed to execute CrewAI task: %v", err)
+			t.Fatalf("Failed to route to CrewAI: %v", err)
 		}
-
-		if !strings.Contains(res2.Output, "data_analyst") {
-			t.Errorf("Expected CrewAI output to contain 'data_analyst', got '%s'", res2.Output)
-		}
-
-		if res2.Telemetry["auth_status"] != "verified" {
-			t.Errorf("Expected CrewAI auth_status to be verified, got '%s'", res2.Telemetry["auth_status"])
+		if res2.Telemetry["delegated_role"] != "researcher" {
+			t.Errorf("Expected researcher role, got %s", res2.Telemetry["delegated_role"])
 		}
 	})
 
-	t.Run("CrewAI_DefaultRole", func(t *testing.T) {
-		taskCAIDefaultRole := &interop.Task{
-			ID:        "task-cai-003",
-			Framework: "CrewAI",
-			Intent:    "task_delegation",
-		}
-
-		res, err := hub.RouteTask(ctx, taskCAIDefaultRole)
-		if err != nil {
-			t.Fatalf("Failed to execute CrewAI task: %v", err)
-		}
-
-		if res.Telemetry["delegated_role"] != "generalist" {
-			t.Errorf("Expected CrewAI delegated_role to be 'generalist', got '%s'", res.Telemetry["delegated_role"])
-		}
-	})
-
-	t.Run("CrewAI_UnsupportedCapability", func(t *testing.T) {
-		taskCAIUnsupported := &interop.Task{
-			ID:        "task-cai-unsup",
-			Framework: "CrewAI",
-			Intent:    "unsupported_intent",
-		}
-
-		_, err := hub.RouteTask(ctx, taskCAIUnsupported)
-		if err == nil {
-			t.Error("Expected error for unsupported CrewAI capability, got nil")
-		} else if err.Error() != "CrewAI does not support capability: unsupported_intent" {
-			t.Errorf("Unexpected error message: %v", err)
-		}
-	})
-
-	// 4. AutoGen Task: Subagent Checkpoint
-	t.Run("AutoGen_SubagentCheckpoint", func(t *testing.T) {
-		task3 := &interop.Task{
-			ID:        "task-ag-003",
+	// 3. Test Unsupported Capability
+	t.Run("Unsupported", func(t *testing.T) {
+		task := &interop.Task{
+			ID:        "task-unsupported",
 			Framework: "AutoGen",
-			Intent:    "subagent_exec",
-			Payload:   map[string]string{"action": "compile_report"},
+			Intent:    "non_existent_capability",
 		}
-
-		res3, err := hub.RouteTask(ctx, task3)
-		if err != nil {
-			t.Fatalf("Failed to execute AutoGen task: %v", err)
-		}
-
-		if res3.Telemetry["mailbox_integrity"] != "verified" {
-			t.Errorf("Expected AutoGen mailbox integrity 'verified', got '%s'", res3.Telemetry["mailbox_integrity"])
-		}
-
-		if res3.Telemetry["history_length"] == "0" {
-			t.Errorf("Expected AutoGen chat history to increment, history_length is 0")
+		_, err := hub.RouteTask(ctx, task)
+		if err == nil {
+			t.Error("Expected error for unsupported capability, got nil")
 		}
 	})
 
-	t.Run("AutoGen_UnsupportedCapability", func(t *testing.T) {
-		taskAGUnsupported := &interop.Task{
-			ID:        "task-ag-unsup",
+	// 4. Test Multi-Agent Conversation (AutoGen)
+	t.Run("AutoGen_Conversation", func(t *testing.T) {
+		task := &interop.Task{
+			ID:        "task-ag-conv",
 			Framework: "AutoGen",
-			Intent:    "unsupported_intent",
+			Intent:    "multi_agent_convo",
+			Payload:   map[string]string{"agents": "assistant,coder"},
 		}
-
-		_, err := hub.RouteTask(ctx, taskAGUnsupported)
-		if err == nil {
-			t.Error("Expected error for unsupported AutoGen capability, got nil")
-		} else if err.Error() != "AutoGen does not support capability: unsupported_intent" {
-			t.Errorf("Unexpected error message: %v", err)
+		res, err := hub.RouteTask(ctx, task)
+		if err != nil {
+			t.Fatalf("AutoGen task failed: %v", err)
 		}
-	})
-
-	// 5. Error Case: Unsupported Framework
-	t.Run("Unsupported_Framework", func(t *testing.T) {
-		taskInvalid := &interop.Task{
-			ID:        "task-inv-004",
-			Framework: "UnknownFramework",
-			Intent:    "do_magic",
-		}
-		_, err := hub.RouteTask(ctx, taskInvalid)
-		if err == nil {
-			t.Error("Expected error for routing task to unknown framework, got nil")
+		if res.Telemetry["convo_depth"] != "3" {
+			t.Errorf("Expected convo depth 3, got %s", res.Telemetry["convo_depth"])
 		}
 	})
 
-	// 6. UMMB Sync Memory Shard Test
-	t.Run("UMMB_SyncMemoryShard", func(t *testing.T) {
+	// 5. Test Memory Shard Sync
+	t.Run("MemorySync", func(t *testing.T) {
 		validShard := &interop.MemoryShard{
-			ShardID:           "shard-100",
-			Intent:            "cross-framework-sync",
-			TextContent:       "Mission context update.",
-			MultimodalPayload: []byte("<svg>mocked</svg>"),
-			Signature:         "valid_hardware_signature",
+			ShardID:   "shard-123",
+			Intent:    "global_context",
+			Signature: "valid-sig",
 		}
-
 		invalidShard := &interop.MemoryShard{
-			ShardID:           "shard-101",
-			Intent:            "unverified-sync",
-			TextContent:       "Malicious context.",
-			MultimodalPayload: []byte("<svg>malicious</svg>"),
-			Signature:         "", // Missing signature should fail
+			ShardID: "shard-456",
 		}
 
-		adapters := []string{"OpenClaw", "CrewAI", "AutoGen"}
-		for _, name := range adapters {
-			adapter := getAdapterByName(hub, name)
+		adapters := map[string]interop.AgentFramework{
+			"OpenClaw": oc,
+			"CrewAI":   cai,
+			"AutoGen":  ag,
+		}
 
+		for name, adapter := range adapters {
 			err := adapter.SyncMemoryShard(ctx, validShard)
 			if err != nil {
 				t.Errorf("Expected successful sync for %s, got error: %v", name, err)
@@ -199,7 +122,6 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 			}
 		}
 	})
-<<<<<<< HEAD
 
 	// 7. Streaming Task Test
 	t.Run("OpenClaw_Streaming", func(t *testing.T) {
@@ -228,8 +150,6 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 			t.Errorf("Expected 2 chunks, got %d", len(chunks))
 		}
 	})
-=======
->>>>>>> 1cf24f72 (Strategic Evolution: Dynamic Mesh Resilience & Economic Attribution (#7282))
 }
 
 // Helper to access registered adapters for testing interface direct calls

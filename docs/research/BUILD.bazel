@@ -1,13 +1,9 @@
 # docs/research/BUILD.bazel
 filegroup(
     name = "docs",
-<<<<<<< HEAD
     srcs = [
+        "evolution-2026-07-12-streaming.md",
         "interop_blueprint.md",
-        "evolution-2026-07-12-streaming.md"
     ],
-=======
-    srcs = ["interop_blueprint.md"],
->>>>>>> 1cf24f72 (Strategic Evolution: Dynamic Mesh Resilience & Economic Attribution (#7282))
     visibility = ["//visibility:public"],
 )

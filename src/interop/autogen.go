@@ -7,7 +7,7 @@ import (
 
 // AutoGenAdapter implements the AgentFramework interface for AutoGen.
 //
-// Intent: Represents an adapter that connects the AutoGen multi-agent framework to the universal adapter hub.
+// Intent: Standard adapter for bridging the AutoGen multi-agent framework to the universal bus.
 //
 // Parameters:
 //   - None.
@@ -22,43 +22,43 @@ import (
 //   - None.
 type AutoGenAdapter struct {
 	Capabilities map[string]bool
-	ChatHistory  []string // Maintain stateful checkpoints
+	ConvoHistory []string
 }
 
 // NewAutoGenAdapter creates a new AutoGenAdapter instance.
 //
-// Intent: Constructs a new AutoGenAdapter with predefined multi-agent capabilities.
+// Intent: Constructor that initializes an AutoGen adapter with predefined capabilities like multi-agent conversation.
 //
 // Parameters:
 //   - None.
 //
 // Returns:
-//   - *AutoGenAdapter: A newly created pointer to an AutoGenAdapter instance.
+//   - *AutoGenAdapter: A pointer to the newly created AutoGenAdapter.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - Allocates internal state variables for capabilities and chat history.
+//   - Allocates memory for the AutoGenAdapter and its capability map.
 func NewAutoGenAdapter() *AutoGenAdapter {
 	return &AutoGenAdapter{
 		Capabilities: map[string]bool{
-			"multi_agent_chat": true,
-			"subagent_exec":    true,
+			"multi_agent_convo": true,
+			"code_execution":    true,
 		},
-		ChatHistory: make([]string, 0),
+		ConvoHistory: []string{},
 	}
 }
 
 // Name returns the identifier of the agent framework.
 //
-// Intent: Retrieves the exact name identifier for the AutoGen adapter.
+// Intent: Returns the name "AutoGen" as the unique identifier for this adapter.
 //
 // Parameters:
 //   - None.
 //
 // Returns:
-//   - string: The name "AutoGen".
+//   - string: The name of the adapter.
 //
 // Errors:
 //   - None.
@@ -71,71 +71,64 @@ func (a *AutoGenAdapter) Name() string {
 
 // HandleTask translates and executes a universal task on the AutoGen framework.
 //
-// Intent: Processes and executes a task through simulated multi-agent subagent execution.
+// Intent: Executes a task by simulating a multi-turn conversation between AutoGen agents.
 //
 // Parameters:
-//   - ctx (context.Context): Execution context for controlling cancellation and timeout.
-//   - task (*Task): The generic task object that needs to be executed by AutoGen.
+//   - ctx (context.Context): The context for execution, ensuring lifecycle management.
+//   - task (*Task): The universal task object containing requested intent and parameters.
 //
 // Returns:
-//   - *TaskResult: Contains the status, output, and telemetry information from the subagent.
-//   - error: Indicates failure in executing the task or an unsupported intent.
+//   - *TaskResult: The generalized output representing the result of the agent conversation.
+//   - error: An error if the intent is unsupported or execution fails.
 //
 // Errors:
-//   - Returns "AutoGen does not support capability" if the task's intent is missing from capabilities.
+//   - Returns "AutoGen does not support capability" if the task's intent is missing from the capabilities map.
 //
 // Side Effects:
-//   - Appends execution checkpoints (strings) to the internal `ChatHistory` array, mutating adapter state.
+//   - Appends to the internal ConvoHistory state based on task execution progress.
 func (a *AutoGenAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult, error) {
 	if !a.SupportsCapability(task.Intent) {
 		return nil, fmt.Errorf("AutoGen does not support capability: %s", task.Intent)
 	}
 
-	// Simulated stateful checkpoints (Sandbox Persistence Proofs)
-	msg := fmt.Sprintf("AutoGen subagent executed task: %s", task.Intent)
-	a.ChatHistory = append(a.ChatHistory, msg)
+	// Simulated multi-turn agent interaction logic
+	a.ConvoHistory = append(a.ConvoHistory, fmt.Sprintf("User: %s", task.Intent))
+	a.ConvoHistory = append(a.ConvoHistory, "Assistant: I can help with that.")
+	a.ConvoHistory = append(a.ConvoHistory, "Coder: Generating solution...")
 
-	output := fmt.Sprintf("Completed AutoGen subagent task: %s, Checkpoints: %d", task.Intent, len(a.ChatHistory))
+	output := fmt.Sprintf("AutoGen interaction complete for: %s", task.Intent)
 
-<<<<<<< HEAD
 	res := &TaskResult{
-=======
-	return &TaskResult{
->>>>>>> 1cf24f72 (Strategic Evolution: Dynamic Mesh Resilience & Economic Attribution (#7282))
 		TaskID: task.ID,
 		Status: "success",
 		Output: output,
 		Telemetry: map[string]string{
-			"mailbox_integrity": "verified",
-			"history_length":    fmt.Sprintf("%d", len(a.ChatHistory)),
+			"convo_depth": fmt.Sprintf("%d", len(a.ConvoHistory)),
+			"agents_used": "assistant,coder",
 		},
-<<<<<<< HEAD
 	}
 
 	if task.Payload["stream"] == "true" {
 		res.Stream = make(chan string)
 		go func() {
-			res.Stream <- "subagent start"
-			res.Stream <- "subagent finish"
+			res.Stream <- "Assistant: Processing..."
+			res.Stream <- "Coder: Running code..."
 			close(res.Stream)
 		}()
 	}
 
 	return res, nil
-=======
-	}, nil
->>>>>>> 1cf24f72 (Strategic Evolution: Dynamic Mesh Resilience & Economic Attribution (#7282))
 }
 
 // SupportsCapability checks if the framework provides a requested capability.
 //
-// Intent: Confirms if the AutoGen adapter's capabilities include the requested functionality.
+// Intent: Determines whether this AutoGen adapter can handle the specified capability intent.
 //
 // Parameters:
-//   - capability (string): The intended capability name.
+//   - capability (string): The capability identifier to check.
 //
 // Returns:
-//   - bool: Indicates whether the given capability is supported.
+//   - bool: True if the capability is supported, otherwise false.
 //
 // Errors:
 //   - None.
@@ -148,25 +141,25 @@ func (a *AutoGenAdapter) SupportsCapability(capability string) bool {
 
 // SyncMemoryShard synchronizes a hardware-attested multimodal memory shard with the AutoGen framework.
 //
-// Intent: Ingests a memory shard to synchronize state across agents.
+// Intent: Ingests a context shard into the AutoGen agent's memory for improved reasoning.
 //
 // Parameters:
-//   - ctx (context.Context): The context for controlling cancellation and timeouts.
-//   - shard (*MemoryShard): The multimodal memory shard to synchronize.
+//   - ctx (context.Context): The context for the synchronization operation.
+//   - shard (*MemoryShard): The multimodal memory shard to be synchronized.
 //
 // Returns:
-//   - error: An error if the signature is invalid.
+//   - error: An error if the shard signature is missing or verification fails.
 //
 // Errors:
-//   - Returns an error if the shard signature verification fails.
+//   - Returns an error if the shard signature is empty.
 //
 // Side Effects:
-//   - Modifies the chat history state by injecting new checkpoints.
+//   - Simulates the integration of external context into the AutoGen conversation history.
 func (a *AutoGenAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard) error {
 	if shard.Signature == "" {
-		return fmt.Errorf("invalid memory shard: signature required for ingestion")
+		return fmt.Errorf("invalid memory shard: missing signature")
 	}
 
-	a.ChatHistory = append(a.ChatHistory, fmt.Sprintf("Received multimodal shard: %s", shard.ShardID))
+	a.ConvoHistory = append(a.ConvoHistory, fmt.Sprintf("SYSTEM: Context Ingested [%s]", shard.ShardID))
 	return nil
 }

@@ -7,7 +7,7 @@ import (
 
 // CrewAIAdapter implements the AgentFramework interface for CrewAI.
 //
-// Intent: Provides the implementation for interacting with the CrewAI framework via the universal adapter hub.
+// Intent: Standard adapter for bridging the CrewAI agent framework to the universal bus.
 //
 // Parameters:
 //   - None.
@@ -22,29 +22,29 @@ import (
 //   - None.
 type CrewAIAdapter struct {
 	Capabilities map[string]bool
-	RoleRegistry map[string]string // Role name -> Capability token
+	RoleRegistry map[string]string
 }
 
 // NewCrewAIAdapter creates a new CrewAIAdapter instance.
 //
-// Intent: Instantiates and initializes a new adapter for CrewAI with its predefined capabilities.
+// Intent: Constructor that initializes a CrewAI adapter with predefined capabilities like role delegation.
 //
 // Parameters:
 //   - None.
 //
 // Returns:
-//   - *CrewAIAdapter: A pointer to the newly created CrewAIAdapter instance.
+//   - *CrewAIAdapter: A pointer to the newly created CrewAIAdapter.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
-//   - Allocates memory for the adapter and its internal mappings.
+//   - Allocates memory for the CrewAIAdapter and its capability/role maps.
 func NewCrewAIAdapter() *CrewAIAdapter {
 	return &CrewAIAdapter{
 		Capabilities: map[string]bool{
-			"task_delegation": true,
-			"role_discovery":  true,
+			"role_delegation": true,
+			"task_planning":   true,
 		},
 		RoleRegistry: make(map[string]string),
 	}
@@ -52,13 +52,13 @@ func NewCrewAIAdapter() *CrewAIAdapter {
 
 // Name returns the identifier of the agent framework.
 //
-// Intent: Provides the unique identifier for the CrewAI adapter.
+// Intent: Returns the name "CrewAI" as the unique identifier for this adapter.
 //
 // Parameters:
 //   - None.
 //
 // Returns:
-//   - string: The name of the adapter ("CrewAI").
+//   - string: The name of the adapter.
 //
 // Errors:
 //   - None.
@@ -100,11 +100,7 @@ func (a *CrewAIAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult
 	a.RoleRegistry[role] = fmt.Sprintf("auth_token_%s", role)
 	output := fmt.Sprintf("CrewAI delegated task: %s to role: %s", task.Intent, role)
 
-<<<<<<< HEAD
 	res := &TaskResult{
-=======
-	return &TaskResult{
->>>>>>> 1cf24f72 (Strategic Evolution: Dynamic Mesh Resilience & Economic Attribution (#7282))
 		TaskID: task.ID,
 		Status: "success",
 		Output: output,
@@ -112,7 +108,6 @@ func (a *CrewAIAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult
 			"delegated_role": role,
 			"auth_status":    "verified",
 		},
-<<<<<<< HEAD
 	}
 
 	if task.Payload["stream"] == "true" {
@@ -125,9 +120,6 @@ func (a *CrewAIAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult
 	}
 
 	return res, nil
-=======
-	}, nil
->>>>>>> 1cf24f72 (Strategic Evolution: Dynamic Mesh Resilience & Economic Attribution (#7282))
 }
 
 // SupportsCapability checks if the framework provides a requested capability.
