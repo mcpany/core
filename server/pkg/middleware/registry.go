@@ -184,6 +184,7 @@ func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler)
 //
 // Summary: Represents a StandardMiddlewares.
 type StandardMiddlewares struct {
+	HACA             *HACAMiddleware
 	Audit            *AuditMiddleware
 	GlobalRateLimit  *GlobalRateLimitMiddleware
 	ContextOptimizer *ContextOptimizer
@@ -237,6 +238,7 @@ func InitStandardMiddlewares(
 	debuggerConfig *configv1.DebuggerConfig,
 	smartRecoveryConfig *configv1.SmartRecoveryConfig,
 	cfiaConfig *CFIAConfig,
+	hacaConfig *HACAConfig,
 ) (*StandardMiddlewares, error) {
 	// 1. Logging
 	RegisterMCP("logging", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
@@ -469,6 +471,63 @@ func InitStandardMiddlewares(
 	})
 
 	// Context-File Integrity Attestation (CFIA)
+	var hacaMiddleware *HACAMiddleware
+	if hacaConfig != nil {
+		hacaMiddleware = NewHACAMiddleware(*hacaConfig)
+		RegisterMCP("haca", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
+			return func(next mcp.MethodHandler) mcp.MethodHandler {
+				return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+					if method != "tools/call" {
+						return next(ctx, method, req)
+					}
+
+					callReq, ok := req.(*mcp.CallToolRequest)
+					if !ok {
+						return next(ctx, method, req)
+					}
+
+					var args map[string]interface{}
+					if callReq.Params.Arguments != nil {
+						_ = json.Unmarshal(callReq.Params.Arguments, &args)
+					}
+
+					executionReq := &tool.ExecutionRequest{
+						ToolName:  callReq.Params.Name,
+						Arguments: args,
+					}
+
+
+					result, err := hacaMiddleware.Execute(ctx, executionReq, func(ctx context.Context, updatedReq *tool.ExecutionRequest) (any, error) {
+						// Marshal back the cleaned arguments
+						if updatedArgsBytes, err := json.Marshal(updatedReq.Arguments); err == nil {
+							callReq.Params.Arguments = updatedArgsBytes
+						}
+
+						res, err := next(ctx, method, req)
+						return res, err
+					})
+
+
+					if err != nil {
+						return &mcp.CallToolResult{
+							IsError: true,
+							Content: []mcp.Content{
+								&mcp.TextContent{
+									Text: err.Error(),
+								},
+							},
+						}, nil
+					}
+
+					if mcpRes, ok := result.(mcp.Result); ok {
+						return mcpRes, nil
+					}
+					return &mcp.CallToolResult{}, nil
+				}
+			}
+		})
+	}
+
 	var cfiaMiddleware *CFIAMiddleware
 	if cfiaConfig != nil && cfiaConfig.Enabled {
 		cfiaMiddleware = NewCFIAMiddleware(*cfiaConfig)
@@ -523,6 +582,7 @@ func InitStandardMiddlewares(
 		A2ABridge:        a2aBridge,
 		ESB:              esbMiddleware,
 		CFIA:             cfiaMiddleware,
+		HACA:             hacaMiddleware,
 		Cleanup:          audit.Close,
 	}, nil
 }

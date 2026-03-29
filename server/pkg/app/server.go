@@ -718,6 +718,7 @@ func (a *Application) Run(opts RunOptions) error {
 		cfg.GetGlobalSettings().GetDebugger(),
 		cfg.GetGlobalSettings().GetSmartRecovery(),
 		nil,
+		nil,
 	)
 	if err != nil {
 		workerCancel()
