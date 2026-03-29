@@ -656,6 +656,12 @@
 - [ ] **[P0] Metadata Sanitization Log**: Security dashboard for reviewing redacted coordination messages and metadata probes. (Added: 2026-03-26)
 - [ ] **[P1] Post-Quantum Status Widget**: Monitor for quantum-resistant handshake status and mesh integrity. (Added: 2026-03-26)
 
+#### Upcoming (2026-03-29 Architect Evolution)
+- [ ] **[P0] Economic Attribution Viewer**: Visual tracker for hardware-attested cost attribution (HACA) across subagent lineages. (Added: 2026-03-29)
+- [ ] **[P0] Ephemeral Hook Monitor**: Status widget for monitoring session-locked discovery hooks and their expiration. (Added: 2026-03-29)
+- [ ] **[P0] Mesh Resilience Dashboard**: Real-time visualization of state shard migration and physical node health. (Added: 2026-03-29)
+- [ ] **[P1] Resource Reclamation Log**: Real-time tracker for RRR-triggered budget reclaims and mission efficiency gains. (Added: 2026-03-29)
+
 #### Upcoming (2026-06-25 Evolution)
 - [ ] **[P0] Attention Heatmap Visualizer**: Real-time dashboard for monitoring reasoning-density and ADF-gated noise. (Added: 2026-06-25)
 - [ ] **[P0] HLES Status Monitor**: Security widget for visualizing hardware-locked identity buffer status and environment isolation. (Added: 2026-06-25)

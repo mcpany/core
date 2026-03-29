@@ -167,6 +167,12 @@
 *   **[P0] Metadata Sanitization Gateway (MSG)**: Real-time semantic deconstruction of ingested metadata to neutralize instruction injection. (Added: 2026-03-26)
 *   **[P1] Post-Quantum Mesh Handshake (PQMH)**: Transition inter-agent transport to NIST-standard quantum-resistant algorithms. (Added: 2026-03-26)
 
+#### Upcoming (2026-03-29 Architect Evolution)
+*   **[P0] Hardware-Attested Cost Attribution (HACA) Provider**: advanced economic security service that cryptographically attributes token usage to specific sub-process lineage. (Added: 2026-03-29)
+*   **[P0] Ephemeral Registry Hook (ERH) Provider**: security middleware mandating session-locked discovery schemas to neutralize registry persistence exploits. (Added: 2026-03-29)
+*   **[P0] Dynamic Mesh Resilience (DMR) Hub**: authoritative coordination service for re-sharding and migrating state between physical nodes upon subagent failure. (Added: 2026-03-29)
+*   **[P1] Recursive Resource Reclamation (RRR) Manager**: lifecycle management service for reclaiming unused token and reasoning budgets from dormant sub-missions. (Added: 2026-03-29)
+
 #### Upcoming (2026-03-25 Evolution)
 *   **[P0] Hardware-Attested Monotonic Depth-Counters**: physical constraint enforcement for recursive delegations to prevent infinite resource loops. (Added: 2026-03-25)
 *   **[P0] Relational PoI Chain Validator**: cryptographic lineage verification for every tool call to neutralize "Intent Ghosting" vulnerabilities. (Added: 2026-03-25)

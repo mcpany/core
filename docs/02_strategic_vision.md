@@ -751,6 +751,15 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ---
 
 ## Strategic Evolution: [2026-03-29]
+### Focus: Economic Transparency & Ephemeral Registry Sovereignty
+**Context**: The emergence of "Economic Squatting" in recursive swarms and the disclosure of the "Registry Persistence" exploit confirm that the "Universal Agent Bus" must move beyond transport security. We must now protect the **economic integrity** of the mission and ensure that the **discovery phase** is ephemeral and session-locked.
+**Strategic Pivot**:
+- **Hardware-Attested Cost Attribution (HACA)**: MCP Any will evolve to act as the authoritative "Economic Auditor." We will implement HACA, utilizing hardware-attested (TPM) counters to cryptographically attribute every token millisecond to its specific sub-process lineage, neutralizing "Economic Squatting."
+- **Ephemeral Registry Hook (ERH) Provider**: To neutralize "Registry Persistence" exfiltration, we are mandating ERH. Discovery schemas will be issued as session-locked, ephemeral tokens that expire immediately post-discovery, ensuring that malicious subagents cannot shadow tools in long-running missions.
+- **Dynamic Mesh Resilience (DMR) Hub**: Supporting the efficiency of production meshes, we are introducing the DMR Hub. This service will automatically re-shard and migrate mission-critical state (entangled context, mailbox shards) between physical nodes upon detection of subagent failure or attestation breach, moving us to a "Fail-Operational" posture.
+- **Recursive Resource Reclamation (RRR)**: We are adopting the UACO v3.6 standard for resource management. MCP Any will act as the authoritative "Lease Reaper," allowing parent agents to forcefully reclaim unused token and reasoning budgets from dormant sub-missions in real-time.
+
+## Strategic Evolution: [2026-03-29]
 ### Focus: Proactive State Alignment & Relational Intent Scoping
 **Context**: Today's findings on OpenClaw's Proactive State Alignment (PSA) and the UACO v2.0 draft for Relational Intent Scoping (RIS) mark a shift from "Reactive Defense" to "Proactive Governance." Additionally, the emergence of "Identity Shadowing" (CVE-2026-45001) confirms that session-bound trust must be multi-dimensional and non-reusable.
 **Strategic Pivot**:

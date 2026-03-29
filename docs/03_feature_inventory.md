@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-03-29] (Architect Edition) Updates
+
+### Proposed Additions
+- **Hardware-Attested Cost Attribution (HACA) Provider**: (P0) Advanced economic security service that cryptographically attributes token usage to specific sub-process lineage, neutralizing "Economic Squatting."
+- **Ephemeral Registry Hook (ERH) Provider**: (P0) Security middleware mandating session-locked discovery schemas to neutralize registry persistence exploits (Claude Code v3.2 alignment).
+- **Dynamic Mesh Resilience (DMR) Hub**: (P0) Authoritative coordination service for re-sharding and migrating state between physical nodes upon subagent failure (OpenClaw v3.6 alignment).
+- **Recursive Resource Reclamation (RRR) Manager**: (P1) Lifecycle management service for reclaiming unused token and reasoning budgets from dormant sub-missions (UACO v3.6 compliance).
+
+### Priority Shifts
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **HACA** integration.
+- **Zero-Knowledge State Attestation (ZKSA) Provider**: (Re-affirmed P0) Elevated to support **DMR-compliant** state migration proofs.
+
 ## Evolution: [2026-07-11] Updates
 
 ### Proposed Additions
