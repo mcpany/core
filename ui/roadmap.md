@@ -780,3 +780,9 @@
 - [ ] **[P0] Economic Attribution Viewer**: (2026-07-11) Visual tracker for hardware-attested cost attribution (HACA) across subagent lineages.
 - [ ] **[P0] Ephemeral Hook Monitor**: (2026-07-11) Status widget for monitoring session-locked discovery hooks and their expiration.
 - [ ] **[P1] Resource Reclamation Log**: (2026-07-11) Real-time tracker for RRR-triggered budget reclaims and mission efficiency gains.
+
+#### Upcoming (2026-07-12 Evolution)
+- [ ] **[P0] Global Revocation Console**: (2026-07-12) UI for broadcasting hardware-attested kill-signals and monitoring mesh-wide revocation status.
+- [ ] **[P1] Neural Mailbox Visualizer**: (2026-07-12) Real-time tracker for ACP latent intent routing and stylometric consistency scores.
+- [ ] **[P0] Task DAG Orchestrator**: (2026-07-12) Interactive visualization of task dependencies and parallel teammate progress.
+- [ ] **[P1] Remote Sandbox Monitor**: (2026-07-12) Dashboard for monitoring cloud-backed gVisor execution and hardware-attested capabilities.

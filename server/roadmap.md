@@ -954,3 +954,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Attested Cost Attribution (HACA)**: Advanced economic security service that cryptographically attributes token usage to specific sub-process lineage. (Added: 2026-07-11)
 *   **[P0] Ephemeral Registry Hook (ERH) Provider**: Security middleware mandating session-locked discovery schemas to neutralize registry persistence exploits. (Added: 2026-07-11)
 *   **[P1] Recursive Resource Reclamation (RRR) Manager**: Lifecycle management service for reclaiming unused token and reasoning budgets from dormant sub-missions. (Added: 2026-07-11)
+
+#### Upcoming (2026-07-12 Evolution)
+*   **[P0] Cross-Framework Identity Revocation (CFIR)**: Authorized "Global Kill-Switch" broker to terminate subagent agency across meshes. (Added: 2026-07-12)
+*   **[P1] Neural Mailbox (NM) Arbiter**: High-dimensional coordination service for ACP-based intent routing with stylometric attestation. (Added: 2026-07-12)
+*   **[P0] Dependency-Aware Task Hub**: Orchestration engine for managing complex Task DAGs and asynchronous teammate synchronization. (Added: 2026-07-12)
+*   **[P1] Cloud-Native Sandbox Bridge**: Secure coordination for remote gVisor-based execution (GaaS). (Added: 2026-07-12)

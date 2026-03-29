@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-12] Updates
+
+### Proposed Additions
+- **Cross-Framework Identity Revocation (CFIR) Provider**: (P0) Authoritative "Global Kill-Switch" broker for simultaneous multi-framework identity revocation.
+- **Neural Mailbox (NM) Arbiter**: (P1) High-dimensional coordination service for ACP-based intent routing with stylometric attestation.
+- **Dependency-Aware Task Hub**: (P0) Orchestration engine for managing Task DAGs and asynchronous teammate synchronization.
+- **Cloud-Native Sandbox Bridge**: (P1) Secure coordination service for remote gVisor-based execution (GaaS).
+
+### Priority Shifts
+- **Lock-Free Mesh Arbiter (LFMA)**: (Re-affirmed P0) Elevated to support **Dependency-Aware Task Hub** integration.
+- **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Designated as a critical component of the **Neural Mailbox Arbiter**.
+
 ## Evolution: [2026-07-11] Updates
 
 ### Proposed Additions
