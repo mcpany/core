@@ -199,6 +199,42 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 			}
 		}
 	})
+
+	// 7. A2A Message Test
+	t.Run("A2A_Message_Processing", func(t *testing.T) {
+		validMsg := &interop.A2AMessage{
+			MessageID:   "msg-200",
+			Source:      "CrewAI",
+			Destination: "AutoGen",
+			Intent:      "cross-agent-delegation",
+			Payload:     map[string]string{"role": "auditor"},
+			Signature:   "valid_a2a_signature",
+		}
+
+		invalidMsg := &interop.A2AMessage{
+			MessageID:   "msg-201",
+			Source:      "Unknown",
+			Destination: "OpenClaw",
+			Intent:      "malicious-intent",
+			Payload:     map[string]string{"cmd": "rm -rf /"},
+			Signature:   "", // Missing signature should fail
+		}
+
+		adapters := []string{"OpenClaw", "CrewAI", "AutoGen"}
+		for _, name := range adapters {
+			adapter := getAdapterByName(hub, name)
+
+			err := adapter.ProcessA2AMessage(ctx, validMsg)
+			if err != nil {
+				t.Errorf("Expected successful A2A message processing for %s, got error: %v", name, err)
+			}
+
+			err = adapter.ProcessA2AMessage(ctx, invalidMsg)
+			if err == nil {
+				t.Errorf("Expected A2A message processing to fail for %s due to missing signature", name)
+			}
+		}
+	})
 }
 
 // Helper to access registered adapters for testing interface direct calls

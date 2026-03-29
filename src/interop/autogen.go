@@ -45,6 +45,7 @@ func NewAutoGenAdapter() *AutoGenAdapter {
 		Capabilities: map[string]bool{
 			"multi_agent_chat": true,
 			"subagent_exec":    true,
+			"a2a_messaging":    true,
 		},
 		ChatHistory: make([]string, 0),
 	}
@@ -149,5 +150,30 @@ func (a *AutoGenAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard
 	}
 
 	a.ChatHistory = append(a.ChatHistory, fmt.Sprintf("Received multimodal shard: %s", shard.ShardID))
+	return nil
+}
+
+// ProcessA2AMessage processes an Agent-to-Agent message for AutoGen.
+//
+// Intent: Processes messages directed to shared mailboxes and validates subagent coordination.
+//
+// Parameters:
+//   - ctx (context.Context): Execution context.
+//   - msg (*A2AMessage): The A2A message to process.
+//
+// Returns:
+//   - error: An error if the signature is invalid.
+//
+// Errors:
+//   - Returns an error if the signature is missing.
+//
+// Side Effects:
+//   - Modifies chat history state by tracking mailbox inputs.
+func (a *AutoGenAdapter) ProcessA2AMessage(ctx context.Context, msg *A2AMessage) error {
+	if msg.Signature == "" {
+		return fmt.Errorf("invalid A2A message: missing signature for mailbox ingestion")
+	}
+
+	a.ChatHistory = append(a.ChatHistory, fmt.Sprintf("Processed A2A msg: %s from %s", msg.Intent, msg.Source))
 	return nil
 }

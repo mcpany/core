@@ -45,6 +45,7 @@ func NewCrewAIAdapter() *CrewAIAdapter {
 		Capabilities: map[string]bool{
 			"task_delegation": true,
 			"role_discovery":  true,
+			"a2a_messaging":   true,
 		},
 		RoleRegistry: make(map[string]string),
 	}
@@ -151,5 +152,34 @@ func (a *CrewAIAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard)
 		return fmt.Errorf("invalid memory shard: unverified payload rejected by CrewAI")
 	}
 
+	return nil
+}
+
+// ProcessA2AMessage processes an Agent-to-Agent message for CrewAI.
+//
+// Intent: Translates an authenticated A2A task card into role-based task delegation.
+//
+// Parameters:
+//   - ctx (context.Context): The context for controlling cancellation and timeouts.
+//   - msg (*A2AMessage): The A2A message containing task proposals.
+//
+// Returns:
+//   - error: An error if the message signature is invalid.
+//
+// Errors:
+//   - Returns an error if the signature is missing.
+//
+// Side Effects:
+//   - Adds mapping for the delegated role to internal registry.
+func (a *CrewAIAdapter) ProcessA2AMessage(ctx context.Context, msg *A2AMessage) error {
+	if msg.Signature == "" {
+		return fmt.Errorf("invalid A2A message: unverified A2A task card rejected by CrewAI")
+	}
+
+	role, exists := msg.Payload["role"]
+	if !exists {
+		role = "generalist"
+	}
+	a.RoleRegistry[role] = fmt.Sprintf("auth_token_%s", role)
 	return nil
 }

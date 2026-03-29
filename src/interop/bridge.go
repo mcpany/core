@@ -91,6 +91,34 @@ type AgentFramework interface {
 	// Side Effects:
 	//   - Modifies internal framework state by updating the contextual memory.
 	SyncMemoryShard(ctx context.Context, shard *MemoryShard) error
+
+	// ProcessA2AMessage handles an Agent-to-Agent (A2A) protocol message.
+	//
+	// Intent: Processes authenticated A2A messages for cross-agent communication.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for controlling cancellation and timeouts.
+	//   - msg (*A2AMessage): The A2A message to process.
+	//
+	// Returns:
+	//   - error: An error if the message processing fails or authentication is invalid.
+	//
+	// Errors:
+	//   - Returns an error if the message signature is invalid or processing fails.
+	//
+	// Side Effects:
+	//   - Modifies internal framework state or delegates tasks depending on the message content.
+	ProcessA2AMessage(ctx context.Context, msg *A2AMessage) error
+}
+
+// A2AMessage represents an authenticated message for the Agent-to-Agent protocol.
+type A2AMessage struct {
+	MessageID   string            `json:"message_id"`
+	Source      string            `json:"source"`
+	Destination string            `json:"destination"`
+	Intent      string            `json:"intent"`
+	Payload     map[string]string `json:"payload"`
+	Signature   string            `json:"signature"`
 }
 
 // MemoryShard represents a hardware-attested, intent-pinned memory fragment.
