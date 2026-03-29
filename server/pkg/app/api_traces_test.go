@@ -4,6 +4,7 @@
 package app
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"net/http"
@@ -236,10 +237,10 @@ func TestHandleBulkDeleteTraces(t *testing.T) {
 		"ids": []string{"trace-to-delete"},
 	})
 
-	req, _ := http.NewRequest(http.MethodPost, "/traces/bulk-delete", bytes.NewBuffer(reqBody))
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/traces/bulk-delete", bytes.NewBuffer(reqBody))
 	rr := httptest.NewRecorder()
 
-	app.apiHandler().ServeHTTP(rr, req)
+	app.GetRouter().ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusNoContent {
 		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusNoContent)
