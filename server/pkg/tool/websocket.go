@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/gorilla/websocket"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -15,6 +16,7 @@ import (
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/client"
 	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/metrics"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/transformer"
 	"github.com/mcpany/core/server/pkg/util"
@@ -180,14 +182,25 @@ func (t *WebsocketTool) StreamExecute(ctx context.Context, req *ExecutionRequest
 //
 // Side Effects:
 //   - Makes a WebSocket network call.
+var (
+	metricWebsocketRequestError   = []string{"websocket", "request", "error"}
+	metricWebsocketRequestSuccess = []string{"websocket", "request", "success"}
+	metricWebsocketRequestLatency = []string{"websocket", "request", "latency"}
+)
+
 func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	logging.GetLogger().DebugContext(ctx, "executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, "application/json"))
+	defer metrics.MeasureSince(metricWebsocketRequestLatency, time.Now())
+
 	wsPool, ok := pool.Get[*client.WebsocketClientWrapper](t.poolManager, t.serviceID)
 	if !ok {
+		metrics.IncrCounter(metricWebsocketRequestError, 1)
 		return nil, fmt.Errorf("no websocket pool found for service: %s", t.serviceID)
 	}
 
 	wrapper, err := wsPool.Get(ctx)
 	if err != nil {
+		metrics.IncrCounter(metricWebsocketRequestError, 1)
 		return nil, fmt.Errorf("failed to get websocket connection from pool: %w", err)
 	}
 	defer wsPool.Put(wrapper)
@@ -196,6 +209,7 @@ func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any
 
 	var inputs map[string]any
 	if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
+		metrics.IncrCounter(metricWebsocketRequestError, 1)
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 	}
 
@@ -203,6 +217,7 @@ func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any
 		if secret := param.GetSecret(); secret != nil {
 			secretValue, err := util.ResolveSecret(ctx, secret)
 			if err != nil {
+				metrics.IncrCounter(metricWebsocketRequestError, 1)
 				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", param.GetSchema().GetName(), err)
 			}
 			inputs[param.GetSchema().GetName()] = secretValue
@@ -213,39 +228,52 @@ func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any
 	if t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "" { //nolint:staticcheck
 		tpl, err := transformer.NewTemplate(t.inputTransformer.GetTemplate(), "{{", "}}") //nolint:staticcheck
 		if err != nil {
+			metrics.IncrCounter(metricWebsocketRequestError, 1)
 			return nil, fmt.Errorf("failed to create input template: %w", err)
 		}
 		rendered, err := tpl.Render(inputs)
 		if err != nil {
+			metrics.IncrCounter(metricWebsocketRequestError, 1)
 			return nil, fmt.Errorf("failed to render input template: %w", err)
 		}
 		message = []byte(rendered)
 	} else {
 		message, err = json.Marshal(inputs)
 		if err != nil {
+			metrics.IncrCounter(metricWebsocketRequestError, 1)
 			return nil, fmt.Errorf("failed to marshal inputs to json: %w", err)
 		}
 	}
 
 	if err := wrapper.Conn.WriteMessage(websocket.TextMessage, message); err != nil {
+		metrics.IncrCounter(metricWebsocketRequestError, 1)
 		return nil, fmt.Errorf("failed to send message over websocket: %w", err)
 	}
 
 	_, response, err := wrapper.Conn.ReadMessage()
 	if err != nil {
+		metrics.IncrCounter(metricWebsocketRequestError, 1)
 		return nil, fmt.Errorf("failed to read message from websocket: %w", err)
 	}
 
 	if t.outputTransformer != nil {
 		parser := transformer.NewTextParser()
 		outputFormat := configv1.OutputTransformer_OutputFormat_name[int32(t.outputTransformer.GetFormat())]
-		return parser.Parse(outputFormat, response, t.outputTransformer.GetExtractionRules(), t.outputTransformer.GetJqQuery())
+		res, parseErr := parser.Parse(outputFormat, response, t.outputTransformer.GetExtractionRules(), t.outputTransformer.GetJqQuery())
+		if parseErr != nil {
+			metrics.IncrCounter(metricWebsocketRequestError, 1)
+		} else {
+			metrics.IncrCounter(metricWebsocketRequestSuccess, 1)
+		}
+		return res, parseErr
 	}
 
 	var result map[string]any
 	if err := json.Unmarshal(response, &result); err != nil {
+		metrics.IncrCounter(metricWebsocketRequestSuccess, 1)
 		return string(response), nil
 	}
 
+	metrics.IncrCounter(metricWebsocketRequestSuccess, 1)
 	return result, nil
 }

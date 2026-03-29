@@ -18,6 +18,7 @@ import (
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/metrics"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/transformer"
 	"github.com/mcpany/core/server/pkg/util"
@@ -257,19 +258,41 @@ func (t *WebrtcTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (
 //
 // Side Effects:
 //   - Makes a WebRTC network call.
+var (
+	metricWebrtcRequestError   = []string{"webrtc", "request", "error"}
+	metricWebrtcRequestSuccess = []string{"webrtc", "request", "success"}
+	metricWebrtcRequestLatency = []string{"webrtc", "request", "latency"}
+)
+
 func (t *WebrtcTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	logging.GetLogger().DebugContext(ctx, "executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, "application/json"))
+	defer metrics.MeasureSince(metricWebrtcRequestLatency, time.Now())
+
 	if t.webrtcPool == nil {
 		// Fallback to creating a new connection if the pool is not initialized
-		return t.executeWithoutPool(ctx, req)
+		res, err := t.executeWithoutPool(ctx, req)
+		if err != nil {
+			metrics.IncrCounter(metricWebrtcRequestError, 1)
+		} else {
+			metrics.IncrCounter(metricWebrtcRequestSuccess, 1)
+		}
+		return res, err
 	}
 
 	wrapper, err := t.webrtcPool.Get(ctx)
 	if err != nil {
+		metrics.IncrCounter(metricWebrtcRequestError, 1)
 		return nil, fmt.Errorf("failed to get peer connection from pool: %w", err)
 	}
 	defer t.webrtcPool.Put(wrapper)
 
-	return t.executeWithPeerConnection(ctx, req, wrapper.PeerConnection)
+	res, err := t.executeWithPeerConnection(ctx, req, wrapper.PeerConnection)
+	if err != nil {
+		metrics.IncrCounter(metricWebrtcRequestError, 1)
+	} else {
+		metrics.IncrCounter(metricWebrtcRequestSuccess, 1)
+	}
+	return res, err
 }
 
 func (t *WebrtcTool) executeWithoutPool(ctx context.Context, req *ExecutionRequest) (any, error) {

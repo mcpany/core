@@ -11,12 +11,14 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/machinebox/graphql"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
+	"github.com/mcpany/core/server/pkg/metrics"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream"
 	"google.golang.org/protobuf/proto"
@@ -265,7 +267,14 @@ type Callable struct {
 //
 // Side Effects:
 //   - None.
+var (
+	metricGraphqlRequestError   = []string{"graphql", "request", "error"}
+	metricGraphqlRequestSuccess = []string{"graphql", "request", "success"}
+	metricGraphqlRequestLatency = []string{"graphql", "request", "latency"}
+)
+
 func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+	defer metrics.MeasureSince(metricGraphqlRequestLatency, time.Now())
 	graphqlReq := graphql.NewRequest(c.query)
 	for key, value := range req.Arguments {
 		graphqlReq.Var(key, value)
@@ -273,17 +282,21 @@ func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, e
 	if c.authenticator != nil {
 		dummyReq, err := http.NewRequestWithContext(ctx, "POST", c.address, nil)
 		if err != nil {
+			metrics.IncrCounter(metricGraphqlRequestError, 1)
 			return nil, fmt.Errorf("failed to create dummy request: %w", err)
 		}
 		if err := c.authenticator.Authenticate(dummyReq); err != nil {
+			metrics.IncrCounter(metricGraphqlRequestError, 1)
 			return nil, fmt.Errorf("failed to authenticate graphql query: %w", err)
 		}
 		graphqlReq.Header = dummyReq.Header
 	}
 	var respData any
 	if err := c.client.Run(ctx, graphqlReq, &respData); err != nil {
+		metrics.IncrCounter(metricGraphqlRequestError, 1)
 		return nil, fmt.Errorf("failed to run graphql query: %w", err)
 	}
+	metrics.IncrCounter(metricGraphqlRequestSuccess, 1)
 	return respData, nil
 }
 
