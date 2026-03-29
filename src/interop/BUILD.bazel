@@ -7,6 +7,7 @@ go_library(
         "autogen.go",
         "bridge.go",
         "crewai.go",
+        "fsi.go",
         "openclaw.go",
     ],
     importpath = "github.com/mcpany/core/src/interop",

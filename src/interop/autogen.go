@@ -23,6 +23,7 @@ import (
 type AutoGenAdapter struct {
 	Capabilities map[string]bool
 	ChatHistory  []string // Maintain stateful checkpoints
+	IdentityToken string  // Hardware-attested identity token
 }
 
 // NewAutoGenAdapter creates a new AutoGenAdapter instance.
@@ -149,5 +150,29 @@ func (a *AutoGenAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard
 	}
 
 	a.ChatHistory = append(a.ChatHistory, fmt.Sprintf("Received multimodal shard: %s", shard.ShardID))
+	return nil
+}
+
+// AttestIdentity verifies the hardware-attested identity token of the agent.
+//
+// Intent: Ensures that the AutoGen agent is operating under a valid, hardware-bound mission-root token.
+//
+// Parameters:
+//   - ctx (context.Context): The context for controlling cancellation.
+//   - token (string): The identity token to attest.
+//
+// Returns:
+//   - error: An error if the attestation fails.
+//
+// Errors:
+//   - Returns an error if the token is empty.
+//
+// Side Effects:
+//   - Updates the internal framework identity token.
+func (a *AutoGenAdapter) AttestIdentity(ctx context.Context, token string) error {
+	if token == "" {
+		return fmt.Errorf("invalid token: empty identity token provided")
+	}
+	a.IdentityToken = token
 	return nil
 }

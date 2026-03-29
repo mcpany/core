@@ -199,6 +199,45 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 			}
 		}
 	})
+
+	// 7. FSI Provider Token Minting and Attestation Test
+	t.Run("FSI_IdentityAttestation", func(t *testing.T) {
+		fsi := interop.NewFederatedIdentityHub()
+		missionID := "mission-alpha"
+
+		adapters := []string{"OpenClaw", "CrewAI", "AutoGen"}
+		for _, name := range adapters {
+			// Mint token
+			token, err := fsi.MintToken(ctx, missionID, name)
+			if err != nil {
+				t.Fatalf("Failed to mint token for %s: %v", name, err)
+			}
+
+			// Verify token exists
+			if !fsi.VerifyToken(ctx, token) {
+				t.Errorf("Token for %s should be verified", name)
+			}
+
+			// Get adapter and attest identity
+			adapter := getAdapterByName(hub, name)
+			err = adapter.AttestIdentity(ctx, token)
+			if err != nil {
+				t.Errorf("Failed to attest identity for %s: %v", name, err)
+			}
+
+			// Record attestation in FSI
+			err = fsi.RecordAttestation(ctx, token)
+			if err != nil {
+				t.Errorf("Failed to record attestation for %s: %v", name, err)
+			}
+
+			// Attest empty token should fail
+			err = adapter.AttestIdentity(ctx, "")
+			if err == nil {
+				t.Errorf("Expected attesting empty token to fail for %s", name)
+			}
+		}
+	})
 }
 
 // Helper to access registered adapters for testing interface direct calls

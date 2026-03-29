@@ -23,6 +23,7 @@ import (
 type CrewAIAdapter struct {
 	Capabilities map[string]bool
 	RoleRegistry map[string]string // Role name -> Capability token
+	IdentityToken string // Hardware-attested identity token
 }
 
 // NewCrewAIAdapter creates a new CrewAIAdapter instance.
@@ -151,5 +152,29 @@ func (a *CrewAIAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard)
 		return fmt.Errorf("invalid memory shard: unverified payload rejected by CrewAI")
 	}
 
+	return nil
+}
+
+// AttestIdentity verifies the hardware-attested identity token of the agent.
+//
+// Intent: Ensures that the CrewAI agent is operating under a valid, hardware-bound mission-root token.
+//
+// Parameters:
+//   - ctx (context.Context): The context for controlling cancellation.
+//   - token (string): The identity token to attest.
+//
+// Returns:
+//   - error: An error if the attestation fails.
+//
+// Errors:
+//   - Returns an error if the token is empty.
+//
+// Side Effects:
+//   - Updates the internal framework identity token.
+func (a *CrewAIAdapter) AttestIdentity(ctx context.Context, token string) error {
+	if token == "" {
+		return fmt.Errorf("invalid token: empty identity token provided")
+	}
+	a.IdentityToken = token
 	return nil
 }

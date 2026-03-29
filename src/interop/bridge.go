@@ -91,6 +91,24 @@ type AgentFramework interface {
 	// Side Effects:
 	//   - Modifies internal framework state by updating the contextual memory.
 	SyncMemoryShard(ctx context.Context, shard *MemoryShard) error
+
+	// AttestIdentity verifies the hardware-attested identity token of the agent.
+	//
+	// Intent: Ensures that the agent framework is operating under a valid, hardware-bound mission-root token.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for controlling cancellation.
+	//   - token (string): The identity token to attest.
+	//
+	// Returns:
+	//   - error: An error if the attestation fails.
+	//
+	// Errors:
+	//   - Returns an error if the provided token is invalid.
+	//
+	// Side Effects:
+	//   - Updates the internal framework identity state.
+	AttestIdentity(ctx context.Context, token string) error
 }
 
 // MemoryShard represents a hardware-attested, intent-pinned memory fragment.
