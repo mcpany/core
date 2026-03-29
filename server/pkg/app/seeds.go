@@ -385,6 +385,31 @@ func init() {
 				}.Build(),
 			}.Build(),
 		}.Build(),
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("global-telemetry"),
+			Name:        proto.String("Global Telemetry"),
+			Description: proto.String("Gold Standard demonstration of global agent activity map visualization data. Contains geolocated tool execution metrics and active agent nodes."),
+			Icon:        proto.String("globe"),
+			Tags:        []string{"telemetry", "analytics", "mock"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("global-telemetry"),
+				McpService: configv1.McpUpstreamService_builder{
+					HttpConnection: configv1.McpStreamableHttpConnection_builder{
+						HttpAddress: proto.String("http://localhost:50050/api/v1/telemetry/global"),
+					}.Build(),
+					ToolAutoDiscovery: proto.Bool(true),
+				}.Build(),
+				UpstreamAuth: configv1.Authentication_builder{
+					ApiKey: configv1.APIKeyAuth_builder{
+						Value: configv1.SecretValue_builder{
+							PlainText: proto.String("mcp-any-global-telemetry-token"),
+						}.Build(),
+						ParamName: proto.String("X-Telemetry-Auth-Token"),
+						In:        configv1.APIKeyAuth_HEADER.Enum(),
+					}.Build(),
+				}.Build(),
+			}.Build(),
+		}.Build(),
 	}
 }
 
