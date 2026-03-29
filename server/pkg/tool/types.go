@@ -37,6 +37,7 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"go.opentelemetry.io/otel"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
@@ -575,6 +576,8 @@ func (t *GRPCTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 // Side Effects:
 //   - Makes a gRPC call to the upstream service.
 func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	ctx, span := otel.Tracer("mcpany.tools").Start(ctx, req.ToolName)
+	defer span.End()
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
 	}
@@ -947,12 +950,14 @@ func (t *HTTPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 // Side Effects:
 //   - Makes an HTTP request to the upstream service.
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	ctx, span := otel.Tracer("mcpany.tools").Start(ctx, req.ToolName)
+	defer span.End()
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
 	}
 	defer metrics.MeasureSince(metricHTTPRequestLatency, time.Now())
 
-	if allowed, err := EvaluateCompiledCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs); err != nil {
+	if allowed, err := EvaluateCompiledCallPolicy(t.policies, req.ToolName, t.callID, req.ToolInputs); err != nil {
 		return nil, fmt.Errorf("failed to evaluate call policy: %w", err)
 	} else if !allowed {
 		return nil, fmt.Errorf("tool execution blocked by policy")
@@ -1036,7 +1041,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		attemptResp, err := httpClient.Do(httpReq)
 		if err != nil {
 			// 🛡️ Sentinel Security Update: Prevent Information Leakage
-			logging.GetLogger().ErrorContext(ctx, "Failed to execute HTTP request", "tool", t.tool.GetName(), "error", err)
+			logging.GetLogger().ErrorContext(ctx, "Failed to execute HTTP request", "tool", req.ToolName, "error", err)
 			return fmt.Errorf("failed to execute http request")
 		}
 
@@ -1754,6 +1759,8 @@ func (t *MCPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-c
 // Side Effects:
 //   - Makes a call to a downstream MCP service.
 func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	ctx, span := otel.Tracer("mcpany.tools").Start(ctx, req.ToolName)
+	defer span.End()
 	if t.initError != nil {
 		return nil, t.initError
 	}
@@ -2097,6 +2104,8 @@ func (t *OpenAPITool) StreamExecute(ctx context.Context, req *ExecutionRequest) 
 // Side Effects:
 //   - Makes an HTTP request to the upstream service.
 func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
+	ctx, span := otel.Tracer("mcpany.tools").Start(ctx, req.ToolName)
+	defer span.End()
 	if t.initError != nil {
 		return nil, t.initError
 	}
@@ -2200,7 +2209,7 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	resp, err := t.client.Do(httpReq)
 	if err != nil {
 		// 🛡️ Sentinel Security Update: Prevent Information Leakage
-		logging.GetLogger().ErrorContext(ctx, "Failed to execute OpenAPI HTTP request", "tool", t.tool.GetName(), "error", err)
+		logging.GetLogger().ErrorContext(ctx, "Failed to execute OpenAPI HTTP request", "tool", req.ToolName, "error", err)
 		return nil, fmt.Errorf("failed to execute http request")
 	}
 	defer func() { _ = resp.Body.Close() }()
@@ -2218,7 +2227,7 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 
 	if resp.StatusCode >= 400 {
 		// 🛡️ Sentinel Security Update: Prevent Information Leakage
-		logging.GetLogger().ErrorContext(ctx, "Upstream OpenAPI request failed", "tool", t.tool.GetName(), "status", resp.StatusCode, "response", string(respBody))
+		logging.GetLogger().ErrorContext(ctx, "Upstream OpenAPI request failed", "tool", req.ToolName, "status", resp.StatusCode, "response", string(respBody))
 		return nil, fmt.Errorf("upstream OpenAPI request failed with status %d", resp.StatusCode)
 	}
 
@@ -2563,6 +2572,8 @@ func (t *LocalCommandTool) StreamExecute(ctx context.Context, req *ExecutionRequ
 // Side Effects:
 //   - Executes a local command line process.
 func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
+	ctx, span := otel.Tracer("mcpany.tools").Start(ctx, req.ToolName)
+	defer span.End()
 	if t.initError != nil {
 		return nil, t.initError
 	}
@@ -2570,7 +2581,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
 	}
 
-	if allowed, err := EvaluateCompiledCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs); err != nil {
+	if allowed, err := EvaluateCompiledCallPolicy(t.policies, req.ToolName, t.callID, req.ToolInputs); err != nil {
 		return nil, fmt.Errorf("failed to evaluate call policy: %w", err)
 	} else if !allowed {
 		return nil, fmt.Errorf("tool execution blocked by policy")
@@ -2794,7 +2805,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		stdin, stdout, stderr, _, err := executor.ExecuteWithStdIO(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env)
 		if err != nil {
 			// 🛡️ Sentinel Security Update: Prevent Information Leakage
-			logging.GetLogger().ErrorContext(ctx, "Failed to execute JSON CLI command with stdio", "tool", t.tool.GetName(), "error", err)
+			logging.GetLogger().ErrorContext(ctx, "Failed to execute JSON CLI command with stdio", "tool", req.ToolName, "error", err)
 			return nil, fmt.Errorf("failed to execute JSON CLI command")
 		}
 		// We don't defer stdin.Close() here because we close it in the writer goroutine
@@ -2830,7 +2841,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			// Do not leak raw stderr to the client. Log it server-side instead.
 			redactedStderr := redactor.Redact(stderrBuf.String())
 			if redactedStderr != "" {
-				logging.GetLogger().WarnContext(ctx, "JSON CLI command failed with stderr", "tool", t.tool.GetName(), "stderr", redactedStderr)
+				logging.GetLogger().WarnContext(ctx, "JSON CLI command failed with stderr", "tool", req.ToolName, "stderr", redactedStderr)
 			}
 			return nil, fmt.Errorf("failed to execute JSON CLI command: %w", err)
 		}
@@ -2840,7 +2851,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	stdout, stderr, exitCodeChan, err := executor.Execute(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env)
 	if err != nil {
 		// 🛡️ Sentinel Security Update: Prevent Information Leakage
-		logging.GetLogger().ErrorContext(ctx, "Failed to execute CLI command", "tool", t.tool.GetName(), "error", err)
+		logging.GetLogger().ErrorContext(ctx, "Failed to execute CLI command", "tool", req.ToolName, "error", err)
 		return nil, fmt.Errorf("failed to execute command")
 	}
 
@@ -3042,6 +3053,8 @@ func (t *CommandTool) StreamExecute(ctx context.Context, req *ExecutionRequest) 
 // Side Effects:
 //   - Executes a local command line process, potentially in a container.
 func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
+	ctx, span := otel.Tracer("mcpany.tools").Start(ctx, req.ToolName)
+	defer span.End()
 	if t.initError != nil {
 		return nil, t.initError
 	}
@@ -3049,7 +3062,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
 	}
 
-	if allowed, err := EvaluateCompiledCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs); err != nil {
+	if allowed, err := EvaluateCompiledCallPolicy(t.policies, req.ToolName, t.callID, req.ToolInputs); err != nil {
 		return nil, fmt.Errorf("failed to evaluate call policy: %w", err)
 	} else if !allowed {
 		return nil, fmt.Errorf("tool execution blocked by policy")
@@ -3282,7 +3295,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		stdin, stdout, stderr, _, err := executor.ExecuteWithStdIO(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env)
 		if err != nil {
 			// 🛡️ Sentinel Security Update: Prevent Information Leakage
-			logging.GetLogger().ErrorContext(ctx, "Failed to execute JSON CLI command with stdio", "tool", t.tool.GetName(), "error", err)
+			logging.GetLogger().ErrorContext(ctx, "Failed to execute JSON CLI command with stdio", "tool", req.ToolName, "error", err)
 			return nil, fmt.Errorf("failed to execute JSON CLI command")
 		}
 		// We don't defer stdin.Close() here because we close it in the writer goroutine
@@ -3318,7 +3331,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			// Do not leak raw stderr to the client. Log it server-side instead.
 			redactedStderr := redactor.Redact(stderrBuf.String())
 			if redactedStderr != "" {
-				logging.GetLogger().WarnContext(ctx, "JSON CLI command failed with stderr", "tool", t.tool.GetName(), "stderr", redactedStderr)
+				logging.GetLogger().WarnContext(ctx, "JSON CLI command failed with stderr", "tool", req.ToolName, "stderr", redactedStderr)
 			}
 			return nil, fmt.Errorf("failed to execute JSON CLI command: %w", err)
 		}
@@ -3328,7 +3341,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	stdout, stderr, exitCodeChan, err := executor.Execute(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env)
 	if err != nil {
 		// 🛡️ Sentinel Security Update: Prevent Information Leakage
-		logging.GetLogger().ErrorContext(ctx, "Failed to execute CLI command", "tool", t.tool.GetName(), "error", err)
+		logging.GetLogger().ErrorContext(ctx, "Failed to execute CLI command", "tool", req.ToolName, "error", err)
 		return nil, fmt.Errorf("failed to execute command")
 	}
 

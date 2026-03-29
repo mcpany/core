@@ -19,6 +19,7 @@ import (
 	"github.com/mcpany/core/server/pkg/transformer"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"go.opentelemetry.io/otel"
 )
 
 // WebsocketTool implements the Tool interface for a tool exposed via a WebSocket
@@ -181,6 +182,8 @@ func (t *WebsocketTool) StreamExecute(ctx context.Context, req *ExecutionRequest
 // Side Effects:
 //   - Makes a WebSocket network call.
 func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	ctx, span := otel.Tracer("mcpany.tools").Start(ctx, req.ToolName)
+	defer span.End()
 	wsPool, ok := pool.Get[*client.WebsocketClientWrapper](t.poolManager, t.serviceID)
 	if !ok {
 		return nil, fmt.Errorf("no websocket pool found for service: %s", t.serviceID)

@@ -23,6 +23,7 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/pion/webrtc/v3"
+	"go.opentelemetry.io/otel"
 )
 
 type peerConnectionWrapper struct {
@@ -258,6 +259,8 @@ func (t *WebrtcTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (
 // Side Effects:
 //   - Makes a WebRTC network call.
 func (t *WebrtcTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	ctx, span := otel.Tracer("mcpany.tools").Start(ctx, req.ToolName)
+	defer span.End()
 	if t.webrtcPool == nil {
 		// Fallback to creating a new connection if the pool is not initialized
 		return t.executeWithoutPool(ctx, req)

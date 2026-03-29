@@ -51,6 +51,7 @@ go_library(
         "@com_github_pion_webrtc_v3//:webrtc",
         "@com_github_puzpuzpuz_xsync_v4//:xsync",
         "@com_github_standard_webhooks_standard_webhooks_libraries//go",
+        "@io_opentelemetry_go_otel//:otel",
         "@org_golang_google_protobuf//encoding/protojson",
         "@org_golang_google_protobuf//proto",
         "@org_golang_google_protobuf//reflect/protoreflect",
