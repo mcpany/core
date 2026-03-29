@@ -153,3 +153,73 @@ func (a *CrewAIAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard)
 
 	return nil
 }
+
+// StreamTask streams the execution of a task from the CrewAI framework.
+//
+// Intent: Simulates a streaming task execution for CrewAI delegated roles.
+//
+// Parameters:
+//   - ctx (context.Context): The context for execution, handling cancellation.
+//   - task (*Task): The generic task object to execute.
+//
+// Returns:
+//   - <-chan *TaskResult: A read-only channel emitting streamed chunks.
+//   - error: Indicates failure in executing the task or an unsupported intent.
+//
+// Errors:
+//   - Returns an error if the framework's capability check fails for the task's intent.
+//
+// Side Effects:
+//   - Modifies the internal RoleRegistry state to map the delegated role to an authentication token.
+//   - Spawns a goroutine to send chunks.
+func (a *CrewAIAdapter) StreamTask(ctx context.Context, task *Task) (<-chan *TaskResult, error) {
+	if !a.SupportsCapability(task.Intent) {
+		return nil, fmt.Errorf("CrewAI does not support capability: %s", task.Intent)
+	}
+
+	stream := make(chan *TaskResult)
+
+	role, exists := task.Payload["role"]
+	if !exists {
+		role = "generalist"
+	}
+	a.RoleRegistry[role] = fmt.Sprintf("auth_token_%s", role)
+
+	go func() {
+		defer close(stream)
+
+		// Send initial chunk
+		select {
+		case <-ctx.Done():
+			return
+		case stream <- &TaskResult{
+			TaskID: task.ID,
+			Status: "streaming",
+			Output: fmt.Sprintf("CrewAI delegating task: %s to role: %s...", task.Intent, role),
+			Telemetry: map[string]string{
+				"delegated_role": role,
+				"auth_status":    "verified",
+				"chunk_index":    "0",
+			},
+		}:
+		}
+
+		// Send final chunk
+		select {
+		case <-ctx.Done():
+			return
+		case stream <- &TaskResult{
+			TaskID: task.ID,
+			Status: "success",
+			Output: fmt.Sprintf("CrewAI completed task: %s with role: %s", task.Intent, role),
+			Telemetry: map[string]string{
+				"delegated_role": role,
+				"auth_status":    "verified",
+				"chunk_index":    "1",
+			},
+		}:
+		}
+	}()
+
+	return stream, nil
+}

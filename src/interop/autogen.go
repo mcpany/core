@@ -151,3 +151,73 @@ func (a *AutoGenAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard
 	a.ChatHistory = append(a.ChatHistory, fmt.Sprintf("Received multimodal shard: %s", shard.ShardID))
 	return nil
 }
+
+// StreamTask streams the execution of a task from the AutoGen framework.
+//
+// Intent: Simulates a streaming task execution by emitting chunks to a channel.
+//
+// Parameters:
+//   - ctx (context.Context): The context for execution, handling cancellation.
+//   - task (*Task): The generic task object to execute.
+//
+// Returns:
+//   - <-chan *TaskResult: A read-only channel emitting streamed chunks.
+//   - error: Indicates failure in executing the task or an unsupported intent.
+//
+// Errors:
+//   - Returns an error if the framework's capability check fails for the task's intent.
+//
+// Side Effects:
+//   - Appends execution checkpoints (strings) to the internal `ChatHistory` array, mutating adapter state.
+//   - Spawns a goroutine to send chunks.
+func (a *AutoGenAdapter) StreamTask(ctx context.Context, task *Task) (<-chan *TaskResult, error) {
+	if !a.SupportsCapability(task.Intent) {
+		return nil, fmt.Errorf("AutoGen does not support capability: %s", task.Intent)
+	}
+
+	stream := make(chan *TaskResult)
+
+	go func() {
+		defer close(stream)
+
+		msg := fmt.Sprintf("AutoGen subagent started task: %s", task.Intent)
+		a.ChatHistory = append(a.ChatHistory, msg)
+
+		// Send initial chunk
+		select {
+		case <-ctx.Done():
+			return
+		case stream <- &TaskResult{
+			TaskID: task.ID,
+			Status: "streaming",
+			Output: fmt.Sprintf("Streaming AutoGen subagent task: %s, Checkpoints: %d", task.Intent, len(a.ChatHistory)),
+			Telemetry: map[string]string{
+				"mailbox_integrity": "verified",
+				"history_length":    fmt.Sprintf("%d", len(a.ChatHistory)),
+				"chunk_index":       "0",
+			},
+		}:
+		}
+
+		msg2 := fmt.Sprintf("AutoGen subagent completed task: %s", task.Intent)
+		a.ChatHistory = append(a.ChatHistory, msg2)
+
+		// Send final chunk
+		select {
+		case <-ctx.Done():
+			return
+		case stream <- &TaskResult{
+			TaskID: task.ID,
+			Status: "success",
+			Output: fmt.Sprintf("Completed AutoGen subagent task: %s, Checkpoints: %d", task.Intent, len(a.ChatHistory)),
+			Telemetry: map[string]string{
+				"mailbox_integrity": "verified",
+				"history_length":    fmt.Sprintf("%d", len(a.ChatHistory)),
+				"chunk_index":       "1",
+			},
+		}:
+		}
+	}()
+
+	return stream, nil
+}

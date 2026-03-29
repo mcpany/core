@@ -152,3 +152,84 @@ func (a *OpenClawAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShar
 
 	return nil
 }
+
+// StreamTask streams the execution of a task from the OpenClaw framework.
+//
+// Intent: Simulates a streaming task execution by emitting chunks to a channel.
+//
+// Parameters:
+//   - ctx (context.Context): The context for execution, handling cancellation.
+//   - task (*Task): The generic task object to execute.
+//
+// Returns:
+//   - <-chan *TaskResult: A read-only channel emitting streamed chunks.
+//   - error: Indicates failure in executing the task or an unsupported intent.
+//
+// Errors:
+//   - Returns an error if the framework's capability check fails for the task's intent.
+//
+// Side Effects:
+//   - Spawns a goroutine to send chunks.
+func (a *OpenClawAdapter) StreamTask(ctx context.Context, task *Task) (<-chan *TaskResult, error) {
+	if !a.SupportsCapability(task.Intent) {
+		return nil, fmt.Errorf("OpenClaw does not support capability: %s", task.Intent)
+	}
+
+	stream := make(chan *TaskResult)
+
+	go func() {
+		defer close(stream)
+
+		a.CurrentEpoch++
+
+		// Send initial chunk
+		select {
+		case <-ctx.Done():
+			return
+		case stream <- &TaskResult{
+			TaskID: task.ID,
+			Status: "streaming",
+			Output: fmt.Sprintf("Started OpenClaw task: %s, Epoch: %d", task.Intent, a.CurrentEpoch),
+			Telemetry: map[string]string{
+				"reasoning_epoch": fmt.Sprintf("%d", a.CurrentEpoch),
+				"entropy_score":   "low",
+				"chunk_index":     "0",
+			},
+		}:
+		}
+
+		// Send intermediate chunk
+		select {
+		case <-ctx.Done():
+			return
+		case stream <- &TaskResult{
+			TaskID: task.ID,
+			Status: "streaming",
+			Output: fmt.Sprintf("Processing OpenClaw task: %s...", task.Intent),
+			Telemetry: map[string]string{
+				"reasoning_epoch": fmt.Sprintf("%d", a.CurrentEpoch),
+				"entropy_score":   "low",
+				"chunk_index":     "1",
+			},
+		}:
+		}
+
+		// Send final chunk
+		select {
+		case <-ctx.Done():
+			return
+		case stream <- &TaskResult{
+			TaskID: task.ID,
+			Status: "success",
+			Output: fmt.Sprintf("Finished OpenClaw task: %s", task.Intent),
+			Telemetry: map[string]string{
+				"reasoning_epoch": fmt.Sprintf("%d", a.CurrentEpoch),
+				"entropy_score":   "low",
+				"chunk_index":     "2",
+			},
+		}:
+		}
+	}()
+
+	return stream, nil
+}
