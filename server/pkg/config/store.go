@@ -1424,14 +1424,16 @@ func suggestFix(unknownField string, root proto.Message) string {
 
 	bestMatch := ""
 	minDist := 100
+	bestMatchLen := 0
 
 	for name := range candidates {
 		// ⚡ BOLT: Replaced inefficient local Levenshtein implementation with optimized utility function.
 		// Randomized Selection from Top 5 High-Impact Targets
 		dist := util.LevenshteinDistance(unknownField, name)
-		if dist < minDist {
+		if dist < minDist || (dist == minDist && len(name) > bestMatchLen) {
 			minDist = dist
 			bestMatch = name
+			bestMatchLen = len(name)
 		}
 	}
 
