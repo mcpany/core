@@ -968,7 +968,7 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 	if err != nil {
 		// Log error result (nil result usually)
 		if logger.Enabled(ctx, slog.LevelInfo) {
-			logger.Info("Tool execution completed", "result_type", fmt.Sprintf("%T", result), "result_value", LazyLogResult{Value: result})
+			logger.Info("Tool execution completed", "result_type", fmt.Sprintf("%T", result), "result_value", LazyLogResult{Value: result}.LogValue())
 		}
 		return nil, err
 	}
@@ -1044,15 +1044,13 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 	// Log the result
 	if logger.Enabled(ctx, slog.LevelInfo) {
 		var logValue slog.Value
-		// If we have a structured result (either directly or converted), use the summarizer.
-		// If we fell back to raw JSON (isStructured=false), reuse the jsonBytes for redacted logging.
-		if !isStructured && len(jsonBytes) > 0 && marshalErr == nil {
-			// ⚡ Bolt Optimization: Reuse marshaled bytes for logging (redacted)
-			// This saves a second marshal operation for large maps.
-			logValue = slog.StringValue(util.BytesToString(util.RedactJSON(jsonBytes)))
-		} else {
-			logValue = summarizeCallToolResult(finalResult)
-		}
+		// Avoid double serialization by reusing context from tool execution
+		logValue = LazyLogResult{
+			Value:        result,
+			JSONBytes:    jsonBytes,
+			IsStructured: isStructured,
+			FinalResult:  finalResult,
+		}.LogValue()
 
 		logger.Info("Tool execution completed", "result_type", fmt.Sprintf("%T", result), "result_value", logValue)
 	}
@@ -1227,6 +1225,9 @@ func (s *Server) Reload(ctx context.Context) error {
 	return nil
 }
 
+var errNotCallToolResult = fmt.Errorf("neither content nor isError present")
+var errContentNotList = fmt.Errorf("content is not a list")
+
 // convertMapToCallToolResult attempts to convert a map result to a CallToolResult
 // without JSON serialization overhead. It supports text, image, and resource content.
 func convertMapToCallToolResult(m map[string]any) (*mcp.CallToolResult, error) {
@@ -1235,7 +1236,7 @@ func convertMapToCallToolResult(m map[string]any) (*mcp.CallToolResult, error) {
 	if !ok {
 		// If content is missing, check for isError
 		if _, hasIsError := m["isError"]; !hasIsError {
-			return nil, fmt.Errorf("neither content nor isError present")
+			return nil, errNotCallToolResult
 		}
 		// Maybe it's just error?
 		isError, _ := m["isError"].(bool)
@@ -1244,7 +1245,7 @@ func convertMapToCallToolResult(m map[string]any) (*mcp.CallToolResult, error) {
 
 	contentList, ok := contentRaw.([]any)
 	if !ok {
-		return nil, fmt.Errorf("content is not a list")
+		return nil, errContentNotList
 	}
 
 	contents := make([]mcp.Content, 0, len(contentList))
@@ -1368,7 +1369,10 @@ func (l LazyRedact) LogValue() slog.Value {
 //
 // Summary: Represents a LazyLogResult.
 type LazyLogResult struct {
-	Value any
+	Value        any
+	JSONBytes    []byte
+	IsStructured bool
+	FinalResult  *mcp.CallToolResult
 }
 
 // LogValue implements slog.LogValuer.
@@ -1399,6 +1403,14 @@ func (r LazyLogResult) LogValue() slog.Value {
 		return slog.StringValue("<nil>")
 	}
 
+	if !r.IsStructured && len(r.JSONBytes) > 0 {
+		return slog.StringValue(util.BytesToString(util.RedactJSON(r.JSONBytes)))
+	}
+
+	if r.FinalResult != nil {
+		return summarizeCallToolResult(r.FinalResult)
+	}
+
 	switch v := r.Value.(type) {
 	case *mcp.CallToolResult:
 		return summarizeCallToolResult(v)
@@ -1409,6 +1421,9 @@ func (r LazyLogResult) LogValue() slog.Value {
 		}
 		// Otherwise redact it. We marshal it to JSON bytes to use RedactJSON.
 		// Use json-iterator for speed.
+		if len(r.JSONBytes) > 0 {
+			return slog.StringValue(util.BytesToString(util.RedactJSON(r.JSONBytes)))
+		}
 		jsonBytes, _ := util.FastMarshal(v)
 		return slog.StringValue(util.BytesToString(util.RedactJSON(jsonBytes)))
 	default:
