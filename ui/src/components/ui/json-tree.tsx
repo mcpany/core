@@ -62,12 +62,14 @@ export function JsonTree({ data, level = 0, defaultExpandedLevel = 1, className 
 
   if (!isObject) {
     return (
-      <div className={cn("flex items-center gap-2 group/node font-mono text-xs hover:bg-white/5 rounded px-1 -ml-1", className)} style={{ paddingLeft: level > 0 ? '0' : undefined }}>
-        <PrimitiveValue value={data} />
+      <div className={cn("flex items-center group/node font-mono text-xs w-full", className)} style={{ paddingLeft: level > 0 ? '0' : undefined }}>
+        <div className="flex-1 min-w-0">
+            <PrimitiveValue value={data} />
+        </div>
         <Button
             variant="ghost"
             size="icon"
-            className="h-4 w-4 opacity-0 group-hover/node:opacity-100 transition-opacity ml-auto"
+            className="h-5 w-5 opacity-0 group-hover/node:opacity-100 transition-opacity shrink-0 ml-2 bg-muted/50 hover:bg-muted"
             onClick={handleCopy}
             title="Copy value"
         >
@@ -91,9 +93,9 @@ export function JsonTree({ data, level = 0, defaultExpandedLevel = 1, className 
     : `{ ${entries.slice(0, 3).map(([k]) => k).join(", ")}${entries.length > 3 ? ", ..." : ""} }`;
 
   return (
-    <div className={cn("font-mono text-xs", className)}>
+    <div className={cn("font-mono text-xs w-full", className)}>
       <div
-        className="flex items-center gap-1 cursor-pointer hover:bg-white/5 rounded px-1 -ml-1 select-none group/node"
+        className="flex items-center gap-1 cursor-pointer hover:bg-muted/30 rounded py-1 px-1 -ml-1 select-none group/node w-full"
         onClick={() => setExpanded(!expanded)}
       >
         <span className="text-muted-foreground w-4 flex justify-center shrink-0">
@@ -101,7 +103,7 @@ export function JsonTree({ data, level = 0, defaultExpandedLevel = 1, className 
         </span>
         <span className="text-muted-foreground">{isArray ? "[" : "{"}</span>
         {!expanded && (
-            <span className="text-muted-foreground opacity-50 mx-1 italic text-[10px]">{preview}</span>
+            <span className="text-muted-foreground opacity-50 mx-1 italic text-[10px] truncate max-w-[200px] md:max-w-md">{preview}</span>
         )}
         {!expanded && (
              <span className="text-muted-foreground">{isArray ? "]" : "}"}</span>
@@ -109,7 +111,7 @@ export function JsonTree({ data, level = 0, defaultExpandedLevel = 1, className 
          <Button
             variant="ghost"
             size="icon"
-            className="h-4 w-4 opacity-0 group-hover/node:opacity-100 transition-opacity ml-auto"
+            className="h-5 w-5 opacity-0 group-hover/node:opacity-100 transition-opacity ml-auto shrink-0 bg-muted/50 hover:bg-muted"
             onClick={handleCopy}
             title="Copy JSON"
         >
@@ -118,15 +120,16 @@ export function JsonTree({ data, level = 0, defaultExpandedLevel = 1, className 
       </div>
 
       {expanded && (
-        <div className="border-l border-white/10 ml-2 pl-2 flex flex-col">
-          {entries.map(([key, value], idx) => (
-            <div key={key} className="flex items-start gap-1">
+        <div className="border-l-2 border-muted-foreground/20 ml-[7px] pl-3 flex flex-col gap-1 my-1 w-full">
+          {entries.map(([key, value]) => (
+            <div key={key} className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4 w-full group/row hover:bg-muted/10 rounded px-1 -ml-1 py-0.5">
                {/* Key */}
-               <div className="pt-[2px] shrink-0 text-purple-400">
+               <div className="pt-[2px] shrink-0 text-primary/80 sm:w-[30%] sm:max-w-[250px] font-semibold truncate" title={key}>
                   {!isArray && (
-                      <span className="mr-1 opacity-80">
-                        "{key}":
-                      </span>
+                      <span>{key}</span>
+                  )}
+                  {isArray && (
+                      <span className="text-muted-foreground/50 text-[10px]">{key}</span>
                   )}
                </div>
 
@@ -138,13 +141,12 @@ export function JsonTree({ data, level = 0, defaultExpandedLevel = 1, className 
                     defaultExpandedLevel={defaultExpandedLevel}
                   />
                </div>
-               {/* Comma if needed (optional purely visual preference, syntax highlighter usually omits in tree view but keeps structure) */}
             </div>
           ))}
         </div>
       )}
       {expanded && (
-          <div className="pl-6 text-muted-foreground">
+          <div className="pl-2 text-muted-foreground/60 font-semibold">
               {isArray ? "]" : "}"}
           </div>
       )}
@@ -153,16 +155,40 @@ export function JsonTree({ data, level = 0, defaultExpandedLevel = 1, className 
 }
 
 function PrimitiveValue({ value }: { value: unknown }) {
+  const [expandedText, setExpandedText] = useState(false);
+
   if (typeof value === 'string') {
     if (value.startsWith('data:image/') && value.length > 50) {
         return (
             <div className="mt-1 mb-2">
-                <span className="text-green-400 break-all whitespace-pre-wrap opacity-50 text-[10px] block truncate max-w-[300px]" title="Click copy to get full string">"{value}"</span>
+                <span className="text-green-600 dark:text-green-400 break-all whitespace-pre-wrap opacity-50 text-[10px] block truncate max-w-[300px]" title="Click copy to get full string">"{value}"</span>
                 <img src={value} alt="Base64 Image" className="max-w-[200px] h-auto rounded-md border bg-black/50 mt-1" />
             </div>
         );
     }
-    return <span className="text-green-400 break-all whitespace-pre-wrap">"{value}"</span>;
+
+    const isLong = value.length > 100;
+
+    return (
+        <div className="flex flex-col items-start w-full">
+            <span
+                className={cn(
+                    "text-green-700 dark:text-green-400 break-all whitespace-pre-wrap",
+                    !expandedText && isLong && "line-clamp-3"
+                )}
+            >
+                "{value}"
+            </span>
+            {isLong && (
+                <button
+                    onClick={(e) => { e.stopPropagation(); setExpandedText(!expandedText); }}
+                    className="text-[10px] text-muted-foreground hover:text-primary mt-1 font-sans underline underline-offset-2"
+                >
+                    {expandedText ? "Show less" : "Show more"}
+                </button>
+            )}
+        </div>
+    );
   }
   if (typeof value === 'number') {
     return <span className="text-blue-400">{value}</span>;

@@ -8,9 +8,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp, ChevronsUpDown, Maximize2, MoreHorizontal, Copy, Check } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
+import { JsonTree } from "@/components/ui/json-tree";
 import { JsonView } from "@/components/ui/json-view";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
@@ -190,22 +192,23 @@ export function SmartTable({ data }: SmartTableProps) {
         const isArray = Array.isArray(value);
         const label = isArray ? `Array(${value.length})` : `Object {${Object.keys(value).length}}`;
         return (
-            <Dialog>
-                <DialogTrigger asChild>
-                    <Button variant="ghost" size="sm" className="h-6 px-2 text-xs font-mono bg-muted/30 hover:bg-muted/60 text-muted-foreground border border-transparent hover:border-border">
+            <Popover>
+                <PopoverTrigger asChild>
+                    <Button variant="ghost" size="sm" className="h-6 px-2 text-xs font-mono bg-muted/30 hover:bg-muted/60 text-muted-foreground border border-transparent hover:border-border shadow-sm">
                         <Maximize2 className="mr-1.5 h-3 w-3" />
                         {label}
                     </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-3xl max-h-[80vh] flex flex-col p-0 overflow-hidden bg-background/95 backdrop-blur-xl border-muted/50 shadow-2xl">
-                    <DialogHeader className="px-4 py-3 border-b bg-muted/10">
-                        <DialogTitle className="font-mono text-sm">{colKey}</DialogTitle>
-                    </DialogHeader>
-                    <ScrollArea className="flex-1 p-4">
-                        <JsonView data={value} />
+                </PopoverTrigger>
+                <PopoverContent className="w-auto min-w-[300px] max-w-xl max-h-[400px] flex flex-col p-0 overflow-hidden bg-background/95 backdrop-blur-xl border-muted/50 shadow-2xl" align="start">
+                    <div className="px-3 py-2 border-b bg-muted/20 flex items-center justify-between">
+                        <span className="font-mono text-xs font-semibold">{colKey}</span>
+                        <Badge variant="outline" className="text-[10px] uppercase tracking-wider bg-background/50">{isArray ? "Array" : "Object"}</Badge>
+                    </div>
+                    <ScrollArea className="flex-1 p-3">
+                        <JsonTree data={value} defaultExpandedLevel={2} />
                     </ScrollArea>
-                </DialogContent>
-            </Dialog>
+                </PopoverContent>
+            </Popover>
         );
     }
 
