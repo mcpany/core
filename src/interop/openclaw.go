@@ -152,3 +152,28 @@ func (a *OpenClawAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShar
 
 	return nil
 }
+
+// HandleStreamingTask processes a task and streams the intermediate/progress outputs.
+//
+// Intent: Streams execution progress for long-running OpenClaw processes.
+//
+// Parameters:
+//   - ctx (context.Context): Execution context.
+//   - task (*Task): The generic task object to execute.
+//   - stream (chan<- string): Channel to send text output chunks.
+//
+// Returns:
+//   - error: Error if unsupported or streaming fails.
+//
+// Side Effects:
+//   - Increments reasoning epoch.
+func (a *OpenClawAdapter) HandleStreamingTask(ctx context.Context, task *Task, stream chan<- string) error {
+	if !a.SupportsCapability(task.Intent) {
+		return fmt.Errorf("OpenClaw does not support capability: %s", task.Intent)
+	}
+
+	a.CurrentEpoch++
+	stream <- fmt.Sprintf("OpenClaw streaming task: %s", task.Intent)
+	stream <- fmt.Sprintf("Epoch updated: %d", a.CurrentEpoch)
+	return nil
+}

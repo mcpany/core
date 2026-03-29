@@ -199,6 +199,38 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 			}
 		}
 	})
+
+	// 7. Streaming Task Test
+	t.Run("StreamingTaskTest", func(t *testing.T) {
+		taskStream := &interop.Task{
+			ID:        "task-stream-001",
+			Framework: "OpenClaw",
+			Intent:    "adaptive_reasoning",
+			Payload:   map[string]string{"context": "streaming_data"},
+		}
+
+		stream := make(chan string, 5)
+
+		err := hub.RouteStreamingTask(ctx, taskStream, stream)
+		if err != nil {
+			t.Fatalf("Failed to execute streaming task: %v", err)
+		}
+
+		close(stream)
+
+		chunks := []string{}
+		for chunk := range stream {
+			chunks = append(chunks, chunk)
+		}
+
+		if len(chunks) != 2 {
+			t.Errorf("Expected 2 streaming chunks, got %d", len(chunks))
+		}
+
+		if !strings.Contains(chunks[0], "OpenClaw streaming task") {
+			t.Errorf("Unexpected first chunk content: %s", chunks[0])
+		}
+	})
 }
 
 // Helper to access registered adapters for testing interface direct calls

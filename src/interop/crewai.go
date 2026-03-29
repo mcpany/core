@@ -153,3 +153,33 @@ func (a *CrewAIAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard)
 
 	return nil
 }
+
+// HandleStreamingTask processes a task and streams the intermediate/progress outputs.
+//
+// Intent: Streams execution progress for CrewAI roles.
+//
+// Parameters:
+//   - ctx (context.Context): Execution context.
+//   - task (*Task): The task to execute.
+//   - stream (chan<- string): Channel to send output.
+//
+// Returns:
+//   - error: Error if capability is unsupported or streaming fails.
+//
+// Side Effects:
+//   - Modifies internal RoleRegistry state.
+func (a *CrewAIAdapter) HandleStreamingTask(ctx context.Context, task *Task, stream chan<- string) error {
+	if !a.SupportsCapability(task.Intent) {
+		return fmt.Errorf("CrewAI does not support capability: %s", task.Intent)
+	}
+
+	role, exists := task.Payload["role"]
+	if !exists {
+		role = "generalist"
+	}
+
+	a.RoleRegistry[role] = fmt.Sprintf("auth_token_%s", role)
+	stream <- fmt.Sprintf("CrewAI streaming delegation for role: %s", role)
+	stream <- fmt.Sprintf("Token mapped for %s", role)
+	return nil
+}

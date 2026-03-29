@@ -151,3 +151,30 @@ func (a *AutoGenAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard
 	a.ChatHistory = append(a.ChatHistory, fmt.Sprintf("Received multimodal shard: %s", shard.ShardID))
 	return nil
 }
+
+// HandleStreamingTask processes a task and streams the intermediate/progress outputs.
+//
+// Intent: Allows AutoGen agents to stream conversational checkpoints.
+//
+// Parameters:
+//   - ctx (context.Context): Execution context.
+//   - task (*Task): Task definition.
+//   - stream (chan<- string): Write-only output channel.
+//
+// Returns:
+//   - error: Error if unsupported.
+//
+// Side Effects:
+//   - Mutates ChatHistory by appending checkpoints.
+func (a *AutoGenAdapter) HandleStreamingTask(ctx context.Context, task *Task, stream chan<- string) error {
+	if !a.SupportsCapability(task.Intent) {
+		return fmt.Errorf("AutoGen does not support capability: %s", task.Intent)
+	}
+
+	msg := fmt.Sprintf("AutoGen streaming task executed: %s", task.Intent)
+	a.ChatHistory = append(a.ChatHistory, msg)
+
+	stream <- fmt.Sprintf("AutoGen subagent checkpoint: %s", task.Intent)
+	stream <- fmt.Sprintf("History Length: %d", len(a.ChatHistory))
+	return nil
+}

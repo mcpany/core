@@ -91,6 +91,26 @@ type AgentFramework interface {
 	// Side Effects:
 	//   - Modifies internal framework state by updating the contextual memory.
 	SyncMemoryShard(ctx context.Context, shard *MemoryShard) error
+
+	// HandleStreamingTask processes a task and streams the intermediate/progress outputs.
+	//
+	// Intent: Enables long-running processes to stream incremental progress.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for execution.
+	//   - task (*Task): The generic task object to execute.
+	//   - stream (chan<- string): A write-only channel to send text output chunks.
+	//
+	// Returns:
+	//   - error: Any error that aborts the streaming task. Note that the final result
+	//     might be simply interpreted through the completion of the channel stream.
+	//
+	// Errors:
+	//   - Returns an error if the framework does not support the capability or fails to stream.
+	//
+	// Side Effects:
+	//   - Writes progressively to the stream channel until completion.
+	HandleStreamingTask(ctx context.Context, task *Task, stream chan<- string) error
 }
 
 // MemoryShard represents a hardware-attested, intent-pinned memory fragment.
@@ -243,4 +263,26 @@ func (h *AdapterHub) RouteTask(ctx context.Context, task *Task) (*TaskResult, er
 		return nil, fmt.Errorf("no adapter registered for framework: %s", task.Framework)
 	}
 	return adapter.HandleTask(ctx, task)
+}
+
+// RouteStreamingTask routes a task and enables output streaming.
+//
+// Intent: Dispatches a long-running task to the appropriate adapter with a streaming channel.
+//
+// Parameters:
+//   - ctx (context.Context): Context for execution timeouts and cancellation.
+//   - task (*Task): Task definition.
+//   - stream (chan<- string): Destination channel for task chunks.
+//
+// Returns:
+//   - error: An error if the routing or task initialization fails.
+//
+// Side Effects:
+//   - Passes stream to the underlying adapter implementation.
+func (h *AdapterHub) RouteStreamingTask(ctx context.Context, task *Task, stream chan<- string) error {
+	adapter, exists := h.adapters[task.Framework]
+	if !exists {
+		return fmt.Errorf("no adapter registered for framework: %s", task.Framework)
+	}
+	return adapter.HandleStreamingTask(ctx, task, stream)
 }
