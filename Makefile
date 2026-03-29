@@ -16,3 +16,6 @@ docker-test:
 
 k8s-e2e:
 	$(MAKE) -C k8s test
+
+run:
+	bazelisk run //:mcpany -- run -c examples/hello_world.yaml

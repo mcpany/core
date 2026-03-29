@@ -43,7 +43,9 @@ func TestSuggestFix_Fuzzy(t *testing.T) {
 		input    string
 		expected string
 	}{
-		{"adres", "Did you mean \"address\"?"},
+		// "adres" is closer to "args" (1 edit) than "address" (2 edits).
+		// Thus "adres" maps to "args", "addres" maps to "address"
+		{"adres", "Did you mean \"args\"?"},
 		{"addres", "Did you mean \"address\"?"},
 		{"xyz", ""}, // No match
 	}

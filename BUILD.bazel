@@ -83,6 +83,12 @@ alias(
     actual = "@buildozer//:buildozer",
 )
 
+alias(
+    name = "mcpany",
+    actual = "//server/cmd/mcpany",
+    visibility = ["//visibility:public"],
+)
+
 # ---------------------------------------------------------------------------
 # Well-known-type TypeScript bindings
 #

@@ -41,7 +41,12 @@ Ensure `bazelisk` and `make` are installed and available in your `PATH`.
 ### 3. Run the App
 Run the server with the included Hello World example configuration:
 ```bash
-bazelisk run //server/cmd/mcpany -- -config examples/hello_world.yaml
+make run
+```
+
+Or run the underlying command directly:
+```bash
+bazelisk run //:mcpany -- run -config examples/hello_world.yaml
 ```
 *The server will start and you can connect your MCP-compatible client to the local instance.*
 
@@ -68,7 +73,7 @@ We use `make` and `bazelisk` for common development tasks.
 - **Build the binary:**
   Build the server executable:
   ```bash
-  bazelisk build //server/cmd/mcpany
+  bazelisk build //:mcpany
   ```
 
 ## Configuration
