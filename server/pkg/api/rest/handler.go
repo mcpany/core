@@ -124,6 +124,7 @@ func ValidateConfigHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+
 func respondWithJSONError(w http.ResponseWriter, code int, message string) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
