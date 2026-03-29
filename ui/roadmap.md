@@ -775,6 +775,12 @@
 - [ ] **[P0] UTD Mesh Topology**: (2026-07-10) Interactive map of teammate discovery beacons and horizontal swarm formation.
 - [ ] **[P0] Hierarchical Lineage Tracer**: (2026-07-10) Visual debugger for recursive, hardware-signed reasoning sub-steps.
 
+#### Upcoming (2026-07-12 Evolution)
+- [ ] **[P0] Mission Forking Visualizer**: (2026-07-12) Real-time graph showing mission-fork lineages and immutable boundary triggers.
+- [ ] **[P0] Kernel Sanitization Monitor**: (2026-07-12) Dashboard for visualizing KFS-blocked splicing attempts and kernel fault logs.
+- [ ] **[P0] Attention-Locked Shard Streamer UI**: (2026-07-12) Visual tracker for granular state streaming within the lead agent's attention window.
+- [ ] **[P1] Semantic Clock Drift Widget**: (2026-07-12) Real-time monitor for hardware clock synchronization and SLP attestation status.
+
 #### Upcoming (2026-07-11 Evolution)
 - [ ] **[P0] Mesh Resilience Dashboard**: (2026-07-11) Real-time visualization of state shard migration and physical node health.
 - [ ] **[P0] Economic Attribution Viewer**: (2026-07-11) Visual tracker for hardware-attested cost attribution (HACA) across subagent lineages.

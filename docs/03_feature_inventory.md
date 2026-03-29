@@ -12,6 +12,18 @@
 - **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **HACA** integration.
 - **Zero-Knowledge State Attestation (ZKSA) Provider**: (Re-affirmed P0) Elevated to support **DMR-compliant** state migration proofs.
 
+## Evolution: [2026-07-12] Updates
+
+### Proposed Additions
+- **Mission Forking Hub (MFH)**: (P0) Authoritative coordination service for spawning sub-missions with inherited, immutable security policies.
+- **Kernel-Layer Fragment Sanitizer (KFS)**: (P0) Advanced security extension for the BSH Gateway that performs fragment-level semantic validation at the kernel layer.
+- **Attention-Locked Shard Streamer (ALSS)**: (P0) Coordination middleware for horizontal Agent Teams facilitating attention-pinned state streaming.
+- **Semantic Lineage Pinning (SLP) Provider**: (P1) Identity extension for the SRM Provider that binds reasoning paths to hardware-attested monotonic clocks.
+
+### Priority Shifts
+- **Atomic Fragment Sanitizer (AFS)**: (Evolved to Kernel-Layer Fragment Sanitizer) Now designated as a mandatory requirement for high-frequency horizontal coordination.
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SLP** integration.
+
 ## Evolution: [2026-03-26] Updates
 
 ### Proposed Additions

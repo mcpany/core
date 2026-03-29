@@ -217,6 +217,12 @@
 *   **[P0] Multi-Signature Skill Attestation (MSSA)**: Mandatory auditor attestation for dynamic tool grafting and high-risk skill installation. (Added: 2026-06-27)
 *   **[P1] Reasoning Path Integrity (RPI) Validator**: Support for ARE v1.8 hardware-signed reasoning fragments and semantic hash-chaining. (Added: 2026-06-27)
 
+#### Upcoming (2026-07-12 Evolution)
+*   **[P0] Mission Forking Hub (MFH)**: Authoritative broker for spawning sub-missions with immutable, inherited security policies. (Added: 2026-07-12)
+*   **[P0] Kernel-Layer Fragment Sanitizer (KFS)**: High-speed, kernel-resident semantic validation for binary state fragments to neutralize Monologue Splicing. (Added: 2026-07-12)
+*   **[P0] Attention-Locked Shard Streamer (ALSS)**: Coordination middleware for horizontal Agent Teams facilitating attention-pinned state streaming. (Added: 2026-07-12)
+*   **[P1] Semantic Lineage Pinning (SLP) Provider**: Identity extension binding reasoning paths to hardware-attested monotonic clocks. (Added: 2026-07-12)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
