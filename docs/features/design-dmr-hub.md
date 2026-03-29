@@ -56,3 +56,7 @@ The Dynamic Mesh Resilience (DMR) Hub evolves MCP Any from a static gateway into
 
 ## 7. Evolutionary Changelog
 * **2026-07-11:** Initial Document Creation.
+
+
+## CUJ Visuals
+![Connect Client](screenshots/cuj_connect-client.png)
