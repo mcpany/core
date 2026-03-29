@@ -1,7 +1,3 @@
-// Copyright 2025 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
-
-// Package app provides the main application logic.
 package app
 
 import (
@@ -79,48 +75,72 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-const authMiddlewareName = "auth"
+// configHealthCheck checks the status of the configuration.
+func (a *Application) configHealthCheck(_ context.Context) health.CheckResult {
+	a.configMu.Lock()
+	defer a.configMu.Unlock()
 
-var healthCheckClient = &http.Client{
-	CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
-		return http.ErrUseLastResponse
-	},
-}
+	if a.lastReloadErr != nil {
+		return health.CheckResult{
+			Status:  "degraded",
+			Message: a.lastReloadErr.Error(),
+			Latency: time.Since(a.lastReloadTime).String(),
+			Diff:    a.configDiff,
+		}
+	}
 
+	status := "ok"
+	if a.lastReloadTime.IsZero() {
+		status = "unknown"
+	}
 
-func NewApplication() *Application {
-	busProvider, _ := bus.NewProvider(nil)
-	return &Application{
-		runStdioModeFunc: runStdioMode,
-		PromptManager:    prompt.NewManager(),
-		ToolManager:      tool.NewManager(busProvider),
-		AlertsManager:    alerts.NewManager(),
-		WebhooksManager:  webhooks.NewManager(),
-		CatalogManager:   catalog.NewManager(afero.NewOsFs(), "marketplace/catalog"), // Default path, can be overridden
-
-		ResourceManager: resource.NewManager(),
-		UpstreamFactory: factory.NewUpstreamServiceFactory(pool.NewManager(), nil),
-		configFiles:     make(map[string]string),
-		startupCh:       make(chan struct{}),
-		startTime:       time.Now(),
-		MetricsGatherer: prometheus.DefaultGatherer,
-		statsCache:      make(map[string]statsCacheEntry),
+	return health.CheckResult{
+		Status:  status,
+		Latency: time.Since(a.lastReloadTime).String(),
 	}
 }
 
-// Run starts the MCP Any server and all its components.
-//
-// Summary: Executes the application.
-//
-// Parameters:
-//   - opts (RunOptions): The runtime options.
-//
-// Returns:
-//   - (error): An error if execution fails.
-//
-// Side Effects:
-//   - Starts HTTP and gRPC servers.
-//   - Initializes background workers.
-//   - Loads configuration.
-//
-//nolint:gocyclo // Run is the main entry point and setup function, expected to be complex
+func (a *Application) filesystemHealthCheck(_ context.Context) health.CheckResult {
+	if a.ServiceRegistry == nil {
+		return health.CheckResult{Status: "ok"}
+	}
+
+	services, err := a.ServiceRegistry.GetAllServices()
+	if err != nil {
+		return health.CheckResult{
+			Status:  "degraded",
+			Message: fmt.Sprintf("failed to list services: %v", err),
+		}
+	}
+
+	var issues []string
+	start := time.Now()
+
+	for _, svc := range services {
+		fsSvc := svc.GetFilesystemService()
+		if fsSvc == nil {
+			continue
+		}
+
+		for virtualPath, localPath := range fsSvc.GetRootPaths() {
+			if info, err := os.Stat(localPath); err != nil {
+				issues = append(issues, fmt.Sprintf("service %q: root path %q (%s) is inaccessible: %v", svc.GetName(), virtualPath, localPath, err))
+			} else if !info.IsDir() {
+				issues = append(issues, fmt.Sprintf("service %q: root path %q (%s) is not a directory", svc.GetName(), virtualPath, localPath))
+			}
+		}
+	}
+
+	status := "ok"
+	var message string
+	if len(issues) > 0 {
+		status = "degraded"
+		message = strings.Join(issues, "; ")
+	}
+
+	return health.CheckResult{
+		Status:  status,
+		Message: message,
+		Latency: time.Since(start).String(),
+	}
+}

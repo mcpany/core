@@ -1,7 +1,3 @@
-// Copyright 2025 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
-
-// Package app provides the main application logic.
 package app
 
 import (
@@ -79,48 +75,42 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-const authMiddlewareName = "auth"
-
-var healthCheckClient = &http.Client{
-	CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
-		return http.ErrUseLastResponse
-	},
-}
-
-
-func NewApplication() *Application {
-	busProvider, _ := bus.NewProvider(nil)
-	return &Application{
-		runStdioModeFunc: runStdioMode,
-		PromptManager:    prompt.NewManager(),
-		ToolManager:      tool.NewManager(busProvider),
-		AlertsManager:    alerts.NewManager(),
-		WebhooksManager:  webhooks.NewManager(),
-		CatalogManager:   catalog.NewManager(afero.NewOsFs(), "marketplace/catalog"), // Default path, can be overridden
-
-		ResourceManager: resource.NewManager(),
-		UpstreamFactory: factory.NewUpstreamServiceFactory(pool.NewManager(), nil),
-		configFiles:     make(map[string]string),
-		startupCh:       make(chan struct{}),
-		startTime:       time.Now(),
-		MetricsGatherer: prometheus.DefaultGatherer,
-		statsCache:      make(map[string]statsCacheEntry),
+func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
 	}
-}
 
-// Run starts the MCP Any server and all its components.
-//
-// Summary: Executes the application.
-//
-// Parameters:
-//   - opts (RunOptions): The runtime options.
-//
-// Returns:
-//   - (error): An error if execution fails.
-//
-// Side Effects:
-//   - Starts HTTP and gRPC servers.
-//   - Initializes background workers.
-//   - Loads configuration.
-//
-//nolint:gocyclo // Run is the main entry point and setup function, expected to be complex
+	// Limit the request body size to 10MB to prevent DoS attacks
+	r.Body = http.MaxBytesReader(w, r.Body, 10<<20)
+
+	file, header, err := r.FormFile("file")
+	if err != nil {
+		http.Error(w, "failed to get file from form", http.StatusBadRequest)
+		return
+	}
+	defer func() { _ = file.Close() }()
+
+	// Clean up any temporary files created by ParseMultipartForm
+	if r.MultipartForm != nil {
+		defer func() {
+			if err := r.MultipartForm.RemoveAll(); err != nil {
+				logging.GetLogger().Error("Failed to remove multipart form files", "error", err)
+			}
+		}()
+	}
+
+	// Consume the file content without writing to disk.
+	// We discard the content to avoid disk usage and potential residue.
+	written, err := io.Copy(io.Discard, file)
+	if err != nil {
+		http.Error(w, "failed to read file", http.StatusInternalServerError)
+		return
+	}
+
+	// Respond with the file name and size
+	// Sanitize the filename to prevent reflected XSS and ensure safe filesystem usage
+	safeFilename := util.SanitizeFilename(header.Filename)
+	w.Header().Set("Content-Type", "text/plain")
+	_, _ = fmt.Fprintf(w, "File '%s' uploaded successfully (size: %d bytes)", html.EscapeString(safeFilename), written)
+}
