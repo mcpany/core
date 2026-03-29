@@ -1,0 +1,7 @@
+load("@rules_go//go:def.bzl", "go_binary")
+
+go_binary(
+    name = "test_lev",
+    srcs = ["test_lev_internal.go"],
+    deps = ["//server/pkg/util"],
+)

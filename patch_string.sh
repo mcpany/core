@@ -1,3 +1,4 @@
+cat << 'INNER_EOF' > server/pkg/util/string.go.tmp
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
@@ -150,3 +151,5 @@ func levenshteinASCIIBounded(s1, s2 string, limit int) int {
 
 	return v0[m]
 }
+INNER_EOF
+mv server/pkg/util/string.go.tmp server/pkg/util/string.go
