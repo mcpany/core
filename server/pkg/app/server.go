@@ -502,6 +502,16 @@ func (a *Application) Run(opts RunOptions) error {
 	// Add Resilience Middleware
 	a.ToolManager.AddMiddleware(middleware.NewResilienceMiddleware(a.ToolManager))
 
+	// Add Scopes Middleware to enforce granular scopes on tool executors
+	scopesConfig := middleware.ScopesConfig{
+		Roles: map[string][]string{
+			"default": {"fs:read:/tmp"},
+			"admin":   {"fs:", "db:", "cmd:"},
+		},
+	}
+	// Note: in a real application this would be driven by cfg.GetGlobalSettings().GetScopes()
+	a.ToolManager.AddMiddleware(middleware.NewScopesMiddleware(scopesConfig))
+
 	a.PromptManager = prompt.NewManager()
 	a.TemplateManager = NewTemplateManager("data") // Use "data" directory for now
 	a.ResourceManager = resource.NewManager()

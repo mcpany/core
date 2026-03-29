@@ -766,6 +766,11 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 		}(chain)
 	}
 
+	// Apply Resource Limits (Timeout)
+	var cancel context.CancelFunc
+	ctx, cancel = context.WithTimeout(ctx, 30*time.Second) // 30s timeout for resource limits
+	defer cancel()
+
 	start := time.Now()
 	result, err := chain(ctx, req)
 	duration := time.Since(start)

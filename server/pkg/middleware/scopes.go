@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"encoding/json"
 
 	"github.com/mcpany/core/server/pkg/tool"
 )
@@ -84,9 +85,34 @@ func (m *ScopesMiddleware) Execute(ctx context.Context, req *tool.ExecutionReque
 
 	isAllowed := false
 	for _, prefix := range allowedPrefixes {
-		if strings.HasPrefix(req.ToolName, prefix) {
-			isAllowed = true
-			break
+		parts := strings.Split(prefix, ":")
+		if len(parts) >= 3 {
+			// Format is like "fs:read:/tmp"
+			toolName := parts[0] + ":" + parts[1]
+			if req.ToolName != toolName {
+				continue
+			}
+			capability := parts[2]
+
+			// Parse JSON inputs to check if the arguments match the capability prefix
+			var inputs map[string]interface{}
+			if err := json.Unmarshal(req.ToolInputs, &inputs); err == nil {
+				for _, v := range inputs {
+					if s, ok := v.(string); ok && strings.HasPrefix(s, capability) {
+						isAllowed = true
+						break
+					}
+				}
+			}
+			if isAllowed {
+				break
+			}
+		} else {
+			// Fallback to simple prefix match for non-parameterized capabilities
+			if strings.HasPrefix(req.ToolName, prefix) {
+				isAllowed = true
+				break
+			}
 		}
 	}
 
