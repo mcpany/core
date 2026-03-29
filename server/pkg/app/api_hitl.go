@@ -23,6 +23,9 @@ type hitlApprovalResponse struct {
 	Approved    bool   `json:"approved"`
 }
 
+// HITLState represents the global state for Human-in-the-Loop approvals.
+//
+// Summary: Manages the pending HITL approval requests.
 type HITLState struct {
 	mu        sync.RWMutex
 	approvals map[string]hitlApprovalRequest

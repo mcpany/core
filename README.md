@@ -1,6 +1,6 @@
 # MCP Any - Universal Agent Infrastructure
 
-## Elevator Pitch
+## Project Identity
 **What is this?** MCP Any is the ultimate developer entry point and Universal Adapter designed to eliminate the requirement to implement new MCP (Model Context Protocol) servers for doing API calls.
 
 **Why does it exist?** It allows you to configure everything through lightweight YAML/JSON configurations to capability-enable different APIs (REST, gRPC, GraphQL, Command-line) and run a single `mcpany` server instance that acts as a secure, universal bridge. Instead of writing custom boilerplate adapters for each service, you configure MCP Any to handle it automatically.
@@ -25,7 +25,7 @@ graph TD
     C -->|CLI| G[Command Line Tool]
 ```
 
-## Getting Started
+## Quick Start
 
 Follow these steps to go from `git clone` to `Hello World`.
 
@@ -45,7 +45,7 @@ bazelisk run //server/cmd/mcpany -- -config examples/hello_world.yaml
 ```
 *The server will start and you can connect your MCP-compatible client to the local instance.*
 
-## Development
+## Developer Workflow
 
 We use `make` and `bazelisk` for common development tasks.
 

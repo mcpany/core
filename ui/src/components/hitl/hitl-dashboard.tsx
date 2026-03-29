@@ -42,6 +42,20 @@ interface HITLApproval {
     requireMfa: boolean;
 }
 
+/**
+ * Renders a dashboard for reviewing and managing pending HITL approvals.
+ *
+ * Summary: Displays a dashboard component for HITL (Human-in-the-Loop) approvals.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - JSX.Element: The rendered dashboard component.
+ *
+ * Throws/Errors:
+ *   - None explicitly thrown by the component itself.
+ */
 export function HitlDashboard() {
     const [approvals, setApprovals] = React.useState<HITLApproval[]>([]);
     const [mfaDialogOpen, setMfaDialogOpen] = useState(false);
