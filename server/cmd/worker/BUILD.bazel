@@ -42,6 +42,7 @@ oci_image(
     base = "@debian_bookworm_slim",
     entrypoint = ["/app/worker"],
     tars = [":worker_layer"],
+    user = "65532:65532",
 )
 
 oci_load(

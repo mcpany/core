@@ -55,6 +55,7 @@ oci_image(
         "50051/tcp",
     ],
     tars = [":server_layer"],
+    user = "65532:65532",
 )
 
 oci_load(

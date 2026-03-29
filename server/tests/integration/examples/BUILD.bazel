@@ -50,6 +50,7 @@ oci_image(
     base = "@python312_slim",
     entrypoint = ["/app/timeserver_bin"],
     tars = [":timeserver_layer"],
+    user = "65532:65532",
 )
 
 oci_load(

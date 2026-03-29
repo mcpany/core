@@ -15,6 +15,7 @@ oci_image(
     name = "runner_image",
     base = "@debian_bookworm_slim",
     tars = [":bazelisk_tar"],
+    user = "65532:65532",
 )
 
 oci_load(
