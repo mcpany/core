@@ -39,6 +39,8 @@ As AI agent frameworks like Gemini CLI and OpenClaw move toward high-intensity r
 * **Client-Side Budgeting:** Rejected because compromised subagents can easily bypass local checks.
 * **Post-hoc Auditing:** Rejected because it doesn't prevent "Token Drain" in real-time.
 
+![Audit](../screenshots/audit_logs.png)
+
 ## 6. Cross-Cutting Concerns
 * **Security (Zero Trust):** RBF requires hardware-attested identity to prevent lease hijacking.
 * **Observability:** Integration with the `Reasoning Quota Monitor` for real-time visualization.

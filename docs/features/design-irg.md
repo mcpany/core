@@ -19,6 +19,8 @@ As AI agent swarms evolve from linear execution to high-frequency teammate rotat
 ## 3. Critical User Journey (CUJ)
 * **User Persona:** Heterogeneous Swarm Orchestrator (e.g., Claude Code Team Lead)
 * **Primary Goal:** Rapidly rotate between a "Coder" specialist and a "Security Auditor" without incurring cognitive stall.
+
+![Audit](../screenshots/audit_logs.png)
 * **The Happy Path (Tasks):**
     1. The Team Lead agent requests a "Resumption Token" for a specific mission fragment from the IRG.
     2. The IRG validates the request against the hardware-attested mission root.

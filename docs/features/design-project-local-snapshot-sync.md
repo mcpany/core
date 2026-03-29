@@ -18,6 +18,8 @@ AI agents operating on local project files (e.g., refactoring code, modifying co
 ## 3. Critical User Journey (CUJ)
 * **User Persona:** Local Developer using Agent Swarms
 * **Primary Goal:** Automatically revert a complex code refactor if the "Auditor Agent" detects a security policy violation in the generated code.
+
+![Audit](../screenshots/audit_logs.png)
 * **The Happy Path (Tasks):**
     1. Parent Agent initiates a "Speculative Branch" for refactoring.
     2. PLSS Sync creates a project-local snapshot (Snapshot A).

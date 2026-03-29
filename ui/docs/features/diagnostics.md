@@ -6,7 +6,7 @@ The **System Diagnostics** page provides a centralized dashboard for monitoring 
 
 Access the Diagnostics page via the **Diagnostics** link in the sidebar (Platform section).
 
-![Diagnostics Page](../screenshots/diagnostics.png)
+![Diagnostics Page](screenshots/diagnostics.png)
 
 ## Features
 

@@ -19,6 +19,8 @@ The ZKSA Provider enables subagents to generate cryptographic proofs that their 
 
 ## 3. Critical User Journey (CUJ)
 * **User Persona:** Data Privacy Auditor
+
+![Audit](../screenshots/audit_logs.png)
 * **Primary Goal:** Verify that a "Code Reviewer" agent has not ingested sensitive database credentials without actually seeing the agent's internal reasoning monologue.
 * **The Happy Path (Tasks):**
     1. The parent agent spawns a "Code Reviewer" subagent with a ZK-Policy requiring "Credential-Free Context."

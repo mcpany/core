@@ -50,6 +50,8 @@ MCP Any needs to provide a robust defense mechanism that performs active deconst
     * **Intent Registry:** Local in-memory store for active mission intents, backed by SQLite.
     * **Validation Logs:** Hardware-attested logs of all deconstruction events for forensic auditing.
 
+![Logs](../screenshots/logs.png)
+
 ## 5. Alternatives Considered
 * **Framework-Level Validation:** Rejected because it relies on the honesty of the subagent framework. MCP Any provides a framework-neutral security boundary.
 * **Simple Keyword Filtering:** Rejected because it is easily bypassed by sophisticated semantic mimicking. Structural deconstruction is required for "Splicing" detection.
@@ -57,6 +59,8 @@ MCP Any needs to provide a robust defense mechanism that performs active deconst
 ## 6. Cross-Cutting Concerns
 * **Security (Zero Trust):** The ISD itself must run in a secure enclave (HAPE) to prevent tampering. All intent mappings must be hardware-attested.
 * **Observability:** Integrated with the "Intent-Splicing Audit Log" in the UI for real-time monitoring of detection events.
+
+![Audit](../screenshots/audit_logs.png)
 
 ## 7. Evolutionary Changelog
 * **2026-06-06:** Initial Document Creation.

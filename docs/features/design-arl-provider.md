@@ -33,6 +33,8 @@ The ARL Provider allows for sub-millisecond, hardware-bound revocation of agent 
     ```mermaid
     graph TD
         Auditor[Auditor / CSAD Hub] -->|Compromise Detected| ARLProvider[ARL Provider]
+
+![Audit](../screenshots/audit_logs.png)
         ARLProvider -->|Sign Revocation| TPM[Hardware TPM/SEP]
         TPM -->|Signed ARL| ARLProvider
         ARLProvider -->|Broadcast| MeshNodes[Mesh Nodes / Gateways]

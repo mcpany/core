@@ -18,6 +18,8 @@ The `Shared KV Store` (Blackboard) is a core tool in MCP Any that allows multipl
 ## 3. Critical User Journey (CUJ)
 * **User Persona:** Multi-Agent Swarm Orchestrator (e.g., OpenClaw).
 * **Primary Goal:** Ensure the "Security Auditor" subagent cannot modify the "Code Generator" subagent's temporary state.
+
+![Audit](../screenshots/audit_logs.png)
 * **The Happy Path (Tasks):**
     1. Parent Agent creates a session with a unique `AgentID` and `IntentScope`.
     2. Subagent A is spawned with `AgentID: Sub-A` and inherits the same `IntentScope`.
@@ -44,6 +46,8 @@ The `Shared KV Store` (Blackboard) is a core tool in MCP Any that allows multipl
 ## 6. Cross-Cutting Concerns
 * **Security (Zero Trust)**: Follows the principle of least privilege. By default, an agent only sees its own data.
 * **Observability**: The `Recursive Context Dashboard` will visualize which agents are accessing which parts of the Blackboard.
+
+![Dashboard](../screenshots/dashboard_overview.png)
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.

@@ -52,5 +52,7 @@ The **Environment Sovereignty Enforcer (ESE)** is a core security service for th
 *   **Security (Zero Trust):** ESE requires hardware attestation (TPM) to perform its final wipe and attestation signals.
 *   **Observability:** Integrated with the `Audit Log`, showing "Environment Sanitization" events.
 
+![Audit](../screenshots/audit_logs.png)
+
 ## 7. Evolutionary Changelog
 *   **2026-06-10:** Initial Document Creation.

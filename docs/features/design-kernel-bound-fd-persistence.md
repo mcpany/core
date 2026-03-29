@@ -43,6 +43,8 @@ The "Recursive Symlink Tunnel" exploit and the persistence of "Symlink-to-Inode 
 * **Security (Zero Trust):** The pinned FD is the "Root of Truth" for the session. Any mismatch in hardware Inode during subsequent checks triggers an immediate session termination.
 * **Observability:** Logs all "Pinning Events" and "Blocked Race Attempts" with full FD metadata.
 
+![Logs](../screenshots/logs.png)
+
 ## 7. Evolutionary Changelog
 * **2026-05-04:** Initial Document Creation.
 * **2026-05-05: HEPA Evolution & Shared Memory Optimization**

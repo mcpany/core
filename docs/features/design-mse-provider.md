@@ -17,6 +17,8 @@ With the rise of multimodal agents, "Contextual Entanglement" has become a major
 
 ## 3. Critical User Journey (CUJ)
 * **User Persona:** Security Auditor
+
+![Audit](../screenshots/audit_logs.png)
 * **Primary Goal:** Ensure that an agent-generated SVG UI plan hasn't been tampered with by a specialist subagent to include an invisible exfiltration script.
 * **The Happy Path (Tasks):**
     1. The "UI Designer Agent" generates an SVG design fragment.

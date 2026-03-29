@@ -42,6 +42,8 @@ The emergence of "AI Swarm Attacks" (Hivenets) in 2026 has rendered traditional,
 * **Security (Zero Trust):** The rate limiter itself must be isolated to prevent "Self-Denial" attacks by malicious agents.
 * **Observability:** Swarm patterns and neutralization events are logged in the "Local Security Audit Dashboard."
 
+![Dashboard](../screenshots/dashboard_overview.png)
+
 ## 7. Evolutionary Changelog
 * **2026-05-14:** Initial Document Creation.
 * **2026-05-15:** Integration with "Consensus-Based Task Attestation" (CBTA). The rate limiter now acts as a primary trigger for CBTA; when swarm-speed anomalies are detected, the system automatically escalates high-risk tool calls to require a multi-agent security quorum signature, neutralizing "Agentic Social Engineering" attempts within the swarm.

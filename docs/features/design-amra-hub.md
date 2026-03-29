@@ -42,5 +42,7 @@ As AI agent swarms evolve toward "Long-Haul Agency," missions frequently exceed 
 * **Security (Zero Trust):** Mandatory TPM signatures prevent software-only spoofing of mission resumption.
 * **Observability:** Every resumption event is logged in the `Sovereign Audit Trail` with the associated monotonic counter value.
 
+![Audit](../screenshots/audit_logs.png)
+
 ## 7. Evolutionary Changelog
 * **2026-06-18:** Initial Document Creation.

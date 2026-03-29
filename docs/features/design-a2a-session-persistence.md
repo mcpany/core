@@ -44,5 +44,7 @@ As agent swarms evolve from short-lived command-line tools to long-running, auto
 * **Security (Zero Trust):** All session refreshes require a valid "Attested Lineage" signature. If the underlying hardware state (RIM) drifts, all persisted sessions for that lineage are instantly purged.
 * **Observability:** Session health and refresh events are visualized in the "A2A Session Persistence Dashboard."
 
+![Dashboard](../screenshots/dashboard_overview.png)
+
 ## 7. Evolutionary Changelog
 * **2026-04-26:** Initial Document Creation.

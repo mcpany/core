@@ -44,6 +44,8 @@ As AI agent swarms move from simple automation to autonomous high-stakes operati
 * **Security (Zero Trust):** All tokens are hardware-bound (TPM/SEP) and tied to a unique "Mission Intent ID" to prevent replay and shadowing.
 * **Observability:** Quorum status, participant logs, and risk calculations are visualized in the "Contextual Quorum Dashboard."
 
+![Dashboard](../screenshots/dashboard_overview.png)
+
 ## 7. Evolutionary Changelog
 * **2026-05-02:** Initial Document Creation.
 * **2026-05-03:** [Update] - Implementing Deadlock-Resilient Attestation.

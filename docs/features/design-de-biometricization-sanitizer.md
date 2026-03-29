@@ -13,6 +13,8 @@ The **De-biometricization Sanitizer** acts as a local-first security boundary, s
     * Identify and scrub biometric markers (voice prints, facial geometry metadata) from multimodal data.
     * Provide a pluggable architecture for domain-specific scrubbing rules (e.g., HIPAA, GDPR).
     * Maintain a "Sovereignty Audit Log" of all redacted fragments for local review.
+
+![Audit](../screenshots/audit_logs.png)
 * **Non-Goals:**
     * Encrypting data for cloud storage (handled by transport layers).
     * Providing perfect, 100% detection (uses a best-effort, heuristic-driven approach).
@@ -52,6 +54,8 @@ The **De-biometricization Sanitizer** acts as a local-first security boundary, s
 ## 6. Cross-Cutting Concerns
 * **Security (Zero Trust):** The sanitizer is the last line of defense before data exfiltration.
 * **Observability:** Integrated with the "Sovereignty Audit Dashboard" in the UI.
+
+![Dashboard](../screenshots/dashboard_overview.png)
 
 ## 7. Evolutionary Changelog
 * **2026-04-29:** Initial Document Creation.

@@ -9,6 +9,8 @@ While 60% of developers use AI agents, only 20% can "fully delegate" tasks due t
 * **Goals:**
     * Enable fully autonomous delegation for high-stakes tasks via multi-agent consensus.
     * Mandate hardware-attested (TPM/Secure Enclave) approval tokens from independent "Auditor" and "Monitor" agents.
+
+![Audit](../screenshots/audit_logs.png)
     * Provide a standardized interface for agents from disparate frameworks (Claude Code, OpenClaw, AutoGen) to participate in quorums.
     * Implement a "Consensus-Based Task Attestation" (CBTA) protocol.
 * **Non-Goals:**

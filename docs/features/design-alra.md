@@ -55,5 +55,7 @@ Attention-Locked Reasoning Anchors (ALRA) provide a hardware-bound mechanism to 
 * **Security (Zero Trust):** ALRA ensures that "Injected Context" cannot shadow the root authority by occupying the primary attention tiers.
 * **Observability:** The "Visual Attention Dashboard" provides real-time heatmaps of driving fragments.
 
+![Dashboard](../screenshots/dashboard_overview.png)
+
 ## 7. Evolutionary Changelog
 * **2026-07-01:** Initial Document Creation.

@@ -37,6 +37,8 @@ The AMS Middleware solves this by sharding the inter-agent mailbox based on the 
         AMSHub --> Shard2[Task Shard: Test]
         AMSHub --> Shard3[Task Shard: Audit]
 
+![Audit](../screenshots/audit_logs.png)
+
         TeammateA[Teammate A] <-->|Claim/Update| Shard1
         TeammateB[Teammate B] <-->|Claim/Update| Shard2
         TeammateC[Teammate C] <-->|Claim/Update| Shard3

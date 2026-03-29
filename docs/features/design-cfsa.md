@@ -44,5 +44,7 @@ As AI agent swarms become more heterogeneous and autonomous, the risk of "Semant
 * **Security (Zero Trust):** The arbiter itself must run in a secure enclave to prevent its models from being poisoned.
 * **Observability:** Logs include stylometric drift scores to help troubleshoot legitimate agent evolution vs. spoofing.
 
+![Logs](../screenshots/logs.png)
+
 ## 7. Evolutionary Changelog
 * **2026-06-26:** Initial Document Creation.

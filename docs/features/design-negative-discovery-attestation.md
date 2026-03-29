@@ -50,5 +50,7 @@ The tool discovery phase in AI agents has become a primary attack vector (e.g., 
 * **Security (Zero Trust)**: The NDAP itself must be hardware-isolated to prevent a compromised gateway from falsifying receipts.
 * **Observability**: The UI provides a "Negative Discovery Audit Viewer" for manual review of discovery-phase integrity.
 
+![Audit](../screenshots/audit_logs.png)
+
 ## 7. Evolutionary Changelog
 * **2026-05-12:** Initial Document Creation.

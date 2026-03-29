@@ -19,6 +19,8 @@ Stylometric Identity Anchoring (SIA) mitigates this by providing behavioral iden
 
 ## 3. Critical User Journey (CUJ)
 * **User Persona:** Swarm Governance Auditor
+
+![Audit](../screenshots/audit_logs.png)
 * **Primary Goal:** Prevent a compromised specialist agent from hijacking the AIR quorum by mimicking the supervisor's tone.
 * **The Happy Path (Tasks):**
     1. Specialist Agent A submits a reasoning fragment to the AIR Hub for task reconciliation.

@@ -45,5 +45,7 @@ The "Approval Fatigue" bottleneck remains the primary inhibitor to scaling auton
 * **Security (Zero Trust):** VADE must never authorize a delegation if the "Root Mission Intent" has been modified or if the hardware attestation for the subagent's sandbox is stale.
 * **Observability:** All autonomous decisions are logged with "Auto-Approval" tags in the A2A Messaging Hub Dashboard.
 
+![Dashboard](../screenshots/dashboard_overview.png)
+
 ## 7. Evolutionary Changelog
 * **2026-04-16:** Initial Document Creation.

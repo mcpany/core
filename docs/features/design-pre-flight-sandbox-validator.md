@@ -40,6 +40,8 @@ The persistent threat of Remote Code Execution (RCE) via project-local configura
 * **Read-only Filesystems**: Too restrictive; agents often need to write to `dist/`, `build/`, or temporary files.
 * **Kernel-level Auditing (eBPF)**: High complexity and requires root privileges, which conflicts with our "Run Anywhere" principle.
 
+![Audit](../screenshots/audit_logs.png)
+
 ## 6. Cross-Cutting Concerns
 * **Security (Zero Trust)**: Implements "Trust but Verify" for the entire project environment.
 * **Observability**: All pre-flight manifests and validation failures are logged to the Audit Log.

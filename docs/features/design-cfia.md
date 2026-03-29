@@ -56,6 +56,8 @@ MCP Any needs to bridge the "Attestation Gap" for these non-structural context s
 * **Security (Zero Trust):** The signing key is hardware-bound, ensuring that even if the MCP Any process is compromised, it cannot forge valid signatures for malicious files.
 * **Observability:** Every attestation event and blocked read attempt is logged to the Local Security Audit Log with origin headers.
 
+![Audit](../screenshots/audit_logs.png)
+
 ## 7. Evolutionary Changelog
 * **2026-06-20:** Initial Document Creation.
 * **2026-06-21:** Added support for **Resumption-Aware Attestation**. CFIA signatures are now persistent across MRCP-mediated mission resumptions, eliminating redundant user approvals for previously verified context files.

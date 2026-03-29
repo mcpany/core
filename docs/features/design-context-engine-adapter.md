@@ -41,6 +41,8 @@ The release of OpenClaw v2026.3.7-beta.1's "ContextEngine" has introduced a stan
 * **Security (Zero Trust):** Plugins are executed in an isolated WASM sandbox (via the WASM-BSH Sanitizer) to prevent unauthorized host access.
 * **Observability:** State mutations are logged in the Mission Audit Trail, including the ID of the plugin that performed the mutation.
 
+![Audit](../screenshots/audit_logs.png)
+
 ## 7. Evolutionary Changelog
 * **2026-04-25:** Initial Document Creation.
 * **2026-05-14:** Evolving to support OpenClaw v2026.3.7 "ContextEngine" lifecycle hooks. This update enables MCP Any to act as a universal host for pluggable context plugins, neutralizing "Context Amnesia" in deep, heterogeneous swarms.

@@ -53,6 +53,8 @@ The **Attention-Density Firewall (ADF)** is a cognitive security middleware for 
 *   **Security (Zero Trust):** ADF rules are cryptographically bound to the Mission Root intent.
 *   **Observability:** Integrated with the "Visual Attention Dashboard" to show real-time attention-density heatmaps.
 
+![Dashboard](../screenshots/dashboard_overview.png)
+
 ## 7. Evolutionary Changelog
 *   **2026-06-25:** Initial Document Creation.
 

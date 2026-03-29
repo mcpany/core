@@ -18,6 +18,8 @@ As AI agent swarms move toward horizontal, heterogeneous team structures (e.g., 
 ## 3. Critical User Journey (CUJ)
 * **User Persona:** Swarm Orchestrator
 * **Primary Goal:** Resolve a conflict between a "Developer Agent" and an "Auditor Agent" regarding a code change without human intervention.
+
+![Audit](../screenshots/audit_logs.png)
 * **The Happy Path (Tasks):**
     1. The "Developer Agent" submits a proposed code edit to the Blackboard.
     2. The "Auditor Agent" flags a security violation and submits a counter-instruction.
@@ -42,6 +44,8 @@ As AI agent swarms move toward horizontal, heterogeneous team structures (e.g., 
 ## 6. Cross-Cutting Concerns
 * **Security (Zero Trust):** All votes must be signed with hardware-bound identity tokens (FSI). The "Winning Intent" carries a cryptographic proof of the quorum result.
 * **Observability:** Logs include semantic diffs of the conflicting instructions and the reasoning traces of the quorum participants.
+
+![Logs](../screenshots/logs.png)
 
 ## 7. Evolutionary Changelog
 * **2026-07-02:** Initial Document Creation.

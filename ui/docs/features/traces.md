@@ -12,7 +12,7 @@ Debug complex interactions by inspecting the full lifecycle of MCP requests. The
 
 Navigate to `/inspector`. This view shows a real-time, virtualized table of all system activity, powered by WebSockets.
 
-![Inspector Table](../screenshots/inspector_table.png)
+![Inspector Table](screenshots/inspector_table.png)
 
 - **Search & Filter**: Use the toolbar to search traces by ID or Name, and filter by Status (Success, Error, Pending) or Type (Tool, Service, Core, Resource).
 - **Status Icons**: Green check for success, Red X for failure.
@@ -29,7 +29,7 @@ This view is split into tabs:
 - **Logs**: Displays centralized logs correlated with this specific trace.
 - **Payload**: The raw JSON request and response payloads.
 
-![Trace Detail](../screenshots/trace_detail.png)
+![Trace Detail](screenshots/trace_detail.png)
 
 ### 3. Replay & Diff
 
@@ -50,7 +50,7 @@ To share a trace with your team or attach it to a bug report:
 
 When a trace contains an error (e.g., Schema Validation Error, Connection Refused), the inspector automatically analyzes the failure and provides a **Diagnostics & Suggestions** card.
 
-![Trace Diagnostics](../screenshots/trace_diagnostics.png)
+![Trace Diagnostics](screenshots/trace_diagnostics.png)
 
 This feature detects common issues like:
 

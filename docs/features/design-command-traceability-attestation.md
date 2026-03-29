@@ -19,9 +19,13 @@ MCP Any needs to solve this by providing a cryptographically signed "Chain of Co
 
 ## 3. Critical User Journey (CUJ)
 *   **User Persona:** Enterprise Security Auditor
+
+![Audit](../screenshots/audit_logs.png)
 *   **Primary Goal:** Verify that a suspicious file deletion on a production server was authorized by the root mission and not injected by a rogue subagent.
 *   **The Happy Path (Tasks):**
     1.  The Auditor opens the **Traceability Dashboard** in MCP Any.
+
+![Dashboard](../screenshots/dashboard_overview.png)
     2.  They search for the specific `fs:delete` tool call event.
     3.  The system displays the **Chain of Command**: Root Mission (Human) -> Supervisor Agent (Claude) -> File Specialist Subagent (OpenClaw).
     4.  The Auditor clicks "Verify Signatures" and the system confirms that every link in the chain is cryptographically bound to the hardware identities of the agents and the user's initial session.

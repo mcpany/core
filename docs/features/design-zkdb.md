@@ -20,6 +20,8 @@ The Zero-Knowledge Discovery Broker (ZKDB) evolves the discovery process by mand
 ## 3. Critical User Journey (CUJ)
 * **User Persona:** Heterogeneous Swarm Orchestrator
 * **Primary Goal:** Discover a "Financial Auditor" specialist from a third-party framework without exposing the internal auditing schema to the entire swarm mesh.
+
+![Audit](../screenshots/audit_logs.png)
 * **The Happy Path (Tasks):**
     1. The "Orchestrator" queries the ZKDB for `capability:financial_audit`.
     2. The ZKDB returns a set of "Masked Capability Cards" containing ZK-Proofs of possession.

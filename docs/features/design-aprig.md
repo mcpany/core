@@ -7,6 +7,8 @@ AI coding agents are capable of generating working software at unprecedented spe
 
 MCP Any needs to act as the final gate for any tool call that generates or modifies code (e.g., `git:create-pr`, `fs:write`). APRIG implements a multi-agent security quorum where a code change must be attested to by independent "Security Auditor" agents before it is committed to a repository.
 
+![Audit](../screenshots/audit_logs.png)
+
 ## 2. Goals & Non-Goals
 *   **Goals:**
     *   Automatically intercept tool calls that result in code commits or pull requests.
@@ -52,6 +54,8 @@ MCP Any needs to act as the final gate for any tool call that generates or modif
 ## 6. Cross-Cutting Concerns
 *   **Security (Zero Trust):** Auditors must be cryptographically distinct from the primary agent to prevent collusion.
 *   **Observability:** A dedicated "PR Integrity Dashboard" visualizes the pass/fail rates and common vulnerability patterns found by the swarm.
+
+![Dashboard](../screenshots/dashboard_overview.png)
 
 ## 7. Evolutionary Changelog
 *   **2026-05-28:** Initial Document Creation.

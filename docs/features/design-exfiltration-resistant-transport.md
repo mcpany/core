@@ -38,6 +38,8 @@ Standard AI agents often communicate directly with LLM providers (Anthropic, Ope
     * `allow_list.yaml`: Configuration-driven list of trusted endpoints.
     * `Egress Logs`: Audit trail of all outbound traffic from agents.
 
+![Logs](../screenshots/logs.png)
+
 ## 5. Alternatives Considered
 * **mTLS for all connections**: Ideal but difficult to implement as it requires the LLM providers to support client certificates from individual developer machines.
 * **OS-level Firewall (e.g., Little Snitch style)**: Too intrusive and difficult to configure automatically for every developer project.

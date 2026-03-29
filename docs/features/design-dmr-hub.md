@@ -54,5 +54,7 @@ The Dynamic Mesh Resilience (DMR) Hub evolves MCP Any from a static gateway into
 * **Security (Zero Trust):** State migration must be hardware-attested. A destination node must prove its TPM integrity before receiving a migrated mission shard.
 * **Observability:** Migration events are logged with nanosecond precision in the Mesh Audit Log.
 
+![Audit](../screenshots/audit_logs.png)
+
 ## 7. Evolutionary Changelog
 * **2026-07-11:** Initial Document Creation.

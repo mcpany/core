@@ -44,5 +44,7 @@ As agent swarms utilize "Reactive Intent" (RI) to dynamically request boundary e
 * **Security (Zero Trust):** The Arbitration Hub must use hardware-bound signatures for all issued proofs.
 * **Observability:** Smuggling attempts are logged as high-priority security alerts in the RIG Dashboard.
 
+![Dashboard](../screenshots/dashboard_overview.png)
+
 ## 7. Evolutionary Changelog
 * **2026-04-17:** Initial Document Creation.

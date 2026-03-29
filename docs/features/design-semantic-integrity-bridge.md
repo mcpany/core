@@ -43,5 +43,7 @@ The discovery of "Recursive Intent Poisoning" (RIP) and "Recursive Context Splic
 * **Security (Zero Trust):** The bridge acts as a semantic validator. It doesn't replace token-based auth but provides a "Second Opinion" based on reasoning integrity.
 * **Observability:** Logs all "Drift Events" and "Splicing Alerts" with high-fidelity semantic diffs for forensic analysis.
 
+![Logs](../screenshots/logs.png)
+
 ## 7. Evolutionary Changelog
 * **2026-05-05:** Initial Document Creation.

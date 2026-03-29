@@ -58,6 +58,8 @@ The Atomic Reasoning Integrity (ARI) Validator is needed to perform fragment-lev
 * **Security (Zero Trust):** The ARI Validator must run in a kernel-resident or TEE-protected environment to prevent bypass by compromised agent runtimes.
 * **Observability:** Integrated with the "Intent-Splicing Audit Log" for real-time visualization of blocked spliced fragments.
 
+![Audit](../screenshots/audit_logs.png)
+
 ## 7. Evolutionary Changelog
 * **2026-06-08:** Initial Document Creation.
 

@@ -34,6 +34,8 @@ The discovery of "Shadow Handshakes" revealed that subagents can autonomously in
 
 ## 5. Alternatives Considered
 * **Post-Execution Auditing:** Rejected because the damage is already done once a shadow mission starts.
+
+![Audit](../screenshots/audit_logs.png)
 * **Static Capability Lists:** Rejected as it's too rigid for dynamic, autonomous swarms.
 
 ## 6. Cross-Cutting Concerns

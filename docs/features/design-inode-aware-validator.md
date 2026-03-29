@@ -41,6 +41,8 @@ Recent vulnerabilities in agentic IDEs (e.g., Claude Code CVE-2026-34812) have d
 * **Security (Zero Trust):** The validator is the primary gatekeeper for all "Settings-as-Code" interactions.
 * **Observability:** Logs all blocked traversal attempts with full resolution traces.
 
+![Logs](../screenshots/logs.png)
+
 ## 7. Evolutionary Changelog
 * **2026-04-01:** Initial Document Creation.
 * **2026-04-02:** **Update: Resolving Normalization Fatigue via Inode-Pinning**

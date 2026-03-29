@@ -11,6 +11,8 @@ The OpenClaw security crisis (CVE-2026-25253) has demonstrated that the "Local T
     * Provide a configurable "Trusted Origins" allow-list for local IDEs, CLI tools, and authorized dashboards.
     * Automatically block any request from a non-local or non-allow-listed origin.
     * Log blocked attempts for the Security Dashboard.
+
+![Dashboard](../screenshots/dashboard_overview.png)
 * **Non-Goals:**
     * Implementing full OIDC or OAuth2 (covered by other auth modules).
     * Protecting against physical host access.

@@ -43,5 +43,7 @@ Recent vulnerabilities in OpenClaw (CVE-2026-32000, CVE-2026-22169) have shown t
 * **Security (Zero Trust):** Enforces least privilege at the argument level.
 * **Observability:** Logs all blocked arguments for forensic analysis.
 
+![Logs](../screenshots/logs.png)
+
 ## 7. Evolutionary Changelog
 * **2026-03-24:** Initial Document Creation.

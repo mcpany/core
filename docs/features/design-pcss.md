@@ -42,6 +42,8 @@ Speculative reasoning allows agents to prepare for potential future states, sign
 * **Security (Zero Trust):** PCSS operates as a mandatory gate for all speculative ingestion.
 * **Observability:** Logs all detected and neutralized poisoned fragments for audit.
 
+![Logs](../screenshots/logs.png)
+
 ## 7. Evolutionary Changelog
 * **2026-06-04:** Initial Document Creation.
 * **2026-06-05:** Update - Intent-Splicing Defense.

@@ -41,6 +41,8 @@ As agent swarms become more autonomous and perform complex multi-step reasoning,
 * **Security (Zero Trust):** Rollback triggers must be authorized by the Parent Agent or a verified MAQ Quorum.
 * **Observability:** Checkpoint creation and rollback events are logged to the "Swarm Rollback Dashboard."
 
+![Dashboard](../screenshots/dashboard_overview.png)
+
 ## 7. Evolutionary Changelog
 * **2026-03-29:** Initial Document Creation.
 * **2026-03-30: IPSC-Triggered Checkpoints**

@@ -27,6 +27,8 @@ The emergence of programmatic agent control via SDKs (like the OpenCode SDK v202
     4. The SDK Boundary Enforcer intercepts the injection, identifies the unauthorized tool schema, and blocks it based on the "Zero-Trust Discovery" policy.
     5. The script is notified of the violation, and a security alert is logged in the Local Security Audit Dashboard.
 
+![Dashboard](../screenshots/dashboard_overview.png)
+
 ## 4. Design & Architecture
 * **System Flow:**
     `[SDK Script] -> [SDK Boundary Enforcer] -> [MCP Any Core Server] -> [Agent Swarm]`

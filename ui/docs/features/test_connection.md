@@ -42,7 +42,7 @@ The system can automatically identify specific error types:
 ### Diagnostics Failure Example
 Below is an example of the diagnostics dialog reporting a failure during the operational verification stage.
 
-![Diagnostics Failure](../screenshots/diagnostics_failure.png)
+![Diagnostics Failure](screenshots/diagnostics_failure.png)
 
 ### Successful Connection
-![Test Connection](../screenshots/test_connection.png)
+![Test Connection](screenshots/test_connection.png)

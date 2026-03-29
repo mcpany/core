@@ -12,6 +12,8 @@ The March 2026 Oasis Security report revealed that OpenClaw's implicit trust of 
     *   Enforce `Origin` and `Sec-Fetch-Site` validation for all local requests.
     *   Log all local connection attempts (success and failure) with origin metadata.
     *   Provide a "Local Security Dashboard" for users to review blocked attempts.
+
+![Dashboard](../screenshots/dashboard_overview.png)
 *   **Non-Goals:**
     *   Blocking legitimate local applications (e.g., a local IDE).
     *   Implementing OS-level firewall rules.

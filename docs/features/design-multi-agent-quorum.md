@@ -18,6 +18,8 @@ As agents perform higher-risk actions (e.g., executing shell scripts, making fin
 ## 3. Critical User Journey (CUJ)
 * **User Persona:** Security-Conscious Agent Swarm Architect
 * **Primary Goal:** Require an "Audit Quorum" of two independent monitor agents before a subagent is allowed to delete files from a restricted directory.
+
+![Audit](../screenshots/audit_logs.png)
 * **The Happy Path (Tasks):**
     1. Subagent A attempts to call `fs_delete` on a restricted path.
     2. MAQ Gateway intercepts the call and identifies a "Quorum Requirement" of 2 monitors.

@@ -35,6 +35,8 @@ MITS will sit as an active interception layer in the agent's context pipeline. W
 
 ## 5. Alternatives Considered
 *   **Post-Inference Auditing:** Scanning outputs only after the LLM generates them. Rejected because the agent's internal state is already contaminated.
+
+![Audit](../screenshots/audit_logs.png)
 *   **Relying purely on the LLM's internal safety:** Rejected as LLMs are susceptible to sophisticated polyglot payloads and "jailbreaks".
 
 ## 6. Implementation Plan

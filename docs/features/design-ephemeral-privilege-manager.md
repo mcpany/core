@@ -60,6 +60,8 @@ MCP Any needs to transition to an **Ephemeral Agency** model, where high-level p
 * **Security (Zero Trust):** Tokens are bound to the specific agent session and origin.
 * **Observability:** Every escalation and expiration is logged in the "Local Security Audit Log."
 
+![Audit](../screenshots/audit_logs.png)
+
 ## 7. Evolutionary Changelog
 * **2026-04-29:** Addressing "BoryptGrab" persistence by binding privilege leases to the ContextEngine's session lifecycle. Introduced "Lifecycle-Bound Revocation" to ensure high-risk capabilities are purged immediately upon subagent or task termination.
 * **2026-04-28:** Initial Document Creation.

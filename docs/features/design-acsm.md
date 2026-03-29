@@ -19,6 +19,8 @@ Autonomous agents operate at speeds that exceed human intervention capabilities.
 * **Primary Goal:** Detect and block an agent attempting to exfiltrate database secrets through a series of "innocent" code analysis steps.
 * **The Happy Path (Tasks):**
     1. Agent begins a "Security Audit" mission.
+
+![Audit](../screenshots/audit_logs.png)
     2. ACSM initializes a new "Action Chain" token bound to this mission.
     3. Agent performs a series of file reads (authorized).
     4. Agent attempts to call a network egress tool with sensitive data fragments.

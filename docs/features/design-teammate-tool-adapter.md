@@ -18,6 +18,8 @@ With the official launch of Claude Code "Agent Teams," the `TeammateTool` has em
 ## 3. Critical User Journey (CUJ)
 * **User Persona:** Full-Stack AI Swarm Architect
 * **Primary Goal:** Use a Claude Code "Team Lead" to orchestrate a specialized OpenClaw "Security Auditor" agent.
+
+![Audit](../screenshots/audit_logs.png)
 * **The Happy Path (Tasks):**
     1. The user starts Claude Code in a project monitored by MCP Any.
     2. Claude Code (Team Lead) identifies a need for a security audit and calls `TeammateTool.spawn()`.

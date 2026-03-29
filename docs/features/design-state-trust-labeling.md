@@ -40,5 +40,7 @@ As AI agent swarms become more heterogeneous, bridging between disparate framewo
 * **Security (Zero Trust)**: STL is a core pillar of the Zero Trust architecture, ensuring data lineage is preserved.
 * **Observability**: Trust-policy violations will be surfaced in the Local Security Audit Dashboard.
 
+![Dashboard](../screenshots/dashboard_overview.png)
+
 ## 7. Evolutionary Changelog
 * **2026-05-19:** Initial Document Creation.

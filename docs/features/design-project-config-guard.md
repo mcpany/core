@@ -47,6 +47,8 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 * **Security (Zero Trust)**: All hooks are treated as untrusted until attested. Approved hooks are executed in a `Detached Sandbox` (cgroups/Docker) with restricted network and disk access.
 * **Observability**: Every intercepted config and its attestation status is logged to the `Audit Log`.
 
+![Audit](../screenshots/audit_logs.png)
+
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
 

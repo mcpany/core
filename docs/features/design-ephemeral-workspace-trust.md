@@ -42,6 +42,8 @@ With the release of OpenClaw v1.6 and Claude Code's "Staged Trust" model, the in
 * **Security (Zero Trust):** The "Bridge Token" must be bound to the specific hardware ID of the host to prevent relay attacks.
 * **Observability:** Trust exchange events and revocations are logged to the "Local Security Audit Log."
 
+![Audit](../screenshots/audit_logs.png)
+
 ## 7. Evolutionary Changelog
 * **2026-03-20:** Initial Document Creation.
 * **2026-03-21:** Added **Adaptive Trust Continuity** section.

@@ -18,6 +18,8 @@ With the maturation of Gemini CLI's A2A auth and the shift toward horizontal "Ag
 ## 3. Critical User Journey (CUJ)
 * **User Persona:** Local-First Agent Swarm Developer
 * **Primary Goal:** Ensure that a newly spawned "Security Auditor" agent can only see the tools of the "Database specialist" after proving its hardware-attested lineage.
+
+![Audit](../screenshots/audit_logs.png)
 * **The Happy Path (Tasks):**
     1. Agent A (Requester) broadcasts a discovery request to the Mesh.
     2. Agent B (Provider) responds with a "Handshake Challenge" signed by its local TPM.

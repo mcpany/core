@@ -45,6 +45,8 @@ OpenClaw-RL v1.0 and recent research into "Process-Reward Models" (PRM) demand t
 
 ## 6. Cross-Cutting Concerns
 * **Security (Zero Trust)**: Traces must be sanitized of secrets and PII before export. Only authorized RL pipelines can subscribe to the telemetry stream.
+
+![Traces](../screenshots/traces.png)
 * **Observability**: A "Policy Drift" dashboard in the UI visualizes the effectiveness of the feedback loop.
 
 ## 7. Evolutionary Changelog

@@ -44,5 +44,7 @@ With the shift toward "Deterministic Environment Integrity," agents require a ve
 * **Security (Zero Trust):** The manifest must be bound to a unique `SessionID` and `HardwareNonce` to prevent reuse on different machines or sessions.
 * **Observability:** Boot manifest generation and verification events are visualized in the "Deterministic Boot Dashboard."
 
+![Dashboard](../screenshots/dashboard_overview.png)
+
 ## 7. Evolutionary Changelog
 * **2026-04-16:** Initial Document Creation.

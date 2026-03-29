@@ -46,6 +46,8 @@ The Active Subagent Reaper is a mandatory lifecycle management layer in MCP Any 
 * **Security (Zero Trust):** Heartbeats must be signed by the subagent's session key. Pruning signals must be signed by the Parent Agent or an authorized Monitor.
 * **Observability:** Logs all Reaper actions (Termination events, state rollbacks) for swarm forensics.
 
+![Logs](../screenshots/logs.png)
+
 ## 7. Evolutionary Changelog
 * **2026-04-03:** Initial Document Creation.
 

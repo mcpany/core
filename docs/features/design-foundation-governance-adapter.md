@@ -28,6 +28,8 @@ The Foundation Governance Adapter (FGA) acts as this translation layer within MC
     5. The task is delegated to the AutoGen specialist with the governance token attached.
     6. An immutable audit record is generated and stored in the Lineage-Aware Audit Log.
 
+![Audit](../screenshots/audit_logs.png)
+
 ## 4. Design & Architecture
 * **System Flow:**
     `Agent Request -> UAB Adapter -> Foundation Governance Adapter (FGA) -> Policy Mirror -> Target Agent`

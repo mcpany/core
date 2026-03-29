@@ -46,6 +46,8 @@ MCP Any, as the universal agent infrastructure, is uniquely positioned to act as
 * **Security (Zero Trust):** All A2UI manifests must be cryptographically signed by the agent. The Gateway performs strict schema validation to prevent "UI Injection" attacks.
 * **Observability:** Every UI interaction is logged in the "A2UI Audit Trail," allowing users to see exactly what state was proposed and what they approved.
 
+![Audit](../screenshots/audit_logs.png)
+
 ## 7. Evolutionary Changelog
 * **2026-04-21:** Initial Document Creation.
 * **2026-04-22:** Update: Resolving WebSocket State Desync.

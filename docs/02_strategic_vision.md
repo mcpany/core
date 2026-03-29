@@ -42,6 +42,8 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Context**: The official integration of Quorum-Bound Summarization (QBS) in OpenClaw and the introduction of Adaptive Jitter Profiles (AJP) in Gemini CLI reveal that **State Integrity** must now be consensus-driven and **Security Latency** must be risk-aware. As MTTC (Mean Time to Coordinate) becomes the primary performance bottleneck, the "Universal Agent Bus" must move beyond static safety gates to active **Optimistic Summarization** and **Intent-Aware Jitter**.
 **Strategic Pivot**:
 - **Quorum-Bound Summarization (QBS) Hub**: MCP Any will evolve to act as the authoritative "Consensus Broker" for all context compaction events. We will implement the QBS Hub, requiring a multi-agent quorum (Mission-Root + Independent Auditor) before any context fragment is summarized, neutralizing "Mission-Root Erasure" during aggressive token-saving.
+
+![Audit](screenshots/audit_logs.png)
 - **Optimistic Summarization Middleware**: Supporting the efficiency of deep meshes, we are introducing Optimistic Summarization. This allows agents to speculatively reason against pending summaries while quorums perform background attestation, with automated rollback on failure, neutralizing the 50ms+ quorum resolution tax.
 - **Intent-Aware Adaptive Jitter**: To optimize for performance, we are evolving the Monotonic Jitter provider to support Intent-Aware profiles. MCP Any will dynamically scale jitter variations (2ms to 20ms) based on the real-time reasoning intent and shard sensitivity, reducing the "Coordination Tax" for low-risk handoffs.
 - **Enclave-local Metadata Attestation (EMA)**: Supporting "Physical Shard Sovereignty," we are mandating EMA for all shard metadata. This provides hardware-enclave (TPM/SEP) bound attestation, ensuring that sharded context fragments remain cryptographically pinned to their authorized mission-root physical boundaries.
@@ -1158,6 +1160,8 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Semantic Lineage Tracking**: Supporting the stability of "Headless Handoffs," MCP Any will implement Semantic Lineage Tracking. This provides a cryptographically signed "Chain of Reason" that verifies the lineage of a tool call back to the mission-root intent, ensuring that "Injected Context" cannot shadow the root authority.
 - **Visual Attention Dashboard**: To counter "Approval Blindness," we are evolving the UI to include a visual "Attention Map." Users will see a real-time heatmap of which context fragments (User, System, Injected) are driving the agent's current tool-call reasoning.
 
+![Dashboard](screenshots/dashboard_overview.png)
+
 ## Strategic Evolution: [2026-06-20]
 ### Focus: Context-File Integrity & Attention-Locked Tooling (ALT)
 **Context**: The emergence of "Deceptive Context Hijacking" in Gemini CLI (via natural-language `GEMINI.md` files) and the rise of "Teammate Mailbox" coordination patterns in Claude Code reveal that passive sandbox boundaries are no longer sufficient. Attackers are now using "Invisible" project-local instructions to trick agents into executing exfiltration tools.
@@ -1372,6 +1376,8 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ## Strategic Evolution: [2026-03-28]
 ### Focus: Plugin Market Sovereignty & Injection-Resistant Code Generation
 **Context**: The emergence of the OpenClaw plugin market and the disclosure of critical injection vulnerabilities in Gemini CLI confirm that the "Universal Agent Bus" must now move beyond simple bridging to active **Marketplace Governance** and **Instruction-Aware Hardening**. Simultaneously, the high vulnerability rate in agent-generated PRs (87%) demands that infrastructure provides **Atomic Integrity Gates** for all code-modifying actions.
+
+![Marketplace](screenshots/marketplace.png)
 **Strategic Pivot**:
 - **Plugin Market Ingestion Adapter**: MCP Any will evolve to act as the authoritative bridge for third-party marketplace ingestion. We will implement standardized profiling and sandboxing for all imported tools, ensuring they match local Zero-Trust policies before being exposed to the discovery bus.
 - **Injection-Resistant PR Auditing**: Supporting the sovereignty of the build pipeline, we are evolving the APRIG middleware. This layer will mandate specialized "Injection-Scanning" auditors that specifically look for command and prompt injection patterns in agent-generated code before authorizing a PR commit.

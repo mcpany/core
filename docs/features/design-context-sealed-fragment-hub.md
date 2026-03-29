@@ -40,5 +40,7 @@ With the discovery of the "EchoLeak" vulnerability, where sensitive data is exfi
 *   **Security (Zero Trust):** Mandatory origin and identity validation before any sealing operation.
 *   **Observability:** Audit logs for every shard mount and access attempt.
 
+![Audit](../screenshots/audit_logs.png)
+
 ## 7. Evolutionary Changelog
 *   **2026-05-09:** Initial Document Creation.

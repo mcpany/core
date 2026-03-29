@@ -20,6 +20,8 @@ The Zero-Copy Memory Broker (ZCMB) addresses this by providing hardware-locked, 
 ## 3. Critical User Journey (CUJ)
 * **User Persona:** Local LLM Swarm Orchestrator
 * **Primary Goal:** Enable high-frequency refinement loops between a Dev Agent and an Auditor Agent without transport-induced latency.
+
+![Audit](../screenshots/audit_logs.png)
 * **The Happy Path (Tasks):**
     1. The primary agent initiates a high-intensity mission.
     2. MCP Any allocates a hardware-locked shared memory region (ZCMB Shard) for the mission.

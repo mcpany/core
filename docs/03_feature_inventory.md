@@ -61,6 +61,8 @@
 - **Physical Shard Sovereignty (PSS) Provider**: (P0) Advanced security service that cryptographically pins sharded context fragments to specific hardware enclave IDs.
 - **Multi-Modal Stylometric Integrity (MMSI) Validator**: (P0) Upgrade for the SBF providing real-time stylometric analysis of SVG logic diagrams and audio reasoning traces.
 - **Quorum-Bound Summarization (QBS) Hub**: (P0) Distributed coordination service requiring multi-agent consensus (Mission-Root + Auditor) on all context compaction events.
+
+![Audit](screenshots/audit_logs.png)
 - **Adaptive Jitter Profiler**: (P1) Performance-optimizing middleware that dynamically scales timing variations based on shard sensitivity and trust levels.
 
 ### Priority Shifts
@@ -156,6 +158,8 @@
 - **Context-File Integrity Attestation (CFIA)**: (P0) Core security service requiring hardware-attested hash signatures for all project-local natural language context files.
 - **Attention-Locked Tooling (ALT)**: (P0) Security middleware that cryptographically locks high-risk tool calls to user-verified reasoning anchors, neutralizing context-hijacking.
 - **Visual Attention Dashboard**: (P1) Advanced UI component for visualizing reasoning drivers and attention-level heatmaps.
+
+![Dashboard](screenshots/dashboard_overview.png)
 
 ### Priority Shifts
 - **Atomic Reasoning Integrity (ARI) Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory **ESB-compliant** state entanglement.
@@ -967,6 +971,8 @@
 ### Deprecations / Monitoring
 - **Framework-Specific Feedback Logs**: Monitoring for deprecation. Feedback should be normalized via the Unified Telemetry Bridge.
 
+![Logs](screenshots/logs.png)
+
 ## Evolution: [2026-03-20] Updates
 
 ### Proposed Additions
@@ -1568,6 +1574,8 @@
 
 ### Priority Shifts
 - **Visual Attention Dashboard**: (P1) Now elevated to a critical requirement for supporting the **ALT** user-verification flow.
+
+![Visual Attention Dashboard](screenshots/dashboard_overview.png)
 - **Mailbox Integrity Middleware**: (Re-affirmed P0) Evolving to support the new **Teammate Mailbox** security requirements.
 
 ## Evolution: [2026-06-21] Updates

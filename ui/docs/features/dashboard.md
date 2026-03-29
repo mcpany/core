@@ -11,7 +11,7 @@ Assess the overall health and performance of the MCP ecosystem. The Dashboard se
 Navigate to `/` (Home).
 The dashboard is composed of configurable widgets that provide visibility into different aspects of the system.
 
-![Dashboard Overview](../screenshots/dashboard_overview.png)
+![Dashboard Overview](screenshots/dashboard_overview.png)
 
 ### 2. Live Metrics
 The dashboard updates in real-time.
@@ -27,7 +27,7 @@ The dashboard features a fully customizable layout engine ("Portainer-style").
 - **Resize**: Click the menu (⋮) on any widget to change its size (Full Width, 1/2, 1/3, etc.).
 - **Persisted State**: Your custom layout is automatically saved to your local browser storage.
 
-![Widget Gallery](../screenshots/dashboard_overview.png)
+![Widget Gallery](screenshots/dashboard_overview.png)
 
 ### 4. Quick Actions
 The **Quick Actions** widget provides one-click access to the most common management tasks, helping new users get started and power users navigate efficiently.
@@ -37,4 +37,4 @@ The **Quick Actions** widget provides one-click access to the most common manage
 - **Manage Secrets**: Securely store API keys.
 - **Network Map**: Visualize the system topology.
 
-![Quick Actions](../screenshots/dashboard_quick_actions.png)
+![Quick Actions](screenshots/dashboard_quick_actions.png)

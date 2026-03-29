@@ -44,6 +44,8 @@ The Tool Metadata Sanitizer is a security middleware in MCP Any that treats all 
 * **Security (Zero Trust):** Mandatory scanning for all non-VML-attested metadata.
 * **Observability:** Logs all redaction events and blocked patterns for security auditing.
 
+![Logs](../screenshots/logs.png)
+
 ## 7. Evolutionary Changelog
 * **2026-04-04:** Initial Document Creation.
 

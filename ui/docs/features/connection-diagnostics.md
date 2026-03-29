@@ -26,4 +26,4 @@ The **Connection Diagnostic Tool** helps users troubleshoot connectivity issues 
 ## Screenshots
 
 *(Screenshot of the connection diagnostics dialog showing a localhost warning)*
-![Connection Diagnostics](../screenshots/connection-diagnostics.png)
+![Connection Diagnostics](screenshots/connection-diagnostics.png)

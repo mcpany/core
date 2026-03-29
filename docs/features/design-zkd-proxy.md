@@ -53,5 +53,7 @@ The Zero-Knowledge Discovery (ZKD) Proxy evolves the discovery process by mandat
 * **Security (Zero Trust):** ZKD ensures that even if the discovery bus is monitored, no imperative instructions (from tool descriptions) can be scraped for prompt injection.
 * **Observability:** The "Discovery Audit Log" tracks proof-requests vs. schema-unmasks, highlighting potential mapping attempts.
 
+![Audit](../screenshots/audit_logs.png)
+
 ## 7. Evolutionary Changelog
 * **2026-06-27:** Initial Document Creation.

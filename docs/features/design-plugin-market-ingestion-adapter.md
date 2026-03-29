@@ -32,6 +32,8 @@ MCP Any needs a secure, attested bridge for importing tools from these marketpla
 ## 4. Design & Architecture
 *   **System Flow:**
     `[Marketplace] --> [Ingestion Adapter] --> [Structural Sanitizer] --> [Ghost Shell Profiler] --> [User Attestation] --> [Discovery Bus]`
+
+![Marketplace](../screenshots/marketplace.png)
 *   **APIs / Interfaces:**
     *   `POST /v1/ingestion/import`: Initiates the import process for a specific plugin.
     *   `GET /v1/ingestion/report/:id`: Retrieves the behavioral profiling results.
@@ -44,6 +46,8 @@ MCP Any needs a secure, attested bridge for importing tools from these marketpla
 ## 6. Cross-Cutting Concerns
 *   **Security (Zero Trust):** Ingestion is a "Fail-Closed" process; skills remain quarantined until explicitly attested.
 *   **Observability:** Integrated with the `Plugin Market Ingestion Dashboard` for real-time tracking of import status.
+
+![Dashboard](../screenshots/dashboard_overview.png)
 
 ## 7. Evolutionary Changelog
 *   **2026-03-28:** Initial Document Creation.

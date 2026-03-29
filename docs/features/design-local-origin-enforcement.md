@@ -34,6 +34,8 @@ The OpenClaw security crisis (CVE-2026-25253) highlighted a critical flaw in "lo
     * Allowed origins are stored in the primary `config.yaml`.
     * Violation logs are stored in the Local Security Audit Log (SQLite).
 
+![Audit](../screenshots/audit_logs.png)
+
 ## 5. Alternatives Considered
 * **Token-only Authentication**: Rejected because tokens can be exfiltrated via the same loopback vulnerability if the origin isn't verified.
 * **Custom Auth Headers**: Browsers don't allow setting custom headers on `EventSource` or `WebSocket` initial handshakes without complex workarounds.
@@ -41,6 +43,8 @@ The OpenClaw security crisis (CVE-2026-25253) highlighted a critical flaw in "lo
 ## 6. Cross-Cutting Concerns
 * **Security (Zero Trust):** Treating every local request as potentially hostile unless the origin is proven.
 * **Observability:** Real-time logging of origin violations to the Security Dashboard.
+
+![Dashboard](../screenshots/dashboard_overview.png)
 
 ## 7. Evolutionary Changelog
 * **2026-03-18:** Initial Document Creation.

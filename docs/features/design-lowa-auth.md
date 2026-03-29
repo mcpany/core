@@ -59,5 +59,7 @@ LOWA is a mandatory security layer for MCP Any that enforces session-bound authe
 *   **Security (Zero Trust):** LOWA is a core component of the "Local Zero Trust" mandate. It treats loopback as untrusted until proven otherwise.
 *   **Observability:** All failed local auth attempts are logged to the `Local Security Audit Dashboard`.
 
+![Dashboard](../screenshots/dashboard_overview.png)
+
 ## 7. Evolutionary Changelog
 *   **2026-05-22:** Initial Document Creation.

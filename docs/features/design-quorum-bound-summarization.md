@@ -11,6 +11,8 @@ MCP Any needs to act as the authoritative governor for context lifecycle. QBS in
 * **Goals:**
     * Implement a multi-agent quorum protocol for context compaction events.
     * Prevent "Mission-Root Erasure" by mandating Auditor attestation for summaries.
+
+![Audit](../screenshots/audit_logs.png)
     * Support "Optimistic Summarization Commits" to minimize coordination latency.
     * Maintain a verifiable lineage of context state transitions.
 * **Non-Goals:**

@@ -15,7 +15,7 @@ As the number of connected services and tools grows, finding a specific tool can
 
 ## Visuals
 
-![Tool Search Bar](../screenshots/global_search.png)
+![Tool Search Bar](screenshots/global_search.png)
 
 ## Technical Details
 

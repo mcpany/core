@@ -43,5 +43,7 @@ The "ClawHavoc" registry compromise demonstrated that individual tool validation
 * **Security (Zero Trust)**: Reputation is the foundation of capability-based scoping.
 * **Observability**: Real-time "Reputation Heatmap" in the Security Dashboard.
 
+![Dashboard](../screenshots/dashboard_overview.png)
+
 ## 7. Evolutionary Changelog
 * **2026-04-09:** Initial Document Creation.

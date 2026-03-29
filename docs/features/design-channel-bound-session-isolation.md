@@ -37,6 +37,8 @@ Currently, session context is stored in a shared control plane. If a subagent is
         B -->|Discord Token| D[Discord Session Shard]
         B -->|Unauthorized Access| E[Security Interdiction]
         E --> F[Audit Log & Dashboard Alert]
+
+![Dashboard](../screenshots/dashboard_overview.png)
     ```
 *   **APIs / Interfaces:**
     *   `RegisterPlatform(platformID string, trustLevel int)`: Registers a communication platform with a specific trust score.
@@ -53,6 +55,8 @@ Currently, session context is stored in a shared control plane. If a subagent is
 ## 6. Cross-Cutting Concerns
 *   **Security (Zero Trust):** CBSI follows the "Verify Everything" principle. No state fragment can be read or written without a valid platform-bound attestation token.
 *   **Observability:** All "Isolation Boundary Probes" are logged with high-entropy trace IDs, allowing administrators to visualize the "Attack Path" in the Visual Attention Dashboard.
+
+![Visual Attention Dashboard](../screenshots/dashboard_overview.png)
 
 ## 7. Evolutionary Changelog
 *   **2026-06-22:** Initial Document Creation.

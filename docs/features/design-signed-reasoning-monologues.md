@@ -17,6 +17,8 @@ The emergence of "Reasoning Hijacking" via monologue injection represents a crit
 ## 3. Critical User Journey (CUJ)
 * **User Persona:** High-Stakes Autonomous Swarm Architect
 * **Primary Goal:** Ensure a "Deployment Agent" cannot be tricked into believing a "Security Auditor" has already approved a commit.
+
+![Audit](../screenshots/audit_logs.png)
 * **The Happy Path (Tasks):**
     1. The architect enables SRM in the MCP Any configuration for the swarm.
     2. Every reasoning fragment from the Deployment Agent is cryptographically signed and bound to the mission session.

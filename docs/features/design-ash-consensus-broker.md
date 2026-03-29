@@ -49,3 +49,5 @@ With the introduction of Autonomous Self-Healing (ASH) in OpenClaw v2.8, agent s
 * **2026-04-21:** Update: A2UI Integration for Interactive Consensus.
     * **Context**: Research into OpenClaw's "Adaptive Reasoning" reveals that ASH cycles often require human-in-the-loop (HITL) intervention for ambiguous drift.
     * **Architecture Adjustment**: Integrating the ASH Consensus Broker with the A2UI Native Gateway to surface "Consensus Conflict Dashboards" when autonomous quorum fails.
+
+![Dashboard](../screenshots/dashboard_overview.png)

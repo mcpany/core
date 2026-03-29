@@ -22,6 +22,8 @@ In decentralized agent swarms (e.g., Claude Code Agent Teams, OpenClaw swarms), 
     2. MCP Any detects the conflict on the Shared Blackboard.
     3. The AIR Broker triggers an Intent Reconciliation session.
     4. Independent "Auditor" agents provide signatures for the intent that best aligns with the Mission Root.
+
+![Audit](../screenshots/audit_logs.png)
     5. The AIR Broker publishes the hardware-attested "Winning Intent" to the swarm.
 
 ## 4. Design & Architecture

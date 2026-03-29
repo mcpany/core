@@ -56,5 +56,7 @@ The **Layer-7 Semantic Inspection Hub (L7SIH)** is designed to address the emerg
 *   **Security (Zero Trust):** L7SIH itself is isolated and requires hardware-attested identity to update its mission-alignment baselines.
 *   **Observability:** Integrated with the `Audit Log` and `Swarm Anomaly Visualizer`, providing real-time "Entropy Heatmaps."
 
+![Audit](../screenshots/audit_logs.png)
+
 ## 7. Evolutionary Changelog
 *   **2026-06-10:** Initial Document Creation.

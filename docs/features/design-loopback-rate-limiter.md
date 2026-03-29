@@ -26,6 +26,8 @@ The **Local-Loopback Rate Limiter** is a mandatory security middleware for MCP A
     4.  Subsequent requests from that origin are immediately dropped with a `429 Too Many Requests`.
     5.  The incident is logged in the `Local Security Audit Dashboard`.
 
+![Dashboard](../screenshots/dashboard_overview.png)
+
 ## 4. Design & Architecture
 *   **System Flow:**
     ```mermaid
@@ -36,6 +38,8 @@ The **Local-Loopback Rate Limiter** is a mandatory security middleware for MCP A
         RL -->|If Exceeded| Block[429 Too Many Requests / Close WS]
         RL -->|If Valid| App[Core MCP Server Logic]
         Block --> Audit[Security Audit Log]
+
+![Audit](../screenshots/audit_logs.png)
     ```
 *   **APIs / Interfaces:**
     - `RateLimitConfig`: YAML schema for defining `requests_per_second` and `burst_size` specifically for `127.0.0.1`.

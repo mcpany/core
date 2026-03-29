@@ -21,6 +21,8 @@ The Mission-Locked Execution (MLE) Gateway is needed to ensure that every tool c
 ## 3. Critical User Journey (CUJ)
 * **User Persona:** Local LLM Swarm Orchestrator
 * **Primary Goal:** Ensure that a "Database Specialist" subagent can only execute queries that are explicitly locked to the "Quarterly Audit" mission root.
+
+![Audit](../screenshots/audit_logs.png)
 * **The Happy Path (Tasks):**
     1. Parent agent issues a task delegation with a cryptographically signed "Mission Lock" token.
     2. Subagent attempts to call a `db_query` tool.
@@ -49,6 +51,8 @@ The Mission-Locked Execution (MLE) Gateway is needed to ensure that every tool c
 * **Data Storage/State:**
     * **Mission Lock Registry:** High-speed, in-memory store for active mission locks, anchored to the hardware-attested session.
     * **Sovereignty Logs:** Immutable logs of all mission-lock validation events.
+
+![Logs](../screenshots/logs.png)
 
 ## 5. Alternatives Considered
 * **Session-Bound Tokens:** Rejected because they only verify the *session*, not the specific *mission fragment*. Session tokens can be reused for unauthorized intents (Ghosting).

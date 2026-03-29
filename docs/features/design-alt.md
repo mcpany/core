@@ -54,6 +54,8 @@ ALT addresses this by cryptographically locking high-risk tool capabilities to s
 * **Security (Zero Trust):** ALT relies on the integrity of the reasoning trace provided by the model. It works best with hardware-attested reasoning providers (like SRM).
 * **Observability:** Blocked calls are visualized in the "Visual Attention Dashboard" for forensic analysis.
 
+![Dashboard](../screenshots/dashboard_overview.png)
+
 ## 7. Evolutionary Changelog
 * **2026-06-20:** Initial Document Creation.
 * **2026-06-21:** Integrated with **Mission-Root Continuity Provider (MRCP)**. ALT anchors now carry monotonic sequence IDs that must align with the restored continuity state, preventing attention-mapping replay attacks during mission resumption.

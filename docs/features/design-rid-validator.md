@@ -19,6 +19,8 @@ MCP Any needs to implement a **Recursive Intent Delegation (RID) Validator** tha
 ## 3. Critical User Journey (CUJ)
 * **User Persona:** Enterprise Security Architect
 * **Primary Goal:** Prevent a specialized "Code Auditor" subagent from spawning an "Executor" subagent to bypass security gates.
+
+![Audit](../screenshots/audit_logs.png)
 * **The Happy Path (Tasks):**
     1. Parent agent issues a task to a subagent with a RID token (Depth: 1, Mutations: Allowed-Tools-Only).
     2. Subagent attempts to spawn a second subagent with "All Tools" access.

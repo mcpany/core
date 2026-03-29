@@ -42,6 +42,8 @@ As the Agent-to-Agent (A2A) ecosystem matures, the risk of "A2A Coercion" and un
 * **Security (Zero Trust):** Enforces identity-bound access control for all inter-agent messages. Neutralizes "Shadow Agent" discovery by masking capabilities until authenticated.
 * **Observability:** Logs all handshake attempts (success/failure) and maps them to the Mission Audit Trail.
 
+![Logs](../screenshots/logs.png)
+
 ## 7. Evolutionary Changelog
 * **2026-04-25:** Added "Trust Persistence" section to address "Session Decay" in long-running reasoning chains. Introduced token refresh mechanisms linked to the Mission Intent.
 * **2026-04-24:** Initial Document Creation based on Gemini CLI v0.33.0 A2A security updates.

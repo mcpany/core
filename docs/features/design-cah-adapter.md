@@ -20,6 +20,8 @@ The **CAH Adapter** enables MCP Any to participate in this consensus model. It p
 ## 3. Critical User Journey (CUJ)
 *   **User Persona:** Enterprise Swarm Compliance Officer
 *   **Primary Goal:** Ensure that a code-refactoring subagent only commits changes if a "Security Auditor" agent and a "Quality Monitor" agent both reach a hardware-attested consensus on the refactor's safety.
+
+![Audit](../screenshots/audit_logs.png)
 *   **The Happy Path (Tasks):**
     1.  Lead Agent proposes a code refactor task.
     2.  Refactor Agent generates the code change.
