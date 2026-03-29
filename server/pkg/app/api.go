@@ -211,7 +211,16 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/ws/logs", a.handleLogsWS())
 	mux.HandleFunc("/ws/traces", a.handleTracesWS())
 
-	return mux
+	var handler http.Handler = mux
+
+	// The config singleton provides the global settings object
+	if globalCfg := config.GlobalSettings(); globalCfg != nil {
+		if ssoCfg := globalCfg.GetSso(); ssoCfg != nil && ssoCfg.GetEnabled() {
+			handler = middleware.SSOMiddleware(ssoCfg)(handler)
+		}
+	}
+
+	return handler
 }
 
 func (a *Application) handleServices(store storage.Storage) http.HandlerFunc {
