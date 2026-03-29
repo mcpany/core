@@ -43,8 +43,9 @@ type CrewAIAdapter struct {
 func NewCrewAIAdapter() *CrewAIAdapter {
 	return &CrewAIAdapter{
 		Capabilities: map[string]bool{
-			"task_delegation": true,
-			"role_discovery":  true,
+			"task_delegation":     true,
+			"distributed_tracing": true,
+			"role_discovery":      true,
 		},
 		RoleRegistry: make(map[string]string),
 	}
@@ -89,6 +90,17 @@ func (a *CrewAIAdapter) Name() string {
 func (a *CrewAIAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult, error) {
 	if !a.SupportsCapability(task.Intent) {
 		return nil, fmt.Errorf("CrewAI does not support capability: %s", task.Intent)
+	}
+
+	if task.Intent == "distributed_tracing" {
+		return &TaskResult{
+			TaskID: task.ID,
+			Status: "success",
+			Output: fmt.Sprintf("CrewAI executed distributed_tracing"),
+			Telemetry: map[string]string{
+				"trace_id": task.Payload["trace_id"],
+			},
+		}, nil
 	}
 
 	// Simulated role discovery and task delegation mapping

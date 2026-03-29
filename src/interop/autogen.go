@@ -43,8 +43,9 @@ type AutoGenAdapter struct {
 func NewAutoGenAdapter() *AutoGenAdapter {
 	return &AutoGenAdapter{
 		Capabilities: map[string]bool{
-			"multi_agent_chat": true,
-			"subagent_exec":    true,
+			"multi_agent_chat":    true,
+			"distributed_tracing": true,
+			"subagent_exec":       true,
 		},
 		ChatHistory: make([]string, 0),
 	}
@@ -89,6 +90,17 @@ func (a *AutoGenAdapter) Name() string {
 func (a *AutoGenAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult, error) {
 	if !a.SupportsCapability(task.Intent) {
 		return nil, fmt.Errorf("AutoGen does not support capability: %s", task.Intent)
+	}
+
+	if task.Intent == "distributed_tracing" {
+		return &TaskResult{
+			TaskID: task.ID,
+			Status: "success",
+			Output: fmt.Sprintf("AutoGen executed distributed_tracing"),
+			Telemetry: map[string]string{
+				"trace_id": task.Payload["trace_id"],
+			},
+		}, nil
 	}
 
 	// Simulated stateful checkpoints (Sandbox Persistence Proofs)

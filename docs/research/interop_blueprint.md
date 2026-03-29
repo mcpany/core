@@ -50,3 +50,8 @@ MCP Any provides a universal **Bridge Pattern** implementation in Go (`src/inter
 ## 4. Conclusion
 
 By implementing a generalized Bridge interface, MCP Any normalizes external framework quirks into standardized A2A and MCP primitives. This ensures a 100% interoperable, zero-trust swarm environment without framework-specific hacks.
+### D. New Supported Feature: Distributed Tracing
+*   **Focus:** Cross-Framework Distributed Tracing
+*   **Adapter Features:**
+    *   *Trace Propagation:* Supports `distributed_tracing` capabilities across all agent frameworks (OpenClaw, CrewAI, AutoGen).
+    *   *Telemetry Sync:* Ensures `trace_id` telemetry is consistently propagated and returned in TaskResult across the Universal Agent Bus.

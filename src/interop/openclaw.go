@@ -43,8 +43,9 @@ type OpenClawAdapter struct {
 func NewOpenClawAdapter() *OpenClawAdapter {
 	return &OpenClawAdapter{
 		Capabilities: map[string]bool{
-			"adaptive_reasoning": true,
-			"context_sync":       true,
+			"adaptive_reasoning":  true,
+			"distributed_tracing": true,
+			"context_sync":        true,
 		},
 		CurrentEpoch: 1,
 	}
@@ -89,6 +90,17 @@ func (a *OpenClawAdapter) Name() string {
 func (a *OpenClawAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult, error) {
 	if !a.SupportsCapability(task.Intent) {
 		return nil, fmt.Errorf("OpenClaw does not support capability: %s", task.Intent)
+	}
+
+	if task.Intent == "distributed_tracing" {
+		return &TaskResult{
+			TaskID: task.ID,
+			Status: "success",
+			Output: fmt.Sprintf("OpenClaw executed distributed_tracing"),
+			Telemetry: map[string]string{
+				"trace_id": task.Payload["trace_id"],
+			},
+		}, nil
 	}
 
 	// Simulated execution with state versioning logic (reasoning_epoch)

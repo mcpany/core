@@ -199,6 +199,28 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 			}
 		}
 	})
+
+	// 7. Distributed Tracing Capability Test (New Feature)
+	t.Run("CrossFramework_DistributedTracing", func(t *testing.T) {
+		adapters := []string{"OpenClaw", "CrewAI", "AutoGen"}
+		for _, name := range adapters {
+			taskTrace := &interop.Task{
+				ID:        "task-trace-" + name,
+				Framework: name,
+				Intent:    "distributed_tracing",
+				Payload:   map[string]string{"trace_id": "abc-123"},
+			}
+			res, err := hub.RouteTask(ctx, taskTrace)
+			if err != nil {
+				t.Fatalf("Failed to execute distributed tracing on %s: %v", name, err)
+			}
+
+			if res.Telemetry["trace_id"] != "abc-123" {
+				t.Errorf("Expected trace_id 'abc-123' in telemetry for %s, got '%s'", name, res.Telemetry["trace_id"])
+			}
+		}
+	})
+
 }
 
 // Helper to access registered adapters for testing interface direct calls
