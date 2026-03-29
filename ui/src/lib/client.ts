@@ -633,6 +633,27 @@ export const apiClient = {
     },
 
     /**
+     * Deletes multiple traces by ID.
+     *
+     * Summary: Deletes multiple traces.
+     *
+     * @param traceIds - The list of trace IDs to delete.
+     * @returns A promise that resolves when the traces are deleted.
+     * @throws {Error} If the deletion fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/traces/bulk-delete.
+     */
+    bulkDeleteTraces: async (traceIds: string[]) => {
+        const res = await fetchWithAuth('/api/v1/traces/bulk-delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ids: traceIds })
+        });
+        if (!res.ok) throw new Error('Failed to delete traces');
+        return {};
+    },
+
+    /**
      * Lists services from the dynamic catalog.
      *
      * Summary: Fetches available services from the catalog.

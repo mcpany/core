@@ -319,6 +319,16 @@ func (m *AuditMiddleware) ClearHistory() {
 	}
 }
 
+// DeleteHistory removes specific entries from the history based on a filter function.
+//
+// Parameters:
+//   - filter (func(any) bool): A function that returns true if the entry should be deleted.
+func (m *AuditMiddleware) DeleteHistory(filter func(any) bool) {
+	if m.broadcaster != nil {
+		m.broadcaster.DeleteHistory(filter)
+	}
+}
+
 // Broadcast manually broadcasts an audit entry, used primarily for test seeding.
 //
 // Summary: Broadcasts an audit entry.

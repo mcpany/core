@@ -202,6 +202,16 @@ export function useTraces(options: UseTracesOptions = {}) {
         }
     };
 
+    const bulkDeleteTraces = async (traceIds: string[]) => {
+        try {
+            await apiClient.bulkDeleteTraces(traceIds);
+            setTraces((prev) => prev.filter((t) => !traceIds.includes(t.id)));
+            bufferRef.current = bufferRef.current.filter((t) => !traceIds.includes(t.id));
+        } catch (e) {
+            console.error("Failed to delete traces", e);
+        }
+    };
+
     const refresh = () => {
         setTraces([]);
         connect();
@@ -214,6 +224,7 @@ export function useTraces(options: UseTracesOptions = {}) {
         isPaused,
         setIsPaused,
         clearTraces,
+        bulkDeleteTraces,
         refresh
     };
 }

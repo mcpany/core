@@ -368,6 +368,54 @@ func (b *Broadcaster) ClearHistory() {
 	b.full = false
 }
 
+// DeleteHistory removes specific entries from the history based on a filter function.
+//
+// Parameters:
+//   - filter (func(any) bool): A function that returns true if the entry should be deleted.
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - Modifies the history array.
+func (b *Broadcaster) DeleteHistory(filter func(any) bool) {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+
+	count := b.limit
+	if !b.full {
+		count = b.head
+	}
+
+	idx := 0
+	if b.full {
+		idx = b.head
+	}
+
+	newHistory := make([]any, b.limit)
+	newHead := 0
+
+	for i := 0; i < count; i++ {
+		item := b.history[idx]
+		idx++
+		if idx >= b.limit {
+			idx = 0
+		}
+
+		if !filter(item) {
+			newHistory[newHead] = item
+			newHead++
+		}
+	}
+
+	b.history = newHistory
+	b.head = newHead
+	b.full = false
+}
+
 // GetHistory returns the current log history.
 //
 // Parameters:

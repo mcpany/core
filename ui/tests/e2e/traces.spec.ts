@@ -64,6 +64,32 @@ test.describe.skip('Trace Viewer', () => {
     await expect(page.locator('text=Root Input')).toBeVisible();
   });
 
+  test('should support bulk delete traces', async ({ page }) => {
+    await page.goto('/traces');
+
+    // Wait for traces to load
+    await page.waitForSelector('text=Loading traces...', { state: 'detached' });
+
+    // Verify list is populated
+    const firstTrace = page.locator('button.flex.flex-col').first();
+    await expect(firstTrace).toBeVisible();
+
+    // Check the "Select All" checkbox
+    const selectAllCheckbox = page.getByRole('checkbox', { name: 'Select all traces' });
+    await expect(selectAllCheckbox).toBeVisible();
+    await selectAllCheckbox.check();
+
+    // Ensure the Bulk Actions bar appears
+    const bulkDeleteBtn = page.getByRole('button', { name: 'Delete' });
+    await expect(bulkDeleteBtn).toBeVisible();
+
+    // Click Bulk Delete
+    await bulkDeleteBtn.click();
+
+    // Verify it disappears from UI (because of state update)
+    await expect(page.getByText('No traces found.')).toBeVisible();
+  });
+
   test('should filter traces', async ({ page }) => {
     await page.goto('/traces');
 

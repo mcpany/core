@@ -185,6 +185,54 @@ func (a *Application) handleClearTraces() http.HandlerFunc {
 	}
 }
 
+func (a *Application) handleBulkDeleteTraces() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		var req struct {
+			IDs []string `json:"ids"`
+		}
+
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, "invalid request body", http.StatusBadRequest)
+			return
+		}
+
+		if len(req.IDs) == 0 {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
+		idMap := make(map[string]bool)
+		for _, id := range req.IDs {
+			idMap[id] = true
+		}
+
+		auditMiddleware := a.GetAuditMiddleware()
+		if auditMiddleware != nil {
+			auditMiddleware.DeleteHistory(func(item any) bool {
+				entry, ok := item.(audit.Entry)
+				if !ok {
+					return false
+				}
+
+				// Generate trace ID exactly how toTrace() does to match correctly
+				data := fmt.Sprintf("%d-%s-%s-%s", entry.Timestamp.UnixNano(), entry.ToolName, entry.UserID, entry.ProfileID)
+				hash := sha256.Sum256([]byte(data))
+				traceID := hex.EncodeToString(hash[:])
+
+				return idMap[traceID]
+			})
+			logging.GetLogger().Info("Bulk deleted traces via API", "count", len(req.IDs))
+		}
+
+		w.WriteHeader(http.StatusNoContent)
+	}
+}
+
 func (a *Application) handleTracesWS() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)

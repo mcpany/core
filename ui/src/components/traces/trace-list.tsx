@@ -8,11 +8,12 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { Search, AlertCircle, CheckCircle2, Clock, Terminal, Database, User, Webhook as WebhookIcon, Play, Pause } from "lucide-react";
+import { Search, AlertCircle, CheckCircle2, Clock, Terminal, Database, User, Webhook as WebhookIcon, Play, Pause, Trash2 } from "lucide-react";
 import type { Trace, SpanStatus } from "@/types/trace";
 import { formatDistanceToNow } from "date-fns";
-import React, { memo, useMemo } from "react";
+import React, { memo, useMemo, useState, useCallback } from "react";
 import { Virtuoso } from "react-virtuoso";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface TraceListProps {
   traces: Trace[];
@@ -22,6 +23,7 @@ interface TraceListProps {
   onSearchChange: (query: string) => void;
   isLive: boolean;
   onToggleLive: (live: boolean) => void;
+  onBulkDelete?: (ids: string[]) => void;
 }
 
 // Optimization: Memoize TraceListItem to prevent re-renders of all items when one is selected.
@@ -32,39 +34,52 @@ interface TraceListProps {
  * @param props.trace - The trace property.
  * @param props.isSelected - The isSelected property.
  * @param props.onSelect - The onSelect property.
+ * @param props.isChecked - The isChecked property.
+ * @param props.onCheck - The onCheck property.
  * @returns The rendered component.
  */
-const TraceListItem = memo(({ trace, isSelected, onSelect }: { trace: Trace, isSelected: boolean, onSelect: (id: string) => void }) => {
+const TraceListItem = memo(({ trace, isSelected, onSelect, isChecked, onCheck }: { trace: Trace, isSelected: boolean, onSelect: (id: string) => void, isChecked: boolean, onCheck: (id: string, checked: boolean) => void }) => {
   return (
-    <button
-      onClick={() => onSelect(trace.id)}
-      className={cn(
-        "flex flex-col items-start gap-2 p-4 text-left text-sm transition-all hover:bg-accent/50 border-b last:border-0 w-full",
+    <div className={cn(
+        "flex items-stretch gap-2 transition-all hover:bg-accent/50 border-b last:border-0 w-full",
         isSelected && "bg-accent border-l-2 border-l-primary"
-      )}
-    >
-      <div className="flex w-full flex-col gap-1">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <StatusIcon status={trace.status} className="h-4 w-4" />
-            <span className="font-semibold">{trace.rootSpan.name}</span>
+      )}>
+        {onCheck && (
+            <div className="flex items-start pt-4 pl-4" onClick={(e) => e.stopPropagation()}>
+                <Checkbox
+                    checked={isChecked}
+                    onCheckedChange={(checked) => onCheck(trace.id, !!checked)}
+                    aria-label={`Select trace ${trace.id}`}
+                />
+            </div>
+        )}
+      <button
+        onClick={() => onSelect(trace.id)}
+        className="flex-1 flex flex-col items-start gap-2 p-4 text-left text-sm"
+      >
+        <div className="flex w-full flex-col gap-1">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <StatusIcon status={trace.status} className="h-4 w-4" />
+              <span className="font-semibold">{trace.rootSpan.name}</span>
+            </div>
+            <span className="text-xs text-muted-foreground font-mono">
+              {formatDuration(trace.totalDuration)}
+            </span>
           </div>
-          <span className="text-xs text-muted-foreground font-mono">
-            {formatDuration(trace.totalDuration)}
-          </span>
-        </div>
 
-        <div className="flex items-center justify-between w-full mt-1">
-           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <TriggerIcon trigger={trace.trigger} className="h-3 w-3" />
-                <span>{trace.id}</span>
-           </div>
-           <span className="text-xs text-muted-foreground">
-             {formatDistanceToNow(new Date(trace.timestamp), { addSuffix: true })}
-           </span>
+          <div className="flex items-center justify-between w-full mt-1">
+             <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <TriggerIcon trigger={trace.trigger} className="h-3 w-3" />
+                  <span>{trace.id}</span>
+             </div>
+             <span className="text-xs text-muted-foreground">
+               {formatDistanceToNow(new Date(trace.timestamp), { addSuffix: true })}
+             </span>
+          </div>
         </div>
-      </div>
-    </button>
+      </button>
+    </div>
   );
 });
 TraceListItem.displayName = "TraceListItem";
@@ -88,7 +103,37 @@ TraceListItem.displayName = "TraceListItem";
  *
  * @param onToggleLive - The onToggleLive.
  */
-export function TraceList({ traces, selectedId, onSelect, searchQuery, onSearchChange, isLive, onToggleLive }: TraceListProps) {
+export function TraceList({ traces, selectedId, onSelect, searchQuery, onSearchChange, isLive, onToggleLive, onBulkDelete }: TraceListProps) {
+  const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set());
+
+  const handleCheckAll = useCallback((checked: boolean) => {
+    if (checked) {
+      setCheckedIds(new Set(traces.map(t => t.id)));
+    } else {
+      setCheckedIds(new Set());
+    }
+  }, [traces]);
+
+  const handleCheckOne = useCallback((id: string, checked: boolean) => {
+    setCheckedIds(prev => {
+        const next = new Set(prev);
+        if (checked) {
+          next.add(id);
+        } else {
+          next.delete(id);
+        }
+        return next;
+    });
+  }, []);
+
+  const handleBulkDeleteClick = useCallback(() => {
+    if (onBulkDelete) {
+      onBulkDelete(Array.from(checkedIds));
+      setCheckedIds(new Set());
+    }
+  }, [onBulkDelete, checkedIds]);
+
+  const isAllChecked = traces.length > 0 && checkedIds.size === traces.length;
 
   // Optimization: Memoize filtered traces to avoid re-calculating on every render,
   // especially when only selectedId changes.
@@ -103,6 +148,13 @@ export function TraceList({ traces, selectedId, onSelect, searchQuery, onSearchC
   return (
     <div className="flex flex-col h-full border-r bg-background/50 backdrop-blur-sm">
       <div className="p-4 border-b flex items-center gap-2">
+        <div className="flex items-center justify-center">
+             <Checkbox
+                checked={isAllChecked}
+                onCheckedChange={(checked) => handleCheckAll(!!checked)}
+                aria-label="Select all traces"
+             />
+        </div>
         <div className="relative flex-1">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
@@ -122,6 +174,23 @@ export function TraceList({ traces, selectedId, onSelect, searchQuery, onSearchC
              {isLive ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
         </Button>
       </div>
+
+      {checkedIds.size > 0 && (
+          <div className="flex items-center gap-2 p-2 bg-muted/20 border-b justify-between animate-in fade-in slide-in-from-top-2">
+              <span className="text-xs text-muted-foreground ml-2">{checkedIds.size} selected</span>
+              <div className="flex items-center gap-2">
+                 <Button variant="outline" size="sm" onClick={() => setCheckedIds(new Set())} className="h-7 text-xs">
+                     Clear Selection
+                 </Button>
+                 {onBulkDelete && (
+                     <Button variant="destructive" size="sm" onClick={handleBulkDeleteClick} className="h-7 text-xs">
+                         <Trash2 className="mr-1 h-3 w-3" /> Delete
+                     </Button>
+                 )}
+              </div>
+          </div>
+      )}
+
       <div className="flex-1 min-h-0">
         {filteredTraces.length === 0 ? (
            <div className="p-8 text-center text-muted-foreground text-sm">
@@ -139,6 +208,8 @@ export function TraceList({ traces, selectedId, onSelect, searchQuery, onSearchC
                 trace={trace}
                 isSelected={selectedId === trace.id}
                 onSelect={onSelect}
+                isChecked={checkedIds.has(trace.id)}
+                onCheck={handleCheckOne}
               />
             )}
           />

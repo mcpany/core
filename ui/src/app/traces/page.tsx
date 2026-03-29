@@ -12,6 +12,7 @@ import type { Trace } from "@/types/trace";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { Loader2 } from "lucide-react";
 import { usePolling } from "@/hooks/use-polling";
+import { apiClient } from "@/lib/client";
 
 /**
  * Intent: Document TracesPage
@@ -69,6 +70,18 @@ export default function TracesPage() {
   // Randomized Selection from Top 5 High-Impact Targets (Network Category)
   usePolling(() => loadTraces(false), isLive ? 3000 : null);
 
+  const handleBulkDelete = useCallback(async (traceIds: string[]) => {
+      try {
+          await apiClient.bulkDeleteTraces(traceIds);
+          setTraces(prev => prev.filter(t => !traceIds.includes(t.id)));
+          if (selectedId && traceIds.includes(selectedId)) {
+              setSelectedId(null);
+          }
+      } catch (err) {
+          console.error("Failed to bulk delete traces", err);
+      }
+  }, [selectedId]);
+
   const selectedTrace = traces.find(t => t.id === selectedId) || null;
 
   if (loading) {
@@ -91,6 +104,7 @@ export default function TracesPage() {
                 onSearchChange={setSearchQuery}
                 isLive={isLive}
                 onToggleLive={setIsLive}
+                onBulkDelete={handleBulkDelete}
             />
         </ResizablePanel>
         <ResizableHandle />
