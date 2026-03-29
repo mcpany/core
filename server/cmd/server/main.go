@@ -127,12 +127,26 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			log.Info("Configuration", "mcp-listen-address", bindAddress, "registration-port", grpcPort, "stdio", stdio, "config-path", configPaths)
 
 			// Track 1: Friction Fighter - Verify config files exist before proceeding
+			// Track 1: Friction Fighter - Fix Bazel relative path resolution
 			if len(configPaths) > 0 {
 				log.Info("Attempting to load services from config path", "paths", configPaths)
-				for _, path := range configPaths {
+
+				bazelWorkspaceDir := os.Getenv("BUILD_WORKSPACE_DIRECTORY")
+
+				for i, path := range configPaths {
 					if strings.HasPrefix(strings.ToLower(path), "http://") || strings.HasPrefix(strings.ToLower(path), "https://") {
 						continue
 					}
+
+					// If file doesn't exist and we are running via Bazel, try resolving against the workspace directory
+					if _, err := osFs.Stat(path); os.IsNotExist(err) && bazelWorkspaceDir != "" && !strings.HasPrefix(path, "/") {
+						resolvedPath := bazelWorkspaceDir + "/" + path
+						if _, err2 := osFs.Stat(resolvedPath); err2 == nil {
+							path = resolvedPath
+							configPaths[i] = resolvedPath
+						}
+					}
+
 					if _, err := osFs.Stat(path); os.IsNotExist(err) {
 						return fmt.Errorf("❌ Configuration file not found: %s\n\n💡 Tip: You can generate a default configuration using:\n   %s config generate > %s", path, appconsts.Name, path)
 					} else if err != nil {
@@ -657,6 +671,23 @@ upstream_services:
 //   - Executes the root command.
 //   - Exits the process.
 func main() {
+	// Intercept command-line arguments to default to "run" if no known command is provided.
+	// This improves developer experience so that `mcpany --config config.yaml` works directly.
+	if len(os.Args) > 1 {
+		firstArg := os.Args[1]
+		// List of known commands
+		knownCommands := map[string]bool{
+			"run": true, "version": true, "update": true, "health": true,
+			"doctor": true, "config": true, "init": true, "lint": true,
+			"help": true, "completion": true,
+		}
+
+		if !knownCommands[firstArg] && !strings.HasPrefix(firstArg, "-h") && !strings.HasPrefix(firstArg, "--help") {
+			// Prepend "run" to the arguments list
+			os.Args = append([]string{os.Args[0], "run"}, os.Args[1:]...)
+		}
+	}
+
 	if err := newRootCmd().Execute(); err != nil {
 		os.Exit(1)
 	}

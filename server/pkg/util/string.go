@@ -134,8 +134,10 @@ func LevenshteinDistanceWithLimit(s1, s2 string, limit int) int {
 			return limit + 1
 		}
 
-		// Swap v0 and v1 for the next iteration
-		v0, v1 = v1, v0
+		// Copy instead of swap to avoid state corruption
+		for k := 0; k <= m; k++ {
+			v0[k] = v1[k]
+		}
 	}
 
 	return v0[m]
@@ -214,8 +216,10 @@ func levenshteinASCIIBounded(s1, s2 string, limit int) int {
 			return limit + 1
 		}
 
-		// Swap v0 and v1
-		v0, v1 = v1, v0
+		// Copy instead of swap to avoid state corruption
+		for k := 0; k <= m; k++ {
+			v0[k] = v1[k]
+		}
 	}
 
 	return v0[m]
