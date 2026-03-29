@@ -72,7 +72,16 @@ func loadEnv(cmd *cobra.Command) error {
 		if err := godotenv.Load(); err != nil {
 			return fmt.Errorf("failed to parse .env file: %w", err)
 		}
-	} else if !os.IsNotExist(err) {
+	} else if os.IsNotExist(err) {
+		// Automatically create .env from .env.example if it exists
+		if _, exampleErr := os.Stat(".env.example"); exampleErr == nil {
+			exampleContent, readErr := os.ReadFile(".env.example")
+			if readErr == nil {
+				_ = os.WriteFile(".env", exampleContent, 0600)
+				_ = godotenv.Load()
+			}
+		}
+	} else {
 		// Return error if stat failed for reason other than not exist (e.g. permission)
 		return fmt.Errorf("failed to check for .env file: %w", err)
 	}
