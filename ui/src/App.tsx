@@ -6,6 +6,7 @@
 import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Layout } from "./components/layout";
+import { InteropTester } from "./components/interop-tester";
 import { Loader2 } from "lucide-react";
 
 // Lazy-load every page so the initial bundle stays small.
@@ -139,6 +140,7 @@ export default function App() {
 
           {/* Legacy redirect */}
           <Route path="/topology" element={<Navigate to="/network" replace />} />
+          <Route path="interop" element={<InteropTester />} />
         </Route>
       </Routes>
     </Suspense>

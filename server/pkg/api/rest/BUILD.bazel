@@ -8,6 +8,7 @@ go_library(
     srcs = [
         "catalog.go",
         "handler.go",
+        "interop.go",
         "model.go",
     ],
     importpath = "github.com/mcpany/core/server/pkg/api/rest",
@@ -15,6 +16,7 @@ go_library(
     deps = [
         "//proto/api/v1:api",
         "//proto/config/v1:config",
+        "//src/interop",
         "//server/pkg/catalog",
         "//server/pkg/config",
         "@in_gopkg_yaml_v3//:yaml_v3",
@@ -32,6 +34,7 @@ go_test(
         "handler_repro_leak_test.go",
         "handler_security_test.go",
         "handler_test.go",
+        "interop_test.go",
         "sentinel_handler_test.go",
     ],
     embed = [":rest"],
