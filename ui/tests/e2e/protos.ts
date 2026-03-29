@@ -1,3 +1,17 @@
+/**
+ * Defines the MCP Options proto.
+ *
+ * Summary: Protocol buffer definition for MCP Options.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - string: The proto definition.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 export const MCP_OPTIONS_PROTO = `// Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
@@ -70,6 +84,20 @@ extend google.protobuf.MethodOptions {
 }
 `;
 
+/**
+ * Defines the User Service proto.
+ *
+ * Summary: Protocol buffer definition for the User Service.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - string: The proto definition.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 export const USER_SERVICE_PROTO = `// Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
