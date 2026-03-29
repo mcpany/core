@@ -948,3 +948,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] Hardware-Locked Attention Persistence (HLAP)**: TPM-bound monotonic timers for normalizing state-update micro-timing. (Added: 2026-07-10)
 *   **[P0] Unified Teammate Discovery (UTD) Gateway**: High-speed, authenticated discovery hub for horizontal mesh formation. (Added: 2026-07-10)
 *   **[P0] Hierarchical Provenance Validator**: Implementation of Gemini-compliant recursive "Chain-of-Thought" hardware signing. (Added: 2026-07-10)
+
+#### Upcoming (2026-07-11 Evolution)
+*   **[P0] Dynamic Mesh Resilience (DMR) Hub**: Authoritative coordination service for re-sharding and migrating state between physical nodes upon subagent failure. (Added: 2026-07-11)
+*   **[P0] Hardware-Attested Cost Attribution (HACA)**: Advanced economic security service that cryptographically attributes token usage to specific sub-process lineage. (Added: 2026-07-11)
+*   **[P0] Ephemeral Registry Hook (ERH) Provider**: Security middleware mandating session-locked discovery schemas to neutralize registry persistence exploits. (Added: 2026-07-11)
+*   **[P1] Recursive Resource Reclamation (RRR) Manager**: Lifecycle management service for reclaiming unused token and reasoning budgets from dormant sub-missions. (Added: 2026-07-11)
