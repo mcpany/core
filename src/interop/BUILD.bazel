@@ -8,6 +8,7 @@ go_library(
         "bridge.go",
         "crewai.go",
         "openclaw.go",
+        "placeholder.go",
     ],
     importpath = "github.com/mcpany/core/src/interop",
     visibility = ["//visibility:public"],
@@ -15,6 +16,7 @@ go_library(
 
 go_test(
     name = "interop_test",
-    srcs = ["swarm_test.go"],
+    srcs = ["swarm_test.go",
+        "placeholder_test.go",],
     deps = [":interop"],
 )
