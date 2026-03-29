@@ -9,6 +9,7 @@ import (
 	"io"
 	"log/slog"
 	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -108,6 +109,19 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	if len(s.configPaths) == 0 && viper.IsSet("config") {
 		s.configPaths = getStringSlice("config")
 	}
+
+	// If running under Bazel, BUILD_WORKING_DIRECTORY is set.
+	// Resolve relative config paths against the directory from which Bazel was invoked
+	// to provide a smooth day-one experience for `bazelisk run ...`.
+	workingDir := os.Getenv("BUILD_WORKING_DIRECTORY")
+	if workingDir != "" {
+		for i, p := range s.configPaths {
+			if !filepath.IsAbs(p) && !strings.HasPrefix(p, "http://") && !strings.HasPrefix(p, "https://") {
+				s.configPaths[i] = filepath.Join(workingDir, p)
+			}
+		}
+	}
+
 	s.debug = viper.GetBool("debug")
 	s.logLevel = viper.GetString("log-level")
 
