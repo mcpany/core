@@ -11,6 +11,7 @@ go_library(
     deps = [
         "//proto/config/v1:config",
         "//server/pkg/auth",
+        "//server/pkg/metrics",
         "//server/pkg/prompt",
         "//server/pkg/resource",
         "//server/pkg/tool",

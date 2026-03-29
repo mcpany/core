@@ -189,7 +189,7 @@ var (
 )
 
 func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
-	logging.GetLogger().DebugContext(ctx, "executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, "application/json"))
+	logging.GetLogger().DebugContext(ctx, "executing tool", "tool", req.ToolName, "inputs", string(util.RedactJSON(req.ToolInputs)))
 	defer metrics.MeasureSince(metricWebsocketRequestLatency, time.Now())
 
 	wsPool, ok := pool.Get[*client.WebsocketClientWrapper](t.poolManager, t.serviceID)
