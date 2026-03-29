@@ -575,6 +575,7 @@ func (t *GRPCTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 // Side Effects:
 //   - Makes a gRPC call to the upstream service.
 func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	logging.GetLogger().Info("executing tool path", "tool", req.ToolName, "type", "grpc")
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
 	}
@@ -947,6 +948,7 @@ func (t *HTTPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 // Side Effects:
 //   - Makes an HTTP request to the upstream service.
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	logging.GetLogger().Info("executing tool path", "tool", req.ToolName, "type", "http")
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
 	}
@@ -1754,6 +1756,7 @@ func (t *MCPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-c
 // Side Effects:
 //   - Makes a call to a downstream MCP service.
 func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	logging.GetLogger().Info("executing tool path", "tool", req.ToolName, "type", "mcp")
 	if t.initError != nil {
 		return nil, t.initError
 	}
@@ -2097,6 +2100,7 @@ func (t *OpenAPITool) StreamExecute(ctx context.Context, req *ExecutionRequest) 
 // Side Effects:
 //   - Makes an HTTP request to the upstream service.
 func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
+	logging.GetLogger().Info("executing tool path", "tool", req.ToolName, "type", "openapi")
 	if t.initError != nil {
 		return nil, t.initError
 	}
@@ -2563,6 +2567,7 @@ func (t *LocalCommandTool) StreamExecute(ctx context.Context, req *ExecutionRequ
 // Side Effects:
 //   - Executes a local command line process.
 func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
+	logging.GetLogger().Info("executing tool path", "tool", req.ToolName, "type", "local_command")
 	if t.initError != nil {
 		return nil, t.initError
 	}
@@ -3042,6 +3047,7 @@ func (t *CommandTool) StreamExecute(ctx context.Context, req *ExecutionRequest) 
 // Side Effects:
 //   - Executes a local command line process, potentially in a container.
 func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
+	logging.GetLogger().Info("executing tool path", "tool", req.ToolName, "type", "command")
 	if t.initError != nil {
 		return nil, t.initError
 	}

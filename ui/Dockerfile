@@ -43,6 +43,8 @@ EXPOSE 3000
 ENV BACKEND_URL=http://localhost:50050
 ENV PORT=3000
 
+USER 65532:65532
+
 # `vite preview` serves the pre-built dist/ and proxies API paths to BACKEND_URL
 # as configured in the preview.proxy section of vite.config.ts.
 CMD ["node_modules/.bin/vite", "preview", "--host", "0.0.0.0", "--port", "3000"]
