@@ -774,3 +774,8 @@
 - [ ] **[P1] Attention Jitter Visualizer**: (2026-07-10) Real-time heatmap of HLAP-normalized state update micro-timing.
 - [ ] **[P0] UTD Mesh Topology**: (2026-07-10) Interactive map of teammate discovery beacons and horizontal swarm formation.
 - [ ] **[P0] Hierarchical Lineage Tracer**: (2026-07-10) Visual debugger for recursive, hardware-signed reasoning sub-steps.
+
+#### Upcoming (2026-07-11 Evolution)
+- [ ] **[P0] Cognitive Checkpoint Manager**: UI for manually triggering and managing TPM-bound swarm hibernation cycles. (Added: 2026-07-11)
+- [ ] **[P0] Attention-Shadowing Heatmap**: Forensic UI for visualizing noise-eviction attempts and hardware attention-lock status. (Added: 2026-07-11)
+- [ ] **[P1] Reasoning-Depth Tracker**: Real-time visual monitor for subagent cognitive depth and termination alerts. (Added: 2026-07-11)

@@ -948,3 +948,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] Hardware-Locked Attention Persistence (HLAP)**: TPM-bound monotonic timers for normalizing state-update micro-timing. (Added: 2026-07-10)
 *   **[P0] Unified Teammate Discovery (UTD) Gateway**: High-speed, authenticated discovery hub for horizontal mesh formation. (Added: 2026-07-10)
 *   **[P0] Hierarchical Provenance Validator**: Implementation of Gemini-compliant recursive "Chain-of-Thought" hardware signing. (Added: 2026-07-10)
+
+#### Upcoming (2026-07-11 Evolution)
+*   **[P0] Cognitive Checkpoint Broker (CCB)**: TPM-bound swarm hibernation and resumption service to support multi-day persistent missions. (Added: 2026-07-11)
+*   **[P0] Attention-Shadowing Firewall (ASF)**: Security middleware mandating hardware attention-locking to neutralize CVE-2026-10201. (Added: 2026-07-11)
+*   **[P0] Mesh-Resident Named Pipe Adapter**: Mandatory transition to isolated Docker-bound pipes for 40% latency reduction in inter-agent coordination. (Added: 2026-07-11)
+*   **[P1] Cognitive-Depth Enforcer (CDE)**: Real-time hardware-attested monitoring of reasoning depth to prevent "Refinement Spiral" DoS attacks. (Added: 2026-07-11)

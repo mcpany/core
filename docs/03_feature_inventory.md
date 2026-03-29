@@ -1756,3 +1756,14 @@
 ### Priority Shifts
 - **SRM Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Hierarchical Provenance** validation.
 - **Asynchronous Mailbox Sharding (AMS)**: (Re-affirmed P0) Now elevated with the requirement for **HLAP-compliant** timing normalization.
+
+## Evolution: [2026-07-11] Updates
+
+### Proposed Additions
+- **Cognitive Checkpoint Broker (CCB)**: (P0) Authoritative coordination service for TPM-bound swarm hibernation, enabling state resumption across multi-day missions without loss of lineage.
+- **Attention-Shadowing Firewall (ASF)**: (P0) Security middleware designed to detect and block high-entropy noise fragments attempting to evict mission-root anchors (CVE-2026-10201 defense).
+- **Cognitive-Depth Enforcer (CDE)**: (P1) Resource management service mandating hardware-attested reasoning depth limits (`x-gemini-cognitive-depth`) for all subagent spawns.
+
+### Priority Shifts
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving into the **Cognitive Checkpoint Broker** to support hardware-locked hibernation cycles.
+- **Isolated Named-Pipe Transport Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Mesh-Resident Docker binding** to achieve 40% latency reduction.
