@@ -1403,3 +1403,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Hardware-Attested Cost Attribution (HACA)**: To neutralize "Economic Squatting," we are upgrading the Reasoning-Budget Firewall to support HACA. This layer will cryptographically attribute every token and compute millisecond to its specific sub-process lineage, ensuring absolute economic accountability across the mesh.
 - **Ephemeral Registry Hook (ERH) Provider**: Supporting the Claude Code v3.2 standard, MCP Any will implement ERH. Discovery schemas will be issued as session-locked, ephemeral tokens that expire immediately post-discovery, neutralizing "Registry Persistence" exploits.
 - **Recursive Resource Reclamation (RRR)**: We are adopting the UACO v3.6 standard for resource management. MCP Any will act as the authoritative "Lease Reaper," allowing parent agents to forcefully reclaim unused token and reasoning budgets from dormant sub-missions in real-time.
+
+---
+
+## Strategic Evolution: [2026-07-12]
+### Focus: Hook Sovereignty & NHI Mesh Attestation
+**Context**: The disclosure of critical RCE vulnerabilities in Claude Code and Gemini CLI (CVE-2025-59536) confirm that **Configuration-as-Execution** is the new primary attack vector for agentic swarms. Simultaneously, the rise of hierarchical swarms where non-human identities (NHI) outnumber humans 82:1 demands that the "Universal Agent Bus" move beyond simple bridging to active **Hardware-Locked Hook Anchoring** and **NHI Identity Minting**.
+**Strategic Pivot**:
+- **Hardware-Locked Configuration Anchor (HLCA)**: MCP Any will evolve to mandate HLCA for all project-local configurations. We will implement HLCA, cryptographically binding lifecycle hooks and tool settings to a TPM-signed user session, ensuring that repository-committed malicious hooks cannot bypass security boundaries.
+- **NHI Identity Mint (NIM)**: To support secure NHI Mesh coordination, we are introducing NIM. This service will act as a SPIFFE-compatible identity provider, issuing hardware-attested, short-lived identity tokens to sub-agents, ensuring verifiable lineage and authority across heterogeneous framework boundaries.
+- **Hook Sovereignty Enforcer (HSE)**: Supporting the "Pre-Flight" safety model, MCP Any will implement HSE. This layer will perform mandatory, sandboxed static analysis and behavioral profiling of all configuration-defined hooks before they are deemed "Loadable," neutralizing "Silent Hacking" via un-vetted hooks.
+- **Zero-Trust Identity Mesh Gateway**: We are evolving the A2A Messaging Hub to act as the authoritative "Identity Mesh." Every inter-agent request must be authenticated via NIM-issued tokens, ensuring that a compromised worker agent cannot spoof its manager or exfiltrate mission-root secrets.

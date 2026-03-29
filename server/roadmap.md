@@ -954,3 +954,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Attested Cost Attribution (HACA)**: Advanced economic security service that cryptographically attributes token usage to specific sub-process lineage. (Added: 2026-07-11)
 *   **[P0] Ephemeral Registry Hook (ERH) Provider**: Security middleware mandating session-locked discovery schemas to neutralize registry persistence exploits. (Added: 2026-07-11)
 *   **[P1] Recursive Resource Reclamation (RRR) Manager**: Lifecycle management service for reclaiming unused token and reasoning budgets from dormant sub-missions. (Added: 2026-07-11)
+
+#### Upcoming (2026-07-12 Evolution)
+*   **[P0] Hardware-Locked Configuration Anchor (HLCA)**: Core security service cryptographically binding project settings and hooks to TPM-signed user sessions. (Added: 2026-07-12)
+*   **[P0] NHI Identity Mint (NIM)**: SPIFFE-compatible local identity provider issuing hardware-attested tokens for secure NHI Mesh coordination. (Added: 2026-07-12)
+*   **[P0] Hook Sovereignty Enforcer (HSE)**: Sandboxed static analysis and behavioral profiling service for all configuration-defined hooks. (Added: 2026-07-12)

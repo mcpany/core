@@ -1,5 +1,16 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-12] Updates
+
+### Proposed Additions
+- **Hardware-Locked Configuration Anchor (HLCA)**: (P0) Advanced security service that cryptographically binds project-local settings and lifecycle hooks to a TPM-signed user session.
+- **NHI Identity Mint (NIM)**: (P0) SPIFFE-compatible local identity provider issuing hardware-attested, short-lived tokens for sub-agent authentication in the mesh.
+- **Hook Sovereignty Enforcer (HSE)**: (P0) Sandboxed static analysis and behavioral profiling service for all configuration-defined hooks (e.g., Gemini/Claude hooks).
+
+### Priority Shifts
+- **NHI Lifecycle Governance Provider**: (Promoted to P0) Critical for supporting hardware-locked revocation within the NIM-issued token mesh.
+- **A2A Messaging Hub**: (Re-affirmed P0) Evolving into the **Zero-Trust Identity Mesh Gateway** for NIM-authenticated inter-agent requests.
+
 ## Evolution: [2026-07-11] Updates
 
 ### Proposed Additions

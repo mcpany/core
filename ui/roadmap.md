@@ -780,3 +780,8 @@
 - [ ] **[P0] Economic Attribution Viewer**: (2026-07-11) Visual tracker for hardware-attested cost attribution (HACA) across subagent lineages.
 - [ ] **[P0] Ephemeral Hook Monitor**: (2026-07-11) Status widget for monitoring session-locked discovery hooks and their expiration.
 - [ ] **[P1] Resource Reclamation Log**: (2026-07-11) Real-time tracker for RRR-triggered budget reclaims and mission efficiency gains.
+
+#### Upcoming (2026-07-12 Evolution)
+- [ ] **[P0] HLCA Configuration Anchor Manager**: (2026-07-12) UI for reviewing and hardware-signing project-local settings and hooks.
+- [ ] **[P0] NHI Identity Mesh Monitor**: (2026-07-12) Real-time visualization of SPIFFE-compatible identity issuance and sub-agent lineage.
+- [ ] **[P0] Hook Sovereignty Alert Center**: (2026-07-12) Security workspace for reviewing sandboxed hook profiling results and HSE safety scores.
