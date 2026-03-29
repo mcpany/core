@@ -56,3 +56,11 @@ The Dynamic Mesh Resilience (DMR) Hub evolves MCP Any from a static gateway into
 
 ## 7. Evolutionary Changelog
 * **2026-07-11:** Initial Document Creation.
+
+### Update: 2026-07-12 - Non-Blocking State Migration
+**Context:** Today's market sync revealed that synchronous state migration is the primary cause of coordination stalls (2s+) in high-density meshes during node failure.
+**Architecture Adjustment:**
+* Transitioning the "Emergency State Migration" protocol from synchronous to non-blocking.
+* Introducing a "Graceful Handoff" state where the source shard remains readable while the target shard is speculatively prepared.
+* Integrating the Speculative Shard Synchronizer to pre-attest destination buffers.
+**Security Impact:** Reduces the window of vulnerability during migration where state could be intercepted or "ghosted" due to timing variations.

@@ -1768,3 +1768,13 @@
 ### Priority Shifts
 - **SRM Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Hierarchical Provenance** validation.
 - **Asynchronous Mailbox Sharding (AMS)**: (Re-affirmed P0) Now elevated with the requirement for **HLAP-compliant** timing normalization.
+
+## Evolution: [2026-07-12] Updates
+
+### Proposed Additions
+- **Low-Latency Shard Migrator**: (P0) High-performance coordination service implementing non-blocking state migration for the DMR Hub.
+- **Mission-Bound Economic Enforcer**: (P0) Dynamic resource management middleware that throttles subagent agency based on HACA signals.
+- **Speculative Shard Synchronizer**: (P1) Performance-optimizing middleware for predictive shard handoffs during mesh re-balancing.
+
+### Priority Shifts
+- **Recursive Resource Reclamation (RRR) Manager**: (Promoted to P0) Now critical for active mesh re-balancing and preventing resource squatting during node failures.

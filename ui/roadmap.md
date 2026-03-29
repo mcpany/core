@@ -780,3 +780,7 @@
 - [ ] **[P0] Economic Attribution Viewer**: (2026-07-11) Visual tracker for hardware-attested cost attribution (HACA) across subagent lineages.
 - [ ] **[P0] Ephemeral Hook Monitor**: (2026-07-11) Status widget for monitoring session-locked discovery hooks and their expiration.
 - [ ] **[P1] Resource Reclamation Log**: (2026-07-11) Real-time tracker for RRR-triggered budget reclaims and mission efficiency gains.
+
+#### Upcoming (2026-07-12 Evolution)
+- [ ] **[P0] Mesh Migration Monitor**: Real-time visualization of shard migration events, destination pre-attestation, and coordination latency metrics. (Added: 2026-07-12)
+- [ ] **[P0] Resource Accountability Dashboard**: Hierarchical visualization of hardware-attested cost attribution (HACA) across subagent lineages. (Added: 2026-07-12)
