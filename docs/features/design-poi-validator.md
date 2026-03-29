@@ -69,3 +69,11 @@ With the rise of "Context-Mirroring" attacks (CVE-2026-34015), it's no longer en
     * Mandatory **Relational PoI Chain** verification for every tool call.
     * Introduction of "Lineage-Bound Scoping" where subagent capabilities are dynamically restricted based on the most restrictive intent in its parentage chain.
     **Security Impact:** Eliminates "Intent Ghosting" by ensuring no unauthorized intent can shadow the mission root.
+
+### Update: 2026-03-29 - UACO v2.0 & Relational Intent Scoping (RIS)
+**Context:** The disclosure of "Identity Shadowing" (CVE-2026-45001) proves that session nonces are no longer sufficient to prevent subagent hijacking. Simultaneously, regulatory pressure from the EU AI Act demands stronger proof of intent lineage.
+**Architecture Adjustment:**
+* Transitioning from flat intent chains to **Hierarchical Intent Trees** based on UACO v2.0 RIS.
+* Every tool call must be validated against the most restrictive intent in its entire parentage path.
+* Introducing "Context Pinning" to prevent binary smearing during intent-scoping checks.
+**Security Impact:** Neutralizes Identity Shadowing and satisfies EU AI Act "Audit Lineage" requirements.

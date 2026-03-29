@@ -954,3 +954,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Attested Cost Attribution (HACA)**: Advanced economic security service that cryptographically attributes token usage to specific sub-process lineage. (Added: 2026-07-11)
 *   **[P0] Ephemeral Registry Hook (ERH) Provider**: Security middleware mandating session-locked discovery schemas to neutralize registry persistence exploits. (Added: 2026-07-11)
 *   **[P1] Recursive Resource Reclamation (RRR) Manager**: Lifecycle management service for reclaiming unused token and reasoning budgets from dormant sub-missions. (Added: 2026-07-11)
+
+#### Upcoming (2026-03-29 Evolution - Architectural Sync)
+*   **[P0] Regulatory Compliance Hub (RCH)**: Implementation of FINRA/EU AI Act-compliant hash-chained audit trails. (Added: 2026-03-29)
+*   **[P0] Action-Chain Provenance (ACP)**: Monotonic action-chaining for all agent decisions to prevent audit tampering. (Added: 2026-03-29)
+*   **[P1] Adaptive HITL Arbiter**: Risk-aware middleware for dynamic manual approval triggers based on mission criticality. (Added: 2026-03-29)
+*   **[P1] Proactive State Alignment (PSA)**: Background heartbeat for synchronizing agent monologue with global Blackboard. (Added: 2026-03-29)

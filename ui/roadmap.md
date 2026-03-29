@@ -780,3 +780,8 @@
 - [ ] **[P0] Economic Attribution Viewer**: (2026-07-11) Visual tracker for hardware-attested cost attribution (HACA) across subagent lineages.
 - [ ] **[P0] Ephemeral Hook Monitor**: (2026-07-11) Status widget for monitoring session-locked discovery hooks and their expiration.
 - [ ] **[P1] Resource Reclamation Log**: (2026-07-11) Real-time tracker for RRR-triggered budget reclaims and mission efficiency gains.
+
+#### Upcoming (2026-03-29 Evolution - Architectural Sync)
+- [ ] **[P0] Compliance Audit Explorer**: Forensic UI for reviewing hash-chained agent action lineages. (Added: 2026-03-29)
+- [ ] **[P1] Adaptive Approval Console**: Smart HITL interface highlighting high-risk actions vs. auto-authorized reads. (Added: 2026-03-29)
+- [ ] **[P1] State Alignment Heartbeat Widget**: Real-time visual for PSA synchronization status and drift scores. (Added: 2026-03-29)

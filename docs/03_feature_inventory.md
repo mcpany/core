@@ -1768,3 +1768,15 @@
 ### Priority Shifts
 - **SRM Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Hierarchical Provenance** validation.
 - **Asynchronous Mailbox Sharding (AMS)**: (Re-affirmed P0) Now elevated with the requirement for **HLAP-compliant** timing normalization.
+
+## Evolution: [2026-03-29] (Architectural Deep-Dive) Updates
+
+### Proposed Additions
+- **Regulatory Compliance Hub (RCH)**: (P0) Authoritative service for FINRA/EU AI Act-compliant audit trails, providing hash-chained action logs and automated "Separation of Duties" validation.
+- **Adaptive HITL Arbiter**: (P1) Risk-aware governance middleware that dynamically adjusts human checkpoint requirements based on real-time mission criticality and tool risk scores.
+- **Action-Chain Provenance (ACP) Provider**: (P0) Security service mandating cryptographically bound monotonic action-chains for all agent decisions to prevent audit log tampering.
+- **UACO v2.0 RIS Validator**: (P0) Implementation of Relational Intent Scoping to neutralize Identity Shadowing via hierarchical intent tree enforcement.
+
+### Priority Shifts
+- **HITL Middleware**: (Re-affirmed P0) Evolving into the **Adaptive HITL Arbiter** to address community approval fatigue.
+- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Now elevated with the requirement for **Action-Chain** integration to ensure state-change auditability.
