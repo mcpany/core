@@ -7,6 +7,7 @@ go_library(
         "autogen.go",
         "bridge.go",
         "crewai.go",
+        "haca.go",
         "openclaw.go",
     ],
     importpath = "github.com/mcpany/core/src/interop",
@@ -15,6 +16,9 @@ go_library(
 
 go_test(
     name = "interop_test",
-    srcs = ["swarm_test.go"],
+    srcs = [
+        "haca_test.go",
+        "swarm_test.go",
+    ],
     deps = [":interop"],
 )
