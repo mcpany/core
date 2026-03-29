@@ -70,7 +70,7 @@ const DEFAULT_LAYOUT: WidgetInstance[] = WIDGET_DEFINITIONS.map(def => ({
     type: def.type,
     title: def.title,
     size: def.defaultSize,
-    hidden: false
+    hidden: !["metrics", "network-topology", "service-health", "recent-activity", "request-volume"].includes(def.type)
 }));
 
 const getColSpan = (size: WidgetSize) => {

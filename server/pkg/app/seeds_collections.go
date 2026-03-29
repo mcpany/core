@@ -48,5 +48,48 @@ func init() {
 				mkTemplate("github", "GitHub Tools", "{}", "npx -y @modelcontextprotocol/server-github"),
 			},
 		}.Build(),
+		configv1.Collection_builder{
+			Name:        proto.String("Gold Standard Demo"),
+			Description: proto.String("A curated 'Apple-level' demonstration stack to populate Network Topology and Metrics."),
+			Version:     proto.String("1.0.0"),
+			Services: []*configv1.UpstreamServiceConfig{
+				mkTemplate(
+					"memory",
+					"Memory Agent",
+					"{}",
+					"npx -y @modelcontextprotocol/server-memory",
+				),
+				mkTemplate(
+					"slack",
+					"Slack Integration",
+					"{}",
+					"npx -y @modelcontextprotocol/server-slack",
+				),
+				mkTemplate(
+					"github-demo",
+					"GitHub Demo",
+					"{}",
+					"npx -y @modelcontextprotocol/server-github",
+				),
+				mkTemplate(
+					"sqlite-demo",
+					"SQLite Database",
+					`{
+  "type": "object",
+  "title": "SQLite Configuration",
+  "properties": {
+    "DB_PATH": {
+      "type": "string",
+      "title": "Database Path",
+      "description": "Path to SQLite database file",
+      "default": "./data.db"
+    }
+  },
+  "required": ["DB_PATH"]
+}`,
+					"npx -y @modelcontextprotocol/server-sqlite ${DB_PATH}",
+				),
+			},
+		}.Build(),
 	}
 }

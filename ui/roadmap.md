@@ -780,3 +780,4 @@
 - [ ] **[P0] Economic Attribution Viewer**: (2026-07-11) Visual tracker for hardware-attested cost attribution (HACA) across subagent lineages.
 - [ ] **[P0] Ephemeral Hook Monitor**: (2026-07-11) Status widget for monitoring session-locked discovery hooks and their expiration.
 - [ ] **[P1] Resource Reclamation Log**: (2026-07-11) Real-time tracker for RRR-triggered budget reclaims and mission efficiency gains.
+- [x] Implement 'Apple-level' curated default dashboard layout (removed WIDGET_DEFINITIONS dump).
