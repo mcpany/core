@@ -5,26 +5,6 @@
 
 **Why does it exist?** It allows you to configure everything through lightweight YAML/JSON configurations to capability-enable different APIs (REST, gRPC, GraphQL, Command-line) and run a single `mcpany` server instance that acts as a secure, universal bridge. Instead of writing custom boilerplate adapters for each service, you configure MCP Any to handle it automatically.
 
-## Architecture
-MCP Any relies on a "Configuration over Code" pattern. Users deploy a single binary which reads dynamically loaded capability definitions. The architecture supports gRPC, OpenAPI, HTTP, GraphQL, and CLI tools.
-
-Key architectural features include:
-- **Dynamic Tool Registration**: Discovers tools automatically from Proto, OpenAPI specs, or Reflection.
-- **Safety Policies**: Pluggable middlewares that block dangerous operations or restrict URL access (e.g. Audit, DLP, Rate Limiting).
-- **Upstream Authentication**: Handles authentication transparently to connected capabilities (API keys, mTLS, Bearer tokens).
-- **Multi-Tenant**: Supports complex multi-user/multi-profile isolation.
-
-### High-Level Flow
-```mermaid
-graph TD
-    A[Client Application (LLM/Agent)] --> B(MCP Any Adapter)
-    B --> C{Capability Configuration}
-    C -->|REST/OpenAPI| D[REST API]
-    C -->|gRPC| E[gRPC Service]
-    C -->|GraphQL| F[GraphQL Endpoint]
-    C -->|CLI| G[Command Line Tool]
-```
-
 ## Quick Start
 
 Follow these steps to go from `git clone` to `Hello World`.
@@ -70,6 +50,26 @@ We use `make` and `bazelisk` for common development tasks.
   ```bash
   bazelisk build //server/cmd/mcpany
   ```
+
+## Architecture
+MCP Any relies on a "Configuration over Code" pattern. Users deploy a single binary which reads dynamically loaded capability definitions. The architecture supports gRPC, OpenAPI, HTTP, GraphQL, and CLI tools.
+
+Key architectural features include:
+- **Dynamic Tool Registration**: Discovers tools automatically from Proto, OpenAPI specs, or Reflection.
+- **Safety Policies**: Pluggable middlewares that block dangerous operations or restrict URL access (e.g. Audit, DLP, Rate Limiting).
+- **Upstream Authentication**: Handles authentication transparently to connected capabilities (API keys, mTLS, Bearer tokens).
+- **Multi-Tenant**: Supports complex multi-user/multi-profile isolation.
+
+### High-Level Flow
+```mermaid
+graph TD
+    A[Client Application (LLM/Agent)] --> B(MCP Any Adapter)
+    B --> C{Capability Configuration}
+    C -->|REST/OpenAPI| D[REST API]
+    C -->|gRPC| E[gRPC Service]
+    C -->|GraphQL| F[GraphQL Endpoint]
+    C -->|CLI| G[Command Line Tool]
+```
 
 ## Configuration
 
