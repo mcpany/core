@@ -140,7 +140,7 @@ export function RecentActivityWidget() {
                     const isExpanded = expandedTraceId === trace.id;
                     const isSuccess = trace.status === 'success';
                     const isError = trace.status === 'error';
-                    const hasResponseDiff = trace.rootSpan.attributes?.['mcp.response_diff'] !== undefined;
+                    const hasResponseDiff = trace.rootSpan.input?.['mcp.response_diff'] !== undefined;
 
                     return (
                         <div key={trace.id} className="relative group">
@@ -199,7 +199,7 @@ export function RecentActivityWidget() {
                                     {/* Subtitle / Service Info */}
                                     <div className="text-xs text-muted-foreground truncate flex items-center gap-1.5">
                                         <span className="font-mono bg-muted px-1 py-0.5 rounded text-[10px]">
-                                            {trace.rootSpan.attributes?.['mcp.service_id'] || 'unknown-service'}
+                                            {trace.rootSpan.serviceName || 'unknown-service'}
                                         </span>
                                         {hasResponseDiff && (
                                             <Badge variant="outline" className="text-[9px] h-3.5 px-1 border-blue-500/30 text-blue-500 bg-blue-500/5">Diff Available</Badge>
@@ -214,39 +214,39 @@ export function RecentActivityWidget() {
                                     )}>
                                         <div className="overflow-hidden space-y-3">
                                             {/* Request Payload */}
-                                            {trace.rootSpan.attributes?.['mcp.request_payload'] && (
+                                            {trace.rootSpan.input && (
                                                 <div className="space-y-1.5">
                                                     <div className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
                                                         <Code2 className="h-3 w-3" /> Request
                                                     </div>
                                                     <div className="bg-muted/50 rounded-md border border-border/50 overflow-hidden">
-                                                        <JsonView data={safeParsePayload(trace.rootSpan.attributes['mcp.request_payload'])} maxHeight={400} smartTable={true} />
+                                                        <JsonView data={safeParsePayload(trace.rootSpan.input)} maxHeight={400} smartTable={true} />
                                                     </div>
                                                 </div>
                                             )}
 
                                             {/* Error Message */}
-                                            {isError && trace.rootSpan.attributes?.['error.message'] && (
+                                            {isError && trace.rootSpan.errorMessage && (
                                                 <div className="space-y-1.5">
                                                     <div className="text-xs font-medium text-destructive flex items-center gap-1.5">
                                                         <XCircle className="h-3 w-3" /> Error Details
                                                     </div>
                                                     <div className="bg-destructive/10 rounded-md p-2 border border-destructive/20 overflow-x-auto text-destructive">
                                                         <pre className="text-[11px] font-mono whitespace-pre-wrap break-all">
-                                                            {trace.rootSpan.attributes['error.message']}
+                                                            {trace.rootSpan.errorMessage}
                                                         </pre>
                                                     </div>
                                                 </div>
                                             )}
 
                                             {/* Response Payload (if not diff) */}
-                                            {!hasResponseDiff && trace.rootSpan.attributes?.['mcp.response_payload'] && !isError && (
+                                            {!hasResponseDiff && trace.rootSpan.output && !isError && (
                                                 <div className="space-y-1.5">
                                                     <div className="text-xs font-medium text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                                                         <CheckCircle2 className="h-3 w-3" /> Response
                                                     </div>
                                                     <div className="bg-emerald-500/5 rounded-md border border-emerald-500/20 overflow-hidden">
-                                                        <JsonView data={safeParsePayload(trace.rootSpan.attributes['mcp.response_payload'])} maxHeight={400} smartTable={true} />
+                                                        <JsonView data={safeParsePayload(trace.rootSpan.output)} maxHeight={400} smartTable={true} />
                                                     </div>
                                                 </div>
                                             )}
@@ -259,8 +259,8 @@ export function RecentActivityWidget() {
                                                     </div>
                                                     <div className="bg-background rounded-md border border-border overflow-hidden">
                                                         <pre className="text-[11px] font-mono whitespace-pre-wrap break-all m-0">
-                                                            {/* Mock rendering of a unified diff */}
-                                                            {String(trace.rootSpan.attributes['mcp.response_diff']).split('\n').map((line, i) => {
+                                                            {/* Render unified diff securely */}
+                                                            {String(trace.rootSpan.input['mcp.response_diff']).split('\n').map((line, i) => {
                                                                 if (line.startsWith('+')) {
                                                                     return <div key={i} className="bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 px-2 py-0.5">{line}</div>;
                                                                 }
