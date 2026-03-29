@@ -780,3 +780,9 @@
 - [ ] **[P0] Economic Attribution Viewer**: (2026-07-11) Visual tracker for hardware-attested cost attribution (HACA) across subagent lineages.
 - [ ] **[P0] Ephemeral Hook Monitor**: (2026-07-11) Status widget for monitoring session-locked discovery hooks and their expiration.
 - [ ] **[P1] Resource Reclamation Log**: (2026-07-11) Real-time tracker for RRR-triggered budget reclaims and mission efficiency gains.
+
+#### Upcoming (2026-07-12 Evolution)
+- [ ] **[P0] Probabilistic Attestation Dashboard**: Visualize real-time risk scores and attestation scaling events. (Added: 2026-07-12)
+- [ ] **[P0] MFS Integrity Widget**: Real-time monitor for hardware memory fence status and clock-drift synchronization. (Added: 2026-07-12)
+- [ ] **[P1] P2P Beacon Discovery Map**: Visual tracker for ad-hoc teammate formation and encrypted UDP broadcasts. (Added: 2026-07-12)
+- [ ] **[P1] Resource Locking Gantt Chart**: Visualizer for pre-emptive Blackboard locks and circular dependency prevention. (Added: 2026-07-12)

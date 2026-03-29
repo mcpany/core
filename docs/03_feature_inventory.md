@@ -1768,3 +1768,15 @@
 ### Priority Shifts
 - **SRM Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Hierarchical Provenance** validation.
 - **Asynchronous Mailbox Sharding (AMS)**: (Re-affirmed P0) Now elevated with the requirement for **HLAP-compliant** timing normalization.
+
+## Evolution: [2026-07-12] Updates
+
+### Proposed Additions
+- **Probabilistic Attestation Gate (PAG)**: (P0) Authoritative risk-broker service that dynamically scales attestation frequency based on real-time tool risk and reasoning confidence.
+- **Memory-Fence Sanitization (MFS) Provider**: (P0) Hardware-bound security service forcing memory fences and clock synchronization to neutralize timing-drift injections.
+- **P2P Discovery Governance Node**: (P1) Stealth governance service for monitoring and authorizing ad-hoc teammate formation via encrypted UDP beacons.
+- **Pre-emptive Resource Locker**: (P1) Intent-aware concurrency control service for the Blackboard to resolve coordination deadlocks in deep meshes.
+
+### Priority Shifts
+- **Stylometric Identity Anchoring (SIA)**: (Re-affirmed P0) Now elevated with the requirement for **Structural Reasoning-Path Verification**.
+- **Hardware-Locked Attention Persistence (HLAP)**: (Re-affirmed P1) Elevated to support **Monotonic Clock-Drift Compensation** (MFS integration).
