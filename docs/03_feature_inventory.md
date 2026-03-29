@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-12] Updates
+
+### Proposed Additions
+- **Multi-Master Consensus Sharding (MMCS) Hub**: (P0) Authoritative coordination service for decentralized, multi-writer state synchronization in global meshes.
+- **Reasoning-Path Watermarking (RPW) Provider**: (P0) Security service for verifying cryptographically embedded watermarks in agent reasoning fragments for non-repudiable attribution.
+- **Mailbox Injection Shield v2**: (P0) Semantic security middleware for AMS shards to detect and block "Mailbox-Splicing" exfiltration patterns.
+- **Task-Bound Capability Masking (TCM) Provider**: (P0) Advanced discovery service that hides tool schemas until task-claim verification.
+
+### Priority Shifts
+- **Asynchronous Mailbox Sharding (AMS)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Mailbox-Splicing** defense.
+- **Command Traceability Provider (CTP)**: (Re-affirmed P0) Elevated to support **UACO v3.7** Atomic Attribution Proofs.
+
 ## Evolution: [2026-07-11] Updates
 
 ### Proposed Additions

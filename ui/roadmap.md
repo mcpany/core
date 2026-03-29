@@ -775,6 +775,12 @@
 - [ ] **[P0] UTD Mesh Topology**: (2026-07-10) Interactive map of teammate discovery beacons and horizontal swarm formation.
 - [ ] **[P0] Hierarchical Lineage Tracer**: (2026-07-10) Visual debugger for recursive, hardware-signed reasoning sub-steps.
 
+#### Upcoming (2026-07-12 Evolution)
+- [ ] **[P0] MMCS Consensus Visualizer**: (2026-07-12) Real-time visualization of multi-master shard consensus and conflict resolution status.
+- [ ] **[P0] Reasoning Watermark Inspector**: (2026-07-12) Forensic UI for verifying cryptographically embedded watermarks in agent reasoning traces.
+- [ ] **[P0] Mailbox Injection Alert Hub**: (2026-07-12) Real-time monitoring of semantic injection attempts in teammate mailboxes.
+- [ ] **[P0] Capability Masking Dashboard**: (2026-07-12) UI for reviewing task-bound tool schemas and masked capability status.
+
 #### Upcoming (2026-07-11 Evolution)
 - [ ] **[P0] Mesh Resilience Dashboard**: (2026-07-11) Real-time visualization of state shard migration and physical node health.
 - [ ] **[P0] Economic Attribution Viewer**: (2026-07-11) Visual tracker for hardware-attested cost attribution (HACA) across subagent lineages.
