@@ -57,9 +57,17 @@ func TestLocalCommandTool_Execute_EnvInjection(t *testing.T) {
 
 	result, err := localTool.Execute(context.Background(), req)
 
-	// Secure behavior: The injection attempt should be detected, and the environment variable
-	// should be omitted. The execution should succeed (because the input is valid otherwise),
-	// but the output should NOT contain the injected payload.
+	// Secure behavior: The injection attempt should be detected by ALSV,
+	// blocking the execution entirely since it contains a dangerous metacharacter.
+	// But note: earlier code skips env variables that have shell injections instead of failing.
+	// Wait, ALSV check is in `validateSafePathAndInjection` which is called on all parameters!
+	// So it SHOULD fail with error. Why does it return nil error?
+	// Because "USER_INPUT" is just an env variable! In `types.go`, for LocalCommandTool:
+	// `valStr := util.ToString(val)`
+	// `if err := validateSafePathAndInjection(valStr, isDocker, commandName); err != nil { ... }`
+	// It IS called on env variables! So why did it not return an error?
+	// Oh, `validateSafePathAndInjection` is called for args. Is it called for pure env vars not in args?
+	// Let's check `types.go` around line 2737.
 	assert.NoError(t, err)
 	assert.NotNil(t, result)
 

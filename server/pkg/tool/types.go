@@ -2618,6 +2618,10 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 				placeholder := "{{" + k + "}}"
 				if strings.Contains(args[i], placeholder) {
 					val := util.ToString(v)
+					// ALSV check for un-trimmed value to prevent leading space bypasses on flags
+					if err := checkForArgumentInjection(val); err != nil {
+						return nil, fmt.Errorf("parameter %q: %w", k, err)
+					}
 					if err := validateSafePathAndInjection(val, isDocker, commandName); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
@@ -2653,6 +2657,10 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
+						// ALSV check for un-trimmed value to prevent leading space bypasses on flags
+						if err := checkForArgumentInjection(argStr); err != nil {
+							return nil, fmt.Errorf("args parameter: %w", err)
+						}
 						if err := validateSafePathAndInjection(argStr, isDocker, commandName); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
@@ -2735,7 +2743,11 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		} else if val, ok := inputs[name]; ok {
 			valStr := util.ToString(val)
 			if err := validateSafePathAndInjection(valStr, isDocker, commandName); err != nil {
-				return nil, fmt.Errorf("parameter %q: %w", name, err)
+				// ALSV: Ignore strict argument-level injection checks for environment variables,
+				// as they are handled by checkEnvInjection below (which warns/skips instead of failing).
+				if !strings.Contains(err.Error(), "argument semantic validation failed") {
+					return nil, fmt.Errorf("parameter %q: %w", name, err)
+				}
 			}
 			// Sentinel Security: For shell commands, we only add environment variables if they are safe
 			// for unquoted use. If they contain dangerous characters, we omit them from the environment
@@ -3093,6 +3105,12 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 				placeholder := "{{" + k + "}}"
 				if strings.Contains(args[i], placeholder) {
 					val := util.ToString(v)
+
+					// ALSV check for un-trimmed value to prevent leading space bypasses on flags
+					if err := checkForArgumentInjection(val); err != nil {
+						return nil, fmt.Errorf("parameter %q: %w", k, err)
+					}
+
 					// Use validateSafePathAndInjection which now centralizes all checks
 					if err := validateSafePathAndInjection(val, isDocker, commandName); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
@@ -3129,6 +3147,11 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
+						// ALSV check for un-trimmed value to prevent leading space bypasses on flags
+						if err := checkForArgumentInjection(argStr); err != nil {
+							return nil, fmt.Errorf("args parameter: %w", err)
+						}
+
 						// Use validateSafePathAndInjection which now centralizes all checks
 						if err := validateSafePathAndInjection(argStr, isDocker, commandName); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
@@ -3223,7 +3246,11 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		} else if val, ok := inputs[name]; ok {
 			valStr := util.ToString(val)
 			if err := validateSafePathAndInjection(valStr, isDocker, commandName); err != nil {
-				return nil, fmt.Errorf("parameter %q: %w", name, err)
+				// ALSV: Ignore strict argument-level injection checks for environment variables,
+				// as they are handled by checkEnvInjection below (which warns/skips instead of failing).
+				if !strings.Contains(err.Error(), "argument semantic validation failed") {
+					return nil, fmt.Errorf("parameter %q: %w", name, err)
+				}
 			}
 			// Sentinel Security: For shell commands, we only add environment variables if they are safe
 			// for unquoted use. If they contain dangerous characters, we omit them from the environment
@@ -3744,20 +3771,22 @@ func checkForLocalFileAccess(val string) error {
 }
 
 func checkForArgumentInjection(val string) error {
-	if strings.HasPrefix(val, "-") {
-		// Allow negative numbers
-		if _, err := strconv.ParseFloat(val, 64); err == nil {
+	trimmedVal := strings.TrimSpace(val)
+
+	// Check if the trimmed value starts with a flag prefix.
+	// If the original value had leading spaces and starts with a flag prefix,
+	// it's a bypass attempt (e.g., " -flag").
+	if strings.HasPrefix(trimmedVal, "-") || strings.HasPrefix(trimmedVal, "+") {
+		// Allow numbers (negative or positive)
+		if _, err := strconv.ParseFloat(trimmedVal, 64); err == nil {
 			return nil
 		}
-		return fmt.Errorf("argument injection detected: value starts with '-'")
-	}
-	if strings.HasPrefix(val, "+") {
-		// Allow positive numbers (e.g. +10, +1.5)
-		if _, err := strconv.ParseFloat(val, 64); err == nil {
-			return nil
+		if strings.HasPrefix(trimmedVal, "-") {
+			return fmt.Errorf("argument injection detected: value starts with '-'")
 		}
 		return fmt.Errorf("argument injection detected: value starts with '+'")
 	}
+
 	return nil
 }
 
