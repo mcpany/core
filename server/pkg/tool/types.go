@@ -3563,6 +3563,7 @@ func isSensitiveHeader(key string) bool {
 }
 
 func checkForPathTraversal(val string) error {
+	val = strings.TrimSpace(val)
 	if val == ".." {
 		return fmt.Errorf("path traversal attempt detected")
 	}
@@ -3725,6 +3726,7 @@ func cleanPathPreserveDoubleSlash(p string) string {
 }
 
 func checkForLocalFileAccess(val string) error {
+	val = strings.TrimSpace(val)
 	if filepath.IsAbs(val) {
 		return fmt.Errorf("absolute path detected: %s (only relative paths are allowed for local execution)", val)
 	}
@@ -3744,6 +3746,7 @@ func checkForLocalFileAccess(val string) error {
 }
 
 func checkForArgumentInjection(val string) error {
+	val = strings.TrimSpace(val)
 	if strings.HasPrefix(val, "-") {
 		// Allow negative numbers
 		if _, err := strconv.ParseFloat(val, 64); err == nil {

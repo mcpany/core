@@ -11,6 +11,8 @@ import (
 	"net"
 	"os/exec"
 	"sync"
+	"syscall"
+	"runtime"
 
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/image"
@@ -131,6 +133,9 @@ func (e *localExecutor) Execute(ctx context.Context, command string, args []stri
 	cmd := exec.CommandContext(ctx, command, args...)
 	cmd.Dir = workingDir
 	cmd.Env = env
+	if runtime.GOOS != "windows" {
+		cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
+	}
 
 	outR, outW := io.Pipe()
 	errR, errW := io.Pipe()
@@ -196,6 +201,9 @@ func (e *localExecutor) ExecuteWithStdIO(ctx context.Context, command string, ar
 	cmd := exec.CommandContext(ctx, command, args...)
 	cmd.Dir = workingDir
 	cmd.Env = env
+	if runtime.GOOS != "windows" {
+		cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
+	}
 
 	// Use io.Pipe to avoid race condition where cmd.Wait() closes pipes before we are done reading
 	stdinR, stdinW := io.Pipe()
@@ -298,7 +306,13 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 		Tty:        false,
 	}
 
-	hostConfig := &container.HostConfig{}
+	hostConfig := &container.HostConfig{
+		Resources: container.Resources{
+			Memory:   256 * 1024 * 1024, // 256MB
+			NanoCPUs: 1000000000,        // 1 CPU
+			PidsLimit: func() *int64 { i := int64(100); return &i }(),
+		},
+	}
 	if e.containerEnv.GetVolumes() != nil {
 		for dest, src := range e.containerEnv.GetVolumes() {
 			// Validate host path (dest) to prevent mounting sensitive directories
@@ -439,7 +453,13 @@ func (e *dockerExecutor) ExecuteWithStdIO(ctx context.Context, command string, a
 		AttachStderr: true,
 	}
 
-	hostConfig := &container.HostConfig{}
+	hostConfig := &container.HostConfig{
+		Resources: container.Resources{
+			Memory:   256 * 1024 * 1024, // 256MB
+			NanoCPUs: 1000000000,        // 1 CPU
+			PidsLimit: func() *int64 { i := int64(100); return &i }(),
+		},
+	}
 	if e.containerEnv.GetVolumes() != nil {
 		for dest, src := range e.containerEnv.GetVolumes() {
 			// Validate host path (dest) to prevent mounting sensitive directories

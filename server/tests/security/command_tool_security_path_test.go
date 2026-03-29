@@ -74,4 +74,15 @@ func TestCommandTool_Execute_PathTraversal_Comprehensive(t *testing.T) {
 	if assert.Error(t, err3) {
 		assert.Contains(t, err3.Error(), "argument injection detected")
 	}
+
+	// Regression test: Attempts an exploit with padded whitespace that should be blocked
+	req4 := &tool.ExecutionRequest{
+		ToolName:   "cmd-tool",
+		ToolInputs: []byte(`{"env_var": " ../etc/passwd"}`),
+	}
+
+	_, err4 := cmdTool.Execute(context.Background(), req4)
+	if assert.Error(t, err4) {
+		assert.Contains(t, err4.Error(), "path traversal attempt detected")
+	}
 }
