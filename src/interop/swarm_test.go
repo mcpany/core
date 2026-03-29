@@ -199,6 +199,37 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 			}
 		}
 	})
+<<<<<<< HEAD
+
+	// 7. Streaming Task Test
+	t.Run("OpenClaw_Streaming", func(t *testing.T) {
+		taskStream := &interop.Task{
+			ID:        "task-oc-stream",
+			Framework: "OpenClaw",
+			Intent:    "adaptive_reasoning",
+			Payload:   map[string]string{"context": "streaming_data", "stream": "true"},
+		}
+
+		resStream, err := hub.RouteTask(ctx, taskStream)
+		if err != nil {
+			t.Fatalf("Failed to execute OpenClaw streaming task: %v", err)
+		}
+
+		if resStream.Stream == nil {
+			t.Fatal("Expected Stream channel to be populated")
+		}
+
+		chunks := []string{}
+		for chunk := range resStream.Stream {
+			chunks = append(chunks, chunk)
+		}
+
+		if len(chunks) != 2 {
+			t.Errorf("Expected 2 chunks, got %d", len(chunks))
+		}
+	})
+=======
+>>>>>>> 1cf24f72 (Strategic Evolution: Dynamic Mesh Resilience & Economic Attribution (#7282))
 }
 
 // Helper to access registered adapters for testing interface direct calls

@@ -95,7 +95,11 @@ func (a *OpenClawAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResu
 	a.CurrentEpoch++
 	output := fmt.Sprintf("Executed OpenClaw task: %s, Epoch: %d", task.Intent, a.CurrentEpoch)
 
+<<<<<<< HEAD
+	res := &TaskResult{
+=======
 	return &TaskResult{
+>>>>>>> 1cf24f72 (Strategic Evolution: Dynamic Mesh Resilience & Economic Attribution (#7282))
 		TaskID: task.ID,
 		Status: "success",
 		Output: output,
@@ -103,7 +107,22 @@ func (a *OpenClawAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResu
 			"reasoning_epoch": fmt.Sprintf("%d", a.CurrentEpoch),
 			"entropy_score":   "low",
 		},
+<<<<<<< HEAD
+	}
+
+	if task.Payload["stream"] == "true" {
+		res.Stream = make(chan string)
+		go func() {
+			res.Stream <- "chunk 1"
+			res.Stream <- "chunk 2"
+			close(res.Stream)
+		}()
+	}
+
+	return res, nil
+=======
 	}, nil
+>>>>>>> 1cf24f72 (Strategic Evolution: Dynamic Mesh Resilience & Economic Attribution (#7282))
 }
 
 // SupportsCapability checks if the framework provides a requested capability.

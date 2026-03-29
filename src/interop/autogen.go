@@ -97,7 +97,11 @@ func (a *AutoGenAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResul
 
 	output := fmt.Sprintf("Completed AutoGen subagent task: %s, Checkpoints: %d", task.Intent, len(a.ChatHistory))
 
+<<<<<<< HEAD
+	res := &TaskResult{
+=======
 	return &TaskResult{
+>>>>>>> 1cf24f72 (Strategic Evolution: Dynamic Mesh Resilience & Economic Attribution (#7282))
 		TaskID: task.ID,
 		Status: "success",
 		Output: output,
@@ -105,7 +109,22 @@ func (a *AutoGenAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResul
 			"mailbox_integrity": "verified",
 			"history_length":    fmt.Sprintf("%d", len(a.ChatHistory)),
 		},
+<<<<<<< HEAD
+	}
+
+	if task.Payload["stream"] == "true" {
+		res.Stream = make(chan string)
+		go func() {
+			res.Stream <- "subagent start"
+			res.Stream <- "subagent finish"
+			close(res.Stream)
+		}()
+	}
+
+	return res, nil
+=======
 	}, nil
+>>>>>>> 1cf24f72 (Strategic Evolution: Dynamic Mesh Resilience & Economic Attribution (#7282))
 }
 
 // SupportsCapability checks if the framework provides a requested capability.
