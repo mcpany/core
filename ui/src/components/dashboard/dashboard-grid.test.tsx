@@ -76,13 +76,14 @@ describe("DashboardGrid", () => {
         vi.useRealTimers();
       });
 
-  it("renders all default widgets initially", async () => {
+  it("renders curated default widgets initially", async () => {
     render(<DashboardGrid />);
     await waitFor(() => {
         expect(screen.getByTestId("widget-metrics")).toBeInTheDocument();
     });
     expect(screen.getByTestId("widget-recent-activity")).toBeInTheDocument();
-    expect(screen.getByTestId("widget-uptime")).toBeInTheDocument();
+    // uptime is hidden by default in curated layout
+    expect(screen.queryByTestId("widget-uptime")).not.toBeInTheDocument();
   });
 
   it("loads layout from localStorage", async () => {

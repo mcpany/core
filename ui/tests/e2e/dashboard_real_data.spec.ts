@@ -152,8 +152,18 @@ test.describe('Dashboard Real Data', () => {
         expect(seedRes.ok()).toBeTruthy();
 
         await page.goto('/');
+
         // Check for "System Uptime" card
-        await expect(page.locator('text=System Uptime')).toBeVisible();
+        // It's hidden by default in the curated layout, so let's unhide it first.
+        await page.getByRole('button', { name: /Layout/i }).click();
+        // Check the checkbox to show System Uptime
+        await page.locator('label', { hasText: /^System Uptime$/ }).click();
+        // Re-click to close
+        await page.getByRole('button', { name: /Layout/i }).click();
+
+        // Let's just wait for the network response to settle, sometimes the chart takes a moment to appear
+        // The title might be rendered inside the popover as a label, we want the h3 heading inside the actual card
+        await expect(page.locator('.text-2xl.font-semibold:has-text("System Uptime")')).toBeVisible();
 
         // In HealthHistoryChart, we infer status from traffic.
         // We might verify that we see some red bars (error status).
