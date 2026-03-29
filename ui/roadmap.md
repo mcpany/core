@@ -780,3 +780,7 @@
 - [ ] **[P0] Economic Attribution Viewer**: (2026-07-11) Visual tracker for hardware-attested cost attribution (HACA) across subagent lineages.
 - [ ] **[P0] Ephemeral Hook Monitor**: (2026-07-11) Status widget for monitoring session-locked discovery hooks and their expiration.
 - [ ] **[P1] Resource Reclamation Log**: (2026-07-11) Real-time tracker for RRR-triggered budget reclaims and mission efficiency gains.
+- [ ] **[P0] Hardware Identity Mint Viewer**: (2026-07-12) UI for reviewing device-bound cryptographic credentials and TPM/Enclave attestation status.
+- [ ] **[P0] PR Integrity Dashboard**: (2026-07-12) Real-time visualization of agent PR security scans and policy-based validation results.
+- [ ] **[P0] ACP Negotiation Workspace**: (2026-07-12) Interactive interface for monitoring ACP-native federated task handoffs and mesh identity verification.
+- [ ] **[P1] HLAP Drift Debugger**: (2026-07-12) Visual monitor for tracking clock-drift compensation in hardware-signed traces.

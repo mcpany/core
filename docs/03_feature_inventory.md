@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-12] Updates
+
+### Proposed Additions
+- **Hardware-Bound Identity Hub (HBIH)**: (P0) Authoritative local identity service utilizing TPM/Secure Enclaves to issue device-resident cryptographic credentials.
+- **Autonomous PR Integrity Gate (APRIG)**: (P0) Semantic security middleware that automatically scans and validates agent-generated pull requests against local policies.
+- **ACP-Native Negotiation Broker**: (P0) Federated orchestration service implementing the Agent Communication Protocol (ACP) for secure, cross-mesh task handoffs.
+- **Clock-Drift Compensated HLAP**: (P1) Security upgrade for the HLAP middleware that compensates for TPM nanosecond timing drift to neutralize Shadow-Attestation exploits.
+
+### Priority Shifts
+- **Full-Mesh Discovery Auth Provider**: (Re-affirmed P0) Designated as the primary integration point for **ACP-native** federated orchestration.
+- **Hardware-Attested Cost Attribution (HACA)**: (Re-affirmed P0) Elevated to support **HBIH-compliant** credential binding.
+
 ## Evolution: [2026-07-11] Updates
 
 ### Proposed Additions

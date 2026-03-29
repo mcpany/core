@@ -954,3 +954,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Attested Cost Attribution (HACA)**: Advanced economic security service that cryptographically attributes token usage to specific sub-process lineage. (Added: 2026-07-11)
 *   **[P0] Ephemeral Registry Hook (ERH) Provider**: Security middleware mandating session-locked discovery schemas to neutralize registry persistence exploits. (Added: 2026-07-11)
 *   **[P1] Recursive Resource Reclamation (RRR) Manager**: Lifecycle management service for reclaiming unused token and reasoning budgets from dormant sub-missions. (Added: 2026-07-11)
+
+#### Upcoming (2026-07-12 Evolution)
+*   **[P0] Hardware-Bound Identity Hub (HBIH)**: Authoritative local identity service utilizing TPM/Secure Enclaves to issue device-resident cryptographic credentials. (Added: 2026-07-12)
+*   **[P0] Autonomous PR Integrity Gate (APRIG)**: Semantic security middleware that automatically scans and validates agent-generated pull requests against local policies. (Added: 2026-07-12)
+*   **[P0] ACP-Native Negotiation Broker**: Federated orchestration service implementing the Agent Communication Protocol (ACP) for secure, cross-mesh task handoffs. (Added: 2026-07-12)
+*   **[P1] Clock-Drift Compensated HLAP**: Security upgrade for the HLAP middleware that compensates for TPM nanosecond timing drift. (Added: 2026-07-12)
