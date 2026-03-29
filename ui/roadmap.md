@@ -774,3 +774,9 @@
 - [ ] **[P1] Attention Jitter Visualizer**: (2026-07-10) Real-time heatmap of HLAP-normalized state update micro-timing.
 - [ ] **[P0] UTD Mesh Topology**: (2026-07-10) Interactive map of teammate discovery beacons and horizontal swarm formation.
 - [ ] **[P0] Hierarchical Lineage Tracer**: (2026-07-10) Visual debugger for recursive, hardware-signed reasoning sub-steps.
+
+#### Upcoming (2026-07-11 Evolution)
+- [ ] **[P0] Mesh Resilience Dashboard**: (2026-07-11) Real-time visualization of state shard migration and physical node health.
+- [ ] **[P0] Economic Attribution Viewer**: (2026-07-11) Visual tracker for hardware-attested cost attribution (HACA) across subagent lineages.
+- [ ] **[P0] Ephemeral Hook Monitor**: (2026-07-11) Status widget for monitoring session-locked discovery hooks and their expiration.
+- [ ] **[P1] Resource Reclamation Log**: (2026-07-11) Real-time tracker for RRR-triggered budget reclaims and mission efficiency gains.

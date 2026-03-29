@@ -55,3 +55,9 @@ The ZKSA Provider enables subagents to generate cryptographic proofs that their 
 
 ## 7. Evolutionary Changelog
 * **2026-07-10:** Initial Document Creation.
+
+### Update: 2026-07-11 - DMR-Compliant State Migration Proofs
+**Context:** Today's market sync revealed the move toward Dynamic Mesh Resilience (DMR) in OpenClaw v3.6.
+**Architecture Adjustment:** * Integrating ZK-proofs with the DMR Hub state migration protocol.
+* Introducing a new circuit for "Migration-Bound State Consistency" to ensure migrated shards maintain policy compliance on the destination node.
+**Security Impact:** Prevents state corruption or policy bypass during automated node failover.
