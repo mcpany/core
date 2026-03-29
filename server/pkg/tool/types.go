@@ -21,6 +21,7 @@ import (
 	"sync"
 	"time"
 	"unicode"
+	"unicode/utf8"
 
 	jsoniter "github.com/json-iterator/go"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -4084,15 +4085,25 @@ func checkInterpreterFunctionCalls(val, language string) error {
 	return nil
 }
 
+// checkBufferPool provides a pool of byte slices to avoid allocations during keyword checks.
+var checkBufferPool = sync.Pool{
+	New: func() any {
+		b := make([]byte, 0, 128)
+		return &b
+	},
+}
+
 // checkContextualKeywords checks if any keyword in the list is present in val as a whole word
 // AND is followed by one of the suffix characters (ignoring whitespace).
 
 func checkContextualKeywords(val string, keywords []string, suffixes []rune) error {
 	var state quoteState
 	// ⚡ Bolt Optimization: Use []byte buffer to avoid string allocations
-	wordBuf := make([]byte, 0, 64)
+	wordBufPtr := checkBufferPool.Get().(*[]byte)
+	wordBuf := (*wordBufPtr)[:0]
+	defer checkBufferPool.Put(wordBufPtr)
+
 	inWord := false
-	runes := []rune(val)
 
 	isSuffix := func(r rune) bool {
 		for _, s := range suffixes {
@@ -4103,8 +4114,10 @@ func checkContextualKeywords(val string, keywords []string, suffixes []rune) err
 		return false
 	}
 
-	for i := 0; i < len(runes); i++ {
-		char := runes[i]
+	var char rune
+	var charLen int
+	for i := 0; i < len(val); i += charLen {
+		char, charLen = utf8.DecodeRuneInString(val[i:])
 
 		if state.escaped {
 			state.escaped = false
@@ -4117,7 +4130,7 @@ func checkContextualKeywords(val string, keywords []string, suffixes []rune) err
 
 		if state.handleQuotes(char) {
 			if state.inQuote() && inWord { // Entered quote
-				if err := checkWordSuffix(wordBuf, keywords, runes, i, isSuffix); err != nil {
+				if err := checkWordSuffix(wordBuf, keywords, val, i, isSuffix); err != nil {
 					return err
 				}
 				inWord = false
@@ -4138,7 +4151,7 @@ func checkContextualKeywords(val string, keywords []string, suffixes []rune) err
 		} else if inWord {
 			// Delimiter
 			// Look ahead starting from current char i
-			if err := checkWordSuffix(wordBuf, keywords, runes, i, isSuffix); err != nil {
+			if err := checkWordSuffix(wordBuf, keywords, val, i, isSuffix); err != nil {
 				return err
 			}
 			inWord = false
@@ -4146,7 +4159,7 @@ func checkContextualKeywords(val string, keywords []string, suffixes []rune) err
 	}
 
 	if inWord {
-		if err := checkWordSuffix(wordBuf, keywords, runes, len(runes), isSuffix); err != nil {
+		if err := checkWordSuffix(wordBuf, keywords, val, len(val), isSuffix); err != nil {
 			return err
 		}
 	}
@@ -4161,9 +4174,15 @@ func checkUnquotedKeywords(val string, keywords []string) error {
 	escaped := false
 
 	// ⚡ Bolt Optimization: Use []byte buffer to avoid string allocations
-	wordBuf := make([]byte, 0, 64)
+	wordBufPtr := checkBufferPool.Get().(*[]byte)
+	wordBuf := (*wordBufPtr)[:0]
+	defer checkBufferPool.Put(wordBufPtr)
+
+	lastWordPtr := checkBufferPool.Get().(*[]byte)
+	lastWord := (*lastWordPtr)[:0]
+	defer checkBufferPool.Put(lastWordPtr)
+
 	lastChar := rune(0) // Last non-whitespace char before current word
-	var lastWord []byte // Last word seen before current word (separated only by whitespace)
 
 	for _, char := range val {
 		if escaped {
@@ -5242,7 +5261,7 @@ func (s *quoteState) inQuote() bool {
 	return s.inSingle || s.inDouble || s.inBacktick
 }
 
-func checkWordSuffix(word []byte, keywords []string, runes []rune, nextIdx int, isSuffix func(rune) bool) error {
+func checkWordSuffix(word []byte, keywords []string, val string, nextIdx int, isSuffix func(rune) bool) error {
 	found := false
 	for _, kw := range keywords {
 		if string(word) == kw {
@@ -5253,8 +5272,11 @@ func checkWordSuffix(word []byte, keywords []string, runes []rune, nextIdx int, 
 	if !found {
 		return nil
 	}
-	for k := nextIdx; k < len(runes); k++ {
-		r := runes[k]
+
+	var r rune
+	var rLen int
+	for k := nextIdx; k < len(val); k += rLen {
+		r, rLen = utf8.DecodeRuneInString(val[k:])
 		if unicode.IsSpace(r) {
 			continue
 		}
