@@ -4,9 +4,12 @@
 package tool
 
 import (
+	"encoding/json"
 	"fmt"
 	"regexp"
 	"sync"
+
+	"github.com/google/cel-go/cel"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
@@ -148,6 +151,7 @@ type compiledCallPolicyRule struct {
 type CompiledCallPolicy struct {
 	policy        *configv1.CallPolicy
 	compiledRules []compiledCallPolicyRule
+	compiledCEL   *CompiledCELPolicy
 }
 
 // CompileCallPolicies compiles a list of call policies into an efficient runtime format.
@@ -219,9 +223,48 @@ func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, er
 			rule:          rule,
 		}
 	}
+
+	var compiledCEL *CompiledCELPolicy
+	if policy.GetCel() != "" {
+		c, err := CompileCELPolicy(policy.GetCel())
+		if err != nil {
+			return nil, fmt.Errorf("invalid CEL policy %q: %w", policy.GetCel(), err)
+		}
+		compiledCEL = c
+	}
+
 	return &CompiledCallPolicy{
 		policy:        policy,
 		compiledRules: compiledRules,
+		compiledCEL:   compiledCEL,
+	}, nil
+}
+
+// CompiledCELPolicy holds a compiled version of a CEL policy.
+type CompiledCELPolicy struct {
+	env     *cel.Env
+	program cel.Program
+}
+
+// CompileCELPolicy compiles a single CEL policy.
+func CompileCELPolicy(celPolicy string) (*CompiledCELPolicy, error) {
+	env, err := cel.NewEnv(
+		cel.Variable("request", cel.MapType(cel.StringType, cel.DynType)),
+	)
+	if err != nil {
+		return nil, err
+	}
+	ast, issues := env.Compile(celPolicy)
+	if issues != nil && issues.Err() != nil {
+		return nil, issues.Err()
+	}
+	program, err := env.Program(ast)
+	if err != nil {
+		return nil, err
+	}
+	return &CompiledCELPolicy{
+		env:     env,
+		program: program,
 	}, nil
 }
 
@@ -240,6 +283,30 @@ func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, er
 //   - error: An error if evaluation fails.
 func EvaluateCompiledCallPolicy(policies []*CompiledCallPolicy, toolName, callID string, arguments []byte) (bool, error) {
 	for _, policy := range policies {
+		if policy.compiledCEL != nil {
+			var argsMap map[string]interface{}
+			if arguments != nil {
+				_ = json.Unmarshal(arguments, &argsMap)
+			}
+			if argsMap == nil {
+				argsMap = map[string]interface{}{}
+			}
+			out, _, err := policy.compiledCEL.program.Eval(map[string]interface{}{
+				"request": map[string]interface{}{
+					"tool":   toolName,
+					"callID": callID,
+					"params": argsMap,
+				},
+			})
+			if err != nil {
+				return false, fmt.Errorf("cel evaluation failed: %w", err)
+			}
+			if out.Type() == cel.BoolType && out.Value().(bool) == false {
+				return false, nil // Policy denied
+			}
+			continue
+		}
+
 		policyBlocked := false
 		matchedRule := false
 		for _, cRule := range policy.compiledRules {

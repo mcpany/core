@@ -134,6 +134,8 @@ message CallPolicy {
   Action default_action = 1;
   // List of rules to apply. First match wins.
   repeated CallPolicyRule rules = 2;
+  // A CEL expression that evaluates to true/false. If provided, this overrides rules.
+  string cel = 3;
 }
 
 message CallPolicyRule {

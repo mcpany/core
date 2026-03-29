@@ -43,6 +43,7 @@ go_library(
         "//server/pkg/validation",
         "@com_github_cloudevents_sdk_go_v2//:sdk-go",
         "@com_github_cloudevents_sdk_go_v2//protocol/http",
+        "@com_github_google_cel_go//cel:go_default_library",
         "@com_github_google_jsonschema_go//jsonschema",
         "@com_github_google_uuid//:uuid",
         "@com_github_gorilla_websocket//:websocket",

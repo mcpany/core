@@ -270,4 +270,51 @@ func TestCallPolicyMiddleware(t *testing.T) {
 		assert.Equal(t, successResult, result)
 		assert.True(t, nextCalled)
 	})
+
+	t.Run("cel policy -> allowed", func(t *testing.T) {
+		policy := configv1.CallPolicy_builder{
+			Cel: proto.String(`request.tool == "service.test-tool" && request.params.path.startsWith("/tmp/")`),
+		}.Build()
+
+		cpMiddleware, _, mockTool := setup([]*configv1.CallPolicy{policy})
+
+		req := &tool.ExecutionRequest{
+			ToolName:   "service.test-tool",
+			ToolInputs: json.RawMessage(`{"path": "/tmp/test.txt"}`),
+		}
+		ctx := tool.NewContextWithTool(context.Background(), mockTool)
+
+		nextCalled := false
+		next := func(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+			nextCalled = true
+			return successResult, nil
+		}
+
+		result, err := cpMiddleware.Execute(ctx, req, next)
+		assert.NoError(t, err)
+		assert.Equal(t, successResult, result)
+		assert.True(t, nextCalled)
+	})
+
+	t.Run("cel policy -> blocked", func(t *testing.T) {
+		policy := configv1.CallPolicy_builder{
+			Cel: proto.String(`request.tool == "service.test-tool" && request.params.path.startsWith("/tmp/")`),
+		}.Build()
+
+		cpMiddleware, _, mockTool := setup([]*configv1.CallPolicy{policy})
+
+		req := &tool.ExecutionRequest{
+			ToolName:   "service.test-tool",
+			ToolInputs: json.RawMessage(`{"path": "/etc/passwd"}`),
+		}
+		ctx := tool.NewContextWithTool(context.Background(), mockTool)
+
+		next := func(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+			return successResult, nil
+		}
+
+		_, err := cpMiddleware.Execute(ctx, req, next)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "execution denied by policy")
+	})
 }
