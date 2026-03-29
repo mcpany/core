@@ -9,7 +9,9 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"os"
 	"os/exec"
+	"strconv"
 	"sync"
 
 	"github.com/docker/docker/api/types/container"
@@ -298,7 +300,13 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 		Tty:        false,
 	}
 
-	hostConfig := &container.HostConfig{}
+	hostConfig := &container.HostConfig{
+		Resources: container.Resources{
+			Memory:   1024 * 1024 * 512, // 512 MB memory limit
+			NanoCPUs: 1000000000,        // 1 CPU core limit
+			PidsLimit: &[]int64{1024}[0], // PIDs limit
+		},
+	}
 	if e.containerEnv.GetVolumes() != nil {
 		for dest, src := range e.containerEnv.GetVolumes() {
 			// Validate host path (dest) to prevent mounting sensitive directories
@@ -439,7 +447,13 @@ func (e *dockerExecutor) ExecuteWithStdIO(ctx context.Context, command string, a
 		AttachStderr: true,
 	}
 
-	hostConfig := &container.HostConfig{}
+	hostConfig := &container.HostConfig{
+		Resources: container.Resources{
+			Memory:   1024 * 1024 * 512, // 512 MB memory limit
+			NanoCPUs: 1000000000,        // 1 CPU core limit
+			PidsLimit: &[]int64{1024}[0], // PIDs limit
+		},
+	}
 	if e.containerEnv.GetVolumes() != nil {
 		for dest, src := range e.containerEnv.GetVolumes() {
 			// Validate host path (dest) to prevent mounting sensitive directories
@@ -562,4 +576,17 @@ func (c *closeWriter) Close() error {
 		return cw.CloseWrite()
 	}
 	return c.conn.Close()
+}
+
+// getMaxCommandOutputSize returns the maximum size of the command output (stdout + stderr) in bytes.
+// It checks the MCPANY_MAX_COMMAND_OUTPUT_SIZE environment variable.
+func getMaxCommandOutputSize() int64 {
+	val := os.Getenv("MCPANY_MAX_COMMAND_OUTPUT_SIZE")
+	if val != "" {
+		if size, err := strconv.ParseInt(val, 10, 64); err == nil {
+			return size
+		}
+		// Log error? For now just fallback.
+	}
+	return 10 * 1024 * 1024 // 10MB DefaultMaxCommandOutputBytes
 }
