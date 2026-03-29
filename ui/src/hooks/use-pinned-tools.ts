@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 const STORAGE_KEY = "mcpany-pinned-tools";
 
 /**
- * Intent: Document usePinnedTools
+ * Summary: Document usePinnedTools
  *
  * Params:
  *   - None

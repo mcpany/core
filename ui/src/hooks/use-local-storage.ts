@@ -6,7 +6,7 @@
 import { useState, useEffect, useCallback } from "react";
 
 /**
- * Intent: Document useLocalStorage
+ * Summary: Document useLocalStorage
  *
  * Params:
  *   - Documented below.

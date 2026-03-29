@@ -19,7 +19,7 @@ import { Credential, Authentication } from '@proto/config/v1/auth';
 import { BrowserHeaders } from 'browser-headers';
 
 /**
- * Intent: Document UpstreamServiceConfig
+ * Summary: Document UpstreamServiceConfig
  *
  * Params:
  *   - None
@@ -64,7 +64,7 @@ export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, 
 export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '@proto/api/v1/registration';
 
 /**
- * Intent: Document ServiceTemplate
+ * Summary: Document ServiceTemplate
  *
  * Params:
  *   - None
@@ -160,7 +160,7 @@ const rpc = new GrpcWebImpl(getBaseUrl(), {
 const registrationClient = new RegistrationServiceClientImpl(rpc);
 
 /**
- * Intent: Document fetchWithAuth
+ * Summary: Document fetchWithAuth
  *
  * Params:
  *   - Documented below.
@@ -214,7 +214,7 @@ const dedupeRequests = <T>(key: string, fn: () => Promise<T>): Promise<T> => {
 };
 
 /**
- * Intent: Document SecretDefinition
+ * Summary: Document SecretDefinition
  *
  * Params:
  *   - None
@@ -248,7 +248,7 @@ export interface SecretDefinition {
 }
 
 /**
- * Intent: Document ResourceContent
+ * Summary: Document ResourceContent
  *
  * Params:
  *   - None
@@ -276,7 +276,7 @@ export interface ResourceContent {
 }
 
 /**
- * Intent: Document ReadResourceResponse
+ * Summary: Document ReadResourceResponse
  *
  * Params:
  *   - None
@@ -306,7 +306,7 @@ interface RawValidateServiceResponse {
 }
 
 /**
- * Intent: Document CheckResult
+ * Summary: Document CheckResult
  *
  * Params:
  *   - None
@@ -334,7 +334,7 @@ export interface CheckResult {
 }
 
 /**
- * Intent: Document DoctorReport
+ * Summary: Document DoctorReport
  *
  * Params:
  *   - None
@@ -360,7 +360,7 @@ export interface DoctorReport {
 }
 
 /**
- * Intent: Document ToolFailureStats
+ * Summary: Document ToolFailureStats
  *
  * Params:
  *   - None
@@ -384,7 +384,7 @@ export interface ToolFailureStats {
 }
 
 /**
- * Intent: Document ToolAnalytics
+ * Summary: Document ToolAnalytics
  *
  * Params:
  *   - None
@@ -409,7 +409,7 @@ export interface ToolAnalytics {
 
 
 /**
- * Intent: Document Metric
+ * Summary: Document Metric
  *
  * Params:
  *   - None
@@ -436,7 +436,7 @@ export interface Metric {
 
 
 /**
- * Intent: Document SystemStatus
+ * Summary: Document SystemStatus
  *
  * Params:
  *   - None
@@ -468,7 +468,7 @@ export interface SystemStatus {
 }
 
 /**
- * Intent: Document ServiceStatus
+ * Summary: Document ServiceStatus
  *
  * Params:
  *   - None
@@ -487,7 +487,7 @@ export interface SystemStatus {
 export type ServiceStatus = "healthy" | "degraded" | "unhealthy" | "inactive" | "unknown";
 
 /**
- * Intent: Document ServiceHealth
+ * Summary: Document ServiceHealth
  *
  * Params:
  *   - None
@@ -519,7 +519,7 @@ export interface ServiceHealth {
 }
 
 /**
- * Intent: Document HealthHistoryPoint
+ * Summary: Document HealthHistoryPoint
  *
  * Params:
  *   - None
@@ -543,7 +543,7 @@ export interface HealthHistoryPoint {
 }
 
 /**
- * Intent: Document ServiceHealthResponse
+ * Summary: Document ServiceHealthResponse
  *
  * Params:
  *   - None
@@ -582,7 +582,7 @@ const getMetadata = () => {
 };
 
 /**
- * Intent: Document apiClient
+ * Summary: Document apiClient
  *
  * Params:
  *   - None

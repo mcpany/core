@@ -6,7 +6,7 @@
 import { UpstreamServiceConfig } from "./client";
 
 /**
- * Intent: Document SecretHandlingMode
+ * Summary: Document SecretHandlingMode
  *
  * Params:
  *   - None
@@ -28,7 +28,7 @@ import { UpstreamServiceConfig } from "./client";
 export type SecretHandlingMode = 'redact' | 'template' | 'unsafe';
 
 /**
- * Intent: Document sanitizeServiceConfig
+ * Summary: Document sanitizeServiceConfig
  *
  * Params:
  *   - None
@@ -37,7 +37,7 @@ export type SecretHandlingMode = 'redact' | 'template' | 'unsafe';
  *
  * Summary: Redacts or templates secrets embedded in a service configuration object.
  *
- * Parameters:
+ * Params:
  *   - service (UpstreamServiceConfig): The service configuration to sanitize.
  *   - mode (SecretHandlingMode): The secret handling mode ('redact', 'template', or 'unsafe').
  *

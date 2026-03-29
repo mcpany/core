@@ -7,7 +7,7 @@ import { ServiceTemplate } from "@/lib/templates";
 import { UpstreamServiceConfig } from "@/lib/client";
 
 /**
- * Intent: Document applyTemplateFields
+ * Summary: Document applyTemplateFields
  *
  * Params:
  *   - Documented below.

@@ -6,7 +6,7 @@
 import data from './placeholder-images.json';
 
 /**
- * Intent: Document ImagePlaceholder
+ * Summary: Document ImagePlaceholder
  *
  * Params:
  *   - None
@@ -30,7 +30,7 @@ export type ImagePlaceholder = {
 };
 
 /**
- * Intent: Document PlaceHolderImages
+ * Summary: Document PlaceHolderImages
  *
  * Params:
  *   - None

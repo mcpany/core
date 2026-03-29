@@ -6,7 +6,7 @@
 import { useEffect, useRef } from 'react';
 
 /**
- * Intent: Document usePolling
+ * Summary: Document usePolling
  *
  * Params:
  *   - Documented below.

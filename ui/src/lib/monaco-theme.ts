@@ -6,7 +6,7 @@
 import { Monaco } from "@monaco-editor/react";
 
 /**
- * Intent: Document defineDraculaTheme
+ * Summary: Document defineDraculaTheme
  *
  * Params:
  *   - Documented below.

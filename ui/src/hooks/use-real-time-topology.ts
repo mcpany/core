@@ -62,7 +62,7 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
 };
 
 /**
- * Intent: Document useRealTimeTopology
+ * Summary: Document useRealTimeTopology
  *
  * Params:
  *   - None
