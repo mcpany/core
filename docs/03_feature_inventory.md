@@ -1768,3 +1768,42 @@
 ### Priority Shifts
 - **SRM Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Hierarchical Provenance** validation.
 - **Asynchronous Mailbox Sharding (AMS)**: (Re-affirmed P0) Now elevated with the requirement for **HLAP-compliant** timing normalization.
+
+
+![Dashboard Screenshot](screenshots/dashboard_overview.png)
+
+
+![Services Screenshot](screenshots/services.png)
+
+
+![Traces Screenshot](screenshots/traces.png)
+
+
+![Middleware Screenshot](screenshots/middleware.png)
+
+
+![Logs Screenshot](screenshots/logs.png)
+
+
+![Marketplace Screenshot](screenshots/marketplace.png)
+
+
+![Auth Screenshot](screenshots/settings_auth.png)
+
+
+![Prompts Screenshot](screenshots/prompts.png)
+
+
+![Alerts Screenshot](screenshots/alerts_list.png)
+
+
+![Skills Screenshot](screenshots/skills_list.png)
+
+
+![Profiles Screenshot](screenshots/profiles.png)
+
+
+![Settings Screenshot](screenshots/settings.png)
+
+
+![Credentials Screenshot](screenshots/credentials.png)

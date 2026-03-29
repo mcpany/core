@@ -1403,3 +1403,45 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Hardware-Attested Cost Attribution (HACA)**: To neutralize "Economic Squatting," we are upgrading the Reasoning-Budget Firewall to support HACA. This layer will cryptographically attribute every token and compute millisecond to its specific sub-process lineage, ensuring absolute economic accountability across the mesh.
 - **Ephemeral Registry Hook (ERH) Provider**: Supporting the Claude Code v3.2 standard, MCP Any will implement ERH. Discovery schemas will be issued as session-locked, ephemeral tokens that expire immediately post-discovery, neutralizing "Registry Persistence" exploits.
 - **Recursive Resource Reclamation (RRR)**: We are adopting the UACO v3.6 standard for resource management. MCP Any will act as the authoritative "Lease Reaper," allowing parent agents to forcefully reclaim unused token and reasoning budgets from dormant sub-missions in real-time.
+
+
+![Dashboard Screenshot](screenshots/dashboard_overview.png)
+
+
+![Traces Screenshot](screenshots/traces.png)
+
+
+![Middleware Screenshot](screenshots/middleware.png)
+
+
+![Logs Screenshot](screenshots/logs.png)
+
+
+![Marketplace Screenshot](screenshots/marketplace.png)
+
+
+![Secrets Screenshot](screenshots/secrets.png)
+
+
+![Auth Screenshot](screenshots/settings_auth.png)
+
+
+![Search Screenshot](screenshots/global_search.png)
+
+
+![Resources Screenshot](screenshots/resources.png)
+
+
+![Skills Screenshot](screenshots/skills_list.png)
+
+
+![Profiles Screenshot](screenshots/profiles.png)
+
+
+![Settings Screenshot](screenshots/settings.png)
+
+
+![Credentials Screenshot](screenshots/credentials.png)
+
+
+![Audit logs Screenshot](screenshots/audit_logs.png)
