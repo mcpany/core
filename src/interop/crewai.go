@@ -100,7 +100,7 @@ func (a *CrewAIAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult
 	a.RoleRegistry[role] = fmt.Sprintf("auth_token_%s", role)
 	output := fmt.Sprintf("CrewAI delegated task: %s to role: %s", task.Intent, role)
 
-	return &TaskResult{
+	res := &TaskResult{
 		TaskID: task.ID,
 		Status: "success",
 		Output: output,
@@ -108,7 +108,18 @@ func (a *CrewAIAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult
 			"delegated_role": role,
 			"auth_status":    "verified",
 		},
-	}, nil
+	}
+
+	if task.Payload["stream"] == "true" {
+		res.Stream = make(chan string)
+		go func() {
+			res.Stream <- "delegating..."
+			res.Stream <- "done."
+			close(res.Stream)
+		}()
+	}
+
+	return res, nil
 }
 
 // SupportsCapability checks if the framework provides a requested capability.

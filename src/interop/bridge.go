@@ -158,6 +158,7 @@ type TaskResult struct {
 	Status    string            `json:"status"`
 	Output    string            `json:"output"`
 	Telemetry map[string]string `json:"telemetry,omitempty"`
+	Stream    chan string       `json:"-"`
 }
 
 // AdapterHub manages the registration and routing of tasks to different agent frameworks.
