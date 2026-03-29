@@ -56,3 +56,10 @@ The Dynamic Mesh Resilience (DMR) Hub evolves MCP Any from a static gateway into
 
 ## 7. Evolutionary Changelog
 * **2026-07-11:** Initial Document Creation.
+
+### Update: 2026-07-12 - Predictive Shard Rebalancing (PSR)
+**Context**: Today's market sync revealed the introduction of OpenClaw v3.6.1's Predictive Shard Balancing. Relying strictly on reactive heartbeats leads to "Coordination Stall" when specialized nodes are compromised by "Mesh-Resident Logic Bombs" (MRLB) that degrade performance without triggering a full failure.
+**Architecture Adjustment**:
+*   Implementing **Predictive Shard Rebalancer (PSR)**. The Hub now monitors subagent reasoning entropy and token emission rates in real-time.
+*   Introducing "Proactive Migration Triggers" that re-shard entangled state to healthy nodes when a subagent's cognitive profile diverges from the hardware-attested baseline.
+**Security Impact**: Neutralizes "Low-and-Slow" MRLB attacks that attempt to anchor a swarm to a compromised node by polluting its shard metadata without triggering a fail-stop event.

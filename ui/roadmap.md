@@ -775,6 +775,12 @@
 - [ ] **[P0] UTD Mesh Topology**: (2026-07-10) Interactive map of teammate discovery beacons and horizontal swarm formation.
 - [ ] **[P0] Hierarchical Lineage Tracer**: (2026-07-10) Visual debugger for recursive, hardware-signed reasoning sub-steps.
 
+#### Upcoming (2026-07-12 Evolution)
+- [ ] **[P0] Predictive Shard Rebalance Map**: (2026-07-12) Heatmap visualizing reasoning entropy and preemptive state migration triggers.
+- [ ] **[P0] Registry-Locked Context (RLC) Auditor**: (2026-07-12) Visual workspace for reviewing discovery-phase schema locks and integrity proofs.
+- [ ] **[P0] Clock-Drift Integrity Monitor**: (2026-07-12) Real-time widget visualizing TPM vs System clock synchronization and MCDC status.
+- [ ] **[P0] Active Lease Reaping Dashboard**: (2026-07-12) Monitor for reasoning emission rates and autonomous budget reclamation events.
+
 #### Upcoming (2026-07-11 Evolution)
 - [ ] **[P0] Mesh Resilience Dashboard**: (2026-07-11) Real-time visualization of state shard migration and physical node health.
 - [ ] **[P0] Economic Attribution Viewer**: (2026-07-11) Visual tracker for hardware-attested cost attribution (HACA) across subagent lineages.

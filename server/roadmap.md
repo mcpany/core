@@ -949,6 +949,13 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Unified Teammate Discovery (UTD) Gateway**: High-speed, authenticated discovery hub for horizontal mesh formation. (Added: 2026-07-10)
 *   **[P0] Hierarchical Provenance Validator**: Implementation of Gemini-compliant recursive "Chain-of-Thought" hardware signing. (Added: 2026-07-10)
 
+#### Upcoming (2026-07-12 Evolution)
+*   **[P0] Predictive Shard Rebalancer (PSR)**: Entropy-aware coordination service for preemptive re-sharding of entangled state. (Added: 2026-07-12)
+*   **[P0] Registry-Locked Context (RLC) Enforcer**: Security middleware for cryptographic locking of tool schemas to discovery sessions. (Added: 2026-07-12)
+*   **[P0] Monotonic Clock-Drift Compensator (MCDC)**: Hardware-attested timestamping for neutralizing "Shadow-Attestation" exploits. (Added: 2026-07-12)
+*   **[P0] Active Lease Reaper (ALR)**: Monitoring service for reasoning emission rates to neutralize Lease-Squatting. (Added: 2026-07-12)
+*   **[P1] Atomic Resource Transfer (ART) Gateway**: Implementation of UACO v3.7 for secure inter-swarm budget handoffs. (Added: 2026-07-12)
+
 #### Upcoming (2026-07-11 Evolution)
 *   **[P0] Dynamic Mesh Resilience (DMR) Hub**: Authoritative coordination service for re-sharding and migrating state between physical nodes upon subagent failure. (Added: 2026-07-11)
 *   **[P0] Hardware-Attested Cost Attribution (HACA)**: Advanced economic security service that cryptographically attributes token usage to specific sub-process lineage. (Added: 2026-07-11)

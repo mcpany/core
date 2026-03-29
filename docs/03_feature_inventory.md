@@ -1,5 +1,18 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-12] Updates
+
+### Proposed Additions
+- **Predictive Shard Rebalancer (PSR)**: (P0) High-performance coordination service for preemptive re-sharding of entangled state fragments based on reasoning entropy analysis.
+- **Registry-Locked Context (RLC) Enforcer**: (P0) Security middleware mandating cryptographic locking of tool context fragments to discovery sessions to neutralize shadowing.
+- **Monotonic Clock-Drift Compensator (MCDC)**: (P0) Hardware-attested timestamping service for the SRM Provider to prevent Shadow-Attestation exploits.
+- **Active Lease Reaper (ALR)**: (P0) Resource management service that monitors reasoning emission rates to neutralize Lease-Squatting in swarms.
+- **Atomic Resource Transfer (ART) Gateway**: (P1) Implementation of UACO v3.7 for secure, inter-swarm budget handoffs during teammate rotations.
+
+### Priority Shifts
+- **Dynamic Mesh Resilience (DMR) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **PSR** integration for proactive stability.
+- **Ephemeral Registry Hook (ERH) Provider**: (Re-affirmed P0) Designated as the primary enforcement point for **RLC-compliant** tool locking.
+
 ## Evolution: [2026-07-11] Updates
 
 ### Proposed Additions

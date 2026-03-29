@@ -59,3 +59,17 @@ As AI agent frameworks like Gemini CLI and OpenClaw move toward high-intensity r
 *   Implementing **Cross-Mission Budget Continuity**. Reasoning budgets are now reconciled against a persistent "Mission Root Registry."
 *   Introducing a "Lease Migration Protocol" for framework-neutral handoffs, ensuring budget integrity as agents move between local and cloud environments.
 **Security Impact:** Prevents "Budget Reset" exploits where subagents trigger mission restarts to refresh their reasoning quotas.
+
+### Update: 2026-07-11 - HACA Integration
+**Context**: Gemini CLI v0.51 introduced Hardware-Attested Cost Attribution (HACA). Reasoning budgets must now move beyond simple token counts to cryptographically signed sub-process lineage for granular economic accountability.
+**Architecture Adjustment**:
+*   Mandating **HACA-compliant attribution** for all reasoning leases. Every token consumed is now linked to a TPM-signed lineage token.
+*   Enabling "Recursive Budget Handoffs" that survive framework-neutral migrations.
+**Security Impact**: Eliminates "Economic Squatting" where subagents bleed parent budgets via opaque sub-process recursion.
+
+### Update: 2026-07-12 - Predictive Budgeting & Active Lease Reaping
+**Context**: Today's findings revealed the "Lease-Squatting" vulnerability in Recursive Resource Reclamation (RRR) and the introduction of Gemini's Predictive Budgeting. Passive budget monitoring is no longer sufficient to prevent resource exhaustion in deep meshes.
+**Architecture Adjustment**:
+*   Implementing **Predictive Budgeting** triggers. RBF now calculates projected reasoning depth based on HACA historical metrics and sets mission-wide spend-caps.
+*   Integrating with the **Active Lease Reaper (ALR)**. RBF will now forcefully revoke token and compute leases from sub-missions that exhibit zero cognitive progress (low reasoning emission rate) despite active heartbeat signals.
+**Security Impact**: Neutralizes "Silent Resource Exhaustion" attacks where subagents lock mission budgets without providing verifiable reasoning traces.
