@@ -45,6 +45,7 @@ func NewOpenClawAdapter() *OpenClawAdapter {
 		Capabilities: map[string]bool{
 			"adaptive_reasoning": true,
 			"context_sync":       true,
+			"mcp_tool_call":      true,
 		},
 		CurrentEpoch: 1,
 	}
@@ -94,15 +95,22 @@ func (a *OpenClawAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResu
 	// Simulated execution with state versioning logic (reasoning_epoch)
 	a.CurrentEpoch++
 	output := fmt.Sprintf("Executed OpenClaw task: %s, Epoch: %d", task.Intent, a.CurrentEpoch)
+	telemetry := map[string]string{
+		"reasoning_epoch": fmt.Sprintf("%d", a.CurrentEpoch),
+		"entropy_score":   "low",
+	}
+
+	if task.Intent == "mcp_tool_call" {
+		toolName := task.Payload["tool_name"]
+		output = fmt.Sprintf("OpenClaw executed MCP tool: %s, Epoch: %d", toolName, a.CurrentEpoch)
+		telemetry["mcp_tool"] = toolName
+	}
 
 	return &TaskResult{
-		TaskID: task.ID,
-		Status: "success",
-		Output: output,
-		Telemetry: map[string]string{
-			"reasoning_epoch": fmt.Sprintf("%d", a.CurrentEpoch),
-			"entropy_score":   "low",
-		},
+		TaskID:    task.ID,
+		Status:    "success",
+		Output:    output,
+		Telemetry: telemetry,
 	}, nil
 }
 

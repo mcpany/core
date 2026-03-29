@@ -45,6 +45,7 @@ func NewAutoGenAdapter() *AutoGenAdapter {
 		Capabilities: map[string]bool{
 			"multi_agent_chat": true,
 			"subagent_exec":    true,
+			"mcp_tool_call":    true,
 		},
 		ChatHistory: make([]string, 0),
 	}
@@ -97,14 +98,22 @@ func (a *AutoGenAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResul
 
 	output := fmt.Sprintf("Completed AutoGen subagent task: %s, Checkpoints: %d", task.Intent, len(a.ChatHistory))
 
+	telemetry := map[string]string{
+		"mailbox_integrity": "verified",
+		"history_length":    fmt.Sprintf("%d", len(a.ChatHistory)),
+	}
+
+	if task.Intent == "mcp_tool_call" {
+		toolName := task.Payload["tool_name"]
+		output = fmt.Sprintf("AutoGen executed MCP tool: %s, Checkpoints: %d", toolName, len(a.ChatHistory))
+		telemetry["mcp_tool"] = toolName
+	}
+
 	return &TaskResult{
-		TaskID: task.ID,
-		Status: "success",
-		Output: output,
-		Telemetry: map[string]string{
-			"mailbox_integrity": "verified",
-			"history_length":    fmt.Sprintf("%d", len(a.ChatHistory)),
-		},
+		TaskID:    task.ID,
+		Status:    "success",
+		Output:    output,
+		Telemetry: telemetry,
 	}, nil
 }
 

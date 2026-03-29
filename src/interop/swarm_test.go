@@ -153,7 +153,65 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 		}
 	})
 
-	// 5. Error Case: Unsupported Framework
+	// 5. MCP Tool Call across all frameworks
+	t.Run("MCP_ToolCall_OpenClaw", func(t *testing.T) {
+		task := &interop.Task{
+			ID:        "task-mcp-oc",
+			Framework: "OpenClaw",
+			Intent:    "mcp_tool_call",
+			Payload:   map[string]string{"tool_name": "fetch_data"},
+		}
+		res, err := hub.RouteTask(ctx, task)
+		if err != nil {
+			t.Fatalf("Failed to execute OpenClaw MCP task: %v", err)
+		}
+		if res.Telemetry["mcp_tool"] != "fetch_data" {
+			t.Errorf("Expected OpenClaw mcp_tool telemetry to be 'fetch_data', got '%s'", res.Telemetry["mcp_tool"])
+		}
+		if !strings.Contains(res.Output, "OpenClaw executed MCP tool: fetch_data") {
+			t.Errorf("Unexpected OpenClaw output: %s", res.Output)
+		}
+	})
+
+	t.Run("MCP_ToolCall_CrewAI", func(t *testing.T) {
+		task := &interop.Task{
+			ID:        "task-mcp-cai",
+			Framework: "CrewAI",
+			Intent:    "mcp_tool_call",
+			Payload:   map[string]string{"tool_name": "analyze_data", "role": "researcher"},
+		}
+		res, err := hub.RouteTask(ctx, task)
+		if err != nil {
+			t.Fatalf("Failed to execute CrewAI MCP task: %v", err)
+		}
+		if res.Telemetry["mcp_tool"] != "analyze_data" {
+			t.Errorf("Expected CrewAI mcp_tool telemetry to be 'analyze_data', got '%s'", res.Telemetry["mcp_tool"])
+		}
+		if !strings.Contains(res.Output, "CrewAI role researcher executed MCP tool: analyze_data") {
+			t.Errorf("Unexpected CrewAI output: %s", res.Output)
+		}
+	})
+
+	t.Run("MCP_ToolCall_AutoGen", func(t *testing.T) {
+		task := &interop.Task{
+			ID:        "task-mcp-ag",
+			Framework: "AutoGen",
+			Intent:    "mcp_tool_call",
+			Payload:   map[string]string{"tool_name": "write_report"},
+		}
+		res, err := hub.RouteTask(ctx, task)
+		if err != nil {
+			t.Fatalf("Failed to execute AutoGen MCP task: %v", err)
+		}
+		if res.Telemetry["mcp_tool"] != "write_report" {
+			t.Errorf("Expected AutoGen mcp_tool telemetry to be 'write_report', got '%s'", res.Telemetry["mcp_tool"])
+		}
+		if !strings.Contains(res.Output, "AutoGen executed MCP tool: write_report") {
+			t.Errorf("Unexpected AutoGen output: %s", res.Output)
+		}
+	})
+
+	// 6. Error Case: Unsupported Framework
 	t.Run("Unsupported_Framework", func(t *testing.T) {
 		taskInvalid := &interop.Task{
 			ID:        "task-inv-004",
@@ -166,7 +224,7 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 		}
 	})
 
-	// 6. UMMB Sync Memory Shard Test
+	// 7. UMMB Sync Memory Shard Test
 	t.Run("UMMB_SyncMemoryShard", func(t *testing.T) {
 		validShard := &interop.MemoryShard{
 			ShardID:           "shard-100",

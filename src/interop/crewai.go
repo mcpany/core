@@ -45,6 +45,7 @@ func NewCrewAIAdapter() *CrewAIAdapter {
 		Capabilities: map[string]bool{
 			"task_delegation": true,
 			"role_discovery":  true,
+			"mcp_tool_call":   true,
 		},
 		RoleRegistry: make(map[string]string),
 	}
@@ -99,15 +100,22 @@ func (a *CrewAIAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult
 
 	a.RoleRegistry[role] = fmt.Sprintf("auth_token_%s", role)
 	output := fmt.Sprintf("CrewAI delegated task: %s to role: %s", task.Intent, role)
+	telemetry := map[string]string{
+		"delegated_role": role,
+		"auth_status":    "verified",
+	}
+
+	if task.Intent == "mcp_tool_call" {
+		toolName := task.Payload["tool_name"]
+		output = fmt.Sprintf("CrewAI role %s executed MCP tool: %s", role, toolName)
+		telemetry["mcp_tool"] = toolName
+	}
 
 	return &TaskResult{
-		TaskID: task.ID,
-		Status: "success",
-		Output: output,
-		Telemetry: map[string]string{
-			"delegated_role": role,
-			"auth_status":    "verified",
-		},
+		TaskID:    task.ID,
+		Status:    "success",
+		Output:    output,
+		Telemetry: telemetry,
 	}, nil
 }
 
