@@ -95,6 +95,12 @@ func (a *OpenClawAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResu
 	a.CurrentEpoch++
 	output := fmt.Sprintf("Executed OpenClaw task: %s, Epoch: %d", task.Intent, a.CurrentEpoch)
 
+	lineageID := fmt.Sprintf("lineage-oc-%s", task.ID)
+	// Simulate calculating tokens and compute time
+	tokens := 1500
+	computeMs := 450
+	attestedCost := GenerateCostAttestation(lineageID, tokens, computeMs)
+
 	return &TaskResult{
 		TaskID: task.ID,
 		Status: "success",
@@ -103,6 +109,7 @@ func (a *OpenClawAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResu
 			"reasoning_epoch": fmt.Sprintf("%d", a.CurrentEpoch),
 			"entropy_score":   "low",
 		},
+		AttestedCost: attestedCost,
 	}, nil
 }
 

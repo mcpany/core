@@ -97,6 +97,12 @@ func (a *AutoGenAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResul
 
 	output := fmt.Sprintf("Completed AutoGen subagent task: %s, Checkpoints: %d", task.Intent, len(a.ChatHistory))
 
+	lineageID := fmt.Sprintf("lineage-ag-%s", task.ID)
+	// Simulate calculating tokens and compute time
+	tokens := 2200
+	computeMs := 850
+	attestedCost := GenerateCostAttestation(lineageID, tokens, computeMs)
+
 	return &TaskResult{
 		TaskID: task.ID,
 		Status: "success",
@@ -105,6 +111,7 @@ func (a *AutoGenAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResul
 			"mailbox_integrity": "verified",
 			"history_length":    fmt.Sprintf("%d", len(a.ChatHistory)),
 		},
+		AttestedCost: attestedCost,
 	}, nil
 }
 

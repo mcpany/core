@@ -8,6 +8,7 @@ go_library(
         "bridge.go",
         "crewai.go",
         "openclaw.go",
+        "haca.go",
     ],
     importpath = "github.com/mcpany/core/src/interop",
     visibility = ["//visibility:public"],

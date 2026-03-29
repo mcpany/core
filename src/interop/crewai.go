@@ -100,6 +100,12 @@ func (a *CrewAIAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult
 	a.RoleRegistry[role] = fmt.Sprintf("auth_token_%s", role)
 	output := fmt.Sprintf("CrewAI delegated task: %s to role: %s", task.Intent, role)
 
+	lineageID := fmt.Sprintf("lineage-cai-%s-%s", role, task.ID)
+	// Simulate calculating tokens and compute time
+	tokens := 850
+	computeMs := 320
+	attestedCost := GenerateCostAttestation(lineageID, tokens, computeMs)
+
 	return &TaskResult{
 		TaskID: task.ID,
 		Status: "success",
@@ -108,6 +114,7 @@ func (a *CrewAIAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult
 			"delegated_role": role,
 			"auth_status":    "verified",
 		},
+		AttestedCost: attestedCost,
 	}, nil
 }
 

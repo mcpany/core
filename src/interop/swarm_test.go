@@ -42,6 +42,13 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 		if res1.Telemetry["entropy_score"] != "low" {
 			t.Errorf("Expected OpenClaw low entropy score, got '%s'", res1.Telemetry["entropy_score"])
 		}
+
+		if res1.AttestedCost == nil || res1.AttestedCost.Signature == "" {
+			t.Errorf("Expected valid AttestedCost from OpenClaw, got %v", res1.AttestedCost)
+		}
+		if res1.AttestedCost.LineageID != "lineage-oc-task-oc-001" {
+			t.Errorf("Expected correct LineageID from OpenClaw, got '%s'", res1.AttestedCost.LineageID)
+		}
 	})
 
 	t.Run("OpenClaw_UnsupportedCapability", func(t *testing.T) {
@@ -80,6 +87,13 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 
 		if res2.Telemetry["auth_status"] != "verified" {
 			t.Errorf("Expected CrewAI auth_status to be verified, got '%s'", res2.Telemetry["auth_status"])
+		}
+
+		if res2.AttestedCost == nil || res2.AttestedCost.Signature == "" {
+			t.Errorf("Expected valid AttestedCost from CrewAI, got %v", res2.AttestedCost)
+		}
+		if res2.AttestedCost.LineageID != "lineage-cai-data_analyst-task-cai-002" {
+			t.Errorf("Expected correct LineageID from CrewAI, got '%s'", res2.AttestedCost.LineageID)
 		}
 	})
 
@@ -135,6 +149,13 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 
 		if res3.Telemetry["history_length"] == "0" {
 			t.Errorf("Expected AutoGen chat history to increment, history_length is 0")
+		}
+
+		if res3.AttestedCost == nil || res3.AttestedCost.Signature == "" {
+			t.Errorf("Expected valid AttestedCost from AutoGen, got %v", res3.AttestedCost)
+		}
+		if res3.AttestedCost.LineageID != "lineage-ag-task-ag-003" {
+			t.Errorf("Expected correct LineageID from AutoGen, got '%s'", res3.AttestedCost.LineageID)
 		}
 	})
 

@@ -154,10 +154,11 @@ type Task struct {
 // Side Effects:
 //   - None.
 type TaskResult struct {
-	TaskID    string            `json:"task_id"`
-	Status    string            `json:"status"`
-	Output    string            `json:"output"`
-	Telemetry map[string]string `json:"telemetry,omitempty"`
+	TaskID       string            `json:"task_id"`
+	Status       string            `json:"status"`
+	Output       string            `json:"output"`
+	Telemetry    map[string]string `json:"telemetry,omitempty"`
+	AttestedCost *CostAttestation  `json:"attested_cost,omitempty"`
 }
 
 // AdapterHub manages the registration and routing of tasks to different agent frameworks.
