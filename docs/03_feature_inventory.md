@@ -1768,3 +1768,13 @@
 ### Priority Shifts
 - **SRM Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Hierarchical Provenance** validation.
 - **Asynchronous Mailbox Sharding (AMS)**: (Re-affirmed P0) Now elevated with the requirement for **HLAP-compliant** timing normalization.
+
+## Evolution: [2026-07-12] Updates
+
+### Proposed Additions
+- **Zero-Trust Local Handshake Provider**: (P0) Security middleware mandating origin-bound, hardware-attested handshakes for all local WebSocket and API interactions to neutralize CVE-2026-25253.
+- **Behavioral Skill Profiler**: (P0) Mandatory forensic service for real-time sandboxed profiling of dynamic skills to detect "ClawHub" style marketplace poisoning.
+
+### Priority Shifts
+- **Hardware-Attested Cost Attribution (HACA)**: (Re-affirmed P0) Elevated to mandatory status for all mesh-bound tool calls to ensure economic accountability across mission-root lineages.
+- **Dynamic Mesh Resilience (DMR) Hub**: (Re-affirmed P0) Designated as the primary coordination service for migrating mission-critical state during Agent Team coordination stalls.
