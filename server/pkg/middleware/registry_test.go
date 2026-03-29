@@ -309,6 +309,7 @@ func TestInitStandardMiddlewares_ContextOptimizer_Default(t *testing.T) {
 		nil,
 		nil,
 		nil,
+		nil,
 	)
 	assert.NoError(t, err)
 	assert.NotNil(t, stdMws.ContextOptimizer)
