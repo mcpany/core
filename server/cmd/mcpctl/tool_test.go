@@ -84,6 +84,6 @@ upstream_services:
 		cmd.SetArgs([]string{"tool", "hash", "http-tool", "--config-path", filepath.Join(tempDir, "non-existent.yaml")})
 		err := cmd.Execute()
 		assert.Error(t, err)
-        assert.Contains(t, err.Error(), "failed to load configuration")
+        assert.Contains(t, err.Error(), "not found")
     })
 }

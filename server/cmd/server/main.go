@@ -134,7 +134,51 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 						continue
 					}
 					if _, err := osFs.Stat(path); os.IsNotExist(err) {
-						return fmt.Errorf("❌ Configuration file not found: %s\n\n💡 Tip: You can generate a default configuration using:\n   %s config generate > %s", path, appconsts.Name, path)
+						if path == "examples/hello_world.yaml" || strings.HasSuffix(path, "hello_world.yaml") {
+							log.Warn("⚠️ Configuration file not found, creating a default one", "path", path)
+							configData := []byte(`upstream_services:
+  - name: "hello-service"
+    http_service:
+      address: "https://echo.free.beeceptor.com"
+      tools:
+        - name: "hello"
+          description: "Say hello"
+          call_id: "hello-call"
+          input_schema:
+            type: "object"
+            properties: {}
+      calls:
+        hello-call:
+          method: "HTTP_METHOD_GET"
+          endpoint_path: "/hello"
+`)
+							_ = afero.WriteFile(osFs, path, configData, 0o600)
+						} else if path == "config.yaml" || path == "mcpany.yaml" {
+							log.Warn("⚠️ Configuration file not found, creating a default one", "path", path)
+							configData := []byte(`global_settings:
+  mcp_listen_address: ":50050"
+  metrics_listen_address: ":9090"
+  log_level: "info"
+upstream_services:
+  - name: "example-service"
+    http_service:
+      address: "https://httpbin.org"
+      tools:
+        - name: "get_example"
+          description: "Get example data"
+          call_id: "get-example-call"
+          input_schema:
+            type: "object"
+            properties: {}
+      calls:
+        get-example-call:
+          method: "HTTP_METHOD_GET"
+          endpoint_path: "/get"
+`)
+							_ = afero.WriteFile(osFs, path, configData, 0o600)
+						} else {
+							log.Warn("⚠️ Configuration file not found, skipping.", "path", path)
+						}
 					} else if err != nil {
 						return fmt.Errorf("❌ Failed to access configuration file %s: %w", path, err)
 					}

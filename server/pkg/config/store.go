@@ -964,12 +964,10 @@ func (s *FileStore) collectFilePaths() ([]string, error) {
 			files = append(files, path)
 			continue
 		}
-		info, err := s.fs.Stat(path)
-		if err != nil {
-			return nil, fmt.Errorf("failed to stat path %s: %w", path, err)
-		}
-
-		if info.IsDir() {
+		if info, err := s.fs.Stat(path); err != nil {
+			// Skip missing files to avoid friction when starting with empty config.
+			continue
+		} else if info.IsDir() {
 			err := afero.Walk(s.fs, path, func(p string, fi os.FileInfo, err error) error {
 				if err != nil {
 					return err

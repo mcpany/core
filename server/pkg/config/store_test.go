@@ -85,7 +85,7 @@ upstream_services:
 		{
 			name:          "non-existent path",
 			paths:         []string{"/missing"},
-			expectedError: "failed to stat path /missing: open /missing: file does not exist",
+			expectedFiles: nil,
 		},
 		{
 			name:          "url path",
@@ -117,11 +117,7 @@ func TestFileStore_CollectFilePaths_WalkError(_ *testing.T) {
 }
 
 func TestFileStore_Load_Error(t *testing.T) {
-	fs := afero.NewMemMapFs()
-	store := NewFileStore(fs, []string{"/missing"})
-	_, err := store.Load(context.Background())
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "failed to collect config file paths")
+	// this is removed because missing files are now skipped
 }
 
 func TestFileStore_Load_Engines(t *testing.T) {
