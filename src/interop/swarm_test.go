@@ -199,6 +199,106 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 			}
 		}
 	})
+
+	// 7. Streaming Task Tests
+	t.Run("OpenClaw_StreamTask", func(t *testing.T) {
+		taskStream := &interop.Task{
+			ID:        "task-stream-oc-001",
+			Framework: "OpenClaw",
+			Intent:    "adaptive_reasoning",
+			Payload:   map[string]string{"context": "stream_data"},
+		}
+
+		resultChan, err := hub.RouteStreamTask(ctx, taskStream)
+		if err != nil {
+			t.Fatalf("Failed to execute OpenClaw stream task: %v", err)
+		}
+
+		count := 0
+		for res := range resultChan {
+			count++
+			if res.Status != "streaming" && res.Status != "success" {
+				t.Errorf("Expected status 'streaming' or 'success', got '%s'", res.Status)
+			}
+			if res.Status == "streaming" && res.Telemetry["entropy_score"] != "low" {
+				t.Errorf("Expected OpenClaw low entropy score during stream, got '%s'", res.Telemetry["entropy_score"])
+			}
+		}
+
+		if count != 4 { // 3 partials + 1 success
+			t.Errorf("Expected 4 results from OpenClaw stream, got %d", count)
+		}
+	})
+
+	t.Run("CrewAI_StreamTask", func(t *testing.T) {
+		taskStream := &interop.Task{
+			ID:        "task-stream-cai-002",
+			Framework: "CrewAI",
+			Intent:    "task_delegation",
+			Payload:   map[string]string{"role": "data_streamer"},
+		}
+
+		resultChan, err := hub.RouteStreamTask(ctx, taskStream)
+		if err != nil {
+			t.Fatalf("Failed to execute CrewAI stream task: %v", err)
+		}
+
+		count := 0
+		for res := range resultChan {
+			count++
+			if res.Status == "streaming" && res.Telemetry["auth_status"] != "verified" {
+				t.Errorf("Expected CrewAI auth_status to be verified during stream, got '%s'", res.Telemetry["auth_status"])
+			}
+			if res.Telemetry["delegated_role"] != "data_streamer" {
+				t.Errorf("Expected CrewAI delegated_role 'data_streamer', got '%s'", res.Telemetry["delegated_role"])
+			}
+		}
+
+		if count != 2 { // 1 streaming + 1 success
+			t.Errorf("Expected 2 results from CrewAI stream, got %d", count)
+		}
+	})
+
+	t.Run("AutoGen_StreamTask", func(t *testing.T) {
+		taskStream := &interop.Task{
+			ID:        "task-stream-ag-003",
+			Framework: "AutoGen",
+			Intent:    "subagent_exec",
+			Payload:   map[string]string{"action": "compile_stream"},
+		}
+
+		resultChan, err := hub.RouteStreamTask(ctx, taskStream)
+		if err != nil {
+			t.Fatalf("Failed to execute AutoGen stream task: %v", err)
+		}
+
+		count := 0
+		for res := range resultChan {
+			count++
+			if res.Status == "streaming" && res.Telemetry["mailbox_integrity"] != "verified" {
+				t.Errorf("Expected AutoGen mailbox integrity 'verified' during stream, got '%s'", res.Telemetry["mailbox_integrity"])
+			}
+			if res.Telemetry["history_length"] == "0" {
+				t.Errorf("Expected AutoGen chat history to increment, history_length is 0")
+			}
+		}
+
+		if count != 2 { // 1 streaming + 1 success
+			t.Errorf("Expected 2 results from AutoGen stream, got %d", count)
+		}
+	})
+
+	t.Run("StreamTask_UnsupportedFramework", func(t *testing.T) {
+		taskInvalid := &interop.Task{
+			ID:        "task-stream-inv-004",
+			Framework: "UnknownFramework",
+			Intent:    "do_magic",
+		}
+		_, err := hub.RouteStreamTask(ctx, taskInvalid)
+		if err == nil {
+			t.Error("Expected error for routing stream task to unknown framework, got nil")
+		}
+	})
 }
 
 // Helper to access registered adapters for testing interface direct calls

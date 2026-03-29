@@ -3,6 +3,7 @@ package interop
 import (
 	"context"
 	"fmt"
+	"sync"
 )
 
 // CrewAIAdapter implements the AgentFramework interface for CrewAI.
@@ -23,6 +24,7 @@ import (
 type CrewAIAdapter struct {
 	Capabilities map[string]bool
 	RoleRegistry map[string]string // Role name -> Capability token
+	mu           sync.Mutex
 }
 
 // NewCrewAIAdapter creates a new CrewAIAdapter instance.
@@ -97,7 +99,10 @@ func (a *CrewAIAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult
 		role = "generalist"
 	}
 
+	a.mu.Lock()
 	a.RoleRegistry[role] = fmt.Sprintf("auth_token_%s", role)
+	a.mu.Unlock()
+
 	output := fmt.Sprintf("CrewAI delegated task: %s to role: %s", task.Intent, role)
 
 	return &TaskResult{
@@ -128,6 +133,77 @@ func (a *CrewAIAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult
 //   - None.
 func (a *CrewAIAdapter) SupportsCapability(capability string) bool {
 	return a.Capabilities[capability]
+}
+
+// StreamTask translates and streams execution of a universal task on the CrewAI framework.
+//
+// Intent: Simulates streaming task execution utilizing delegated role mechanisms.
+//
+// Parameters:
+//   - ctx (context.Context): The context for execution, used to handle cancellation and timeouts.
+//   - task (*Task): The universal task definition detailing the requested intent and payload.
+//
+// Returns:
+//   - <-chan *TaskResult: A read-only channel pushing incremental task results.
+//   - error: An error if the capability is unsupported.
+//
+// Errors:
+//   - Returns "CrewAI does not support capability" if the task's intent is not supported by the adapter.
+//
+// Side Effects:
+//   - Spawns a background goroutine to execute the task.
+//   - Modifies the internal RoleRegistry state to map the delegated role to an authentication token.
+func (a *CrewAIAdapter) StreamTask(ctx context.Context, task *Task) (<-chan *TaskResult, error) {
+	if !a.SupportsCapability(task.Intent) {
+		return nil, fmt.Errorf("CrewAI does not support capability: %s", task.Intent)
+	}
+
+	resultChan := make(chan *TaskResult)
+
+	go func() {
+		defer close(resultChan)
+
+		// Simulated role discovery and task delegation mapping
+		role, exists := task.Payload["role"]
+		if !exists {
+			role = "generalist"
+		}
+
+		a.mu.Lock()
+		a.RoleRegistry[role] = fmt.Sprintf("auth_token_%s", role)
+		a.mu.Unlock()
+
+		output := fmt.Sprintf("CrewAI streaming delegated task: %s to role: %s", task.Intent, role)
+
+		select {
+		case <-ctx.Done():
+			return
+		case resultChan <- &TaskResult{
+			TaskID: task.ID,
+			Status: "streaming",
+			Output: output,
+			Telemetry: map[string]string{
+				"delegated_role": role,
+				"auth_status":    "verified",
+			},
+		}:
+		}
+
+		select {
+		case <-ctx.Done():
+			return
+		case resultChan <- &TaskResult{
+			TaskID: task.ID,
+			Status: "success",
+			Output: fmt.Sprintf("Completed CrewAI task: %s", task.Intent),
+			Telemetry: map[string]string{
+				"delegated_role": role,
+			},
+		}:
+		}
+	}()
+
+	return resultChan, nil
 }
 
 // SyncMemoryShard synchronizes a hardware-attested multimodal memory shard with the CrewAI framework.

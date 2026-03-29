@@ -3,6 +3,7 @@ package interop
 import (
 	"context"
 	"fmt"
+	"sync"
 )
 
 // OpenClawAdapter implements the AgentFramework interface for OpenClaw.
@@ -23,6 +24,7 @@ import (
 type OpenClawAdapter struct {
 	Capabilities map[string]bool
 	CurrentEpoch int // Track the reasoning epoch
+	mu           sync.Mutex
 }
 
 // NewOpenClawAdapter creates a new OpenClawAdapter instance.
@@ -92,15 +94,19 @@ func (a *OpenClawAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResu
 	}
 
 	// Simulated execution with state versioning logic (reasoning_epoch)
+	a.mu.Lock()
 	a.CurrentEpoch++
-	output := fmt.Sprintf("Executed OpenClaw task: %s, Epoch: %d", task.Intent, a.CurrentEpoch)
+	currentEpoch := a.CurrentEpoch
+	a.mu.Unlock()
+
+	output := fmt.Sprintf("Executed OpenClaw task: %s, Epoch: %d", task.Intent, currentEpoch)
 
 	return &TaskResult{
 		TaskID: task.ID,
 		Status: "success",
 		Output: output,
 		Telemetry: map[string]string{
-			"reasoning_epoch": fmt.Sprintf("%d", a.CurrentEpoch),
+			"reasoning_epoch": fmt.Sprintf("%d", currentEpoch),
 			"entropy_score":   "low",
 		},
 	}, nil
@@ -123,6 +129,77 @@ func (a *OpenClawAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResu
 //   - None.
 func (a *OpenClawAdapter) SupportsCapability(capability string) bool {
 	return a.Capabilities[capability]
+}
+
+// StreamTask translates and streams execution of a universal task on the OpenClaw framework.
+//
+// Intent: Simulates an adaptive reasoning streaming execution by emitting partial state to neutralize "Mailbox Lock".
+//
+// Parameters:
+//   - ctx (context.Context): The context for execution, used to handle cancellation and timeouts.
+//   - task (*Task): The universal task definition detailing the requested intent and payload.
+//
+// Returns:
+//   - <-chan *TaskResult: A read-only channel pushing incremental task results.
+//   - error: An error if the capability is unsupported.
+//
+// Errors:
+//   - Returns "OpenClaw does not support capability" if the task's intent is not supported by the adapter.
+//
+// Side Effects:
+//   - Spawns a background goroutine to execute the task.
+//   - Modifies the internal CurrentEpoch state.
+func (a *OpenClawAdapter) StreamTask(ctx context.Context, task *Task) (<-chan *TaskResult, error) {
+	if !a.SupportsCapability(task.Intent) {
+		return nil, fmt.Errorf("OpenClaw does not support capability: %s", task.Intent)
+	}
+
+	resultChan := make(chan *TaskResult)
+
+	go func() {
+		defer close(resultChan)
+		for i := 1; i <= 3; i++ {
+			a.mu.Lock()
+			a.CurrentEpoch++
+			currentEpoch := a.CurrentEpoch
+			a.mu.Unlock()
+
+			output := fmt.Sprintf("Streamed OpenClaw partial task: %s, Epoch: %d (Part %d/3)", task.Intent, currentEpoch, i)
+
+			select {
+			case <-ctx.Done():
+				return
+			case resultChan <- &TaskResult{
+				TaskID: task.ID,
+				Status: "streaming",
+				Output: output,
+				Telemetry: map[string]string{
+					"reasoning_epoch": fmt.Sprintf("%d", currentEpoch),
+					"entropy_score":   "low",
+				},
+			}:
+			}
+		}
+
+		a.mu.Lock()
+		currentEpochFinal := a.CurrentEpoch
+		a.mu.Unlock()
+
+		select {
+		case <-ctx.Done():
+			return
+		case resultChan <- &TaskResult{
+			TaskID: task.ID,
+			Status: "success",
+			Output: fmt.Sprintf("Completed OpenClaw task: %s", task.Intent),
+			Telemetry: map[string]string{
+				"reasoning_epoch": fmt.Sprintf("%d", currentEpochFinal),
+			},
+		}:
+		}
+	}()
+
+	return resultChan, nil
 }
 
 // SyncMemoryShard synchronizes a hardware-attested multimodal memory shard with the OpenClaw framework.

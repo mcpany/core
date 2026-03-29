@@ -3,6 +3,7 @@ package interop
 import (
 	"context"
 	"fmt"
+	"sync"
 )
 
 // AutoGenAdapter implements the AgentFramework interface for AutoGen.
@@ -23,6 +24,7 @@ import (
 type AutoGenAdapter struct {
 	Capabilities map[string]bool
 	ChatHistory  []string // Maintain stateful checkpoints
+	mu           sync.Mutex
 }
 
 // NewAutoGenAdapter creates a new AutoGenAdapter instance.
@@ -93,9 +95,13 @@ func (a *AutoGenAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResul
 
 	// Simulated stateful checkpoints (Sandbox Persistence Proofs)
 	msg := fmt.Sprintf("AutoGen subagent executed task: %s", task.Intent)
-	a.ChatHistory = append(a.ChatHistory, msg)
 
-	output := fmt.Sprintf("Completed AutoGen subagent task: %s, Checkpoints: %d", task.Intent, len(a.ChatHistory))
+	a.mu.Lock()
+	a.ChatHistory = append(a.ChatHistory, msg)
+	historyLength := len(a.ChatHistory)
+	a.mu.Unlock()
+
+	output := fmt.Sprintf("Completed AutoGen subagent task: %s, Checkpoints: %d", task.Intent, historyLength)
 
 	return &TaskResult{
 		TaskID: task.ID,
@@ -103,7 +109,7 @@ func (a *AutoGenAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResul
 		Output: output,
 		Telemetry: map[string]string{
 			"mailbox_integrity": "verified",
-			"history_length":    fmt.Sprintf("%d", len(a.ChatHistory)),
+			"history_length":    fmt.Sprintf("%d", historyLength),
 		},
 	}, nil
 }
@@ -127,6 +133,82 @@ func (a *AutoGenAdapter) SupportsCapability(capability string) bool {
 	return a.Capabilities[capability]
 }
 
+// StreamTask translates and streams execution of a universal task on the AutoGen framework.
+//
+// Intent: Simulates streaming task execution with subagent checkpoints.
+//
+// Parameters:
+//   - ctx (context.Context): The context for execution, used to handle cancellation and timeouts.
+//   - task (*Task): The universal task definition detailing the requested intent and payload.
+//
+// Returns:
+//   - <-chan *TaskResult: A read-only channel pushing incremental task results.
+//   - error: An error if the capability is unsupported.
+//
+// Errors:
+//   - Returns "AutoGen does not support capability" if the task's intent is not supported by the adapter.
+//
+// Side Effects:
+//   - Spawns a background goroutine to execute the task.
+//   - Modifies the internal ChatHistory state.
+func (a *AutoGenAdapter) StreamTask(ctx context.Context, task *Task) (<-chan *TaskResult, error) {
+	if !a.SupportsCapability(task.Intent) {
+		return nil, fmt.Errorf("AutoGen does not support capability: %s", task.Intent)
+	}
+
+	resultChan := make(chan *TaskResult)
+
+	go func() {
+		defer close(resultChan)
+
+		// Simulated subagent checkpointing
+		action, exists := task.Payload["action"]
+		if !exists {
+			action = "default_action"
+		}
+
+		a.mu.Lock()
+		a.ChatHistory = append(a.ChatHistory, fmt.Sprintf("Checkpoint: starting %s", action))
+		historyLength := len(a.ChatHistory)
+		a.mu.Unlock()
+
+		output := fmt.Sprintf("AutoGen streamed subagent execution: %s", action)
+
+		select {
+		case <-ctx.Done():
+			return
+		case resultChan <- &TaskResult{
+			TaskID: task.ID,
+			Status: "streaming",
+			Output: output,
+			Telemetry: map[string]string{
+				"mailbox_integrity": "verified",
+				"history_length":    fmt.Sprintf("%d", historyLength),
+			},
+		}:
+		}
+
+		a.mu.Lock()
+		finalHistoryLength := len(a.ChatHistory)
+		a.mu.Unlock()
+
+		select {
+		case <-ctx.Done():
+			return
+		case resultChan <- &TaskResult{
+			TaskID: task.ID,
+			Status: "success",
+			Output: fmt.Sprintf("Completed AutoGen task: %s", task.Intent),
+			Telemetry: map[string]string{
+				"history_length": fmt.Sprintf("%d", finalHistoryLength),
+			},
+		}:
+		}
+	}()
+
+	return resultChan, nil
+}
+
 // SyncMemoryShard synchronizes a hardware-attested multimodal memory shard with the AutoGen framework.
 //
 // Intent: Ingests a memory shard to synchronize state across agents.
@@ -148,6 +230,8 @@ func (a *AutoGenAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard
 		return fmt.Errorf("invalid memory shard: signature required for ingestion")
 	}
 
+	a.mu.Lock()
+	defer a.mu.Unlock()
 	a.ChatHistory = append(a.ChatHistory, fmt.Sprintf("Received multimodal shard: %s", shard.ShardID))
 	return nil
 }

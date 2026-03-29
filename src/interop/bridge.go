@@ -74,6 +74,25 @@ type AgentFramework interface {
 	//   - None.
 	SupportsCapability(capability string) bool
 
+	// StreamTask streams task results back to the universal bus as they are generated.
+	//
+	// Intent: Enables granular context streaming between the agent framework and the bus.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for controlling cancellation and timeouts.
+	//   - task (*Task): The universal task definition to execute.
+	//
+	// Returns:
+	//   - <-chan *TaskResult: A read-only channel emitting task results as they become available.
+	//   - error: An error if the task execution fails to start.
+	//
+	// Errors:
+	//   - Returns an error if the framework does not support the requested capability or if execution fails to begin.
+	//
+	// Side Effects:
+	//   - Spawns a background goroutine to execute the task and stream results to the returned channel.
+	StreamTask(ctx context.Context, task *Task) (<-chan *TaskResult, error)
+
 	// SyncMemoryShard synchronizes a hardware-attested multimodal memory shard with the agent framework.
 	//
 	// Intent: Syncs a state shard with the framework, ensuring multimodal trace integrity.
@@ -243,4 +262,30 @@ func (h *AdapterHub) RouteTask(ctx context.Context, task *Task) (*TaskResult, er
 		return nil, fmt.Errorf("no adapter registered for framework: %s", task.Framework)
 	}
 	return adapter.HandleTask(ctx, task)
+}
+
+// RouteStreamTask finds the appropriate adapter for a task and streams its execution.
+//
+// Intent: Routes a given task to the registered framework adapter to initiate a streaming response.
+//
+// Parameters:
+//   - ctx (context.Context): The context for controlling cancellation and timeouts.
+//   - task (*Task): The universal task definition containing the framework and intent.
+//
+// Returns:
+//   - <-chan *TaskResult: A read-only channel emitting task results from the executing adapter.
+//   - error: An error if routing fails or the adapter cannot initiate the stream.
+//
+// Errors:
+//   - Returns "no adapter registered for framework" if the requested framework is not found.
+//   - Returns any error produced by the adapter during stream initiation.
+//
+// Side Effects:
+//   - Initiates a streaming task on the corresponding adapter.
+func (h *AdapterHub) RouteStreamTask(ctx context.Context, task *Task) (<-chan *TaskResult, error) {
+	adapter, exists := h.adapters[task.Framework]
+	if !exists {
+		return nil, fmt.Errorf("no adapter registered for framework: %s", task.Framework)
+	}
+	return adapter.StreamTask(ctx, task)
 }
