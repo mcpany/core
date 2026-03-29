@@ -47,7 +47,6 @@ func NewScopesMiddleware(config ScopesConfig) *ScopesMiddleware {
 	}
 }
 
-
 const agentRoleKey contextKey = "agent_role"
 
 // Execute checks if the tool name matches any capability token prefix granted to the agent's role.

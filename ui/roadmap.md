@@ -775,6 +775,13 @@
 - [ ] **[P0] UTD Mesh Topology**: (2026-07-10) Interactive map of teammate discovery beacons and horizontal swarm formation.
 - [ ] **[P0] Hierarchical Lineage Tracer**: (2026-07-10) Visual debugger for recursive, hardware-signed reasoning sub-steps.
 
+#### Upcoming (2026-07-12 Evolution)
+- [ ] **[P0] DCP Mesh Explorer**: (2026-07-12) Interactive map of decentralized coordination peers and node-to-node state synchronization.
+- [ ] **[P0] Post-Quantum Handshake Widget**: (2026-07-12) Real-time status indicator for PQMH-protected inter-node communications.
+- [ ] **[P0] HLAM Timing Inspector**: (2026-07-12) Forensic UI for visualizing nanosecond clock-drift compensation and timing-drift alerts.
+- [ ] **[P0] Atomic Transaction Monitor**: (2026-07-12) Visual tracker for multi-agent atomic commits and hardware-attested rollbacks.
+- [ ] **[P1] Telemetry Privacy Auditor**: (2026-07-12) Security dashboard for reviewing semantically scrubbed reasoning monologues in the telemetry sink.
+
 #### Upcoming (2026-07-11 Evolution)
 - [ ] **[P0] Mesh Resilience Dashboard**: (2026-07-11) Real-time visualization of state shard migration and physical node health.
 - [ ] **[P0] Economic Attribution Viewer**: (2026-07-11) Visual tracker for hardware-attested cost attribution (HACA) across subagent lineages.

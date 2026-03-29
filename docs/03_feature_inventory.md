@@ -1,5 +1,18 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-12] Updates
+
+### Proposed Additions
+- **Decentralized Coordination Peer (DCP)**: (P0) Transformation of the central gateway into a peer node supporting node-to-node state arbitration.
+- **Post-Quantum Mesh Handshake (PQMH) Provider**: (P0) Security service implementing NIST FIPS 203/204/205 quantum-resistant algorithms for all mesh handshakes.
+- **Hardware-Locked Attention Mapping (HLAM)**: (P0) Security middleware providing nanosecond-precision clock-drift compensation for attention-fragment attestation.
+- **Atomic State Transaction (AST) Broker**: (P0) Transactional integrity service implementing UACO v3.7 atomic commits and hardware-attested rollbacks.
+- **Telemetry Monologue Sanitizer**: (P1) Privacy service for the Asynchronous Telemetry Sink that semantically scrubs reasoning monologues to prevent intent leakage.
+
+### Priority Shifts
+- **Dynamic Mesh Resilience (DMR) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **DCP-compliant** peer-to-peer arbitration.
+- **Asynchronous Telemetry Sink**: (Re-affirmed P1) Now elevated with the requirement for mandatory **Monologue Sanitization** integration.
+
 ## Evolution: [2026-07-11] Updates
 
 ### Proposed Additions

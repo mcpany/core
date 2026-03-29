@@ -949,6 +949,13 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Unified Teammate Discovery (UTD) Gateway**: High-speed, authenticated discovery hub for horizontal mesh formation. (Added: 2026-07-10)
 *   **[P0] Hierarchical Provenance Validator**: Implementation of Gemini-compliant recursive "Chain-of-Thought" hardware signing. (Added: 2026-07-10)
 
+#### Upcoming (2026-07-12 Evolution)
+*   **[P0] Decentralized Coordination Peer (DCP)**: Transformation of the central gateway into a peer node supporting node-to-node state arbitration. (Added: 2026-07-12)
+*   **[P0] Post-Quantum Mesh Handshake (PQMH) Provider**: Security service implementing NIST FIPS 203/204/205 quantum-resistant algorithms for all mesh handshakes. (Added: 2026-07-12)
+*   **[P0] Hardware-Locked Attention Mapping (HLAM)**: Security middleware providing nanosecond-precision clock-drift compensation for attention-fragment attestation. (Added: 2026-07-12)
+*   **[P0] Atomic State Transaction (AST) Broker**: Transactional integrity service implementing UACO v3.7 atomic commits and hardware-attested rollbacks. (Added: 2026-07-12)
+*   **[P1] Telemetry Monologue Sanitizer**: Privacy service for the Asynchronous Telemetry Sink that semantically scrubs reasoning monologues to prevent intent leakage. (Added: 2026-07-12)
+
 #### Upcoming (2026-07-11 Evolution)
 *   **[P0] Dynamic Mesh Resilience (DMR) Hub**: Authoritative coordination service for re-sharding and migrating state between physical nodes upon subagent failure. (Added: 2026-07-11)
 *   **[P0] Hardware-Attested Cost Attribution (HACA)**: Advanced economic security service that cryptographically attributes token usage to specific sub-process lineage. (Added: 2026-07-11)
