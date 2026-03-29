@@ -240,7 +240,7 @@ func TestHandleBulkDeleteTraces(t *testing.T) {
 	req, _ := http.NewRequest(http.MethodPost, "/api/v1/traces/bulk-delete", bytes.NewBuffer(reqBody))
 	rr := httptest.NewRecorder()
 
-	app.GetRouter().ServeHTTP(rr, req)
+	app.handleBulkDeleteTraces().ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusNoContent {
 		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusNoContent)
