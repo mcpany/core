@@ -235,6 +235,27 @@ func init() {
 			}.Build(),
 		}.Build(),
 		configv1.ServiceTemplate_builder{
+			Id:          proto.String("a2a-agent-chain"),
+			Name:        proto.String("A2A Agent Chain Tracer"),
+			Description: proto.String("High-fidelity telemetry provider for the A2A messaging hub. Emits cryptographically signed task proposals, bids, and handoff events for visual tracing."),
+			Icon:        proto.String("activity"),
+			Tags:        []string{"a2a", "tracing", "telemetry", "security"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("a2a-agent-chain"),
+				McpService: configv1.McpUpstreamService_builder{
+					HttpConnection: configv1.McpStreamableHttpConnection_builder{
+						HttpAddress: proto.String("http://localhost:50051/api/v2/a2a/tracer"),
+					}.Build(),
+					ToolAutoDiscovery: proto.Bool(true),
+				}.Build(),
+				UpstreamAuth: configv1.Authentication_builder{
+					Oauth2: configv1.OAuth2Auth_builder{
+						Scopes: proto.String("a2a:read,a2a:trace"),
+					}.Build(),
+				}.Build(),
+			}.Build(),
+		}.Build(),
+		configv1.ServiceTemplate_builder{
 			Id:          proto.String("github"),
 			Name:        proto.String("GitHub"),
 			Description: proto.String("Code hosting and collaboration."),
