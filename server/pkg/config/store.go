@@ -1425,13 +1425,44 @@ func suggestFix(unknownField string, root proto.Message) string {
 	bestMatch := ""
 	minDist := 100
 
+	// Create a stable iteration order to avoid flaky tests, or just break ties gracefully
 	for name := range candidates {
 		// ⚡ BOLT: Replaced inefficient local Levenshtein implementation with optimized utility function.
 		// Randomized Selection from Top 5 High-Impact Targets
 		dist := util.LevenshteinDistance(unknownField, name)
+
+		// Tie-breaking logic:
+		// 1. Shorter distance
+		// 2. If equal distance, favor the candidate whose length is closer to the unknown string, but if one candidate contains the unknown string as a prefix, prioritize it.
+		// 3. If still equal, break ties alphabetically to ensure deterministic behavior
 		if dist < minDist {
 			minDist = dist
 			bestMatch = name
+		} else if dist == minDist {
+			// Check if one shares a longer common prefix
+			prefix1 := commonPrefixLen(name, unknownField)
+			prefix2 := commonPrefixLen(bestMatch, unknownField)
+
+			if prefix1 > prefix2 {
+				bestMatch = name
+			} else if prefix1 == prefix2 {
+				diff1 := len(name) - len(unknownField)
+				if diff1 < 0 {
+					diff1 = -diff1
+				}
+				diff2 := len(bestMatch) - len(unknownField)
+				if diff2 < 0 {
+					diff2 = -diff2
+				}
+
+				if diff1 < diff2 {
+					bestMatch = name
+				} else if diff1 == diff2 {
+					if name < bestMatch {
+						bestMatch = name
+					}
+				}
+			}
 		}
 	}
 
@@ -1449,6 +1480,19 @@ func suggestFix(unknownField string, root proto.Message) string {
 		return fmt.Sprintf("Did you mean %q?", bestMatch)
 	}
 	return ""
+}
+
+func commonPrefixLen(s1, s2 string) int {
+	l := len(s1)
+	if len(s2) < l {
+		l = len(s2)
+	}
+	for i := 0; i < l; i++ {
+		if s1[i] != s2[i] {
+			return i
+		}
+	}
+	return l
 }
 
 func collectFieldNames(md protoreflect.MessageDescriptor, candidates map[string]struct{}) {
