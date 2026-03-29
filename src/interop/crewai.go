@@ -5,11 +5,11 @@ import (
 	"fmt"
 )
 
-// CrewAIAdapter implements the AgentFramework interface for CrewAI.
+// Summary: CrewAIAdapter implements the AgentFramework interface for CrewAI.
 //
 // Intent: Provides the implementation for interacting with the CrewAI framework via the universal adapter hub.
 //
-// Parameters:
+// Params:
 //   - None.
 //
 // Returns:
@@ -25,11 +25,11 @@ type CrewAIAdapter struct {
 	RoleRegistry map[string]string // Role name -> Capability token
 }
 
-// NewCrewAIAdapter creates a new CrewAIAdapter instance.
+// Summary: NewCrewAIAdapter creates a new CrewAIAdapter instance.
 //
 // Intent: Instantiates and initializes a new adapter for CrewAI with its predefined capabilities.
 //
-// Parameters:
+// Params:
 //   - None.
 //
 // Returns:
@@ -50,11 +50,11 @@ func NewCrewAIAdapter() *CrewAIAdapter {
 	}
 }
 
-// Name returns the identifier of the agent framework.
+// Summary: Name returns the identifier of the agent framework.
 //
 // Intent: Provides the unique identifier for the CrewAI adapter.
 //
-// Parameters:
+// Params:
 //   - None.
 //
 // Returns:
@@ -69,11 +69,11 @@ func (a *CrewAIAdapter) Name() string {
 	return "CrewAI"
 }
 
-// HandleTask translates and executes a universal task on the CrewAI framework.
+// Summary: HandleTask translates and executes a universal task on the CrewAI framework.
 //
 // Intent: Simulates executing a task using the delegated role mechanisms within the CrewAI framework.
 //
-// Parameters:
+// Params:
 //   - ctx (context.Context): The context for execution, used to handle cancellation and timeouts.
 //   - task (*Task): The universal task definition detailing the requested intent and payload.
 //
@@ -111,11 +111,11 @@ func (a *CrewAIAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult
 	}, nil
 }
 
-// SupportsCapability checks if the framework provides a requested capability.
+// Summary: SupportsCapability checks if the framework provides a requested capability.
 //
 // Intent: Checks the internal capabilities map to see if the given intent is supported by CrewAI.
 //
-// Parameters:
+// Params:
 //   - capability (string): The capability or intent name to check.
 //
 // Returns:
@@ -130,11 +130,11 @@ func (a *CrewAIAdapter) SupportsCapability(capability string) bool {
 	return a.Capabilities[capability]
 }
 
-// SyncMemoryShard synchronizes a hardware-attested multimodal memory shard with the CrewAI framework.
+// Summary: SyncMemoryShard synchronizes a hardware-attested multimodal memory shard with the CrewAI framework.
 //
 // Intent: Provides a unified way to distribute intent-pinned context to CrewAI's subagents.
 //
-// Parameters:
+// Params:
 //   - ctx (context.Context): The context for controlling cancellation and timeouts.
 //   - shard (*MemoryShard): The multimodal memory shard to synchronize.
 //

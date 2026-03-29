@@ -5,11 +5,11 @@ import (
 	"fmt"
 )
 
-// AgentFramework represents a standardized AI framework to interact with.
+// Summary: AgentFramework represents a standardized AI framework to interact with.
 //
 // Intent: Defines the standard interface that all agent frameworks must implement to integrate with the universal bus.
 //
-// Parameters:
+// Params:
 //   - None.
 //
 // Returns:
@@ -21,11 +21,11 @@ import (
 // Side Effects:
 //   - None.
 type AgentFramework interface {
-	// Name returns the identifier of the agent framework.
+	// Summary: Name returns the identifier of the agent framework.
 	//
 	// Intent: Retrieves the unique name of the framework.
 	//
-	// Parameters:
+	// Params:
 	//   - None.
 	//
 	// Returns:
@@ -38,11 +38,11 @@ type AgentFramework interface {
 	//   - None.
 	Name() string
 
-	// HandleTask receives a task from the universal bus, translates it, executes it, and returns the result.
+	// Summary: HandleTask receives a task from the universal bus, translates it, executes it, and returns the result.
 	//
 	// Intent: Translates and executes a given task within the specific agent framework.
 	//
-	// Parameters:
+	// Params:
 	//   - ctx (context.Context): The context for controlling cancellation and timeouts.
 	//   - task (*Task): The universal task definition to execute.
 	//
@@ -57,11 +57,11 @@ type AgentFramework interface {
 	//   - May trigger external API calls or modify internal framework state depending on the task.
 	HandleTask(ctx context.Context, task *Task) (*TaskResult, error)
 
-	// SupportsCapability checks if the framework provides a requested capability.
+	// Summary: SupportsCapability checks if the framework provides a requested capability.
 	//
 	// Intent: Verifies whether the framework can handle a specific intent or capability.
 	//
-	// Parameters:
+	// Params:
 	//   - capability (string): The capability or intent to check.
 	//
 	// Returns:
@@ -74,11 +74,11 @@ type AgentFramework interface {
 	//   - None.
 	SupportsCapability(capability string) bool
 
-	// SyncMemoryShard synchronizes a hardware-attested multimodal memory shard with the agent framework.
+	// Summary: SyncMemoryShard synchronizes a hardware-attested multimodal memory shard with the agent framework.
 	//
 	// Intent: Syncs a state shard with the framework, ensuring multimodal trace integrity.
 	//
-	// Parameters:
+	// Params:
 	//   - ctx (context.Context): The context for controlling cancellation and timeouts.
 	//   - shard (*MemoryShard): The multimodal memory shard to synchronize.
 	//
@@ -93,11 +93,11 @@ type AgentFramework interface {
 	SyncMemoryShard(ctx context.Context, shard *MemoryShard) error
 }
 
-// MemoryShard represents a hardware-attested, intent-pinned memory fragment.
+// Summary: MemoryShard represents a hardware-attested, intent-pinned memory fragment.
 //
 // Intent: A data structure that holds text context and an optional multimodal payload, with cryptographic lineage.
 //
-// Parameters:
+// Params:
 //   - None.
 //
 // Returns:
@@ -116,11 +116,11 @@ type MemoryShard struct {
 	Signature         string `json:"signature"`
 }
 
-// Task represents a universal task definition for the Agent Bus.
+// Summary: Task represents a universal task definition for the Agent Bus.
 //
 // Intent: A data structure that holds the definition of a task to be routed to an agent framework.
 //
-// Parameters:
+// Params:
 //   - None.
 //
 // Returns:
@@ -138,11 +138,11 @@ type Task struct {
 	Payload   map[string]string `json:"payload"`
 }
 
-// TaskResult holds the generalized output from an agent framework.
+// Summary: TaskResult holds the generalized output from an agent framework.
 //
 // Intent: A data structure that contains the result of an executed task.
 //
-// Parameters:
+// Params:
 //   - None.
 //
 // Returns:
@@ -160,11 +160,11 @@ type TaskResult struct {
 	Telemetry map[string]string `json:"telemetry,omitempty"`
 }
 
-// AdapterHub manages the registration and routing of tasks to different agent frameworks.
+// Summary: AdapterHub manages the registration and routing of tasks to different agent frameworks.
 //
 // Intent: A central hub that maintains registered agent adapters and routes tasks to the appropriate one.
 //
-// Parameters:
+// Params:
 //   - None.
 //
 // Returns:
@@ -179,11 +179,11 @@ type AdapterHub struct {
 	adapters map[string]AgentFramework
 }
 
-// NewAdapterHub initializes a new AdapterHub.
+// Summary: NewAdapterHub initializes a new AdapterHub.
 //
 // Intent: Creates and returns a new instance of AdapterHub with an empty registry.
 //
-// Parameters:
+// Params:
 //   - None.
 //
 // Returns:
@@ -200,11 +200,11 @@ func NewAdapterHub() *AdapterHub {
 	}
 }
 
-// RegisterAdapter adds a new framework adapter to the hub.
+// Summary: RegisterAdapter adds a new framework adapter to the hub.
 //
 // Intent: Registers an agent framework adapter with the hub, allowing tasks to be routed to it.
 //
-// Parameters:
+// Params:
 //   - adapter (AgentFramework): The adapter implementation to register.
 //
 // Returns:
@@ -219,11 +219,11 @@ func (h *AdapterHub) RegisterAdapter(adapter AgentFramework) {
 	h.adapters[adapter.Name()] = adapter
 }
 
-// RouteTask finds the appropriate adapter for a task and executes it.
+// Summary: RouteTask finds the appropriate adapter for a task and executes it.
 //
 // Intent: Routes a given task to the registered framework adapter and returns the execution result.
 //
-// Parameters:
+// Params:
 //   - ctx (context.Context): The context for controlling cancellation and timeouts.
 //   - task (*Task): The universal task definition containing the framework and intent.
 //

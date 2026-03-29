@@ -5,11 +5,11 @@ import (
 	"fmt"
 )
 
-// AutoGenAdapter implements the AgentFramework interface for AutoGen.
+// Summary: AutoGenAdapter implements the AgentFramework interface for AutoGen.
 //
 // Intent: Represents an adapter that connects the AutoGen multi-agent framework to the universal adapter hub.
 //
-// Parameters:
+// Params:
 //   - None.
 //
 // Returns:
@@ -25,11 +25,11 @@ type AutoGenAdapter struct {
 	ChatHistory  []string // Maintain stateful checkpoints
 }
 
-// NewAutoGenAdapter creates a new AutoGenAdapter instance.
+// Summary: NewAutoGenAdapter creates a new AutoGenAdapter instance.
 //
 // Intent: Constructs a new AutoGenAdapter with predefined multi-agent capabilities.
 //
-// Parameters:
+// Params:
 //   - None.
 //
 // Returns:
@@ -50,11 +50,11 @@ func NewAutoGenAdapter() *AutoGenAdapter {
 	}
 }
 
-// Name returns the identifier of the agent framework.
+// Summary: Name returns the identifier of the agent framework.
 //
 // Intent: Retrieves the exact name identifier for the AutoGen adapter.
 //
-// Parameters:
+// Params:
 //   - None.
 //
 // Returns:
@@ -69,11 +69,11 @@ func (a *AutoGenAdapter) Name() string {
 	return "AutoGen"
 }
 
-// HandleTask translates and executes a universal task on the AutoGen framework.
+// Summary: HandleTask translates and executes a universal task on the AutoGen framework.
 //
 // Intent: Processes and executes a task through simulated multi-agent subagent execution.
 //
-// Parameters:
+// Params:
 //   - ctx (context.Context): Execution context for controlling cancellation and timeout.
 //   - task (*Task): The generic task object that needs to be executed by AutoGen.
 //
@@ -108,11 +108,11 @@ func (a *AutoGenAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResul
 	}, nil
 }
 
-// SupportsCapability checks if the framework provides a requested capability.
+// Summary: SupportsCapability checks if the framework provides a requested capability.
 //
 // Intent: Confirms if the AutoGen adapter's capabilities include the requested functionality.
 //
-// Parameters:
+// Params:
 //   - capability (string): The intended capability name.
 //
 // Returns:
@@ -127,11 +127,11 @@ func (a *AutoGenAdapter) SupportsCapability(capability string) bool {
 	return a.Capabilities[capability]
 }
 
-// SyncMemoryShard synchronizes a hardware-attested multimodal memory shard with the AutoGen framework.
+// Summary: SyncMemoryShard synchronizes a hardware-attested multimodal memory shard with the AutoGen framework.
 //
 // Intent: Ingests a memory shard to synchronize state across agents.
 //
-// Parameters:
+// Params:
 //   - ctx (context.Context): The context for controlling cancellation and timeouts.
 //   - shard (*MemoryShard): The multimodal memory shard to synchronize.
 //

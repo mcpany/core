@@ -1,33 +1,44 @@
-# MCP Any - Universal Agent Infrastructure
+# MCP Any - The Universal Agent Infrastructure
 
 ## Project Identity
-**What is this?** MCP Any is the ultimate developer entry point and Universal Adapter designed to eliminate the requirement to implement new MCP (Model Context Protocol) servers for doing API calls.
 
-**Why does it exist?** It allows you to configure everything through lightweight YAML/JSON configurations to capability-enable different APIs (REST, gRPC, GraphQL, Command-line) and run a single `mcpany` server instance that acts as a secure, universal bridge. Instead of writing custom boilerplate adapters for each service, you configure MCP Any to handle it automatically.
+**What is MCP Any?**
+MCP Any is the ultimate developer entry point and Universal Adapter. It is designed to completely eliminate the need to implement custom Model Context Protocol (MCP) servers for API integrations.
 
-## Architecture
-MCP Any relies on a "Configuration over Code" pattern. Users deploy a single binary which reads dynamically loaded capability definitions. The architecture supports gRPC, OpenAPI, HTTP, GraphQL, and CLI tools.
+**Why does it exist?**
+In a world of rapidly expanding AI capabilities, writing custom boilerplate for every new API or internal service is unscalable. MCP Any solves this by embracing a "Configuration over Code" philosophy. By simply providing lightweight YAML or JSON configurations, you can capability-enable APIs (REST, gRPC, GraphQL, Command-line) instantly. A single `mcpany` server instance acts as a secure, universal bridge between your LLM clients and your infrastructure.
 
-Key architectural features include:
-- **Dynamic Tool Registration**: Discovers tools automatically from Proto, OpenAPI specs, or Reflection.
-- **Safety Policies**: Pluggable middlewares that block dangerous operations or restrict URL access (e.g. Audit, DLP, Rate Limiting).
-- **Upstream Authentication**: Handles authentication transparently to connected capabilities (API keys, mTLS, Bearer tokens).
-- **Multi-Tenant**: Supports complex multi-user/multi-profile isolation.
+## Architecture & Design Principles
 
-### High-Level Flow
+MCP Any dynamically loads capability definitions and routes requests seamlessly. It eliminates the friction between modern AI agents and legacy systems.
+
+**Key capabilities:**
+- **Dynamic Tool Registration**: Discovers tools instantly from Proto descriptors, OpenAPI specs, or dynamic reflection.
+- **Enterprise-Grade Safety**: Pluggable middlewares enforce strict boundaries (Audit Logs, DLP, Rate Limiting).
+- **Transparent Authentication**: Automatically handles API keys, mTLS, and Bearer tokens for upstream services without leaking them to the LLM.
+- **Multi-Tenant Isolation**: Natively supports complex multi-user and multi-profile environments.
+
+### System Topology
+
 ```mermaid
 graph TD
-    A[Client Application (LLM/Agent)] --> B(MCP Any Adapter)
-    B --> C{Capability Configuration}
-    C -->|REST/OpenAPI| D[REST API]
-    C -->|gRPC| E[gRPC Service]
-    C -->|GraphQL| F[GraphQL Endpoint]
-    C -->|CLI| G[Command Line Tool]
+    A[Client Application / Agent Framework] -->|Model Context Protocol| B(MCP Any Adapter Hub)
+    B --> C{Capability Router}
+
+    C -->|OpenAPI / HTTP| D[REST / RESTful APIs]
+    C -->|Protobuf| E[gRPC Services]
+    C -->|GraphQL Schema| F[GraphQL Endpoints]
+    C -->|Subprocess| G[Command Line Tools & Scripts]
+
+    subgraph Safety & Middlewares
+    B -.-> H[Audit & DLP]
+    B -.-> I[Rate Limiting]
+    end
 ```
 
-## Quick Start
+## Quick Start (Getting Started)
 
-Follow these steps to go from `git clone` to `Hello World`.
+Follow these steps to go from `git clone` to executing your first capability.
 
 ### 1. Clone the repository
 ```bash
@@ -36,45 +47,33 @@ cd core
 ```
 
 ### 2. Install Dependencies
-Ensure `bazelisk` and `make` are installed and available in your `PATH`.
+Ensure `bazelisk` is installed and available in your system's `PATH`. We strictly use Bazel for all build and test execution to ensure reproducible environments.
 
-### 3. Run the App
-Run the server with the included Hello World example configuration:
+### 3. Build & Run the Server
+Launch the universal server using the included Hello World example configuration:
 ```bash
 bazelisk run //server/cmd/mcpany -- -config examples/hello_world.yaml
 ```
-*The server will start and you can connect your MCP-compatible client to the local instance.*
+*The server will initialize dynamically. You can now connect any standard MCP-compatible client to your local instance.*
 
 ## Developer Workflow
 
-We use `make` and `bazelisk` for common development tasks.
+We rely exclusively on `bazelisk` to guarantee consistency across our Go and TypeScript layers. Manual build scripts or other runners (npm, go test) are strictly prohibited.
 
-- **Lint the code:**
-  Run the linter to ensure your code matches style guidelines:
-  ```bash
-  make lint
-  ```
-
-- **Run the tests:**
-  Execute all tests using Bazel:
+- **Run all verification tests (Unit, Integration, E2E):**
   ```bash
   bazelisk test //...
   ```
-  Or via the Makefile:
+
+- **Build the core binary:**
   ```bash
-  make test
+  bazelisk build //...
   ```
 
-- **Build the binary:**
-  Build the server executable:
-  ```bash
-  bazelisk build //server/cmd/mcpany
-  ```
+## Configuration Guide
 
-## Configuration
+MCP Any is driven entirely by declarative configurations:
 
-MCP Any requires configurations to be provided via YAML/JSON.
-
-- **Configs:** Place capability configurations in the `./configs` directory. These define what upstream capabilities your MCP Any server exposes.
-- **Environment Variables:** Set any secret values in environment variables (e.g., `OPENAI_API_KEY`) and reference them dynamically in your config files to ensure security boundaries are maintained.
-- **Global Settings:** Important settings (like allowed IPs, logging level, rate limits) can be provided through a global configuration structure or CLI flags.
+- **Capability Configs:** Place new API integrations in the `./configs` directory. These files define the surface area exposed to connected agents.
+- **Secret Management:** Never hardcode secrets. Expose them via secure environment variables (e.g., `OPENAI_API_KEY`) and reference them in your YAML configs to maintain absolute security boundaries.
+- **Global Settings:** Configure global limits, allowed origins, and telemetry via the central configuration structure or dynamic CLI flags.

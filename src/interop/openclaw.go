@@ -5,11 +5,11 @@ import (
 	"fmt"
 )
 
-// OpenClawAdapter implements the AgentFramework interface for OpenClaw.
+// Summary: OpenClawAdapter implements the AgentFramework interface for OpenClaw.
 //
 // Intent: An adapter implementation that bridges the OpenClaw agent framework with the universal hub.
 //
-// Parameters:
+// Params:
 //   - None.
 //
 // Returns:
@@ -25,11 +25,11 @@ type OpenClawAdapter struct {
 	CurrentEpoch int // Track the reasoning epoch
 }
 
-// NewOpenClawAdapter creates a new OpenClawAdapter instance.
+// Summary: NewOpenClawAdapter creates a new OpenClawAdapter instance.
 //
 // Intent: Initializes and returns a new adapter for OpenClaw with its specific capabilities.
 //
-// Parameters:
+// Params:
 //   - None.
 //
 // Returns:
@@ -50,11 +50,11 @@ func NewOpenClawAdapter() *OpenClawAdapter {
 	}
 }
 
-// Name returns the identifier of the agent framework.
+// Summary: Name returns the identifier of the agent framework.
 //
 // Intent: Returns the specific name identifier of the OpenClaw adapter.
 //
-// Parameters:
+// Params:
 //   - None.
 //
 // Returns:
@@ -69,11 +69,11 @@ func (a *OpenClawAdapter) Name() string {
 	return "OpenClaw"
 }
 
-// HandleTask translates and executes a universal task on the OpenClaw framework.
+// Summary: HandleTask translates and executes a universal task on the OpenClaw framework.
 //
 // Intent: Executes the provided task using simulated adaptive reasoning logic.
 //
-// Parameters:
+// Params:
 //   - ctx (context.Context): The task execution context, for managing lifecycle.
 //   - task (*Task): The universal task object describing what to execute.
 //
@@ -106,11 +106,11 @@ func (a *OpenClawAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResu
 	}, nil
 }
 
-// SupportsCapability checks if the framework provides a requested capability.
+// Summary: SupportsCapability checks if the framework provides a requested capability.
 //
 // Intent: Determines whether the OpenClaw adapter can execute tasks for a given capability intent.
 //
-// Parameters:
+// Params:
 //   - capability (string): The capability identifier string to query.
 //
 // Returns:
@@ -125,11 +125,11 @@ func (a *OpenClawAdapter) SupportsCapability(capability string) bool {
 	return a.Capabilities[capability]
 }
 
-// SyncMemoryShard synchronizes a hardware-attested multimodal memory shard with the OpenClaw framework.
+// Summary: SyncMemoryShard synchronizes a hardware-attested multimodal memory shard with the OpenClaw framework.
 //
 // Intent: Ingests a memory shard and appends it to OpenClaw's internal state.
 //
-// Parameters:
+// Params:
 //   - ctx (context.Context): The context for controlling cancellation and timeouts.
 //   - shard (*MemoryShard): The multimodal memory shard to synchronize.
 //
