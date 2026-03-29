@@ -7,6 +7,8 @@ package app
 import (
 	"bytes"
 	"context"
+
+	"github.com/mcpany/core/src/interop"
 	"crypto/subtle"
 	"crypto/tls"
 	"crypto/x509"
@@ -224,6 +226,7 @@ type Application struct {
 	configPaths      []string
 	Storage          storage.Storage
 	TemplateManager  *TemplateManager
+	AdapterHub       *interop.AdapterHub
 	// Store explicit API Key passed via CLI args
 	explicitAPIKey string
 
@@ -316,14 +319,17 @@ type statsCacheEntry struct {
 //   - (*Application): The initialized application.
 func NewApplication() *Application {
 	busProvider, _ := bus.NewProvider(nil)
+	hub := interop.NewAdapterHub()
+	hub.RegisterAdapter(interop.NewOpenClawAdapter())
+	hub.RegisterAdapter(interop.NewCrewAIAdapter())
+	hub.RegisterAdapter(interop.NewAutoGenAdapter())
 	return &Application{
 		runStdioModeFunc: runStdioMode,
 		PromptManager:    prompt.NewManager(),
 		ToolManager:      tool.NewManager(busProvider),
 		AlertsManager:    alerts.NewManager(),
 		WebhooksManager:  webhooks.NewManager(),
-		CatalogManager:   catalog.NewManager(afero.NewOsFs(), "marketplace/catalog"), // Default path, can be overridden
-
+		CatalogManager:   catalog.NewManager(afero.NewOsFs(), "marketplace/catalog"),
 		ResourceManager: resource.NewManager(),
 		UpstreamFactory: factory.NewUpstreamServiceFactory(pool.NewManager(), nil),
 		configFiles:     make(map[string]string),
@@ -331,6 +337,7 @@ func NewApplication() *Application {
 		startTime:       time.Now(),
 		MetricsGatherer: prometheus.DefaultGatherer,
 		statsCache:      make(map[string]statsCacheEntry),
+		AdapterHub:      hub,
 	}
 }
 

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -16,8 +16,13 @@ import {
   Clock,
   Search,
   Network,
-  Activity
+  Activity,
+  Play
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+const fetchWrapper = fetch;
 
 /**
  * Intent: Document UniversalAgentBusPage
@@ -45,6 +50,77 @@ import {
  *   - Renders multiple dashboard cards.
  */
 export default function UniversalAgentBusPage() {
+  const { toast } = useToast();
+  const [adapters, setAdapters] = useState<string[]>([]);
+  const [loadingAdapters, setLoadingAdapters] = useState(true);
+  const [taskResult, setTaskResult] = useState<any>(null);
+  const [taskLoading, setTaskLoading] = useState(false);
+  const [intentInput, setIntentInput] = useState("adaptive_reasoning");
+
+  useEffect(() => {
+    const fetchAdapters = async () => {
+      try {
+        const response = await fetchWrapper("/api/v1/interop/adapters");
+        if (response.ok) {
+          const data = await response.json();
+          setAdapters(data.adapters || []);
+        } else {
+          toast({
+            title: "Error fetching adapters",
+            description: "Failed to fetch adapters list.",
+            variant: "destructive"
+          });
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoadingAdapters(false);
+      }
+    };
+    fetchAdapters();
+  }, [toast]);
+
+  const handleTestTask = async () => {
+    setTaskLoading(true);
+    setTaskResult(null);
+    try {
+      const response = await fetchWrapper("/api/v1/interop/task", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: "test-" + Date.now(),
+          framework: "OpenClaw",
+          intent: intentInput,
+          payload: { test: "data" }
+        })
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setTaskResult(data);
+        toast({
+          title: "Task executed",
+          description: "Task returned " + data.status,
+        });
+      } else {
+        const errData = await response.text();
+        toast({
+          title: "Task failed",
+          description: errData,
+          variant: "destructive"
+        });
+      }
+    } catch (e) {
+      console.error(e);
+      toast({
+        title: "Task error",
+        description: "Failed to execute task.",
+        variant: "destructive"
+      });
+    } finally {
+      setTaskLoading(false);
+    }
+  };
+
   return (
     <div className="p-6 space-y-6">
       <div>
@@ -55,17 +131,42 @@ export default function UniversalAgentBusPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {/* Recursive Context Dashboard */}
+        {/* Active Adapters */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Recursive Context Dashboard</CardTitle>
+            <CardTitle className="text-sm font-medium">Registered Hub Adapters</CardTitle>
             <GitMerge className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">Inactive</div>
+            <div className="text-2xl font-bold">{loadingAdapters ? "..." : adapters.length}</div>
             <p className="text-xs text-muted-foreground">
-              Visualize state inheritance and session tokens across agent swarms.
+              {adapters.join(", ")}
             </p>
+          </CardContent>
+        </Card>
+
+        {/* Task Executor */}
+        <Card className="md:col-span-2">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Test Interop Task</CardTitle>
+            <Play className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex space-x-2 mt-4">
+              <Input
+                value={intentInput}
+                onChange={(e) => setIntentInput(e.target.value)}
+                placeholder="Intent (e.g. adaptive_reasoning)"
+              />
+              <Button onClick={handleTestTask} disabled={taskLoading}>
+                {taskLoading ? "Executing..." : "Execute Task"}
+              </Button>
+            </div>
+            {taskResult && (
+              <div className="p-4 bg-muted rounded-md overflow-x-auto text-xs font-mono">
+                {JSON.stringify(taskResult, null, 2)}
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -93,20 +194,6 @@ export default function UniversalAgentBusPage() {
             <div className="text-2xl font-bold">0 Transports</div>
             <p className="text-xs text-muted-foreground">
               UI for managing and auto-discovering MCP servers across transports.
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Lazy-MCP Tool Search Dashboard */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Lazy-MCP Tool Search Dashboard</CardTitle>
-            <Search className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">0 Index Hits</div>
-            <p className="text-xs text-muted-foreground">
-              UI for managing the on-demand tool index and monitoring search hits/misses.
             </p>
           </CardContent>
         </Card>

@@ -59,7 +59,7 @@ func (a *Application) handleDebugSeed() http.HandlerFunc {
 
 		if err := a.seedData(ctx, req); err != nil {
 			log.Error("Failed to seed data", "error", err)
-			if err.Error() == "invalid json" {
+			if strings.HasPrefix(err.Error(), "invalid json") {
 				http.Error(w, "Invalid JSON in seed data", http.StatusBadRequest)
 			} else {
 				http.Error(w, "Failed to seed data: "+err.Error(), http.StatusInternalServerError)
@@ -198,7 +198,7 @@ func (a *Application) seedData(ctx context.Context, req SeedRequest) error {
 	for _, raw := range req.ServicesRaw {
 		s := configv1.UpstreamServiceConfig_builder{}.Build()
 		if err := protojson.Unmarshal(raw, s); err != nil {
-			return fmt.Errorf("invalid json")
+			return fmt.Errorf("invalid json: %w", err)
 		}
 		err := withRetry(ctx, logging.GetLogger(), func() error {
 			return a.Storage.SaveService(ctx, s)
@@ -210,7 +210,7 @@ func (a *Application) seedData(ctx context.Context, req SeedRequest) error {
 	for _, raw := range req.CredentialsRaw {
 		c := configv1.Credential_builder{}.Build()
 		if err := protojson.Unmarshal(raw, c); err != nil {
-			return fmt.Errorf("invalid json")
+			return fmt.Errorf("invalid json: %w", err)
 		}
 		err := withRetry(ctx, logging.GetLogger(), func() error {
 			return a.Storage.SaveCredential(ctx, c)
@@ -222,7 +222,7 @@ func (a *Application) seedData(ctx context.Context, req SeedRequest) error {
 	for _, raw := range req.SecretsRaw {
 		s := configv1.Secret_builder{}.Build()
 		if err := protojson.Unmarshal(raw, s); err != nil {
-			return fmt.Errorf("invalid json")
+			return fmt.Errorf("invalid json: %w", err)
 		}
 		err := withRetry(ctx, logging.GetLogger(), func() error {
 			return a.Storage.SaveSecret(ctx, s)
@@ -234,7 +234,7 @@ func (a *Application) seedData(ctx context.Context, req SeedRequest) error {
 	for _, raw := range req.ProfilesRaw {
 		p := configv1.ProfileDefinition_builder{}.Build()
 		if err := protojson.Unmarshal(raw, p); err != nil {
-			return fmt.Errorf("invalid json")
+			return fmt.Errorf("invalid json: %w", err)
 		}
 		err := withRetry(ctx, logging.GetLogger(), func() error {
 			return a.Storage.SaveProfile(ctx, p)
@@ -246,7 +246,7 @@ func (a *Application) seedData(ctx context.Context, req SeedRequest) error {
 	for _, raw := range req.UsersRaw {
 		u := configv1.User_builder{}.Build()
 		if err := protojson.Unmarshal(raw, u); err != nil {
-			return fmt.Errorf("invalid json")
+			return fmt.Errorf("invalid json: %w", err)
 		}
 		err := withRetry(ctx, logging.GetLogger(), func() error {
 			return a.Storage.CreateUser(ctx, u)
@@ -258,7 +258,7 @@ func (a *Application) seedData(ctx context.Context, req SeedRequest) error {
 	for _, raw := range req.TemplatesRaw {
 		t := configv1.ServiceTemplate_builder{}.Build()
 		if err := protojson.Unmarshal(raw, t); err != nil {
-			return fmt.Errorf("invalid json")
+			return fmt.Errorf("invalid json: %w", err)
 		}
 		err := withRetry(ctx, logging.GetLogger(), func() error {
 			return a.Storage.SaveServiceTemplate(ctx, t)

@@ -64,6 +64,8 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	loginRateLimiter := middleware.NewHTTPRateLimitMiddleware(1, 5, middleware.WithTrustProxy(trustProxy))
 
 	mux.HandleFunc("/services", a.handleServices(store))
+	mux.HandleFunc("/interop/task", a.handleInteropTask)
+	mux.HandleFunc("/interop/adapters", a.handleInteropAdapters)
 	mux.HandleFunc("/services/validate", a.handleServiceValidate())
 	mux.HandleFunc("/services/", a.handleServiceDetail(store))
 	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {

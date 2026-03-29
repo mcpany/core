@@ -30,10 +30,10 @@ describe("UniversalAgentBusPage", () => {
   it("renders all expected feature cards", () => {
     render(<UniversalAgentBusPage />);
 
-    expect(screen.getByText("Recursive Context Dashboard")).toBeInTheDocument();
+    expect(screen.getByText("Registered Hub Adapters")).toBeInTheDocument();
+    expect(screen.getByText("Test Interop Task")).toBeInTheDocument();
     expect(screen.getByText("Multi-Agent Session Timeline")).toBeInTheDocument();
     expect(screen.getByText("Unified Discovery Manager")).toBeInTheDocument();
-    expect(screen.getByText("Lazy-MCP Tool Search Dashboard")).toBeInTheDocument();
     expect(screen.getByText("Agent Chain Tracer (A2A)")).toBeInTheDocument();
   });
 });
