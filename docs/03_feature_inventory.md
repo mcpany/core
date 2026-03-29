@@ -1,5 +1,16 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-12] Updates
+
+### Proposed Additions
+- **Universal Episodic Graph (UEG) Memory Broker**: (P0) Authoritative storage middleware evolving the Shared KV Store into a hardware-attested graph database. Resolves "Context Amnesia" and "Memory Smearing" in deep, horizontal swarms by cryptographically linking reasoning traces to mission-root intents.
+- **Speculative Zero-Knowledge Discovery (SZKD) Engine**: (P0) A background service pre-fetching and sandboxing tool schemas via speculative execution. Utilizes cryptographic masking to hide capability details from agents until a hardware-bound mission handshake is verified, preventing pre-flight capability mapping.
+- **Multimodal Trace Deconstruction (MTD) Pipeline**: (P0) Real-time sanitization layer for the Multimodal State Entanglement (MSE) Provider. Actively deconstructs SVG, WebM, and Audio metadata into verifiable semantic trees before allowing them into the shared teammate mesh.
+
+### Priority Shifts
+- **Universal Multimodal Memory Bus (UMMB)**: (Re-affirmed P0) Evolving to act as the primary interface for querying the new **Universal Episodic Graph (UEG)**.
+- **Zero-Knowledge Discovery Broker (ZKDB)**: (Re-affirmed P0) Upgrading to support the **Speculative Zero-Knowledge Discovery (SZKD)** patterns for non-blocking capability pre-loading.
+
 ## Evolution: [2026-07-11] Updates
 
 ### Proposed Additions
