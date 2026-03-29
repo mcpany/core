@@ -1,4 +1,5 @@
 /**
+ * Summary: Document Severity
  * Intent: Document Severity
  *
  * Params:
@@ -19,6 +20,7 @@
 
 export type Severity = "critical" | "warning" | "info";
 /**
+ * Summary: Document AlertStatus
  * Intent: Document AlertStatus
  *
  * Params:
@@ -38,6 +40,7 @@ export type Severity = "critical" | "warning" | "info";
 export type AlertStatus = "active" | "acknowledged" | "resolved";
 
 /**
+ * Summary: Document Alert
  * Intent: Document Alert
  *
  * Params:
@@ -65,6 +68,7 @@ export interface Alert {
   source: string;
 }
 /**
+ * Summary: Document AlertRule
  * Intent: Document AlertRule
  *
  * Params:

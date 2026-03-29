@@ -4,6 +4,7 @@
  */
 
 /**
+ * Summary: Document GrpcWebImpl
  * Intent: Document GrpcWebImpl
  *
  * Params:
@@ -23,6 +24,7 @@
 export class GrpcWebImpl { }
 
 /**
+ * Summary: Document RegistrationServiceClientImpl
  * Intent: Document RegistrationServiceClientImpl
  *
  * Params:
@@ -42,6 +44,7 @@ export class GrpcWebImpl { }
 export class RegistrationServiceClientImpl { }
 
 /**
+ * Summary: Document HttpUpstreamService
  * Intent: Document HttpUpstreamService
  *
  * Params:
@@ -61,6 +64,7 @@ export class RegistrationServiceClientImpl { }
 export const HttpUpstreamService = {};
 
 /**
+ * Summary: Document ServiceProvenance
  * Intent: Document ServiceProvenance
  *
  * Params:
@@ -98,6 +102,7 @@ export enum ExportPolicy_Action {
 }
 
 /**
+ * Summary: Document CallPolicy
  * Intent: Document CallPolicy
  *
  * Params:
@@ -117,6 +122,7 @@ export enum ExportPolicy_Action {
 export const CallPolicy = {};
 
 /**
+ * Summary: Document CallPolicyRule
  * Intent: Document CallPolicyRule
  *
  * Params:
@@ -136,6 +142,7 @@ export const CallPolicy = {};
 export const CallPolicyRule = {};
 
 /**
+ * Summary: Document ExportPolicy
  * Intent: Document ExportPolicy
  *
  * Params:
@@ -155,6 +162,7 @@ export const CallPolicyRule = {};
 export const ExportPolicy = {};
 
 /**
+ * Summary: Document ExportRule
  * Intent: Document ExportRule
  *
  * Params:
@@ -174,6 +182,7 @@ export const ExportPolicy = {};
 export const ExportRule = {};
 
 /**
+ * Summary: Document ProfileDefinition
  * Intent: Document ProfileDefinition
  *
  * Params:
@@ -193,6 +202,7 @@ export const ExportRule = {};
 export const ProfileDefinition = {};
 
 /**
+ * Summary: Document ToolDefinition
  * Intent: Document ToolDefinition
  *
  * Params:
@@ -235,6 +245,7 @@ export enum OutputTransformer_OutputFormat {
 }
 
 /**
+ * Summary: Document HttpCallDefinition
  * Intent: Document HttpCallDefinition
  *
  * Params:
@@ -266,6 +277,7 @@ export enum ParameterType {
 }
 
 /**
+ * Summary: Document InputTransformer
  * Intent: Document InputTransformer
  *
  * Params:
@@ -285,6 +297,7 @@ export enum ParameterType {
 export const InputTransformer = {};
 
 /**
+ * Summary: Document OutputTransformer
  * Intent: Document OutputTransformer
  *
  * Params:
@@ -304,6 +317,7 @@ export const InputTransformer = {};
 export const OutputTransformer = {};
 
 /**
+ * Summary: Document HttpParameterMapping
  * Intent: Document HttpParameterMapping
  *
  * Params:
@@ -323,6 +337,7 @@ export const OutputTransformer = {};
 export const HttpParameterMapping = {};
 
 /**
+ * Summary: Document ResourceDefinition
  * Intent: Document ResourceDefinition
  *
  * Params:
@@ -342,6 +357,7 @@ export const HttpParameterMapping = {};
 export const ResourceDefinition = {};
 
 /**
+ * Summary: Document PromptDefinition
  * Intent: Document PromptDefinition
  *
  * Params:
@@ -361,6 +377,7 @@ export const ResourceDefinition = {};
 export const PromptDefinition = {};
 
 /**
+ * Summary: Document Credential
  * Intent: Document Credential
  *
  * Params:
@@ -380,6 +397,7 @@ export const PromptDefinition = {};
 export const Credential = {};
 
 /**
+ * Summary: Document Authentication
  * Intent: Document Authentication
  *
  * Params:

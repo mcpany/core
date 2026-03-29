@@ -1,4 +1,5 @@
 /**
+ * Summary: Document DiagnosticResult
  * Intent: Document DiagnosticResult
  *
  * Params:
@@ -26,6 +27,7 @@ export interface DiagnosticResult {
 }
 
 /**
+ * Summary: Document analyzeConnectionError
  * Intent: Document analyzeConnectionError
  *
  * Params:

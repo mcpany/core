@@ -1,4 +1,5 @@
 /**
+ * Summary: Document STACK_CONFIG_SCHEMA
  * Intent: Document STACK_CONFIG_SCHEMA
  *
  * Params:

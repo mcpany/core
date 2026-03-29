@@ -1,4 +1,5 @@
 /**
+ * Summary: Document Tool
  * Intent: Document Tool
  *
  * Params:
@@ -25,6 +26,7 @@ export interface Tool {
 }
 
 /**
+ * Summary: Document BuiltInTools
  * Intent: Document BuiltInTools
  *
  * Params:
@@ -138,6 +140,7 @@ export const BuiltInTools: Record<string, Tool> = {
 };
 
 /**
+ * Summary: Document executeTool
  * Intent: Document executeTool
  *
  * Params:

@@ -4,6 +4,7 @@
  */
 
 /**
+ * Summary: Document unwrapMcpResult
  * Intent: Document unwrapMcpResult
  *
  * Params:
@@ -13,7 +14,7 @@
  *
  * Summary: Extracts the core content payload from an MCP tool result.
  *
- * Parameters:
+ * Params:
  *   - result (any): The raw tool execution result to be unwrapped.
  *
  * Returns:
@@ -80,6 +81,7 @@ export function unwrapMcpResult(result: any): any {
 }
 
 /**
+ * Summary: Document deepParseJson
  * Intent: Document deepParseJson
  *
  * Params:
@@ -89,7 +91,7 @@ export function unwrapMcpResult(result: any): any {
  *
  * Summary: Deeply parses JSON strings embedded within an object or array.
  *
- * Parameters:
+ * Params:
  *   - obj (any): The object, array, or string to deeply parse.
  *
  * Returns:

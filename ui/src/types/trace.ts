@@ -4,6 +4,7 @@
  */
 
 /**
+ * Summary: Document SpanStatus
  * Intent: Document SpanStatus
  *
  * Params:
@@ -23,6 +24,7 @@
 export type SpanStatus = 'success' | 'error' | 'pending';
 
 /**
+ * Summary: Document Span
  * Intent: Document Span
  *
  * Params:
@@ -54,6 +56,7 @@ export interface Span {
 }
 
 /**
+ * Summary: Document Trace
  * Intent: Document Trace
  *
  * Params:

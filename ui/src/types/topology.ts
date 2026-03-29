@@ -4,6 +4,7 @@
  */
 
 /**
+ * Summary: Document NodeType
  * Intent: Document NodeType
  *
  * Params:
@@ -33,6 +34,7 @@ export type NodeType =
   | 'NODE_TYPE_WEBHOOK';
 
 /**
+ * Summary: Document NodeStatus
  * Intent: Document NodeStatus
  *
  * Params:
@@ -56,6 +58,7 @@ export type NodeStatus =
   | 'NODE_STATUS_ERROR';
 
 /**
+ * Summary: Document NodeMetrics
  * Intent: Document NodeMetrics
  *
  * Params:
@@ -82,6 +85,7 @@ export interface NodeMetrics {
 }
 
 /**
+ * Summary: Document Node
  * Intent: Document Node
  *
  * Params:
@@ -116,6 +120,7 @@ export interface Node {
 }
 
 /**
+ * Summary: Document Graph
  * Intent: Document Graph
  *
  * Params:

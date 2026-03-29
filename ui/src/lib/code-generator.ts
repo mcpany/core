@@ -11,6 +11,7 @@ interface CodeGeneratorOptions {
 }
 
 /**
+ * Summary: Document generateCurlCommand
  * Intent: Document generateCurlCommand
  *
  * Params:
@@ -52,6 +53,7 @@ export function generateCurlCommand({ toolName, args, baseUrl = "http://localhos
 }
 
 /**
+ * Summary: Document generatePythonCode
  * Intent: Document generatePythonCode
  *
  * Params:

@@ -4,6 +4,7 @@
  */
 
 /**
+ * Summary: Document estimateTokens
  * Intent: Document estimateTokens
  *
  * Params:
@@ -13,7 +14,7 @@
  *
  * Summary: Provides a rough estimation of the number of tokens for UI purposes.
  *
- * Parameters:
+ * Params:
  *   - input (any): The text or object to estimate tokens for.
  *
  * Returns:
@@ -46,6 +47,7 @@ export function estimateTokens(input: any): number {
 }
 
 /**
+ * Summary: Document estimateMessageTokens
  * Intent: Document estimateMessageTokens
  *
  * Params:
@@ -55,7 +57,7 @@ export function estimateTokens(input: any): number {
  *
  * Summary: Aggregates the estimated token count for an array of message objects.
  *
- * Parameters:
+ * Params:
  *   - messages (any[]): Array of message objects containing content.
  *
  * Returns:
@@ -78,6 +80,7 @@ export function estimateMessageTokens(messages: any[]): number {
 }
 
 /**
+ * Summary: Document formatTokenCount
  * Intent: Document formatTokenCount
  *
  * Params:
@@ -87,7 +90,7 @@ export function estimateMessageTokens(messages: any[]): number {
  *
  * Summary: Converts a token count into a formatted string (e.g., 1.2k).
  *
- * Parameters:
+ * Params:
  *   - count (number): The number of tokens.
  *
  * Returns:
@@ -107,6 +110,7 @@ export function formatTokenCount(count: number): string {
 }
 
 /**
+ * Summary: Document calculateCost
  * Intent: Document calculateCost
  *
  * Params:
@@ -116,7 +120,7 @@ export function formatTokenCount(count: number): string {
  *
  * Summary: Estimates the cost in USD based on a generic pricing model.
  *
- * Parameters:
+ * Params:
  *   - tokens (number): The number of tokens.
  *
  * Returns:
@@ -136,6 +140,7 @@ export function calculateCost(tokens: number): number {
 }
 
 /**
+ * Summary: Document formatCost
  * Intent: Document formatCost
  *
  * Params:
@@ -145,7 +150,7 @@ export function calculateCost(tokens: number): number {
  *
  * Summary: Formats a numerical cost into a USD currency string.
  *
- * Parameters:
+ * Params:
  *   - cost (number): The cost in USD.
  *
  * Returns:

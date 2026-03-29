@@ -11,6 +11,7 @@ import { usePolling } from "@/hooks/use-polling";
 export type { ServiceHealth, HealthHistoryPoint };
 
 /**
+ * Summary: Document ServiceHistory
  * Intent: Document ServiceHistory
  *
  * Params:
@@ -32,6 +33,7 @@ export interface ServiceHistory {
 }
 
 /**
+ * Summary: Document useServiceHealthHistory
  * Intent: Document useServiceHealthHistory
  *
  * Params:

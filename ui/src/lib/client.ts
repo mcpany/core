@@ -19,6 +19,7 @@ import { Credential, Authentication } from '@proto/config/v1/auth';
 import { BrowserHeaders } from 'browser-headers';
 
 /**
+ * Summary: Document UpstreamServiceConfig
  * Intent: Document UpstreamServiceConfig
  *
  * Params:
@@ -64,6 +65,7 @@ export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, 
 export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '@proto/api/v1/registration';
 
 /**
+ * Summary: Document ServiceTemplate
  * Intent: Document ServiceTemplate
  *
  * Params:
@@ -160,6 +162,7 @@ const rpc = new GrpcWebImpl(getBaseUrl(), {
 const registrationClient = new RegistrationServiceClientImpl(rpc);
 
 /**
+ * Summary: Document fetchWithAuth
  * Intent: Document fetchWithAuth
  *
  * Params:
@@ -214,6 +217,7 @@ const dedupeRequests = <T>(key: string, fn: () => Promise<T>): Promise<T> => {
 };
 
 /**
+ * Summary: Document SecretDefinition
  * Intent: Document SecretDefinition
  *
  * Params:
@@ -248,6 +252,7 @@ export interface SecretDefinition {
 }
 
 /**
+ * Summary: Document ResourceContent
  * Intent: Document ResourceContent
  *
  * Params:
@@ -276,6 +281,7 @@ export interface ResourceContent {
 }
 
 /**
+ * Summary: Document ReadResourceResponse
  * Intent: Document ReadResourceResponse
  *
  * Params:
@@ -306,6 +312,7 @@ interface RawValidateServiceResponse {
 }
 
 /**
+ * Summary: Document CheckResult
  * Intent: Document CheckResult
  *
  * Params:
@@ -334,6 +341,7 @@ export interface CheckResult {
 }
 
 /**
+ * Summary: Document DoctorReport
  * Intent: Document DoctorReport
  *
  * Params:
@@ -360,6 +368,7 @@ export interface DoctorReport {
 }
 
 /**
+ * Summary: Document ToolFailureStats
  * Intent: Document ToolFailureStats
  *
  * Params:
@@ -384,6 +393,7 @@ export interface ToolFailureStats {
 }
 
 /**
+ * Summary: Document ToolAnalytics
  * Intent: Document ToolAnalytics
  *
  * Params:
@@ -409,6 +419,7 @@ export interface ToolAnalytics {
 
 
 /**
+ * Summary: Document Metric
  * Intent: Document Metric
  *
  * Params:
@@ -436,6 +447,7 @@ export interface Metric {
 
 
 /**
+ * Summary: Document SystemStatus
  * Intent: Document SystemStatus
  *
  * Params:
@@ -468,6 +480,7 @@ export interface SystemStatus {
 }
 
 /**
+ * Summary: Document ServiceStatus
  * Intent: Document ServiceStatus
  *
  * Params:
@@ -487,6 +500,7 @@ export interface SystemStatus {
 export type ServiceStatus = "healthy" | "degraded" | "unhealthy" | "inactive" | "unknown";
 
 /**
+ * Summary: Document ServiceHealth
  * Intent: Document ServiceHealth
  *
  * Params:
@@ -519,6 +533,7 @@ export interface ServiceHealth {
 }
 
 /**
+ * Summary: Document HealthHistoryPoint
  * Intent: Document HealthHistoryPoint
  *
  * Params:
@@ -543,6 +558,7 @@ export interface HealthHistoryPoint {
 }
 
 /**
+ * Summary: Document ServiceHealthResponse
  * Intent: Document ServiceHealthResponse
  *
  * Params:
@@ -582,6 +598,7 @@ const getMetadata = () => {
 };
 
 /**
+ * Summary: Document apiClient
  * Intent: Document apiClient
  *
  * Params:

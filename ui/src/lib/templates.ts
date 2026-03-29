@@ -7,6 +7,7 @@ import { UpstreamServiceConfig } from "@/lib/types";
 import { Database, FileText, Github, Globe, Server, Activity, Cloud, MessageSquare, Map, Clock, Zap, CheckCircle2 } from "lucide-react";
 
 /**
+ * Summary: Document ServiceTemplate
  * Intent: Document ServiceTemplate
  *
  * Params:
@@ -64,6 +65,7 @@ export interface ServiceTemplate {
 }
 
 /**
+ * Summary: Document SERVICE_TEMPLATES
  * Intent: Document SERVICE_TEMPLATES
  *
  * Params:
