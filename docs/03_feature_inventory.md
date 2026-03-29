@@ -731,7 +731,10 @@
 
 ### Priority Shifts
 - **DCA Negotiation Guard**: (Re-affirmed P0) Expanded to support the new VSA protocol and mitigate negotiation exhaustion.
-- **Attested Discovery Authority**: (Re-affirmed P0) Promoted as the mandatory gate for all marketplace-sourced skills.
+- **Attested Discovery Authority**: (Re-affirmed P0) Promoted as the mandatory gate for all Marketplace
+
+![Marketplace](screenshots/marketplace.png)
+-sourced skills.
 
 ---
 

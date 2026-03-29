@@ -1156,7 +1156,10 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Context-File Integrity Attestation (CFIA)**: MCP Any will evolve to act as the authoritative "Context Gatekeeper." We will implement CFIA, requiring hardware-attested, hash-based signatures for all project-local "Context Files" (e.g., `.mcpany/context.md`, `GEMINI.md`) before they are ingested by the agent reasoning engine. This ensures that "Deceptive Context" cannot be injected without explicit user attestation.
 - **Attention-Locked Tooling (ALT)**: To neutralize "Context-Hijacked Exfiltration," we are introducing ALT. High-risk tool calls (e.g., shell, filesystem write) will be cryptographically locked to specific, user-verified "Attention Anchors." If the agent attempts to call a high-risk tool while its reasoning trace shows "Injected Context" as the primary driver, the ALT middleware will interdict the call.
 - **Semantic Lineage Tracking**: Supporting the stability of "Headless Handoffs," MCP Any will implement Semantic Lineage Tracking. This provides a cryptographically signed "Chain of Reason" that verifies the lineage of a tool call back to the mission-root intent, ensuring that "Injected Context" cannot shadow the root authority.
-- **Visual Attention Dashboard**: To counter "Approval Blindness," we are evolving the UI to include a visual "Attention Map." Users will see a real-time heatmap of which context fragments (User, System, Injected) are driving the agent's current tool-call reasoning.
+- **Visual Attention Dashboard
+
+![System Health Dashboard](screenshots/dashboard_overview.png)
+**: To counter "Approval Blindness," we are evolving the UI to include a visual "Attention Map." Users will see a real-time heatmap of which context fragments (User, System, Injected) are driving the agent's current tool-call reasoning.
 
 ## Strategic Evolution: [2026-06-20]
 ### Focus: Context-File Integrity & Attention-Locked Tooling (ALT)

@@ -19,7 +19,10 @@ MCP Any, as the universal agent infrastructure, is uniquely positioned to act as
 
 ## 3. Critical User Journey (CUJ)
 * **User Persona:** Multi-Agent Developer
-* **Primary Goal:** Surface a secure interactive dashboard from a remote specialist agent to a local developer workspace.
+* **Primary Goal:** Surface a secure interactive dashboard
+
+![Dashboard Overview](screenshots/dashboard_overview.png)
+ from a remote specialist agent to a local developer workspace.
 * **The Happy Path (Tasks):**
     1. A specialist agent (e.g., a Database Tuner) identifies a need for user feedback on a complex configuration.
     2. The agent sends an A2UI "Manifest" message containing the UI state and interactive elements via the MCP Any A2A Hub.
