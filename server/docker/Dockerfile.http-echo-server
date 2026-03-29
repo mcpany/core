@@ -21,10 +21,15 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
 # Stage 2: Create the final, minimal production image
 FROM mirror.gcr.io/library/alpine:latest
 
+RUN addgroup -S nonroot && adduser -S nonroot -G nonroot
+USER nonroot:nonroot
+
 # Install wget and ca-certificates.
 # wget is needed for the healthcheck in docker-compose.yml.
 # ca-certificates are good practice to include for HTTPS requests.
+USER root
 RUN apk --no-cache add wget ca-certificates
+USER nonroot:nonroot
 
 # Copy the built binary from the builder stage.
 COPY --from=builder /http-echo-server /http-echo-server

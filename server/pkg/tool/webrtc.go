@@ -23,6 +23,7 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/pion/webrtc/v3"
+	"log/slog"
 )
 
 type peerConnectionWrapper struct {
@@ -258,6 +259,9 @@ func (t *WebrtcTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (
 // Side Effects:
 //   - Makes a WebRTC network call.
 func (t *WebrtcTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
+		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
+	}
 	if t.webrtcPool == nil {
 		// Fallback to creating a new connection if the pool is not initialized
 		return t.executeWithoutPool(ctx, req)

@@ -5,6 +5,8 @@ package tool
 
 import (
 	"context"
+	"github.com/mcpany/core/server/pkg/logging"
+	"log/slog"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
@@ -115,6 +117,9 @@ func (m *MockTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 // Side Effects:
 //   - Calls the underlying mock ExecuteFunc.
 func (m *MockTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
+		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
+	}
 	if m.ExecuteFunc != nil {
 		return m.ExecuteFunc(ctx, req)
 	}

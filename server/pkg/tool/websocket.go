@@ -19,6 +19,7 @@ import (
 	"github.com/mcpany/core/server/pkg/transformer"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"log/slog"
 )
 
 // WebsocketTool implements the Tool interface for a tool exposed via a WebSocket
@@ -181,6 +182,9 @@ func (t *WebsocketTool) StreamExecute(ctx context.Context, req *ExecutionRequest
 // Side Effects:
 //   - Makes a WebSocket network call.
 func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
+		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
+	}
 	wsPool, ok := pool.Get[*client.WebsocketClientWrapper](t.poolManager, t.serviceID)
 	if !ok {
 		return nil, fmt.Errorf("no websocket pool found for service: %s", t.serviceID)

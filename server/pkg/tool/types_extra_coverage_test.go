@@ -10,8 +10,8 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
-	"google.golang.org/protobuf/reflect/protoreflect"
 	"github.com/mcpany/core/server/pkg/pool"
+	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 func TestCheckUnquotedKeywords_ExtraCoverage(t *testing.T) {

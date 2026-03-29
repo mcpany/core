@@ -95,6 +95,8 @@ jobs:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_OFFICIAL_API_KEY }}
         run: |
           bazelisk test //... \
+            --jobs=auto \
+            --local_test_jobs=auto \
             --config=remote \
             --test_output=errors \
             --test_summary=terse \

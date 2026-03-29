@@ -5,6 +5,8 @@ package tool
 
 import (
 	"context"
+	"github.com/mcpany/core/server/pkg/logging"
+	"log/slog"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -52,6 +54,9 @@ func NewCallableTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.U
 //   - any: The result of the execution.
 //   - error: An error if the operation fails.
 func (t *CallableTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
+		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
+	}
 	return t.callable.Call(ctx, req)
 }
 

@@ -76,6 +76,7 @@ func TestBrowsePage_FetcherError(t *testing.T) {
 }
 
 type errorPageFetcher struct{}
+
 func (e *errorPageFetcher) FetchText(ctx context.Context, url string) (string, error) {
 	return "", fmt.Errorf("simulated fetch error")
 }
