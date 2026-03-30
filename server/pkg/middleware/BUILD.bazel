@@ -58,6 +58,7 @@ go_library(
         "tool_metrics.go",
         "trace.go",
         "vector_store_memory.go",
+        "error_mapping.go",
     ],
     importpath = "github.com/mcpany/core/server/pkg/middleware",
     visibility = ["//visibility:public"],
@@ -171,6 +172,7 @@ go_test(
         "tool_metrics_test.go",
         "trace_test.go",
         "vector_store_memory_test.go",
+        "error_mapping_test.go",
     ],
     embed = [":middleware"],
     deps = [
