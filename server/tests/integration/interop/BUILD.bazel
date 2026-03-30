@@ -5,6 +5,7 @@ go_test(
     srcs = [
         "e2e_interop_test.go",
         "interop_test.go",
+        "seeded_interop_test.go",
     ],
     tags = ["integration"],
     deps = [
@@ -17,6 +18,7 @@ go_test(
     srcs = [
         "e2e_interop_test.go",
         "interop_test.go",
+        "seeded_interop_test.go",
     ],
     deps = ["//src/interop"],
 )
