@@ -780,3 +780,9 @@
 - [ ] **[P0] Economic Attribution Viewer**: (2026-07-11) Visual tracker for hardware-attested cost attribution (HACA) across subagent lineages.
 - [ ] **[P0] Ephemeral Hook Monitor**: (2026-07-11) Status widget for monitoring session-locked discovery hooks and their expiration.
 - [ ] **[P1] Resource Reclamation Log**: (2026-07-11) Real-time tracker for RRR-triggered budget reclaims and mission efficiency gains.
+
+#### Upcoming (2026-07-12 Evolution)
+- [ ] **[P0] Environment Isolation Status Dashboard**: (2026-07-12) Visualization of hardware-attested environment scrubbing and PEL neutralization.
+- [ ] **[P0] Side-Channel Violation Monitor**: (2026-07-12) Real-time tracker for SCIM-interdicted out-of-band coordination probes.
+- [ ] **[P0] Attention Gating Heatmap**: (2026-07-12) Dashboard for monitoring HAAG-locked fragments and noise-to-utility pruning scores.
+- [ ] **[P1] Action-Chain Trust Explorer**: (2026-07-12) Forensic UI for reviewing ZKAV-compliant cryptographic proofs of tool sequences.

@@ -954,3 +954,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Attested Cost Attribution (HACA)**: Advanced economic security service that cryptographically attributes token usage to specific sub-process lineage. (Added: 2026-07-11)
 *   **[P0] Ephemeral Registry Hook (ERH) Provider**: Security middleware mandating session-locked discovery schemas to neutralize registry persistence exploits. (Added: 2026-07-11)
 *   **[P1] Recursive Resource Reclamation (RRR) Manager**: Lifecycle management service for reclaiming unused token and reasoning budgets from dormant sub-missions. (Added: 2026-07-11)
+
+#### Upcoming (2026-07-12 Evolution)
+*   **[P0] Hardware-Attested Environment Isolated (HAEI) Provider**: Authoritative environment scrubbing and isolated process spawning to neutralize secret leakage. (Added: 2026-07-12)
+*   **[P0] Side-Channel Interdiction Middleware (SCIM)**: Active monitoring and interdiction of out-of-band subagent communication. (Added: 2026-07-12)
+*   **[P0] Hardware-Attested Attention Gating (HAAG)**: Enhanced attention governance to prevent mission-root eviction in 2M+ token windows. (Added: 2026-07-12)
+*   **[P1] Zero-Knowledge Action-Chain Verification (ZKAV) Hub**: Infrastructure for cryptographic proof of mission-alignment in autonomous tool chains. (Added: 2026-07-12)

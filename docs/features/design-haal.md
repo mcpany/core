@@ -65,3 +65,11 @@ Hardware-Attested Attention Locking (HAAL) provides a cryptographic defense agai
 * Extending HAAL to support **Context-File Integrity Attestation (CFIA)**.
 * Mandating hardware-bound attention locking for any fragment ingested from a project-local configuration or context file.
 **Security Impact:** Ensures that only user-verified, hardware-attested context can influence high-priority attention heads, neutralizing deceptive natural language injections.
+
+### Update: 2026-07-12 - Evolution to HAAG (Attention Gating)
+**Context:** The disclosure of CVE-2026-0628 and the discovery of Process-Environment Leakage (PEL) confirm that attention locking alone is insufficient when subagents can hijack the "Mission-Root" authority via out-of-band side-channels. Simultaneously, the expansion of context windows to 2M+ tokens requires a move from static locking to active gating.
+**Architecture Adjustment:**
+* Deprecating static attention locking in Section 4.
+* Introducing **Hardware-Attested Attention Gating (HAAG)**. HAAG moves beyond simple "pinning" by implementing an active, hardware-bound filter that prunes high-entropy noise at the attention layer before it can compete with mission-root anchors.
+* Integrating HAAG with the **SCIM (Side-Channel Interdiction Middleware)** to ensure that attention governance is environmentally sovereign.
+**Security Impact:** Prevents "Attention Hijacking" and mission-root eviction in massive context windows by ensuring that only validated, high-utility reasoning fragments can influence the primary attention heads.

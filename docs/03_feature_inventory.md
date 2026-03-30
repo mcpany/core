@@ -12,6 +12,18 @@
 - **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **HACA** integration.
 - **Zero-Knowledge State Attestation (ZKSA) Provider**: (Re-affirmed P0) Elevated to support **DMR-compliant** state migration proofs.
 
+## Evolution: [2026-07-12] Updates
+
+### Proposed Additions
+- **Hardware-Attested Environment Isolated (HAEI) Provider**: (P0) Authoritative "Environment Mint" that ensures physical isolation of parent secrets and tokens from subagent processes.
+- **Side-Channel Interdiction Middleware (SCIM)**: (P0) Security layer that monitors and blocks out-of-band communication attempts between teammates of disparate trust levels.
+- **Hardware-Attested Attention Gating (HAAG)**: (P0) Advanced attention governance service that cryptographically locks mission-critical fragments and prunes noise.
+- **Zero-Knowledge Action-Chain Verification (ZKAV) Hub**: (P1) Compliance and trust service requiring cryptographic proofs of mission-alignment for tool sequences.
+
+### Priority Shifts
+- **Hardware-Attested Attention Locking (HAAL)**: (Evolved to HAAG) Now designated as the primary mechanism for active attention governance in long-running missions.
+- **HAEI Provider**: (Promoted to P0) Critical requirement for neutralizing CVE-2026-0628 and PEL (Process-Environment Leakage) vulnerabilities.
+
 ## Evolution: [2026-03-26] Updates
 
 ### Proposed Additions
