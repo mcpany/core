@@ -954,3 +954,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Attested Cost Attribution (HACA)**: Advanced economic security service that cryptographically attributes token usage to specific sub-process lineage. (Added: 2026-07-11)
 *   **[P0] Ephemeral Registry Hook (ERH) Provider**: Security middleware mandating session-locked discovery schemas to neutralize registry persistence exploits. (Added: 2026-07-11)
 *   **[P1] Recursive Resource Reclamation (RRR) Manager**: Lifecycle management service for reclaiming unused token and reasoning budgets from dormant sub-missions. (Added: 2026-07-11)
+
+#### Upcoming (2026-07-12 Evolution)
+*   **[P0] Mission-Bound Resource Quota (MBRQ) Controller**: Cryptographically signed hard-limits on token and reasoning effort for mission branches. (Added: 2026-07-12)
+*   **[P1] Speculative Sovereignty Broker (SSB)**: Authority for pre-attesting context shards based on background shadow reasoning. (Added: 2026-07-12)
+*   **[P0] Stylometrically-Anchored Attention (SAA)**: Cognitive security upgrade anchoring attention tier promotion to mission-root behavioral anchors. (Added: 2026-07-12)
+*   **[P0] Collaborative Sandbox (CS) Adapter**: Shared teammate filesystem overlays with kernel-level host Inode pinning. (Added: 2026-07-12)

@@ -1,5 +1,10 @@
 # Feature Inventory: MCP Any
 
+- **Speculative Sovereignty Broker (SSB)**: (P1) Authoritative prefetch arbiter utilizing background reasoning to pre-attest context shards.
+- **Mission-Bound Resource Quota (MBRQ) Controller**: (P0) Budget enforcement middleware for cryptographically signed, mission-specific resource limits.
+- **Stylometrically-Anchored Attention (SAA) Validator**: (P0) Cognitive security upgrade for the AAE middleware that anchors attention to mission-root behavioral profiles.
+- **Collaborative Sandbox (CS) Adapter**: (P0) Orchestration service for shared teammate filesystem overlays with host-level Inode pinning.
+
 ## Evolution: [2026-07-11] Updates
 
 ### Proposed Additions
@@ -1768,3 +1773,15 @@
 ### Priority Shifts
 - **SRM Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Hierarchical Provenance** validation.
 - **Asynchronous Mailbox Sharding (AMS)**: (Re-affirmed P0) Now elevated with the requirement for **HLAP-compliant** timing normalization.
+
+## Evolution: [2026-07-12] Updates
+
+### Proposed Additions
+- **Speculative Sovereignty Broker (SSB)**: (P1) Authoritative prefetch arbiter utilizing background reasoning to pre-attest context shards.
+- **Mission-Bound Resource Quota (MBRQ) Controller**: (P0) Budget enforcement middleware for cryptographically signed, mission-specific resource limits.
+- **Stylometrically-Anchored Attention (SAA) Validator**: (P0) Cognitive security upgrade for the AAE middleware that anchors attention to mission-root behavioral profiles.
+- **Collaborative Sandbox (CS) Adapter**: (P0) Orchestration service for shared teammate filesystem overlays with host-level Inode pinning.
+
+### Priority Shifts
+- **Active Attention Enforcer (AAE)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SAA** integration to counter Attention Hijacking.
+- **Collaborative Sandbox (CS) Adapter**: (Re-affirmed P0) Designated as the primary enforcement point for teammate shared-state isolation.

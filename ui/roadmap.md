@@ -780,3 +780,9 @@
 - [ ] **[P0] Economic Attribution Viewer**: (2026-07-11) Visual tracker for hardware-attested cost attribution (HACA) across subagent lineages.
 - [ ] **[P0] Ephemeral Hook Monitor**: (2026-07-11) Status widget for monitoring session-locked discovery hooks and their expiration.
 - [ ] **[P1] Resource Reclamation Log**: (2026-07-11) Real-time tracker for RRR-triggered budget reclaims and mission efficiency gains.
+
+#### Upcoming (2026-07-12 Evolution)
+- [ ] **[P0] Mission Budget Console**: (2026-07-12) UI for defining and reviewing cryptographically signed Mission-Bound Resource Quotas.
+- [ ] **[P0] Cost Attribution Tree**: (2026-07-12) Visual hierarchical tracer for hardware-attested cost attribution across subagent lineages.
+- [ ] **[P0] Stylometric Attention Monitor**: (2026-07-12) Real-time tracker for SAA-anchored attention fragments and mimicry-hijack alerts.
+- [ ] **[P1] Speculative Prefetch Dashboard**: (2026-07-12) Visualization of SSB pre-attestation hits and shadow-reasoning predictions.
