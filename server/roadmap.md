@@ -949,6 +949,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Unified Teammate Discovery (UTD) Gateway**: High-speed, authenticated discovery hub for horizontal mesh formation. (Added: 2026-07-10)
 *   **[P0] Hierarchical Provenance Validator**: Implementation of Gemini-compliant recursive "Chain-of-Thought" hardware signing. (Added: 2026-07-10)
 
+#### Upcoming (2026-07-12 Evolution)
+*   **[P0] Teammate Mailbox Integrity Guard (TMIG)**: Authoritative validator for inter-agent mailbox messages, requiring hardware-attested signatures and intent-validation. (Added: 2026-07-12)
+*   **[P1] Reasoning-Aware Git-Locking (RAGL)**: Efficiency middleware wrapping legacy git-based locking with CRDTs for sub-millisecond task claiming. (Added: 2026-07-12)
+*   **[P0] Context-File Hashing Provider**: Security service mandating hardware-attested hashes for all project-local context files (e.g., `GEMINI.md`) before ingestion. (Added: 2026-07-12)
+*   **[P0] Consensus-Bound Coordination Hub**: Advanced coordination service requiring multi-agent quorums for high-stakes inter-teammate instructions. (Added: 2026-07-12)
+
 #### Upcoming (2026-07-11 Evolution)
 *   **[P0] Dynamic Mesh Resilience (DMR) Hub**: Authoritative coordination service for re-sharding and migrating state between physical nodes upon subagent failure. (Added: 2026-07-11)
 *   **[P0] Hardware-Attested Cost Attribution (HACA)**: Advanced economic security service that cryptographically attributes token usage to specific sub-process lineage. (Added: 2026-07-11)

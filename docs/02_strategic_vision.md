@@ -1403,3 +1403,15 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Hardware-Attested Cost Attribution (HACA)**: To neutralize "Economic Squatting," we are upgrading the Reasoning-Budget Firewall to support HACA. This layer will cryptographically attribute every token and compute millisecond to its specific sub-process lineage, ensuring absolute economic accountability across the mesh.
 - **Ephemeral Registry Hook (ERH) Provider**: Supporting the Claude Code v3.2 standard, MCP Any will implement ERH. Discovery schemas will be issued as session-locked, ephemeral tokens that expire immediately post-discovery, neutralizing "Registry Persistence" exploits.
 - **Recursive Resource Reclamation (RRR)**: We are adopting the UACO v3.6 standard for resource management. MCP Any will act as the authoritative "Lease Reaper," allowing parent agents to forcefully reclaim unused token and reasoning budgets from dormant sub-missions in real-time.
+
+---
+
+## Strategic Evolution: [2026-07-12]
+### Focus: Teammate Mailbox Sovereignty & Consensus-Bound Coordination
+**Context**: The emergence of "Agent Teams" in Claude Code and the disclosure of injection vulnerabilities in Gemini CLI confirm that the perimeter has shifted from the tool boundary to the **Teammate Mailbox**. As agents collaborate horizontally via peer-to-peer messaging, the integrity of inter-agent coordination becomes the new primary attack surface. Simultaneously, the inefficiency of "Git-based Locking" in high-density teams demands a shift toward hardware-attested, lock-free state synchronization.
+
+**Strategic Pivot**:
+- **Teammate Mailbox Integrity Guard (TMIG)**: MCP Any will evolve to act as the authoritative validator for all inter-agent mailbox messages. We will implement TMIG, requiring hardware-attested signatures and semantic intent-validation for every teammate-to-teammate request, neutralizing lateral movement by compromised subagents.
+- **Reasoning-Aware Git-Locking (RAGL)**: To resolve coordination bottlenecks in horizontal swarms, we are introducing RAGL. This service will wrap legacy git-based locking with an intent-aware abstraction, utilizing Conflict-Free Replicated Data Types (CRDTs) to provide sub-millisecond task claiming while maintaining filesystem compatibility.
+- **Discovery-Phase Context Attestation**: To counter "Invisible Instruction" smuggling in natural language files (e.g., `GEMINI.md`), we are mandating hardware-attested hashing for all project-local context files. MCP Any will treat these files as high-risk execution artifacts, requiring explicit user attestation before they are ingested by the agent reasoning engine.
+- **Consensus-Bound Coordination Hub**: We are promoting the coordination layer to a "Consensus Hub." High-stakes inter-teammate instructions will now require a multi-agent quorum (Team Lead + Independent Auditor) before being written to the shared mailbox, ensuring that no single agent can coerce the mesh into unauthorized actions.

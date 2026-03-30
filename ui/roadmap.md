@@ -775,6 +775,12 @@
 - [ ] **[P0] UTD Mesh Topology**: (2026-07-10) Interactive map of teammate discovery beacons and horizontal swarm formation.
 - [ ] **[P0] Hierarchical Lineage Tracer**: (2026-07-10) Visual debugger for recursive, hardware-signed reasoning sub-steps.
 
+#### Upcoming (2026-07-12 Evolution)
+- [ ] **[P0] Teammate Mailbox Integrity Monitor**: (2026-07-12) Visual tracking and security auditing of inter-agent coordination messages with signature verification status.
+- [ ] **[P1] RAGL Task-Claiming Visualizer**: (2026-07-12) Real-time visualization of lock-free task claiming and git-sync status for horizontal teams.
+- [ ] **[P0] Context-File Hashing Status**: (2026-07-12) Security indicator for hardware-attested hashes of project-local context files.
+- [ ] **[P0] Consensus-Bound Coordination Workspace**: (2026-07-12) Interactive UI for reviewing and approving multi-agent coordination quorums.
+
 #### Upcoming (2026-07-11 Evolution)
 - [ ] **[P0] Mesh Resilience Dashboard**: (2026-07-11) Real-time visualization of state shard migration and physical node health.
 - [ ] **[P0] Economic Attribution Viewer**: (2026-07-11) Visual tracker for hardware-attested cost attribution (HACA) across subagent lineages.

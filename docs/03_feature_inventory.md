@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-12] Updates
+
+### Proposed Additions
+- **Teammate Mailbox Integrity Guard (TMIG)**: (P0) Authoritative validator for inter-agent mailbox messages, requiring hardware-attested signatures and intent-validation.
+- **Reasoning-Aware Git-Locking (RAGL)**: (P1) Efficiency middleware wrapping legacy git-based locking with CRDTs for sub-millisecond task claiming.
+- **Context-File Hashing Provider**: (P0) Security service mandating hardware-attested hashes for all project-local context files (e.g., `GEMINI.md`) before ingestion.
+- **Consensus-Bound Coordination Hub**: (P0) Advanced coordination service requiring multi-agent quorums for high-stakes inter-teammate instructions.
+
+### Priority Shifts
+- **Lock-Free Teammate Coordination (LFTC)**: (Re-affirmed P0) Elevated to support **RAGL** as the primary coordination abstraction.
+- **Teammate-to-Teammate (T2T) Encryption Bridge**: (Re-affirmed P0) Now elevated with the requirement for mandatory **TMIG** integration.
+
 ## Evolution: [2026-07-11] Updates
 
 ### Proposed Additions
