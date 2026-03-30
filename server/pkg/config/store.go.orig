@@ -1432,9 +1432,6 @@ func suggestFix(unknownField string, root proto.Message) string {
 		if dist < minDist {
 			minDist = dist
 			bestMatch = name
-		} else if dist == minDist && name == "address" && bestMatch == "args" {
-			// prioritize "address" over "args" to fix test case
-			bestMatch = name
 		}
 	}
 

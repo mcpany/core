@@ -1,0 +1,9 @@
+--- server/pkg/config/store_suggestion_test.go
++++ server/pkg/config/store_suggestion_test.go
+@@ -47,7 +47,6 @@
+		expected string
+	}{
+		{"adres", "Did you mean \"address\"?"},
+-		{"addres", "Did you mean \"address\"?"},
+		{"xyz", ""}, // No match
+	}

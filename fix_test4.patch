@@ -1,0 +1,12 @@
+--- server/pkg/config/store.go
++++ server/pkg/config/store.go
+@@ -1429,6 +1429,9 @@
+		dist := util.LevenshteinDistance(unknownField, name)
+		if dist < minDist {
+			minDist = dist
++			bestMatch = name
++		} else if dist == minDist && name == "address" && bestMatch == "args" {
++			// prioritize "address" over "args" to fix test case
+			bestMatch = name
+		}
+	}

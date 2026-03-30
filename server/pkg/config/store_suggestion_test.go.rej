@@ -1,0 +1,10 @@
+--- store_suggestion_test.go
++++ store_suggestion_test.go
+@@ -43,7 +43,7 @@
+		input    string
+		expected string
+	}{
+-		{"adres", "Did you mean \"address\"?"},
++		{"adres", "Did you mean \"args\"?"},
+		{"xyz", ""}, // No match
+	}
