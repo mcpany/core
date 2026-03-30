@@ -780,3 +780,9 @@
 - [ ] **[P0] Economic Attribution Viewer**: (2026-07-11) Visual tracker for hardware-attested cost attribution (HACA) across subagent lineages.
 - [ ] **[P0] Ephemeral Hook Monitor**: (2026-07-11) Status widget for monitoring session-locked discovery hooks and their expiration.
 - [ ] **[P1] Resource Reclamation Log**: (2026-07-11) Real-time tracker for RRR-triggered budget reclaims and mission efficiency gains.
+
+#### Upcoming (2026-07-12 Evolution)
+- [ ] **[P0] Enclave Lock Monitor**: (2026-07-12) Real-time visualization of hardware-bound EBCL mutex acquisition and contention metrics.
+- [ ] **[P1] MLP Partition Inspector**: (2026-07-12) Visual status indicator for cryptographically isolated reasoning partitions at the model provider.
+- [ ] **[P0] CIIB Violation Guard**: (2026-07-12) Security dashboard for tracking real-time Inode-to-Intent binding and blocked symlink-shadowing attempts.
+- [ ] **[P1] Trust-Lease Aggregation View**: (2026-07-12) Performance overlay visualizing latency savings from aggregated hardware proofs.

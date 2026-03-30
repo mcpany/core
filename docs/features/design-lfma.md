@@ -59,3 +59,7 @@ The Lock-Free Mesh Arbiter (LFMA) is designed to provide a decentralized, non-bl
 
 ## 7. Evolutionary Changelog
 *   **2026-05-31:** Initial Document Creation.
+*   **2026-07-12: Hardware-Enclave Coordination Hardening**
+    **Context:** Today's market sync revealed "Shard-Claim Collision" vulnerabilities in high-density horizontal swarms.
+    **Architecture Adjustment:** Evolving LFMA to utilize **Enclave-Bound Coordination Locks (EBCL)** for critical shard operations. Software-level CRDTs will now be gated by hardware-bound mutexes during peak contention periods.
+    **Security Impact:** Prevents race-condition exploits in the shared task list and ensures non-repudiable task claiming.

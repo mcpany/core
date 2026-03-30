@@ -954,3 +954,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Attested Cost Attribution (HACA)**: Advanced economic security service that cryptographically attributes token usage to specific sub-process lineage. (Added: 2026-07-11)
 *   **[P0] Ephemeral Registry Hook (ERH) Provider**: Security middleware mandating session-locked discovery schemas to neutralize registry persistence exploits. (Added: 2026-07-11)
 *   **[P1] Recursive Resource Reclamation (RRR) Manager**: Lifecycle management service for reclaiming unused token and reasoning budgets from dormant sub-missions. (Added: 2026-07-11)
+
+#### Upcoming (2026-07-12 Evolution)
+*   **[P0] Enclave-Bound Coordination Locks (EBCL)**: Hardware-enclave (TPM) bound mutexes for race-free coordination in high-density swarms. (Added: 2026-07-12)
+*   **[P1] Model-Level Partition (MLP) Adapter**: Support for cryptographically isolated reasoning partitions via `x-gemini-reasoning-isolation` headers. (Added: 2026-07-12)
+*   **[P0] Continuous Inode-to-Intent Binding (CIIB)**: Real-time cryptographic binding of tool-accessible files to Inodes to neutralize TOCTOU symlink shadowing. (Added: 2026-07-12)
+*   **[P1] Trust-Lease Aggregation (TLA) Hub**: Implementation of aggregated hardware attestation proofs to reduce mesh coordination latency. (Added: 2026-07-12)

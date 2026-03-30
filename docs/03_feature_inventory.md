@@ -12,6 +12,18 @@
 - **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **HACA** integration.
 - **Zero-Knowledge State Attestation (ZKSA) Provider**: (Re-affirmed P0) Elevated to support **DMR-compliant** state migration proofs.
 
+## Evolution: [2026-07-12] Updates
+
+### Proposed Additions
+- **Enclave-Bound Coordination Locks (EBCL)**: (P0) Authoritative hardware arbitration service utilizing TPM-bound mutexes for race-free teammate coordination.
+- **Model-Level Partition (MLP) Adapter**: (P1) Security bridge for requesting cryptographically isolated reasoning partitions from LLM providers (Gemini CLI v0.55.0 compliance).
+- **Continuous Inode-to-Intent Binding (CIIB) Provider**: (P0) Advanced security service that cryptographically binds files to Inodes at the moment of tool execution to neutralize TOCTOU symlink shadowing.
+- **Trust-Lease Aggregation (TLA) Hub**: (P1) Performance-optimizing service allowing a single hardware-attested proof to cover multiple sibling subagents within the same trust tier.
+
+### Priority Shifts
+- **Lock-Free Mesh Arbiter (LFMA)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **EBCL** integration to prevent coordination races.
+- **Resident Integrity Monitor (RIM)**: (Re-affirmed P0) Evolving to support **CIIB-compliant** per-action verification.
+
 ## Evolution: [2026-03-26] Updates
 
 ### Proposed Additions
