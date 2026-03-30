@@ -780,3 +780,6 @@
 - [ ] **[P0] Economic Attribution Viewer**: (2026-07-11) Visual tracker for hardware-attested cost attribution (HACA) across subagent lineages.
 - [ ] **[P0] Ephemeral Hook Monitor**: (2026-07-11) Status widget for monitoring session-locked discovery hooks and their expiration.
 - [ ] **[P1] Resource Reclamation Log**: (2026-07-11) Real-time tracker for RRR-triggered budget reclaims and mission efficiency gains.
+
+#### Upcoming (2026-03-21 Evolution)
+*   **[P0] Premium MCP Any Portainer Experience**: Implement Apple-level aesthetic for Tool Execution History (Recent Activity) widget, integrating rich diffs and precise stats. (Added: 2026-03-21)
