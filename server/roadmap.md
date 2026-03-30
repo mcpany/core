@@ -954,3 +954,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Attested Cost Attribution (HACA)**: Advanced economic security service that cryptographically attributes token usage to specific sub-process lineage. (Added: 2026-07-11)
 *   **[P0] Ephemeral Registry Hook (ERH) Provider**: Security middleware mandating session-locked discovery schemas to neutralize registry persistence exploits. (Added: 2026-07-11)
 *   **[P1] Recursive Resource Reclamation (RRR) Manager**: Lifecycle management service for reclaiming unused token and reasoning budgets from dormant sub-missions. (Added: 2026-07-11)
+
+#### Upcoming (2026-07-12 Evolution)
+*   **[P0] Teammate-to-Teammate (T2T) Auth Bridge**: Authoritative middleware for encrypted, session-bound messaging between horizontal teammates. (Added: 2026-07-12)
+*   **[P0] Marketplace Skill Profiler Sandbox**: Air-gapped behavioral profiling environment (gVisor) for third-party agent skills. (Added: 2026-07-12)
+*   **[P0] Pre-Flight Instruction Sanitizer**: Structural metadata scanner for tool definitions to neutralize prompt-to-command injections. (Added: 2026-07-12)

@@ -780,3 +780,8 @@
 - [ ] **[P0] Economic Attribution Viewer**: (2026-07-11) Visual tracker for hardware-attested cost attribution (HACA) across subagent lineages.
 - [ ] **[P0] Ephemeral Hook Monitor**: (2026-07-11) Status widget for monitoring session-locked discovery hooks and their expiration.
 - [ ] **[P1] Resource Reclamation Log**: (2026-07-11) Real-time tracker for RRR-triggered budget reclaims and mission efficiency gains.
+
+#### Upcoming (2026-07-12 Evolution)
+- [ ] **[P0] T2T Message Inspector**: (2026-07-12) Real-time visualization of encrypted inter-teammate coordination and session tokens.
+- [ ] **[P0] Skill Profiling Safety Report**: (2026-07-12) UI for viewing gVisor-based sandbox results and safety scores for marketplace skills.
+- [ ] **[P0] Discovery Sanitization Alerts**: (2026-07-12) Alerts and redaction viewer for tool metadata flagged by the Pre-Flight Sanitizer.

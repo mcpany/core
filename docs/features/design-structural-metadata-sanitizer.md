@@ -59,3 +59,10 @@ The Structural Metadata Sanitizer (SMS) treats all tool structural metadata as u
 ## 7. Evolutionary Changelog
 * **2026-06-14:** Initial Document Creation. Addressing the Shadow-Discovery via Metadata Injection (SDMI) vulnerability.
 * **2026-06-15:** Added **WASM-Hook Behavioral Profiling** to counter PR "Logic Bombs." SMS now performs mandatory, sandboxed behavioral profiling of AI-generated configuration hooks before they are deemed "Loadable."
+
+### Update: 2026-07-12 - Neutralizing Gemini CLI Prompt-to-Command Vectors
+**Context**: Today's research into the Gemini CLI vulnerabilities revealed that tool descriptions are being used as secondary injection vectors to trigger VS Code extension logic.
+**Architecture Adjustment**:
+* Expanding the **Semantic Pattern Matcher** to specifically flag "Extension Installation" and "Marketplace Trigger" keywords in tool metadata.
+* Mandating **Isolated Execution** for any tool whose metadata contains "Pre-flight" hooks or installation logic.
+**Security Impact**: Prevents "Invisible" instructions in structural metadata from escalating to host-level command execution before the user even confirms a tool call.

@@ -46,3 +46,10 @@ As AI agents evolve from hierarchical subagents to horizontal "Agent Teams" (e.g
 
 ## 7. Evolutionary Changelog
 * **2026-03-24:** Initial Document Creation.
+
+### Update: 2026-07-12 - Authenticated Teammate Messaging (T2T)
+**Context**: Research into Claude Code Agent Teams reveals that horizontal coordination requires more than just a shared task list; teammates need secure, direct communication channels that are resilient to "Identity Spoofing."
+**Architecture Adjustment**:
+* Introducing the **T2T Auth Bridge**: A middleware component that mandates hardware-attested session tokens for every peer-to-peer message.
+* Implementing **Session-Bound Identity Rotation**: Teammate identities are now ephemeral and rotate upon task completion to neutralize long-term session hijacking.
+**Security Impact**: Ensures that inter-teammate coordination remains sovereign and prevents a compromised specialist agent from injecting unauthorized instructions into the shared mesh.

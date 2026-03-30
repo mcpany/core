@@ -1,5 +1,16 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-12] Updates
+
+### Proposed Additions
+- **Teammate-to-Teammate (T2T) Auth Bridge**: (P0) Authoritative coordination service for encrypted, session-bound messaging between horizontal teammates, utilizing sharded CRDT state.
+- **Marketplace Skill Profiler**: (P0) Security sandbox service for behavioral profiling of third-party tools (ClawHub style) against a Zero-Trust baseline before discovery.
+- **Pre-Flight Instruction Sanitizer**: (P0) Structural metadata sanitization middleware that scans tool descriptions and examples for imperative command injection (Gemini CLI CVE defense).
+
+### Priority Shifts
+- **Teammate Task-List Arbiter**: (Re-affirmed P0) Now elevated with mandatory **T2T Auth Bridge** integration for horizontal mesh security.
+- **Structural Metadata Sanitizer**: (Re-affirmed P0) Elevated to support **Pre-Flight Instruction** scanning for marketplace tool ingestion.
+
 ## Evolution: [2026-07-11] Updates
 
 ### Proposed Additions

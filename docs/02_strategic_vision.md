@@ -1403,3 +1403,11 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Hardware-Attested Cost Attribution (HACA)**: To neutralize "Economic Squatting," we are upgrading the Reasoning-Budget Firewall to support HACA. This layer will cryptographically attribute every token and compute millisecond to its specific sub-process lineage, ensuring absolute economic accountability across the mesh.
 - **Ephemeral Registry Hook (ERH) Provider**: Supporting the Claude Code v3.2 standard, MCP Any will implement ERH. Discovery schemas will be issued as session-locked, ephemeral tokens that expire immediately post-discovery, neutralizing "Registry Persistence" exploits.
 - **Recursive Resource Reclamation (RRR)**: We are adopting the UACO v3.6 standard for resource management. MCP Any will act as the authoritative "Lease Reaper," allowing parent agents to forcefully reclaim unused token and reasoning budgets from dormant sub-missions in real-time.
+
+## Strategic Evolution: [2026-07-12]
+### Focus: Mesh Governance & Marketplace Sovereignty
+**Context**: The maturation of "Agent Teams" in Claude Code and the launch of OpenClaw's "ClawHub" confirm that the security frontier has moved from individual tool calls to the **Collective Mesh** and the **Tool Supply Chain**. The discovery of prompt-injection based command execution in Gemini CLI further emphasizes that "Pre-Flight" sanitization is no longer optional.
+**Strategic Pivot**:
+- **Teammate-to-Teammate (T2T) Auth Bridge**: Supporting horizontal swarms, MCP Any will evolve to act as the authoritative bridge for encrypted, session-bound messaging between teammates, resolving "Mailbox Lock" bottlenecks via sharded CRDT state.
+- **Marketplace Skill Profiler**: To counter "Skill-Squatting" in emerging markets like ClawHub, we are introducing a mandatory "Behavioral Sandbox" for all third-party tools. Every skill must be profiled against a "Zero-Trust Baseline" before being promoted to the agent's discovery bus.
+- **Pre-Flight Instruction Sanitizer**: Moving beyond execution-time shielding, MCP Any will implement "Structural Metadata Sanitization" for tool definitions, ensuring that imperative commands hidden in tool descriptions cannot hijack the agent reasoning loop during the discovery phase.
