@@ -1,5 +1,11 @@
 # Server Roadmap
 
+#### Upcoming (2026-07-12 Evolution)
+*   **[P0] HARC Validator**: Multi-agent reasoning consensus service requiring hardware-attested quorums for high-risk autonomous tasks. (Added: 2026-07-12)
+*   **[P0] Discovery Entropy Shield (DES)**: Security middleware to neutralize timing side-channels in metadata propagation. (Added: 2026-07-12)
+*   **[P0] TBES Provider**: Orchestrator for task-bound ephemeral sandboxes and automated task-specific container purging. (Added: 2026-07-12)
+*   **[P0] MRMS Broker**: Multi-region mesh sovereignty service facilitating cross-region attestation relays. (Added: 2026-07-12)
+
 ## 1. Top Priorities: The Universal Agent Bus (New Strategic Focus)
 *   **[Security] Policy Firewall Engine:** Implement Rego/CEL based hooking for tool calls.
 *   **[Security] Granular Scopes:** implement capability-based token system (`fs:read:/tmp`).

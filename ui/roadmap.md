@@ -1,5 +1,11 @@
 # UI Roadmap
 
+#### Upcoming (2026-07-12 Evolution)
+- [ ] **[P0] HARC Quorum Manager**: (2026-07-12) Visual workspace for orchestrating and approving hardware-attested reasoning quorums.
+- [ ] **[P0] Discovery Timing Heatmap**: (2026-07-12) Real-time visualization of normalized metadata propagation and DES jitter distribution.
+- [ ] **[P0] Ephemeral Sandbox Monitor**: (2026-07-12) UI for tracking task-bound container lifecycles and automated purging events.
+- [ ] **[P0] Multi-Region Mesh Visualizer**: (2026-07-12) Interactive map showing cross-region attestation relays and intent lineage persistence.
+
 ## Status: Active Development
 
 ### Universal Agent Bus (New Strategic Priorities)

@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-12] Updates
+
+### Proposed Additions
+- **HARC Validator**: (P0) Hardware-Attested Reasoning Consensus service requiring a multi-agent quorum for high-risk autonomous tasks.
+- **Discovery Entropy Shield (DES)**: (P0) Security middleware to neutralize "Metadata Echoing" side-channels by normalizing metadata propagation micro-timing.
+- **TBES Provider**: (P0) Task-Bound Ephemeral Sandbox orchestrator for spawning and purging isolated task-specific micro-containers.
+- **MRMS Broker**: (P0) Multi-Region Mesh Sovereignty service for cross-region hardware-attestation relays and intent lineage persistence.
+
+### Priority Shifts
+- **Atomic Fragment Sanitizer (AFS)**: (Re-affirmed P0) Elevated with the requirement for mandatory **HARC-compliant** quorum validation to prevent smearing cascades.
+- **Monotonic Handshake Lineage (MHL) Provider**: (Re-affirmed P0) Elevated to support **MRMS-compliant** cross-region relays.
+
 ## Evolution: [2026-07-11] Updates
 
 ### Proposed Additions
