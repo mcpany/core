@@ -114,6 +114,7 @@ type MemoryShard struct {
 	TextContent       string `json:"text_content"`
 	MultimodalPayload []byte `json:"multimodal_payload,omitempty"`
 	Signature         string `json:"signature"`
+	PreviousHash      string `json:"previous_hash,omitempty"` // For Multimodal Hash-Chaining (MHC)
 }
 
 // Task represents a universal task definition for the Agent Bus.
