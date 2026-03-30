@@ -1,0 +1,16 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "zksa",
+    srcs = ["zksa.go"],
+    importpath = "github.com/mcpany/core/server/pkg/zksa",
+    visibility = ["//visibility:public"],
+)
+
+load("@rules_go//go:def.bzl", "go_test")
+
+go_test(
+    name = "zksa_test",
+    srcs = ["zksa_test.go"],
+    embed = [":zksa"],
+)

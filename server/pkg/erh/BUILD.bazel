@@ -1,0 +1,16 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "erh",
+    srcs = ["erh.go"],
+    importpath = "github.com/mcpany/core/server/pkg/erh",
+    visibility = ["//visibility:public"],
+)
+
+load("@rules_go//go:def.bzl", "go_test")
+
+go_test(
+    name = "erh_test",
+    srcs = ["erh_test.go"],
+    embed = [":erh"],
+)

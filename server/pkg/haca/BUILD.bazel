@@ -1,0 +1,16 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "haca",
+    srcs = ["haca.go"],
+    importpath = "github.com/mcpany/core/server/pkg/haca",
+    visibility = ["//visibility:public"],
+)
+
+load("@rules_go//go:def.bzl", "go_test")
+
+go_test(
+    name = "haca_test",
+    srcs = ["haca_test.go"],
+    embed = [":haca"],
+)

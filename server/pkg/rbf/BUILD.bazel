@@ -1,0 +1,16 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "rbf",
+    srcs = ["rbf.go"],
+    importpath = "github.com/mcpany/core/server/pkg/rbf",
+    visibility = ["//visibility:public"],
+)
+
+load("@rules_go//go:def.bzl", "go_test")
+
+go_test(
+    name = "rbf_test",
+    srcs = ["rbf_test.go"],
+    embed = [":rbf"],
+)
