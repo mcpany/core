@@ -154,15 +154,15 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
 
             // Level 1 scan
             Object.values(content).forEach(val => {
-                 if (Array.isArray(val) && val.length > 0 && typeof val[0] === 'object' && val[0] !== null) {
+                 if (Array.isArray(val) && val.length > 0 && val.every(item => typeof item === 'object' && item !== null && !Array.isArray(item))) {
                      if (val.length > largestArray.length) {
                          largestArray = val;
                      }
                  }
                  // Level 2 scan
-                 else if (val && typeof val === 'object' && !Array.isArray(val)) {
+                 else if (val && typeof val === 'object' && !Array.isArray(val) && val !== null) {
                       Object.values(val).forEach(nestedVal => {
-                           if (Array.isArray(nestedVal) && nestedVal.length > 0 && typeof nestedVal[0] === 'object' && nestedVal[0] !== null) {
+                           if (Array.isArray(nestedVal) && nestedVal.length > 0 && nestedVal.every(item => typeof item === 'object' && item !== null && !Array.isArray(item))) {
                                if (nestedVal.length > largestArray.length) {
                                    largestArray = nestedVal;
                                }
