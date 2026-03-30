@@ -1,9 +1,7 @@
 # MCP Any - Universal Agent Infrastructure
 
-## Project Identity
-**What is this?** MCP Any is the ultimate developer entry point and Universal Adapter designed to eliminate the requirement to implement new MCP (Model Context Protocol) servers for doing API calls.
-
-**Why does it exist?** It allows you to configure everything through lightweight YAML/JSON configurations to capability-enable different APIs (REST, gRPC, GraphQL, Command-line) and run a single `mcpany` server instance that acts as a secure, universal bridge. Instead of writing custom boilerplate adapters for each service, you configure MCP Any to handle it automatically.
+## Elevator Pitch
+MCP Any is the ultimate developer entry point and Universal Adapter designed to eliminate the requirement to implement new MCP (Model Context Protocol) servers for doing API calls. It allows you to configure everything through lightweight YAML/JSON configurations to capability-enable different APIs (REST, gRPC, GraphQL, Command-line) and run a single `mcpany` server instance that acts as a secure, universal bridge. Instead of writing custom boilerplate adapters for each service, you configure MCP Any to handle it automatically.
 
 ## Architecture
 MCP Any relies on a "Configuration over Code" pattern. Users deploy a single binary which reads dynamically loaded capability definitions. The architecture supports gRPC, OpenAPI, HTTP, GraphQL, and CLI tools.
@@ -25,8 +23,7 @@ graph TD
     C -->|CLI| G[Command Line Tool]
 ```
 
-## Quick Start
-
+## Getting Started
 Follow these steps to go from `git clone` to `Hello World`.
 
 ### 1. Clone the repository
@@ -45,8 +42,7 @@ bazelisk run //server/cmd/mcpany -- -config examples/hello_world.yaml
 ```
 *The server will start and you can connect your MCP-compatible client to the local instance.*
 
-## Developer Workflow
-
+## Development
 We use `make` and `bazelisk` for common development tasks.
 
 - **Lint the code:**
@@ -72,7 +68,6 @@ We use `make` and `bazelisk` for common development tasks.
   ```
 
 ## Configuration
-
 MCP Any requires configurations to be provided via YAML/JSON.
 
 - **Configs:** Place capability configurations in the `./configs` directory. These define what upstream capabilities your MCP Any server exposes.
