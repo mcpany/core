@@ -1,4 +1,4 @@
-// Copyright 2025 Author(s) of MCP Any
+// Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
 package util
@@ -92,5 +92,30 @@ func TestReadLastNLines(t *testing.T) {
 	}
 	if len(lines) != 10 {
 		t.Errorf("expected 10 lines, got %d", len(lines))
+	}
+
+	// Case 6: Negative lines
+	lines, err = ReadLastNLines(path, -5)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(lines) != 0 {
+		t.Errorf("expected 0 lines, got %d", len(lines))
+	}
+
+	// Case 7: File does not exist
+	missingPath := filepath.Join(tmpDir, "missing.log")
+	_, err = ReadLastNLines(missingPath, 10)
+	if err == nil {
+		t.Error("expected error for missing file, got nil")
+	}
+
+	// Case 8: Read all lines from large file
+	lines, err = ReadLastNLines(path, 4000)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(lines) != 3000 {
+		t.Errorf("expected 3000 lines, got %d", len(lines))
 	}
 }

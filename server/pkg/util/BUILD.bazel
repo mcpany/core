@@ -125,6 +125,7 @@ go_test(
         "tls_test.go",
         "tostring_bug_test.go",
         "tostring_cycle_test.go",
+        "tostring_extra_test.go",
         "tostring_integration_test.go",
         "tostring_pointer_test.go",
         "tostring_test.go",
