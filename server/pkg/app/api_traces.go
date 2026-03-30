@@ -46,6 +46,7 @@ type Trace struct {
 	TotalDuration int64  `json:"totalDuration"`
 	Status        string `json:"status"`
 	Trigger       string `json:"trigger"`
+	TraceID       string `json:"traceId"`
 }
 
 const (
@@ -116,6 +117,7 @@ func toTrace(entry audit.Entry) *Trace {
 		TotalDuration: durationMs,
 		Status:        status,
 		Trigger:       "user", // Default to user for now
+		TraceID:       traceID,
 	}
 }
 
