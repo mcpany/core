@@ -193,6 +193,7 @@ type StandardMiddlewares struct {
 	A2ABridge        *A2ABridgeMiddleware
 	ESB              *ESBMiddleware
 	CFIA             *CFIAMiddleware
+	IPSC             *IPSCMiddleware
 	Cleanup          func() error
 }
 
@@ -468,6 +469,23 @@ func InitStandardMiddlewares(
 		}
 	})
 
+	// IPSC Middleware
+	var ipscMiddleware *IPSCMiddleware
+	if true { // In a real setup, read from config. For now, enable it by default.
+		ipscConfig := IPSCConfig{
+			Enabled:                true,
+			DefaultCorrectionLimit: 3,
+		}
+		ipscMiddleware = NewIPSCMiddleware(ipscConfig)
+		RegisterMCP("ipsc", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
+			return func(next mcp.MethodHandler) mcp.MethodHandler {
+				return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+					return ipscMiddleware.Execute(ctx, method, req, next)
+				}
+			}
+		})
+	}
+
 	// Context-File Integrity Attestation (CFIA)
 	var cfiaMiddleware *CFIAMiddleware
 	if cfiaConfig != nil && cfiaConfig.Enabled {
@@ -523,6 +541,7 @@ func InitStandardMiddlewares(
 		A2ABridge:        a2aBridge,
 		ESB:              esbMiddleware,
 		CFIA:             cfiaMiddleware,
+		IPSC:             ipscMiddleware,
 		Cleanup:          audit.Close,
 	}, nil
 }
