@@ -1,0 +1,14 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "dmr",
+    srcs = ["dmr.go"],
+    importpath = "github.com/mcpany/core/server/pkg/dmr",
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "dmr_test",
+    srcs = ["dmr_test.go"],
+    deps = [":dmr"],
+)
