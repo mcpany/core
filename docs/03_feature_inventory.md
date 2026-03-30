@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-12] Updates
+
+### Proposed Additions
+- **Monotonic Clock-Drift Compensation (MCDC) Middleware**: (P0) Security service synchronizing TPM counters with high-res timers to neutralize "Shadow-Attestation" exploits.
+- **Self-Healing Registry Manifest (SHRM) Provider**: (P0) Sovereignty service mandating background manifest validation against hardware-attested global truths to purge unauthorized hooks.
+- **State Migration Proof (SMP) Broker**: (P0) Resilience service facilitating the transfer of entangled state between mesh nodes while maintaining attestation continuity.
+- **Recursive Resource Reclamation (RRR) Manager**: (GA P0) Now promoted to GA with mandatory integration into the **Reasoning-Budget Firewall**.
+
+### Priority Shifts
+- **Dynamic Mesh Resilience (DMR) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SMP-compliant** state transfers.
+- **Layer-7 Semantic Inspection Hub (L7SIH)**: (Re-affirmed P0) Elevated with mandatory "Intent Inversion Detection" to counter **Reasoning Mirroring** attacks.
+
 ## Evolution: [2026-07-11] Updates
 
 ### Proposed Additions

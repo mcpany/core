@@ -775,6 +775,12 @@
 - [ ] **[P0] UTD Mesh Topology**: (2026-07-10) Interactive map of teammate discovery beacons and horizontal swarm formation.
 - [ ] **[P0] Hierarchical Lineage Tracer**: (2026-07-10) Visual debugger for recursive, hardware-signed reasoning sub-steps.
 
+#### Upcoming (2026-07-12 Evolution)
+- [ ] **[P0] Clock-Drift Compensation Widget**: (2026-07-12) Real-time monitor for MCDC temporal alignment and nanosecond drift alerts.
+- [ ] **[P0] Self-Healing Registry Hub**: (2026-07-12) UI for reviewing "Self-Healing" events and blocked un-attested tool discovery.
+- [ ] **[P0] State Migration Proof Explorer**: (2026-07-12) Visual tracker for SMP-compliant state transfers between resilient mesh nodes.
+- [ ] **[P0] Intent Inversion Detector UI**: (2026-07-12) Forensic dashboard for reviewing L7SIH-flagged "Reasoning Mirroring" attempts.
+
 #### Upcoming (2026-07-11 Evolution)
 - [ ] **[P0] Mesh Resilience Dashboard**: (2026-07-11) Real-time visualization of state shard migration and physical node health.
 - [ ] **[P0] Economic Attribution Viewer**: (2026-07-11) Visual tracker for hardware-attested cost attribution (HACA) across subagent lineages.

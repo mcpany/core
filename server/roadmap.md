@@ -949,6 +949,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Unified Teammate Discovery (UTD) Gateway**: High-speed, authenticated discovery hub for horizontal mesh formation. (Added: 2026-07-10)
 *   **[P0] Hierarchical Provenance Validator**: Implementation of Gemini-compliant recursive "Chain-of-Thought" hardware signing. (Added: 2026-07-10)
 
+#### Upcoming (2026-07-12 Evolution)
+*   **[P0] Monotonic Clock-Drift Compensation (MCDC) Middleware**: Security service synchronizing TPM counters with high-res timers to neutralize "Shadow-Attestation" exploits. (Added: 2026-07-12)
+*   **[P0] Self-Healing Registry Manifest (SHRM) Provider**: Sovereignty service mandating background manifest validation against hardware-attested global truths to purge unauthorized hooks. (Added: 2026-07-12)
+*   **[P0] State Migration Proof (SMP) Broker**: Resilience service facilitating the transfer of entangled state between mesh nodes while maintaining attestation continuity. (Added: 2026-07-12)
+*   **[GA] [P0] Recursive Resource Reclamation (RRR) Manager**: Lifecycle management service for reclaiming unused token and reasoning budgets from dormant sub-missions. (Promoted to GA: 2026-07-12)
+
 #### Upcoming (2026-07-11 Evolution)
 *   **[P0] Dynamic Mesh Resilience (DMR) Hub**: Authoritative coordination service for re-sharding and migrating state between physical nodes upon subagent failure. (Added: 2026-07-11)
 *   **[P0] Hardware-Attested Cost Attribution (HACA)**: Advanced economic security service that cryptographically attributes token usage to specific sub-process lineage. (Added: 2026-07-11)

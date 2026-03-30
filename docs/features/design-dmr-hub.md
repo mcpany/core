@@ -56,3 +56,4 @@ The Dynamic Mesh Resilience (DMR) Hub evolves MCP Any from a static gateway into
 
 ## 7. Evolutionary Changelog
 * **2026-07-11:** Initial Document Creation.
+* **2026-07-12:** Updated to support UACO v3.7 State Migration Proofs (SMP). Integration of SMP Broker to maintain attestation continuity during fail-operational node migration.
