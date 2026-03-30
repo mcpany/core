@@ -1,34 +1,31 @@
-# Truth Reconciliation Audit Report
+# Truth Reconciliation Audit
 
 ## Executive Summary
-A comprehensive 10-file truth reconciliation audit was performed spanning documentation, roadmap items, and current codebase implementations. The audit confirmed strong alignment across 90% of the surveyed surfaces, with the UI correctly implementing advanced topologies, traces, and system diagnostics as outlined. However, one discrepancy was identified and remediated regarding the "Browser-Side HTTP Connectivity Check" documentation. The system is now 100% aligned with the sampled Product Roadmap.
+A Truth Reconciliation Audit was conducted to verify that the implementation of 10 randomly selected features across the UI and Server matches the documented Roadmap. The audit revealed a 90% compliance rate. One feature, `Lazy-MCP Middleware`, was implemented in the codebase but missing its wiring in the server pipeline. This discrepancy was successfully resolved by correctly exporting and wiring the context key logic and registering the middleware.
 
 ## Verification Matrix
 
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `ui/docs/features/tool-diff.md` | Aligned | Verified UI Implementation | `ReplayDiffDialog` and diffing views are present in `ui/src/components/traces/replay-diff-dialog.tsx`. |
-| `ui/docs/features/diagnostics.md` | Aligned | Verified UI Implementation | `SystemHealth` provides diagnostic cards in `ui/src/components/diagnostics/system-health.tsx`. |
-| `ui/docs/features/network.md` | Aligned | Verified UI Implementation | `NetworkGraphClient` correctly uses ReactFlow in `ui/src/components/network/network-graph-client.tsx`. |
-| `ui/docs/features/recursive_context.md` | Aligned | Verified Server/UI Implementation | Recursive Context Protocol is managed via `RecursiveContextManager` in `server/pkg/middleware/recursive_context.go`. |
-| `server/docs/features/sso.md` | Aligned | Verified Server Implementation | SSO capabilities implemented via `server/pkg/middleware/sso.go`. |
-| `server/docs/features/guardrails.md` | Aligned | Verified Server Implementation | Prompt injection guardrails exist via `server/pkg/middleware/guardrails.go`. |
-| `server/docs/features/audit_logging.md` | Aligned | Verified Server Implementation | Diverse audit storage patterns exist in `server/pkg/audit/*.go`. |
-| `ui/docs/features/hitl.md` | Aligned | Verified Server/UI Implementation | HITL dashboards and middleware are present (`hitl-dashboard.tsx`, `hitl.go`). |
-| `ui/docs/features/connect-client-center.md` | Aligned | Verified UI Implementation | `ConnectClientDialog` effectively handles connection strings in `ui/src/components/connect-client-button.tsx`. |
-| `ui/docs/features/browser_connectivity_check.md` | **Diverged** | Engineered Missing Implementation | Added browser `fetch` with `mode: 'no-cors'` to `ui/src/components/diagnostics/connection-diagnostic.tsx`. |
+| `ui/docs/features/playground.md` | Verified | None | Playground Native File Upload logic exists in `ui/src/components/playground/tool-runner.tsx` |
+| `ui/docs/features/tool_analytics.md` | Verified | None | Analytics widgets exist in `ui/src/components/playground/tool-runner.tsx` |
+| `server/docs/features/caching/README.md` | Verified | None | `CachingMiddleware` exists in `server/pkg/middleware/cache.go` and is registered |
+| `server/docs/features/lazy-mcp.md` | Remediated | Wired up `LazyMCPMiddleware` to filter `tools/list` requests | See Remediation Log below |
+| `server/docs/features/hitl.md` | Verified | None | `HITLMiddleware` exists in `server/pkg/middleware/hitl.go` and is wired |
+| `ui/docs/features/hitl.md` | Verified | None | Dashboard exists in `ui/src/components/hitl/hitl-dashboard.tsx` |
+| `server/docs/features/shared_kv_store.md` | Verified | None | Blackboard store exists in `server/pkg/middleware/blackboard.go` |
+| `ui/docs/features/recursive_context.md` | Verified | None | Context Dashboard exists in `ui/src/app/context/page.tsx` |
+| `server/docs/features/recursive_context.md` | Verified | None | `RecursiveContextManager` exists in `server/pkg/middleware/recursive_context.go` |
+| `ui/docs/features/tag-based-access-control.md` | Verified | None | Profile tags utilized in UI and Server `ToolManager` |
 
 ## Remediation Log
-**Case B: Roadmap Debt (Code is Missing)**
-The documentation `ui/docs/features/browser_connectivity_check.md` clearly states that the Connection Diagnostics interface must use a `fetch` with `mode: 'no-cors'` from the browser to determine client-side vs server-side connectivity issues (especially useful for Docker/VPN boundaries).
 
-This logic was missing from the actual component (`ui/src/components/diagnostics/connection-diagnostic.tsx`).
-
-**Engineering Fix:**
-- Injected `Browser Connectivity Check` as step 1.5 in the diagnostics workflow when `service.httpService.address` is present.
-- Implemented a `fetch(service.httpService.address, { mode: 'no-cors', method: 'GET' })` call with performance benchmarking.
-- Added strict error handling with a context-aware severity diagnostic result on failure.
-- Updated `ui/src/components/diagnostics/connection-diagnostic.test.tsx` to assert the newly introduced step to conform to TDD standards. `make test` passes successfully.
+### Case B: Roadmap Debt (Code is Missing/Broken)
+**Condition**: The `Lazy-MCP Middleware` documentation (`server/docs/features/lazy-mcp.md`) described a feature that was implemented in the codebase (`server/pkg/middleware/lazy_mcp.go`), but the middleware was never registered or added to the MCP server middleware pipeline.
+**Action**:
+- Exported `missionIntentKey` as `MissionIntentKey` in `server/pkg/middleware/esb.go`.
+- Instantiated and registered `LazyMCPMiddleware` in `server/pkg/middleware/registry.go`.
+- Added logic within the pipeline to intercept the `tools/list` MCP request, extract the agent's intent using `ctx.Value(MissionIntentKey)`, and apply the `FilterTools` logic.
 
 ## Security Scrub
-This report has been reviewed and contains NO PII, secrets, API keys, or internal Google IP structures.
+The audit report contains no PII, internal IPs, or secrets. All references are limited to public features and file paths within the open-source repository.

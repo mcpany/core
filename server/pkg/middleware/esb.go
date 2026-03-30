@@ -13,7 +13,7 @@ import (
 type esbContextKey string
 
 const (
-	missionIntentKey     esbContextKey = "x-mission-intent"
+	MissionIntentKey     esbContextKey = "x-mission-intent"
 	entanglementShardKey esbContextKey = "x-entanglement-shard"
 )
 
@@ -72,7 +72,7 @@ func (m *ESBMiddleware) Execute(ctx context.Context, method string, req mcp.Requ
 		// For the purpose of this implementation, we extract them from the context if available,
 		// or we look into the request meta if supported.
 
-		missionIntent := ctx.Value(missionIntentKey)
+		missionIntent := ctx.Value(MissionIntentKey)
 		if missionIntent == nil || missionIntent == "" {
 			// In tests, context might not have this, but let's allow strings as a fallback
 			// just in case they are set as regular strings

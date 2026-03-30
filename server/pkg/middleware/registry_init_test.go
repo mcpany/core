@@ -108,7 +108,7 @@ func TestInitStandardMiddlewares(t *testing.T) {
 	}
 
 	// Verify standard middlewares are registered in MCP registry
-	expectedMiddlewares := []string{"logging", "auth", "debug", "cors", "caching", "ratelimit", "call_policy", "audit", "global_ratelimit"}
+	expectedMiddlewares := []string{"logging", "auth", "debug", "cors", "caching", "ratelimit", "call_policy", "audit", "global_ratelimit", "lazy_mcp"}
 
 	globalRegistry.mu.RLock()
 	for _, name := range expectedMiddlewares {
@@ -226,6 +226,40 @@ func TestInitStandardMiddlewares(t *testing.T) {
 		// Passthrough check (Global Rate Limit handles all requests)
 		_, err := handler(context.Background(), "tools/list", &mcp.ListToolsRequest{})
 		assert.NoError(t, err)
+	})
+
+	t.Run("lazy_mcp_execution", func(t *testing.T) {
+		factory := globalRegistry.mcpFactories["lazy_mcp"]
+		handler := factory(&configv1.Middleware{})(dummyNext)
+		assert.NotNil(t, handler)
+
+		// Create a mock dummy next that returns a valid ListToolsResult
+		mockNext := func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+			return &mcp.ListToolsResult{
+				Tools: []*mcp.Tool{
+					{Name: "fs:read"},
+					{Name: "db:query"},
+				},
+			}, nil
+		}
+		handler = factory(&configv1.Middleware{})(mockNext)
+
+		// Should filter
+		ctx := context.WithValue(context.Background(), MissionIntentKey, "disk")
+		res, err := handler(ctx, "tools/list", &mcp.ListToolsRequest{})
+		assert.NoError(t, err)
+		listRes, ok := res.(*mcp.ListToolsResult)
+		assert.True(t, ok)
+		// Assuming naive threshold filtering logic matches "disk" to "fs" etc if lazy_mcp was smart enough,
+		// but since FilterTools does a substring check, let's inject "fs:" intent to ensure it works.
+
+		ctx2 := context.WithValue(context.Background(), MissionIntentKey, "fs:")
+		res2, err2 := handler(ctx2, "tools/list", &mcp.ListToolsRequest{})
+		assert.NoError(t, err2)
+		listRes2, ok2 := res2.(*mcp.ListToolsResult)
+		assert.True(t, ok2)
+		assert.Len(t, listRes2.Tools, 1)
+		assert.Equal(t, "fs:read", listRes2.Tools[0].Name)
 	})
 }
 

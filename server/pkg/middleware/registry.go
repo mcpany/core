@@ -193,6 +193,7 @@ type StandardMiddlewares struct {
 	A2ABridge        *A2ABridgeMiddleware
 	ESB              *ESBMiddleware
 	CFIA             *CFIAMiddleware
+	LazyMCP          *LazyMCPMiddleware
 	Cleanup          func() error
 }
 
@@ -468,6 +469,32 @@ func InitStandardMiddlewares(
 		}
 	})
 
+	lazyMcpConfig := LazyMCPConfig{Enabled: true, Threshold: 0.85}
+	lazyMcpMiddleware := NewLazyMCPMiddleware(lazyMcpConfig)
+	RegisterMCP("lazy_mcp", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
+		return func(next mcp.MethodHandler) mcp.MethodHandler {
+			return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+				result, err := next(ctx, method, req)
+				if err != nil {
+					return result, err
+				}
+				if method == "tools/list" {
+					if res, ok := result.(*mcp.ListToolsResult); ok {
+						intent := ""
+						if intentCtx := ctx.Value(MissionIntentKey); intentCtx != nil {
+							if intentStr, ok := intentCtx.(string); ok {
+								intent = intentStr
+							}
+						}
+						filteredRes := lazyMcpMiddleware.FilterTools(res, intent)
+						return filteredRes, nil
+					}
+				}
+				return result, err
+			}
+		}
+	})
+
 	// Context-File Integrity Attestation (CFIA)
 	var cfiaMiddleware *CFIAMiddleware
 	if cfiaConfig != nil && cfiaConfig.Enabled {
@@ -523,6 +550,7 @@ func InitStandardMiddlewares(
 		A2ABridge:        a2aBridge,
 		ESB:              esbMiddleware,
 		CFIA:             cfiaMiddleware,
+		LazyMCP:          lazyMcpMiddleware,
 		Cleanup:          audit.Close,
 	}, nil
 }
