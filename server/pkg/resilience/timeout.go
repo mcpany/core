@@ -25,6 +25,12 @@ type Timeout struct {
 //
 // Returns:
 //   - *Timeout: The initialized timeout policy.
+//
+// Errors:
+//   - None specified.
+//
+// Side Effects:
+//   - None.
 func NewTimeout(duration *durationpb.Duration) *Timeout {
 	return &Timeout{
 		duration: duration,

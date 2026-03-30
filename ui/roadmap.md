@@ -780,3 +780,9 @@
 - [ ] **[P0] Economic Attribution Viewer**: (2026-07-11) Visual tracker for hardware-attested cost attribution (HACA) across subagent lineages.
 - [ ] **[P0] Ephemeral Hook Monitor**: (2026-07-11) Status widget for monitoring session-locked discovery hooks and their expiration.
 - [ ] **[P1] Resource Reclamation Log**: (2026-07-11) Real-time tracker for RRR-triggered budget reclaims and mission efficiency gains.
+
+#### Upcoming (2026-07-12 Evolution)
+- [ ] **[P0] Mesh Topology Forecaster**: (2026-07-12) Real-time visualization of PTO-predicted migration paths and shard movement.
+- [ ] **[P0] Clock Drift Alert Widget**: (2026-07-12) Security status indicator for MCDC-normalized timing and shadow-attestation attempt alerts.
+- [ ] **[P0] Session Manifest Locker**: (2026-07-12) Authorization interface for reviewing RBSS-locked capability manifests.
+- [ ] **[P1] Burst-Task Intensity Heatmap**: (2026-07-12) Visual tracker for BARA-throttled micro-tasks and RRE detection.

@@ -8,6 +8,14 @@
 - **Ephemeral Registry Hook (ERH) Provider**: (P0) Security middleware mandating session-locked discovery schemas to neutralize registry persistence exploits.
 - **Recursive Resource Reclamation (RRR) Manager**: (P1) Lifecycle management service for reclaiming unused token and reasoning budgets from dormant sub-missions.
 
+## Evolution: [2026-07-12] Updates
+
+### Proposed Additions
+- **Predictive Topology Optimizer (PTO)**: (P0) Advanced forecasting service that pre-emptively re-shards state based on telemetry and reasoning entropy.
+- **Monotonic Clock-Drift Compensator (MCDC)**: (P0) Temporal security middleware that normalizes timing drift between TPM and system clock to neutralize shadow-attestation.
+- **Registry-Bound Session Sovereignty (RBSS) Provider**: (P0) Security service mandating session-locked capability manifests to prevent late-binding privilege escalation.
+- **Burst-Aware Resource Arbiter (BARA)**: (P1) Advanced resource manager implementing sub-millisecond throttling for high-frequency micro-tasks to counter RRE.
+
 ### Priority Shifts
 - **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **HACA** integration.
 - **Zero-Knowledge State Attestation (ZKSA) Provider**: (Re-affirmed P0) Elevated to support **DMR-compliant** state migration proofs.
