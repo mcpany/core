@@ -1768,3 +1768,14 @@
 ### Priority Shifts
 - **SRM Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Hierarchical Provenance** validation.
 - **Asynchronous Mailbox Sharding (AMS)**: (Re-affirmed P0) Now elevated with the requirement for **HLAP-compliant** timing normalization.
+
+## Evolution: [2026-03-30] Updates
+
+### Proposed Additions
+- **Ghost Fragment Mutation (GFM) Detector**: (P0) WASM-based integrity monitor for the BSH Gateway to detect dormant malicious fragments during self-correction.
+- **Monotonic Clock-Drift Compensator**: (P1) Security middleware for the SRM Provider to normalize TPM vs. system clock drift, neutralizing Shadow-Attestation.
+- **Recursive Resource Reclamation (RRR) Controller**: (P1) Economic security service allowing parent agents to forcefully reclaim unused token and reasoning budgets.
+
+### Priority Shifts
+- **WASM-BSH State Sanitizer**: (Re-affirmed P0) Now elevated with the requirement for **Continuous Integrity Monitoring** during self-correction loops.
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Designated as the primary enforcement point for **Recursive Resource Reclamation (RRR)**.

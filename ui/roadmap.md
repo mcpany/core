@@ -3,6 +3,8 @@
 ## Status: Active Development
 
 ### Universal Agent Bus (New Strategic Priorities)
+- [ ] **[P0] HACA Economic Dashboard**: Real-time visualization of cost attribution across agent lineages. (Added: 2026-03-30)
+- [ ] **[P0] Swarm Topology & Sovereignty Monitor**: Physics-based visualization of agent coordination and attestation anomalies. (Added: 2026-03-30)
 - [ ] **[P0] Recursive Context Dashboard**: Visualize state inheritance and session tokens across agent swarms. (Added: 2026-02-23)
 - [ ] **[P0] Multi-Agent Session Timeline**: Visual tracking of agent handoffs and shared tool state. (Added: 2026-02-24)
 - [ ] **[P1] Unified Discovery Manager**: UI for managing and auto-discovering MCP servers across transports. (Added: 2026-02-24)

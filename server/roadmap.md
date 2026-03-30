@@ -409,6 +409,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] Federated Discovery Quorum (FDQ) Node**: Peer-to-peer discovery service requiring multi-node attestation for new tool beacons. (Added: 2026-03-31)
 
 #### Upcoming (2026-03-30 Evolution)
+*   **[P0] Hardware-Attested Cost Attribution (HACA) Provider**: Cryptographic token and compute attribution for sub-process lineage. (Added: 2026-03-30)
+*   **[P1] Recursive Resource Reclamation (RRR) Controller**: Lifecycle-bound reclamation of unused sub-mission budgets. (Added: 2026-03-30)
 *   **[P0] UACO v2.1 IPSC Middleware**: Implementation of Intent-Preserving Self-Correction to prevent recursive "Cognitive Lock" refinement loops. (Added: 2026-03-30)
 *   **[P0] Continuous BSH Integrity Monitor**: Real-time WASM-based integrity checks for Binary State Handoffs to detect "Ghost Fragment" mutations. (Added: 2026-03-30)
 *   **[P1] UDP Beacon Discovery Listener**: High-speed reactive listener for Gemini-style Capability Beacons. (Added: 2026-03-30)

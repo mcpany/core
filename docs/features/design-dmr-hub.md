@@ -56,3 +56,10 @@ The Dynamic Mesh Resilience (DMR) Hub evolves MCP Any from a static gateway into
 
 ## 7. Evolutionary Changelog
 * **2026-07-11:** Initial Document Creation.
+
+### Update: 2026-03-30 - Shadow-Attestation Defense
+**Context:** Recent research has exposed the "Shadow-Attestation" vulnerability, where timing drift between the TPM and host clock is used to inject unauthorized reasoning fragments.
+**Architecture Adjustment:**
+* Mandating **Monotonic Clock-Drift Compensation** in Section 4.
+* The DMR Hub will now reject state migration signals if the heartbeat latency exceeds the hardware-attested drift threshold.
+**Security Impact:** Prevents state-migration hijacking and ensures that "Entangled State" remains cryptographically pinned to a consistent temporal baseline.
