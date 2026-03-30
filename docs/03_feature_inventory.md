@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-12] Updates
+
+### Proposed Additions
+- **Cognitive Load Balancing (CLB) Hub**: (P0) Authoritative coordination service for redistributing reasoning tasks across the mesh based on real-time node cognitive pressure.
+- **Hardware-Attested Intent Recovery (HAIR) Provider**: (P0) Advanced stability service utilizing TPM-bound state snapshots to reconstruct reasoning chains post-failure.
+- **Intent-Aware Attention Gating (IAAG) Middleware**: (P0) Security middleware utilizing hardware attention layers to filter context not aligned with the primary intent.
+- **Mesh-Bound Telemetry Sink**: (P1) Authoritative observability service for cross-framework monitoring of reasoning efficiency and attestation latency.
+
+### Priority Shifts
+- **Dynamic Mesh Resilience (DMR) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **CLB-compliant** task redistribution.
+- **Atomic Reasoning Integrity (ARI) Validator**: (Re-affirmed P0) Elevated to support **IAAG-compliant** attention locking.
+
 ## Evolution: [2026-07-11] Updates
 
 ### Proposed Additions
