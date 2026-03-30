@@ -33,6 +33,9 @@ type Transformer struct {
 //
 // Side Effects:
 //   - Initializes a sync.Pool for bytes.Buffer.
+//
+// Errors:
+//   - None specified.
 func NewTransformer() *Transformer {
 	return &Transformer{
 		pool: sync.Pool{
