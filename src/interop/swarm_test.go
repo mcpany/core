@@ -4,6 +4,7 @@ import (
 	"context"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/mcpany/core/src/interop"
 )
@@ -197,6 +198,104 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 			if err == nil {
 				t.Errorf("Expected sync to fail for %s due to missing signature", name)
 			}
+		}
+	})
+
+	// 7. Test DMR Hub
+	t.Run("DMR_EmergencyMigration", func(t *testing.T) {
+		dmr := interop.NewDynamicMeshResilienceHub()
+		ctx := context.Background()
+
+		// Setup nodes
+		dmr.ProcessHeartbeat("node-1", true)
+		dmr.ProcessHeartbeat("node-2", true)
+
+		shard := &interop.MemoryShard{
+			ShardID: "shard-1",
+		}
+
+		// node-1 is still healthy, migration shouldn't happen
+		err := dmr.TriggerEmergencyMigration(ctx, "node-1", "node-2", shard)
+		if err == nil {
+			t.Errorf("Expected migration to fail because node is healthy")
+		}
+
+		// simulate node-1 attestation failure
+		dmr.ProcessHeartbeat("node-1", false)
+		err = dmr.TriggerEmergencyMigration(ctx, "node-1", "node-2", shard)
+		if err != nil {
+			t.Errorf("Expected migration to succeed, got: %v", err)
+		}
+		if shard.ShardID != "shard-1-migrated-to-node-2" {
+			t.Errorf("Expected shard ID to be updated, got: %s", shard.ShardID)
+		}
+	})
+
+	// 8. Test HACA Provider
+	t.Run("HACA_AttributeCost", func(t *testing.T) {
+		haca := interop.NewHACAProvider()
+		ctx := context.Background()
+
+		err := haca.AttributeCost(ctx, "subprocess-1", 100, 2.5, "")
+		if err == nil {
+			t.Errorf("Expected error due to missing signature")
+		}
+
+		err = haca.AttributeCost(ctx, "subprocess-1", 100, 2.5, "valid-sig")
+		if err != nil {
+			t.Errorf("Expected successful attribution, got: %v", err)
+		}
+
+		attr, err := haca.GetAttribution("subprocess-1")
+		if err != nil {
+			t.Errorf("Failed to retrieve attribution: %v", err)
+		}
+		if attr.TokensUsed != 100 || attr.GPUSeconds != 2.5 {
+			t.Errorf("Incorrect attribution values")
+		}
+	})
+
+	// 9. Test ERH Provider
+	t.Run("ERH_SessionLockedHook", func(t *testing.T) {
+		erh := interop.NewERHProvider()
+		ctx := context.Background()
+
+		hookID := erh.IssueSessionLockedHook(ctx, "my-schema", time.Hour)
+		schema, err := erh.RetrieveHook(ctx, hookID)
+		if err != nil {
+			t.Errorf("Expected to retrieve hook, got error: %v", err)
+		}
+		if schema != "my-schema" {
+			t.Errorf("Expected schema 'my-schema', got: %s", schema)
+		}
+	})
+
+	// 10. Test RRR Manager
+	t.Run("RRR_ReclaimResources", func(t *testing.T) {
+		rrr := interop.NewRRRManager()
+		ctx := context.Background()
+
+		rrr.AllocateLease(ctx, "submission-1", 1000)
+
+		_, err := rrr.ReclaimResources(ctx, "submission-1")
+		if err == nil {
+			t.Errorf("Expected error since submission is not dormant")
+		}
+
+		err = rrr.MarkDormant(ctx, "submission-1")
+		if err != nil {
+			t.Errorf("Failed to mark dormant: %v", err)
+		}
+
+		// Adjust usage simulating some spent tokens
+		rrr.SubMissionBudgets["submission-1"].TokensUsed = 200
+
+		reclaimed, err := rrr.ReclaimResources(ctx, "submission-1")
+		if err != nil {
+			t.Errorf("Expected successful reclamation, got: %v", err)
+		}
+		if reclaimed != 800 {
+			t.Errorf("Expected 800 reclaimed tokens, got: %d", reclaimed)
 		}
 	})
 }
