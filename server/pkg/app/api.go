@@ -198,6 +198,9 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	// Mount HITL
 	a.mountHITL(mux)
 
+	// Blackboard API
+	mux.HandleFunc("/blackboard/keys", a.handleBlackboardKeys())
+
 	mux.HandleFunc("/traces", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:

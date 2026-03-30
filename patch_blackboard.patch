@@ -1,0 +1,46 @@
+--- server/pkg/middleware/blackboard.go
++++ server/pkg/middleware/blackboard.go
+@@ -83,6 +83,41 @@
+	return value, nil
+ }
+
++// BlackboardEntry represents a single entry in the blackboard.
++//
++// Summary: Represents a single entry in the blackboard.
++type BlackboardEntry struct {
++	AgentID string `json:"agentId"`
++	Key     string `json:"key"`
++	Value   string `json:"value"`
++}
++
++// GetAll retrieves all values from the blackboard.
++//
++// Summary: Retrieves all values from the blackboard.
++//
++// Parameters:
++//   - ctx (context.Context): The context for the request.
++//
++// Returns:
++//   - []BlackboardEntry: A slice of all blackboard entries.
++//   - error: An error if the retrieval fails.
++func (s *BlackboardStore) GetAll(ctx context.Context) ([]BlackboardEntry, error) {
++	rows, err := s.db.QueryContext(ctx, "SELECT agent_id, key, value FROM blackboard")
++	if err != nil {
++		return nil, err
++	}
++	defer rows.Close()
++
++	var entries []BlackboardEntry
++	for rows.Next() {
++		var entry BlackboardEntry
++		if err := rows.Scan(&entry.AgentID, &entry.Key, &entry.Value); err != nil {
++			return nil, err
++		}
++		entries = append(entries, entry)
++	}
++	return entries, nil
++}
++
+ // Set stores a value in the blackboard for a specific agent.
+ //
+ // Summary: Stores a value in the blackboard for a specific agent.

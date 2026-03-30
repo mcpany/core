@@ -32,16 +32,38 @@ import { Button } from "@/components/ui/button";
  * Side Effects:
  *   - Uses local React state to manage keys.
  */
+interface BlackboardKey {
+    agentId: string;
+    key: string;
+    value: string;
+    intent?: string; // Kept for UI backwards compatibility if provided
+}
+
 export function BlackboardDashboard() {
-    const [keys, setKeys] = useState([
-        { id: "1", agentId: "agent-a", key: "session_token", value: "abc-123", intent: "auth" },
-        { id: "2", agentId: "agent-b", key: "last_query", value: "select * from users", intent: "database_read" }
-    ]);
+    const [keys, setKeys] = useState<BlackboardKey[]>([]);
+
+    React.useEffect(() => {
+        fetchKeys();
+        const interval = setInterval(fetchKeys, 3000);
+        return () => clearInterval(interval);
+    }, []);
+
+    const fetchKeys = async () => {
+        try {
+            const res = await fetch("/api/v1/blackboard/keys");
+            if (res.ok) {
+                const data = await res.json();
+                setKeys(data || []);
+            }
+        } catch (err) {
+            console.error("Failed to fetch blackboard keys", err);
+        }
+    };
 
     return (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {keys.map(k => (
-                <Card key={k.id}>
+                <Card key={`${k.agentId}-${k.key}`}>
                     <CardHeader>
                         <CardTitle>{k.key}</CardTitle>
                         <CardDescription>Agent ID: {k.agentId}</CardDescription>

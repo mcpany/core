@@ -193,6 +193,7 @@ type StandardMiddlewares struct {
 	A2ABridge        *A2ABridgeMiddleware
 	ESB              *ESBMiddleware
 	CFIA             *CFIAMiddleware
+	Blackboard       *BlackboardStore
 	Cleanup          func() error
 }
 
