@@ -5,10 +5,11 @@ package middleware
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	"github.com/mcpany/core/server/pkg/tool"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // ScopesConfig defines the configuration for capability-based scoping.
@@ -50,6 +51,20 @@ func NewScopesMiddleware(config ScopesConfig) *ScopesMiddleware {
 
 const agentRoleKey contextKey = "agent_role"
 
+// WithAgentRole adds the agent role to the context.
+//
+// Summary: Adds the agent role to the context.
+//
+// Parameters:
+//   - ctx (context.Context): The context to modify.
+//   - role (string): The agent role to add.
+//
+// Returns:
+//   - context.Context: The modified context.
+func WithAgentRole(ctx context.Context, role string) context.Context {
+	return context.WithValue(ctx, agentRoleKey, role)
+}
+
 // Execute checks if the tool name matches any capability token prefix granted to the agent's role.
 //
 // Summary: Validates that the requested tool is allowed for the agent's role before execution.
@@ -79,19 +94,35 @@ func (m *ScopesMiddleware) Execute(ctx context.Context, req *tool.ExecutionReque
 
 	allowedPrefixes, roleExists := m.config.Roles[role]
 	if !roleExists {
-		return nil, fmt.Errorf("access denied: no scope configuration for role '%s'", role)
+		return nil, status.Errorf(codes.PermissionDenied, "access denied: no scope configuration for role '%s'", role)
+	}
+
+	if req == nil {
+		return nil, status.Errorf(codes.PermissionDenied, "access denied: request is nil")
 	}
 
 	isAllowed := false
 	for _, prefix := range allowedPrefixes {
-		if strings.HasPrefix(req.ToolName, prefix) {
+		if req.ToolName == prefix {
+			isAllowed = true
+			break
+		}
+		if strings.HasPrefix(req.ToolName, prefix+":") {
+			isAllowed = true
+			break
+		}
+		if strings.HasPrefix(req.ToolName, prefix+"/") {
+			isAllowed = true
+			break
+		}
+		if strings.HasSuffix(prefix, ":") && strings.HasPrefix(req.ToolName, prefix) {
 			isAllowed = true
 			break
 		}
 	}
 
 	if !isAllowed {
-		return nil, fmt.Errorf("access denied: tool '%s' is outside granted scopes", req.ToolName)
+		return nil, status.Errorf(codes.PermissionDenied, "access denied: tool '%s' is outside granted scopes", req.ToolName)
 	}
 
 	return next(ctx, req)
