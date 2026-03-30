@@ -1403,3 +1403,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Hardware-Attested Cost Attribution (HACA)**: To neutralize "Economic Squatting," we are upgrading the Reasoning-Budget Firewall to support HACA. This layer will cryptographically attribute every token and compute millisecond to its specific sub-process lineage, ensuring absolute economic accountability across the mesh.
 - **Ephemeral Registry Hook (ERH) Provider**: Supporting the Claude Code v3.2 standard, MCP Any will implement ERH. Discovery schemas will be issued as session-locked, ephemeral tokens that expire immediately post-discovery, neutralizing "Registry Persistence" exploits.
 - **Recursive Resource Reclamation (RRR)**: We are adopting the UACO v3.6 standard for resource management. MCP Any will act as the authoritative "Lease Reaper," allowing parent agents to forcefully reclaim unused token and reasoning budgets from dormant sub-missions in real-time.
+
+---
+
+## Strategic Evolution: [2026-07-12]
+### Focus: SWARM Protocol & Horizontal Identity Persistence
+**Context**: The emergence of OpenClaw's "SWARM Protocol" and the release of Claude Code's "Agent Teams" mark a shift from point-to-point tool calls to **Autonomous Collective Agency**. Security must now move from "Access Control" to **Reputation-Bound Scoping** and **Horizontal Identity Persistence**. Simultaneously, the "Context-File" injection (via GEMINI.md/AGENTS.md) confirm that infrastructure must provide **Natural Language Integrity**.
+**Strategic Pivot**:
+- **Reputation-Bound Scoping (RBS) Provider**: MCP Any will evolve to act as the authoritative "Reputation Broker." We will implement RBS, allowing users to define hardware-attested reputation thresholds for all connected agents, neutralizing "Machine-Speed Swarm Attacks" by revoking capabilities from low-rep peers.
+- **Horizontal Identity Persistence (HIP) Bridge**: Supporting the stability of long-running missions, we are introducing HIP. This service provides hardware-locked, cross-session identity tokens that allow agents to persist their "SWARM Reputation" across teammate rotations and framework handoffs.
+- **Natural Language Integrity (NLI) Sanitizer**: To neutralize "Context-File" injection, we are mandating NLI. MCP Any will perform real-time, semantic analysis of all project-local markdown files (e.g., AGENTS.md, GEMINI.md) before ingestion, ensuring they do not contain imperative instructions designed to hijack the mission root.
+- **SWARM-Native Task Bidding**: We are upgrading the ANB to support the SWARM protocol's task-claiming logic. MCP Any will act as the authoritative arbiter for autonomous task bidding, utilizing hardware-attested reputation scores to filter and validate bids locally.

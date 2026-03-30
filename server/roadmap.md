@@ -954,3 +954,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Attested Cost Attribution (HACA)**: Advanced economic security service that cryptographically attributes token usage to specific sub-process lineage. (Added: 2026-07-11)
 *   **[P0] Ephemeral Registry Hook (ERH) Provider**: Security middleware mandating session-locked discovery schemas to neutralize registry persistence exploits. (Added: 2026-07-11)
 *   **[P1] Recursive Resource Reclamation (RRR) Manager**: Lifecycle management service for reclaiming unused token and reasoning budgets from dormant sub-missions. (Added: 2026-07-11)
+
+#### Upcoming (2026-07-12 Evolution)
+*   **[P0] Reputation-Bound Scoping (RBS) Provider**: Authoritative security service for defining and enforcing reputation thresholds across agent swarms. (Added: 2026-07-12)
+*   **[P0] Horizontal Identity Persistence (HIP) Bridge**: Lifecycle management service for hardware-locked, cross-session identity tokens. (Added: 2026-07-12)
+*   **[P0] Natural Language Integrity (NLI) Sanitizer**: Semantic security middleware for project-local markdown/context files (AGENTS.md, GEMINI.md). (Added: 2026-07-12)

@@ -780,3 +780,8 @@
 - [ ] **[P0] Economic Attribution Viewer**: (2026-07-11) Visual tracker for hardware-attested cost attribution (HACA) across subagent lineages.
 - [ ] **[P0] Ephemeral Hook Monitor**: (2026-07-11) Status widget for monitoring session-locked discovery hooks and their expiration.
 - [ ] **[P1] Resource Reclamation Log**: (2026-07-11) Real-time tracker for RRR-triggered budget reclaims and mission efficiency gains.
+
+#### Upcoming (2026-07-12 Evolution)
+- [ ] **[P0] Reputation-Bound Scoping Dashboard**: (2026-07-12) UI for reviewing agent reputation scores and defining capability-revocation thresholds.
+- [ ] **[P0] Horizontal Identity Manager**: (2026-07-12) Visual tracker for hardware-locked HIP tokens across teammate rotations.
+- [ ] **[P0] Natural Language Integrity Log**: (2026-07-12) Security dashboard for reviewing NLI-redacted context fragments and instruction-injection alerts.

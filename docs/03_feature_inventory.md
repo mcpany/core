@@ -1,5 +1,15 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-12] Updates
+
+### Proposed Additions
+- **Reputation-Bound Scoping (RBS) Provider**: (P0) Authoritative security service for defining and enforcing reputation thresholds across agent swarms.
+- **Horizontal Identity Persistence (HIP) Bridge**: (P0) Lifecycle management service for hardware-locked, cross-session identity tokens.
+- **Natural Language Integrity (NLI) Sanitizer**: (P0) Semantic security middleware for project-local markdown/context files (AGENTS.md, GEMINI.md).
+
+### Priority Shifts
+- **Active Negotiation Broker (ANB)**: (Re-affirmed P0) Elevated to support **SWARM-native** task-claiming and reputation-bound bidding.
+
 ## Evolution: [2026-07-11] Updates
 
 ### Proposed Additions
