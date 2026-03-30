@@ -1425,7 +1425,16 @@ func suggestFix(unknownField string, root proto.Message) string {
 	bestMatch := ""
 	minDist := 100
 
+	// Convert candidates map to a slice and sort it to ensure deterministic tie-breaking.
+	// This fixes flaky tests where multiple candidates have the same Levenshtein distance
+	// (e.g. "adres" -> "address" and "adres" -> "args" both have distance 2).
+	var sortedCandidates []string
 	for name := range candidates {
+		sortedCandidates = append(sortedCandidates, name)
+	}
+	sort.Strings(sortedCandidates)
+
+	for _, name := range sortedCandidates {
 		// ⚡ BOLT: Replaced inefficient local Levenshtein implementation with optimized utility function.
 		// Randomized Selection from Top 5 High-Impact Targets
 		dist := util.LevenshteinDistance(unknownField, name)
