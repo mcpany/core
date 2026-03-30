@@ -160,6 +160,32 @@ type TaskResult struct {
 	Telemetry map[string]string `json:"telemetry,omitempty"`
 }
 
+// TokenProvider defines an interface for issuing and verifying Zero-Trust Agent Identity tokens.
+//
+// Intent: This ensures all connected agents are operating with hardware-attested, mesh-resident identities.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+type TokenProvider interface {
+	// MintToken creates a hardware-attested, mesh-resident identity token.
+	MintToken(ctx context.Context, framework string, missionRoot string, capabilities []string) (*IdentityToken, error)
+
+	// VerifyToken checks if an identity token is valid, active, and contains a specific capability.
+	VerifyToken(ctx context.Context, tokenID string, requiredCapability string) (bool, error)
+
+	// RevokeToken forcefully invalidates a given mesh-resident identity token.
+	RevokeToken(ctx context.Context, tokenID string) error
+}
+
 // AdapterHub manages the registration and routing of tasks to different agent frameworks.
 //
 // Intent: A central hub that maintains registered agent adapters and routes tasks to the appropriate one.
@@ -177,6 +203,12 @@ type TaskResult struct {
 //   - None.
 type AdapterHub struct {
 	adapters map[string]AgentFramework
+	identity HubIdentityService
+}
+
+// HubIdentityService defines the identity service used by the AdapterHub
+type HubIdentityService interface {
+	TokenProvider
 }
 
 // NewAdapterHub initializes a new AdapterHub.
@@ -197,7 +229,13 @@ type AdapterHub struct {
 func NewAdapterHub() *AdapterHub {
 	return &AdapterHub{
 		adapters: make(map[string]AgentFramework),
+		identity: NewZeroTrustIdentityHub(),
 	}
+}
+
+// GetIdentityService returns the identity service attached to this hub.
+func (h *AdapterHub) GetIdentityService() HubIdentityService {
+	return h.identity
 }
 
 // RegisterAdapter adds a new framework adapter to the hub.

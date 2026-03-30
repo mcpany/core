@@ -1422,10 +1422,16 @@ func suggestFix(unknownField string, root proto.Message) string {
 		collectFieldNames(msg.ProtoReflect().Descriptor(), candidates)
 	}
 
+	var sortedCandidates []string
+	for name := range candidates {
+		sortedCandidates = append(sortedCandidates, name)
+	}
+	sort.Strings(sortedCandidates)
+
 	bestMatch := ""
 	minDist := 100
 
-	for name := range candidates {
+	for _, name := range sortedCandidates {
 		// ⚡ BOLT: Replaced inefficient local Levenshtein implementation with optimized utility function.
 		// Randomized Selection from Top 5 High-Impact Targets
 		dist := util.LevenshteinDistance(unknownField, name)
