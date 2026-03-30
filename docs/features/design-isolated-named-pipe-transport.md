@@ -47,6 +47,13 @@ The industry pivot away from local network port exposure (GSA-2026-OPENCLAW-ROUT
 ## 7. Evolutionary Changelog
 * **2026-05-13:** Initial Document Creation.
 
+### Update: 2026-03-30 - Mandatory LPNP Migration (CVE-2026-25253 Response)
+**Context:** The "ClawJacked" exploit has proven that unauthenticated loopback listeners are a critical vulnerability.
+**Architecture Adjustment:**
+* Elevating "Isolated Named-Pipe Transport" from an alternative to the **Mandatory Default** (LPNP - Loopback-to-Named-Pipe Migration).
+* All local `127.0.0.1` listeners for inter-agent communication are now deprecated and will be forcefully disabled in the next release.
+* Introducing **Origin-Bound Pipe ACLs** to ensure that even filesystem-level access is restricted by the initiating browser/CLI session.
+
 ### Update: 2026-05-17 - Transport-Layer Session Binding (TLSB)
 **Context:** Today's research has identified a new "Team Ghosting" exploit pattern where sibling agents in a parallel swarm hijack stale or un-authenticated named-pipe sessions to exfiltrate context.
 **Architecture Adjustment:**

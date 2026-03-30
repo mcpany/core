@@ -760,16 +760,6 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
-## Strategic Evolution: [2026-03-30]
-### Focus: Self-Correction Governance & Beacon-Based Discovery
-**Context**: The emergence of "Cognitive Lock" in OpenClaw v2.6 and the "Ghost Fragment Mutation" (GFM) exploit demonstrate that autonomy without strict boundary enforcement is a liability. Additionally, the shift toward push-based "Capability Beacons" requires a more reactive discovery architecture.
-**Strategic Pivot**:
-- **Self-Correction Guardrails**: MCP Any will implement UACO v2.1 IPSC (Intent-Preserving Self-Correction). We will introduce a "Correction Budget" middleware that halts recursive refinement loops and mandates user or parent-agent re-attestation when agents diverge from the primary intent.
-- **GFM-Resistant State Validation**: Our WASM-BSH sanitization will be expanded to detect "Dormant Fragments." We will move from validation-on-handoff to "Continuous State Integrity Monitoring," where binary state is re-verified during every self-correction cycle.
-- **Beacon-First Discovery Hub**: Transitioning from poll-based discovery to a "Beacon Reactive" model. MCP Any will act as a high-speed listener for UDP Capability Beacons, deduplicating and indexing them in real-time to eliminate "Discovery Noise" for connected agents.
-
----
-
 ## Strategic Evolution: 2026-04-01
 ### Focus: Reasoning-Bound Context Integrity & Path Normalization Governance
 **Context**: Today's findings on "Reasoning-Bound Context Shifting" (OpenClaw) and "Normalization Fatigue" (Claude Code CVE-2026-34812) reveal that security and stability now depend on the *integrity of the path* and the *consistency of the reasoning state*.
@@ -1403,3 +1393,20 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Hardware-Attested Cost Attribution (HACA)**: To neutralize "Economic Squatting," we are upgrading the Reasoning-Budget Firewall to support HACA. This layer will cryptographically attribute every token and compute millisecond to its specific sub-process lineage, ensuring absolute economic accountability across the mesh.
 - **Ephemeral Registry Hook (ERH) Provider**: Supporting the Claude Code v3.2 standard, MCP Any will implement ERH. Discovery schemas will be issued as session-locked, ephemeral tokens that expire immediately post-discovery, neutralizing "Registry Persistence" exploits.
 - **Recursive Resource Reclamation (RRR)**: We are adopting the UACO v3.6 standard for resource management. MCP Any will act as the authoritative "Lease Reaper," allowing parent agents to forcefully reclaim unused token and reasoning budgets from dormant sub-missions in real-time.
+
+## Strategic Evolution: [2026-03-30]
+### Focus: Fail-Operational Mesh Stability & Zero-Trust Local Sovereignty
+**Context**: The "ClawJacked" (CVE-2026-25253) exploit and the emergence of "Link-Preview Exfiltration" reveal that "Implicit Local Trust" is a catastrophic failure point for AI agents. Simultaneously, the coordination tax in horizontal swarms (Claude Code/Gemini) confirms that the "Universal Agent Bus" must now provide **Dynamic Mesh Resilience** and **Hardware-Attested Cost Attribution** to ensure that meshes are both stable and economically secure.
+**Strategic Pivot**:
+- **Dynamic Mesh Resilience (DMR) Hub**: MCP Any will evolve to act as the authoritative "Resilience Broker." We will implement the DMR Hub, utilizing hardware-attested heartbeats to automatically re-shard and migrate mission-critical state between physical nodes upon detection of subagent failure or attestation breach.
+- **Hardware-Attested Cost Attribution (HACA)**: To neutralize "Economic Squatting" and reasoning-budget hijacking, we are upgrading the Reasoning-Budget Firewall to support HACA. This layer will cryptographically attribute every token and compute millisecond to its specific sub-process lineage.
+- **Loopback-to-Named-Pipe Migration (LPNP)**: Neutralizing CVE-2026-25253, we are mandating the migration of all local inter-agent coordination from TCP/UDP loopback to isolated, Docker-bound named pipes.
+- **Link-Preview Interdiction Middleware**: Supporting "Semantic Sovereignty," we are introducing a mandatory interdiction layer that strips or sanitizes URLs in agent-generated messaging outputs to prevent automated exfiltration via link-previews.
+
+## Strategic Evolution: [2026-03-30]
+### Focus: Self-Correction Governance & Beacon-Based Discovery
+**Context**: The emergence of "Cognitive Lock" in OpenClaw v2.6 and the "Ghost Fragment Mutation" (GFM) exploit demonstrate that autonomy without strict boundary enforcement is a liability. Additionally, the shift toward push-based "Capability Beacons" requires a more reactive discovery architecture.
+**Strategic Pivot**:
+- **Self-Correction Guardrails**: MCP Any will implement UACO v2.1 IPSC (Intent-Preserving Self-Correction). We will introduce a "Correction Budget" middleware that halts recursive refinement loops and mandates user or parent-agent re-attestation when agents diverge from the primary intent.
+- **GFM-Resistant State Validation**: Our WASM-BSH sanitization will be expanded to detect "Dormant Fragments." We will move from validation-on-handoff to "Continuous State Integrity Monitoring," where binary state is re-verified during every self-correction cycle.
+- **Beacon-First Discovery Hub**: Transitioning from poll-based discovery to a "Beacon Reactive" model. MCP Any will act as a high-speed listener for UDP Capability Beacons, deduplicating and indexing them in real-time to eliminate "Discovery Noise" for connected agents.

@@ -56,3 +56,10 @@ The Dynamic Mesh Resilience (DMR) Hub evolves MCP Any from a static gateway into
 
 ## 7. Evolutionary Changelog
 * **2026-07-11:** Initial Document Creation.
+
+### Update: 2026-03-30 - Addressing Mailbox Lock Stalls
+**Context:** Today's market research identified "Mailbox Lock" issues as the primary performance bottleneck in horizontal agent teams.
+**Architecture Adjustment:**
+* Integrating DMR Hub with the **Asynchronous Mailbox Sharding (AMS)** middleware.
+* Introducing "Predictive Shard Migration" where state is migrated to low-latency nodes before locks are even requested by the agent reasoning engine.
+**Security Impact:** Reduces the time-window for "Team Ghosting" attacks by ensuring coordination fragments spend minimal time in transit.

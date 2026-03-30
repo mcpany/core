@@ -59,3 +59,10 @@ As AI agent frameworks like Gemini CLI and OpenClaw move toward high-intensity r
 *   Implementing **Cross-Mission Budget Continuity**. Reasoning budgets are now reconciled against a persistent "Mission Root Registry."
 *   Introducing a "Lease Migration Protocol" for framework-neutral handoffs, ensuring budget integrity as agents move between local and cloud environments.
 **Security Impact:** Prevents "Budget Reset" exploits where subagents trigger mission restarts to refresh their reasoning quotas.
+
+### Update: 2026-03-30 - Hardware-Attested Cost Attribution (HACA)
+**Context:** Today's research has identified the risk of "Economic Squatting" where subagents consume expensive reasoning tokens for unauthorized side-missions.
+**Architecture Adjustment:**
+*   Mandating **Hardware-Attested Cost Attribution (HACA)** for all reasoning-effort headers.
+*   Integrating the RBF with the DMR Hub to ensure cost attribution persists during node-to-node state migration.
+**Security Impact:** Provides absolute economic accountability across the mesh, ensuring every token millisecond is cryptographically linked to its originating sub-process.

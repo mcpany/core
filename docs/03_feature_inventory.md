@@ -1,5 +1,23 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-03-30] Updates
+
+### Proposed Additions
+- **Dynamic Mesh Resilience (DMR) Hub**: (P0) Authoritative coordination service for re-sharding and migrating state between physical nodes upon subagent failure.
+- **Hardware-Attested Cost Attribution (HACA) Provider**: (P0) Advanced economic security service that cryptographically attributes token usage to specific sub-process lineage.
+- **Link-Preview Interdiction Middleware**: (P0) Security service that sanitizes URLs in agent outputs to prevent automated "Link-Preview" exfiltration.
+- **LPNP (Loopback-to-Named-Pipe) Migration Bridge**: (P0) Mandatory transport bridge for migrating all local inter-agent communication to isolated named pipes.
+- **UACO v2.1 IPSC Middleware**: (P0) Implementation of Intent-Preserving Self-Correction to prevent "Cognitive Lock" refinement loops.
+- **Continuous BSH Integrity Monitor**: (P0) Real-time WASM-based monitor for Binary State Handoffs to detect "Ghost Fragment Mutation" during self-correction.
+- **UDP Beacon Discovery Listener**: (P1) High-speed reactive listener for Gemini-style Capability Beacons to reduce discovery noise.
+- **Correction Budget Controller**: (P1) Resource management middleware that enforces token and cycle limits on agent self-correction loops.
+
+### Priority Shifts
+- **Isolated Named-Pipe Transport**: (Promoted to P0) Designated as the mandatory default for all local communication (LPNP).
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **HACA** integration to prevent economic hijacking.
+- **WASM-BSH State Sanitizer**: (Re-affirmed P0) Expanded to include "Dormant Fragment" detection as part of GFM defense.
+- **PNTD Discovery Provider**: (Promoted to P0) Essential foundation for the new Beacon-First Discovery Hub.
+
 ## Evolution: [2026-07-11] Updates
 
 ### Proposed Additions
@@ -1167,21 +1185,6 @@
 - **Static Discovery Quorums**: Moving toward **Optimistic Loading** with background attestation.
 
 ---
-
-## Evolution: [2026-03-30] Updates
-
-### Proposed Additions
-- **UACO v2.1 IPSC Middleware**: (P0) Implementation of Intent-Preserving Self-Correction to prevent "Cognitive Lock" refinement loops.
-- **Continuous BSH Integrity Monitor**: (P0) Real-time WASM-based monitor for Binary State Handoffs to detect "Ghost Fragment Mutation" during self-correction.
-- **UDP Beacon Discovery Listener**: (P1) High-speed reactive listener for Gemini-style Capability Beacons to reduce discovery noise.
-- **Correction Budget Controller**: (P1) Resource management middleware that enforces token and cycle limits on agent self-correction loops.
-
-### Priority Shifts
-- **WASM-BSH State Sanitizer**: Re-affirmed as **P0**. Expanded to include "Dormant Fragment" detection as part of GFM defense.
-- **PNTD Discovery Provider**: Promoted from **P1** to **P0**. Essential foundation for the new Beacon-First Discovery Hub.
-
-### Deprecations / Monitoring
-- **Unbounded Self-Correction**: Moving toward total deprecation. All self-correction loops must eventually be bound by an IPSC token and Correction Budget.
 
 ---
 
