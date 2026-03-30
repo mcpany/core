@@ -35,6 +35,7 @@ go_library(
         "seeds.go",
         "seeds_collections.go",
         "server.go",
+        "server_run.go",
         "server_init.go",
         "settings.go",
         "template_manager.go",
