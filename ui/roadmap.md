@@ -775,6 +775,12 @@
 - [ ] **[P0] UTD Mesh Topology**: (2026-07-10) Interactive map of teammate discovery beacons and horizontal swarm formation.
 - [ ] **[P0] Hierarchical Lineage Tracer**: (2026-07-10) Visual debugger for recursive, hardware-signed reasoning sub-steps.
 
+#### Upcoming (2026-07-12 Evolution)
+- [ ] **[P0] Stylometric Integrity Heatmap**: (2026-07-12) Real-time visualization of behavioral consistency scores and mimicry alerts.
+- [ ] **[P0] Speculative Buffer Inspector**: (2026-07-12) UI for reviewing speculative reasoning fragments and SIS-redacted instructions.
+- [ ] **[P0] Shard Isolation Visualizer**: (2026-07-12) Dashboard showing hardware-enclave shard bindings and mission-root isolation status.
+- [ ] **[P0] Intent Envelope Tracer**: (2026-07-12) Visual debugger for RIBE-compliant recursive context boundaries.
+
 #### Upcoming (2026-07-11 Evolution)
 - [ ] **[P0] Mesh Resilience Dashboard**: (2026-07-11) Real-time visualization of state shard migration and physical node health.
 - [ ] **[P0] Economic Attribution Viewer**: (2026-07-11) Visual tracker for hardware-attested cost attribution (HACA) across subagent lineages.

@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-12] Updates
+
+### Proposed Additions
+- **Continuous Stylometric Validator (CSV)**: (P0) High-frequency behavioral gatekeeper performing real-time analysis to detect "Identity Smuggling" via stylistic mimicry.
+- **Speculative Intent Sanitizer (SIS)**: (P0) Authoritative security layer for OpenClaw-SIB compliance, sanitizing speculative reasoning fragments before commitment.
+- **Hardware-Locked Shard Isolator (HLSI)**: (P0) Advanced memory-broker extension cryptographically binding Shard IDs to hardware Enclaves and Mission-Root tokens.
+- **Recursive Intent-Bound Envelopes (RIBE)**: (P0) Context inheritance upgrade mandating hardware-attested boundaries for all sub-delegated reasoning tasks.
+
+### Priority Shifts
+- **Stylometric Identity Anchoring (SIA)**: (Evolved to CSV) Now designated as a real-time behavioral firewall component.
+- **Speculative Execution Guard**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SIS** integration for OpenClaw v3.5 support.
+
 ## Evolution: [2026-07-11] Updates
 
 ### Proposed Additions

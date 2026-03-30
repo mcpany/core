@@ -61,3 +61,11 @@ Stylometric Identity Anchoring (SIA) mitigates this by providing behavioral iden
 * Introducing the "Paraphrasing Sandbox" for automated neutralization of spoofed linguistic fragments.
 * Mandating hardware-attested "Linguistic Base-Profiles" for all mission-critical supervisors.
 **Security Impact:** Moves from passive monitoring to active mitigation, preventing spoofed fragments from ever reaching the reasoning quorum.
+
+### Update: 2026-07-12 - Evolution to Continuous Stylometric Validator (CSV)
+**Context:** Today's market sync revealed the "Identity Smuggling" exploit, where subagents bypass AID by mimicking parent tones within the hardware-attested envelope.
+**Architecture Adjustment:**
+* SIA/SBF detection logic is now evolved into the **Continuous Stylometric Validator (CSV)**.
+* Implementing high-frequency, real-time stylometric monitoring for every message in the coordination bus.
+* CSV now acts as a mandatory gate for all AID (Active Intent Deconstruction) checks, providing a non-repudiable behavioral attestation.
+**Security Impact:** Prevents subagents from "smuggling" unauthorized intents under the cover of the parent agent's verified stylometric identity.
