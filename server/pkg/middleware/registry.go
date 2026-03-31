@@ -193,6 +193,7 @@ type StandardMiddlewares struct {
 	A2ABridge        *A2ABridgeMiddleware
 	ESB              *ESBMiddleware
 	CFIA             *CFIAMiddleware
+	DiscoverySandbox *DiscoverySandboxMiddleware
 	Cleanup          func() error
 }
 
@@ -237,6 +238,7 @@ func InitStandardMiddlewares(
 	debuggerConfig *configv1.DebuggerConfig,
 	smartRecoveryConfig *configv1.SmartRecoveryConfig,
 	cfiaConfig *CFIAConfig,
+	discoverySandboxConfig *DiscoverySandboxConfig,
 ) (*StandardMiddlewares, error) {
 	// 1. Logging
 	RegisterMCP("logging", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
@@ -513,6 +515,42 @@ func InitStandardMiddlewares(
 		})
 	}
 
+	// Discovery-Phase Sandbox
+	var discoverySandboxMiddleware *DiscoverySandboxMiddleware
+	if discoverySandboxConfig != nil && discoverySandboxConfig.Enabled {
+		discoverySandboxMiddleware = NewDiscoverySandboxMiddleware(*discoverySandboxConfig)
+		RegisterMCP("discovery_sandbox", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
+			return func(next mcp.MethodHandler) mcp.MethodHandler {
+				return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+					if method != "tools/call" {
+						return next(ctx, method, req)
+					}
+
+					callReq, ok := req.(*mcp.CallToolRequest)
+					if !ok {
+						return next(ctx, method, req)
+					}
+
+					if err := discoverySandboxMiddleware.PreExecute(ctx, callReq, nil); err != nil {
+						return nil, err
+					}
+
+					res, err := next(ctx, method, req)
+					if err != nil {
+						return nil, err
+					}
+
+					callRes, ok := res.(*mcp.CallToolResult)
+					if !ok {
+						return res, nil
+					}
+
+					return discoverySandboxMiddleware.PostExecute(ctx, callReq, callRes, nil)
+				}
+			}
+		})
+	}
+
 	return &StandardMiddlewares{
 		Audit:            audit,
 		GlobalRateLimit:  globalRateLimit,
@@ -523,6 +561,7 @@ func InitStandardMiddlewares(
 		A2ABridge:        a2aBridge,
 		ESB:              esbMiddleware,
 		CFIA:             cfiaMiddleware,
+		DiscoverySandbox: discoverySandboxMiddleware,
 		Cleanup:          audit.Close,
 	}, nil
 }
