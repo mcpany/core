@@ -1,13 +1,13 @@
 # MCP Any - Universal Agent Infrastructure
 
 ## Project Identity
-**What is this?** MCP Any is the ultimate developer entry point and Universal Adapter designed to eliminate the requirement to implement new MCP (Model Context Protocol) servers for doing API calls.
+**What is this?** MCP Any is the definitive, "Gold Standard" Universal Adapter for AI agents. It completely eliminates the need to implement custom Model Context Protocol (MCP) servers for individual API integrations.
 
-**Why does it exist?** It allows you to configure everything through lightweight YAML/JSON configurations to capability-enable different APIs (REST, gRPC, GraphQL, Command-line) and run a single `mcpany` server instance that acts as a secure, universal bridge. Instead of writing custom boilerplate adapters for each service, you configure MCP Any to handle it automatically.
+**Why does it exist?** MCP Any empowers developers to build secure, capability-enabled APIs (REST, gRPC, GraphQL, Command-line) through lightweight YAML/JSON configurations. A single `mcpany` instance serves as your ultimate, universal bridge. Forget writing boilerplate adapters—configure MCP Any and let it handle tool discovery, routing, and safety policies autonomously.
 
 ## Quick Start
 
-Follow these steps to go from `git clone` to `Hello World`.
+Follow these definitive steps to go from `git clone` to `Hello World`.
 
 ### 1. Clone the repository
 ```bash
@@ -16,7 +16,7 @@ cd core
 ```
 
 ### 2. Install Dependencies
-Ensure `bazelisk` and `make` are installed and available in your `PATH`.
+Ensure `bazelisk` is installed and available in your `PATH`. We strictly use Bazel via `bazelisk` for all builds and tests.
 
 ### 3. Run the App
 Run the server with the included Hello World example configuration:
@@ -27,22 +27,12 @@ bazelisk run //server/cmd/mcpany -- -config examples/hello_world.yaml
 
 ## Developer Workflow
 
-We use `make` and `bazelisk` for common development tasks.
-
-- **Lint the code:**
-  Run the linter to ensure your code matches style guidelines:
-  ```bash
-  make lint
-  ```
+We enforce the use of `bazelisk` for all common development tasks.
 
 - **Run the tests:**
-  Execute all tests using Bazel:
+  Execute all unit, integration, and E2E tests using Bazelisk (Mandatory):
   ```bash
   bazelisk test //...
-  ```
-  Or via the Makefile:
-  ```bash
-  make test
   ```
 
 - **Build the binary:**
