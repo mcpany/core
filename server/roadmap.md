@@ -982,3 +982,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Ambient State Sanitizer (ASS)**: Real-time high-entropy sanitization of environment metadata leaked between teammates. (Added: 2026-07-16)
 *   **[P0] Enclave-Bound Speculative Memory (EBSM)**: Hardware-locked memory regions for speculative state preparation in ZCMB. (Added: 2026-07-16)
 *   **[P0] Echo-Immune Coordination Fragments**: Transport-level security standard mandating monotonic anchoring to neutralize mailbox replay. (Added: 2026-07-16)
+
+#### Upcoming (2026-07-17 Evolution)
+*   **[P0] Skill-State Sovereignty (SSS) Broker**: hardware-attested storage shards for SSP-compliant skills. (Added: 2026-07-17)
+*   **[P0] Atomic Scratchpad Guard (ASG)**: semantic security and atomic locking for shared team workspaces. (Added: 2026-07-17)
+*   **[P0] RaaS Attribution Middleware**: cryptographic attribution of thinking-tool reasoning effort to calling tools. (Added: 2026-07-17)
+*   **[P0] Stitch-Resistant Memory Segmentation**: advanced memory protection using "Cognitive Salt" to prevent context re-composition. (Added: 2026-07-17)
