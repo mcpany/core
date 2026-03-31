@@ -270,6 +270,137 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 			t.Errorf("Expected 2 chunks, got %d", len(chunks))
 		}
 	})
+
+	// 8. HandleTask Streaming
+	t.Run("AutoGen_HandleTask_Streaming", func(t *testing.T) {
+		taskStream := &interop.Task{
+			ID:        "task-ag-stream-handletask",
+			Framework: "AutoGen",
+			Intent:    "subagent_exec",
+			Payload:   map[string]string{"stream": "true"},
+		}
+
+		resStream, err := hub.RouteTask(ctx, taskStream)
+		if err != nil {
+			t.Fatalf("Failed to execute AutoGen HandleTask streaming: %v", err)
+		}
+
+		if resStream.Stream == nil {
+			t.Fatal("Expected Stream channel to be populated")
+		}
+
+		chunks := []string{}
+		for chunk := range resStream.Stream {
+			chunks = append(chunks, chunk)
+		}
+
+		if len(chunks) != 2 {
+			t.Errorf("Expected 2 chunks, got %d", len(chunks))
+		}
+	})
+
+	t.Run("CrewAI_HandleTask_Streaming", func(t *testing.T) {
+		taskStream := &interop.Task{
+			ID:        "task-cai-stream-handletask",
+			Framework: "CrewAI",
+			Intent:    "task_delegation",
+			Payload:   map[string]string{"stream": "true"},
+		}
+
+		resStream, err := hub.RouteTask(ctx, taskStream)
+		if err != nil {
+			t.Fatalf("Failed to execute CrewAI HandleTask streaming: %v", err)
+		}
+
+		if resStream.Stream == nil {
+			t.Fatal("Expected Stream channel to be populated")
+		}
+
+		chunks := []string{}
+		for chunk := range resStream.Stream {
+			chunks = append(chunks, chunk)
+		}
+
+		if len(chunks) != 2 {
+			t.Errorf("Expected 2 chunks, got %d", len(chunks))
+		}
+	})
+
+	// 9. StreamRouteTask Tests
+	t.Run("AutoGen_StreamRouteTask", func(t *testing.T) {
+		taskStream := &interop.Task{
+			ID:        "task-ag-streamroute",
+			Framework: "AutoGen",
+			Intent:    "subagent_exec",
+		}
+
+		stream, err := hub.StreamRouteTask(ctx, taskStream)
+		if err != nil {
+			t.Fatalf("Failed to start streaming task: %v", err)
+		}
+
+		var results []*interop.TaskResult
+		for res := range stream {
+			results = append(results, res)
+		}
+
+		if len(results) != 2 {
+			t.Errorf("Expected 2 streaming chunks, got %d", len(results))
+		}
+
+		if results[0].Status != "streaming" {
+			t.Errorf("Expected first chunk status 'streaming', got '%s'", results[0].Status)
+		}
+
+		if results[1].Status != "success" {
+			t.Errorf("Expected final chunk status 'success', got '%s'", results[1].Status)
+		}
+	})
+
+	t.Run("CrewAI_StreamRouteTask", func(t *testing.T) {
+		taskStream := &interop.Task{
+			ID:        "task-cai-streamroute",
+			Framework: "CrewAI",
+			Intent:    "task_delegation",
+		}
+
+		stream, err := hub.StreamRouteTask(ctx, taskStream)
+		if err != nil {
+			t.Fatalf("Failed to start streaming task: %v", err)
+		}
+
+		var results []*interop.TaskResult
+		for res := range stream {
+			results = append(results, res)
+		}
+
+		if len(results) != 2 {
+			t.Errorf("Expected 2 streaming chunks, got %d", len(results))
+		}
+
+		if results[0].Status != "streaming" {
+			t.Errorf("Expected first chunk status 'streaming', got '%s'", results[0].Status)
+		}
+
+		if results[1].Status != "success" {
+			t.Errorf("Expected final chunk status 'success', got '%s'", results[1].Status)
+		}
+	})
+
+	t.Run("OpenClaw_StreamRouteTask_Unsupported", func(t *testing.T) {
+		taskStream := &interop.Task{
+			ID:        "task-oc-streamroute-unsup",
+			Framework: "OpenClaw",
+			Intent:    "unsupported_intent",
+		}
+
+		_, err := hub.StreamRouteTask(ctx, taskStream)
+		if err == nil {
+			t.Error("Expected error for unsupported OpenClaw capability, got nil")
+		} else if err.Error() != "OpenClaw does not support capability: unsupported_intent" {
+			t.Errorf("Unexpected error message: %v", err)
+		}
+	})
 }
 
 // Helper to access registered adapters for testing interface direct calls
@@ -284,4 +415,218 @@ func getAdapterByName(hub *interop.AdapterHub, name string) interop.AgentFramewo
 		return interop.NewAutoGenAdapter()
 	}
 	return nil
+}
+
+func TestStreamTaskCancellations(t *testing.T) {
+	hub := interop.NewAdapterHub()
+	hub.RegisterAdapter(interop.NewOpenClawAdapter())
+	hub.RegisterAdapter(interop.NewCrewAIAdapter())
+	hub.RegisterAdapter(interop.NewAutoGenAdapter())
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel() // pre-cancel context to hit early exits
+
+	taskOC := &interop.Task{Framework: "OpenClaw", Intent: "adaptive_reasoning"}
+	streamOC, _ := hub.StreamRouteTask(ctx, taskOC)
+	for _ = range streamOC {} // Drain stream
+
+	taskCAI := &interop.Task{Framework: "CrewAI", Intent: "task_delegation"}
+	streamCAI, _ := hub.StreamRouteTask(ctx, taskCAI)
+	for _ = range streamCAI {}
+
+	taskAG := &interop.Task{Framework: "AutoGen", Intent: "subagent_exec"}
+	streamAG, _ := hub.StreamRouteTask(ctx, taskAG)
+	for _ = range streamAG {}
+}
+
+func TestStreamTaskPartialCancellations(t *testing.T) {
+	hub := interop.NewAdapterHub()
+	hub.RegisterAdapter(interop.NewOpenClawAdapter())
+	hub.RegisterAdapter(interop.NewCrewAIAdapter())
+	hub.RegisterAdapter(interop.NewAutoGenAdapter())
+
+    // For openclaw which has 3 chunks
+	ctx, cancel := context.WithCancel(context.Background())
+	taskOC := &interop.Task{Framework: "OpenClaw", Intent: "adaptive_reasoning"}
+	streamOC, _ := hub.StreamRouteTask(ctx, taskOC)
+	<-streamOC // read first chunk
+	cancel() // cancel before second chunk
+	for _ = range streamOC {} // drain
+
+	ctx2, cancel2 := context.WithCancel(context.Background())
+	taskOC2 := &interop.Task{Framework: "OpenClaw", Intent: "adaptive_reasoning"}
+	streamOC2, _ := hub.StreamRouteTask(ctx2, taskOC2)
+	<-streamOC2 // read first chunk
+	<-streamOC2 // read second chunk
+	cancel2() // cancel before third chunk
+	for _ = range streamOC2 {} // drain
+
+    // For autogen which has 2 chunks
+    ctx3, cancel3 := context.WithCancel(context.Background())
+	taskAG := &interop.Task{Framework: "AutoGen", Intent: "subagent_exec"}
+	streamAG, _ := hub.StreamRouteTask(ctx3, taskAG)
+	<-streamAG // read first chunk
+	cancel3() // cancel before second chunk
+	for _ = range streamAG {} // drain
+
+    // For crewai which has 2 chunks
+    ctx4, cancel4 := context.WithCancel(context.Background())
+	taskCAI := &interop.Task{Framework: "CrewAI", Intent: "task_delegation", Payload: map[string]string{}}
+	streamCAI, _ := hub.StreamRouteTask(ctx4, taskCAI)
+	<-streamCAI // read first chunk
+	cancel4() // cancel before second chunk
+	for _ = range streamCAI {} // drain
+}
+
+func TestStreamTaskPartialCancellations2(t *testing.T) {
+	hub := interop.NewAdapterHub()
+	hub.RegisterAdapter(interop.NewCrewAIAdapter())
+	hub.RegisterAdapter(interop.NewAutoGenAdapter())
+
+    // For autogen, read 0 chunks and cancel
+    ctx3, cancel3 := context.WithCancel(context.Background())
+    cancel3() // cancel immediately
+	taskAG := &interop.Task{Framework: "AutoGen", Intent: "subagent_exec"}
+	streamAG, _ := hub.StreamRouteTask(ctx3, taskAG)
+	for _ = range streamAG {} // drain
+
+    // For crewai, read 0 chunks and cancel
+    ctx4, cancel4 := context.WithCancel(context.Background())
+    cancel4() // cancel immediately
+	taskCAI := &interop.Task{Framework: "CrewAI", Intent: "task_delegation"}
+	streamCAI, _ := hub.StreamRouteTask(ctx4, taskCAI)
+	for _ = range streamCAI {} // drain
+}
+
+func TestStreamTaskPartialCancellations3(t *testing.T) {
+	hub := interop.NewAdapterHub()
+	hub.RegisterAdapter(interop.NewOpenClawAdapter())
+	hub.RegisterAdapter(interop.NewCrewAIAdapter())
+	hub.RegisterAdapter(interop.NewAutoGenAdapter())
+
+    ctx1, cancel1 := context.WithCancel(context.Background())
+	taskOC1 := &interop.Task{Framework: "OpenClaw", Intent: "adaptive_reasoning"}
+	streamOC1, _ := hub.StreamRouteTask(ctx1, taskOC1)
+	cancel1() // cancel before first chunk
+	for _ = range streamOC1 {} // drain
+}
+
+func TestStreamTaskPartialCancellations4(t *testing.T) {
+	hub := interop.NewAdapterHub()
+	hub.RegisterAdapter(interop.NewCrewAIAdapter())
+	hub.RegisterAdapter(interop.NewAutoGenAdapter())
+
+    ctx1, cancel1 := context.WithCancel(context.Background())
+	taskCAI1 := &interop.Task{Framework: "CrewAI", Intent: "task_delegation"}
+	streamCAI1, _ := hub.StreamRouteTask(ctx1, taskCAI1)
+    <-streamCAI1
+	cancel1() // cancel before last chunk
+	for _ = range streamCAI1 {} // drain
+
+    ctx2, cancel2 := context.WithCancel(context.Background())
+	taskAG1 := &interop.Task{Framework: "AutoGen", Intent: "subagent_exec"}
+	streamAG1, _ := hub.StreamRouteTask(ctx2, taskAG1)
+    <-streamAG1
+	cancel2() // cancel before last chunk
+	for _ = range streamAG1 {} // drain
+}
+
+func TestCrewAIDefaultRoleStream(t *testing.T) {
+	hub := interop.NewAdapterHub()
+	hub.RegisterAdapter(interop.NewCrewAIAdapter())
+
+    ctx1 := context.Background()
+	taskCAI1 := &interop.Task{Framework: "CrewAI", Intent: "task_delegation"}
+	streamCAI1, _ := hub.StreamRouteTask(ctx1, taskCAI1)
+    for _ = range streamCAI1 {}
+}
+
+func TestStreamTaskCancellationsMore(t *testing.T) {
+	hub := interop.NewAdapterHub()
+	hub.RegisterAdapter(interop.NewOpenClawAdapter())
+	hub.RegisterAdapter(interop.NewCrewAIAdapter())
+	hub.RegisterAdapter(interop.NewAutoGenAdapter())
+
+    // Try to trigger the "send final chunk" select with context done
+    ctx1, cancel1 := context.WithCancel(context.Background())
+	taskOC1 := &interop.Task{Framework: "OpenClaw", Intent: "adaptive_reasoning"}
+	streamOC1, _ := hub.StreamRouteTask(ctx1, taskOC1)
+    <-streamOC1 // read chunk 1
+    <-streamOC1 // read chunk 2
+	cancel1() // cancel before final chunk
+	for _ = range streamOC1 {}
+
+    ctx2, cancel2 := context.WithCancel(context.Background())
+	taskCAI1 := &interop.Task{Framework: "CrewAI", Intent: "task_delegation"}
+	streamCAI1, _ := hub.StreamRouteTask(ctx2, taskCAI1)
+    <-streamCAI1
+	cancel2()
+	for _ = range streamCAI1 {}
+
+    ctx3, cancel3 := context.WithCancel(context.Background())
+	taskAG1 := &interop.Task{Framework: "AutoGen", Intent: "subagent_exec"}
+	streamAG1, _ := hub.StreamRouteTask(ctx3, taskAG1)
+    <-streamAG1
+	cancel3()
+	for _ = range streamAG1 {}
+}
+
+func TestStreamTaskCancellationsEvenMore(t *testing.T) {
+	hub := interop.NewAdapterHub()
+	hub.RegisterAdapter(interop.NewOpenClawAdapter())
+	hub.RegisterAdapter(interop.NewCrewAIAdapter())
+	hub.RegisterAdapter(interop.NewAutoGenAdapter())
+
+    ctx1, cancel1 := context.WithCancel(context.Background())
+	taskOC1 := &interop.Task{Framework: "OpenClaw", Intent: "adaptive_reasoning"}
+	streamOC1, _ := hub.StreamRouteTask(ctx1, taskOC1)
+    <-streamOC1 // read chunk 1
+	cancel1() // cancel before chunk 2
+	for _ = range streamOC1 {}
+}
+
+func TestStreamTaskCancellationsEvenMore2(t *testing.T) {
+	hub := interop.NewAdapterHub()
+	hub.RegisterAdapter(interop.NewOpenClawAdapter())
+
+    ctx2, cancel2 := context.WithCancel(context.Background())
+	taskOC2 := &interop.Task{Framework: "OpenClaw", Intent: "adaptive_reasoning"}
+	streamOC2, _ := hub.StreamRouteTask(ctx2, taskOC2)
+    <-streamOC2 // read chunk 1
+    <-streamOC2 // read chunk 2
+	cancel2() // cancel before chunk 3
+	for _ = range streamOC2 {}
+}
+
+func TestStreamTaskCancellationsEvenMore3(t *testing.T) {
+	hub := interop.NewAdapterHub()
+	hub.RegisterAdapter(interop.NewOpenClawAdapter())
+
+    ctx3, cancel3 := context.WithCancel(context.Background())
+    cancel3() // cancel before chunk 1
+	taskOC3 := &interop.Task{Framework: "OpenClaw", Intent: "adaptive_reasoning"}
+	streamOC3, _ := hub.StreamRouteTask(ctx3, taskOC3)
+	for _ = range streamOC3 {}
+}
+
+func TestStreamTaskCancellationsEvenMore4(t *testing.T) {
+	hub := interop.NewAdapterHub()
+	hub.RegisterAdapter(interop.NewCrewAIAdapter())
+	hub.RegisterAdapter(interop.NewAutoGenAdapter())
+
+    // CrewAI Default Role final chunk
+    ctx1, cancel1 := context.WithCancel(context.Background())
+	taskCAI1 := &interop.Task{Framework: "CrewAI", Intent: "task_delegation"}
+	streamCAI1, _ := hub.StreamRouteTask(ctx1, taskCAI1)
+    <-streamCAI1 // Read chunk 1
+    cancel1()    // Cancel before chunk 2
+	for _ = range streamCAI1 {} // Drain
+
+    // AutoGen final chunk
+    ctx2, cancel2 := context.WithCancel(context.Background())
+	taskAG1 := &interop.Task{Framework: "AutoGen", Intent: "subagent_exec"}
+	streamAG1, _ := hub.StreamRouteTask(ctx2, taskAG1)
+    <-streamAG1 // Read chunk 1
+    cancel2()    // Cancel before chunk 2
+	for _ = range streamAG1 {} // Drain
 }
