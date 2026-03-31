@@ -134,6 +134,28 @@ func (a *PlaceholderAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryS
 	return fmt.Errorf("Not Implemented: %s is a placeholder service", a.name)
 }
 
+// StreamTask acts as a stub, returning an unimplemented error.
+//
+// Intent: Satisfies the AgentFramework interface while correctly signaling
+// that the feature is a placeholder.
+//
+// Parameters:
+//   - ctx (context.Context): Execution context.
+//   - task (*Task): The universal task definition to execute.
+//
+// Returns:
+//   - <-chan *TaskResult: nil
+//   - error: An error indicating the feature is not implemented.
+//
+// Errors:
+//   - Always returns a "Not Implemented" error containing the framework name.
+//
+// Side Effects:
+//   - None.
+func (a *PlaceholderAdapter) StreamTask(ctx context.Context, task *Task) (<-chan *TaskResult, error) {
+	return nil, fmt.Errorf("Not Implemented: %s is a placeholder service", a.name)
+}
+
 // RegisterPlaceholders registers all missing P0 features documented in the roadmap
 // as placeholder adapters on the provided AdapterHub.
 //
@@ -142,6 +164,9 @@ func (a *PlaceholderAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryS
 // rather than a "Framework Not Found" error.
 func RegisterPlaceholders(hub *AdapterHub) {
 	missingFeatures := []string{
+		"Startup-Time Environment Attestor (STEA)",
+		"Atomic Upload Sanitizer (AUS)",
+		"Agent Team Coordination Guard (ATCG)",
 		"Dynamic Mesh Resilience (DMR) Hub",
 		"Action-Chain Sovereignty Monitor (ACSM)",
 		"CI/CD Cache Integrity Guard (CCIG)",

@@ -1792,3 +1792,14 @@
 ### Priority Shifts
 - **Hardware-Attested Cost Attribution (HACA)**: (Re-affirmed P0) Elevated to mandatory status for all mesh-bound tool calls to ensure economic accountability across mission-root lineages.
 - **Dynamic Mesh Resilience (DMR) Hub**: (Re-affirmed P0) Designated as the primary coordination service for migrating mission-critical state during Agent Team coordination stalls.
+
+## Evolution: [2026-07-13] Updates
+
+### Proposed Additions
+- **Startup-Time Environment Attestor (STEA)**: (P0) Authoritative security service mandating hardware-attested validation of all environment variables and startup flags to neutralize "Initialization Hijacking" (CVE-2026-22177).
+- **Atomic Upload Sanitizer (AUS)**: (P0) Advanced security middleware providing fragment-level semantic validation and Inode-pinning for all file uploads to prevent path traversal (CVE-2026-26329).
+- **Agent Team Coordination Guard (ATCG)**: (P0) Coordination security service providing intent-bound mailbox shards and hardware-attested task-claiming validation for horizontal Agent Teams.
+
+### Priority Shifts
+- **Hardware-Attested Cost Attribution (HACA)**: (Re-affirmed P0) Now elevated with the requirement for **Teammate-Level Attribution** in horizontal swarms.
+- **Asynchronous Mailbox Sharding (AMS)**: (Re-affirmed P0) Designated as the primary infrastructure for the **Agent Team Coordination Guard (ATCG)**.

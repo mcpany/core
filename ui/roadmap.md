@@ -785,3 +785,6 @@
 #### Upcoming (2026-07-12 Evolution)
 - [ ] **[P0] Mission Cost Attribution Dashboard**: (2026-07-12) Visual tracker for HACA-bound reasoning costs and mission-root budget consumption.
 - [ ] **[P0] Mesh Resilience Status Hub**: (2026-07-12) Real-time visualization of DMR-mediated state migration and node health status.
+- [ ] **[P0] Boot Integrity Monitor**: (2026-07-13) Real-time visualization of hardware-attested environment validation and boot tamper alerts.
+- [ ] **[P0] Upload Path Inspector**: (2026-07-13) Security UI for reviewing semantically sanitized file uploads and blocked path-traversal attempts.
+- [ ] **[P0] Team Coordination Dashboard**: (2026-07-13) Visual workspace for monitoring intent-bound teammate coordination and task-claiming status.
