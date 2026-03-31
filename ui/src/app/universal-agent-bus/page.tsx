@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -46,6 +46,23 @@ import { AgentChainTracer } from "@/components/dashboard/agent-chain-tracer";
  *   - Renders multiple dashboard cards.
  */
 export default function UniversalAgentBusPage() {
+  const [stats, setStats] = useState({
+    contextStatus: "Inactive",
+    sessions: 0,
+    transports: 0,
+    indexHits: 0,
+  });
+
+  useEffect(() => {
+    // Engineer solution: Fetch Universal Agent Bus stats from the backend.
+    fetch('/api/v1/uab/stats')
+      .then(res => res.json())
+      .then(data => {
+        setStats(data);
+      })
+      .catch(console.error);
+  }, []);
+
   return (
     <div className="p-6 space-y-6">
       <div>
@@ -63,7 +80,7 @@ export default function UniversalAgentBusPage() {
             <GitMerge className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">Inactive</div>
+            <div className="text-2xl font-bold">{stats.contextStatus}</div>
             <p className="text-xs text-muted-foreground">
               Visualize state inheritance and session tokens across agent swarms.
             </p>
@@ -77,7 +94,7 @@ export default function UniversalAgentBusPage() {
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0 Sessions</div>
+            <div className="text-2xl font-bold">{stats.sessions} Sessions</div>
             <p className="text-xs text-muted-foreground">
               Visual tracking of agent handoffs and shared tool state.
             </p>
@@ -91,7 +108,7 @@ export default function UniversalAgentBusPage() {
             <Network className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0 Transports</div>
+            <div className="text-2xl font-bold">{stats.transports} Transports</div>
             <p className="text-xs text-muted-foreground">
               UI for managing and auto-discovering MCP servers across transports.
             </p>
@@ -105,7 +122,7 @@ export default function UniversalAgentBusPage() {
             <Search className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0 Index Hits</div>
+            <div className="text-2xl font-bold">{stats.indexHits} Index Hits</div>
             <p className="text-xs text-muted-foreground">
               UI for managing the on-demand tool index and monitoring search hits/misses.
             </p>

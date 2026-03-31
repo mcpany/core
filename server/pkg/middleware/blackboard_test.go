@@ -61,4 +61,37 @@ func TestBlackboardStore(t *testing.T) {
 	if val != "value2" {
 		t.Errorf("expected 'value2', got '%s'", val)
 	}
+
+	// Test ListAll
+	err = store.Set(ctx, "agent2", "key2", "value_for_agent2")
+	if err != nil {
+		t.Fatalf("failed to set value: %v", err)
+	}
+
+	entries, err := store.ListAll(ctx)
+	if err != nil {
+		t.Fatalf("failed to list all entries: %v", err)
+	}
+
+	if len(entries) != 2 {
+		t.Errorf("expected 2 entries, got %d", len(entries))
+	}
+
+	foundAgent1 := false
+	foundAgent2 := false
+	for _, entry := range entries {
+		if entry.AgentID == "agent1" && entry.Key == "key1" && entry.Value == "value2" {
+			foundAgent1 = true
+		}
+		if entry.AgentID == "agent2" && entry.Key == "key2" && entry.Value == "value_for_agent2" {
+			foundAgent2 = true
+		}
+	}
+
+	if !foundAgent1 {
+		t.Errorf("expected to find agent1's entry in ListAll")
+	}
+	if !foundAgent2 {
+		t.Errorf("expected to find agent2's entry in ListAll")
+	}
 }

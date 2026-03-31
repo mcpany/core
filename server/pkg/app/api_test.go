@@ -6,6 +6,7 @@ package app
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"encoding/csv"
 	"encoding/json"
 	"errors"
@@ -60,6 +61,50 @@ func setupApiTestApp() (*Application, storage.Storage) {
 		Storage:         store,
 	}
 	return app, store
+}
+
+func TestAPI_UABStats(t *testing.T) {
+	app, _, _, _, _, _ := setupTestApp(t)
+
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/uab/stats", nil)
+	rr := httptest.NewRecorder()
+
+	app.apiMux.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Errorf("expected status %v, got %v", http.StatusOK, rr.Code)
+	}
+
+	var stats map[string]interface{}
+	if err := json.NewDecoder(rr.Body).Decode(&stats); err != nil {
+		t.Errorf("failed to decode JSON response: %v", err)
+	}
+
+	if stats["contextStatus"] != "Inactive" {
+		t.Errorf("expected contextStatus 'Inactive', got %v", stats["contextStatus"])
+	}
+}
+
+func TestAPI_BlackboardKeys(t *testing.T) {
+	app, _, _, _, _, _ := setupTestApp(t)
+
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/blackboard/keys", nil)
+	rr := httptest.NewRecorder()
+
+	app.apiMux.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Errorf("expected status %v, got %v", http.StatusOK, rr.Code)
+	}
+
+	var keys []map[string]interface{}
+	if err := json.NewDecoder(rr.Body).Decode(&keys); err != nil {
+		t.Errorf("failed to decode JSON response: %v", err)
+	}
+
+	if keys == nil {
+		t.Errorf("expected keys to be initialized, got %v", keys)
+	}
 }
 
 func TestIsUnsafeConfig(t *testing.T) {

@@ -25,5 +25,5 @@ This section details the capabilities of the MCP Any Server.
 - [Lazy-MCP](features/lazy-mcp.md) - On-demand discovery.
 - [Recursive Context Protocol](features/recursive_context.md) - Subagent inheritance.
 - [Shared Key-Value Store](features/shared_kv_store.md) - Embedded Blackboard.
-- [Granular Scopes](features/granular_scopes.md) - Capability-based tokens.
+- [Zero-Trust Subagent Scoping](features/zero_trust_subagent_scoping.md) - Capability-based tokens.
 - [Message Bus](features/message_bus.md) - Event-driven integrations.

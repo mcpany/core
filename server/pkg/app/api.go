@@ -199,6 +199,60 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	// Mount HITL
 	a.mountHITL(mux)
 
+	// Blackboard Keys API
+	mux.HandleFunc("/blackboard/keys", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		if a.BlackboardStore == nil {
+			// Blackboard not initialized, return empty array
+			json.NewEncoder(w).Encode([]map[string]string{})
+			return
+		}
+		entries, err := a.BlackboardStore.ListAll(r.Context())
+		if err != nil {
+			http.Error(w, "Failed to list blackboard entries", http.StatusInternalServerError)
+			return
+		}
+		json.NewEncoder(w).Encode(entries)
+	})
+
+	// Universal Agent Bus Stats
+	mux.HandleFunc("/uab/stats", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		// Fetch actual metrics
+		contextStatus := "Inactive"
+
+		sessions := 0
+		transports := 0
+		indexHits := 0
+
+		if a.TopologyManager != nil {
+			state := a.TopologyManager.GetState()
+			transports = len(state.Edges) + len(state.Nodes)
+		}
+
+		type UABStats struct {
+			ContextStatus string `json:"contextStatus"`
+			Sessions      int    `json:"sessions"`
+			Transports    int    `json:"transports"`
+			IndexHits     int    `json:"indexHits"`
+		}
+
+		json.NewEncoder(w).Encode(UABStats{
+			ContextStatus: contextStatus,
+			Sessions:      sessions,
+			Transports:    transports,
+			IndexHits:     indexHits,
+		})
+	})
+
 	mux.HandleFunc("/traces", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:

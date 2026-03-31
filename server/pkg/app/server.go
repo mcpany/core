@@ -242,6 +242,9 @@ type Application struct {
 	// CatalogManager manages dynamic service catalog
 	CatalogManager *catalog.Manager
 
+	// BlackboardStore is the shared KV store for agent context
+	BlackboardStore *middleware.BlackboardStore
+
 	// lastReloadErr stores the error from the last configuration reload.
 	standardMiddlewares *middleware.StandardMiddlewares
 	// Settings Manager for global settings (dynamic updates)

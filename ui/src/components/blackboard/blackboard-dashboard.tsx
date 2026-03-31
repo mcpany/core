@@ -3,9 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 
 /**
  * Intent: Document BlackboardDashboard
@@ -33,10 +32,22 @@ import { Button } from "@/components/ui/button";
  *   - Uses local React state to manage keys.
  */
 export function BlackboardDashboard() {
-    const [keys, setKeys] = useState([
-        { id: "1", agentId: "agent-a", key: "session_token", value: "abc-123", intent: "auth" },
-        { id: "2", agentId: "agent-b", key: "last_query", value: "select * from users", intent: "database_read" }
-    ]);
+    interface BlackboardKey {
+        id: string;
+        agentId: string;
+        key: string;
+        value: string;
+        intent: string;
+    }
+    const [keys, setKeys] = useState<BlackboardKey[]>([]);
+
+    useEffect(() => {
+        // Engineer solution: fetch keys dynamically from the new API
+        fetch('/api/v1/blackboard/keys')
+            .then(res => res.json())
+            .then(data => setKeys(data || []))
+            .catch(console.error);
+    }, []);
 
     return (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

@@ -1,6 +1,6 @@
-# Granular Scopes
+# Zero-Trust Subagent Scoping
 
-Granular Scopes implement a capability-based token system, enabling "Least Privilege" security for agents and guarding against data exfiltration risks.
+Zero-Trust Subagent Scoping implements a capability-based token system, enabling "Least Privilege" security for agents and guarding against data exfiltration risks.
 
 ## Configuration
 

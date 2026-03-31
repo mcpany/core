@@ -99,6 +99,40 @@ func (s *BlackboardStore) Get(ctx context.Context, agentID, key string) (string,
 	return value, nil
 }
 
+// BlackboardEntry represents a single key-value entry in the blackboard.
+type BlackboardEntry struct {
+	ID      string `json:"id"`
+	AgentID string `json:"agentId"`
+	Key     string `json:"key"`
+	Value   string `json:"value"`
+	Intent  string `json:"intent"`
+}
+
+// ListAll retrieves all key-value entries from the blackboard.
+func (s *BlackboardStore) ListAll(ctx context.Context) ([]BlackboardEntry, error) {
+	rows, err := s.db.QueryContext(ctx, "SELECT agent_id, key, value FROM blackboard")
+	if err != nil {
+		return nil, fmt.Errorf("failed to query blackboard: %w", err)
+	}
+	defer rows.Close()
+
+	var entries []BlackboardEntry
+	for i := 1; rows.Next(); i++ {
+		var entry BlackboardEntry
+		entry.ID = fmt.Sprintf("%d", i)
+		if err := rows.Scan(&entry.AgentID, &entry.Key, &entry.Value); err != nil {
+			return nil, fmt.Errorf("failed to scan blackboard row: %w", err)
+		}
+		// Intent is not in the DB schema, so we assign a placeholder or empty string.
+		entry.Intent = "unknown"
+		entries = append(entries, entry)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("blackboard row iteration error: %w", err)
+	}
+	return entries, nil
+}
+
 // Set stores a value in the blackboard for a specific agent.
 //
 // Summary: Stores a value in the blackboard for a specific agent.
