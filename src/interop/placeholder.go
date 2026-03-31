@@ -94,6 +94,18 @@ func (a *PlaceholderAdapter) HandleTask(ctx context.Context, task *Task) (*TaskR
 	return nil, fmt.Errorf("Not Implemented: %s is a placeholder service", a.name)
 }
 
+// StreamTask implements the required method.
+//
+// Intent: Satisfies the AgentFramework interface while correctly signaling
+// that the feature is a placeholder.
+//
+// Returns:
+//   - A read-only channel of *TaskResult
+//   - An error indicating the method is not implemented.
+func (p *PlaceholderAdapter) StreamTask(ctx context.Context, task *Task) (<-chan *TaskResult, error) {
+	return nil, fmt.Errorf("feature %s is currently a placeholder on the roadmap", p.name)
+}
+
 // SupportsCapability checks if the framework provides a requested capability.
 //
 // Intent: Returns whether the placeholder was initialized with the given capability.
