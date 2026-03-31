@@ -249,7 +249,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
 
             {isExtracted && (
                 <TabsContent value="raw">
-                    <JsonView data={result} maxHeight={400} smartTable={true} />
+                    <JsonView data={result} maxHeight={400} smartTable={false} />
                 </TabsContent>
             )}
         </Tabs>
