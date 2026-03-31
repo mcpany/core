@@ -785,3 +785,6 @@
 #### Upcoming (2026-07-12 Evolution)
 - [ ] **[P0] Mission Cost Attribution Dashboard**: (2026-07-12) Visual tracker for HACA-bound reasoning costs and mission-root budget consumption.
 - [ ] **[P0] Mesh Resilience Status Hub**: (2026-07-12) Real-time visualization of DMR-mediated state migration and node health status.
+- [ ] **[P0] Local Pairing Portal**: (2026-07-13) UI for reviewing and approving hardware-locked pairing requests from local applications.
+- [ ] **[P0] CRDT Shard Health Explorer**: (2026-07-13) Visual debugger for monitoring CFRS Hub convergence and vector clock consistency.
+- [ ] **[P1] Stylometric Drift Monitor**: (2026-07-13) Real-time tracker for inter-agent coordination stylometry, highlighting potential attention-splicing attempts.

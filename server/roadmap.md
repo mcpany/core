@@ -959,3 +959,8 @@ These features represent the next logical steps for the product, focusing on Ent
 #### Upcoming (2026-07-12 Evolution)
 *   **[P0] Hardware-Attested Cost Attribution (HACA)**: Advanced economic security service that cryptographically attributes token usage to specific sub-process lineage. (Added: 2026-07-12)
 *   **[P0] DMR Speculative Shard Pulling**: Performance upgrade for Dynamic Mesh Resilience hub to neutralize coordination stalls in high-density teams. (Added: 2026-07-12)
+
+#### Upcoming (2026-07-13 Evolution)
+*   **[P0] Origin-Locked Local Handshake (OLH)**: Zero-Trust local transport layer mandating hardware-attested origin validation for all loopback listeners. (Added: 2026-07-13)
+*   **[P0] Conflict-Free Replicated State (CFRS) Hub**: CRDT-based coordination backend for lock-free state synchronization in horizontal Agent Teams. (Added: 2026-07-13)
+*   **[P1] Attention-Splicing Defense Middleware**: Entropy-based stylometric firewall to detect and block instruction injection in shared teammate shards. (Added: 2026-07-13)

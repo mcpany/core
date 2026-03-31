@@ -1415,3 +1415,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Mesh-Bound Team Coordination**: Supporting the "Agent Teams" standard, MCP Any will evolve into a native mesh-resident coordinator. We will provide the infrastructure for lock-free, CRDT-based teammate synchronization, ensuring that parallel agent sessions maintain a consistent worldview without global state locks.
 - **Hardware-Attested Cost Attribution (HACA)**: To address resource prioritization shifts seen in Gemini CLI, we are mandating HACA. Every tool call and reasoning fragment will be cryptographically attributed to its mission-root lineage, enabling granular, hardware-locked quota enforcement and economic transparency across the mesh.
 - **Sovereign Skill Verification**: To neutralize "ClawHub" style marketplace poisonings, we are implementing mandatory behavioral profiling for all dynamic skill grafts. No tool will be exposed to the discovery bus unless its behavioral manifest is signed by an attested hardware authority.
+
+---
+
+## Strategic Evolution: [2026-07-13]
+### Focus: Origin-Locked Local Sovereignty & Conflict-Free Mesh State
+**Context**: The persistence of the OpenClaw "Implicit Local Trust" exploit (CVE-2026-25253) and the scaling challenges of Claude Code "Agent Teams" confirm that the **Local Network** is no longer a trusted zone and **Synchronous Coordination** is a performance ceiling. We must move beyond simple network isolation to hardware-attested origin validation and lock-free state replication.
+**Strategic Pivot**:
+- **Origin-Locked Local Handshake (OLH)**: MCP Any will evolve to mandate OLH for all local WebSocket and API listeners. This ensures that only verified local applications—not malicious browser scripts—can bridge into the agent control plane, neutralizing loopback hijacking.
+- **Conflict-Free Replicated State (CFRS) Hub**: Supporting the GA launch of horizontal Agent Teams, we are introducing the CFRS Hub. Utilizing CRDTs for the shared task list and teammate mailboxes, this hub will enable parallel agents to synchronize state without global coordination locks, ensuring linear performance scaling.
+- **Attention-Splicing Defense Middleware**: To counter stylized mimicry in horizontal meshes, we are implementing entropy-based firewalls. This layer will monitor inter-agent coordination for stylometric drift and block "Injected Instructions" designed to hijack the parent attention window.
+- **Hardware-Attested Cost Attribution (HACA) Mandate**: We are mandating HACA for all enterprise swarms. Every resource-consuming action will be cryptographically attributed to its mission-root lineage, enabling granular budget enforcement and preventing "Economic Squatting" by sub-missions.

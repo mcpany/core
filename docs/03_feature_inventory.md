@@ -1,5 +1,16 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-13] Updates
+
+### Proposed Additions
+- **Conflict-Free Replicated State (CFRS) Hub**: (P0) Coordination service utilizing CRDTs for the Shared Task List and teammate mailboxes. Resolves "Mailbox Lock" bottlenecks in horizontal Agent Teams by enabling asynchronous, lock-free state synchronization.
+- **Origin-Locked Local Handshake Provider**: (P0) Security middleware mandating origin-bound, hardware-attested handshakes for all local listeners. Neutralizes CVE-2026-25253 by ensuring only verified local applications can command the gateway.
+- **Attention-Splicing Defense Middleware**: (P1) Cognitive security layer that monitors inter-agent coordination for stylometric drift and blocks instructions designed to hijack the parent attention window.
+
+### Priority Shifts
+- **Asynchronous Mailbox Sharding (AMS)**: (Re-affirmed P0) Evolving to act as the primary transport for the new **CFRS Hub** logic.
+- **Hardware-Attested Cost Attribution (HACA)**: (Promoted to P0) Designated as a mandatory requirement for all enterprise Agent Team deployments to ensure mission-root accountability.
+
 ## Evolution: [2026-07-12] Updates
 
 ### Proposed Additions

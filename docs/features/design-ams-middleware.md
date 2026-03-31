@@ -86,3 +86,11 @@ The AMS Middleware solves this by sharding the inter-agent mailbox based on the 
 * Implementing **HLAP-Compliant Jitter**: Normalizing update micro-timing for mailbox shards using TPM monotonic timers to neutralize side-channel leakage.
 * Integrating with the **ZKSA Provider** to allow shards to verify task completion via Zero-Knowledge proofs, further isolating the central bus from raw teammate state.
 **Security Impact:** Prevents side-channel intent mapping and ensures that critical safety interventions bypass coordination locks instantly.
+
+### Update: 2026-07-13 - Conflict-Free Replicated State (CFRS) Hub Integration
+**Context:** Today's research confirms that horizontal swarms require a more resilient, framework-agnostic coordination hub that can survive temporary mesh partitions and provide sub-millisecond state convergence across heterogeneous frameworks.
+**Architecture Adjustment:**
+* **CFRS Hub Adoption**: AMS is now designated as the authoritative implementation of the CFRS Hub. This hub manages the lifecycle of CRDT-based state fragments across the entire agent mesh.
+* **Vector Clock Anchoring**: Every shard mutation is now anchored to a mission-root vector clock, ensuring causal consistency even when teammates operate over high-latency or intermittent channels.
+* **Partition-Resilient Merging**: Implementing anti-entropy protocols to reconcile divergent shards post-network partition, using hardware-attested mission intent as the final arbiter.
+**Security Impact:** Neutralizes "Attention-Splicing" (CVE-2026-91023) by validating the causal lineage of every state update against the Mission-Root's vector clock.
