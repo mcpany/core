@@ -7,6 +7,8 @@ import { render, screen, waitFor } from "../../tests/test-utils";
 import { RecentActivityWidget } from "./recent-activity-widget";
 import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
 
+import { apiClient } from "@/lib/client";
+
 // Mock Trace data
 const mockTraces = [
   {
@@ -29,28 +31,27 @@ const mockTraces = [
   },
 ];
 
-// Mock Fetch
-const mockFetch = vi.fn();
-global.fetch = mockFetch;
+vi.mock("@/lib/client", () => ({
+  apiClient: {
+    getTraces: vi.fn(),
+  },
+}));
 
 describe("RecentActivityWidget", () => {
   beforeEach(() => {
-    mockFetch.mockReset();
+    vi.mocked(apiClient.getTraces).mockReset();
   });
 
   it("renders loading state initially", async () => {
     // Return a promise that never resolves immediately to test loading state
-    mockFetch.mockReturnValue(new Promise(() => {}));
+    vi.mocked(apiClient.getTraces).mockReturnValue(new Promise(() => {}));
 
     render(<RecentActivityWidget />);
     expect(screen.getByText(/Loading timeline/i)).toBeInTheDocument();
   });
 
   it("renders traces when fetch succeeds", async () => {
-    mockFetch.mockResolvedValue({
-      ok: true,
-      json: async () => mockTraces,
-    });
+    vi.mocked(apiClient.getTraces).mockResolvedValue(mockTraces as any);
 
     render(<RecentActivityWidget />);
 
@@ -66,10 +67,7 @@ describe("RecentActivityWidget", () => {
   });
 
   it("renders empty state when no traces", async () => {
-    mockFetch.mockResolvedValue({
-      ok: true,
-      json: async () => [],
-    });
+    vi.mocked(apiClient.getTraces).mockResolvedValue([]);
 
     render(<RecentActivityWidget />);
 
@@ -79,10 +77,7 @@ describe("RecentActivityWidget", () => {
   });
 
   it("renders error state when fetch fails", async () => {
-    mockFetch.mockResolvedValue({
-      ok: false,
-      status: 500,
-    });
+    vi.mocked(apiClient.getTraces).mockRejectedValue(new Error("Failed"));
 
     render(<RecentActivityWidget />);
 
