@@ -954,3 +954,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Attested Cost Attribution (HACA)**: Advanced economic security service that cryptographically attributes token usage to specific sub-process lineage. (Added: 2026-07-11)
 *   **[P0] Ephemeral Registry Hook (ERH) Provider**: Security middleware mandating session-locked discovery schemas to neutralize registry persistence exploits. (Added: 2026-07-11)
 *   **[P1] Recursive Resource Reclamation (RRR) Manager**: Lifecycle management service for reclaiming unused token and reasoning budgets from dormant sub-missions. (Added: 2026-07-11)
+
+#### Upcoming (2026-07-12 Evolution)
+*   **[P0] Migration-Aware State Sanitizer (MASS)**: Real-time semantic verification of sharded state during node re-sharding to prevent encrypted state smuggling. (Added: 2026-07-12)
+*   **[P0] A2UI Out-of-Band Proxy (A2UI-OBP)**: Authoritative UI proxy that intercepts specialist-to-user streams to ensure origin-locking and structural safety. (Added: 2026-07-12)
+*   **[P1] Predictive Resource Provisioner (PRP)**: Efficiency middleware utilizing ARE v2.0 intent signals to pre-allocate security quorums and GPU quotas. (Added: 2026-07-12)
+*   **[P0] Monotonic Real-Time Attribution (MRTA) Provider**: Advanced economic security service mandating real-time monotonic counter validation for all token expenditures. (Added: 2026-07-12)

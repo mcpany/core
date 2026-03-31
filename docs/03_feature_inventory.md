@@ -1768,3 +1768,16 @@
 ### Priority Shifts
 - **SRM Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Hierarchical Provenance** validation.
 - **Asynchronous Mailbox Sharding (AMS)**: (Re-affirmed P0) Now elevated with the requirement for **HLAP-compliant** timing normalization.
+
+## Evolution: [2026-07-12] Updates
+
+### Proposed Additions
+- **Migration-Aware State Sanitizer (MASS)**: (P0) Real-time semantic verification service for sharded state during node re-sharding to prevent encrypted state smuggling.
+- **A2UI Out-of-Band Proxy (A2UI-OBP)**: (P0) Authoritative UI proxy that intercepts specialist-to-user streams to ensure origin-locking and structural safety.
+- **Predictive Resource Provisioner (PRP)**: (P1) Efficiency middleware utilizing ARE v2.0 intent signals to pre-allocate security quorums and GPU quotas.
+- **Monotonic Real-Time Attribution (MRTA) Provider**: (P0) Advanced economic security service mandating real-time monotonic counter validation for all token expenditures.
+
+### Priority Shifts
+- **Dynamic Mesh Resilience (DMR) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **MASS** integration.
+- **Recursive Resource Reclamation (RRR) Manager**: (Promoted to P0) Critical for "Swarm-Containment-as-Code" enterprise requirements.
+- **Hardware-Attested Cost Attribution (HACA)**: (Evolved to MRTA) Now designated as the primary defense against "Nanosecond Racing" exploits.

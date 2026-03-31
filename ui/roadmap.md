@@ -780,3 +780,9 @@
 - [ ] **[P0] Economic Attribution Viewer**: (2026-07-11) Visual tracker for hardware-attested cost attribution (HACA) across subagent lineages.
 - [ ] **[P0] Ephemeral Hook Monitor**: (2026-07-11) Status widget for monitoring session-locked discovery hooks and their expiration.
 - [ ] **[P1] Resource Reclamation Log**: (2026-07-11) Real-time tracker for RRR-triggered budget reclaims and mission efficiency gains.
+
+#### Upcoming (2026-07-12 Evolution)
+- [ ] **[P0] Migration Sovereignty Monitor**: (2026-07-12) Real-time visualization of state shard migration and MASS-validation events.
+- [ ] **[P0] Out-of-Band UI Proxy Console**: (2026-07-12) UI for reviewing and approving specialist-to-user A2UI streams.
+- [ ] **[P0] Real-Time Attribution Widget**: (2026-07-12) Status monitor for monotonic hardware-attested cost counters.
+- [ ] **[P1] PRP Latency Dashboard**: (2026-07-12) Performance visualizer for predictive security quorums and pre-allocated quotas.
