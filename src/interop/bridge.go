@@ -91,6 +91,25 @@ type AgentFramework interface {
 	// Side Effects:
 	//   - Modifies internal framework state by updating the contextual memory.
 	SyncMemoryShard(ctx context.Context, shard *MemoryShard) error
+
+	// StreamTask receives a task from the universal bus and streams the result back in chunks.
+	//
+	// Intent: Executes a task within the framework and emits streaming results as they become available.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for controlling cancellation and timeouts.
+	//   - task (*Task): The universal task definition to execute.
+	//
+	// Returns:
+	//   - <-chan *TaskResult: A read-only channel emitting streamed task results.
+	//   - error: An error if the task execution fails to start.
+	//
+	// Errors:
+	//   - Returns an error if the framework does not support the capability or initialization fails.
+	//
+	// Side Effects:
+	//   - Spawns a goroutine to stream results back through the channel.
+	StreamTask(ctx context.Context, task *Task) (<-chan *TaskResult, error)
 }
 
 // MemoryShard represents a hardware-attested, intent-pinned memory fragment.
@@ -244,4 +263,30 @@ func (h *AdapterHub) RouteTask(ctx context.Context, task *Task) (*TaskResult, er
 		return nil, fmt.Errorf("no adapter registered for framework: %s", task.Framework)
 	}
 	return adapter.HandleTask(ctx, task)
+}
+
+// StreamRouteTask finds the appropriate adapter for a task and streams its execution.
+//
+// Intent: Routes a given task to the registered framework adapter and streams the execution result.
+//
+// Parameters:
+//   - ctx (context.Context): The context for controlling cancellation and timeouts.
+//   - task (*Task): The universal task definition containing the framework and intent.
+//
+// Returns:
+//   - <-chan *TaskResult: A read-only channel emitting streamed task results.
+//   - error: An error if routing or execution fails to start.
+//
+// Errors:
+//   - Returns "no adapter registered for framework" if the requested framework is not found.
+//   - Returns any error produced by the adapter during task execution initialization.
+//
+// Side Effects:
+//   - Triggers the streaming task execution on the corresponding adapter.
+func (h *AdapterHub) StreamRouteTask(ctx context.Context, task *Task) (<-chan *TaskResult, error) {
+	adapter, exists := h.adapters[task.Framework]
+	if !exists {
+		return nil, fmt.Errorf("no adapter registered for framework: %s", task.Framework)
+	}
+	return adapter.StreamTask(ctx, task)
 }

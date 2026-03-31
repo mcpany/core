@@ -153,7 +153,38 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 		}
 	})
 
-	// 5. Error Case: Unsupported Framework
+	// 5. Streaming Task Execution
+	t.Run("OpenClaw_StreamingTask", func(t *testing.T) {
+		taskStream := &interop.Task{
+			ID:        "task-oc-stream",
+			Framework: "OpenClaw",
+			Intent:    "adaptive_reasoning",
+		}
+
+		stream, err := hub.StreamRouteTask(ctx, taskStream)
+		if err != nil {
+			t.Fatalf("Failed to start streaming task: %v", err)
+		}
+
+		var results []*interop.TaskResult
+		for res := range stream {
+			results = append(results, res)
+		}
+
+		if len(results) != 3 {
+			t.Errorf("Expected 3 streaming chunks, got %d", len(results))
+		}
+
+		if results[0].Status != "streaming" {
+			t.Errorf("Expected first chunk status 'streaming', got '%s'", results[0].Status)
+		}
+
+		if results[2].Status != "success" {
+			t.Errorf("Expected final chunk status 'success', got '%s'", results[2].Status)
+		}
+	})
+
+	// 6. Error Case: Unsupported Framework
 	t.Run("Unsupported_Framework", func(t *testing.T) {
 		taskInvalid := &interop.Task{
 			ID:        "task-inv-004",
@@ -166,7 +197,19 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 		}
 	})
 
-	// 6. UMMB Sync Memory Shard Test
+	t.Run("Unsupported_Framework_Stream", func(t *testing.T) {
+		taskInvalid := &interop.Task{
+			ID:        "task-inv-005",
+			Framework: "UnknownFramework",
+			Intent:    "do_magic",
+		}
+		_, err := hub.StreamRouteTask(ctx, taskInvalid)
+		if err == nil {
+			t.Error("Expected error for streaming task to unknown framework, got nil")
+		}
+	})
+
+	// 7. UMMB Sync Memory Shard Test
 	t.Run("UMMB_SyncMemoryShard", func(t *testing.T) {
 		validShard := &interop.MemoryShard{
 			ShardID:           "shard-100",
