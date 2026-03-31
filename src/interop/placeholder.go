@@ -134,6 +134,28 @@ func (a *PlaceholderAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryS
 	return fmt.Errorf("Not Implemented: %s is a placeholder service", a.name)
 }
 
+// StreamTask acts as a stub, returning an unimplemented error.
+//
+// Intent: Satisfies the AgentFramework interface while correctly signaling
+// that the feature is a placeholder and not fully implemented.
+//
+// Parameters:
+//   - ctx (context.Context): Execution context.
+//   - task (*Task): The task to process.
+//
+// Returns:
+//   - <-chan *TaskResult: Always returns nil.
+//   - error: Always returns an error indicating the method is an unimplemented placeholder.
+//
+// Errors:
+//   - Returns "placeholder method: not implemented" unconditionally.
+//
+// Side Effects:
+//   - None.
+func (a *PlaceholderAdapter) StreamTask(ctx context.Context, task *Task) (<-chan *TaskResult, error) {
+	return nil, fmt.Errorf("placeholder method: not implemented")
+}
+
 // RegisterPlaceholders registers all missing P0 features documented in the roadmap
 // as placeholder adapters on the provided AdapterHub.
 //
