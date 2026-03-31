@@ -29,13 +29,13 @@ import (
 // Summary: Executes DebugMiddleware operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - mcp.Middleware: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

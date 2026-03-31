@@ -49,13 +49,13 @@ type RecursiveContextManager struct {
 // Summary: Initializes NewRecursiveContextManager operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *RecursiveContextManager: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -84,13 +84,14 @@ func NewRecursiveContextManager() *RecursiveContextManager {
 // Summary: Initializes CreateSession operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - data: map[string]interface{}. Represents the data for the operation.
+//   - ttl: time.Duration. Represents the ttl for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *SessionState: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -136,13 +137,13 @@ func (m *RecursiveContextManager) CreateSession(data map[string]interface{}, ttl
 // Summary: Retrieves GetSession operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - id: string. A unique identifier used for tracking and lookup.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -178,13 +179,13 @@ func (m *RecursiveContextManager) GetSession(id string) (*SessionState, bool) {
 // Summary: Executes APIHandler operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - http.HandlerFunc: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -274,13 +275,13 @@ const (
 // Summary: Executes HandleContext operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - next: http.Handler. Represents the next for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - http.Handler: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

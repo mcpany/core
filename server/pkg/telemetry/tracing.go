@@ -51,13 +51,17 @@ const (
 // Summary: Executes InitTelemetry operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - serviceName: string. The designated name identifying the specific entity.
+//   - version: string. Represents the version for the operation.
+//   - cfg: *config_v1.TelemetryConfig. Configuration structure providing operational parameters.
+//   - writer: io.Writer. Represents the writer for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

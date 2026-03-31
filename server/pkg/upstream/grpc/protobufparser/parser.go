@@ -78,13 +78,13 @@ type McpField struct {
 // Summary: Retrieves GetName operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - string: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -103,13 +103,13 @@ func (f *McpField) GetName() string {
 // Summary: Retrieves GetDescription operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - string: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -128,13 +128,13 @@ func (f *McpField) GetDescription() string {
 // Summary: Retrieves GetType operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - string: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -153,13 +153,13 @@ func (f *McpField) GetType() string {
 // Summary: Retrieves GetIsRepeated operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - bool: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -187,13 +187,15 @@ func (f *McpField) GetIsRepeated() bool {
 // Summary: Executes ParseProtoFromDefs operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - protoDefinitions: []*configv1.ProtoDefinition. Represents the protoDefinitions for the operation.
+//   - protoCollections: []*configv1.ProtoCollection. Represents the protoCollections for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -453,13 +455,14 @@ type McpResource struct {
 // Summary: Executes ParseProtoByReflection operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - target: string. Represents the target for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -665,13 +668,13 @@ func getFileDescriptorByFilename(stream reflectpb.ServerReflection_ServerReflect
 // Summary: Executes ExtractMcpDefinitions operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - fds: *descriptorpb.FileDescriptorSet. Represents the fds for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

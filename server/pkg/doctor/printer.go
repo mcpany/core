@@ -28,13 +28,14 @@ import (
 // Summary: Executes PrintResults operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - w: io.Writer. Represents the w for the operation.
+//   - results: []CheckResult. The response object for the executed operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

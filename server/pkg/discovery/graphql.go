@@ -22,13 +22,13 @@ type GraphQLProvider struct {
 // Summary: Executes Name operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - string: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -41,13 +41,13 @@ func (p *GraphQLProvider) Name() string {
 // Summary: Executes Discover operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _: context.Context. Represents the _ for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

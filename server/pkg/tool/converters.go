@@ -30,13 +30,13 @@ import (
 // Summary: Executes ConvertMCPToolToProto operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - tool: *mcp.Tool. Represents the tool for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -133,13 +133,13 @@ func convertJSONSchemaToStruct(schema any) (*structpb.Struct, error) {
 // Summary: Executes ConvertMcpFieldsToInputSchemaProperties operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - fields: []*protobufparser.McpField. Represents the fields for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -181,13 +181,15 @@ func ConvertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) 
 // Summary: Executes ConvertToolDefinitionToProto operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - toolDef: *configv1.ToolDefinition. Represents the toolDef for the operation.
+//   - inputSchema: unknown. Represents the inputSchema for the operation.
+//   - outputSchema: *structpb.Struct. Represents the outputSchema for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -245,13 +247,14 @@ func ConvertToolDefinitionToProto(toolDef *configv1.ToolDefinition, inputSchema,
 // Summary: Retrieves GetJSONSchemaForScalarType operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - scalarType: unknown. Represents the scalarType for the operation.
+//   - description: string. Represents the description for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -293,13 +296,13 @@ func GetJSONSchemaForScalarType(scalarType, description string) (*jsonschema.Sch
 // Summary: Executes ConvertProtoToMCPTool operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - pbTool: *pb.Tool. Represents the pbTool for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

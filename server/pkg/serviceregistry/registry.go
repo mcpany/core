@@ -139,13 +139,17 @@ type ServiceRegistry struct {
 // Summary: Initializes New operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - factory: factory.Factory. Represents the factory for the operation.
+//   - toolManager: tool.ManagerInterface. A manager instance responsible for coordinating operations.
+//   - promptManager: prompt.ManagerInterface. A manager instance responsible for coordinating operations.
+//   - resourceManager: resource.ManagerInterface. The response object for the executed operation.
+//   - authManager: *auth.Manager. A manager instance responsible for coordinating operations.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *ServiceRegistry: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -197,13 +201,14 @@ func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManag
 // Summary: Executes RegisterService operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - serviceConfig: *config.UpstreamServiceConfig. Configuration settings governing the behavior of the component.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -346,13 +351,14 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 // Summary: Executes AddServiceInfo operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - serviceID: string. A unique identifier used for tracking and lookup.
+//   - info: *tool.ServiceInfo. Represents the info for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -377,13 +383,13 @@ func (r *ServiceRegistry) AddServiceInfo(serviceID string, info *tool.ServiceInf
 // Summary: Retrieves GetServiceInfo operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - serviceID: string. A unique identifier used for tracking and lookup.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -421,13 +427,13 @@ func (r *ServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 // Summary: Retrieves GetServiceConfig operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - serviceID: string. A unique identifier used for tracking and lookup.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -465,13 +471,14 @@ func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamSe
 // Summary: Executes UnregisterService operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - serviceName: string. The designated name identifying the specific entity.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - error: An error object detailing any execution failure, or nil on success.
 //
 // Side Effects:
 //   - None.
@@ -523,13 +530,13 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 // Summary: Retrieves GetServiceError operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - serviceID: string. A unique identifier used for tracking and lookup.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -555,13 +562,14 @@ func (r *ServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 // Summary: Executes StartHealthChecks operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - interval: time.Duration. A value associated with the key.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -655,13 +663,13 @@ func (r *ServiceRegistry) checkAllHealth(ctx context.Context) {
 // Summary: Executes Close operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - error: An error object detailing any execution failure, or nil on success.
 //
 // Side Effects:
 //   - None.
@@ -694,13 +702,13 @@ func (r *ServiceRegistry) Close(ctx context.Context) error {
 // Summary: Retrieves GetAllServices operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

@@ -39,13 +39,13 @@ type Bus[T any] struct {
 // Summary: Initializes New operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - config: *bus.NatsBus. Configuration settings governing the behavior of the component.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -106,13 +106,15 @@ func (b *Bus[T]) Close() {
 // Summary: Executes Publish operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _: context.Context. Represents the _ for the operation.
+//   - topic: string. Represents the topic for the operation.
+//   - msg: T. Represents the msg for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - error: An error object detailing any execution failure, or nil on success.
 //
 // Side Effects:
 //   - None.
@@ -139,13 +141,15 @@ func (b *Bus[T]) Publish(_ context.Context, topic string, msg T) error {
 // Summary: Executes Subscribe operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _: context.Context. Represents the _ for the operation.
+//   - topic: string. Represents the topic for the operation.
+//   - handler: func(T. Represents the handler for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -177,13 +181,15 @@ func (b *Bus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (un
 // Summary: Executes SubscribeOnce operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _: context.Context. Represents the _ for the operation.
+//   - topic: string. Represents the topic for the operation.
+//   - handler: func(T. Represents the handler for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

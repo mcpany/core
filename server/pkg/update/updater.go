@@ -40,13 +40,14 @@ type Updater struct {
 // Summary: Initializes NewUpdater operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - httpClient: *http.Client. A client connection used to interface with external services.
+//   - githubAPIURL: string. The Uniform Resource Locator to connect to.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *Updater: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -85,13 +86,16 @@ func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 // Summary: Executes CheckForUpdate operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - owner: unknown. Represents the owner for the operation.
+//   - repo: unknown. Represents the repo for the operation.
+//   - currentVersion: string. Represents the currentVersion for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -130,13 +134,18 @@ func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersio
 // Summary: Executes UpdateTo operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - fs: afero.Fs. Represents the fs for the operation.
+//   - executablePath: string. The filesystem path.
+//   - release: *github.RepositoryRelease. Represents the release for the operation.
+//   - assetName: unknown. The designated name identifying the specific entity.
+//   - checksumsAssetName: string. The designated name identifying the specific entity.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - error: An error object detailing any execution failure, or nil on success.
 //
 // Side Effects:
 //   - None.

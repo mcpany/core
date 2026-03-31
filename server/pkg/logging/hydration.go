@@ -28,13 +28,13 @@ import (
 // Summary: Executes HydrateFromFile operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - path: string. The filesystem path.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - error: An error object detailing any execution failure, or nil on success.
 //
 // Side Effects:
 //   - None.

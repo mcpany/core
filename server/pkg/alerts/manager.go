@@ -83,13 +83,13 @@ type Manager struct {
 // Summary: Initializes NewManager operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *Manager: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -133,13 +133,13 @@ func (m *Manager) seedData() {
 // Summary: Executes ListAlerts operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - []*Alert: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -174,13 +174,13 @@ func (m *Manager) ListAlerts() []*Alert {
 // Summary: Retrieves GetAlert operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - id: string. A unique identifier used for tracking and lookup.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *Alert: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -207,13 +207,13 @@ func (m *Manager) GetAlert(id string) *Alert {
 // Summary: Initializes CreateAlert operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - alert: *Alert. Represents the alert for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *Alert: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -275,13 +275,13 @@ func (m *Manager) CreateAlert(alert *Alert) *Alert {
 // Summary: Retrieves GetAlertStats operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *AlertStats: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -335,13 +335,13 @@ func (m *Manager) GetAlertStats() *AlertStats {
 // Summary: Executes DeleteAlert operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - id: string. A unique identifier used for tracking and lookup.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - error: An error object detailing any execution failure, or nil on success.
 //
 // Side Effects:
 //   - None.
@@ -373,13 +373,14 @@ func (m *Manager) DeleteAlert(id string) error {
 // Summary: Executes UpdateAlert operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - id: string. A unique identifier used for tracking and lookup.
+//   - alert: *Alert. Represents the alert for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *Alert: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -445,13 +446,13 @@ func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 // Summary: Retrieves GetWebhookURL operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - string: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -478,13 +479,13 @@ func (m *Manager) GetWebhookURL() string {
 // Summary: Updates SetWebhookURL operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - url: string. The Uniform Resource Locator to connect to.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -511,13 +512,13 @@ func (m *Manager) SetWebhookURL(url string) {
 // Summary: Executes ListRules operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - []*AlertRule: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -551,13 +552,13 @@ func (m *Manager) ListRules() []*AlertRule {
 // Summary: Retrieves GetRule operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - id: string. A unique identifier used for tracking and lookup.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *AlertRule: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -584,13 +585,13 @@ func (m *Manager) GetRule(id string) *AlertRule {
 // Summary: Initializes CreateRule operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - rule: *AlertRule. Represents the rule for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *AlertRule: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -623,13 +624,14 @@ func (m *Manager) CreateRule(rule *AlertRule) *AlertRule {
 // Summary: Executes UpdateRule operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - id: string. A unique identifier used for tracking and lookup.
+//   - rule: *AlertRule. Represents the rule for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *AlertRule: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -668,13 +670,13 @@ func (m *Manager) UpdateRule(id string, rule *AlertRule) *AlertRule {
 // Summary: Executes DeleteRule operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - id: string. A unique identifier used for tracking and lookup.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - error: An error object detailing any execution failure, or nil on success.
 //
 // Side Effects:
 //   - None.

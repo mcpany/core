@@ -22,13 +22,13 @@ import (
 // Summary: Executes Password operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - password: string. Represents the password for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -54,13 +54,14 @@ func Password(password string) (string, error) {
 // Summary: Executes CheckPassword operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - password: unknown. Represents the password for the operation.
+//   - hash: string. Represents the hash for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - bool: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

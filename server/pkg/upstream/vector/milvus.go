@@ -40,13 +40,13 @@ type MilvusClient struct {
 // Summary: Initializes NewMilvusClient operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - config: *configv1.MilvusVectorDB. Configuration settings governing the behavior of the component.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -108,13 +108,17 @@ func NewMilvusClient(config *configv1.MilvusVectorDB) (*MilvusClient, error) {
 // Summary: Executes Query operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - vector: []float32. Represents the vector for the operation.
+//   - topK: int64. Represents the topK for the operation.
+//   - filter: map[string]interface{}. Represents the filter for the operation.
+//   - namespace: string. The designated name identifying the specific entity.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -245,13 +249,15 @@ func (c *MilvusClient) Query(ctx context.Context, vector []float32, topK int64, 
 // Summary: Executes Upsert operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - vectors: []map[string]interface{}. Represents the vectors for the operation.
+//   - namespace: string. The designated name identifying the specific entity.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -475,13 +481,16 @@ func fillMetadataColumn(col entity.Column, i int, val interface{}) {
 // Summary: Executes Delete operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - ids: []string. A unique identifier used for tracking and lookup.
+//   - namespace: string. The designated name identifying the specific entity.
+//   - filter: map[string]interface{}. Represents the filter for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -558,13 +567,14 @@ func (c *MilvusClient) Delete(ctx context.Context, ids []string, namespace strin
 // Summary: Executes DescribeIndexStats operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - _: map[string]interface{}. Represents the _ for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

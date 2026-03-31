@@ -62,13 +62,18 @@ type Server struct {
 // Summary: Initializes NewServer operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - cache: *middleware.CachingMiddleware. Represents the cache for the operation.
+//   - toolManager: tool.ManagerInterface. A manager instance responsible for coordinating operations.
+//   - serviceRegistry: serviceregistry.ServiceRegistryInterface. The target service identifier.
+//   - storage: storage.Storage. Represents the storage for the operation.
+//   - discoveryManager: *discovery.Manager. A manager instance responsible for coordinating operations.
+//   - getAuditMiddleware: func(. A unique identifier used for tracking and lookup.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *Server: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -109,13 +114,14 @@ func NewServer(
 // Summary: Executes ClearCache operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - _: *pb.ClearCacheRequest. Represents the _ for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -148,13 +154,14 @@ func (s *Server) ClearCache(ctx context.Context, _ *pb.ClearCacheRequest) (*pb.C
 // Summary: Executes ListServices operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _: context.Context. Represents the _ for the operation.
+//   - _: *pb.ListServicesRequest. Represents the _ for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -223,13 +230,14 @@ func (s *Server) ListServices(_ context.Context, _ *pb.ListServicesRequest) (*pb
 // Summary: Retrieves GetService operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _: context.Context. Represents the _ for the operation.
+//   - req: *pb.GetServiceRequest. The request payload containing operation parameters.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -294,13 +302,14 @@ func (s *Server) GetService(_ context.Context, req *pb.GetServiceRequest) (*pb.G
 // Summary: Executes ListTools operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _: context.Context. Represents the _ for the operation.
+//   - _: *pb.ListToolsRequest. Represents the _ for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -332,13 +341,14 @@ func (s *Server) ListTools(_ context.Context, _ *pb.ListToolsRequest) (*pb.ListT
 // Summary: Retrieves GetTool operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _: context.Context. Represents the _ for the operation.
+//   - req: *pb.GetToolRequest. The request payload containing operation parameters.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -369,13 +379,14 @@ func (s *Server) GetTool(_ context.Context, req *pb.GetToolRequest) (*pb.GetTool
 // Summary: Initializes CreateUser operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - req: *pb.CreateUserRequest. The request payload containing operation parameters.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -423,13 +434,14 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb
 // Summary: Retrieves GetUser operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - req: *pb.GetUserRequest. The request payload containing operation parameters.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -466,13 +478,14 @@ func (s *Server) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUs
 // Summary: Executes ListUsers operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - _: *pb.ListUsersRequest. Represents the _ for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -511,13 +524,14 @@ func (s *Server) ListUsers(ctx context.Context, _ *pb.ListUsersRequest) (*pb.Lis
 // Summary: Executes UpdateUser operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - req: *pb.UpdateUserRequest. The request payload containing operation parameters.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -565,13 +579,14 @@ func (s *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb
 // Summary: Executes DeleteUser operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - req: *pb.DeleteUserRequest. The request payload containing operation parameters.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -601,13 +616,14 @@ func (s *Server) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb
 // Summary: Retrieves GetDiscoveryStatus operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _: context.Context. Represents the _ for the operation.
+//   - _: *pb.GetDiscoveryStatusRequest. Represents the _ for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -652,13 +668,14 @@ func (s *Server) GetDiscoveryStatus(_ context.Context, _ *pb.GetDiscoveryStatusR
 // Summary: Executes ListAuditLogs operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - req: *pb.ListAuditLogsRequest. The request payload containing operation parameters.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

@@ -31,13 +31,13 @@ import (
 // Summary: Initializes NewHTTPClientWithTLS operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - tlsConfig: *configv1.TLSConfig. Configuration settings governing the behavior of the component.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

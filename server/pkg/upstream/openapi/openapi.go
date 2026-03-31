@@ -61,13 +61,13 @@ type OpenAPIUpstream struct { //nolint:revive
 // Summary: Executes Shutdown operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _: context.Context. Represents the _ for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - error: An error object detailing any execution failure, or nil on success.
 //
 // Side Effects:
 //   - None.
@@ -94,13 +94,13 @@ func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 // Summary: Initializes NewOpenAPIUpstream operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - upstream.Upstream: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -141,13 +141,18 @@ func NewOpenAPIUpstream() upstream.Upstream {
 // Summary: Executes Register operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - serviceConfig: *configv1.UpstreamServiceConfig. Configuration settings governing the behavior of the component.
+//   - toolManager: tool.ManagerInterface. A manager instance responsible for coordinating operations.
+//   - promptManager: prompt.ManagerInterface. A manager instance responsible for coordinating operations.
+//   - resourceManager: resource.ManagerInterface. The response object for the executed operation.
+//   - isReload: bool. Represents the isReload for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -349,13 +354,13 @@ type httpClientImpl struct {
 // Summary: Executes Do operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - req: *http.Request. The request payload containing operation parameters.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

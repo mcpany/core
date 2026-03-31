@@ -51,13 +51,14 @@ var (
 // Summary: Executes Register operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name: string. The designated name identifying the specific entity.
+//   - factory: Factory. Represents the factory for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -76,13 +77,14 @@ func Register(name string, factory Factory) {
 // Summary: Executes RegisterMCP operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name: string. The designated name identifying the specific entity.
+//   - factory: MCPFactory. Represents the factory for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -103,13 +105,13 @@ func RegisterMCP(name string, factory MCPFactory) {
 // Summary: Retrieves GetHTTPMiddlewares operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - configs: []*configv1.Middleware. Configuration settings governing the behavior of the component.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - http.Handler: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -147,13 +149,13 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 // Summary: Retrieves GetMCPMiddlewares operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - configs: []*configv1.Middleware. Configuration settings governing the behavior of the component.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - mcp.MethodHandler: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -217,13 +219,23 @@ type StandardMiddlewares struct {
 // Summary: Executes InitStandardMiddlewares operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - authManager: *auth.Manager. A manager instance responsible for coordinating operations.
+//   - toolManager: tool.ManagerInterface. A manager instance responsible for coordinating operations.
+//   - auditConfig: *configv1.AuditConfig. Configuration settings governing the behavior of the component.
+//   - cachingMiddleware: *CachingMiddleware. A unique identifier used for tracking and lookup.
+//   - globalRateLimitConfig: *configv1.RateLimitConfig. Configuration settings governing the behavior of the component.
+//   - dlpConfig: *configv1.DLPConfig. Configuration settings governing the behavior of the component.
+//   - contextOptimizerConfig: *configv1.ContextOptimizerConfig. Configuration settings governing the behavior of the component.
+//   - debuggerConfig: *configv1.DebuggerConfig. Configuration settings governing the behavior of the component.
+//   - smartRecoveryConfig: *configv1.SmartRecoveryConfig. Configuration settings governing the behavior of the component.
+//   - cfiaConfig: *CFIAConfig. Configuration settings governing the behavior of the component.
+//   - discoverySandboxConfig: *DiscoverySandboxConfig. Configuration settings governing the behavior of the component.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

@@ -34,13 +34,13 @@ var (
 // Summary: Updates SetLevel operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - level: slog.Level. Represents the level for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -65,13 +65,13 @@ func SetLevel(level slog.Level) {
 // Summary: Executes ForTestsOnlyResetLogger operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -102,13 +102,16 @@ func ForTestsOnlyResetLogger() {
 // Summary: Executes Init operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - level: slog.Level. Represents the level for the operation.
+//   - output: io.Writer. Represents the output for the operation.
+//   - logFilePath: string. The filesystem path.
+//   - format: ...string. Represents the format for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -192,13 +195,13 @@ func Init(level slog.Level, output io.Writer, logFilePath string, format ...stri
 // Summary: Retrieves GetLogger operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *slog.Logger: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -235,13 +238,13 @@ func GetLogger() *slog.Logger {
 // Summary: Executes ToSlogLevel operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - level: configv1.GlobalSettings_LogLevel. Represents the level for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - slog.Level: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

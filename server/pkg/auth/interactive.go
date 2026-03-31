@@ -40,13 +40,17 @@ import (
 // Summary: Executes InitiateOAuth operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - userID: unknown. A unique identifier used for tracking and lookup.
+//   - serviceID: unknown. A unique identifier used for tracking and lookup.
+//   - credentialID: unknown. A unique identifier used for tracking and lookup.
+//   - redirectURL: string. The Uniform Resource Locator to connect to.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -170,13 +174,18 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 // Summary: Executes HandleOAuthCallback operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - userID: unknown. A unique identifier used for tracking and lookup.
+//   - serviceID: unknown. A unique identifier used for tracking and lookup.
+//   - credentialID: unknown. A unique identifier used for tracking and lookup.
+//   - code: unknown. Represents the code for the operation.
+//   - redirectURL: string. The Uniform Resource Locator to connect to.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - error: An error object detailing any execution failure, or nil on success.
 //
 // Side Effects:
 //   - None.

@@ -42,13 +42,13 @@ type poolWithChecker[T pool.ClosableClient] struct {
 // Summary: Executes Close operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - error: An error object detailing any execution failure, or nil on success.
 //
 // Side Effects:
 //   - None.
@@ -88,13 +88,17 @@ func (p *poolWithChecker[T]) Close() error {
 // Summary: Initializes NewGrpcPool operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - minSize: unknown. Represents the minSize for the operation.
+//   - maxSize: int. Represents the maxSize for the operation.
+//   - idleTimeout: time.Duration. A unique identifier used for tracking and lookup.
+//   - dialer: func(context.Context. Represents the dialer for the operation.
+//   - string: unknown. Represents the string for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

@@ -32,13 +32,13 @@ import (
 // Summary: Executes AuthMiddleware operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - authManager: *auth.Manager. A manager instance responsible for coordinating operations.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - mcp.Middleware: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

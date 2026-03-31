@@ -89,13 +89,14 @@ type OpenAIClient struct {
 // Summary: Initializes NewOpenAIClient operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - apiKey: string. A key used to identify the entity.
+//   - baseURL: string. The Uniform Resource Locator to connect to.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *OpenAIClient: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -145,13 +146,14 @@ type openAIChatResponse struct {
 // Summary: Executes ChatCompletion operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - req: ChatRequest. The request payload containing operation parameters.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

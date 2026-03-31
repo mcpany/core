@@ -41,13 +41,14 @@ type AuditHandler struct {
 // Summary: Initializes NewAuditHandler operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - next: slog.Handler. Represents the next for the operation.
+//   - config: *configv1.AuditConfig. Configuration settings governing the behavior of the component.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *AuditHandler: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -113,13 +114,14 @@ func (h *AuditHandler) initializeStore(config *configv1.AuditConfig) {
 // Summary: Executes Enabled operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - level: slog.Level. Represents the level for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - bool: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -145,13 +147,14 @@ func (h *AuditHandler) Enabled(ctx context.Context, level slog.Level) bool {
 // Summary: Executes Handle operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - r: slog.Record. Represents the r for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - error: An error object detailing any execution failure, or nil on success.
 //
 // Side Effects:
 //   - None.
@@ -182,13 +185,13 @@ func (h *AuditHandler) Handle(ctx context.Context, r slog.Record) error {
 // Summary: Executes WithAttrs operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - attrs: []slog.Attr. Represents the attrs for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - slog.Handler: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -217,13 +220,13 @@ func (h *AuditHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 // Summary: Executes WithGroup operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name: string. The designated name identifying the specific entity.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - slog.Handler: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -253,13 +256,14 @@ func (h *AuditHandler) WithGroup(name string) slog.Handler {
 // Summary: Executes Export operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - r: slog.Record. Represents the r for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - error: An error object detailing any execution failure, or nil on success.
 //
 // Side Effects:
 //   - None.

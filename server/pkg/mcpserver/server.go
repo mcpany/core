@@ -81,13 +81,13 @@ type Server struct {
 // Summary: Executes Server operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *mcp.Server: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -129,13 +129,21 @@ func (s *Server) Server() *mcp.Server {
 // Summary: Initializes NewServer operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _: context.Context. Represents the _ for the operation.
+//   - toolManager: tool.ManagerInterface. A manager instance responsible for coordinating operations.
+//   - promptManager: prompt.ManagerInterface. A manager instance responsible for coordinating operations.
+//   - resourceManager: resource.ManagerInterface. The response object for the executed operation.
+//   - authManager: *auth.Manager. A manager instance responsible for coordinating operations.
+//   - serviceRegistry: *serviceregistry.ServiceRegistry. The target service identifier.
+//   - catalogManager: *catalog.Manager. A manager instance responsible for coordinating operations.
+//   - bus: *bus.Provider. Represents the bus for the operation.
+//   - debug: bool. Represents the debug for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -450,13 +458,14 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 // Summary: Executes ListPrompts operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _: context.Context. Represents the _ for the operation.
+//   - _: *mcp.ListPromptsRequest. Represents the _ for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -494,13 +503,14 @@ func (s *Server) ListPrompts(
 // Summary: Initializes CreateMessage operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - params: *mcp.CreateMessageParams. Represents the params for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -534,13 +544,14 @@ func (s *Server) CreateMessage(ctx context.Context, params *mcp.CreateMessagePar
 // Summary: Retrieves GetPrompt operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - req: *mcp.GetPromptRequest. The request payload containing operation parameters.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -590,13 +601,14 @@ func (s *Server) GetPrompt(
 // Summary: Executes ListResources operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _: context.Context. Represents the _ for the operation.
+//   - _: *mcp.ListResourcesRequest. Represents the _ for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -637,13 +649,14 @@ func (s *Server) ListResources(
 // Summary: Retrieves ReadResource operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - req: *mcp.ReadResourceRequest. The request payload containing operation parameters.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -682,13 +695,13 @@ func (s *Server) ReadResource(
 // Summary: Executes AuthManager operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *auth.Manager: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -710,13 +723,13 @@ func (s *Server) AuthManager() *auth.Manager {
 // Summary: Executes ToolManager operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - tool.ManagerInterface: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -738,13 +751,13 @@ func (s *Server) ToolManager() tool.ManagerInterface {
 // Summary: Executes PromptManager operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - prompt.ManagerInterface: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -766,13 +779,13 @@ func (s *Server) PromptManager() prompt.ManagerInterface {
 // Summary: Executes ResourceManager operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - resource.ManagerInterface: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -793,13 +806,13 @@ func (s *Server) ResourceManager() resource.ManagerInterface {
 // Summary: Executes ServiceRegistry operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *serviceregistry.ServiceRegistry: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -819,13 +832,14 @@ func (s *Server) ServiceRegistry() *serviceregistry.ServiceRegistry {
 // Summary: Executes AddServiceInfo operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - serviceID: string. A unique identifier used for tracking and lookup.
+//   - info: *tool.ServiceInfo. Represents the info for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -848,13 +862,13 @@ func (s *Server) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 // Summary: Retrieves GetTool operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - toolName: string. The designated name identifying the specific entity.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -874,13 +888,13 @@ func (s *Server) GetTool(toolName string) (tool.Tool, bool) {
 // Summary: Executes ListTools operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - []tool.Tool: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -911,13 +925,14 @@ func (s *Server) ListTools() []tool.Tool {
 // Summary: Executes CallTool operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - req: *tool.ExecutionRequest. The request payload containing operation parameters.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -1069,13 +1084,13 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 // Summary: Updates SetMCPServer operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - mcpServer: tool.MCPServerProvider. Represents the mcpServer for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -1097,13 +1112,13 @@ func (s *Server) SetMCPServer(mcpServer tool.MCPServerProvider) {
 // Summary: Executes AddTool operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - t: tool.Tool. Represents the t for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - error: An error object detailing any execution failure, or nil on success.
 //
 // Side Effects:
 //   - None.
@@ -1126,13 +1141,13 @@ func (s *Server) AddTool(t tool.Tool) error {
 // Summary: Retrieves GetServiceInfo operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - serviceID: string. A unique identifier used for tracking and lookup.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -1155,13 +1170,13 @@ func (s *Server) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 // Summary: Executes ClearToolsForService operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - serviceKey: string. A key used to identify the entity.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -1180,13 +1195,13 @@ func (s *Server) ClearToolsForService(serviceKey string) {
 // Summary: Updates SetReloadFunc operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - f: func(context.Context. Represents the f for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -1208,13 +1223,13 @@ func (s *Server) SetReloadFunc(f func(context.Context) error) {
 // Summary: Executes Reload operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - error: An error object detailing any execution failure, or nil on success.
 //
 // Side Effects:
 //   - None.
@@ -1348,13 +1363,13 @@ type LazyRedact []byte
 // Summary: Executes LogValue operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - slog.Value: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -1388,13 +1403,13 @@ type LazyLogResult struct {
 // Summary: Executes LogValue operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - slog.Value: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

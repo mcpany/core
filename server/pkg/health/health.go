@@ -56,13 +56,13 @@ var (
 // Summary: Updates SetGlobalAlertConfig operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - cfg: *configv1.AlertConfig. Configuration structure providing operational parameters.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -105,13 +105,13 @@ type HTTPServiceWithHealthCheck interface {
 // Summary: Initializes NewChecker operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - uc: *configv1.UpstreamServiceConfig. Represents the uc for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - health.Checker: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

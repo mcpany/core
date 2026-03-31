@@ -35,13 +35,13 @@ var jsonSizeVisitedPool = sync.Pool{
 // Summary: Executes EstimateJSONSize operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - v: interface{}. Represents the v for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - int: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

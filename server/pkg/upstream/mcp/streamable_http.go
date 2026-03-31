@@ -118,13 +118,16 @@ type ClientSession interface {
 // Summary: Updates SetNewClientImplForTesting operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - f: func(client *mcp.Client. Represents the f for the operation.
+//   - stdioConfig: *configv1.McpStdioConnection. Configuration settings governing the behavior of the component.
+//   - httpAddress: string. The response object for the executed operation.
+//   - httpClient: *http.Client. A client connection used to interface with external services.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -147,13 +150,13 @@ func SetNewClientImplForTesting(f func(client *mcp.Client, stdioConfig *configv1
 // Summary: Updates SetNewClientForTesting operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - f: func(impl *mcp.Implementation. Represents the f for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -180,13 +183,16 @@ func SetNewClientForTesting(f func(impl *mcp.Implementation) *mcp.Client) {
 // Summary: Updates SetConnectForTesting operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - f: func(client *mcp.Client. Represents the f for the operation.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - transport: mcp.Transport. Represents the transport for the operation.
+//   - roots: []mcp.Root. Represents the roots for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -228,13 +234,13 @@ type Upstream struct {
 // Summary: Executes CheckHealth operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - error: An error object detailing any execution failure, or nil on success.
 //
 // Side Effects:
 //   - None.
@@ -271,13 +277,13 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 // Summary: Executes Shutdown operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _: context.Context. Represents the _ for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - error: An error object detailing any execution failure, or nil on success.
 //
 // Side Effects:
 //   - None.
@@ -320,13 +326,13 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // Summary: Initializes NewUpstream operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - globalSettings: *configv1.GlobalSettings. Represents the globalSettings for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - upstream.Upstream: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -357,13 +363,13 @@ type mcpPrompt struct {
 // Summary: Executes Prompt operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *mcp.Prompt: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -382,13 +388,13 @@ func (p *mcpPrompt) Prompt() *mcp.Prompt {
 // Summary: Executes Service operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - string: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -413,13 +419,13 @@ func (p *mcpPrompt) Service() string {
 // Summary: Executes Definition operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *configv1.PromptDefinition: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -479,13 +485,14 @@ func (p *mcpPrompt) Definition() *configv1.PromptDefinition {
 // Summary: Retrieves Get operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - args: json.RawMessage. Represents the args for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -538,13 +545,13 @@ type mcpResource struct {
 // Summary: Executes Resource operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *mcp.Resource: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -563,13 +570,13 @@ func (r *mcpResource) Resource() *mcp.Resource {
 // Summary: Executes Service operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - string: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -596,13 +603,13 @@ func (r *mcpResource) Service() string {
 // Summary: Retrieves Read operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -636,13 +643,13 @@ func (r *mcpResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error)
 // Summary: Executes Subscribe operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _: context.Context. Represents the _ for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - error: An error object detailing any execution failure, or nil on success.
 //
 // Side Effects:
 //   - None.
@@ -675,13 +682,18 @@ func (r *mcpResource) Subscribe(_ context.Context) error {
 // Summary: Executes Register operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - serviceConfig: *configv1.UpstreamServiceConfig. Configuration settings governing the behavior of the component.
+//   - toolManager: tool.ManagerInterface. A manager instance responsible for coordinating operations.
+//   - promptManager: prompt.ManagerInterface. A manager instance responsible for coordinating operations.
+//   - resourceManager: resource.ManagerInterface. The response object for the executed operation.
+//   - isReload: bool. Represents the isReload for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -864,13 +876,14 @@ func (c *mcpConnection) withMCPClientSession(ctx context.Context, f func(cs Clie
 // Summary: Executes CallTool operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - params: *mcp.CallToolParams. Represents the params for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -1540,13 +1553,13 @@ type authenticatedRoundTripper struct {
 // Summary: Executes RoundTrip operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - req: *http.Request. The request payload containing operation parameters.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -1591,13 +1604,13 @@ type StreamableHTTP struct {
 // Summary: Executes RoundTrip operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - req: *http.Request. The request payload containing operation parameters.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

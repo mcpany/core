@@ -55,13 +55,13 @@ type Manager struct {
 // Summary: Initializes NewManager operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - rootDir: string. Represents the rootDir for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -92,13 +92,13 @@ func NewManager(rootDir string) (*Manager, error) {
 // Summary: Executes ListSkills operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -160,13 +160,13 @@ func (m *Manager) ListSkills() ([]*Skill, error) {
 // Summary: Retrieves GetSkill operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name: string. The designated name identifying the specific entity.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -193,13 +193,13 @@ func (m *Manager) GetSkill(name string) (*Skill, error) {
 // Summary: Initializes CreateSkill operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - skill: *Skill. Represents the skill for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - error: An error object detailing any execution failure, or nil on success.
 //
 // Side Effects:
 //   - None.
@@ -249,13 +249,14 @@ func (m *Manager) CreateSkill(skill *Skill) error {
 // Summary: Executes UpdateSkill operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - originalName: string. The designated name identifying the specific entity.
+//   - skill: *Skill. Represents the skill for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - error: An error object detailing any execution failure, or nil on success.
 //
 // Side Effects:
 //   - None.
@@ -307,13 +308,13 @@ func (m *Manager) UpdateSkill(originalName string, skill *Skill) error {
 // Summary: Executes DeleteSkill operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name: string. The designated name identifying the specific entity.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - error: An error object detailing any execution failure, or nil on success.
 //
 // Side Effects:
 //   - None.
@@ -352,13 +353,15 @@ func (m *Manager) DeleteSkill(name string) error {
 // Summary: Executes SaveAsset operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - skillName: string. The designated name identifying the specific entity.
+//   - relPath: string. The filesystem path.
+//   - content: []byte. Represents the content for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - error: An error object detailing any execution failure, or nil on success.
 //
 // Side Effects:
 //   - None.

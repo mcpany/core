@@ -44,13 +44,13 @@ type PineconeClient struct {
 // Summary: Initializes NewPineconeClient operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - config: *configv1.PineconeVectorDB. Configuration settings governing the behavior of the component.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -152,13 +152,17 @@ func (c *PineconeClient) doRequest(ctx context.Context, method, path string, bod
 // Summary: Executes Query operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - vector: []float32. Represents the vector for the operation.
+//   - topK: int64. Represents the topK for the operation.
+//   - filter: map[string]interface{}. Represents the filter for the operation.
+//   - namespace: string. The designated name identifying the specific entity.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -195,13 +199,15 @@ func (c *PineconeClient) Query(ctx context.Context, vector []float32, topK int64
 // Summary: Executes Upsert operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - vectors: []map[string]interface{}. Represents the vectors for the operation.
+//   - namespace: string. The designated name identifying the specific entity.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -233,13 +239,16 @@ func (c *PineconeClient) Upsert(ctx context.Context, vectors []map[string]interf
 // Summary: Executes Delete operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - ids: []string. A unique identifier used for tracking and lookup.
+//   - namespace: string. The designated name identifying the specific entity.
+//   - filter: map[string]interface{}. Represents the filter for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -277,13 +286,14 @@ func (c *PineconeClient) Delete(ctx context.Context, ids []string, namespace str
 // Summary: Executes DescribeIndexStats operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
+//   - filter: map[string]interface{}. Represents the filter for the operation.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

@@ -39,13 +39,14 @@ type UpstreamWorker struct {
 // Summary: Initializes NewUpstreamWorker operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - bus: *bus.Provider. Represents the bus for the operation.
+//   - toolManager: tool.ManagerInterface. A manager instance responsible for coordinating operations.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *UpstreamWorker: The resulting output from the operation.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -66,13 +67,13 @@ func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *Up
 // Summary: Executes Start operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx: context.Context. The execution context for managing deadlines and cancellation signals.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -144,13 +145,13 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 // Summary: Executes Stop operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
