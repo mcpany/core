@@ -61,6 +61,29 @@ const getTableData = (data: unknown, smartTable: boolean) => {
             return content;
         }
     }
+
+    if (content && typeof content === 'object' && !Array.isArray(content) && content !== null) {
+        let largestArray: any[] | null = null;
+        Object.values(content).forEach(val => {
+            if (Array.isArray(val) && val.length > 0 && val.every(item => typeof item === 'object' && item !== null && !Array.isArray(item))) {
+                if (!largestArray || val.length > largestArray.length) {
+                    largestArray = val;
+                }
+            } else if (val && typeof val === 'object' && !Array.isArray(val) && val !== null) {
+                Object.values(val).forEach(nestedVal => {
+                    if (Array.isArray(nestedVal) && nestedVal.length > 0 && nestedVal.every(item => typeof item === 'object' && item !== null && !Array.isArray(item))) {
+                        if (!largestArray || nestedVal.length > largestArray.length) {
+                            largestArray = nestedVal;
+                        }
+                    }
+                });
+            }
+        });
+        if (largestArray) {
+            return largestArray;
+        }
+    }
+
     return null;
 };
 
