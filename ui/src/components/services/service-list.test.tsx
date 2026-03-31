@@ -4,6 +4,7 @@
  */
 
 import { render, screen, fireEvent } from "../../tests/test-utils";
+import { vi } from "vitest";
 import { ServiceList } from "./service-list";
 import { UpstreamServiceConfig } from "@/lib/client";
 import { ServiceHealthProvider } from "@/contexts/service-health-context";
@@ -108,5 +109,39 @@ describe("ServiceList", () => {
     expect(screen.queryByText("Service 1")).not.toBeInTheDocument();
     expect(screen.queryByText("Service 2")).not.toBeInTheDocument();
     expect(screen.getByText("No services match the tag filter.")).toBeInTheDocument();
+  });
+
+  it("toggles view mode between table and grid", () => {
+    // Override localStorage for this test
+    Storage.prototype.getItem = vi.fn(() => null);
+    Storage.prototype.setItem = vi.fn();
+
+    const { container } = renderWithProvider(<ServiceList services={mockServices} />);
+
+    // Initially should render Table mode (which uses <table> elements)
+    expect(container.querySelector('table')).toBeInTheDocument();
+
+    // Find the toggle buttons (LayoutGrid and List icons inside buttons)
+    // The grid toggle button has a specific class or icon
+    const buttons = screen.getAllByRole('button');
+    // Assuming the second button in the header is the Grid view toggle
+    // It's the one after the List button in the new MR
+    // We can find by looking for the button that sets view mode to grid
+    // Easiest is to simulate clicking the grid button
+    const gridButton = buttons.find(b => b.innerHTML.includes('lucide-layout-grid'));
+
+    if (gridButton) {
+        fireEvent.click(gridButton);
+    }
+
+    // After clicking grid, table should disappear
+    expect(container.querySelector('table')).not.toBeInTheDocument();
+
+    // We should still see the services
+    expect(screen.getByText("Service 1")).toBeInTheDocument();
+    expect(screen.getByText("Service 2")).toBeInTheDocument();
+
+    // Local storage should be updated
+    expect(localStorage.setItem).toHaveBeenCalledWith('service_list_view_mode', 'grid');
   });
 });
