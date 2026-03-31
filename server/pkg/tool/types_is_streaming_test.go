@@ -13,14 +13,14 @@ func TestLocalCommandTool_IsStreamingReal(t *testing.T) {
 	t.Parallel()
 	toolProto := &v1.Tool{}
 	tool := NewLocalCommandTool(toolProto, nil, nil, nil, "")
-	assert.False(t, tool.IsStreaming())
+	assert.True(t, tool.IsStreaming())
 }
 
 func TestCommandTool_IsStreamingReal(t *testing.T) {
 	t.Parallel()
 	toolProto := &v1.Tool{}
 	tool := NewCommandTool(toolProto, nil, nil, nil, "")
-	assert.False(t, tool.IsStreaming())
+	assert.True(t, tool.IsStreaming())
 }
 
 func TestHTTPTool_IsStreamingReal(t *testing.T) {

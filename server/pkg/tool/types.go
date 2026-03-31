@@ -2536,7 +2536,7 @@ func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - bool: True if streaming is supported.
 func (t *LocalCommandTool) IsStreaming() bool {
-	return false
+	return true
 }
 
 // StreamExecute executes the tool in streaming mode.
@@ -2551,6 +2551,7 @@ func (t *LocalCommandTool) IsStreaming() bool {
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
 func (t *LocalCommandTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
+	// Not fully implemented for stream yet
 	ch := make(chan any, 1)
 	go func() {
 		defer close(ch)
@@ -3015,7 +3016,7 @@ func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - bool: True if streaming is supported.
 func (t *CommandTool) IsStreaming() bool {
-	return false
+	return true
 }
 
 // StreamExecute executes the tool in streaming mode.

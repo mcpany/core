@@ -501,6 +501,8 @@ func (a *Application) Run(opts RunOptions) error {
 	a.ToolManager.AddMiddleware(middleware.NewToolMetricsMiddleware(tokenizer.NewSimpleTokenizer()))
 	// Add Resilience Middleware
 	a.ToolManager.AddMiddleware(middleware.NewResilienceMiddleware(a.ToolManager))
+	// Add Error Mapping Middleware
+	a.ToolManager.AddMiddleware(middleware.NewErrorMappingMiddleware())
 
 	a.PromptManager = prompt.NewManager()
 	a.TemplateManager = NewTemplateManager("data") // Use "data" directory for now
