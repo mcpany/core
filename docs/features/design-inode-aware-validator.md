@@ -54,3 +54,10 @@ Recent vulnerabilities in agentic IDEs (e.g., Claude Code CVE-2026-34812) have d
 * Implementing **Mandatory Inode Pinning** for all configuration-as-code files.
 * Once a configuration block (e.g., `.mcpany/hooks.json`) is validated, the gateway locks the file handle to the hardware Inode for the duration of the agent session.
 **Security Impact:** Renders symlink-swapping attacks ineffective, as the gateway will refuse to read from a new Inode even if the path remains the same.
+
+### Update: 2026-03-31 - Neutralizing Deep Symlink Escapes (CVE-2026-34812)
+**Context:** Today's research revealed a critical vulnerability in project-local discovery where recursive symlinks can bypass sandbox boundaries.
+**Architecture Adjustment:**
+* Mandating Inode-aware validation for all `.claude/settings.json` and equivalent configuration paths.
+* Integrating "Normalization-as-a-Service" (NaaS) to perform hardware-bound recursive resolution before file access.
+**Security Impact:** Eliminates the "Deep Symlink" RCE/Exfiltration vector by verifying the hardware identity of the target file.

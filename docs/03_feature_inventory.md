@@ -1789,6 +1789,15 @@
 - **Zero-Trust Local Handshake Provider**: (P0) Security middleware mandating origin-bound, hardware-attested handshakes for all local WebSocket and API interactions to neutralize CVE-2026-25253.
 - **Behavioral Skill Profiler**: (P0) Mandatory forensic service for real-time sandboxed profiling of dynamic skills to detect "ClawHub" style marketplace poisoning.
 
+## Evolution: [2026-03-31] Updates
+
+### Proposed Additions
+- **UACO v2.2 Intent Barrier Middleware**: (P0) Synchronization engine for parallel sub-intents to prevent race conditions in the Blackboard.
+- **Inode-Aware Symlink Validator**: (P0) Security middleware that performs recursive symlink resolution and inode validation for all project-local configurations.
+- **Parallel Intent Branch Manager**: (P0) Implements "Snapshot-and-Merge" logic for parallel agent branches, ensuring deterministic state reconciliation.
+- **Federated Discovery Quorum (FDQ) Node**: (P1) Peer-to-peer discovery service that requires multi-node attestation for new tool beacons.
+
 ### Priority Shifts
+- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Expanded to support "Branch-Aware State Isolation" and "Merge Conflict Resolution."
 - **Hardware-Attested Cost Attribution (HACA)**: (Re-affirmed P0) Elevated to mandatory status for all mesh-bound tool calls to ensure economic accountability across mission-root lineages.
 - **Dynamic Mesh Resilience (DMR) Hub**: (Re-affirmed P0) Designated as the primary coordination service for migrating mission-critical state during Agent Team coordination stalls.

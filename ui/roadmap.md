@@ -201,6 +201,8 @@
 - [ ] **[P0] Local Trust Verification Dashboard**: (2026-04-05) UI for reviewing and signing local MCP server identity claims.
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
+- [ ] **[P0] Inode Integrity Monitor**: (2026-03-31) Real-time visualization of pinned hardware Inodes and blocked racing attempts.
+- [ ] **[P0] Branch Merge Conflict Resolver**: (2026-03-31) Interactive UI for manual resolution of parallel intent state collisions.
 
 #### Upcoming (2026-07-08 Evolution)
 - [ ] **[P0] Mesh Identity Manager**: (2026-07-08) UI for reviewing and approving hardware-attested, mesh-resident agent identities.
