@@ -966,3 +966,8 @@ These features represent the next logical steps for the product, focusing on Ent
 #### Upcoming (2026-07-12 Evolution)
 *   **[P0] Hardware-Attested Cost Attribution (HACA)**: Advanced economic security service that cryptographically attributes token usage to specific sub-process lineage. (Added: 2026-07-12)
 *   **[P0] DMR Speculative Shard Pulling**: Performance upgrade for Dynamic Mesh Resilience hub to neutralize coordination stalls in high-density teams. (Added: 2026-07-12)
+
+#### Upcoming (2026-07-14 Evolution)
+*   **[P0] Active Subagent Reaper**: authoritative "Swarm Execution Monitor" to forcefully terminate orphaned specialist agents and purge "Intent Residue." (Added: 2026-07-14)
+*   **[P0] Monotonic Handshake Lineage (MHL)**: implementation of unique, sequential tokens for inter-agent messages to neutralize "Mailbox Echo Poisoning." (Added: 2026-07-14)
+*   **[P0] Optimistic Quorum Hardening (OQH)**: mandatory post-speculative hardware attestation for discovery quorums to prevent "Speculative Bypass" exploits. (Added: 2026-07-14)

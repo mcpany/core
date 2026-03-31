@@ -1434,3 +1434,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Temporal Shard Isolation (TSI)**: To counter timing side-channels in shared reasoning regions, we are introducing TSI. This layer will inject hardware-attested monotonic jitter into all memory-broker responses and enforce temporal access windows, preventing subagents from mapping parent attention priority.
 - **Active Intent Alignment (AIA) Broker**: Supporting the stability of horizontal meshes, MCP Any will act as the authoritative host for "Alignment Heartbeats." We will implement the AIA Broker, periodically verifying that specialist reasoning remains semantically aligned with the hardware-attested mission root to prevent consensus drift.
 - **Zero-Copy Memory Enclave (ZCME) Hardening**: We are upgrading the ZCMB to utilize TSI-hardened memory enclaves. This ensures that sub-millisecond state sharing remains secure against side-channel probes while maintaining the performance required for high-density Agent Teams.
+
+---
+
+## Strategic Evolution: [2026-07-14]
+### Focus: Speculative Integrity & Orphaned Resource Reclamation
+**Context**: The emergence of "Speculative Attestation Hijacking" in high-speed loading flows and the persistence of "Ghost Subagents" (Intent Residue) confirm that **Speed** must be matched by **Deterministic Lifecycle Governance**. Simultaneously, the discovery of "Mailbox Echo Poisoning" prove that coordination fragments must move from session-bound to **Lineage-Bound** with mandatory monotonic anchoring.
+**Strategic Pivot**:
+- **Active Subagent Reaper**: MCP Any will evolve to act as the authoritative "Swarm Execution Monitor." We will implement an Active Subagent Reaper that forcefully terminates orphaned specialist agents upon parent mission completion, ensuring that "Intent Residue" cannot pollute the shared Blackboard or exhaust token budgets.
+- **Recursive Resource Reclamation (RRR)**: Supporting the economic stability of enterprise swarms, we are mandating RRR. All hardware-attested token and reasoning budgets will be recursively reclaimed from dormant sub-missions in real-time, neutralizing "Resource Squatting" by specialist agents.
+- **Monotonic Handshake Lineage (MHL)**: To neutralize coordination replay attacks (Echo Poisoning), we are introducing MHL. Every inter-agent coordination fragment must be cryptographically bound to a unique, monotonic lineage token, ensuring that stale mailbox messages cannot be replayed to coerce teammates.
+- **Optimistic Quorum Hardening**: We are evolving the ZKDB to support mandatory post-speculative validation. Probabilistic buffers will remain cryptographically locked and un-persistable until a hardware-attested quorum verifies the pre-flight safety signals, neutralizing "Speculative Bypass" exploits.

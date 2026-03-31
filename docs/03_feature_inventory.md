@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-14] Updates
+
+### Proposed Additions
+- **Active Subagent Reaper**: (P0) Lifecycle monitoring service that forcefully terminates orphaned specialist agents upon parent mission completion to prevent "Intent Residue."
+- **Recursive Resource Reclamation (RRR) Manager**: (P0) Authoritative economic security service for real-time reclamation of unused token and reasoning budgets from dormant sub-missions. (Promoted to P0)
+- **Monotonic Handshake Lineage (MHL) Provider**: (P0) Identity service issuing non-reusable, monotonic lineage tokens for coordination fragments to neutralize "Mailbox Echo Poisoning."
+- **Optimistic Quorum Hardening (OQH) Middleware**: (P0) Security extension for the ZKDB mandating post-speculative hardware attestation before buffer commitment.
+
+### Priority Shifts
+- **Recursive Resource Reclamation (RRR) Manager**: (Promoted from P1 to P0) Critical for neutralizing "Resource Squatting" in high-density swarms.
+- **Zero-Knowledge Discovery Broker (ZKDB)**: (Re-affirmed P0) Elevated with mandatory **OQH** integration to counter speculative attestation hijacking.
+
 ## Evolution: [2026-07-13] Updates
 
 ### Proposed Additions
