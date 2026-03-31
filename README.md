@@ -30,9 +30,17 @@ bazelisk run //server/cmd/mcpany -- -config examples/hello_world.yaml
 We enforce the use of `bazelisk` for all common development tasks.
 
 - **Run the tests:**
-  Execute all unit, integration, and E2E tests using Bazelisk (Mandatory):
+  Execute all unit, integration, and E2E tests using Bazelisk (Mandatory) or Make:
   ```bash
   bazelisk test //...
+  # OR
+  make test
+  ```
+
+- **Run lint:**
+  Execute all linters using Make:
+  ```bash
+  make lint
   ```
 
 - **Build the binary:**

@@ -11,9 +11,12 @@ import (
 type LeaseStatus string
 
 const (
-	StatusActive  LeaseStatus = "ACTIVE"
+	// StatusActive represents an active and valid lease.
+	StatusActive LeaseStatus = "ACTIVE"
+	// StatusExpired represents a lease that has passed its expiration time.
 	StatusExpired LeaseStatus = "EXPIRED"
-	StatusPruned  LeaseStatus = "PRUNED"
+	// StatusPruned represents a lease that has been manually invalidated or cleaned up.
+	StatusPruned LeaseStatus = "PRUNED"
 )
 
 // Lease represents an intent-bound lease for subagents.
