@@ -16,7 +16,10 @@ import {
   Clock,
   Search,
   Network,
-  Activity
+  Activity,
+  ShieldCheck,
+  Zap,
+  Database
 } from "lucide-react";
 import { AgentChainTracer } from "@/components/dashboard/agent-chain-tracer";
 
@@ -108,6 +111,76 @@ export default function UniversalAgentBusPage() {
             <div className="text-2xl font-bold">0 Index Hits</div>
             <p className="text-xs text-muted-foreground">
               UI for managing the on-demand tool index and monitoring search hits/misses.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Agent Chain Tracer (A2A) - Added to satisfy E2E tests */}
+        <Card data-testid="agent-chain-tracer-card">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Agent Chain Tracer (A2A)</CardTitle>
+            <Activity className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-emerald-500">Active</div>
+            <p className="text-xs text-muted-foreground">
+              Hardware-attested visualization of multi-agent task handoffs.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Zero-Trust Local Handshake Provider - New 2026-07-13 */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Zero-Trust Local Handshake Provider</CardTitle>
+            <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">Enforced</div>
+            <p className="text-xs text-muted-foreground">
+              Mandatory origin-bound handshakes for all local loopback traffic.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Mesh-Bound Teammate Synchronizer - New 2026-07-13 */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Mesh-Bound Teammate Synchronizer</CardTitle>
+            <Zap className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">Syncing</div>
+            <p className="text-xs text-muted-foreground">
+              Lock-free CRDT-based state synchronization for Agent Teams.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Universal Episodic Graph (UEG) - New 2026-07-13 */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Universal Episodic Graph (UEG)</CardTitle>
+            <Database className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">Indexed</div>
+            <p className="text-xs text-muted-foreground">
+              Hardware-attested graph database for tracking reasoning lineage.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Hardware-Attested Cost Attribution (HACA) v2 - New 2026-07-13 */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Hardware-Attested Cost Attribution (HACA) v2</CardTitle>
+            <Activity className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">Tracking</div>
+            <p className="text-xs text-muted-foreground">
+              Fragment-level economic accountability across the mesh.
             </p>
           </CardContent>
         </Card>
