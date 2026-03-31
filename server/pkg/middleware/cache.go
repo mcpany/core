@@ -422,12 +422,11 @@ func (m *CachingMiddleware) getCacheConfig(t tool.Tool) *configv1.CacheConfig {
 
 func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 	var normalizedInputs []byte
-	var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 	// Optimization: Use Arguments map if available to avoid unnecessary unmarshal/marshal cycle.
-	// json.Marshal sorts map keys, so it produces a canonical representation for caching.
+	// We use FastMarshalDeterministic which sorts map keys, producing a canonical representation for caching.
 	if req.Arguments != nil {
-		if marshaled, err := json.Marshal(req.Arguments); err == nil {
+		if marshaled, err := util.FastMarshalDeterministic(req.Arguments); err == nil {
 			normalizedInputs = marshaled
 		}
 	}
@@ -446,9 +445,9 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 
 		if firstChar == '{' || firstChar == '[' {
 			var input any
-			// We use standard json.Unmarshal which sorts map keys when Marshaling back.
-			if err := json.Unmarshal(req.ToolInputs, &input); err == nil {
-				if marshaled, err := json.Marshal(input); err == nil {
+			// We use jsoniter to unmarshal, then deterministic marshal back.
+			if err := jsoniter.Unmarshal(req.ToolInputs, &input); err == nil {
+				if marshaled, err := util.FastMarshalDeterministic(input); err == nil {
 					normalizedInputs = marshaled
 				}
 			}

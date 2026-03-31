@@ -974,7 +974,7 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 	}
 
 	var finalResult *mcp.CallToolResult
-	var text string
+	var textResult string
 	var jsonBytes []byte
 	var marshalErr error
 	var isStructured bool
@@ -1026,17 +1026,17 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		if len(jsonBytes) == 0 && marshalErr == nil {
 			jsonBytes, marshalErr = util.FastMarshal(result)
 			if marshalErr == nil {
-				text = util.BytesToString(jsonBytes)
+				textResult = util.BytesToString(jsonBytes)
 			}
 		}
 
 		if marshalErr != nil {
-			text = util.ToString(result)
+			textResult = util.ToString(result)
 		}
 
 		finalResult = &mcp.CallToolResult{
 			Content: []mcp.Content{
-				&mcp.TextContent{Text: text},
+				&mcp.TextContent{Text: textResult},
 			},
 		}
 	}

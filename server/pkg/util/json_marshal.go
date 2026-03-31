@@ -66,3 +66,17 @@ func FastMarshalToString(v interface{}) (string, error) {
 func FastMarshal(v interface{}) ([]byte, error) {
 	return FastJSON.Marshal(v)
 }
+
+var (
+	// FastDeterministicJSON is a configured instance of jsoniter that is optimized for performance, but with sorted keys for deterministic output.
+	FastDeterministicJSON = jsoniter.Config{
+		EscapeHTML:             true,
+		SortMapKeys:            true,
+		ValidateJsonRawMessage: true,
+	}.Froze()
+)
+
+// FastMarshalDeterministic performs a high-performance JSON marshal into a byte slice, with sorted map keys.
+func FastMarshalDeterministic(v interface{}) ([]byte, error) {
+	return FastDeterministicJSON.Marshal(v)
+}
