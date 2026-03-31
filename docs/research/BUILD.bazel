@@ -1,6 +1,9 @@
 # docs/research/BUILD.bazel
 filegroup(
     name = "docs",
-    srcs = ["interop_blueprint.md"],
+    srcs = [
+        "interop_blueprint.md",
+        "evolution-2026-07-12-streaming.md"
+    ],
     visibility = ["//visibility:public"],
 )

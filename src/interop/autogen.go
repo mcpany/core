@@ -97,7 +97,7 @@ func (a *AutoGenAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResul
 
 	output := fmt.Sprintf("Completed AutoGen subagent task: %s, Checkpoints: %d", task.Intent, len(a.ChatHistory))
 
-	return &TaskResult{
+	res := &TaskResult{
 		TaskID: task.ID,
 		Status: "success",
 		Output: output,
@@ -105,7 +105,18 @@ func (a *AutoGenAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResul
 			"mailbox_integrity": "verified",
 			"history_length":    fmt.Sprintf("%d", len(a.ChatHistory)),
 		},
-	}, nil
+	}
+
+	if task.Payload["stream"] == "true" {
+		res.Stream = make(chan string)
+		go func() {
+			res.Stream <- "subagent start"
+			res.Stream <- "subagent finish"
+			close(res.Stream)
+		}()
+	}
+
+	return res, nil
 }
 
 // SupportsCapability checks if the framework provides a requested capability.
