@@ -1,9 +1,31 @@
 # MCP Any - Universal Agent Infrastructure
 
+## Elevator Pitch
+MCP Any is the definitive, "Gold Standard" Universal Adapter for AI agents. It completely eliminates the need to implement custom Model Context Protocol (MCP) servers for individual API integrations. MCP Any bridges the gap between diverse backend services and AI agents. Instead of writing custom MCP servers for every API you want an AI to access, MCP Any acts as a universal adapter. You provide lightweight YAML/JSON configurations, and MCP Any exposes those capabilities (whether REST, gRPC, GraphQL, or CLI) via the Model Context Protocol. It's secure, transparent, and massively reduces integration boilerplate.
+
 ## Project Identity
 **What is this?** MCP Any is the definitive, "Gold Standard" Universal Adapter for AI agents. It completely eliminates the need to implement custom Model Context Protocol (MCP) servers for individual API integrations.
 
 **Why does it exist?** MCP Any empowers developers to build secure, capability-enabled APIs (REST, gRPC, GraphQL, Command-line) through lightweight YAML/JSON configurations. A single `mcpany` instance serves as your ultimate, universal bridge. Forget writing boilerplate adapters—configure MCP Any and let it handle tool discovery, routing, and safety policies autonomously.
+
+## Getting Started
+Follow these definitive steps to go from `git clone` to `Hello World`.
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/mcpany/core.git
+cd core
+```
+
+### 2. Install Dependencies
+Ensure `bazelisk` is installed and available in your `PATH`. We strictly use Bazel via `bazelisk` for all builds and tests.
+
+### 3. Run the App
+Run the server with the included Hello World example configuration:
+```bash
+bazelisk run //server/cmd/mcpany -- -config examples/hello_world.yaml
+```
+*The server will start and you can connect your MCP-compatible client to the local instance.*
 
 ## Quick Start
 
@@ -25,14 +47,20 @@ bazelisk run //server/cmd/mcpany -- -config examples/hello_world.yaml
 ```
 *The server will start and you can connect your MCP-compatible client to the local instance.*
 
-## Developer Workflow
+## Development
 
 We enforce the use of `bazelisk` for all common development tasks.
 
 - **Run the tests:**
-  Execute all unit, integration, and E2E tests using Bazelisk (Mandatory):
+  Execute all unit, integration, and E2E tests (Mandatory):
   ```bash
-  bazelisk test //...
+  make test
+  ```
+
+- **Run the linter:**
+  Ensure your code matches formatting rules:
+  ```bash
+  make lint
   ```
 
 - **Build the binary:**

@@ -1,0 +1,15 @@
+--- server/pkg/dmr/hub.go
++++ server/pkg/dmr/hub.go
+@@ -23,9 +23,13 @@
+ //
+ // Summary: The authoritative coordinator for mesh resilience and state migration.
+ type Hub interface {
++	// Summary: Registers a node in the DMR Hub.
+	RegisterNode(id string, isAttested bool) error
++	// Summary: Processes a heartbeat signal from a mesh node.
+	Heartbeat(id string) error
++	// Summary: Evaluates node health and triggers migration for failed nodes.
+	CheckHealth(ctx context.Context) []string
++	// Summary: Provides access to the stream of failed node IDs that require migration.
+	MigrationChannel() <-chan string
+ }

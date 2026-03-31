@@ -1,0 +1,13 @@
+--- server/pkg/lifecycle/reaper.go
++++ server/pkg/lifecycle/reaper.go
+@@ -10,9 +10,12 @@
+ type LeaseStatus string
+
+ const (
++	// Summary: Defines the Active state of a lease.
+	StatusActive  LeaseStatus = "ACTIVE"
++	// Summary: Defines the Expired state of a lease.
+	StatusExpired LeaseStatus = "EXPIRED"
++	// Summary: Defines the Pruned state of a lease.
+	StatusPruned  LeaseStatus = "PRUNED"
+ )
