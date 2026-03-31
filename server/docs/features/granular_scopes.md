@@ -4,14 +4,16 @@ Granular Scopes implement a capability-based token system, enabling "Least Privi
 
 ## Configuration
 
-It applies token-based scoping directly to resources.
+It applies token-based scoping directly to roles.
 
 ```yaml
 scopes:
-  default: "read"
-  tokens:
-    - "fs:read:/tmp"
-    - "db:write:users"
+  roles:
+    default:
+      - "read"
+    admin:
+      - "fs:read:/tmp"
+      - "db:write:users"
 ```
 
 ## How it works

@@ -10,8 +10,12 @@ import (
 )
 
 func TestLazyMCPMiddleware(t *testing.T) {
-	config := LazyMCPConfig{Enabled: true, Threshold: 0.85}
+	config := LazyMCPConfig{Enabled: true, Threshold: 0.85, CacheTTL: 600}
 	middleware := NewLazyMCPMiddleware(config)
+
+	if middleware.config.CacheTTL != 600 {
+		t.Errorf("expected CacheTTL to be 600, got %d", middleware.config.CacheTTL)
+	}
 
 	originalResult := &mcp.ListToolsResult{
 		Tools: []*mcp.Tool{

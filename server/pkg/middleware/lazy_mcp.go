@@ -15,6 +15,7 @@ import (
 type LazyMCPConfig struct {
 	Enabled   bool    `json:"enabled"`
 	Threshold float64 `json:"threshold"`
+	CacheTTL  int     `json:"cache_ttl"`
 }
 
 // LazyMCPMiddleware filters tools based on a simplistic similarity logic to prevent context pollution.
