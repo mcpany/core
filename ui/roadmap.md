@@ -782,6 +782,11 @@
 - [ ] **[P0] Ephemeral Hook Monitor**: (2026-07-11) Status widget for monitoring session-locked discovery hooks and their expiration.
 - [ ] **[P1] Resource Reclamation Log**: (2026-07-11) Real-time tracker for RRR-triggered budget reclaims and mission efficiency gains.
 
+#### Upcoming (2026-07-13 Evolution)
+- [ ] **[P0] Multi-Modal Behavioral Dashboard**: (2026-07-13) Real-time visualization of HDBA signatures and mimicry-attack alerts.
+- [ ] **[P0] Temporal Jitter Heatmap**: (2026-07-13) Forensic UI for monitoring TSI-injected jitter and memory-enclave access windows.
+- [ ] **[P0] Intent Alignment Monitor**: (2026-07-13) Visual indicator for AIA heartbeat status and semantic drift alerts across the mesh.
+
 #### Upcoming (2026-07-12 Evolution)
 - [ ] **[P0] Mission Cost Attribution Dashboard**: (2026-07-12) Visual tracker for HACA-bound reasoning costs and mission-root budget consumption.
 - [ ] **[P0] Mesh Resilience Status Hub**: (2026-07-12) Real-time visualization of DMR-mediated state migration and node health status.
