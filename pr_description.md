@@ -1,35 +1,37 @@
-# Truth Reconciliation Audit Report
-
 ## Executive Summary
-A comprehensive 10-file truth reconciliation audit was performed across documentation, roadmap items, and current codebase implementations. The audit confirmed strong alignment across 9 out of 10 surveyed surfaces. One critical discrepancy was identified regarding the "Human-in-the-Loop (HITL) Middleware" and its documented Multi-Factor Attestation (MFA) requirement. This Roadmap Debt has been successfully engineered and verified, ensuring 100% alignment with the sampled product requirements.
+
+The Truth Reconciliation Audit analyzed 10 random and strategic documentation files across the codebase (`server/docs` and `ui/docs`) against the current system implementation (`src/`, `pkg/`, `proto/`) and the product Roadmap.
+
+Of the 10 sampled features, 9 were fully aligned with the codebase and in perfect sync. 1 feature (Single Sign-On / SSO) was described as implemented in the documentation but was missing entirely from the underlying protocol buffers, global settings, and routing layer, representing a clear case of Roadmap Debt.
+
+The missing feature was engineered, tested, and aligned with standard Go and generic framework methodologies.
 
 ## Verification Matrix
 
 | Document Name | Status | Action Taken | Evidence |
-| :--- | :--- | :--- | :--- |
-| `ui/docs/features/logs.md` | Aligned | Verified UI Implementation | Live logs stream features exist in `ui/src/components/logs/log-viewer.tsx`. |
-| `ui/docs/features/structured_log_viewer.md` | Aligned | Verified UI Implementation | Auto-detection and expansion of JSON logs via `JsonViewer` in `log-viewer.tsx`. |
-| `ui/docs/features/log-search-highlighting.md` | Aligned | Verified UI Implementation | `HighlightText` component in `log-viewer.tsx` applies proper CSS classes to matched text. |
-| `ui/docs/features/test_connection.md` | Aligned | Verified UI Implementation | Doctor 2.0 diagnostic flow present in `ui/src/components/diagnostics/connection-diagnostic.tsx`. |
-| `server/docs/features/kafka.md` | Aligned | Verified Server Implementation | Kafka message bus supported via `server/pkg/bus/kafka`. |
-| `server/docs/features/sso.md` | Aligned | Verified Server Implementation | SSO proxy logic implemented via `server/pkg/middleware/sso.go`. |
-| `server/docs/features/admin_api.md` | Aligned | Verified Server Implementation | Admin endpoints exposed via `server/pkg/admin/server.go`. |
-| `server/docs/features/audit_logging.md` | Aligned | Verified Server Implementation | Splunk, Datadog, Webhook, File persistence in `server/pkg/audit/`. |
-| `server/docs/features/hitl.md` | Aligned | Verified Server Implementation | HITL suspension logic handles `RequireMFA` flag via `server/pkg/middleware/hitl.go`. |
-| `ui/docs/features/hitl.md` | **Diverged** | Engineered Missing Implementation | Added MFA Dialog flow into `ui/src/components/hitl/hitl-dashboard.tsx`. |
+| --- | --- | --- | --- |
+| `server/docs/features/webhooks/README.md` | In Sync | None | `proto/config/v1/upstream_service.proto`, `server/pkg/app/api_webhooks.go` correctly map to doc definitions. |
+| `server/docs/features/rate-limiting/README.md` | In Sync | None | Code `server/pkg/middleware/ratelimit.go` supports `requests_per_second`, `burst`, `STORAGE_REDIS`, `COST_METRIC_TOKENS`. |
+| `server/docs/features/caching/README.md` | In Sync | None | Found `SemanticCacheConfig` and caching strategies correctly defined in `call.proto` and `cache.go`. |
+| `server/docs/features/dynamic_registration.md` | In Sync | None | `server/pkg/worker/registration_worker.go` handles OpenAPI and gRPC parsing. |
+| `server/docs/reference/configuration.md` | In Sync | None | Configuration schema correctly documented based on `McpAnyServerConfig`. |
+| `ui/docs/features/services.md` | In Sync | None | Services UI table component corresponds perfectly to properties. |
+| `server/docs/features/audit_logging.md` | In Sync | None | `STORAGE_TYPE_SPLUNK` and `STORAGE_TYPE_DATADOG` properly defined in backend code. |
+| `server/docs/features/security.md` | In Sync | None | DLP and IP Allowlisting (`allowed_ips`) supported in codebase. |
+| `ui/docs/features/policy_management.md` | In Sync | None | Granular export rules (`ToolExportPolicy`, `PromptExportPolicy`, `ResourceExportPolicy`) exist in Protobuf and React components (`PolicyEditor`). |
+| `server/docs/features/sso.md` | **Diverged** | Engineered Solution | Discovered missing `SSOConfig` backend integration. See Remediation Log. |
 
 ## Remediation Log
-**Case B: Roadmap Debt (Code is Missing)**
-The documentation `ui/docs/features/hitl.md` clearly states: *"If MFA is configured, the system will prompt for additional authentication before releasing the action."*
 
-However, the `HitlDashboard` React component (`ui/src/components/hitl/hitl-dashboard.tsx`) lacked any logic to render an MFA prompt, effectively discarding the backend's `RequireMFA` flag.
+**SSO Integration (Roadmap Debt)**
+The documentation (`server/docs/features/sso.md`) described configuring SSO through a `sso:` block defining `enabled` and `idp_url` values, and relying on the `X-MCP-Identity` and `Authorization: Bearer` headers.
+The codebase completely lacked this schema and validation logic.
 
-**Engineering Fix:**
-- Updated the `HitlDashboard` React component to evaluate the `requireMfa` flag from incoming approval requests.
-- Engineered an `MFA Dialog` modal that intercepts the "Approve" action, requiring the administrator to enter an MFA code.
-- Restructured the component to fetch real pending HITL requests from the backend instead of using mock state arrays, satisfying the "seed the database" constraint.
-- Implemented `/api/v1/hitl/approvals` GET/POST endpoints in the backend to manage real-time HITL state.
-- Updated `ui/src/components/hitl/hitl-dashboard.test.tsx` to assert the new MFA flow logic according to TDD principles. `make test` passes successfully.
+To resolve this divergence, the following actions were taken:
+1. **Schema Update:** Appended `SSOConfig` mapping to `proto/config/v1/config.proto` within `GlobalSettings` using the correct Protocol Buffer assignments.
+2. **Middleware Engineering:** Developed standard HTTP Middleware in `server/pkg/middleware/sso.go` replacing unused Gin logic, explicitly extracting identity headers or reverting unauthenticated sessions back to the configured `login_url`.
+3. **API Routing Integration:** Injected `SSOMiddleware` around `createAPIHandler` in `server/pkg/app/api.go` conditional upon user-defined configuration checks.
+4. **Test Driven Development:** Added complete unit tests inside `server/pkg/middleware/sso_test.go` ensuring valid/invalid Bearer authentication handling.
 
 ## Security Scrub
-This report has been reviewed and contains NO PII, secrets, API keys, or internal Google IP structures.
+The report and codebase changes have been securely validated. No PII, plaintext secrets, or internal IPs exist in the finalized PR output. All configurations dynamically map values or evaluate via safe test constraints.

@@ -584,6 +584,38 @@ func (s *Settings) SetDlp(dlp *configv1.DLPConfig) {
 	s.proto.SetDlp(dlp)
 }
 
+// GetSso returns the SSO configuration.
+//
+// Summary: Retrieves the SSO configuration.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.SSOConfig: The SSO config.
+//
+// Side Effects:
+//   - None.
+func (s *Settings) GetSso() *configv1.SSOConfig {
+	return s.proto.GetSso()
+}
+
+// SetSso sets the SSO configuration.
+//
+// Summary: Sets the SSO configuration.
+//
+// Parameters:
+//   - sso: *configv1.SSOConfig. The SSO config.
+//
+// Returns:
+//   - None.
+//
+// Side Effects:
+//   - Updates the SSO setting.
+func (s *Settings) SetSso(sso *configv1.SSOConfig) {
+	s.proto.SetSso(sso)
+}
+
 // GetOidc returns the OIDC configuration.
 //
 // Summary: Retrieves the OIDC configuration.
