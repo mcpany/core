@@ -800,3 +800,9 @@
 #### Upcoming (2026-07-12 Evolution)
 - [ ] **[P0] Mission Cost Attribution Dashboard**: (2026-07-12) Visual tracker for HACA-bound reasoning costs and mission-root budget consumption.
 - [ ] **[P0] Mesh Resilience Status Hub**: (2026-07-12) Real-time visualization of DMR-mediated state migration and node health status.
+
+#### Upcoming (2026-07-16 Evolution)
+- [ ] **[P0] Intent Mirroring Alert Center**: (2026-07-16) Visual tracker for GIMM-detected mirroring signatures and stylometric entropy scores.
+- [ ] **[P0] Speculative Buffer Sovereignty Dashboard**: (2026-07-16) Monitor for hardware-attested HASB signals and EBSM memory isolation status.
+- [ ] **[P0] Ambient Metadata Sanitization Log**: (2026-07-16) Forensic UI for reviewing redacted environment metadata in horizontal meshes.
+- [ ] **[P0] Coordination Replay Monitor**: (2026-07-16) Forensic UI for visualizing Echo-Immune fragments and identifying coordination replay alerts.

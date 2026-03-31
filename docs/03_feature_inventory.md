@@ -1828,3 +1828,15 @@
 ### Priority Shifts
 - **Hardware-Attested Cost Attribution (HACA)**: (Re-affirmed P0) Elevated to mandatory status for all mesh-bound tool calls to ensure economic accountability across mission-root lineages.
 - **Dynamic Mesh Resilience (DMR) Hub**: (Re-affirmed P0) Designated as the primary coordination service for migrating mission-critical state during Agent Team coordination stalls.
+
+## Evolution: [2026-07-16] Updates
+
+### Proposed Additions
+- **Ghost Intent Mirroring Mitigator (GIMM)**: (P0) Authoritative security middleware utilizing stylometric entropy analysis to detect subagents mirroring parent authority signatures.
+- **HASB (Hardware-Attested Speculative Buffer) Provider**: (P0) Advanced discovery service mandating hardware-enclave binding for speculative tool-loading buffers to prevent attestation hijacking.
+- **Ambient State Sanitizer (ASS)**: (P0) Real-time, high-entropy sanitization service for environment metadata leaked in horizontal meshes to block side-channel injection.
+- **Enclave-Bound Speculative Memory (EBSM)**: (P0) High-performance coordination extension for the ZCMB providing hardware-locked memory regions for speculative state preparation.
+
+### Priority Shifts
+- **Stylometric Identity Anchoring (SIA)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **GIMM** integration.
+- **Optimistic Quorum Hardening (OQH)**: (Re-affirmed P0) Evolving into the **HASB Provider** for hardware-level attestation guarantees.
