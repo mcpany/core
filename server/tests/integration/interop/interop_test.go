@@ -31,3 +31,25 @@ func TestInteropIntegration(t *testing.T) {
 		t.Errorf("Expected success, got %s", res.Status)
 	}
 }
+
+func TestPlaceholderRegistration(t *testing.T) {
+	hub := interop.NewAdapterHub()
+	interop.RegisterPlaceholders(hub)
+
+	ctx := context.Background()
+	task := &interop.Task{
+		ID:        "int-1",
+		Framework: "Dynamic Mesh Resilience (DMR) Hub",
+		Intent:    "shard_migration",
+		Payload:   map[string]string{"foo": "bar"},
+	}
+
+	res, err := hub.RouteTask(ctx, task)
+	if err == nil {
+		t.Fatalf("Integration task should have failed with NotImplemented for placeholder, got success %v", res)
+	}
+
+	if err.Error() != "Not Implemented: Dynamic Mesh Resilience (DMR) Hub is a placeholder service" {
+		t.Errorf("Expected Not Implemented error, got %s", err.Error())
+	}
+}
