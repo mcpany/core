@@ -15,6 +15,7 @@ go_library(
         "api_discovery.go",
         "api_extra.go",
         "api_hitl.go",
+        "api_interop.go",
         "api_login.go",
         "api_logs.go",
         "api_secret.go",
@@ -45,6 +46,7 @@ go_library(
     importpath = "github.com/mcpany/core/server/pkg/app",
     visibility = ["//visibility:public"],
     deps = [
+        "//src/interop",
         "//proto/admin/v1:admin",
         "//proto/api/v1:api",
         "//proto/config/v1:config",

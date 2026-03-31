@@ -1,15 +1,15 @@
 upstream_services:
-  - name: "hello-service"
+  - name: hello-service
     http_service:
-      address: "https://echo.free.beeceptor.com"
+      address: https://echo.free.beeceptor.com
       tools:
-        - name: "hello"
+        - name: hello
           description: "Say hello"
           call_id: "hello-call"
           input_schema:
             type: "object"
             properties: {}
       calls:
-        hello-call:
+        "hello-call":
+          endpoint_path: /hello
           method: "HTTP_METHOD_GET"
-          endpoint_path: "/hello"

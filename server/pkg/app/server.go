@@ -2101,6 +2101,7 @@ func (a *Application) runServerMode(
 	mux.Handle("/api/v1/debug/traces", authMiddleware(a.handleDebugSeedTraces()))
 
 	// User Preferences
+	mux.Handle("/api/v1/interop/task", authMiddleware(a.handleInterop()))
 	mux.Handle("/api/v1/user/preferences", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:

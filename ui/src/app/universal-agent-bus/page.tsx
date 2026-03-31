@@ -18,6 +18,7 @@ import {
   Network,
   Activity
 } from "lucide-react";
+import { InteropTester } from "./interop-tester";
 
 /**
  * Intent: Document UniversalAgentBusPage
@@ -124,6 +125,10 @@ export default function UniversalAgentBusPage() {
             </p>
           </CardContent>
         </Card>
+      </div>
+
+      <div className="mt-8">
+        <InteropTester />
       </div>
     </div>
   );
