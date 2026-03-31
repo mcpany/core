@@ -9,6 +9,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"context"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -401,4 +402,23 @@ func generateMockAuditEntries() []audit.Entry {
 		},
 	}
 	return entries
+}
+
+func (a *Application) seedTraces(ctx context.Context) error {
+	auditMiddleware := a.GetAuditMiddleware()
+	if auditMiddleware == nil {
+		return nil
+	}
+
+	// Only seed if empty to avoid duplicating during hot reloads
+	history := auditMiddleware.GetHistory()
+	if len(history) > 0 {
+		return nil
+	}
+
+	entries := generateMockAuditEntries()
+	for _, entry := range entries {
+		_ = auditMiddleware.Write(ctx, entry)
+	}
+	return nil
 }
