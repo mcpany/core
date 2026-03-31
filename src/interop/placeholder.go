@@ -134,6 +134,21 @@ func (a *PlaceholderAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryS
 	return fmt.Errorf("Not Implemented: %s is a placeholder service", a.name)
 }
 
+// StreamTask acts as a stub, returning an unimplemented error.
+//
+// Intent: Satisfies the AgentFramework interface.
+//
+// Parameters:
+//   - ctx (context.Context): Execution context.
+//   - task (*Task): The task to process.
+//
+// Returns:
+//   - <-chan *TaskResult: nil
+//   - error: An error indicating the feature is not implemented.
+func (a *PlaceholderAdapter) StreamTask(ctx context.Context, task *Task) (<-chan *TaskResult, error) {
+	return nil, fmt.Errorf("Not Implemented: %s is a placeholder service", a.name)
+}
+
 // RegisterPlaceholders registers all missing P0 features documented in the roadmap
 // as placeholder adapters on the provided AdapterHub.
 //
@@ -482,6 +497,10 @@ func RegisterPlaceholders(hub *AdapterHub) {
 		"Zero-Knowledge State Attestation (ZKSA) Provider",
 		"Unified Teammate Discovery (UTD) Gateway",
 		"Hierarchical Provenance Validator",
+		"Zero-Trust Local Handshake Provider",
+		"Mesh-Bound Teammate Synchronizer",
+		"Hardware-Attested Cost Attribution (HACA) v2",
+		"Universal Episodic Graph (UEG) Memory Broker",
 	}
 
 	for _, name := range missingFeatures {
