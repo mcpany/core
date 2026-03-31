@@ -1,4 +1,7 @@
+const fs = require('fs');
+const path = 'ui/tests/tool-inspector.spec.ts';
 
+const replacement = `
 import { test, expect } from '@playwright/test';
 
 test.describe('Tool Inspector', () => {
@@ -34,3 +37,6 @@ test.describe('Tool Inspector', () => {
     await expect(visualText).toBeVisible({ timeout: 10000 });
   });
 });
+`;
+
+fs.writeFileSync(path, replacement);
