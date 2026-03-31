@@ -488,3 +488,12 @@ func RegisterPlaceholders(hub *AdapterHub) {
 		hub.RegisterAdapter(NewPlaceholderAdapter(name, nil))
 	}
 }
+
+func (a *PlaceholderAdapter) StreamTask(ctx context.Context, task *Task) (<-chan *TaskResult, error) {
+	ch := make(chan *TaskResult)
+	go func() {
+		defer close(ch)
+		// mock implementation
+	}()
+	return ch, nil
+}
