@@ -18,55 +18,42 @@ import { Activity, ShieldCheck, ChevronRight, CheckCircle2, Server, Lock, Finger
 import { cn } from "@/lib/utils";
 
 // Mock data for the A2A Agent Chain tracer
-const MOCK_CHAIN_DATA = [
-  {
-    id: "step-1",
-    agent: "Orchestrator-01",
-    action: "Task Decomposition",
-    status: "attested",
-    latency: "12ms",
-    hash: "0x8F9B...4D2A",
-    details: "Decomposed 'Analyze Q3 Financials' into 3 parallel sub-tasks.",
-    timestamp: "10:42:01.000",
-  },
-  {
-    id: "step-2",
-    agent: "DataFetcher-DB",
-    action: "SQL Query Generation",
-    status: "attested",
-    latency: "45ms",
-    hash: "0x3A1C...9E8B",
-    details: "Generated safe read-only query against production replica.",
-    timestamp: "10:42:01.015",
-  },
-  {
-    id: "step-3",
-    agent: "DataFetcher-API",
-    action: "Salesforce Extraction",
-    status: "speculative",
-    latency: "120ms",
-    hash: "0x7D2F...1A5C",
-    details: "Speculative execution of API request, pending QBS attestation.",
-    timestamp: "10:42:01.060",
-  },
-  {
-    id: "step-4",
-    agent: "Synthesis-Engine",
-    action: "Context Summarization",
-    status: "active",
-    latency: "--",
-    hash: "0x2B4E...6F0D",
-    details: "Merging SQL results with Salesforce data into unified reasoning context.",
-    timestamp: "10:42:01.185",
-  }
-];
+import { useTraces } from "@/hooks/use-traces";
+import { format } from "date-fns";
 
 export function AgentChainTracer() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const { traces } = useTraces();
 
   const toggleExpand = (id: string) => {
     setExpandedId(expandedId === id ? null : id);
   };
+
+  const chainData = traces.slice(0, 5).map((trace) => {
+    let status = "active";
+    if (trace.status === "success") status = "attested";
+    else if (trace.status === "error") status = "speculative";
+
+    let details = "No details provided.";
+    if (trace.rootSpan?.errorMessage) {
+      details = trace.rootSpan.errorMessage;
+    } else if (trace.rootSpan?.input) {
+      try {
+        details = typeof trace.rootSpan.input === "string" ? trace.rootSpan.input : JSON.stringify(trace.rootSpan.input);
+      } catch (e) {}
+    }
+
+    return {
+      id: trace.id,
+      agent: trace.rootSpan?.serviceName || trace.rootSpan?.name || "Unknown-Agent",
+      action: trace.rootSpan?.name || "Unknown Action",
+      status,
+      latency: `${trace.totalDuration || 0}ms`,
+      hash: trace.id ? trace.id.substring(0, 12) : "0x000",
+      details,
+      timestamp: trace.timestamp ? format(new Date(trace.timestamp), "HH:mm:ss.SSS") : ""
+    };
+  });
 
   return (
     <Card className="col-span-full xl:col-span-2 overflow-hidden border-border/50 bg-background/50 backdrop-blur-xl shadow-lg transition-all duration-300">
@@ -93,7 +80,7 @@ export function AgentChainTracer() {
       </CardHeader>
       <CardContent className="pt-4">
         <div className="relative pl-6 border-l-2 border-muted-foreground/20 space-y-6">
-          {MOCK_CHAIN_DATA.map((step, index) => (
+          {chainData.map((step, index) => (
             <div key={step.id} className="relative group">
               {/* Timeline dot */}
               <div
