@@ -16,7 +16,10 @@ import {
   Clock,
   Search,
   Network,
-  Activity
+  Activity,
+  ShieldCheck,
+  Lock,
+  Server
 } from "lucide-react";
 import { AgentChainTracer } from "@/components/dashboard/agent-chain-tracer";
 
@@ -108,6 +111,76 @@ export default function UniversalAgentBusPage() {
             <div className="text-2xl font-bold">0 Index Hits</div>
             <p className="text-xs text-muted-foreground">
               UI for managing the on-demand tool index and monitoring search hits/misses.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Agent Chain Tracer (A2A) */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Agent Chain Tracer (A2A)</CardTitle>
+            <Activity className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">Active</div>
+            <p className="text-xs text-muted-foreground">
+              Visual tracking of multi-agent handoffs and reasoning chains.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Attention Mimicry Alert Center */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Attention Mimicry Alert Center</CardTitle>
+            <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">0 Alerts</div>
+            <p className="text-xs text-muted-foreground">
+              Real-time monitoring of ASF-detected stylometric spoofing.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Universal Handshake Debugger */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Universal Handshake Debugger</CardTitle>
+            <Lock className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">Secure</div>
+            <p className="text-xs text-muted-foreground">
+              Forensic tool for visualizing A2A auth bridging.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Discovery Sandbox Dashboard */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Discovery Sandbox Dashboard</CardTitle>
+            <Server className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">Isolated</div>
+            <p className="text-xs text-muted-foreground">
+              Visual tracker for network-restricted discovery containers.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Cross-Framework Budget Inspector */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Cross-Framework Budget Inspector</CardTitle>
+            <Activity className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">$0.00</div>
+            <p className="text-xs text-muted-foreground">
+              Visualization of HACA-bound reasoning effort and quotas.
             </p>
           </CardContent>
         </Card>
