@@ -181,6 +181,8 @@
 - [ ] **[P0] Parallel Intent Visualizer**: (2026-03-31) Real-time Gantt-style chart showing parallel sub-intent branches, barrier status, and merge events.
 - [ ] **[P0] Symlink Security Inspector**: (2026-03-31) Dashboard for visualizing resolved project paths and flagging unauthorized symlink traversals.
 - [ ] **[P1] Federated Quorum Monitor**: (2026-03-31) Security UI for tracking CDQ attestation progress and consensus status for remote tool beacons.
+- [ ] **[P0] Real-time Reputation Dashboard**: (2026-03-31) Visualization of tool safety scores and DRBE revocation events.
+- [ ] **[P1] Marketplace Infection Heatmap**: (2026-03-31) Global map showing the distribution and status of compromised skills in ClawHub.
 - [ ] **[P0] IPSC Correction Monitor**: (2026-03-30) Real-time dashboard for visualizing agent self-correction cycles, budget consumption, and "Cognitive Lock" alerts.
 - [ ] **[P0] BSH Continuous Integrity Viewer**: (2026-03-30) Forensic UI for inspecting Binary State Handoffs for "Dormant" or "Ghost" fragments.
 - [ ] **[P1] Beacon Discovery Dashboard**: (2026-03-30) UI for monitoring reactive "Capability Beacons" and managing discovery noise filters.

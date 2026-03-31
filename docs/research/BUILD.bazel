@@ -3,7 +3,8 @@ filegroup(
     name = "docs",
     srcs = [
         "interop_blueprint.md",
-        "evolution-2026-07-12-streaming.md"
+        "evolution-2026-07-12-streaming.md",
+        "market-sync-2026-03-31-evolution.md",
     ],
     visibility = ["//visibility:public"],
 )

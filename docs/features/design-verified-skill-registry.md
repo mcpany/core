@@ -67,3 +67,10 @@ The "ClawHavoc" crisis demonstrated that open-source agent marketplaces are vuln
 * **Multi-Signature Requirement**: Transitioning from single-provider signing to MSSA. Dynamic skill grafting now requires cryptographically bound approval tokens from both the agent framework and a verified third-party security auditor.
 * **Auditor Sidecars**: Introducing "Auditor Sidecars" in the analysis engine that provide real-time, independent behavioral monitoring for high-risk tools.
 **Security Impact:** Mitigates the risk of "Rug-Pull" supply chain attacks by ensuring no single entity can authorize high-risk tool execution.
+
+### Update: 2026-03-31 - Continuous Reputation Auditing for ClawHub Infection
+**Context**: Today's findings confirm a 12% infection rate in ClawHub, with 341 malicious skills bypassing initial "Burn-In" tests.
+**Architecture Adjustment**:
+* **Continuous Reputation Auditor**: Implementing a background service that continuously aggregates behavioral telemetry from all connected agents.
+* **Dynamic Reputation-Bound Execution (DRBE)**: Tool capabilities are now tied to a real-time reputation score. A drop in reputation (e.g., due to anomalous file access detected in the wild) triggers an immediate mesh-wide capability revocation.
+**Security Impact**: Provides an automated, near-instant "kill-switch" for compromised marketplace skills, neutralizing "Delayed Payloads" that evade static and initial behavioral checks.

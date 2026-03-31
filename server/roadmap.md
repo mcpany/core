@@ -408,6 +408,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Inode-Aware Symlink Validator**: Security middleware performing recursive symlink resolution and inode validation for all project-local configurations. (Added: 2026-03-31)
 *   **[P0] Parallel Intent Branch Manager**: Implementation of "Snapshot-and-Merge" logic for parallel agent branches. (Added: 2026-03-31)
 *   **[P1] Federated Discovery Quorum (FDQ) Node**: Peer-to-peer discovery service requiring multi-node attestation for new tool beacons. (Added: 2026-03-31)
+*   **[P0] Continuous Reputation Auditor**: Real-time behavioral monitoring to detect marketplace supply chain infections. (Added: 2026-03-31)
+*   **[P0] Reputation-Aware Capability Throttler**: Dynamic tool restriction based on real-time safety scores. (Added: 2026-03-31)
 
 #### Upcoming (2026-03-30 Evolution)
 *   **[P0] UACO v2.1 IPSC Middleware**: Implementation of Intent-Preserving Self-Correction to prevent recursive "Cognitive Lock" refinement loops. (Added: 2026-03-30)

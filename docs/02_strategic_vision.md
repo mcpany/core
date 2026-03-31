@@ -1415,3 +1415,10 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Mesh-Bound Team Coordination**: Supporting the "Agent Teams" standard, MCP Any will evolve into a native mesh-resident coordinator. We will provide the infrastructure for lock-free, CRDT-based teammate synchronization, ensuring that parallel agent sessions maintain a consistent worldview without global state locks.
 - **Hardware-Attested Cost Attribution (HACA)**: To address resource prioritization shifts seen in Gemini CLI, we are mandating HACA. Every tool call and reasoning fragment will be cryptographically attributed to its mission-root lineage, enabling granular, hardware-locked quota enforcement and economic transparency across the mesh.
 - **Sovereign Skill Verification**: To neutralize "ClawHub" style marketplace poisonings, we are implementing mandatory behavioral profiling for all dynamic skill grafts. No tool will be exposed to the discovery bus unless its behavioral manifest is signed by an attested hardware authority.
+
+## Strategic Evolution: [2026-03-31]
+### Focus: Supply Chain Sovereignty & Dynamic Reputation
+**Context**: The disclosure of a 12% infection rate in the ClawHub marketplace confirms that one-time "Burn-In" tests are insufficient for securing autonomous agents. We must move beyond static safety gates to active, mesh-wide behavioral reputation tracking.
+**Strategic Pivot**:
+- **Dynamic Reputation-Bound Execution (DRBE)**: MCP Any will implement DRBE, allowing the gateway to dynamically restrict tool capabilities based on real-time reputation signals from the FDQ. This provides an automated kill-switch for compromised skills that exhibit anomalous behavior post-installation.
+- **Continuous Behavioral Attestation**: Shifting from point-in-time verification to ongoing monitoring. Every tool call will be indexed against a hardware-attested behavioral baseline, with any divergence triggering an immediate reputation audit across the mesh.

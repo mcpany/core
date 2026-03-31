@@ -47,3 +47,10 @@ With the introduction of OpenClaw v2.7 Sub-Intent Parallelization, agents can no
 ## 7. Evolutionary Changelog
 * **2026-03-31:** Initial Document Creation.
 * **2026-04-01:** Updated architecture to include "Reasoning-Bound Snapshot Divergence" resolution. Introduced a multi-stage merging process that reconciles divergent reasoning paths before committing state to the Blackboard.
+
+### Update: 2026-03-31 - Addressing Sub-Intent Race Conditions
+**Context**: OpenClaw v2.7 parallelization has introduced race conditions during Blackboard mutations.
+**Architecture Adjustment**:
+* **Snapshot-and-Merge Enforcement**: Every parallel branch now receives an isolated Blackboard snapshot.
+* **Write Conflict Resolution**: Implemented a mandatory "Conflict Reconciliation" phase at the Intent Barrier, utilizing a 3-way merge between the original parent snapshot and the parallel branch mutations.
+**Security Impact**: Ensures deterministic state commitments and prevents "Branch Poisoning" where one sub-intent corrupts the shared memory of siblings.

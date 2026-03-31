@@ -1792,3 +1792,9 @@
 ### Priority Shifts
 - **Hardware-Attested Cost Attribution (HACA)**: (Re-affirmed P0) Elevated to mandatory status for all mesh-bound tool calls to ensure economic accountability across mission-root lineages.
 - **Dynamic Mesh Resilience (DMR) Hub**: (Re-affirmed P0) Designated as the primary coordination service for migrating mission-critical state during Agent Team coordination stalls.
+
+## Evolution: [2026-03-31] Updates
+
+### Proposed Additions
+- **Continuous Reputation Auditor**: (P0) Background service monitoring tool behavioral telemetry to update federated reputation scores in real-time.
+- **Reputation-Aware Capability Throttler**: (P0) Security middleware enforcing DRBE policies by dynamically restricting access to tools with low reputation scores.
