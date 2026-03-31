@@ -9,13 +9,16 @@ import (
 //
 // Summary: Represents an adapter that connects the AutoGen multi-agent framework to the universal adapter hub.
 //
-// Params:
+// Parameters:
 //   - None.
 //
 // Returns:
 //   - None.
 //
-// Errors:
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
 //   - None.
 type AutoGenAdapter struct {
 	Capabilities map[string]bool
@@ -26,13 +29,16 @@ type AutoGenAdapter struct {
 //
 // Summary: Constructs a new AutoGenAdapter with predefined multi-agent capabilities.
 //
-// Params:
+// Parameters:
 //   - None.
 //
 // Returns:
 //   - *AutoGenAdapter: A newly created pointer to an AutoGenAdapter instance.
 //
-// Errors:
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func NewAutoGenAdapter() *AutoGenAdapter {
 	return &AutoGenAdapter{
@@ -48,13 +54,16 @@ func NewAutoGenAdapter() *AutoGenAdapter {
 //
 // Summary: Retrieves the exact name identifier for the AutoGen adapter.
 //
-// Params:
+// Parameters:
 //   - None.
 //
 // Returns:
 //   - string: The name "AutoGen".
 //
-// Errors:
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func (a *AutoGenAdapter) Name() string {
 	return "AutoGen"
@@ -64,7 +73,7 @@ func (a *AutoGenAdapter) Name() string {
 //
 // Summary: Processes and executes a task through simulated multi-agent subagent execution.
 //
-// Params:
+// Parameters:
 //   - ctx (context.Context): Execution context for controlling cancellation and timeout.
 //   - task (*Task): The generic task object that needs to be executed by AutoGen.
 //
@@ -72,8 +81,11 @@ func (a *AutoGenAdapter) Name() string {
 //   - *TaskResult: Contains the status, output, and telemetry information from the subagent.
 //   - error: Indicates failure in executing the task or an unsupported intent.
 //
-// Errors:
+// Errors/Throws:
 //   - Returns "AutoGen does not support capability" if the task's intent is missing from capabilities.
+//
+// Side Effects:
+//   - None.
 func (a *AutoGenAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult, error) {
 	if !a.SupportsCapability(task.Intent) {
 		return nil, fmt.Errorf("AutoGen does not support capability: %s", task.Intent)
@@ -111,13 +123,16 @@ func (a *AutoGenAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResul
 //
 // Summary: Confirms if the AutoGen adapter's capabilities include the requested functionality.
 //
-// Params:
+// Parameters:
 //   - capability (string): The intended capability name.
 //
 // Returns:
 //   - bool: Indicates whether the given capability is supported.
 //
-// Errors:
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func (a *AutoGenAdapter) SupportsCapability(capability string) bool {
 	return a.Capabilities[capability]
@@ -127,15 +142,18 @@ func (a *AutoGenAdapter) SupportsCapability(capability string) bool {
 //
 // Summary: Ingests a memory shard to synchronize state across agents.
 //
-// Params:
+// Parameters:
 //   - ctx (context.Context): The context for controlling cancellation and timeouts.
 //   - shard (*MemoryShard): The multimodal memory shard to synchronize.
 //
 // Returns:
 //   - error: An error if the signature is invalid.
 //
-// Errors:
+// Errors/Throws:
 //   - Returns an error if the shard signature verification fails.
+//
+// Side Effects:
+//   - None.
 func (a *AutoGenAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard) error {
 	if shard.Signature == "" {
 		return fmt.Errorf("invalid memory shard: signature required for ingestion")
@@ -147,7 +165,7 @@ func (a *AutoGenAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard
 
 // StreamTask streams the execution of a task from the AutoGen framework.
 //
-// Intent: Simulates a streaming task execution by emitting chunks to a channel.
+// Summary: Simulates a streaming task execution by emitting chunks to a channel.
 //
 // Parameters:
 //   - ctx (context.Context): The context for execution, handling cancellation.
@@ -157,7 +175,7 @@ func (a *AutoGenAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard
 //   - <-chan *TaskResult: A read-only channel emitting streamed chunks.
 //   - error: Indicates failure in executing the task or an unsupported intent.
 //
-// Errors:
+// Errors/Throws:
 //   - Returns an error if the framework's capability check fails for the task's intent.
 //
 // Side Effects:

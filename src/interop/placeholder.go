@@ -7,7 +7,7 @@ import (
 
 // PlaceholderAdapter is a parameterized adapter for missing AgentFrameworks.
 //
-// Intent: To act as a service placeholder for features documented in the roadmap
+// Summary: To act as a service placeholder for features documented in the roadmap
 // but not yet fully implemented, preventing "Zombie Docs" or "Ghost Features".
 //
 // Parameters:
@@ -17,7 +17,7 @@ import (
 // Returns:
 //   - None.
 //
-// Errors:
+// Errors/Throws:
 //   - None.
 //
 // Side Effects:
@@ -29,7 +29,7 @@ type PlaceholderAdapter struct {
 
 // NewPlaceholderAdapter creates a new PlaceholderAdapter instance.
 //
-// Intent: Initializes a placeholder for an unimplemented framework.
+// Summary: Initializes a placeholder for an unimplemented framework.
 //
 // Parameters:
 //   - name (string): The name of the framework to mock.
@@ -38,7 +38,7 @@ type PlaceholderAdapter struct {
 // Returns:
 //   - *PlaceholderAdapter: A pointer to the newly instantiated PlaceholderAdapter.
 //
-// Errors:
+// Errors/Throws:
 //   - None.
 //
 // Side Effects:
@@ -55,7 +55,7 @@ func NewPlaceholderAdapter(name string, capabilities map[string]bool) *Placehold
 
 // Name returns the identifier of the agent framework.
 //
-// Intent: Returns the parameterized name of the placeholder framework.
+// Summary: Returns the parameterized name of the placeholder framework.
 //
 // Parameters:
 //   - None.
@@ -63,7 +63,7 @@ func NewPlaceholderAdapter(name string, capabilities map[string]bool) *Placehold
 // Returns:
 //   - string: The name of the framework.
 //
-// Errors:
+// Errors/Throws:
 //   - None.
 //
 // Side Effects:
@@ -74,7 +74,7 @@ func (a *PlaceholderAdapter) Name() string {
 
 // HandleTask acts as a stub, returning an unimplemented error.
 //
-// Intent: Satisfies the AgentFramework interface while correctly signaling
+// Summary: Satisfies the AgentFramework interface while correctly signaling
 // that the feature is a placeholder and not fully implemented.
 //
 // Parameters:
@@ -85,7 +85,7 @@ func (a *PlaceholderAdapter) Name() string {
 //   - *TaskResult: nil
 //   - error: An error indicating the feature is not implemented.
 //
-// Errors:
+// Errors/Throws:
 //   - Always returns a "Not Implemented" error containing the framework name.
 //
 // Side Effects:
@@ -96,7 +96,7 @@ func (a *PlaceholderAdapter) HandleTask(ctx context.Context, task *Task) (*TaskR
 
 // SupportsCapability checks if the framework provides a requested capability.
 //
-// Intent: Returns whether the placeholder was initialized with the given capability.
+// Summary: Returns whether the placeholder was initialized with the given capability.
 //
 // Parameters:
 //   - capability (string): The capability identifier.
@@ -104,7 +104,7 @@ func (a *PlaceholderAdapter) HandleTask(ctx context.Context, task *Task) (*TaskR
 // Returns:
 //   - bool: True if the capability is in the map, false otherwise.
 //
-// Errors:
+// Errors/Throws:
 //   - None.
 //
 // Side Effects:
@@ -115,7 +115,7 @@ func (a *PlaceholderAdapter) SupportsCapability(capability string) bool {
 
 // SyncMemoryShard acts as a stub, returning an unimplemented error.
 //
-// Intent: Satisfies the AgentFramework interface while correctly signaling
+// Summary: Satisfies the AgentFramework interface while correctly signaling
 // that the feature is a placeholder.
 //
 // Parameters:
@@ -125,7 +125,7 @@ func (a *PlaceholderAdapter) SupportsCapability(capability string) bool {
 // Returns:
 //   - error: An error indicating the feature is not implemented.
 //
-// Errors:
+// Errors/Throws:
 //   - Always returns a "Not Implemented" error containing the framework name.
 //
 // Side Effects:
@@ -137,9 +137,19 @@ func (a *PlaceholderAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryS
 // RegisterPlaceholders registers all missing P0 features documented in the roadmap
 // as placeholder adapters on the provided AdapterHub.
 //
-// Intent: To ensure that the feature inventory matches the available integrations
-// inside the universal agent bus, providing a clear "Not Implemented" failure
-// rather than a "Framework Not Found" error.
+// Summary: To ensure that the feature inventory matches the available integrations inside the universal agent bus, providing a clear "Not Implemented" failure rather than a "Framework Not Found" error.
+//
+// Parameters:
+//   - hub (*AdapterHub): The universal adapter hub instance to register placeholders onto.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - Modifies the internal adapters map of the provided AdapterHub instance.
 func RegisterPlaceholders(hub *AdapterHub) {
 	missingFeatures := []string{
 		"Dynamic Mesh Resilience (DMR) Hub",

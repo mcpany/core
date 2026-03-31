@@ -9,13 +9,16 @@ import (
 //
 // Summary: An adapter implementation that bridges the OpenClaw agent framework with the universal hub.
 //
-// Params:
+// Parameters:
 //   - None.
 //
 // Returns:
 //   - None.
 //
-// Errors:
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
 //   - None.
 type OpenClawAdapter struct {
 	Capabilities map[string]bool
@@ -26,13 +29,16 @@ type OpenClawAdapter struct {
 //
 // Summary: Initializes and returns a new adapter for OpenClaw with its specific capabilities.
 //
-// Params:
+// Parameters:
 //   - None.
 //
 // Returns:
 //   - *OpenClawAdapter: A pointer to the newly instantiated OpenClawAdapter.
 //
-// Errors:
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func NewOpenClawAdapter() *OpenClawAdapter {
 	return &OpenClawAdapter{
@@ -48,13 +54,16 @@ func NewOpenClawAdapter() *OpenClawAdapter {
 //
 // Summary: Returns the specific name identifier of the OpenClaw adapter.
 //
-// Params:
+// Parameters:
 //   - None.
 //
 // Returns:
 //   - string: The name "OpenClaw".
 //
-// Errors:
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func (a *OpenClawAdapter) Name() string {
 	return "OpenClaw"
@@ -64,7 +73,7 @@ func (a *OpenClawAdapter) Name() string {
 //
 // Summary: Executes the provided task using simulated adaptive reasoning logic.
 //
-// Params:
+// Parameters:
 //   - ctx (context.Context): The task execution context, for managing lifecycle.
 //   - task (*Task): The universal task object describing what to execute.
 //
@@ -72,8 +81,11 @@ func (a *OpenClawAdapter) Name() string {
 //   - *TaskResult: The generalized output from the executed task, along with telemetry data.
 //   - error: An error indicating if the task failed or is unsupported.
 //
-// Errors:
+// Errors/Throws:
 //   - Returns an error if the framework's capability check fails for the task's intent.
+//
+// Side Effects:
+//   - None.
 func (a *OpenClawAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult, error) {
 	if !a.SupportsCapability(task.Intent) {
 		return nil, fmt.Errorf("OpenClaw does not support capability: %s", task.Intent)
@@ -109,13 +121,16 @@ func (a *OpenClawAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResu
 //
 // Summary: Determines whether the OpenClaw adapter can execute tasks for a given capability intent.
 //
-// Params:
+// Parameters:
 //   - capability (string): The capability identifier string to query.
 //
 // Returns:
 //   - bool: True if the capability is found in the capabilities map; false otherwise.
 //
-// Errors:
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func (a *OpenClawAdapter) SupportsCapability(capability string) bool {
 	return a.Capabilities[capability]
@@ -125,15 +140,18 @@ func (a *OpenClawAdapter) SupportsCapability(capability string) bool {
 //
 // Summary: Ingests a memory shard and appends it to OpenClaw's internal state.
 //
-// Params:
+// Parameters:
 //   - ctx (context.Context): The context for controlling cancellation and timeouts.
 //   - shard (*MemoryShard): The multimodal memory shard to synchronize.
 //
 // Returns:
 //   - error: An error if the signature is invalid.
 //
-// Errors:
+// Errors/Throws:
 //   - Returns an error if the shard signature verification fails.
+//
+// Side Effects:
+//   - None.
 func (a *OpenClawAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard) error {
 	if shard.Signature == "" {
 		return fmt.Errorf("invalid memory shard: missing signature")
@@ -148,7 +166,7 @@ func (a *OpenClawAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShar
 
 // StreamTask streams the execution of a task from the OpenClaw framework.
 //
-// Intent: Simulates a streaming task execution by emitting chunks to a channel.
+// Summary: Simulates a streaming task execution by emitting chunks to a channel.
 //
 // Parameters:
 //   - ctx (context.Context): The context for execution, handling cancellation.
@@ -158,7 +176,7 @@ func (a *OpenClawAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShar
 //   - <-chan *TaskResult: A read-only channel emitting streamed chunks.
 //   - error: Indicates failure in executing the task or an unsupported intent.
 //
-// Errors:
+// Errors/Throws:
 //   - Returns an error if the framework's capability check fails for the task's intent.
 //
 // Side Effects:

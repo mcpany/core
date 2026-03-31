@@ -9,13 +9,16 @@ import (
 //
 // Summary: Defines the standard interface that all agent frameworks must implement to integrate with the universal bus.
 //
-// Params:
+// Parameters:
 //   - None.
 //
 // Returns:
 //   - None.
 //
-// Errors:
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
 //   - None.
 type AgentFramework interface {
 	// Name returns the identifier of the agent framework.
@@ -105,13 +108,16 @@ type AgentFramework interface {
 //
 // Summary: A data structure that holds text context and an optional multimodal payload, with cryptographic lineage.
 //
-// Params:
+// Parameters:
 //   - None.
 //
 // Returns:
 //   - None.
 //
-// Errors:
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
 //   - None.
 type MemoryShard struct {
 	ShardID           string `json:"shard_id"`
@@ -126,13 +132,16 @@ type MemoryShard struct {
 //
 // Summary: A data structure that holds the definition of a task to be routed to an agent framework.
 //
-// Params:
+// Parameters:
 //   - None.
 //
 // Returns:
 //   - None.
 //
-// Errors:
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
 //   - None.
 type Task struct {
 	ID        string            `json:"id"`
@@ -145,13 +154,16 @@ type Task struct {
 //
 // Summary: A data structure that contains the result of an executed task.
 //
-// Params:
+// Parameters:
 //   - None.
 //
 // Returns:
 //   - None.
 //
-// Errors:
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
 //   - None.
 type TaskResult struct {
 	TaskID    string            `json:"task_id"`
@@ -165,13 +177,16 @@ type TaskResult struct {
 //
 // Summary: A central hub that maintains registered agent adapters and routes tasks to the appropriate one.
 //
-// Params:
+// Parameters:
 //   - None.
 //
 // Returns:
 //   - None.
 //
-// Errors:
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
 //   - None.
 type AdapterHub struct {
 	adapters map[string]AgentFramework
@@ -181,13 +196,16 @@ type AdapterHub struct {
 //
 // Summary: Creates and returns a new instance of AdapterHub with an empty registry.
 //
-// Params:
+// Parameters:
 //   - None.
 //
 // Returns:
 //   - *AdapterHub: A pointer to the newly created AdapterHub.
 //
-// Errors:
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func NewAdapterHub() *AdapterHub {
 	return &AdapterHub{
@@ -199,13 +217,16 @@ func NewAdapterHub() *AdapterHub {
 //
 // Summary: Registers an agent framework adapter with the hub, allowing tasks to be routed to it.
 //
-// Params:
+// Parameters:
 //   - adapter (AgentFramework): The adapter implementation to register.
 //
 // Returns:
 //   - None.
 //
-// Errors:
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func (h *AdapterHub) RegisterAdapter(adapter AgentFramework) {
 	h.adapters[adapter.Name()] = adapter
@@ -215,7 +236,7 @@ func (h *AdapterHub) RegisterAdapter(adapter AgentFramework) {
 //
 // Summary: Routes a given task to the registered framework adapter and returns the execution result.
 //
-// Params:
+// Parameters:
 //   - ctx (context.Context): The context for controlling cancellation and timeouts.
 //   - task (*Task): The universal task definition containing the framework and intent.
 //
@@ -223,9 +244,12 @@ func (h *AdapterHub) RegisterAdapter(adapter AgentFramework) {
 //   - *TaskResult: The result of the task execution.
 //   - error: An error if routing or execution fails.
 //
-// Errors:
+// Errors/Throws:
 //   - Returns "no adapter registered for framework" if the requested framework is not found.
 //   - Returns any error produced by the adapter during task execution.
+//
+// Side Effects:
+//   - None.
 func (h *AdapterHub) RouteTask(ctx context.Context, task *Task) (*TaskResult, error) {
 	adapter, exists := h.adapters[task.Framework]
 	if !exists {
@@ -236,7 +260,7 @@ func (h *AdapterHub) RouteTask(ctx context.Context, task *Task) (*TaskResult, er
 
 // StreamRouteTask finds the appropriate adapter for a task and streams its execution.
 //
-// Intent: Routes a given task to the registered framework adapter and streams the execution result.
+// Summary: Routes a given task to the registered framework adapter and streams the execution result.
 //
 // Parameters:
 //   - ctx (context.Context): The context for controlling cancellation and timeouts.
@@ -246,7 +270,7 @@ func (h *AdapterHub) RouteTask(ctx context.Context, task *Task) (*TaskResult, er
 //   - <-chan *TaskResult: A read-only channel emitting streamed task results.
 //   - error: An error if routing or execution fails to start.
 //
-// Errors:
+// Errors/Throws:
 //   - Returns "no adapter registered for framework" if the requested framework is not found.
 //   - Returns any error produced by the adapter during task execution initialization.
 //
