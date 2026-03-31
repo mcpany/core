@@ -10,6 +10,24 @@ import (
 
 // TestMultiAgentSwarmSimulation simulates a complete end-to-end swarm test
 // utilizing multiple agent frameworks managed by the Universal Adapter Hub.
+//
+// Summary: Validates the end-to-end functionality of registered adapters routing multi-agent tasks.
+//
+//
+// Parameters:
+//   - t (*testing.T): The testing object used for assertions and failure reporting.
+//
+//
+// Returns:
+//   - This function does not return any value.
+//
+//
+// Errors:
+//   - This function does not produce any errors.
+//
+//
+// Side Effects:
+//   - This function has no side effects.
 func TestMultiAgentSwarmSimulation(t *testing.T) {
 	hub := interop.NewAdapterHub()
 
@@ -272,7 +290,26 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 	})
 }
 
-// Helper to access registered adapters for testing interface direct calls
+// getAdapterByName retrieves an adapter from the hub for testing.
+//
+// Summary: Helper function to extract a registered AgentFramework by its name identifier.
+//
+//
+// Parameters:
+//   - hub (*interop.AdapterHub): The hub containing the registered adapters.
+//   - name (string): The name of the adapter to retrieve.
+//
+//
+// Returns:
+//   - interop.AgentFramework: The found adapter instance, or nil if not registered.
+//
+//
+// Errors:
+//   - This function does not produce any errors.
+//
+//
+// Side Effects:
+//   - This function has no side effects.
 func getAdapterByName(hub *interop.AdapterHub, name string) interop.AgentFramework {
 	// Let's create a temporary hub-like registry or instantiate directly.
 	switch name {

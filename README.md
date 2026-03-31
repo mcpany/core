@@ -1,53 +1,7 @@
 # MCP Any - Universal Agent Infrastructure
 
-## Project Identity
-**What is this?** MCP Any is the definitive, "Gold Standard" Universal Adapter for AI agents. It completely eliminates the need to implement custom Model Context Protocol (MCP) servers for individual API integrations.
-
-**Why does it exist?** MCP Any empowers developers to build secure, capability-enabled APIs (REST, gRPC, GraphQL, Command-line) through lightweight YAML/JSON configurations. A single `mcpany` instance serves as your ultimate, universal bridge. Forget writing boilerplate adapters—configure MCP Any and let it handle tool discovery, routing, and safety policies autonomously.
-
-## Quick Start
-
-Follow these definitive steps to go from `git clone` to `Hello World`.
-
-### 1. Clone the repository
-```bash
-git clone https://github.com/mcpany/core.git
-cd core
-```
-
-### 2. Install Dependencies
-Ensure `bazelisk` is installed and available in your `PATH`. We strictly use Bazel via `bazelisk` for all builds and tests.
-
-### 3. Run the App
-Run the server with the included Hello World example configuration:
-```bash
-bazelisk run //server/cmd/mcpany -- -config examples/hello_world.yaml
-```
-*The server will start and you can connect your MCP-compatible client to the local instance.*
-
-## Developer Workflow
-
-We enforce the use of `bazelisk` for all common development tasks.
-
-- **Run the tests:**
-  Execute all unit, integration, and E2E tests using Bazelisk (Mandatory) or Make:
-  ```bash
-  bazelisk test //...
-  # OR
-  make test
-  ```
-
-- **Run lint:**
-  Execute all linters using Make:
-  ```bash
-  make lint
-  ```
-
-- **Build the binary:**
-  Build the server executable:
-  ```bash
-  bazelisk build //server/cmd/mcpany
-  ```
+## Elevator Pitch
+MCP Any is the definitive, "Gold Standard" Universal Adapter for AI agents. It completely eliminates the need to implement custom Model Context Protocol (MCP) servers for individual API integrations. MCP Any empowers developers to build secure, capability-enabled APIs (REST, gRPC, GraphQL, Command-line) through lightweight YAML/JSON configurations. A single `mcpany` instance serves as your ultimate, universal bridge. Forget writing boilerplate adapters—configure MCP Any and let it handle tool discovery, routing, and safety policies autonomously.
 
 ## Architecture
 MCP Any relies on a "Configuration over Code" pattern. Users deploy a single binary which reads dynamically loaded capability definitions. The architecture supports gRPC, OpenAPI, HTTP, GraphQL, and CLI tools.
@@ -77,8 +31,46 @@ graph TD
     C -->|Standard I/O| G[Command Line Tools]:::target
 ```
 
-## Configuration
+## Getting Started
 
+### 1. Clone the repository
+```bash
+git clone https://github.com/mcpany/core.git
+cd core
+```
+
+### 2. Install Dependencies
+Ensure `bazelisk` is installed and available in your `PATH`. We strictly use Bazel via `bazelisk` for all builds and tests.
+
+### 3. Run the App
+Run the server with the included Hello World example configuration:
+```bash
+bazelisk run //server/cmd/mcpany -- -config examples/hello_world.yaml
+```
+*The server will start and you can connect your MCP-compatible client to the local instance.*
+
+## Development
+We enforce the use of `bazelisk` for all common development tasks.
+
+- **Run the tests:**
+  Execute all unit, integration, and E2E tests using Make:
+  ```bash
+  make test
+  ```
+
+- **Run lint:**
+  Execute all linters using Make:
+  ```bash
+  make lint
+  ```
+
+- **Build the binary:**
+  Build the server executable:
+  ```bash
+  bazelisk build //server/cmd/mcpany
+  ```
+
+## Configuration
 MCP Any requires configurations to be provided via YAML/JSON.
 
 - **Configs:** Place capability configurations in the `./configs` directory. These define what upstream capabilities your MCP Any server exposes.

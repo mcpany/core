@@ -2,38 +2,46 @@ package arh
 
 // AutomatedRemediationHub acts as a placeholder for the Compliance service.
 //
-// Intent: Provides a verifiable audit trail for AI-powered fix suggestions, satisfying SSDF requirements.
+// Summary: Provides a verifiable audit trail for AI-powered fix suggestions, satisfying SSDF requirements.
+//
 //
 // Parameters:
-//   - None.
+//   - Enabled (bool): Indicates if the hub is active and recording compliance events.
+//
 //
 // Returns:
-//   - None.
+//   - Not applicable for a type.
+//
 //
 // Errors:
-//   - None.
+//   - Not applicable for a type.
+//
 //
 // Side Effects:
-//   - None.
+//   - Instantiation of this type does not produce side effects.
 type AutomatedRemediationHub struct {
 	Enabled bool
 }
 
 // NewAutomatedRemediationHub returns a new ARH instance.
 //
-// Intent: Initializes the ARH placeholder.
+// Summary: Initializes and returns a new ARH placeholder instance with the service enabled by default.
+//
 //
 // Parameters:
-//   - None.
+//   - This function does not accept any parameters.
+//
 //
 // Returns:
-//   - *AutomatedRemediationHub: The initialized placeholder.
+//   - *AutomatedRemediationHub: A pointer to the newly allocated and initialized ARH instance.
+//
 //
 // Errors:
-//   - None.
+//   - This function does not produce any errors.
+//
 //
 // Side Effects:
-//   - None.
+//   - Allocates memory for a new AutomatedRemediationHub struct.
 func NewAutomatedRemediationHub() *AutomatedRemediationHub {
 	return &AutomatedRemediationHub{
 		Enabled: true,
