@@ -27,12 +27,18 @@ bazelisk run //server/cmd/mcpany -- -config examples/hello_world.yaml
 
 ## Developer Workflow
 
-We enforce the use of `bazelisk` for all common development tasks.
+We enforce the use of `make` for all common development tasks.
 
 - **Run the tests:**
-  Execute all unit, integration, and E2E tests using Bazelisk (Mandatory):
+  Execute all unit, integration, and E2E tests using Make (Mandatory):
   ```bash
-  bazelisk test //...
+  make test
+  ```
+
+- **Lint the code:**
+  Run the linter to ensure style compliance:
+  ```bash
+  make lint
   ```
 
 - **Build the binary:**

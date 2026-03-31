@@ -11,8 +11,13 @@ import (
 type LeaseStatus string
 
 const (
+	// StatusActive indicates the subagent lease is currently valid and authorized to execute operations.
 	StatusActive  LeaseStatus = "ACTIVE"
+
+	// StatusExpired indicates the subagent lease has naturally exceeded its Time-To-Live (TTL) without renewal.
 	StatusExpired LeaseStatus = "EXPIRED"
+
+	// StatusPruned indicates the subagent lease was forcefully terminated or garbage collected by the reaper daemon.
 	StatusPruned  LeaseStatus = "PRUNED"
 )
 
