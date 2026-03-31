@@ -12,11 +12,35 @@ import (
 )
 
 // Request represents a tool request.
+// Request represents an incoming tool request.
+//
+// Summary: Defines the JSON structure of requests sent to the tool.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
 type Request struct {
 	Name string `json:"name"`
 }
 
 // Response represents a tool response.
+// Response represents an outgoing tool response.
+//
+// Summary: Defines the JSON structure of responses returned by the tool.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
 type Response struct {
 	Message string `json:"message"`
 }

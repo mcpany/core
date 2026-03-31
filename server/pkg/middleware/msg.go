@@ -15,13 +15,36 @@ import (
 
 // MetadataSanitizationGateway implements the MSG specification for scrubbing
 // malicious instructions from agent-ingested external metadata.
+// MetadataSanitizationGateway scrubs sensitive metadata from tool requests and responses.
+//
+// Summary: Protects sensitive system metadata from leaking to downstream components.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
 type MetadataSanitizationGateway struct {
 	config *configv1.MetadataSanitizationConfig
 	// Pre-compiled regular expressions for speed
 	imperativeRules []*regexp.Regexp
 }
 
-// NewMetadataSanitizationGateway creates a new instance of the MSG middleware.
+// NewMetadataSanitizationGateway initializes a new gateway instance.
+//
+// Summary: Creates a new MetadataSanitizationGateway ready for use.
+//
+// Parameters:
+//   - cfg (*configv1.MetadataSanitizationConfig): The configuration.
+//
+// Returns:
+//   - *MetadataSanitizationGateway: The initialized gateway.
+//
+// Throws/Errors:
+//   - None.
 func NewMetadataSanitizationGateway(cfg *configv1.MetadataSanitizationConfig) *MetadataSanitizationGateway {
 	if cfg == nil {
 		cfg = &configv1.MetadataSanitizationConfig{}
@@ -59,7 +82,18 @@ func NewMetadataSanitizationGateway(cfg *configv1.MetadataSanitizationConfig) *M
 	return msg
 }
 
-// Middleware applies the Metadata Sanitization Gateway to the given tool.
+// Middleware returns an MCP handler that wraps the next handler in the chain.
+//
+// Summary: Applies the sanitization rules to the incoming request and outgoing response.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - mcp.Middleware: The middleware constructor.
+//
+// Throws/Errors:
+//   - None.
 func (m *MetadataSanitizationGateway) Middleware() func(mcp.MethodHandler) mcp.MethodHandler {
 	if !m.config.Enabled {
 		return noOpMiddleware

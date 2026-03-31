@@ -18,7 +18,18 @@ import (
 // Summary: Normalizes arbitrary tool execution errors.
 type ErrorMappingMiddleware struct{}
 
-// NewErrorMappingMiddleware creates a new instance of ErrorMappingMiddleware.
+// NewErrorMappingMiddleware creates a new error mapping middleware.
+//
+// Summary: Initializes the middleware responsible for translating internal errors into safe external responses.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - mcp.Middleware: The initialized error mapping middleware.
+//
+// Throws/Errors:
+//   - None.
 func NewErrorMappingMiddleware() *ErrorMappingMiddleware {
 	return &ErrorMappingMiddleware{}
 }
