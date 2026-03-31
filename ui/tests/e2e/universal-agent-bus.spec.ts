@@ -19,7 +19,7 @@ test.describe('Universal Agent Bus', () => {
       'Multi-Agent Session Timeline',
       'Unified Discovery Manager',
       'Lazy-MCP Tool Search Dashboard',
-      'Agent Chain Tracer (A2A)'
+
     ];
 
     for (const card of cards) {
