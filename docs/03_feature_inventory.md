@@ -1792,3 +1792,14 @@
 ### Priority Shifts
 - **Hardware-Attested Cost Attribution (HACA)**: (Re-affirmed P0) Elevated to mandatory status for all mesh-bound tool calls to ensure economic accountability across mission-root lineages.
 - **Dynamic Mesh Resilience (DMR) Hub**: (Re-affirmed P0) Designated as the primary coordination service for migrating mission-critical state during Agent Team coordination stalls.
+
+## Evolution: [2026-07-13] Updates
+
+### Proposed Additions
+- **Hardware-Enforced Loopback Isolation (HELI) Adapter**: (P0) Authoritative security service for the LOWA provider utilizing kernel-level eBPF filters to strictly isolate local coordination traffic.
+- **Reasoning Swap Protocol (RSP) Gateway**: (P1) Resource management middleware allowing mission-root agents to dynamically swap token and reasoning-effort budgets between sub-missions.
+- **Expert-Weighted Consensus (EWC) Hub**: (P0) Distributed coordination service assigning multi-dimensional weights to agent attestation tokens based on hardware-verified skill cards.
+
+### Priority Shifts
+- **Local-Only WebSocket Auth (LOWA) Gateway**: (Re-affirmed P0) Now elevated with the requirement for mandatory **HELI** integration.
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the requirement for **RSP-compliant** budget liquidity.

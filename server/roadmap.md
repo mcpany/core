@@ -959,3 +959,8 @@ These features represent the next logical steps for the product, focusing on Ent
 #### Upcoming (2026-07-12 Evolution)
 *   **[P0] Hardware-Attested Cost Attribution (HACA)**: Advanced economic security service that cryptographically attributes token usage to specific sub-process lineage. (Added: 2026-07-12)
 *   **[P0] DMR Speculative Shard Pulling**: Performance upgrade for Dynamic Mesh Resilience hub to neutralize coordination stalls in high-density teams. (Added: 2026-07-12)
+
+#### Upcoming (2026-07-13 Evolution)
+*   **[P0] Hardware-Enforced Loopback Isolation (HELI) Adapter**: implementation of kernel-level eBPF filters for local socket isolation. (Added: 2026-07-13)
+*   **[P1] Reasoning Swap Protocol (RSP) Gateway**: dynamic resource liquidity broker for real-time ARE and token budget reallocation. (Added: 2026-07-13)
+*   **[P0] Expert-Weighted Consensus (EWC) Hub**: distributed coordination service assigning multi-dimensional weights to agent quorums. (Added: 2026-07-13)

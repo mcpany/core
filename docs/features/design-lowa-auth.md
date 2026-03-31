@@ -61,3 +61,10 @@ LOWA is a mandatory security layer for MCP Any that enforces session-bound authe
 
 ## 7. Evolutionary Changelog
 *   **2026-05-22:** Initial Document Creation.
+
+### Update: 2026-07-13 - Integrating Hardware-Enforced Loopback Isolation (HELI)
+**Context:** Emerging browser exploits are now capable of bypassing standard software-based Origin validation even with LOWA pairing.
+**Architecture Adjustment:**
+* Evolving LOWA to act as the primary interface for HELI.
+* Implementing kernel-level eBPF filtering to complement software-based token validation.
+**Security Impact:** Provides a defense-in-depth layer that interdicts unauthorized loopback packets at the socket level, neutralizing advanced socket-hijacking techniques.
