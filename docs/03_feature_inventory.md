@@ -1849,3 +1849,14 @@
 - **Stylometric Identity Anchoring (SIA)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **GIMM** integration.
 - **Optimistic Quorum Hardening (OQH)**: (Re-affirmed P0) Evolving into the **HASB Provider** for hardware-level attestation guarantees.
 - **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Elevated with mandatory **RaaS Attribution** integration for thinking-tool governance.
+
+## Evolution: [2026-07-18] Updates
+
+### Proposed Additions
+- **Repository Configuration Attestation (RCA) Gateway**: (P0) Mandatory security interceptor for project-local configurations (e.g., `.claude/settings.json`) requiring hardware-attested user approval before ingestion.
+- **Tool-Level Reasoning Attribution (TLRA) Provider**: (P0) Advanced resource management middleware that cryptographically attributes sub-reasoning effort (RaaS) to the calling tool's lineage and enforces mission-bound quotas.
+- **ClawHub Provenance Validator**: (P0) Security middleware mandating "Marketplace Attestation" for dynamic skills, verifying manifests against ClawHub or trusted auditor signatures.
+
+### Priority Shifts
+- **Stitch-Resistant Memory Segmentation (SRMS)**: (Re-affirmed P0) Elevated with mandatory "Cognitive Salt" integration for shared teammate scratchpads.
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Elevated with mandatory **TLRA** integration to neutralize "Reasoning Fork-Bombs."

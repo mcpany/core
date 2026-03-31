@@ -1475,3 +1475,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Atomic Scratchpad Guard (ASG)**: Supporting the efficiency of Agent Teams, we are introducing ASG. This layer will perform real-time, high-entropy semantic analysis of all writes to shared team workspaces (e.g., `.scratchpad`), neutralizing "Scratchpad Pollution" and race conditions.
 - **Reasoning-as-a-Service (RaaS) Attribution**: To neutralize "Reasoning Exhaustion" via thinking tools, MCP Any will implement the RaaS Attribution middleware. This will cryptographically attribute sub-reasoning effort to the calling tool's lineage and enforce mission-bound quotas for tool-initiated thinking.
 - **Stitch-Resistant Memory Segmentation (SRMS)**: To counter "Context-Stitching" exfiltration, we are upgrading the Blackboard integrity layer to include SRMS. This service will utilize "Cognitive Salt" and reasoning-aware redaction to ensure that state fragments in the shared mailbox or scratchpad cannot be re-composed into parent context traces.
+
+---
+
+## Strategic Evolution: [2026-07-18]
+### Focus: Configuration Attestation & Recursive Reasoning Sovereignty
+**Context**: The disclosure of CVE-2026-21852 (Claude Code configuration hijacking) and the rise of "Reasoning Fork-Bombs" in RaaS pilots confirm that the **Project Discovery Phase** and **Tool-Initiated Reasoning** are the new primary attack surfaces. Security must now extend from tool calls to the very configuration files that define the agent's environment, while resource governance must become tool-aware to prevent recursive cost exhaustion.
+**Strategic Pivot**:
+- **Mandatory Repository Configuration Attestation (RCA)**: MCP Any will move beyond passive file watching to "Active Configuration Gating." Every project-local setting (e.g., `.claude/settings.json`) will require a hardware-attested signature from the user before its hooks or environment variables are ingested by the gateway.
+- **Tool-Level Reasoning Attribution (TLRA)**: Supporting the RaaS era, we are evolving the Reasoning-Budget Firewall. MCP Any will cryptographically attribute "Sub-Reasoning" effort to the calling tool's lineage, enforcing tool-specific quotas to prevent "Reasoning Fork-Bombs" from exhausting the mission-root budget.
+- **ClawHub Provenance Integration**: Aligning with OpenClaw v2026.3.22, we are mandating "Marketplace Attestation" for all dynamic skill grafts. No tool will be exposed to the discovery bus unless its behavioral manifest is signed by a trusted marketplace authority (like ClawHub) or a verified security auditor.
+- **Stitch-Resistant Memory Segmentation (SRMS)**: To neutralize "Context-Stitching" (CVE-2026-88012), we are upgrading the Atomic Scratchpad Guard. Shared team workspaces will utilize "Cognitive Salt" and reasoning-aware redaction to ensure that state fragments cannot be re-assembled into parent context traces by malicious subagents.

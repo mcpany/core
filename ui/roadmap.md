@@ -812,3 +812,8 @@
 - [ ] **[P0] Scratchpad Integrity Dashboard**: (2026-07-17) Real-time visualization of atomic locks and semantic alerts for shared workspaces.
 - [ ] **[P0] RaaS Attribution Visualizer**: (2026-07-17) Visual tracker for tool-initiated reasoning effort and mission-root budget consumption.
 - [ ] **[P1] Memory Stitching Alert Center**: (2026-07-17) Forensic UI for inspecting state fragments flagged by the SRMS segmentation engine.
+
+#### Upcoming (2026-07-18 Evolution)
+- [ ] **[P0] RCA Attestation Dialog**: (2026-07-18) secure UI component for reviewing and signing project-local configuration blocks.
+- [ ] **[P0] Tool-Level Cost Attribution View**: (2026-07-18) visual tracker for RaaS reasoning effort broken down by initiating tool.
+- [ ] **[P0] ClawHub Marketplace Badge**: (2026-07-18) visual indicator for skills with verified marketplace provenance.

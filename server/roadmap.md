@@ -988,3 +988,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Atomic Scratchpad Guard (ASG)**: semantic security and atomic locking for shared team workspaces. (Added: 2026-07-17)
 *   **[P0] RaaS Attribution Middleware**: cryptographic attribution of thinking-tool reasoning effort to calling tools. (Added: 2026-07-17)
 *   **[P0] Stitch-Resistant Memory Segmentation**: advanced memory protection using "Cognitive Salt" to prevent context re-composition. (Added: 2026-07-17)
+
+#### Upcoming (2026-07-18 Evolution)
+*   **[P0] Repository Configuration Attestation (RCA) Gateway**: mandatory security interceptor for project-local configurations requiring hardware-attested user approval (CVE-2026-21852 defense). (Added: 2026-07-18)
+*   **[P0] Tool-Level Reasoning Attribution (TLRA) Provider**: cryptographic attribution of sub-reasoning effort to calling tools with mission-bound quota enforcement. (Added: 2026-07-18)
+*   **[P0] ClawHub Provenance Validator**: security middleware verifying dynamic skill manifests against ClawHub marketplace signatures. (Added: 2026-07-18)

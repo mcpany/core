@@ -44,3 +44,10 @@ Claude Code v3.0 has introduced "Agent Teams" that collaborate via a shared proj
 
 ## 7. Evolutionary Changelog
 * **2026-07-17:** Initial Document Creation.
+
+### Update: 2026-07-18 - Neutralizing Context-Stitching
+**Context:** Today's follow-up on CVE-2026-88012 reveals that "Context-Stitching" attacks are most effective in shared teammate scratchpads.
+**Architecture Adjustment:**
+- Introducing **Cognitive Salt** to the scratchpad write pipeline. ASG will now automatically inject non-functional, semantic noise into scratchpad fragments to prevent bit-level re-assembly of parent context traces.
+- Mandating **Reasoning-Aware Redaction** for all scratchpad writes crossing trust tiers (e.g., from an external specialist to a core architect).
+**Security Impact:** Prevents low-trust subagents from exfiltrating sensitive mission fragments by "stitching" together shared state.
