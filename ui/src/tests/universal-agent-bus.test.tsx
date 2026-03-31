@@ -34,6 +34,9 @@ describe("UniversalAgentBusPage", () => {
     expect(screen.getByText("Multi-Agent Session Timeline")).toBeInTheDocument();
     expect(screen.getByText("Unified Discovery Manager")).toBeInTheDocument();
     expect(screen.getByText("Lazy-MCP Tool Search Dashboard")).toBeInTheDocument();
+    expect(screen.getByText("Startup-Time Environment Attestor (STEA)")).toBeInTheDocument();
+    expect(screen.getByText("Atomic Upload Sanitizer (AUS)")).toBeInTheDocument();
+    expect(screen.getByText("Agent Team Coordination Guard (ATCG)")).toBeInTheDocument();
     expect(screen.getByText("Agent Chain Tracer (A2A)")).toBeInTheDocument();
   });
 });

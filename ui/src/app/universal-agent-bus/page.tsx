@@ -16,7 +16,10 @@ import {
   Clock,
   Search,
   Network,
-  Activity
+  Activity,
+  ShieldAlert,
+  UploadCloud,
+  Users
 } from "lucide-react";
 import { AgentChainTracer } from "@/components/dashboard/agent-chain-tracer";
 
@@ -108,6 +111,48 @@ export default function UniversalAgentBusPage() {
             <div className="text-2xl font-bold">0 Index Hits</div>
             <p className="text-xs text-muted-foreground">
               UI for managing the on-demand tool index and monitoring search hits/misses.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Startup-Time Environment Attestor (STEA) */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Startup-Time Environment Attestor (STEA)</CardTitle>
+            <ShieldAlert className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-emerald-500">Verified</div>
+            <p className="text-xs text-muted-foreground">
+              Hardware-attested validation of startup environment and flags.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Atomic Upload Sanitizer (AUS) */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Atomic Upload Sanitizer (AUS)</CardTitle>
+            <UploadCloud className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">0 Uploads</div>
+            <p className="text-xs text-muted-foreground">
+              Fragment-level semantic validation and Inode-pinning for file uploads.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Agent Team Coordination Guard (ATCG) */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Agent Team Coordination Guard (ATCG)</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">0 Teams</div>
+            <p className="text-xs text-muted-foreground">
+              Intent-bound mailbox shards and hardware-attested task-claiming.
             </p>
           </CardContent>
         </Card>

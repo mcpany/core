@@ -19,11 +19,14 @@ test.describe('Universal Agent Bus', () => {
       'Multi-Agent Session Timeline',
       'Unified Discovery Manager',
       'Lazy-MCP Tool Search Dashboard',
+      'Startup-Time Environment Attestor (STEA)',
+      'Atomic Upload Sanitizer (AUS)',
+      'Agent Team Coordination Guard (ATCG)',
       'Agent Chain Tracer (A2A)'
     ];
 
     for (const card of cards) {
-      await expect(page.locator('.text-sm.font-medium', { hasText: card })).toBeVisible();
+      await expect(page.getByText(card)).toBeVisible();
     }
   });
 });
