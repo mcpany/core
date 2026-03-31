@@ -174,7 +174,6 @@ func RegisterPlaceholders(hub *AdapterHub) {
 		"Autonomous Service Mesh Gateway",
 		"Full-Mesh Discovery Auth Provider",
 		"Federated Swarm Identity (FSI) Provider",
-		"Action-Chain Sovereignty Monitor",
 		"Quorum-Bound Summarization (QBS) Hub",
 		"Enclave-local Metadata Attestation (EMA) Provider",
 		"Physical Shard Sovereignty (PSS) Provider",

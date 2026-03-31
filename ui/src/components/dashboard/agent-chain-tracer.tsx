@@ -72,7 +72,7 @@ export function AgentChainTracer() {
     <Card className="col-span-full xl:col-span-2 overflow-hidden border-border/50 bg-background/50 backdrop-blur-xl shadow-lg transition-all duration-300">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <div className="space-y-1">
-          <CardTitle className="text-xl font-semibold flex items-center gap-2">
+          <CardTitle className="text-sm font-medium flex items-center gap-2">
             <Activity className="h-5 w-5 text-indigo-500" />
             Agent Chain Tracer (A2A)
           </CardTitle>
