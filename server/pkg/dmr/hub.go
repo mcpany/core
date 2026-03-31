@@ -12,6 +12,18 @@ import (
 )
 
 // NodeState represents the health and attestation state of a mesh node.
+// NodeState tracks the state of an agent node in the mesh.
+//
+// Summary: Defines the structure holding metrics and state for dynamic mesh resilience.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
 type NodeState struct {
 	ID             string
 	LastHeartbeat  time.Time

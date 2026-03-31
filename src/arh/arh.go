@@ -2,7 +2,7 @@ package arh
 
 // AutomatedRemediationHub acts as a placeholder for the Compliance service.
 //
-// Intent: Provides a verifiable audit trail for AI-powered fix suggestions, satisfying SSDF requirements.
+// Summary: Provides a verifiable audit trail for AI-powered fix suggestions, satisfying SSDF requirements.
 //
 // Parameters:
 //   - None.
@@ -10,7 +10,7 @@ package arh
 // Returns:
 //   - None.
 //
-// Errors:
+// Throws/Errors:
 //   - None.
 //
 // Side Effects:
@@ -21,7 +21,7 @@ type AutomatedRemediationHub struct {
 
 // NewAutomatedRemediationHub returns a new ARH instance.
 //
-// Intent: Initializes the ARH placeholder.
+// Summary: Initializes the ARH placeholder.
 //
 // Parameters:
 //   - None.
@@ -29,7 +29,7 @@ type AutomatedRemediationHub struct {
 // Returns:
 //   - *AutomatedRemediationHub: The initialized placeholder.
 //
-// Errors:
+// Throws/Errors:
 //   - None.
 //
 // Side Effects:

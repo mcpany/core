@@ -14,6 +14,18 @@ import (
 )
 
 // Signal represents a WebRTC signal.
+// Signal represents a WebRTC signaling message.
+//
+// Summary: Defines the structure for signaling messages in WebRTC setup.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
 type Signal struct {
 	Type    string `json:"type"`
 	Payload string `json:"payload"`

@@ -8,6 +8,17 @@ import (
 )
 
 // LeaseStatus represents the current state of a lease.
+//
+// Summary: Defines the possible states an active or historical lease can be in.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
 type LeaseStatus string
 
 const (
@@ -20,6 +31,17 @@ const (
 )
 
 // Lease represents an intent-bound lease for subagents.
+//
+// Summary: Defines the core lease structure for tracking resource limits and intent boundaries.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
 type Lease struct {
 	IntentID           string
 	SubagentSessionIDs []string
@@ -28,7 +50,18 @@ type Lease struct {
 	mu                 sync.RWMutex
 }
 
-// SubagentReaper manages the lifecycle of intent-bound subagents.
+// SubagentReaper monitors and cleans up orphaned or expired subagent leases.
+//
+// Summary: Reclaims resources tied to inactive subagents to prevent zombie processes.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
 type SubagentReaper struct {
 	registry map[string]*Lease
 	mu       sync.RWMutex
@@ -37,6 +70,18 @@ type SubagentReaper struct {
 }
 
 // NewSubagentReaper initializes a new Active Subagent Reaper.
+// NewSubagentReaper initializes a new subagent reaper instance.
+//
+// Summary: Creates a new SubagentReaper ready to process active leases.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *SubagentReaper: The initialized reaper instance.
+//
+// Throws/Errors:
+//   - None.
 func NewSubagentReaper() *SubagentReaper {
 	return &SubagentReaper{
 		registry: make(map[string]*Lease),
@@ -44,7 +89,19 @@ func NewSubagentReaper() *SubagentReaper {
 	}
 }
 
-// RegisterBranch creates a new speculative intent branch and assigns a lease.
+// RegisterBranch associates a parallel reasoning branch with a lease.
+//
+// Summary: Links a sub-branch of reasoning logic to its parent resource lease.
+//
+// Parameters:
+//   - intentID (string): The intent ID.
+//   - ttl (time.Duration): Time to live.
+//
+// Returns:
+//   - *Lease: The lease.
+//
+// Throws/Errors:
+//   - None.
 func (r *SubagentReaper) RegisterBranch(intentID string, ttl time.Duration) *Lease {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -59,7 +116,19 @@ func (r *SubagentReaper) RegisterBranch(intentID string, ttl time.Duration) *Lea
 	return lease
 }
 
-// RegisterSubagent attaches a subagent session to a lease.
+// RegisterSubagent attaches an active session to a lease.
+//
+// Summary: Links an agent process ID to the lease controlling its lifecycle.
+//
+// Parameters:
+//   - leaseID (string): The lease controlling the subagent.
+//   - subagentSessionID (string): The ID of the session.
+//
+// Returns:
+//   - error: An error if it fails.
+//
+// Throws/Errors:
+//   - error: If the lease is not found.
 func (r *SubagentReaper) RegisterSubagent(intentID string, sessionID string) error {
 	r.mu.RLock()
 	lease, exists := r.registry[intentID]
@@ -80,7 +149,20 @@ func (r *SubagentReaper) RegisterSubagent(intentID string, sessionID string) err
 	return nil
 }
 
-// RecordHeartbeat updates the Last-Seen timestamp (Expiry) for an active lease.
+// RecordHeartbeat prolongs the lease for a given subagent.
+//
+// Summary: Renews the expiration timer for a subagent actively doing work.
+//
+// Parameters:
+//   - intentID (string): The subagent extending its lease.
+//   - signature (string): The subagent signature.
+//   - extendBy (time.Duration): Extended duration.
+//
+// Returns:
+//   - error: An error if it fails.
+//
+// Throws/Errors:
+//   - error: If the intent is not found.
 func (r *SubagentReaper) RecordHeartbeat(intentID string, signature string, extendBy time.Duration) error {
 	r.mu.RLock()
 	lease, exists := r.registry[intentID]
@@ -104,6 +186,18 @@ func (r *SubagentReaper) RecordHeartbeat(intentID string, signature string, exte
 }
 
 // PruneIntent manually invalidates a lease and rolls back uncommitted writes.
+// PruneIntent forcibly cleans up all leases and subagents tied to an intent.
+//
+// Summary: Immediately revokes all resources scoped to the given logical task.
+//
+// Parameters:
+//   - intentID (string): The logical intent to terminate.
+//
+// Returns:
+//   - error: An error if it fails.
+//
+// Throws/Errors:
+//   - error: If the intent is not found.
 func (r *SubagentReaper) PruneIntent(intentID string) error {
 	r.mu.RLock()
 	lease, exists := r.registry[intentID]
@@ -121,7 +215,18 @@ func (r *SubagentReaper) PruneIntent(intentID string) error {
 	return nil
 }
 
-// Start begins the Reaper Daemon background worker.
+// Start launches the background sweeping process.
+//
+// Summary: Initiates the ticker loop to continuously evaluate and collect expired leases.
+//
+// Parameters:
+//   - ctx (context.Context): Context to control the goroutine lifecycle.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
 func (r *SubagentReaper) Start(ctx context.Context, interval time.Duration) {
 	r.ticker = time.NewTicker(interval)
 	go func() {
@@ -141,6 +246,18 @@ func (r *SubagentReaper) Start(ctx context.Context, interval time.Duration) {
 }
 
 // Stop halts the Reaper Daemon.
+// Stop terminates the background sweep.
+//
+// Summary: Halts the automatic garbage collection of subagent leases.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
 func (r *SubagentReaper) Stop() {
 	close(r.quit)
 }
@@ -161,7 +278,19 @@ func (r *SubagentReaper) sweep() {
 	}
 }
 
-// GetLeaseStatus returns the status of a given lease.
+// GetLeaseStatus fetches the current state of a lease.
+//
+// Summary: Retrieves the state indicator for an active intent lease.
+//
+// Parameters:
+//   - leaseID (string): The target lease.
+//
+// Returns:
+//   - LeaseStatus: The active status.
+//   - error: An error if the lease is unknown.
+//
+// Throws/Errors:
+//   - error: If the lease is not found.
 func (r *SubagentReaper) GetLeaseStatus(intentID string) (LeaseStatus, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
