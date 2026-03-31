@@ -684,7 +684,7 @@
 - [ ] **[P1] FPIR Lease Monitor**: Dashboard for tracking fast-path identity resumption leases and teammate rotation latency. (Added: 2026-06-29)
 
 #### Upcoming (2026-03-23 Evolution - v2)
-- [ ] **[P0] A2A Auth Status Dashboard**: (2026-03-23) Visualize authenticated inter-agent handshakes and peer-to-peer security status.
+- [x] **[P0] A2A Auth Status Dashboard**: (2026-03-23) Visualize authenticated inter-agent handshakes and peer-to-peer security status.
 - [ ] **[P1] Usage Quota Dashboard**: (2026-03-23) Real-time visualization of mission budget consumption and quota burn rates.
 - [ ] **[P1] Sandbox Identity Viewer**: (2026-03-23) Real-time status for gVisor-bound tools and execution environment integrity proofs.
 

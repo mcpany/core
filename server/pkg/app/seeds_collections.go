@@ -48,5 +48,40 @@ func init() {
 				mkTemplate("github", "GitHub Tools", "{}", "npx -y @modelcontextprotocol/server-github"),
 			},
 		}.Build(),
+		configv1.Collection_builder{
+			Name:        proto.String("A2A Security Mesh"),
+			Description: proto.String("Gold Standard demonstration of A2A Auth and secure agent-to-agent handshakes."),
+			Version:     proto.String("1.0.0"),
+			Services: []*configv1.UpstreamServiceConfig{
+				mkTemplate(
+					"a2a-auth-proxy",
+					"A2A Authentication Proxy",
+					`{
+  "type": "object",
+  "title": "A2A Proxy Configuration",
+  "properties": {
+    "MESH_SECRET": {
+      "type": "string",
+      "title": "Mesh Secret",
+      "description": "Cryptographic secret for agent mesh.",
+      "format": "password"
+    }
+  },
+  "required": ["MESH_SECRET"]
+}`,
+					"mcpany-a2a-proxy --secret ${MESH_SECRET}",
+				),
+				mkTemplate(
+					"a2a-status-monitor",
+					"A2A Auth Status Monitor",
+					`{
+  "type": "object",
+  "title": "Status Monitor Configuration",
+  "properties": {}
+}`,
+					"mcpany-a2a-monitor --dashboard",
+				),
+			},
+		}.Build(),
 	}
 }
