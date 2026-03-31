@@ -1,5 +1,5 @@
 /**
- * Intent: Document MarketplaceItemConfig
+ * Summary: Document MarketplaceItemConfig
  *
  * Params:
  *   - None
@@ -27,7 +27,7 @@ export interface MarketplaceItemConfig {
 }
 
 /**
- * Intent: Document EnvVarDefinition
+ * Summary: Document EnvVarDefinition
  *
  * Params:
  *   - None
@@ -53,7 +53,7 @@ export interface EnvVarDefinition {
 }
 
 /**
- * Intent: Document MarketplaceItem
+ * Summary: Document MarketplaceItem
  *
  * Params:
  *   - None
@@ -78,7 +78,7 @@ export interface MarketplaceItem {
 }
 
 /**
- * Intent: Document MARKETPLACE_ITEMS
+ * Summary: Document MARKETPLACE_ITEMS
  *
  * Params:
  *   - None

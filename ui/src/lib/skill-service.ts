@@ -5,7 +5,7 @@ import { apiClient } from './client';
 import { Skill } from '@proto/config/v1/skill';
 
 /**
- * Intent: Document SkillService
+ * Summary: Document SkillService
  *
  * Params:
  *   - None

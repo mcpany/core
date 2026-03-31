@@ -1,5 +1,5 @@
 /**
- * Intent: Document ServiceRegistryItem
+ * Summary: Document ServiceRegistryItem
  *
  * Params:
  *   - None
@@ -27,7 +27,7 @@ export interface ServiceRegistryItem {
 }
 
 /**
- * Intent: Document SERVICE_REGISTRY
+ * Summary: Document SERVICE_REGISTRY
  *
  * Params:
  *   - None

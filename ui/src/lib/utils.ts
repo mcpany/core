@@ -7,7 +7,7 @@ import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
 /**
- * Intent: Document cn
+ * Summary: Document cn
  *
  * Params:
  *   - None
@@ -16,7 +16,7 @@ import { twMerge } from "tailwind-merge"
  *
  * Summary: Merges Tailwind CSS classes logically, resolving conflicts.
  *
- * Parameters:
+ * Params:
  *   - inputs (...ClassValue[]): A list of class values (strings, arrays, objects) to combine.
  *
  * Returns:

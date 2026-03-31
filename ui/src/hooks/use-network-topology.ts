@@ -10,7 +10,7 @@ import { Graph, Node as TopologyNode } from '../types/topology';
 import { useTopology } from '../contexts/service-health-context';
 
 /**
- * Intent: Document NetworkGraphState
+ * Summary: Document NetworkGraphState
  *
  * Params:
  *   - None
@@ -81,7 +81,7 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
 };
 
 /**
- * Intent: Document useNetworkTopology
+ * Summary: Document useNetworkTopology
  *
  * Params:
  *   - None

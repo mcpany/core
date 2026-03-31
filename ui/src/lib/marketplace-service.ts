@@ -6,7 +6,7 @@
 import { apiClient, UpstreamServiceConfig } from "@/lib/client";
 
 /**
- * Intent: Document ServiceCollection
+ * Summary: Document ServiceCollection
  *
  * Params:
  *   - None
@@ -36,7 +36,7 @@ export interface ServiceCollection {
 }
 
 /**
- * Intent: Document ExternalMarketplace
+ * Summary: Document ExternalMarketplace
  *
  * Params:
  *   - None
@@ -66,7 +66,7 @@ export interface ExternalMarketplace {
 }
 
 /**
- * Intent: Document ExternalServer
+ * Summary: Document ExternalServer
  *
  * Params:
  *   - None
@@ -96,7 +96,7 @@ export interface ExternalServer {
 }
 
 /**
- * Intent: Document CommunityServer
+ * Summary: Document CommunityServer
  *
  * Params:
  *   - None
@@ -143,7 +143,7 @@ const PUBLIC_MARKETPLACES: ExternalMarketplace[] = [
 ];
 
 /**
- * Intent: Document marketplaceService
+ * Summary: Document marketplaceService
  *
  * Params:
  *   - None

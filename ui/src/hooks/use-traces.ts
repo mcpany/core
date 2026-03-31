@@ -14,7 +14,7 @@ interface UseTracesOptions {
 const MAX_TRACES = 1000;
 
 /**
- * Intent: Document useTraces
+ * Summary: Document useTraces
  *
  * Params:
  *   - Documented below.

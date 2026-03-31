@@ -68,7 +68,7 @@ const addToRemoveQueue = (toastId: string) => {
 }
 
 /**
- * Intent: Document reducer
+ * Summary: Document reducer
  *
  * Params:
  *   - Documented below.

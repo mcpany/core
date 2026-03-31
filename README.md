@@ -53,12 +53,20 @@ Key architectural features include:
 ### High-Level Flow
 ```mermaid
 graph TD
-    A[Client Application (LLM/Agent)] --> B(MCP Any Adapter)
-    B --> C{Capability Configuration}
-    C -->|REST/OpenAPI| D[REST API]
-    C -->|gRPC| E[gRPC Service]
-    C -->|GraphQL| F[GraphQL Endpoint]
-    C -->|CLI| G[Command Line Tool]
+    classDef agent fill:#f9f,stroke:#333,stroke-width:2px;
+    classDef core fill:#bbf,stroke:#333,stroke-width:2px;
+    classDef target fill:#bfb,stroke:#333,stroke-width:2px;
+
+    A[Client Application / Agent Framework]:::agent -->|Model Context Protocol| B(MCP Any Adapter Hub):::core
+
+    subgraph Config [Capability Configurations]
+        B --> C{Dynamic Router}
+    end
+
+    C -->|REST/OpenAPI Specs| D[REST/HTTP API]:::target
+    C -->|Protobuf/Reflection| E[gRPC Service]:::target
+    C -->|GraphQL Schema| F[GraphQL Endpoint]:::target
+    C -->|Standard I/O| G[Command Line Tools]:::target
 ```
 
 ## Configuration

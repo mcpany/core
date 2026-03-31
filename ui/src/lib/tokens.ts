@@ -4,7 +4,7 @@
  */
 
 /**
- * Intent: Document estimateTokens
+ * Summary: Document estimateTokens
  *
  * Params:
  *   - None
@@ -13,7 +13,7 @@
  *
  * Summary: Provides a rough estimation of the number of tokens for UI purposes.
  *
- * Parameters:
+ * Params:
  *   - input (any): The text or object to estimate tokens for.
  *
  * Returns:
@@ -46,7 +46,7 @@ export function estimateTokens(input: any): number {
 }
 
 /**
- * Intent: Document estimateMessageTokens
+ * Summary: Document estimateMessageTokens
  *
  * Params:
  *   - None
@@ -55,7 +55,7 @@ export function estimateTokens(input: any): number {
  *
  * Summary: Aggregates the estimated token count for an array of message objects.
  *
- * Parameters:
+ * Params:
  *   - messages (any[]): Array of message objects containing content.
  *
  * Returns:
@@ -78,7 +78,7 @@ export function estimateMessageTokens(messages: any[]): number {
 }
 
 /**
- * Intent: Document formatTokenCount
+ * Summary: Document formatTokenCount
  *
  * Params:
  *   - None
@@ -87,7 +87,7 @@ export function estimateMessageTokens(messages: any[]): number {
  *
  * Summary: Converts a token count into a formatted string (e.g., 1.2k).
  *
- * Parameters:
+ * Params:
  *   - count (number): The number of tokens.
  *
  * Returns:
@@ -107,7 +107,7 @@ export function formatTokenCount(count: number): string {
 }
 
 /**
- * Intent: Document calculateCost
+ * Summary: Document calculateCost
  *
  * Params:
  *   - None
@@ -116,7 +116,7 @@ export function formatTokenCount(count: number): string {
  *
  * Summary: Estimates the cost in USD based on a generic pricing model.
  *
- * Parameters:
+ * Params:
  *   - tokens (number): The number of tokens.
  *
  * Returns:
@@ -136,7 +136,7 @@ export function calculateCost(tokens: number): number {
 }
 
 /**
- * Intent: Document formatCost
+ * Summary: Document formatCost
  *
  * Params:
  *   - None
@@ -145,7 +145,7 @@ export function calculateCost(tokens: number): number {
  *
  * Summary: Formats a numerical cost into a USD currency string.
  *
- * Parameters:
+ * Params:
  *   - cost (number): The cost in USD.
  *
  * Returns:

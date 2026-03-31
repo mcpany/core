@@ -7,7 +7,7 @@ import {genkit} from 'genkit';
 import {googleAI} from '@genkit-ai/google-genai';
 
 /**
- * Intent: Document ai
+ * Summary: Document ai
  *
  * Params:
  *   - None

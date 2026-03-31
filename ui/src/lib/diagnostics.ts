@@ -6,7 +6,7 @@
 import { Trace } from "@/types/trace";
 
 /**
- * Intent: Document Diagnostic
+ * Summary: Document Diagnostic
  *
  * Params:
  *   - None
@@ -34,7 +34,7 @@ export interface Diagnostic {
 }
 
 /**
- * Intent: Document analyzeTrace
+ * Summary: Document analyzeTrace
  *
  * Params:
  *   - Documented below.

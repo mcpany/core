@@ -9,7 +9,7 @@ const STORAGE_KEY = "mcpany-recent-tools";
 const MAX_RECENT_TOOLS = 5;
 
 /**
- * Intent: Document useRecentTools
+ * Summary: Document useRecentTools
  *
  * Params:
  *   - None
