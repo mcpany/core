@@ -23,9 +23,73 @@ type NodeState struct {
 //
 // Summary: The authoritative coordinator for mesh resilience and state migration.
 type Hub interface {
+	// RegisterNode adds a new node to the mesh or updates its state.
+	//
+	// Summary: Registers a node in the DMR Hub.
+	//
+	// Parameters:
+	//   - id (string): The unique identifier of the node.
+	//   - isAttested (bool): Whether the node has provided valid hardware attestation.
+	//
+	// Returns:
+	//   - error: An error if the id is empty.
+	//
+	// Errors:
+	//   - Returns "node id cannot be empty" if id is empty.
+	//
+	// Side Effects:
+	//   - Modifies the internal nodes map.
 	RegisterNode(id string, isAttested bool) error
+
+	// Heartbeat processes a heartbeat signal from a mesh node.
+	//
+	// Summary: Updates the last heartbeat timestamp for a node.
+	//
+	// Parameters:
+	//   - id (string): The unique identifier of the node.
+	//
+	// Returns:
+	//   - error: An error if the node is not found.
+	//
+	// Errors:
+	//   - Returns "node not found" if the node is not registered.
+	//
+	// Side Effects:
+	//   - Updates the LastHeartbeat time for the node.
 	Heartbeat(id string) error
+
+	// CheckHealth scans the registered nodes for timeouts or attestation failures.
+	//
+	// Summary: Evaluates node health and triggers migration for failed nodes.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for the health check.
+	//
+	// Returns:
+	//   - []string: A list of node IDs that have failed and require migration.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - Can send failed node IDs to the migration channel.
 	CheckHealth(ctx context.Context) []string
+
+	// MigrationChannel returns a read-only channel for listening to migration events.
+	//
+	// Summary: Provides access to the stream of failed node IDs that require migration.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - <-chan string: A channel emitting failed node IDs.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	MigrationChannel() <-chan string
 }
 

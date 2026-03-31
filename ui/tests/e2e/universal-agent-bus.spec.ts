@@ -18,12 +18,13 @@ test.describe('Universal Agent Bus', () => {
       'Recursive Context Dashboard',
       'Multi-Agent Session Timeline',
       'Unified Discovery Manager',
-      'Lazy-MCP Tool Search Dashboard',
-      'Agent Chain Tracer (A2A)'
+      'Lazy-MCP Tool Search Dashboard'
     ];
 
     for (const card of cards) {
       await expect(page.locator('.text-sm.font-medium', { hasText: card })).toBeVisible();
     }
+
+    await expect(page.locator('.text-xl.font-semibold', { hasText: 'Agent Chain Tracer (A2A)' })).toBeVisible();
   });
 });
