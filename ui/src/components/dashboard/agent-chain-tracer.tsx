@@ -45,12 +45,12 @@ export function AgentChainTracer() {
   // Map real traces to the UI format. Limit to recent 5 to match previous mock behavior.
   const chainData = traces.slice(0, 5).map(t => ({
       id: t.id,
-      agent: t.root_span?.serviceName || t.profile_id || "Orchestrator",
-      action: t.root_span?.name || t.tool_name || "Task Execution",
-      status: t.error ? "active" : "attested",
-      latency: t.total_duration_ms ? `${t.total_duration_ms}ms` : "--",
+      agent: t.rootSpan?.serviceName || "Orchestrator",
+      action: t.rootSpan?.name || "Task Execution",
+      status: t.rootSpan?.errorMessage ? "active" : "attested",
+      latency: t.totalDuration ? `${t.totalDuration}ms` : "--",
       hash: t.id.substring(0, 10) + "...",
-      details: t.error || "Execution trace logged by system.",
+      details: t.rootSpan?.errorMessage || "Execution trace logged by system.",
       timestamp: new Date(t.timestamp).toLocaleTimeString(),
   }));
 
