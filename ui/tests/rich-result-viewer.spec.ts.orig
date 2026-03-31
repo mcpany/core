@@ -96,7 +96,7 @@ test.describe('Rich Result Viewer', () => {
     await expect(page.getByText('Alice')).toBeVisible();
 
     // Switch to Raw Output tab
-    // Raw Output tab is not always visible or not available when we mapped it differently
-    // Commenting this out since the array mapping might have changed the raw output handling
+    await viewerTabs.getByRole('tab', { name: 'Raw Output' }).click();
+    await expect(page.getByText('"stdout":')).toBeVisible();
   });
 });
