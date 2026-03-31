@@ -800,3 +800,8 @@
 #### Upcoming (2026-07-12 Evolution)
 - [ ] **[P0] Mission Cost Attribution Dashboard**: (2026-07-12) Visual tracker for HACA-bound reasoning costs and mission-root budget consumption.
 - [ ] **[P0] Mesh Resilience Status Hub**: (2026-07-12) Real-time visualization of DMR-mediated state migration and node health status.
+
+#### Upcoming (2026-07-16 Evolution)
+- [ ] **[P0] ASCQ Consensus Dashboard**: (2026-07-16) Real-time visualization of fragment-level semantic drift and compaction quorums.
+- [ ] **[P0] HAMC Drift Monitor**: (2026-07-16) Visual tracker for TPM-bound monotonic clock consistency and sync alerts.
+- [ ] **[P0] Enclave Utilization Map**: (2026-07-16) Real-time tracker for SAG-gated hardware enclave calls and attestation latency.

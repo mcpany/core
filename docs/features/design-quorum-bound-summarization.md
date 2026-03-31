@@ -66,3 +66,11 @@ MCP Any needs to act as the authoritative governor for context lifecycle. QBS in
 * Introducing **Shard Versioning** in the Blackboard to track "Speculative" vs. "Consensus" states.
 * Mandating an automated **Rollback Trigger** that reverts agent reasoning state if the Auditor quorum fails or detects mission-root erasure.
 **Security Impact:** Maintains machine-speed coordination while providing a safety net for consensus-driven state compression.
+
+### Update: 2026-07-16 - Addressing Semantic Erosion via ASCQ
+**Context:** High-frequency compaction is leading to the loss of critical mission intent fragments (Semantic Erosion).
+**Architecture Adjustment:**
+* Upgrading the QBS Hub to support the **Atomic Shard-Compaction Quorum (ASCQ)** standard.
+* Mandating fragment-level "Intent Consistency" checks before any shard compaction event.
+* Introducing "Semantic Persistence Proofs" that must be signed by the Auditor quorum during compaction.
+**Security Impact:** Ensures that security boundaries and core mission constraints remain immutable during context summarization.

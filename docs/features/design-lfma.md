@@ -59,3 +59,11 @@ The Lock-Free Mesh Arbiter (LFMA) is designed to provide a decentralized, non-bl
 
 ## 7. Evolutionary Changelog
 *   **2026-05-31:** Initial Document Creation.
+
+### Update: 2026-07-16 - Neutralizing Clock-Drift Injection
+**Context:** Today's market sync revealed CVE-2026-41221, where compromised agents manipulate system clocks to "win" CRDT conflict resolution.
+**Architecture Adjustment:**
+* Deprecating reliance on local system time for LWW-Element-Set resolution.
+* Integrating mandatory **Hardware-Attested Monotonic Clocks (HAMC)** for all task-claim timestamps.
+* Adding a "Clock-Sanity" middleware that rejects coordination fragments missing a signed TPM counter.
+**Security Impact:** Prevents state-injection attacks designed to hijack the Shared Task List via temporal spoofing.

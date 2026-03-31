@@ -975,3 +975,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Active Subagent Reaper**: authoritative "Swarm Execution Monitor" to forcefully terminate orphaned specialist agents and purge "Intent Residue." (Added: 2026-07-14)
 *   **[P0] Monotonic Handshake Lineage (MHL)**: implementation of unique, sequential tokens for inter-agent messages to neutralize "Mailbox Echo Poisoning." (Added: 2026-07-14)
 *   **[P0] Optimistic Quorum Hardening (OQH)**: mandatory post-speculative hardware attestation for discovery quorums to prevent "Speculative Bypass" exploits. (Added: 2026-07-14)
+
+#### Upcoming (2026-07-16 Evolution)
+*   **[P0] Atomic Shard-Compaction Quorum (ASCQ)**: Consensus-broker requiring multi-agent attestation for context sharding to prevent semantic erosion. (Added: 2026-07-16)
+*   **[P0] Hardware-Attested Monotonic Clocks (HAMC)**: TPM-bound high-fidelity timing service for CRDT conflict resolution. (Added: 2026-07-16)
+*   **[P0] Speculative Attestation Governor (SAG)**: Performance middleware for rate-limiting and prioritizing hardware enclave signatures. (Added: 2026-07-16)
