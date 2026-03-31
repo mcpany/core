@@ -54,7 +54,7 @@ export default function UniversalAgentBusPage() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Universal Agent Bus</h1>
         <p className="text-muted-foreground mt-2">
-          Manage and map subagents dynamically. Visualize, configure, and orchestrate interactions between complex AI swarms.
+          Manage and map subagents dynamically.
         </p>
       </div>
 
