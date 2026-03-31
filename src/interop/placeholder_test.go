@@ -34,4 +34,56 @@ func TestPlaceholderAdapter(t *testing.T) {
 	} else if err.Error() != "Not Implemented: Dynamic Mesh Resilience (DMR) Hub is a placeholder service" {
 		t.Errorf("Expected correct SyncMemoryShard error, got: %s", err.Error())
 	}
+
+    stream, err := adapter.StreamTask(context.Background(), &interop.Task{})
+    if err == nil {
+        t.Error("Expected StreamTask to return an error, got nil")
+    } else if err.Error() != "placeholder method: not implemented" {
+        t.Errorf("Expected correct StreamTask error, got: %s", err.Error())
+    }
+    if stream != nil {
+        t.Error("Expected StreamTask stream to be nil")
+    }
+}
+
+func TestNewPlaceholderAdapterNilCapabilities(t *testing.T) {
+    adapter := interop.NewPlaceholderAdapter("Nil Caps Hub", nil)
+
+    if adapter.Name() != "Nil Caps Hub" {
+        t.Errorf("Expected name 'Nil Caps Hub', got '%s'", adapter.Name())
+    }
+
+    if adapter.SupportsCapability("any_capability") {
+        t.Error("Expected no capabilities to be supported when initialized with nil")
+    }
+}
+
+func TestRegisterPlaceholders(t *testing.T) {
+    hub := interop.NewAdapterHub()
+    interop.RegisterPlaceholders(hub)
+
+    // Test a sample feature that should be registered
+    task := &interop.Task{
+        Framework: "Dynamic Mesh Resilience (DMR) Hub",
+        Intent: "any",
+    }
+
+    _, err := hub.RouteTask(context.Background(), task)
+    if err == nil {
+        t.Error("Expected routing to placeholder to return an error")
+    } else if err.Error() != "Not Implemented: Dynamic Mesh Resilience (DMR) Hub is a placeholder service" {
+        t.Errorf("Unexpected error from routed placeholder: %s", err.Error())
+    }
+
+    // Test that something NOT in the missingFeatures list returns an adapter not registered error
+    taskUnknown := &interop.Task{
+        Framework: "Not A Real Feature (NARF)",
+        Intent: "any",
+    }
+    _, err = hub.RouteTask(context.Background(), taskUnknown)
+    if err == nil {
+        t.Error("Expected unknown framework to return an error")
+    } else if err.Error() != "no adapter registered for framework: Not A Real Feature (NARF)" {
+        t.Errorf("Unexpected error for unknown framework: %s", err.Error())
+    }
 }
