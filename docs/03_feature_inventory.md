@@ -1,3 +1,14 @@
+## Evolution: [2026-07-13] Updates
+
+### Proposed Additions
+- **Zero-Trust Local Handshake Provider**: (P0) Mandatory security middleware enforcing origin-bound, hardware-attested handshakes for all local WebSocket and API interactions. Neutralizes CVE-2026-25253 style loopback hijacking.
+- **Mesh-Bound Teammate Synchronizer**: (P0) High-performance coordination service utilizing lock-free, CRDT-based state synchronization for shared teammate mailboxes in horizontal swarms.
+- **Hardware-Attested Cost Attribution (HACA) v2**: (P0) Enhanced economic security service extending attribution to fragment-level reasoning effort (ARE), ensuring granular quota enforcement across the mesh.
+
+### Priority Shifts
+- **Zero-Trust Local Handshake Provider**: (New P0) Designated as the highest priority fix for the local loopback trust collapse.
+- **Mesh-Bound Teammate Synchronizer**: (New P0) Promoted to resolve performance bottlenecks in GA-level horizontal Agent Teams.
+
 # Feature Inventory: MCP Any
 
 ## Evolution: [2026-07-12] Updates
