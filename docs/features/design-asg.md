@@ -44,3 +44,10 @@ Claude Code v3.0 has introduced "Agent Teams" that collaborate via a shared proj
 
 ## 7. Evolutionary Changelog
 * **2026-07-17:** Initial Document Creation.
+
+### Update: 2026-07-18 - Incorporating Reasoning-Aware Redaction (RAR)
+**Context**: Today's market sync revealed the launch of OpenClaw v3.6 with RAR, which redacts intents at the edge. To remain the universal infrastructure layer, ASG must integrate with the RAR engine to protect shared scratchpads from "Context-Stitching" (CVE-2026-88012).
+**Architecture Adjustment**:
+*   **RAR Integration**: Appending the RAR engine as a mandatory pre-processor in Section 4.
+*   **Atomic Arbiter**: Upgrading the Lock Manager to include "Conflict-Aware Redaction," ensuring that locked fragments are sanitized based on the reader's trust level.
+**Security Impact**: Mitigates stylometric mimicry and cross-agent intent leakage in high-contention team workspaces.

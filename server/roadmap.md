@@ -988,3 +988,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Atomic Scratchpad Guard (ASG)**: semantic security and atomic locking for shared team workspaces. (Added: 2026-07-17)
 *   **[P0] RaaS Attribution Middleware**: cryptographic attribution of thinking-tool reasoning effort to calling tools. (Added: 2026-07-17)
 *   **[P0] Stitch-Resistant Memory Segmentation**: advanced memory protection using "Cognitive Salt" to prevent context re-composition. (Added: 2026-07-17)
+
+#### Upcoming (2026-07-18 Evolution)
+*   **[P0] Reasoning-Aware Redaction (RAR) Engine**: Authoritative semantic scrubbing service for tool-local state and shared workspaces. (Added: 2026-07-18)
+*   **[P0] Stitch-Resistant Memory Segmentation (SRMS)**: Advanced memory protection using "Cognitive Salt" and reasoning-aware redaction. (Added: 2026-07-18)
+*   **[P0] Atomic Scratchpad Arbiter**: Kernel-level lock manager for project-local scratchpads providing mission-bound atomic write-access. (Added: 2026-07-18)
+*   **[P0] RaaS Attribution & Quota Enforcer**: Resource management middleware for cryptographically attributing thinking-tool effort to lineage. (Added: 2026-07-18)

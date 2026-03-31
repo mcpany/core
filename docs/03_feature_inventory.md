@@ -1849,3 +1849,15 @@
 - **Stylometric Identity Anchoring (SIA)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **GIMM** integration.
 - **Optimistic Quorum Hardening (OQH)**: (Re-affirmed P0) Evolving into the **HASB Provider** for hardware-level attestation guarantees.
 - **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Elevated with mandatory **RaaS Attribution** integration for thinking-tool governance.
+
+## Evolution: [2026-07-18] Updates
+
+### Proposed Additions
+- **Reasoning-Aware Redaction (RAR) Engine**: (P0) Authoritative semantic scrubbing service identifying and redacting mission-root intents from tool-local state and shared workspaces to neutralize "Context-Stitching."
+- **RaaS Attribution & Quota Enforcer**: (P0) Resource management middleware cryptographically attributing sub-reasoning effort to tool lineage and enforcing mission-bound budgets.
+- **Stitch-Resistant Memory Segmentation (SRMS)**: (P0) Advanced memory protection utilizing "Cognitive Salt" and reasoning-aware redaction to prevent fragmented context re-composition.
+- **Atomic Scratchpad Arbiter**: (P0) Kernel-level lock manager for shared team scratchpads providing mission-bound atomic write-access and conflict resolution.
+
+### Priority Shifts
+- **Atomic Scratchpad Guard (ASG)**: (Re-affirmed P0) Elevated with the requirement for mandatory **RAR** integration and **Atomic Arbiter** lock management.
+- **Skill-State Sovereignty (SSS) Broker**: (Re-affirmed P0) Elevated with mandatory **RAR** scrubbing for all SSP-compliant fragments.
