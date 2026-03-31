@@ -19,20 +19,6 @@ import { Credential, Authentication } from '@proto/config/v1/auth';
 import { BrowserHeaders } from 'browser-headers';
 
 /**
- * Summary: Document UpstreamServiceConfig
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Extended UpstreamServiceConfig to include runtime error information.
  */
 export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, 'lastError' | 'toolCount' | 'commandLineService'> {
@@ -56,7 +42,7 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
     /**
      * Overridden to properly support the latest CommandLineUpstreamService structure with args array
      */
-    commandLineService?: CommandLineUpstreamService | any | undefined;
+    commandLineService?: CommandLineUpstreamService | undefined;
 }
 
 // Re-export generated types
@@ -64,20 +50,6 @@ export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, 
 export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '@proto/api/v1/registration';
 
 /**
- * Summary: Document ServiceTemplate
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ServiceTemplate defines a template for an upstream service.
  */
 export interface ServiceTemplate {
@@ -160,20 +132,6 @@ const rpc = new GrpcWebImpl(getBaseUrl(), {
 const registrationClient = new RegistrationServiceClientImpl(rpc);
 
 /**
- * Summary: Document fetchWithAuth
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Fetches data with authentication headers attached.
  *
  * @param input The request info or URL.
@@ -214,20 +172,6 @@ const dedupeRequests = <T>(key: string, fn: () => Promise<T>): Promise<T> => {
 };
 
 /**
- * Summary: Document SecretDefinition
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Definition of a secret stored in the system.
  */
 export interface SecretDefinition {
@@ -248,20 +192,6 @@ export interface SecretDefinition {
 }
 
 /**
- * Summary: Document ResourceContent
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Content of a resource.
  */
 export interface ResourceContent {
@@ -276,20 +206,6 @@ export interface ResourceContent {
 }
 
 /**
- * Summary: Document ReadResourceResponse
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Response for reading a resource.
  */
 export interface ReadResourceResponse {
@@ -306,20 +222,6 @@ interface RawValidateServiceResponse {
 }
 
 /**
- * Summary: Document CheckResult
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Result of a single system health check.
  */
 export interface CheckResult {
@@ -334,20 +236,6 @@ export interface CheckResult {
 }
 
 /**
- * Summary: Document DoctorReport
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Full doctor report containing system health status.
  */
 export interface DoctorReport {
@@ -360,20 +248,6 @@ export interface DoctorReport {
 }
 
 /**
- * Summary: Document ToolFailureStats
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Tool failure statistics.
  */
 export interface ToolFailureStats {
@@ -384,20 +258,6 @@ export interface ToolFailureStats {
 }
 
 /**
- * Summary: Document ToolAnalytics
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Tool usage analytics.
  */
 export interface ToolAnalytics {
@@ -409,20 +269,6 @@ export interface ToolAnalytics {
 
 
 /**
- * Summary: Document Metric
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Metric definition for dashboard.
  */
 export interface Metric {
@@ -436,20 +282,6 @@ export interface Metric {
 
 
 /**
- * Summary: Document SystemStatus
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Represents the current status and health of the system.
  */
 export interface SystemStatus {
@@ -468,39 +300,11 @@ export interface SystemStatus {
 }
 
 /**
- * Summary: Document ServiceStatus
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ServiceStatus represents the possible health states of a service.
  */
 export type ServiceStatus = "healthy" | "degraded" | "unhealthy" | "inactive" | "unknown";
 
 /**
- * Summary: Document ServiceHealth
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ServiceHealth describes the current health information of a service.
  */
 export interface ServiceHealth {
@@ -519,20 +323,6 @@ export interface ServiceHealth {
 }
 
 /**
- * Summary: Document HealthHistoryPoint
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * HealthHistoryPoint represents a single data point in the health history of a service.
  */
 export interface HealthHistoryPoint {
@@ -543,20 +333,6 @@ export interface HealthHistoryPoint {
 }
 
 /**
- * Summary: Document ServiceHealthResponse
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * ServiceHealthResponse represents the response for the health dashboard.
  */
 export interface ServiceHealthResponse {
@@ -582,20 +358,6 @@ const getMetadata = () => {
 };
 
 /**
- * Summary: Document apiClient
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * API Client for interacting with the MCP Any server.
  */
 export const apiClient = {
@@ -2077,29 +1839,10 @@ export const apiClient = {
      *
      * Side Effects: Makes a GET request to /api/v1/alerts/stats.
      */
-    getAlertStats: async (): Promise<{ activeCritical: number, activeWarning: number, mttr: string, totalToday: number, activeCriticalTrend?: string, activeWarningTrend?: string, mttrTrend?: string, totalTodayTrend?: string }> => {
+    getAlertStats: async (): Promise<{ activeCritical: number, activeWarning: number, mttr: string, totalToday: number }> => {
         const res = await fetchWithAuth('/api/v1/alerts/stats');
         if (!res.ok) throw new Error('Failed to fetch alert stats');
         return res.json();
-    },
-
-    /**
-     * Deletes an alert.
-     *
-     * Summary: Deletes an alert.
-     *
-     * @param id - The ID of the alert to delete.
-     * @returns A promise that resolves when the alert is deleted.
-     * @throws {Error} If deletion fails.
-     *
-     * Side Effects: Makes a DELETE request to /api/v1/alerts/:id.
-     */
-    deleteAlert: async (id: string) => {
-        const res = await fetchWithAuth(`/api/v1/alerts/${id}`, {
-            method: 'DELETE'
-        });
-        if (!res.ok) throw new Error('Failed to delete alert');
-        return {};
     },
 
     /**
