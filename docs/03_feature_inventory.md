@@ -1,5 +1,15 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-16] Updates
+
+### Proposed Additions
+- **Key-Level Access Control (KLAC) for Blackboard**: (P0) Authoritative security service for the Shared KV Store ensuring that every key write is cryptographically bound to a mission root to prevent "Key Shadowing" (CVE-2026-35102 defense).
+- **Dynamic Wait-Graph Reconciler (DWGR)**: (P1) High-speed coordination service for the AMS middleware that proactively identifies and breaks circular teammate dependencies on the Blackboard.
+- **Monotonic Response Normalizer (MRN) Provider**: (P0) Transport-level security service injecting hardware-attested, uniform delay patterns into inter-agent responses to neutralize timing side-channel attacks.
+
+### Priority Shifts
+- **Quorum-Bound Summarization (QBS) Hub**: (Re-affirmed P0) Now elevated with the requirement for **APH-Aware** (Attention-Priority Header) summarization to align with Gemini CLI standards.
+
 ## Evolution: [2026-07-15] Updates
 
 ### Proposed Additions

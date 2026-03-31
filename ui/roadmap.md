@@ -800,3 +800,8 @@
 #### Upcoming (2026-07-12 Evolution)
 - [ ] **[P0] Mission Cost Attribution Dashboard**: (2026-07-12) Visual tracker for HACA-bound reasoning costs and mission-root budget consumption.
 - [ ] **[P0] Mesh Resilience Status Hub**: (2026-07-12) Real-time visualization of DMR-mediated state migration and node health status.
+
+#### Upcoming (2026-07-16 Evolution)
+- [ ] **[P0] Blackboard Ownership Heatmap**: Visualize key-level access control and ownership lineages across the mission state. (Added: 2026-07-16)
+- [ ] **[P1] Wait-Graph Visualizer**: Interactive dashboard for identifying AMS task deadlocks and DWGR preemption events. (Added: 2026-07-16)
+- [ ] **[P0] Response Timing Monitor**: Security UI for visualizing inter-agent response delays and MRN normalization status. (Added: 2026-07-16)

@@ -975,3 +975,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Active Subagent Reaper**: authoritative "Swarm Execution Monitor" to forcefully terminate orphaned specialist agents and purge "Intent Residue." (Added: 2026-07-14)
 *   **[P0] Monotonic Handshake Lineage (MHL)**: implementation of unique, sequential tokens for inter-agent messages to neutralize "Mailbox Echo Poisoning." (Added: 2026-07-14)
 *   **[P0] Optimistic Quorum Hardening (OQH)**: mandatory post-speculative hardware attestation for discovery quorums to prevent "Speculative Bypass" exploits. (Added: 2026-07-14)
+
+#### Upcoming (2026-07-16 Evolution)
+*   **[P0] Key-Level Access Control (KLAC)**: Mandatory cryptographic ownership for Blackboard keys to prevent shadowing (CVE-2026-35102 defense). (Added: 2026-07-16)
+*   **[P1] Dynamic Wait-Graph Reconciler (DWGR)**: Background service for AMS to identify and break circular task dependencies in parallel swarms. (Added: 2026-07-16)
+*   **[P0] Monotonic Response Normalizer (MRN)**: Transport-level delay injection to neutralize timing side-channels in inter-agent coordination. (Added: 2026-07-16)
+*   **[P0] APH-Aware Context Compaction**: Support for Gemini-standard Attention-Priority Headers in the QBS Hub. (Added: 2026-07-16)

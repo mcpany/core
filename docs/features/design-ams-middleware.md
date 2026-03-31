@@ -86,3 +86,11 @@ The AMS Middleware solves this by sharding the inter-agent mailbox based on the 
 * Implementing **HLAP-Compliant Jitter**: Normalizing update micro-timing for mailbox shards using TPM monotonic timers to neutralize side-channel leakage.
 * Integrating with the **ZKSA Provider** to allow shards to verify task completion via Zero-Knowledge proofs, further isolating the central bus from raw teammate state.
 **Security Impact:** Prevents side-channel intent mapping and ensures that critical safety interventions bypass coordination locks instantly.
+
+### Update: 2026-07-16 - Dynamic Wait-Graph Reconciler (DWGR)
+**Context:** High-density meshes (20+ agents) are hitting "Wait-Graph Deadlocks" where parallel task dependencies create circular stalls.
+**Architecture Adjustment:**
+* Introducing the **DWGR Service**: A background reconciler that periodically scans the AMS shard state to identify circular dependency loops (Wait-for-Output graphs).
+* Implementing **Mission-Aligned Preemption**: When a deadlock is detected, DWGR applies a "Mission Urgency" score to break the loop, forcefully re-assigning the stalled task to a high-reputation teammate.
+* Integrating with the **ARI Provider** to ensure that task re-assignments are cryptographically linked to the parent intent and do not violate lineage.
+**Security Impact:** Mitigates "Coordination DoS" by ensuring that swarms cannot be permanently stalled by adversarial or malfunctioning subagents.
