@@ -19,11 +19,15 @@ test.describe('Universal Agent Bus', () => {
       'Multi-Agent Session Timeline',
       'Unified Discovery Manager',
       'Lazy-MCP Tool Search Dashboard',
+      'Local Pairing Portal',
+      'CRDT Shard Health Explorer',
       'Agent Chain Tracer (A2A)'
     ];
 
     for (const card of cards) {
-      await expect(page.locator('.text-sm.font-medium', { hasText: card })).toBeVisible();
+      // Use a more general locator that handles both CardTitle (.text-sm.font-medium)
+      // and the custom AgentChainTracer title (.text-xl.font-semibold)
+      await expect(page.getByText(card)).toBeVisible();
     }
   });
 });

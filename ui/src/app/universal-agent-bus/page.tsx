@@ -16,7 +16,9 @@ import {
   Clock,
   Search,
   Network,
-  Activity
+  Activity,
+  ShieldAlert,
+  Database
 } from "lucide-react";
 import { AgentChainTracer } from "@/components/dashboard/agent-chain-tracer";
 
@@ -108,6 +110,34 @@ export default function UniversalAgentBusPage() {
             <div className="text-2xl font-bold">0 Index Hits</div>
             <p className="text-xs text-muted-foreground">
               UI for managing the on-demand tool index and monitoring search hits/misses.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Local Pairing Portal */}
+        <Card className="border-indigo-500/20 bg-indigo-500/5">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Local Pairing Portal</CardTitle>
+            <ShieldAlert className="h-4 w-4 text-indigo-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">Zero Trust</div>
+            <p className="text-xs text-muted-foreground">
+              Review and approve hardware-locked pairing requests from local applications.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* CRDT Shard Health Explorer */}
+        <Card className="border-indigo-500/20 bg-indigo-500/5">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">CRDT Shard Health Explorer</CardTitle>
+            <Database className="h-4 w-4 text-indigo-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">Lock-Free</div>
+            <p className="text-xs text-muted-foreground">
+              Visual debugger for monitoring CFRS Hub convergence and vector clock consistency.
             </p>
           </CardContent>
         </Card>
