@@ -1,5 +1,16 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-15] Updates
+
+### Proposed Additions
+- **Privilege-Constrained Token Rotation (PCTR)**: (P0) Authoritative scope enforcement service ensuring that newly minted tokens never exceed the caller's existing authority (CVE-2026-32922 defense).
+- **Echo-Immune Coordination Fragments**: (P0) Transport-level security standard mandating unique mission-phase and monotonic anchoring for all inter-teammate messages to neutralize "Mailbox Echo Poisoning."
+- **Atomic Rotation Integrity (ARI) Provider**: (P0) Identity middleware utilizing hardware enclaves (TPM) to ensure atomic and lineage-aware token transitions.
+
+### Priority Shifts
+- **Monotonic Handshake Lineage (MHL)**: (Re-affirmed P0) Elevated with the requirement for mandatory **Echo-Immune** anchoring.
+- **Optimistic Quorum Hardening (OQH)**: (Re-affirmed P0) Designated as the primary defense against speculative attestation hijacking.
+
 ## Evolution: [2026-07-14] Updates
 
 ### Proposed Additions

@@ -788,6 +788,10 @@
 - [ ] **[P0] Temporal Jitter Heatmap**: (2026-07-13) Forensic UI for monitoring TSI-injected jitter and memory-enclave access windows.
 - [ ] **[P0] Intent Alignment Monitor**: (2026-07-13) Visual indicator for AIA heartbeat status and semantic drift alerts across the mesh.
 
+#### Upcoming (2026-07-15 Evolution)
+- [ ] **[P0] Token Rotation Security Dashboard**: (2026-07-15) UI for visualizing token scope inheritance and rotation lineage to detect escalation attempts.
+- [ ] **[P0] Coordination Replay Monitor**: (2026-07-15) Forensic UI for visualizing Echo-Immune fragments and identifying coordination replay alerts.
+
 #### Upcoming (2026-07-14 Evolution)
 - [ ] **[P0] Swarm Execution Monitor**: (2026-07-14) Real-time visualization of subagent heartbeats, reaping events, and reclaimed token metrics.
 - [ ] **[P0] Lineage Sequence Inspector**: (2026-07-14) Forensic UI for visualizing MHL monotonic sequences and identifying coordination replay attempts.

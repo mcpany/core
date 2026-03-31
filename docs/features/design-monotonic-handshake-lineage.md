@@ -44,3 +44,10 @@ MCP Any must implement Monotonic Handshake Lineage (MHL) to ensure that every co
 
 ## 7. Evolutionary Changelog
 * **2026-07-14:** Initial Document Creation.
+
+### Update: 2026-07-15 - Neutralizing Mailbox Echo Poisoning
+**Context:** Today's research confirmed the emergence of "Mailbox Echo Poisoning" where stale but valid fragments are replayed to coerce teammates.
+**Architecture Adjustment:**
+* Integrating the **ARI Provider** as the underlying source for counter atomicity.
+* Mandating **Echo-Immune Coordination Fragments** that bind the monotonic counter to specific "Mission Phases," ensuring that a counter valid in a 'discovery' phase cannot be re-used in an 'execution' phase even if sequential.
+**Security Impact:** Prevents complex logic-hijacking attacks that exploit the timing of parallel teammate coordination.
