@@ -214,8 +214,10 @@ func levenshteinASCIIBounded(s1, s2 string, limit int) int {
 			return limit + 1
 		}
 
-		// Swap v0 and v1
-		v0, v1 = v1, v0
+		// Swap slices for next iteration
+		for k := 0; k <= m; k++ {
+			v0[k] = v1[k]
+		}
 	}
 
 	return v0[m]
