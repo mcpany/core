@@ -812,3 +812,9 @@
 - [ ] **[P0] Scratchpad Integrity Dashboard**: (2026-07-17) Real-time visualization of atomic locks and semantic alerts for shared workspaces.
 - [ ] **[P0] RaaS Attribution Visualizer**: (2026-07-17) Visual tracker for tool-initiated reasoning effort and mission-root budget consumption.
 - [ ] **[P1] Memory Stitching Alert Center**: (2026-07-17) Forensic UI for inspecting state fragments flagged by the SRMS segmentation engine.
+
+#### Upcoming (2026-07-18 Evolution)
+- [ ] **[P0] RAR Redaction Monitor**: (2026-07-18) Real-time visualization of semantically redacted intents and blocked "Context-Stitching" attempts.
+- [ ] **[P0] Scratchpad Contention Dashboard**: (2026-07-18) Visual tracker for atomic lock manager performance and scratchpad write-latency.
+- [ ] **[P0] Stitch-Entropy Heatmap**: (2026-07-18) Forensic UI for monitoring fragment-level correlation risks and "Cognitive Salt" effectiveness.
+- [ ] **[P0] RaaS Budget Attribution Viewer**: (2026-07-18) Visual tracker for tool-initiated reasoning effort and lineage-bound budget consumption.
