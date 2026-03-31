@@ -8,9 +8,7 @@ The Shared KV Store can be configured via:
 
 ```yaml
 blackboard:
-  enabled: true
   db_path: "/var/lib/mcpany/blackboard.db"
-  isolation_level: "agent_aware"
 ```
 
 ## How it works
