@@ -45,3 +45,9 @@ PCTR provides the core infrastructure to validate that any rotation event result
 
 ## 7. Evolutionary Changelog
 * **2026-07-15:** Initial Document Creation.
+
+### Update: [2026-07-16] - Neutralizing Ghost Mirroring in Rotation
+**Context**: Today's findings on CVE-2026-51002 reveal that subagents can use mirroring attacks to trick the rotation service into granting escalated scopes if the request reasoning "Mirrors" a parent authority.
+**Architecture Adjustment**: * Integrating GIMM (Ghost Intent Mirroring Mitigator) into the rotation pre-check pipeline.
+* Mandating stylometric entropy validation for all rotation request reasonings.
+**Security Impact**: Prevents "Mirror-based" privilege escalation by ensuring that rotation requests exhibit unique, lineage-verified behavioral signatures.
