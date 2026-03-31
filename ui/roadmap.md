@@ -788,6 +788,11 @@
 - [ ] **[P0] Temporal Jitter Heatmap**: (2026-07-13) Forensic UI for monitoring TSI-injected jitter and memory-enclave access windows.
 - [ ] **[P0] Intent Alignment Monitor**: (2026-07-13) Visual indicator for AIA heartbeat status and semantic drift alerts across the mesh.
 
+#### Upcoming (2026-07-14 Evolution)
+- [ ] **[P0] Swarm Execution Monitor**: (2026-07-14) Real-time visualization of subagent heartbeats, reaping events, and reclaimed token metrics.
+- [ ] **[P0] Lineage Sequence Inspector**: (2026-07-14) Forensic UI for visualizing MHL monotonic sequences and identifying coordination replay attempts.
+- [ ] **[P0] Speculative Attestation Widget**: (2026-07-14) Dashboard indicator for OQH-compliant background quorums and post-speculative commitment status.
+
 #### Upcoming (2026-07-12 Evolution)
 - [ ] **[P0] Mission Cost Attribution Dashboard**: (2026-07-12) Visual tracker for HACA-bound reasoning costs and mission-root budget consumption.
 - [ ] **[P0] Mesh Resilience Status Hub**: (2026-07-12) Real-time visualization of DMR-mediated state migration and node health status.
