@@ -1158,6 +1158,8 @@
 - **Inode-Aware Symlink Validator**: (P0) Security middleware that performs recursive symlink resolution and inode validation for all project-local configurations.
 - **Federated Discovery Quorum (FDQ) Node**: (P1) Peer-to-peer discovery service that requires multi-node attestation for new tool beacons.
 - **Parallel Intent Branch Manager**: (P0) Implements "Snapshot-and-Merge" logic for parallel agent branches, ensuring deterministic state reconciliation.
+- **Optimistic Quorum Gateway**: (P1) Predictive tool serving middleware allowing Speculative Execution during background discovery quorums to mitigate cold-start latency.
+- **Shared-Shard Race Detector**: (P0) Real-time monitoring service for detecting "Sub-Intent Race Conditions" in sharded Blackboard states, triggering automatic conflict resolution.
 
 ### Priority Shifts
 - **Shared KV Store (Blackboard)**: Re-affirmed as **P0**. Expanded to include support for "Branch-Aware State Isolation" and "Merge Conflict Resolution."
