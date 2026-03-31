@@ -1,0 +1,25 @@
+--- ui/src/components/dashboard/recent-activity-widget.tsx
++++ ui/src/components/dashboard/recent-activity-widget.tsx
+@@ -83,10 +83,10 @@
+     return (
+-      <Card className="col-span-1 md:col-span-2 lg:col-span-3 flex flex-col h-[400px]">
++      <Card className="col-span-1 md:col-span-2 lg:col-span-3 flex flex-col h-[400px] bg-background/80 backdrop-blur-md shadow-lg border-border/50">
+         <CardHeader className="py-4 pb-2 border-b">
+           <CardTitle className="flex justify-between items-center text-sm font-medium">
+             <div className="flex items-center gap-2">
+-              <Activity className="h-4 w-4 text-muted-foreground" />
+-              Recent Activity
++              <Activity className="h-4 w-4 text-blue-500" />
++              <span className="font-sans font-semibold tracking-tight">Recent Activity</span>
+             </div>
+             <Button variant="ghost" size="sm" className="h-8 px-2" onClick={fetchTraces} disabled={loading}>
+               <RefreshCcw className={cn("h-4 w-4", loading && "animate-spin")} />
+@@ -107,7 +107,7 @@
+         ) : (
+-            <div className="space-y-4 pr-4">
++            <div className="space-y-5 pr-4 relative before:absolute before:inset-0 before:ml-4 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-border before:to-transparent">
+                 {traces.map((trace) => {
+                     const isError = trace.rootSpan.attributes?.['error.message'] != null;
+                     const isSuccess = !isError;
+                     const hasResponseDiff = trace.rootSpan.attributes?.['mcp.response_diff'] != null;
+                     const isExpanded = expandedTraceId === trace.id;
