@@ -240,7 +240,7 @@ func TestGRPCTool_Coverage(t *testing.T) {
 	callDef := &configv1.GrpcCallDefinition{}
 	resilienceCfg := &configv1.ResilienceConfig{}
 
-	grpcTool := NewGRPCTool(toolProto, poolManager, "test-service", methodDesc, callDef, resilienceCfg)
+	grpcTool := NewGRPCTool(toolProto, poolManager, "test-service", methodDesc, callDef, resilienceCfg, nil, "")
 
 	// Test IsStreaming
 	assert.False(t, grpcTool.IsStreaming())

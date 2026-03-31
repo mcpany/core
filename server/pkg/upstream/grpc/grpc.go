@@ -461,7 +461,7 @@ func (u *Upstream) createAndRegisterGRPCTools(
 		}
 
 		clonedTool := proto.Clone(newToolProto).(*pb.Tool)
-		grpcTool := tool.NewGRPCTool(clonedTool, u.poolManager, serviceID, methodDescriptor, nil, serviceInfo.Config.GetResilience())
+		grpcTool := tool.NewGRPCTool(clonedTool, u.poolManager, serviceID, methodDescriptor, nil, serviceInfo.Config.GetResilience(), serviceInfo.Config.GetCallPolicies(), toolDef.Name)
 		if err := tm.AddTool(grpcTool); err != nil {
 			log.Error("Failed to add gRPC tool", "tool_name", toolName, "error", err)
 			continue
@@ -626,7 +626,7 @@ func (u *Upstream) createAndRegisterGRPCToolsFromConfig(
 			}.Build(),
 		}.Build()
 
-		grpcTool := tool.NewGRPCTool(newToolProto, u.poolManager, serviceID, methodDescriptor, grpcDef, serviceInfo.Config.GetResilience())
+		grpcTool := tool.NewGRPCTool(newToolProto, u.poolManager, serviceID, methodDescriptor, grpcDef, serviceInfo.Config.GetResilience(), serviceInfo.Config.GetCallPolicies(), definition.GetCallId())
 		if err := tm.AddTool(grpcTool); err != nil {
 			log.Error("Failed to add tool", "error", err)
 			continue

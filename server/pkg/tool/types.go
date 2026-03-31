@@ -396,6 +396,9 @@ type GRPCTool struct {
 	requestMessage    protoreflect.ProtoMessage
 	cache             *configv1.CacheConfig
 	resilienceManager *resilience.Manager
+	policies          []*CompiledCallPolicy
+	callID            string
+	initError         error
 }
 
 // NewGRPCTool creates a new GRPCTool instance.
@@ -409,11 +412,14 @@ type GRPCTool struct {
 //   - method: protoreflect.MethodDescriptor. The gRPC method descriptor.
 //   - callDefinition: *configv1.GrpcCallDefinition. The configuration for the gRPC call.
 //   - resilienceConfig: *configv1.ResilienceConfig. The resilience configuration.
+//   - policies: []*configv1.CallPolicy. The security policies.
+//   - callID: string. The unique identifier for the call.
 //
 // Returns:
 //   - *GRPCTool: The initialized GRPCTool.
-func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, method protoreflect.MethodDescriptor, callDefinition *configv1.GrpcCallDefinition, resilienceConfig *configv1.ResilienceConfig) *GRPCTool {
-	return &GRPCTool{
+func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, method protoreflect.MethodDescriptor, callDefinition *configv1.GrpcCallDefinition, resilienceConfig *configv1.ResilienceConfig, policies []*configv1.CallPolicy, callID string) *GRPCTool {
+	compiled, err := CompileCallPolicies(policies)
+	t := &GRPCTool{
 		tool:              tool,
 		poolManager:       poolManager,
 		serviceID:         serviceID,
@@ -421,7 +427,13 @@ func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, met
 		requestMessage:    dynamicpb.NewMessage(method.Input()),
 		cache:             callDefinition.GetCache(),
 		resilienceManager: resilience.NewManager(resilienceConfig),
+		policies:          compiled,
+		callID:            callID,
 	}
+	if err != nil {
+		t.initError = fmt.Errorf("failed to compile call policies: %w", err)
+	}
+	return t
 }
 
 // Tool returns the protobuf definition of the gRPC tool.
@@ -575,10 +587,20 @@ func (t *GRPCTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 // Side Effects:
 //   - Makes a gRPC call to the upstream service.
 func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	if t.initError != nil {
+		return nil, t.initError
+	}
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
 	}
 	defer metrics.MeasureSince(metricGrpcRequestLatency, time.Now())
+
+	if allowed, err := EvaluateCompiledCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs); err != nil {
+		return nil, fmt.Errorf("failed to evaluate call policy: %w", err)
+	} else if !allowed {
+		return nil, fmt.Errorf("tool execution blocked by policy")
+	}
+
 	grpcPool, ok := pool.Get[*client.GrpcClientWrapper](t.poolManager, t.serviceID)
 	if !ok {
 		metrics.IncrCounter(metricGrpcRequestError, 1)
