@@ -65,3 +65,10 @@ Hardware-Attested Attention Locking (HAAL) provides a cryptographic defense agai
 * Extending HAAL to support **Context-File Integrity Attestation (CFIA)**.
 * Mandating hardware-bound attention locking for any fragment ingested from a project-local configuration or context file.
 **Security Impact:** Ensures that only user-verified, hardware-attested context can influence high-priority attention heads, neutralizing deceptive natural language injections.
+
+### Update: 2026-07-16 - Defending against RPS Attention Hijacking
+**Context:** The disclosure of Attention Hijacking in sharded reasoning paths (RPS) confirms that attention must be actively shielded from redirection.
+**Architecture Adjustment:**
+* Integrating the **Attention Redirect Shield (ARS)** into the HAAL Middleware pipeline.
+* High-priority attention anchors will now be dynamically reinforced using ARS confidence scores.
+**Security Impact:** Neutralizes instructions in sharded context designed to redirect model focus, maintaining mission-root prioritization.

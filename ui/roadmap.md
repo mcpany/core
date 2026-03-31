@@ -800,3 +800,9 @@
 #### Upcoming (2026-07-12 Evolution)
 - [ ] **[P0] Mission Cost Attribution Dashboard**: (2026-07-12) Visual tracker for HACA-bound reasoning costs and mission-root budget consumption.
 - [ ] **[P0] Mesh Resilience Status Hub**: (2026-07-12) Real-time visualization of DMR-mediated state migration and node health status.
+
+#### Upcoming (2026-07-16 Evolution)
+- [ ] **[P0] Temporal Access Window Monitor**: (2026-07-16) Real-time visualization of hardware-enforced shard isolation and jitter distribution.
+- [ ] **[P0] Enclave Handover Dashboard**: (2026-07-16) Visual tracker for identity re-anchoring events and predecessor termination signals.
+- [ ] **[P0] Shard Prioritization Guard**: (2026-07-16) Cognitive security UI for monitoring ARS-blocked redirection instructions and attention drivers.
+- [ ] **[P0] Bidding Entropy Visualizer**: (2026-07-16) Real-time dashboard showing UACO bidding convergence and NSCB circuit-breaker status.

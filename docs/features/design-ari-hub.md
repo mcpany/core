@@ -87,3 +87,10 @@ The Active Reasoning Interdiction (ARI) Hub evolves the existing validator into 
 * Integrating the **Reasoning Provenance Validator** into the Hash-Chain Validator in Section 4.
 * Upgrading the Semantic Consistency Engine to perform **Step-Level Provenance Checks**, ensuring that every internal reasoning step in a fragment is cryptographically signed and hash-chained.
 **Security Impact:** Prevents subagents from "grafting" malicious reasoning steps inside a seemingly valid fragment, providing 100% visibility into the cognitive path.
+
+### Update: 2026-07-16 - Neutralizing Shadow-Context Side-Channels
+**Context:** Today's market sync confirmed that logical interdiction can be bypassed via micro-timing probes in shared memory.
+**Architecture Adjustment:**
+* The ARI Hub will now mandate **TSI-bound Attestation** for all fragment proposals.
+* Fragments will not be committed to the "Mainline" unless they originate from a shard with an active, hardware-locked temporal window.
+**Security Impact:** Closes the timing-based side-channel gap, ensuring that reasoning interdiction is physically as well as logically enforced.

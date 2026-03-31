@@ -54,3 +54,10 @@ The DCA Negotiation Guard is a hardware-accelerated (HAN) broker in MCP Any that
 * Extending the DCA Guard to support the **SAB Protocol**.
 * The Guard will now manage "Shadow Auctions" for speculative branches, allowing agents to bid on probable tasks before they are finalized.
 **Security Impact:** Ensures that speculative task delegation maintains the same Zero-Trust attestation as deterministic flows.
+
+### Update: 2026-07-16 - Mitigating Recursive Negotiation Storms
+**Context:** High-density meshes are experiencing infinite bidding loops leading to token exhaustion.
+**Architecture Adjustment:**
+* Integrating the **Negotiation Storm Circuit Breaker (NSCB)** into the HAN Broker's priority queue.
+* Implementing autonomous cool-down periods for branches exhibiting non-convergent bidding behavior.
+**Security Impact:** Prevents "Cognitive Stall" and resource depletion caused by machine-speed coordination failures.

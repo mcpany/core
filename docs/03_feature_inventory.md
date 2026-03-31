@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-16] Updates
+
+### Proposed Additions
+- **Temporal Shard Isolation (TSI) Hub**: (P0) Authoritative broker for temporal access windows utilizing hardware-bound monotonic timers to neutralize shadow-context side-channels (CVE-2026-44012).
+- **Atomic Enclave Handover (AEH) Provider**: (P0) Advanced identity service ensuring atomic and cryptographically linked transfer of mission-root identities to prevent enclave squatting.
+- **Attention Redirect Shield (ARS)**: (P0) Cognitive security middleware for RPS-enabled sharded contexts to block injected "Attention Redirection" instructions.
+- **Negotiation Storm Circuit Breaker (NSCB)**: (P0) High-speed stability middleware that detects and throttles non-convergent UACO bidding loops in high-density meshes.
+
+### Priority Shifts
+- **Temporal Shard Isolation (TSI) Middleware**: (Re-affirmed P0) Evolving into the **TSI Hub** for mesh-wide temporal coordination.
+- **Distributed Memory Enclave (DME) Broker**: (Re-affirmed P0) Now elevated with the requirement for mandatory **AEH-compliant** identity handover.
+
 ## Evolution: [2026-07-15] Updates
 
 ### Proposed Additions

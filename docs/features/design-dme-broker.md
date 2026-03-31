@@ -61,3 +61,10 @@ The Distributed Memory Enclave (DME) Broker solves this by leveraging hardware-e
         * Upgrading `CreateEnclave` in Section 4 to include mandatory **Physical Shard Sovereignty (PSS)**.
         * Shards are now cryptographically pinned to specific hardware Enclave IDs using TPM-bound nonces.
     * **Security Impact**: Prevents a compromised subagent from mounting a sibling shard by spoofing enclave-local metadata.
+
+### Update: 2026-07-16 - Neutralizing Shadow-Context Side-Channels (CVE-2026-44012)
+**Context:** Today's research revealed that logical enclave isolation is vulnerable to micro-timing side-channels.
+**Architecture Adjustment:**
+* Mandating integration with the **Temporal Shard Isolation (TSI) Hub** in Section 4.
+* Memory-mapped buffers now enforce hardware-attested access windows.
+**Security Impact:** Prevents subagents from mapping mission-root constraints via latency monitoring, ensuring temporal sovereignty.
