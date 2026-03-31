@@ -19,11 +19,14 @@ test.describe('Universal Agent Bus', () => {
       'Multi-Agent Session Timeline',
       'Unified Discovery Manager',
       'Lazy-MCP Tool Search Dashboard',
-      'Agent Chain Tracer (A2A)'
     ];
 
     for (const card of cards) {
       await expect(page.locator('.text-sm.font-medium', { hasText: card })).toBeVisible();
     }
+
+    // Agent Chain Tracer has a different DOM structure (it uses an h3 CardTitle inside a different layout)
+    // so we locate it by role and name instead.
+    await expect(page.getByRole('heading', { name: 'Agent Chain Tracer (A2A)' })).toBeVisible();
   });
 });
