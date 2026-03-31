@@ -181,6 +181,9 @@
 - [ ] **[P0] Parallel Intent Visualizer**: (2026-03-31) Real-time Gantt-style chart showing parallel sub-intent branches, barrier status, and merge events.
 - [ ] **[P0] Symlink Security Inspector**: (2026-03-31) Dashboard for visualizing resolved project paths and flagging unauthorized symlink traversals.
 - [ ] **[P1] Federated Quorum Monitor**: (2026-03-31) Security UI for tracking CDQ attestation progress and consensus status for remote tool beacons.
+- [ ] **[P0] Origin-Locked Handshake Portal**: (2026-03-31) UI for reviewing and approving hardware-attested, origin-bound handshakes for local coordinate attempts (CVE-2026-25253 defense).
+- [ ] **[P0] Skill Burn-In Profiler**: (2026-03-31) Dashboard for monitoring skills during their isolation period, showing real-time behavior compared to baseline.
+- [ ] **[P1] Optimistic Loading Debugger**: (2026-03-31) Visual timeline of speculative vs. attested tool loading events to monitor quorum latency.
 - [ ] **[P0] IPSC Correction Monitor**: (2026-03-30) Real-time dashboard for visualizing agent self-correction cycles, budget consumption, and "Cognitive Lock" alerts.
 - [ ] **[P0] BSH Continuous Integrity Viewer**: (2026-03-30) Forensic UI for inspecting Binary State Handoffs for "Dormant" or "Ghost" fragments.
 - [ ] **[P1] Beacon Discovery Dashboard**: (2026-03-30) UI for monitoring reactive "Capability Beacons" and managing discovery noise filters.

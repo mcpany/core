@@ -739,6 +739,15 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Path-Agnostic Sandbox Hardening**: Moving beyond basic path allow-lists to "Inode-Aware" validation. MCP Any will implement mandatory symlink-resolution checks for all project-local configurations, ensuring that "Settings-as-Code" cannot be used to bridge into restricted filesystem regions.
 - **Federated Discovery Quorum (FDQ)**: We will promote Gemini's CDQ model to a global standard. MCP Any nodes will peer with each other to reach a decentralized consensus on tool safety before allowing them to be loaded into the agent's "Discovery Bus."
 
+## Strategic Evolution: [2026-03-31] (Iteration 2)
+### Focus: Local Zero-Trust Enforcement & Behavioral Skill Sovereignty
+**Context**: The emergence of CVE-2026-25253 (Implicit Local Trust) and the rise of "Agentic Social Engineering" via marketplace skills prove that the network boundary is no longer the endpoint. We must protect the **origin-integrity** of local connections and provide **active behavioral profiling** for third-party capabilities. As swarms move toward collaborative discovery, infrastructure must move beyond static gates to **Optimistic Attestation**.
+**Strategic Pivot**:
+- **Local-Only WebSocket Auth (LOWA) Mandate**: MCP Any will transition all local coordination to mandate origin-bound, hardware-attested handshakes. We will neutralize the "Loopback trust gap" by requiring session-bound cryptographic proof for all local WebSocket and API interactions, ensuring browsers cannot bridge into the agent control plane.
+- **Behavioral Skill Profiling**: To neutralize "ClawHub" style marketplace poisonings, we are implementing mandatory behavioral profiling for all dynamic skill grafts. No tool will be exposed to the discovery bus unless its behavioral manifest is signed by an attested hardware authority, detecting "Delayed Payload" tactics.
+- **Inode-Aware Path Sovereignty**: Expanding KLIP enforcement to include mandatory recursive symlink resolution for all project-local settings. We will utilize hardware-bound Inode pinning to ensure that "Settings-as-Code" cannot be used to bridge into restricted host filesystem regions.
+- **Optimistic Attestation Gate**: Supporting the efficiency of Collaborative Discovery Quorums (CDQ), we are introducing Optimistic Attestation. This allows agents to speculatively prepare tool contexts while discovery quorums perform background validation in parallel, minimizing "Cold Start" latency.
+
 ---
 ## Strategic Evolution: [2026-03-28]
 ### Focus: Swarm Sanity & Fast-Path Attestation

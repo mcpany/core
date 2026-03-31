@@ -1164,6 +1164,17 @@
 - **UDP Beacon Discovery Listener**: Promoted from **P1** to **P0**. Essential prerequisite for the new Federated Discovery Quorum.
 - **Inode-Aware Symlink Validator**: Re-prioritized to **P0**. Critical for mitigating project-local exfiltration vectors.
 
+## Evolution: [2026-03-31] (Iteration 2) Updates
+
+### Proposed Additions
+- **Origin-Locked Agent Gateway**: (P0) Advanced security middleware for local coordination enforcing origin-bound, hardware-attested handshakes to neutralize the loopback trust gap (CVE-2026-25253).
+- **Behavioral Skill Profiler**: (P0) Authoritative forensic service for real-time sandboxed profiling of dynamic skills to detect "Delayed Payload" tactics in marketplace tools.
+- **Collaborative Quorum Bridge**: (P1) Integration service for Gemini-style CDQ, allowing MCP Any to participate in decentralized tool safety attestation.
+
+### Priority Shifts
+- **Local-Only WebSocket Auth (LOWA) Gateway**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Origin-Locked** handshakes.
+- **Attested Discovery Authority**: (Re-affirmed P0) Designated as the primary backend for the **Behavioral Skill Profiler**.
+
 ---
 
 ## Evolution: 2026-04-01 Updates

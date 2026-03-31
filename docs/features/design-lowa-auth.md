@@ -61,3 +61,11 @@ LOWA is a mandatory security layer for MCP Any that enforces session-bound authe
 
 ## 7. Evolutionary Changelog
 *   **2026-05-22:** Initial Document Creation.
+
+### Update: 2026-03-31 - Neutralizing Cross-Site WebSocket Hijacking
+**Context:** Today's market sync confirmed that CVE-2026-25253 (OpenClaw) is being actively exploited via malicious browser scripts. The "Implicit Local Trust" assumption for loopback traffic allows unauthorized token exfiltration.
+**Architecture Adjustment:**
+*   Mandating **Strict Origin Validation** (SOP) for all local WebSocket handshakes.
+*   Transitioning from "Local-by-Default" to **Local Zero-Trust**.
+*   Introducing **Origin-Locked Handshakes** where session tokens are cryptographically bound to the initiating browser or CLI origin.
+**Security Impact:** Prevents third-party websites from bridging into the local agent control plane via the user's browser, even if they can reach `127.0.0.1`.
