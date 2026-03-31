@@ -49,3 +49,10 @@ MCP Any needs to provide a hardware-locked mechanism to track and attribute ever
 
 ## 7. Evolutionary Changelog
 * **2026-07-12:** Initial Document Creation.
+
+### Update: 2026-07-13 - Cross-Mesh Economic Attribution (CMEA)
+**Context:** Today's research into Agent Teams (Claude Code) reveals that "Reasoning Effort" is often hidden behind framework-specific handshakes, making it impossible to enforce a global TPM-signed budget when tasks cross framework boundaries.
+**Architecture Adjustment:**
+*   **A2A-HACA Integration**: The HACA Provider now intercepts "Sovereign Handshake v2" packets.
+*   **Attestation Forwarding**: Hardware-attested budget fragments are now "wrapped" in framework-neutral capability proffers.
+**Security Impact:** Prevents "Budget Ghosting" where a subagent exhausts tokens in an un-proxied framework branch without the mission-root's awareness.

@@ -1415,3 +1415,15 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Mesh-Bound Team Coordination**: Supporting the "Agent Teams" standard, MCP Any will evolve into a native mesh-resident coordinator. We will provide the infrastructure for lock-free, CRDT-based teammate synchronization, ensuring that parallel agent sessions maintain a consistent worldview without global state locks.
 - **Hardware-Attested Cost Attribution (HACA)**: To address resource prioritization shifts seen in Gemini CLI, we are mandating HACA. Every tool call and reasoning fragment will be cryptographically attributed to its mission-root lineage, enabling granular, hardware-locked quota enforcement and economic transparency across the mesh.
 - **Sovereign Skill Verification**: To neutralize "ClawHub" style marketplace poisonings, we are implementing mandatory behavioral profiling for all dynamic skill grafts. No tool will be exposed to the discovery bus unless its behavioral manifest is signed by an attested hardware authority.
+
+---
+
+## Strategic Evolution: [2026-07-13]
+### Focus: Attention Sovereignty & Mesh-Bound Teammate Coordination
+**Context**: The emergence of "Attention Splicing" in horizontal Agent Teams and the shift toward hardware-attested "Capability Proffers" (OpenClaw Sovereign Handshake v2) confirm that mesh stability now depends on **Cognitive Isolation** and **Pre-Discovery Attestation**. As swarms become more parallel, the "Universal Agent Bus" must move beyond simple mailboxing to active **Attention Gating** and **Framework-Neutral Handshake Bridging**.
+
+**Strategic Pivot**:
+- **Attention-Splicing Firewall (ASF)**: MCP Any will evolve to act as the authoritative "Reasoning Arbiter." We will implement the ASF, utilizing stylometric identity anchoring (SIA) to detect and interdict coordination fragments that attempt to hijack teammate attention windows via stylistic mimicry.
+- **Universal A2A Handshake Adapter**: Supporting the OpenClaw Sovereign Handshake v2 standard, we are introducing a universal adapter. This service will bridge proprietary hardware-attested tokens (Gemini, Claude) into a framework-neutral "Capability Proffer" bus, ensuring trust continuity across heterogeneous meshes.
+- **Isolated Discovery Sandbox Orchestrator**: To neutralize "Settings-as-Shell" exploits, MCP Any will natively manage the lifecycle of ephemeral, network-restricted discovery containers. Tool discovery commands will be quarantined and hardware-attested before their definitions are exposed to the agent.
+- **Cross-Mesh Economic Attribution (CMEA)**: To resolve organizational budget drift, we are evolving the HACA provider to support CMEA. This provides hardware-locked, real-time attribution of reasoning effort across multi-framework delegations, ensuring that every token is billed to the correct mission-root branch.

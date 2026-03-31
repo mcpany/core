@@ -785,3 +785,9 @@
 #### Upcoming (2026-07-12 Evolution)
 - [ ] **[P0] Mission Cost Attribution Dashboard**: (2026-07-12) Visual tracker for HACA-bound reasoning costs and mission-root budget consumption.
 - [ ] **[P0] Mesh Resilience Status Hub**: (2026-07-12) Real-time visualization of DMR-mediated state migration and node health status.
+
+#### Upcoming (2026-07-13 Evolution)
+- [ ] **[P0] Attention Mimicry Alert Center**: (2026-07-13) Real-time visualization of ASF-detected stylometric spoofing and attention hijacking.
+- [ ] **[P0] Universal Handshake Debugger**: (2026-07-13) Forensic tool for visualizing framework-neutral "Capability Proffers" and A2A auth bridging.
+- [ ] **[P0] Discovery Sandbox Dashboard**: (2026-07-13) Visual tracker for isolated discovery containers, lifecycle events, and network-restricted logs.
+- [ ] **[P1] Cross-Framework Budget Inspector**: (2026-07-13) Multi-framework visualization of HACA-bound reasoning effort and organization-wide quota status.

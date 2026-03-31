@@ -959,3 +959,9 @@ These features represent the next logical steps for the product, focusing on Ent
 #### Upcoming (2026-07-12 Evolution)
 *   **[P0] Hardware-Attested Cost Attribution (HACA)**: Advanced economic security service that cryptographically attributes token usage to specific sub-process lineage. (Added: 2026-07-12)
 *   **[P0] DMR Speculative Shard Pulling**: Performance upgrade for Dynamic Mesh Resilience hub to neutralize coordination stalls in high-density teams. (Added: 2026-07-12)
+
+#### Upcoming (2026-07-13 Evolution)
+*   **[P0] Attention-Splicing Firewall (ASF)**: Authoritative cognitive security service utilizing SIA to detect mimicry-based intent hijacking. (Added: 2026-07-13)
+*   **[P0] Universal A2A Handshake Adapter**: Bridge for OpenClaw Sovereign Handshake v2, normalizing proprietary attestation tokens. (Added: 2026-07-13)
+*   **[P0] Isolated Discovery Sandbox Orchestrator**: Lifecycle management for ephemeral discovery containers to neutralize configuration-based RCE. (Added: 2026-07-13)
+*   **[P1] Cross-Mesh Economic Attribution (CMEA)**: Extension for HACA providing hardware-locked budget tracking across heterogeneous framework handoffs. (Added: 2026-07-13)

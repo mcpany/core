@@ -1792,3 +1792,15 @@
 ### Priority Shifts
 - **Hardware-Attested Cost Attribution (HACA)**: (Re-affirmed P0) Elevated to mandatory status for all mesh-bound tool calls to ensure economic accountability across mission-root lineages.
 - **Dynamic Mesh Resilience (DMR) Hub**: (Re-affirmed P0) Designated as the primary coordination service for migrating mission-critical state during Agent Team coordination stalls.
+
+## Evolution: [2026-07-13] Updates
+
+### Proposed Additions
+- **Attention-Splicing Firewall (ASF)**: (P0) Authoritative cognitive security service utilizing stylometric identity anchoring (SIA) to detect mimicry-based intent hijacking in horizontal meshes.
+- **Universal A2A Handshake Adapter**: (P0) A bridge service for the OpenClaw Foundation's Sovereign Handshake v2, normalizing proprietary Gemini/Claude attestation tokens into framework-neutral "Capability Proffers."
+- **Isolated Discovery Sandbox Orchestrator**: (P0) Lifecycle management service for ephemeral, network-restricted tool discovery containers, neutralizing startup-time configuration-based RCE.
+- **Cross-Mesh Economic Attribution (CMEA)**: (P1) Resource management service extending HACA to provide hardware-locked budget tracking across heterogeneous framework handoffs.
+
+### Priority Shifts
+- **Universal Episodic Graph (UEG) Memory Broker**: (P0) Transitioned to "In Design" status; designated as the primary backend for the **Attention-Splicing Firewall (ASF)**.
+- **Zero-Knowledge Discovery Broker (ZKDB)**: (Re-affirmed P0) Now elevated with the requirement for **Isolated Discovery Sandbox** integration.
