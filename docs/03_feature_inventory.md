@@ -1,5 +1,16 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-13] Updates
+
+### Proposed Additions
+- **Higher-Dimensional Behavioral Attestation (HDBA) Provider**: (P0) Advanced identity service anchoring stylometric profiles to multi-modal trace history (SVG/Audio) to neutralize RL-driven mimicry attacks.
+- **Temporal Shard Isolation (TSI) Middleware**: (P0) Security service injecting hardware-attested timing jitter and enforcing access windows for shared memory enclaves to neutralize side-channel probes.
+- **Active Intent Alignment (AIA) Broker**: (P0) Authoritative alignment service issuing hardware-attested heartbeats to ensure specialist reasoning traces remain mission-anchored and prevent consensus drift.
+
+### Priority Shifts
+- **Stylometric Identity Anchoring (SIA)**: (Re-affirmed P0) Evolving into **HDBA** to support multi-modal behavioral signatures.
+- **Zero-Copy Memory Enclave (ZCME)**: (Re-affirmed P0) Elevated with the requirement for mandatory **TSI** integration to counter timing side-channels.
+
 ## Evolution: [2026-07-12] Updates
 
 ### Proposed Additions
