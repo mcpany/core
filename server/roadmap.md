@@ -11,6 +11,12 @@
 
 ### Status: Active Development
 
+#### Upcoming (2026-07-18 Evolution)
+*   **[P0] Knowledge-Graph Anchoring (KGA) Hub**: authoritative host for mission-root graphs providing a hardware-attested semantic backbone. (Added: 2026-07-18)
+*   **[P0] HARA Provider**: advanced identity service issuing TPM-signed Role Tokens to enforce kernel-level capability boundaries. (Added: 2026-07-18)
+*   **[P0] Atomic Scratchpad Reaper (ASR)**: quorum-bound cleanup service for collaborative workspaces to neutralize Ghost Fragments. (Added: 2026-07-18)
+*   **[P0] Reasoning-Effort Token (RET) Enforcer**: active budget gate utilizing a token-bucket model for RaaS sub-reasoning allocation. (Added: 2026-07-18)
+
 #### Upcoming (2026-02-23 Evolution)
 *   **[P0] Recursive Context Protocol**: Finalize header-based context inheritance for swarms.
 *   **[x] [P0] Zero-Trust Subagent Scoping**: Implement intent-bound capability tokens.

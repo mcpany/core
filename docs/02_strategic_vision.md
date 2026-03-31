@@ -1475,3 +1475,15 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Atomic Scratchpad Guard (ASG)**: Supporting the efficiency of Agent Teams, we are introducing ASG. This layer will perform real-time, high-entropy semantic analysis of all writes to shared team workspaces (e.g., `.scratchpad`), neutralizing "Scratchpad Pollution" and race conditions.
 - **Reasoning-as-a-Service (RaaS) Attribution**: To neutralize "Reasoning Exhaustion" via thinking tools, MCP Any will implement the RaaS Attribution middleware. This will cryptographically attribute sub-reasoning effort to the calling tool's lineage and enforce mission-bound quotas for tool-initiated thinking.
 - **Stitch-Resistant Memory Segmentation (SRMS)**: To counter "Context-Stitching" exfiltration, we are upgrading the Blackboard integrity layer to include SRMS. This service will utilize "Cognitive Salt" and reasoning-aware redaction to ensure that state fragments in the shared mailbox or scratchpad cannot be re-composed into parent context traces.
+
+---
+
+## Strategic Evolution: [2026-07-18]
+### Focus: Knowledge-Graph Sovereignty & Role-Bound Mesh Coordination
+**Context**: The emergence of "Knowledge-Graph Anchoring" (KGA) in OpenClaw and the discovery of "Scratchpad Ghosting" (CVE-2026-99001) in collaborative meshes confirm that the "Universal Agent Bus" must move beyond linear memory shards. We must now protect the **structural sovereignty** of the mission's knowledge and provide **hardware-attested role attribution** to prevent specialist drift. As Agent Teams scale, "Ghost Fragments" in shared workspaces demand that infrastructure provides **Atomic Workspace Reclamation**.
+
+**Strategic Pivot**:
+- **Knowledge-Graph Anchoring (KGA) Hub**: MCP Any will evolve to act as the authoritative host for shared mission graphs. We will implement the KGA Hub, utilizing hardware-attested graph nodes that provide a persistent "Semantic Backbone" for all frameworks, neutralizing "Context-Window Eviction" in long-running meshes.
+- **Hardware-Attested Role Attribution (HARA)**: To neutralize role hijacking in horizontal meshes, we are introducing HARA. MCP Any will issue TPM-signed "Role Tokens" that restrict agent capabilities (e.g., "Security Auditor" vs "Code Writer") at the kernel level, ensuring specialists cannot exceed their intended mission role.
+- **Atomic Scratchpad Reaper (ASR)**: Supporting the stability of Agent Teams, we are implementing the ASR. This service will perform mandatory, quorum-bound cleanup of shared team workspaces (e.g., `.scratchpad`) upon teammate termination or mission phase transition, neutralizing "Scratchpad Ghosting" exploits.
+- **Reasoning-Effort Token (RET) Enforcer**: To counter "Reasoning Exhaustion" in RaaS-enabled swarms, MCP Any will implement active budget enforcement. We will evolve the RaaS Attribution middleware to a "Token-Bucket" model, where tools must spend hardware-attested tokens allocated by the mission root for every sub-reasoning step.

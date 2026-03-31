@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-18] Updates
+
+### Proposed Additions
+- **Knowledge-Graph Anchoring (KGA) Hub**: (P0) Authoritative host for shared mission graphs, providing a persistent semantic backbone resilient to context-window eviction.
+- **Hardware-Attested Role Attribution (HARA) Provider**: (P0) Advanced identity service issuing TPM-signed Role Tokens to enforce kernel-level capability restrictions in meshes.
+- **Atomic Scratchpad Reaper (ASR)**: (P0) Stability middleware performing quorum-bound cleanup of shared workspaces to neutralize "Scratchpad Ghosting" exploits.
+- **Reasoning-Effort Token (RET) Enforcer**: (P0) Active budget enforcement middleware for RaaS, utilizing a token-bucket model for sub-reasoning allocation.
+
+### Priority Shifts
+- **Atomic Scratchpad Guard (ASG)**: (Re-affirmed P0) Elevated with the requirement for mandatory **ASR** integration for lifecycle cleanup.
+- **RaaS Attribution Middleware**: (Re-affirmed P0) Evolving into the **RET Enforcer** for active budget gating.
+
 ## Evolution: [2026-07-15] Updates
 
 ### Proposed Additions

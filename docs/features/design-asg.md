@@ -44,3 +44,10 @@ Claude Code v3.0 has introduced "Agent Teams" that collaborate via a shared proj
 
 ## 7. Evolutionary Changelog
 * **2026-07-17:** Initial Document Creation.
+
+### Update: 2026-07-18 - Addressing Scratchpad Ghosting
+**Context:** Market sync revealed CVE-2026-99001, where terminated agents leave "Ghost Fragments" that pollute the shared reasoning workspace.
+**Architecture Adjustment:**
+- Integrating the **Atomic Scratchpad Reaper (ASR)** into the ASG lifecycle.
+- Adding a mandatory "Cleanup Quorum" phase: when an agent session ends, a quorum of siblings must attest to the sanitization of its scratchpad fragments before locks are released.
+**Security Impact:** Prevents "Stale Instruction" hijacking where new teammates ingest outdated or malicious reasoning traces from dead processes.

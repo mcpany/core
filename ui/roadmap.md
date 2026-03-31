@@ -4,6 +4,12 @@
 
 ### Universal Agent Bus (New Strategic Priorities)
 - [ ] **[P0] Global Agent Activity Map**: Dynamic, glowing map showing agent activity globally.
+#### Upcoming (2026-07-18 Evolution)
+- [ ] **[P0] Knowledge-Graph Sovereignty Map**: (2026-07-18) Visual indicator for mission graph health and KGA anchoring status.
+- [ ] **[P0] HARA Role Auditor**: (2026-07-18) Forensic UI for visualizing role-bound capability gates and blocked hijacking attempts.
+- [ ] **[P0] Atomic Reaper Dashboard**: (2026-07-18) Real-time monitor for scratchpad cleanup quorums and ghost-fragment neutralization.
+- [ ] **[P0] RET Token Bucket Tracker**: (2026-07-18) Real-time visualization of tool-level reasoning budget consumption and token refills.
+
 - [ ] **[P0] Recursive Context Dashboard**: Visualize state inheritance and session tokens across agent swarms. (Added: 2026-02-23)
 - [ ] **[P0] Multi-Agent Session Timeline**: Visual tracking of agent handoffs and shared tool state. (Added: 2026-02-24)
 - [ ] **[P1] Unified Discovery Manager**: UI for managing and auto-discovering MCP servers across transports. (Added: 2026-02-24)
