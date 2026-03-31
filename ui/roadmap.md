@@ -806,3 +806,9 @@
 - [ ] **[P0] Speculative Buffer Sovereignty Dashboard**: (2026-07-16) Monitor for hardware-attested HASB signals and EBSM memory isolation status.
 - [ ] **[P0] Ambient Metadata Sanitization Log**: (2026-07-16) Forensic UI for reviewing redacted environment metadata in horizontal meshes.
 - [ ] **[P0] Coordination Replay Monitor**: (2026-07-16) Forensic UI for visualizing Echo-Immune fragments and identifying coordination replay alerts.
+
+#### Upcoming (2026-07-17 Evolution)
+- [ ] **[P0] Skill-State Registry Viewer**: (2026-07-17) UI for monitoring hardware-attested storage shards for persistent skills.
+- [ ] **[P0] Scratchpad Integrity Dashboard**: (2026-07-17) Real-time visualization of atomic locks and semantic alerts for shared workspaces.
+- [ ] **[P0] RaaS Attribution Visualizer**: (2026-07-17) Visual tracker for tool-initiated reasoning effort and mission-root budget consumption.
+- [ ] **[P1] Memory Stitching Alert Center**: (2026-07-17) Forensic UI for inspecting state fragments flagged by the SRMS segmentation engine.

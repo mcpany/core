@@ -1464,3 +1464,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **HASB (Hardware-Attested Speculative Buffer) Provider**: To neutralize speculative attestation hijacking, we are mandating HASB for all connected frameworks. probabilistic buffers used during discovery will be cryptographically bound to a hardware enclave, ensuring that "Pre-flight" safety signals are physically untamperable.
 - **Ambient State Sanitizer (ASS)**: Supporting the stability of horizontal meshes, MCP Any will implement the ASS. This service will perform real-time, high-entropy sanitization of environment metadata leaked between teammates, blocking side-channel state injection that bypasses primary mailbox guards.
 - **Enclave-Bound Speculative Memory (EBSM)**: To counter "Speculative Drift," we are evolving the ZCMB to support EBSM. This provides hardware-locked, temporary memory regions for speculative tool preparation, ensuring that un-attested state cannot pollute the mission-root blackboard.
+
+---
+
+## Strategic Evolution: [2026-07-17]
+### Focus: Skill-State Sovereignty & Stitch-Resistant Memory
+**Context**: The emergence of "Stateful Skill Persistence" (SSP) in OpenClaw v3.5 and the disclosure of the "Context-Stitching" exploit (CVE-2026-88012) reveal that the "Universal Agent Bus" must now move beyond session-based memory. We must now protect the **integrity of tool-managed state** and provide **reasoning-aware memory segmentation** to prevent context exfiltration via shared workspaces (like Claude Code scratchpads).
+**Strategic Pivot**:
+- **Skill-State Sovereignty (SSS) Broker**: MCP Any will evolve to act as the authoritative "State Mint" for persistent skills. We will implement SSS, providing hardware-attested, tool-bound storage shards that allow skills (SSP-compliant) to persist state while remaining anchored to the mission-root security policy.
+- **Atomic Scratchpad Guard (ASG)**: Supporting the efficiency of Agent Teams, we are introducing ASG. This layer will perform real-time, high-entropy semantic analysis of all writes to shared team workspaces (e.g., `.scratchpad`), neutralizing "Scratchpad Pollution" and race conditions.
+- **Reasoning-as-a-Service (RaaS) Attribution**: To neutralize "Reasoning Exhaustion" via thinking tools, MCP Any will implement the RaaS Attribution middleware. This will cryptographically attribute sub-reasoning effort to the calling tool's lineage and enforce mission-bound quotas for tool-initiated thinking.
+- **Stitch-Resistant Memory Segmentation (SRMS)**: To counter "Context-Stitching" exfiltration, we are upgrading the Blackboard integrity layer to include SRMS. This service will utilize "Cognitive Salt" and reasoning-aware redaction to ensure that state fragments in the shared mailbox or scratchpad cannot be re-composed into parent context traces.

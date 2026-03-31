@@ -1837,6 +1837,15 @@
 - **Ambient State Sanitizer (ASS)**: (P0) Real-time, high-entropy sanitization service for environment metadata leaked in horizontal meshes to block side-channel injection.
 - **Enclave-Bound Speculative Memory (EBSM)**: (P0) High-performance coordination extension for the ZCMB providing hardware-locked memory regions for speculative state preparation.
 
+## Evolution: [2026-07-17] Updates
+
+### Proposed Additions
+- **Skill-State Sovereignty (SSS) Broker**: (P0) Authoritative state management service providing hardware-attested, tool-bound storage shards for persistent skills (SSP-compliant).
+- **Atomic Scratchpad Guard (ASG)**: (P0) High-entropy semantic security middleware for shared teammate scratchpads (e.g., `.scratchpad`) to prevent race conditions and pollution.
+- **RaaS Attribution Middleware**: (P0) Resource management service cryptographically attributing sub-reasoning effort (Reasoning-as-a-Service) to the calling tool's lineage.
+- **Stitch-Resistant Memory Segmentation (SRMS)**: (P0) Advanced memory security layer utilizing "Cognitive Salt" to prevent fragmented state fragments from being re-composed (CVE-2026-88012 defense).
+
 ### Priority Shifts
 - **Stylometric Identity Anchoring (SIA)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **GIMM** integration.
 - **Optimistic Quorum Hardening (OQH)**: (Re-affirmed P0) Evolving into the **HASB Provider** for hardware-level attestation guarantees.
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Elevated with mandatory **RaaS Attribution** integration for thinking-tool governance.
