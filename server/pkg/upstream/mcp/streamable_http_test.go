@@ -4,6 +4,11 @@
 package mcp
 
 import (
+	"os"
+	"strings"
+)
+
+import (
 	"context"
 	"encoding/json"
 	"errors"
@@ -941,4 +946,96 @@ func TestUpstream_Register_InvalidHTTPAddress(t *testing.T) {
 	_, _, _, err := u.Register(ctx, serviceConfig, newMockToolManager(), newMockPromptManager(), newMockResourceManager(), false)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "invalid mcp http service address scheme")
+}
+
+func TestBuildSafeEnv(t *testing.T) {
+	// Save the original environment
+	originalEnv := os.Environ()
+	defer func() {
+		os.Clearenv()
+		for _, e := range originalEnv {
+			parts := strings.SplitN(e, "=", 2)
+			if len(parts) == 2 {
+				os.Setenv(parts[0], parts[1])
+			}
+		}
+	}()
+
+	// Setup initial state
+	allowedEnvVars := []string{"PATH", "HOME", "USER", "TMPDIR", "TZ", "LANG", "LC_ALL"}
+	for _, key := range allowedEnvVars {
+		os.Unsetenv(key)
+	}
+
+	tests := []struct {
+		name        string
+		setupEnv    map[string]string
+		resolvedEnv map[string]string
+		expected    []string
+	}{
+		{
+			name:        "Empty inputs",
+			setupEnv:    nil,
+			resolvedEnv: nil,
+			expected:    []string{},
+		},
+		{
+			name: "Only allowed env vars",
+			setupEnv: map[string]string{
+				"PATH": "/usr/bin",
+				"HOME": "/home/test",
+			},
+			resolvedEnv: nil,
+			expected: []string{
+				"PATH=/usr/bin",
+				"HOME=/home/test",
+			},
+		},
+		{
+			name: "Mixed allowed and blocked env vars",
+			setupEnv: map[string]string{
+				"PATH":   "/usr/bin",
+				"SECRET": "super-secret-key", // Should be filtered out
+				"HOME":   "/home/test",
+			},
+			resolvedEnv: nil,
+			expected: []string{
+				"PATH=/usr/bin",
+				"HOME=/home/test",
+			},
+		},
+		{
+			name: "Resolved env overrides and additions",
+			setupEnv: map[string]string{
+				"PATH": "/usr/bin",
+			},
+			resolvedEnv: map[string]string{
+				"CUSTOM_VAR": "custom_value",
+				"PATH":       "/usr/local/bin",
+			},
+			expected: []string{
+				"PATH=/usr/bin",
+				"CUSTOM_VAR=custom_value",
+				"PATH=/usr/local/bin",
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Setup environment variables
+			for k, v := range tt.setupEnv {
+				os.Setenv(k, v)
+			}
+			defer func() {
+				for k := range tt.setupEnv {
+					os.Unsetenv(k)
+				}
+			}()
+
+			result := buildSafeEnv(tt.resolvedEnv)
+
+			assert.ElementsMatch(t, tt.expected, result)
+		})
+	}
 }

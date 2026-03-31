@@ -20,7 +20,7 @@ func TestStdioTransport_CaptureStderr(t *testing.T) {
 	defer cancel()
 
 	// Command that prints to stderr and fails
-	cmd := exec.CommandContext(ctx, "sh", "-c", "echo 'something went wrong' >&2; exit 1")
+	cmd := exec.CommandContext(ctx, "/bin/sh", "-c", "echo 'something went wrong' >&2; exit 1")
 
 	transport := &StdioTransport{
 		Command: cmd,
