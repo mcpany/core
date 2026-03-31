@@ -60,7 +60,43 @@ const getTableData = (data: unknown, smartTable: boolean) => {
         if (isListOfObjects) {
             return content;
         }
+
+        // Array of primitives
+        const isListOfPrimitives = content.every(item => typeof item !== 'object' || item === null);
+        if (isListOfPrimitives) {
+            return content.map((value, index) => ({ index, value }));
+        }
     }
+
+    // 2. Object containing an array
+    if (content && typeof content === 'object' && !Array.isArray(content) && content !== null) {
+        let largestArray: any[] = [];
+
+        // Level 1 scan
+        Object.values(content).forEach(val => {
+             if (Array.isArray(val) && val.length > 0) {
+                 if (val.length > largestArray.length) {
+                     largestArray = val;
+                 }
+             }
+             // Level 2 scan
+             else if (val && typeof val === 'object' && !Array.isArray(val)) {
+                  Object.values(val).forEach(nestedVal => {
+                       if (Array.isArray(nestedVal) && nestedVal.length > 0) {
+                           if (nestedVal.length > largestArray.length) {
+                               largestArray = nestedVal;
+                           }
+                       }
+                  });
+             }
+        });
+
+        if (largestArray.length > 0) {
+             const isListOfObjects = largestArray.every(item => typeof item === 'object' && item !== null && !Array.isArray(item));
+             return isListOfObjects ? largestArray : largestArray.map((value, index) => ({ index, value }));
+        }
+    }
+
     return null;
 };
 
