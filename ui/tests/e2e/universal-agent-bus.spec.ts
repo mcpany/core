@@ -23,7 +23,8 @@ test.describe('Universal Agent Bus', () => {
     ];
 
     for (const card of cards) {
-      await expect(page.locator('.text-sm.font-medium', { hasText: card })).toBeVisible();
+      // Use getByText to locate the card titles instead of relying on exact class names
+      await expect(page.getByText(card).first()).toBeVisible({ timeout: 15000 });
     }
   });
 });

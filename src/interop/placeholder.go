@@ -134,6 +134,10 @@ func (a *PlaceholderAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryS
 	return fmt.Errorf("Not Implemented: %s is a placeholder service", a.name)
 }
 
+func (a *PlaceholderAdapter) StreamTask(ctx context.Context, task *Task) (<-chan *TaskResult, error) {
+	return nil, fmt.Errorf("Not Implemented: %s is a placeholder service", a.name)
+}
+
 // RegisterPlaceholders registers all missing P0 features documented in the roadmap
 // as placeholder adapters on the provided AdapterHub.
 //
