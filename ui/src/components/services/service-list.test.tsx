@@ -4,6 +4,7 @@
  */
 
 import { render, screen, fireEvent } from "../../tests/test-utils";
+import { vi } from "vitest";
 import { ServiceList } from "./service-list";
 import { UpstreamServiceConfig } from "@/lib/client";
 import { ServiceHealthProvider } from "@/contexts/service-health-context";
@@ -112,8 +113,8 @@ describe("ServiceList", () => {
 
   it("toggles view mode between table and grid", () => {
     // Override localStorage for this test
-    Storage.prototype.getItem = jest.fn(() => null);
-    Storage.prototype.setItem = jest.fn();
+    Storage.prototype.getItem = vi.fn(() => null);
+    Storage.prototype.setItem = vi.fn();
 
     const { container } = renderWithProvider(<ServiceList services={mockServices} />);
 
