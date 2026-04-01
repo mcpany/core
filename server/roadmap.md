@@ -1008,3 +1008,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Multimodal Monologue Scrubber (MMS)**: Semantic security middleware performing real-time deconstruction of non-textual reasoning traces. (Added: 2026-07-21)
 *   **[P0] Durable Mission Continuity Provider**: Hardware-locked cross-session state recovery to maintain mission-root persistence across reboots. (Added: 2026-07-21)
 *   **[P1] Epistemic Attestation Provider**: Identity service issuing hardware-signed "Confidence Proofs" for high-risk tool results. (Added: 2026-07-21)
+
+#### Upcoming (2026-07-22 Evolution)
+*   **[P0] Epistemic Deadlock Resolver (EDR)**: authoritative arbiter utilizing Wait-Graph Analysis to break circular confidence dependencies. (Added: 2026-07-22)
+*   **[P0] SVG Filter-Graph Sanitizer**: security middleware deconstructing visual filter primitives into hardware-attested safe subsets. (Added: 2026-07-22)
+*   **[P1] Ephemeral Task Workspace Broker**: sandbox extension brokering hardware-locked filesystem overlays for sub-tasks. (Added: 2026-07-22)
+*   **[P0] Renderer Frame-Buffer Attestation**: hardware-locked signatures for visual rendering buffers to prevent frame-injection. (Added: 2026-07-22)

@@ -1893,3 +1893,15 @@
 ### Priority Shifts
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Elevated with the requirement for mandatory **Durable Continuity** to support cross-session recovery.
 - **Multimodal Inference-Time Sanitizer (MITS)**: (Re-affirmed P0) Designated as the primary enforcement point for the new **MMS-compliant** visual sanitization.
+
+## Evolution: [2026-07-22] Updates
+
+### Proposed Additions
+- **Epistemic Deadlock Resolver (EDR)**: (P0) Authoritative arbiter utilizing Wait-Graph Analysis to break circular confidence dependencies during multi-agent task bidding.
+- **SVG Filter-Graph Sanitizer**: (P0) Security middleware deconstructing nested visual filter primitives into hardware-attested safe subsets to neutralize context smuggling.
+- **Ephemeral Task Workspace Broker**: (P1) Sandbox extension brokering hardware-locked filesystem overlays that expire upon sub-task completion to minimize workspace residue.
+- **Renderer Frame-Buffer Attestation**: (P0) Identity middleware mandating hardware-locked signatures for visual rendering buffers to prevent frame-injection attacks.
+
+### Priority Shifts
+- **Reasoning Confidence Scoring (RCS) Gateway**: (Re-affirmed P0) Now elevated with the requirement for mandatory **EDR** integration to resolve coordination stalls.
+- **Multimodal Monologue Scrubber (MMS)**: (Re-affirmed P0) Elevated with mandatory **SVG Filter Sanitization** for multimodal lineage.

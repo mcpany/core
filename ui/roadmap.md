@@ -831,3 +831,9 @@
 - [ ] **[P0] Reasoning Confidence Monitor**: Real-time visualization of subagent uncertainty scores and RCS-triggered escalation events. (Added: 2026-07-21)
 - [ ] **[P0] Multimodal Trace Auditor**: Forensic UI for reviewing MMS-sanitized SVG and Audio reasoning fragments. (Added: 2026-07-21)
 - [ ] **[P0] Durable Session Explorer**: Visual workspace for reviewing hardware-locked continuity state across system reboots. (Added: 2026-07-21)
+
+#### Upcoming (2026-07-22 Evolution)
+- [ ] **[P0] Epistemic Deadlock Monitor**: (2026-07-22) Visual workspace for monitoring multi-agent confidence wait-graphs and arbitration events.
+- [ ] **[P0] SVG Filter-Graph Auditor**: (2026-07-22) Forensic UI for reviewing deconstructed visual filters and blocked instruction fragments.
+- [ ] **[P1] Ephemeral Workspace Manager**: (2026-07-22) Visual tracker for task-bound filesystem overlays and their expiration status.
+- [ ] **[P0] Frame-Buffer Integrity Viewer**: (2026-07-22) Security dashboard for verifying hardware-attested rendering buffers.
