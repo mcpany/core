@@ -25,6 +25,9 @@ test.describe('Inspector Page', () => {
     // Expect the toast notification
     await expect(page.getByText('Trace Seeded').first()).toBeVisible({ timeout: 5000 });
 
+    // Wait for the websocket to update the table
+    await page.waitForTimeout(1000);
+
     // The injected trace's root span name should appear in the inspector table.
     const row = page.locator('text=orchestrator-task').first();
     await expect(row).toBeVisible({ timeout: 10000 });
@@ -57,6 +60,8 @@ test.describe('Inspector Page', () => {
     const seedTraceBtn = page.getByRole('button', { name: 'Seed Trace' });
     await seedTraceBtn.click();
     await expect(page.getByText('Trace Seeded').first()).toBeVisible({ timeout: 5000 });
+
+    await page.waitForTimeout(1000);
 
     const row = page.locator('text=orchestrator-task').first();
     await expect(row).toBeVisible({ timeout: 10000 });
