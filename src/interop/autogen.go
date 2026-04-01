@@ -17,6 +17,9 @@ import (
 //
 // Throws/Errors:
 //   - None.
+//
+// Side Effects:
+//   - None.
 type AutoGenAdapter struct {
 	Capabilities map[string]bool
 	ChatHistory  []string // Maintain stateful checkpoints
@@ -33,6 +36,9 @@ type AutoGenAdapter struct {
 //   - *AutoGenAdapter: A newly created pointer to an AutoGenAdapter instance.
 //
 // Throws/Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func NewAutoGenAdapter() *AutoGenAdapter {
 	return &AutoGenAdapter{
@@ -56,6 +62,9 @@ func NewAutoGenAdapter() *AutoGenAdapter {
 //
 // Throws/Errors:
 //   - None.
+//
+// Side Effects:
+//   - None.
 func (a *AutoGenAdapter) Name() string {
 	return "AutoGen"
 }
@@ -74,6 +83,9 @@ func (a *AutoGenAdapter) Name() string {
 //
 // Throws/Errors:
 //   - Returns "AutoGen does not support capability" if the task's intent is missing from capabilities.
+//
+// Side Effects:
+//   - None.
 func (a *AutoGenAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult, error) {
 	if !a.SupportsCapability(task.Intent) {
 		return nil, fmt.Errorf("AutoGen does not support capability: %s", task.Intent)
@@ -119,6 +131,9 @@ func (a *AutoGenAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResul
 //
 // Throws/Errors:
 //   - None.
+//
+// Side Effects:
+//   - None.
 func (a *AutoGenAdapter) SupportsCapability(capability string) bool {
 	return a.Capabilities[capability]
 }
@@ -136,6 +151,9 @@ func (a *AutoGenAdapter) SupportsCapability(capability string) bool {
 //
 // Throws/Errors:
 //   - Returns an error if the shard signature verification fails.
+//
+// Side Effects:
+//   - None.
 func (a *AutoGenAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard) error {
 	if shard.Signature == "" {
 		return fmt.Errorf("invalid memory shard: signature required for ingestion")

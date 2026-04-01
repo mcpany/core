@@ -17,6 +17,9 @@ import (
 //
 // Throws/Errors:
 //   - None.
+//
+// Side Effects:
+//   - None.
 type CrewAIAdapter struct {
 	Capabilities map[string]bool
 	RoleRegistry map[string]string // Role name -> Capability token
@@ -33,6 +36,9 @@ type CrewAIAdapter struct {
 //   - *CrewAIAdapter: A pointer to the newly created CrewAIAdapter instance.
 //
 // Throws/Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func NewCrewAIAdapter() *CrewAIAdapter {
 	return &CrewAIAdapter{
@@ -56,6 +62,9 @@ func NewCrewAIAdapter() *CrewAIAdapter {
 //
 // Throws/Errors:
 //   - None.
+//
+// Side Effects:
+//   - None.
 func (a *CrewAIAdapter) Name() string {
 	return "CrewAI"
 }
@@ -74,6 +83,9 @@ func (a *CrewAIAdapter) Name() string {
 //
 // Throws/Errors:
 //   - Returns "CrewAI does not support capability" if the task's intent is not supported by the adapter.
+//
+// Side Effects:
+//   - None.
 func (a *CrewAIAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult, error) {
 	if !a.SupportsCapability(task.Intent) {
 		return nil, fmt.Errorf("CrewAI does not support capability: %s", task.Intent)
@@ -122,6 +134,9 @@ func (a *CrewAIAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult
 //
 // Throws/Errors:
 //   - None.
+//
+// Side Effects:
+//   - None.
 func (a *CrewAIAdapter) SupportsCapability(capability string) bool {
 	return a.Capabilities[capability]
 }
@@ -139,6 +154,9 @@ func (a *CrewAIAdapter) SupportsCapability(capability string) bool {
 //
 // Throws/Errors:
 //   - Returns an error if the shard signature verification fails.
+//
+// Side Effects:
+//   - None.
 func (a *CrewAIAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard) error {
 	if shard.Signature == "" {
 		return fmt.Errorf("invalid memory shard: unverified payload rejected by CrewAI")
