@@ -10,7 +10,7 @@ The middleware can be configured per-tool or globally:
 hitl:
   enabled: true
   require_mfa: false
-  timeout: 300s
+  timeout_seconds: 300
   sensitive_tools:
     - "database.drop_table"
     - "aws.terminate_instance"

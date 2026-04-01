@@ -9,8 +9,7 @@ It can be configured globally to allow context inheritance for the swarm:
 ```yaml
 recursive_context:
   enabled: true
-  max_depth: 10
-  ttl: 3600s
+  ttl_seconds: 3600
 ```
 
 ## How it works
