@@ -62,13 +62,10 @@ test.describe('Credentials Bulk Actions', () => {
         await page.fill('input[name="username"]', "e2e-admin-credentials");
         await page.fill('input[name="password"]', 'password');
 
-        await Promise.all([
-            page.waitForURL('/', { timeout: 30000 }),
-            page.click('button[type="submit"]', { force: true })
-        ]);
+        await page.click('button[type="submit"]', { force: true });
 
         // Wait for dashboard to load
-        await expect(page).toHaveURL('/', { timeout: 15000 });
+        await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible({ timeout: 15000 });
 
         await page.goto('/credentials');
 
