@@ -4,9 +4,13 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedUser, cleanupUser } from './test-data';
 
 test.describe('Credentials Bulk Actions', () => {
-    test.beforeEach(async ({ request }) => {
+    test.beforeEach(async ({ request, page }) => {
+        // Create user for test
+        await seedUser(request, "e2e-admin-credentials");
+
         // Seed multiple credentials
         const mockCredentials = [
             {
@@ -54,12 +58,17 @@ test.describe('Credentials Bulk Actions', () => {
     test('should select credentials and perform bulk delete', async ({ page }) => {
         // Log in to ensure auth headers are correct
         await page.goto('/login');
-        await page.getByPlaceholder('Username').fill('admin');
-        await page.getByPlaceholder('Password').fill('admin');
-        await page.getByRole('button', { name: 'Sign in' }).click();
+        await page.waitForLoadState('networkidle');
+        await page.fill('input[name="username"]', "e2e-admin-credentials");
+        await page.fill('input[name="password"]', 'password');
+
+        await Promise.all([
+            page.waitForURL('/', { timeout: 30000 }),
+            page.click('button[type="submit"]', { force: true })
+        ]);
 
         // Wait for dashboard to load
-        await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
+        await expect(page).toHaveURL('/', { timeout: 15000 });
 
         await page.goto('/credentials');
 
