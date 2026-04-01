@@ -156,21 +156,21 @@ func (a *PlaceholderAdapter) StreamTask(ctx context.Context, task *Task) (<-chan
 	return nil, fmt.Errorf("placeholder method: not implemented")
 }
 
-// RegisterPlaceholders registers all missing P0 features documented in the roadmap
-// as placeholder adapters on the provided AdapterHub.
+// RegisterPlaceholders registers placeholder adapters for missing features in the AdapterHub.
 //
-// Summary: To ensure that the feature inventory matches the available integrations
-// inside the universal agent bus, providing a clear "Not Implemented" failure
-// rather than a "Framework Not Found" error.
+// Summary: Registers all documented but unimplemented agent frameworks into the provided hub.
 //
 // Parameters:
-//   - hub (*AdapterHub): the hub to register to.
+//   - hub (*AdapterHub): The central adapter hub where placeholders will be registered.
 //
 // Returns:
 //   - None.
 //
 // Throws/Errors:
 //   - None.
+//
+// Side Effects:
+//   - Modifies the provided AdapterHub by adding numerous PlaceholderAdapter instances.
 func RegisterPlaceholders(hub *AdapterHub) {
 	missingFeatures := []string{
 		"Dynamic Mesh Resilience (DMR) Hub",

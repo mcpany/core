@@ -17,6 +17,9 @@ import (
 //
 // Throws/Errors:
 //   - None.
+//
+// Side Effects:
+//   - None.
 type OpenClawAdapter struct {
 	Capabilities map[string]bool
 	CurrentEpoch int // Track the reasoning epoch
@@ -33,6 +36,9 @@ type OpenClawAdapter struct {
 //   - *OpenClawAdapter: A pointer to the newly instantiated OpenClawAdapter.
 //
 // Throws/Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func NewOpenClawAdapter() *OpenClawAdapter {
 	return &OpenClawAdapter{
@@ -56,6 +62,9 @@ func NewOpenClawAdapter() *OpenClawAdapter {
 //
 // Throws/Errors:
 //   - None.
+//
+// Side Effects:
+//   - None.
 func (a *OpenClawAdapter) Name() string {
 	return "OpenClaw"
 }
@@ -74,6 +83,9 @@ func (a *OpenClawAdapter) Name() string {
 //
 // Throws/Errors:
 //   - Returns an error if the framework's capability check fails for the task's intent.
+//
+// Side Effects:
+//   - None.
 func (a *OpenClawAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult, error) {
 	if !a.SupportsCapability(task.Intent) {
 		return nil, fmt.Errorf("OpenClaw does not support capability: %s", task.Intent)
@@ -117,6 +129,9 @@ func (a *OpenClawAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResu
 //
 // Throws/Errors:
 //   - None.
+//
+// Side Effects:
+//   - None.
 func (a *OpenClawAdapter) SupportsCapability(capability string) bool {
 	return a.Capabilities[capability]
 }
@@ -134,6 +149,9 @@ func (a *OpenClawAdapter) SupportsCapability(capability string) bool {
 //
 // Throws/Errors:
 //   - Returns an error if the shard signature verification fails.
+//
+// Side Effects:
+//   - None.
 func (a *OpenClawAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard) error {
 	if shard.Signature == "" {
 		return fmt.Errorf("invalid memory shard: missing signature")

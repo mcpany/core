@@ -17,6 +17,9 @@ import (
 //
 // Throws/Errors:
 //   - None.
+//
+// Side Effects:
+//   - None.
 type AgentFramework interface {
 	// Name returns the identifier of the agent framework.
 	//
@@ -29,6 +32,9 @@ type AgentFramework interface {
 	//   - string: The name of the agent framework.
 	//
 	// Throws/Errors:
+	//   - None.
+	//
+	// Side Effects:
 	//   - None.
 	//
 	Name() string
@@ -48,6 +54,9 @@ type AgentFramework interface {
 	// Throws/Errors:
 	//   - Returns an error if the framework does not support the requested capability or if execution fails.
 	//
+	// Side Effects:
+	//   - None.
+	//
 	HandleTask(ctx context.Context, task *Task) (*TaskResult, error)
 
 	// SupportsCapability checks if the framework provides a requested capability.
@@ -61,6 +70,9 @@ type AgentFramework interface {
 	//   - bool: True if the capability is supported, false otherwise.
 	//
 	// Throws/Errors:
+	//   - None.
+	//
+	// Side Effects:
 	//   - None.
 	//
 	SupportsCapability(capability string) bool
@@ -78,6 +90,9 @@ type AgentFramework interface {
 	//
 	// Throws/Errors:
 	//   - Returns an error if the synchronization process fails.
+	//
+	// Side Effects:
+	//   - None.
 	//
 	SyncMemoryShard(ctx context.Context, shard *MemoryShard) error
 
@@ -113,6 +128,9 @@ type AgentFramework interface {
 //
 // Throws/Errors:
 //   - None.
+//
+// Side Effects:
+//   - None.
 type MemoryShard struct {
 	ShardID           string `json:"shard_id"`
 	Intent            string `json:"intent"`
@@ -134,6 +152,9 @@ type MemoryShard struct {
 //
 // Throws/Errors:
 //   - None.
+//
+// Side Effects:
+//   - None.
 type Task struct {
 	ID        string            `json:"id"`
 	Framework string            `json:"framework"`
@@ -152,6 +173,9 @@ type Task struct {
 //   - None.
 //
 // Throws/Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 type TaskResult struct {
 	TaskID    string            `json:"task_id"`
@@ -173,6 +197,9 @@ type TaskResult struct {
 //
 // Throws/Errors:
 //   - None.
+//
+// Side Effects:
+//   - None.
 type AdapterHub struct {
 	adapters map[string]AgentFramework
 }
@@ -188,6 +215,9 @@ type AdapterHub struct {
 //   - *AdapterHub: A pointer to the newly created AdapterHub.
 //
 // Throws/Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func NewAdapterHub() *AdapterHub {
 	return &AdapterHub{
@@ -206,6 +236,9 @@ func NewAdapterHub() *AdapterHub {
 //   - None.
 //
 // Throws/Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func (h *AdapterHub) RegisterAdapter(adapter AgentFramework) {
 	h.adapters[adapter.Name()] = adapter
@@ -226,6 +259,9 @@ func (h *AdapterHub) RegisterAdapter(adapter AgentFramework) {
 // Throws/Errors:
 //   - Returns "no adapter registered for framework" if the requested framework is not found.
 //   - Returns any error produced by the adapter during task execution.
+//
+// Side Effects:
+//   - None.
 func (h *AdapterHub) RouteTask(ctx context.Context, task *Task) (*TaskResult, error) {
 	adapter, exists := h.adapters[task.Framework]
 	if !exists {
