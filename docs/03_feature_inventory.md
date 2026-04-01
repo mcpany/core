@@ -1,5 +1,15 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Recursive Lease Validator (RLV)**: (P0) Authoritative security service ensuring that sub-delegated hardware leases are strictly subsetted from parent authority to prevent "Lease Creep."
+- **SNT-Native Mesh Bridge**: (P0) High-performance coordination service for buffering cryptographic handshakes and maintaining agentic state across device boundaries in distributed swarms.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with mandatory support for **SNT-Native Mesh Bridging** to reduce coordination latency.
+- **Hardware-Locked Mission Lease (HLML) Provider**: (Re-affirmed P0) Now elevated with the requirement for **Recursive Lease Validation** for sub-delegations.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions
