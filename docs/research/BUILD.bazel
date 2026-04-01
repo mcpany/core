@@ -2,8 +2,8 @@
 filegroup(
     name = "docs",
     srcs = [
+        "evolution-2026-07-12-streaming.md",
         "interop_blueprint.md",
-        "evolution-2026-07-12-streaming.md"
     ],
     visibility = ["//visibility:public"],
 )
