@@ -74,3 +74,11 @@ The Mission-Locked Execution (MLE) Gateway is needed to ensure that every tool c
 * Integrating the **Stylometric Mimicry Mitigator (SMM)** into the MLE validation pipeline.
 * Tool calls now require both a valid **Mission Lock** and a high-confidence **Stylometric Attestation** token from the SMM.
 **Security Impact:** Neutralizes high-fidelity mimicry attacks where subagents attempt to "ghost" authorized intents by imitating the parent's reasoning style.
+
+### Update: 2026-07-24 - Hardware-Locked Mission Leases (HLML)
+**Context:** Today's market sync revealed the maturation of "Mission-Bound Hardware Leases" (MBHL) in Claude Code v3.2.0, providing temporal, hardware-enforced boundaries for high-privilege tasks.
+**Architecture Adjustment:**
+* Upgrading Section 4 to incorporate the **HLML Provider**.
+* MLE Gateway now enforces mandatory hardware-signed leases for "High-Impact" tool categories (e.g., `run_shell_command`).
+* Leases are cryptographically tied to the TPM-attested mission fragment and expire automatically upon mission termination signals.
+**Security Impact:** Mitigates persistent privilege escalation by ensuring that high-privilege tool access is physically revoked by the hardware root at the end of a specific mission, even if the agent process remains active.
