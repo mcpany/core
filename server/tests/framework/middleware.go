@@ -24,6 +24,20 @@ import (
 // TestE2ECaching tests the end-to-end caching functionality.
 //
 // t is the t.
+//
+// Summary: Implements TestE2ECaching for the system.
+//
+// Parameters:
+//   - t: Contextual argument for TestE2ECaching.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies local state or underlying systems.
 func TestE2ECaching(t *testing.T) {
 	t.Parallel()
 	RunE2ETest(t, &E2ETestCase{
@@ -44,6 +58,20 @@ func TestE2ECaching(t *testing.T) {
 // t is the t.
 //
 // Returns the result.
+//
+// Summary: Implements BuildCachingServer for the system.
+//
+// Parameters:
+//   - t: Contextual argument for BuildCachingServer.
+//
+// Returns:
+//   - *integration.ManagedProcess: The computed output or reference.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies local state or underlying systems.
 func BuildCachingServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	proc := integration.NewManagedProcess(t, "http_caching_server", integration.MockBinary(t, "http_caching_server"), []string{"--port", fmt.Sprintf("%d", port)}, nil)
@@ -56,6 +84,22 @@ func BuildCachingServer(t *testing.T) *integration.ManagedProcess {
 // t is the t.
 // registrationClient is the registrationClient.
 // upstreamEndpoint is the upstreamEndpoint.
+//
+// Summary: Implements RegisterCachingService for the system.
+//
+// Parameters:
+//   - t: Contextual argument for RegisterCachingService.
+//   - registrationClient: Contextual argument for RegisterCachingService.
+//   - upstreamEndpoint: Contextual argument for RegisterCachingService.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies local state or underlying systems.
 func RegisterCachingService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	serviceID := "e2e_caching_server"
 	operationID := "get_data"
@@ -103,6 +147,21 @@ func protoString(value string) *string {
 // next is the next.
 //
 // Returns the result.
+//
+// Summary: Implements NoOpMiddleware for the system.
+//
+// Parameters:
+//   - _: Contextual argument for NoOpMiddleware.
+//   - next: Contextual argument for NoOpMiddleware.
+//
+// Returns:
+//   - http.Handler: The computed output or reference.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies local state or underlying systems.
 func NoOpMiddleware(_ *testing.T, next http.Handler) http.Handler {
 	return next
 }
@@ -139,6 +198,22 @@ func callTool(t *testing.T, session *mcp.ClientSession, toolName string) {
 // t is the t.
 // mcpanyEndpoint is the mcpanyEndpoint.
 // upstreamEndpoint is the upstreamEndpoint.
+//
+// Summary: Implements ValidateCaching for the system.
+//
+// Parameters:
+//   - t: Contextual argument for ValidateCaching.
+//   - mcpanyEndpoint: Contextual argument for ValidateCaching.
+//   - upstreamEndpoint: Contextual argument for ValidateCaching.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies local state or underlying systems.
 func ValidateCaching(t *testing.T, mcpanyEndpoint, upstreamEndpoint string) {
 	session := connectMCP(t, mcpanyEndpoint)
 

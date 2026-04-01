@@ -17,6 +17,8 @@ import (
 )
 
 // CopilotCLI handles interactions with the GitHub Copilot CLI tool for testing.
+//
+// Summary: Implements CopilotCLI for the system.
 type CopilotCLI struct {
 	t         *testing.T
 	configDir string
@@ -24,6 +26,8 @@ type CopilotCLI struct {
 }
 
 // MCPServerConfig defines the configuration for an MCP server.
+//
+// Summary: Implements MCPServerConfig for the system.
 type MCPServerConfig struct {
 	Command string   `json:"command,omitempty"`
 	Args    []string `json:"args,omitempty"`
@@ -32,6 +36,8 @@ type MCPServerConfig struct {
 }
 
 // MCPConfig defines the configuration file structure.
+//
+// Summary: Implements MCPConfig for the system.
 type MCPConfig struct {
 	MCPServers map[string]MCPServerConfig `json:"mcpServers"`
 }
@@ -41,6 +47,20 @@ type MCPConfig struct {
 // t is the t.
 //
 // Returns the result.
+//
+// Summary: Implements NewCopilotCLI for the system.
+//
+// Parameters:
+//   - t: Contextual argument for NewCopilotCLI.
+//
+// Returns:
+//   - *CopilotCLI: The computed output or reference.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies local state or underlying systems.
 func NewCopilotCLI(t *testing.T) *CopilotCLI {
 	tempDir := t.TempDir()
 	return &CopilotCLI{
@@ -51,6 +71,20 @@ func NewCopilotCLI(t *testing.T) *CopilotCLI {
 }
 
 // Install installs the Copilot CLI tool.
+//
+// Summary: Implements Install for the system.
+//
+// Parameters:
+//   - c: Contextual argument for Install.
+//
+// Returns:
+//   - Install(): The computed output or reference.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies local state or underlying systems.
 func (c *CopilotCLI) Install() {
 	c.t.Helper()
 	root, err := integration.GetProjectRoot()
@@ -77,6 +111,20 @@ func (c *CopilotCLI) copilotCommand(args ...string) *exec.Cmd {
 //
 // name is the name of the resource.
 // endpoint is the endpoint.
+//
+// Summary: Implements AddMCP for the system.
+//
+// Parameters:
+//   - c: Contextual argument for AddMCP.
+//
+// Returns:
+//   - AddMCP(name, endpoint string): The computed output or reference.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies local state or underlying systems.
 func (c *CopilotCLI) AddMCP(name, endpoint string) {
 	c.t.Helper()
 
@@ -95,6 +143,20 @@ func (c *CopilotCLI) AddMCP(name, endpoint string) {
 // RemoveMCP removes an MCP server.
 //
 // name is the name of the resource.
+//
+// Summary: Implements RemoveMCP for the system.
+//
+// Parameters:
+//   - c: Contextual argument for RemoveMCP.
+//
+// Returns:
+//   - RemoveMCP(name string): The computed output or reference.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies local state or underlying systems.
 func (c *CopilotCLI) RemoveMCP(name string) {
 	c.t.Helper()
 	delete(c.servers, name)
@@ -128,6 +190,20 @@ func (c *CopilotCLI) writeConfig() {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Summary: Implements Run for the system.
+//
+// Parameters:
+//   - c: Contextual argument for Run.
+//
+// Returns:
+//   - Run(apiKey, prompt string) (string, error): The computed output or reference.
+//
+// Errors:
+//   - Returns an error if initialization or execution encounters issues.
+//
+// Side Effects:
+//   - Modifies local state or underlying systems.
 func (c *CopilotCLI) Run(apiKey, prompt string) (string, error) {
 	c.t.Helper()
 	var outputBuffer strings.Builder

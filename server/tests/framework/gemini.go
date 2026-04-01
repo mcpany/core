@@ -16,9 +16,13 @@ import (
 )
 
 // DefaultModel is the default Gemini model to use.
+//
+// Summary: Implements DefaultModel for the system.
 const DefaultModel = "gemini-2.5-flash"
 
 // GeminiCLI handles interactions with the Gemini CLI tool for testing.
+//
+// Summary: Implements GeminiCLI for the system.
 type GeminiCLI struct {
 	t *testing.T
 }
@@ -28,11 +32,39 @@ type GeminiCLI struct {
 // t is the t.
 //
 // Returns the result.
+//
+// Summary: Implements NewGeminiCLI for the system.
+//
+// Parameters:
+//   - t: Contextual argument for NewGeminiCLI.
+//
+// Returns:
+//   - *GeminiCLI: The computed output or reference.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies local state or underlying systems.
 func NewGeminiCLI(t *testing.T) *GeminiCLI {
 	return &GeminiCLI{t: t}
 }
 
 // Install installs the Gemini CLI tool.
+//
+// Summary: Implements Install for the system.
+//
+// Parameters:
+//   - g: Contextual argument for Install.
+//
+// Returns:
+//   - Install(): The computed output or reference.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies local state or underlying systems.
 func (g *GeminiCLI) Install() {
 	g.t.Helper()
 	root, err := integration.GetProjectRoot()
@@ -55,6 +87,20 @@ func (g *GeminiCLI) geminiCommand(args ...string) *exec.Cmd {
 //
 // name is the name of the resource.
 // endpoint is the endpoint.
+//
+// Summary: Implements AddMCP for the system.
+//
+// Parameters:
+//   - g: Contextual argument for AddMCP.
+//
+// Returns:
+//   - AddMCP(name, endpoint string): The computed output or reference.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies local state or underlying systems.
 func (g *GeminiCLI) AddMCP(name, endpoint string) {
 	g.t.Helper()
 	cmd := g.geminiCommand("mcp", "add", "--transport", "http", name, endpoint)
@@ -65,6 +111,20 @@ func (g *GeminiCLI) AddMCP(name, endpoint string) {
 // RemoveMCP removes an MCP server from the Gemini CLI configuration.
 //
 // name is the name of the resource.
+//
+// Summary: Implements RemoveMCP for the system.
+//
+// Parameters:
+//   - g: Contextual argument for RemoveMCP.
+//
+// Returns:
+//   - RemoveMCP(name string): The computed output or reference.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies local state or underlying systems.
 func (g *GeminiCLI) RemoveMCP(name string) {
 	g.t.Helper()
 	cmd := g.geminiCommand("mcp", "remove", name)
@@ -81,6 +141,20 @@ func (g *GeminiCLI) RemoveMCP(name string) {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Summary: Implements Run for the system.
+//
+// Parameters:
+//   - g: Contextual argument for Run.
+//
+// Returns:
+//   - Run(apiKey, prompt string) (string, error): The computed output or reference.
+//
+// Errors:
+//   - Returns an error if initialization or execution encounters issues.
+//
+// Side Effects:
+//   - Modifies local state or underlying systems.
 func (g *GeminiCLI) Run(apiKey, prompt string) (string, error) {
 	g.t.Helper()
 	var outputBuffer strings.Builder

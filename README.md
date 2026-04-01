@@ -1,37 +1,14 @@
 # MCP Any
 
-## Project Identity
-**What is this?** MCP Any is the Universal Adapter for AI agents.
-**Why does it exist?** It empowers developers to build secure, capability-enabled APIs (REST, gRPC, GraphQL, Command-line) through lightweight YAML/JSON configurations, serving as an ultimate universal bridge and eliminating the need to write custom boilerplate adapters.
-
-## Quick Start
-```bash
-git clone https://github.com/mcpany/core.git
-cd core
-# Install dependencies
-# Ensure `bazelisk` is installed and available in your `PATH`.
-bazelisk run //server/cmd/mcpany -- -config examples/hello_world.yaml
-```
-
-## Developer Workflow
-```bash
-# How to run `make test`
-make test
-
-# How to run `make lint`
-make lint
-
-# How to build builds
-bazelisk build //server/cmd/mcpany
-```
+## Elevator Pitch
+MCP Any is the Universal Adapter for AI agents. It acts as an intelligent bridge, enabling seamless, secure, and capability-driven interactions between modern AI models and disparate APIs (REST, gRPC, GraphQL, Command-line) using lightweight YAML/JSON configurations. It entirely eliminates the boilerplate necessary to glue different systems to AI Agent frameworks.
 
 ## Architecture
-MCP Any relies on a "Configuration over Code" pattern. Users deploy a single binary which reads dynamically loaded capability definitions. The architecture supports gRPC, OpenAPI, HTTP, GraphQL, and CLI tools.
-Features include:
-- Dynamic Tool Registration.
-- Safety Policies.
-- Upstream Authentication.
-- Multi-Tenant isolation.
+MCP Any follows a "Configuration over Code" pattern, dynamically loading service definitions via configuration files instead of hardcoded adapters.
+- **Universal Adapter Hub**: Receives connections from the Client Application (Agent Framework) using the Model Context Protocol (MCP).
+- **Dynamic Router**: Dynamically translates and routes agent intents into the target protocol (REST, gRPC, CLI, etc.).
+- **Security & Multi-Tenant**: Provides deep safety policies, access controls, upstream authentication, and strict multi-tenant isolation.
+- **Traceability**: Offers comprehensive debug visibility via Agent Chain Tracer and audit logs.
 
 ### High-Level Flow
 ```mermaid
@@ -51,3 +28,31 @@ graph TD
     C -->|GraphQL Schema| F[GraphQL Endpoint]:::target
     C -->|Standard I/O| G[Command Line Tools]:::target
 ```
+
+## Getting Started
+To get the project up and running:
+
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/mcpany/core.git
+   cd core
+   ```
+
+2. **Run Hello World Example**
+   Ensure `bazelisk` is installed and available in your `PATH`.
+   ```bash
+   bazelisk run //server/cmd/mcpany -- -config examples/hello_world.yaml
+   ```
+
+## Development
+This project utilizes a `Makefile` and `bazelisk` for common build workflows:
+
+- **Run Tests:** `make test` executes the test suite.
+- **Run Linter:** `make lint` verifies code style and docstrings.
+- **Build Server:** `bazelisk build //server/cmd/mcpany` compiles the core binary.
+
+## Configuration
+MCP Any requires specific environment variables and configuration for integration:
+- Deploy using a `config.yaml` specifying resources, capabilities, and safety properties.
+- Environment variables like `OPENAI_API_KEY` or `ANTHROPIC_API_KEY` may be needed depending on the underlying agent connection testing paths.
+- For a comprehensive list of secrets, see the detailed configuration documentation within `docs/`.

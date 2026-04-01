@@ -12,6 +12,21 @@ import (
 
 // StartMockServer starts a new mock server with the provided handler.
 // The caller is responsible for calling Close() on the returned server.
+//
+// Summary: Implements StartMockServer for the system.
+//
+// Parameters:
+//   - t: Contextual argument for StartMockServer.
+//   - handler: Contextual argument for StartMockServer.
+//
+// Returns:
+//   - *httptest.Server: The computed output or reference.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies local state or underlying systems.
 func StartMockServer(t *testing.T, handler http.Handler) *httptest.Server {
 	t.Helper()
 	server := httptest.NewServer(handler)
@@ -21,6 +36,21 @@ func StartMockServer(t *testing.T, handler http.Handler) *httptest.Server {
 
 // DefaultMockHandler provides a simple way to define responses for specific paths.
 // It maps path -> response body (string or bytes).
+//
+// Summary: Implements DefaultMockHandler for the system.
+//
+// Parameters:
+//   - t: Contextual argument for DefaultMockHandler.
+//   - responses: Contextual argument for DefaultMockHandler.
+//
+// Returns:
+//   - http.Handler: The computed output or reference.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies local state or underlying systems.
 func DefaultMockHandler(t *testing.T, responses map[string]string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		bodyBytes, _ := io.ReadAll(r.Body)
@@ -48,6 +78,21 @@ func DefaultMockHandler(t *testing.T, responses map[string]string) http.Handler 
 }
 
 // CreateMockServerWithResponses is a convenience function to start a server with static responses.
+//
+// Summary: Implements CreateMockServerWithResponses for the system.
+//
+// Parameters:
+//   - t: Contextual argument for CreateMockServerWithResponses.
+//   - responses: Contextual argument for CreateMockServerWithResponses.
+//
+// Returns:
+//   - *httptest.Server: The computed output or reference.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies local state or underlying systems.
 func CreateMockServerWithResponses(t *testing.T, responses map[string]string) *httptest.Server {
 	return StartMockServer(t, DefaultMockHandler(t, responses))
 }
