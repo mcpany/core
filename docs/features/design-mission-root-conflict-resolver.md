@@ -48,3 +48,10 @@ The Mission-Root Conflict Resolver (MRCR) acts as the authoritative kernel-level
 
 ## 7. Evolutionary Changelog
 * **2026-07-23:** Initial Document Creation.
+
+### Update: 2026-07-24 - Resolving Stateful Workspace Hook Collision
+**Context:** Today's research reveals that filesystem-triggered automation in shared workspaces can lead to "Hook Poisoning" and temporal race conditions.
+**Architecture Adjustment:**
+* Integrating the **Stateful Workspace Hook Guard (SWHG)** into the MRCR pipeline.
+* Mandating **Temporal State Integrity (TSI)** for all scratchpad writes to ensure monotonic event sequencing.
+**Security Impact:** Prevents malicious subagents from weaponizing automated triggers and acting on stale state fragments.

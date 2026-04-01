@@ -40,7 +40,7 @@ cd core
 
 # Run a hello world example
 # Ensure `bazelisk` is installed and available in your `PATH`.
-bazelisk run //server/cmd/mcpany -- -config examples/hello_world.yaml
+bazelisk run //server/cmd/server -- run --config examples/hello_world.yaml
 ```
 
 ## Development
@@ -48,13 +48,16 @@ We use `make` and `bazelisk` for our development workflow.
 
 ```bash
 # Run the test suite
-make test
+make docker-test
 
 # Run the linter
-make lint
+make docker-lint
+
+# Run Kubernetes E2E tests
+make k8s-e2e
 
 # Build the main binary
-bazelisk build //server/cmd/mcpany
+bazelisk build //server/cmd/server
 ```
 
 ## Configuration
