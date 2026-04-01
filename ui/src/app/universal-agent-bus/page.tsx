@@ -19,6 +19,7 @@ import {
   Activity
 } from "lucide-react";
 import { AgentChainTracer } from "@/components/dashboard/agent-chain-tracer";
+import { LazyMcpDashboard } from "@/components/dashboard/lazy-mcp-dashboard";
 
 /**
  * Intent: Document UniversalAgentBusPage
@@ -98,20 +99,10 @@ export default function UniversalAgentBusPage() {
           </CardContent>
         </Card>
 
-        {/* Lazy-MCP Tool Search Dashboard */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Lazy-MCP Tool Search Dashboard</CardTitle>
-            <Search className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">0 Index Hits</div>
-            <p className="text-xs text-muted-foreground">
-              UI for managing the on-demand tool index and monitoring search hits/misses.
-            </p>
-          </CardContent>
-        </Card>
+      </div>
 
+      <div className="mt-8">
+        <LazyMcpDashboard />
       </div>
 
       <div className="mt-8">
