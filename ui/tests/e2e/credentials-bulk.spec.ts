@@ -4,10 +4,14 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedUser, cleanupUser } from './test-data';
+import { seedUser, seedGlobalState } from './test-data';
 
 test.describe('Credentials Bulk Actions', () => {
+    test.describe.configure({ mode: 'serial' });
+
     test.beforeEach(async ({ request, page }) => {
+        // Must seed global state first to initialize the DB and ensure no conflicts
+        await seedGlobalState(request);
         // Create user for test
         await seedUser(request, "e2e-admin-credentials");
 
