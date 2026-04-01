@@ -1018,3 +1018,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Reasoning-Path Watermark (RPW) Validator**: advanced provenance service for verifying cryptographic watermarks in reasoning fragments. (Added: 2026-07-22)
 *   **[P0] Adaptive Resource Reclamation (ARR) Service**: high-speed budgeting middleware for real-time token/reasoning re-allocation between teammates. (Added: 2026-07-22)
 *   **[P0] Manifest-Based Reflection (MBR) Arbiter**: authoritative service for validating subagent self-reflection against hardware-attested manifests. (Added: 2026-07-22)
+
+#### Upcoming (2026-07-24 Evolution)
+*   **[P0] Semantic Subsidiarity Broker (SSB)**: implementation of "Veto Contracts" for mission-root override of specialized sub-agent results. (Added: 2026-07-24)
+*   **[P0] Anchor-Drift Guard (ADG)**: syntax-aware cognitive anchor validation using Tree-sitter and Inode-pinning. (Added: 2026-07-24)
+*   **[P1] Task-Bidding Token-Cap**: automated throttling of task auctions in high-density (50+) agent meshes. (Added: 2026-07-24)
+*   **[P0] Sovereign Context Comparator**: hardware-attested comparison engine for sub-mission termination verification. (Added: 2026-07-24)

@@ -841,3 +841,8 @@
 - [ ] **[P0] Reasoning Provenance Inspector**: (2026-07-22) Visual debugger for verifying RPW-compliant watermarks and reasoning lineage.
 - [ ] **[P0] Dynamic Resource Budgeting Monitor**: (2026-07-22) Real-time visualization of ARR-triggered budget re-allocations between teammates.
 - [ ] **[P0] Reflection Policy Dashboard**: (2026-07-22) UI for defining and monitoring MBR-compliant subagent reflection cycles.
+
+#### Upcoming (2026-07-24 Evolution)
+- [ ] **[P0] Subsidiarity Veto Console**: (2026-07-24) Workspace for Mission-Root agents to review and issue hardware-signed vetos on sub-agent proposals.
+- [ ] **[P0] Anchor-Drift Heatmap**: (2026-07-24) Real-time visualization of syntactical drift across agent "Attention Anchors" in the workspace.
+- [ ] **[P1] Swarm Density Monitor**: (2026-07-24) Visual tracker for auction bidding density and token-cap throttling events.

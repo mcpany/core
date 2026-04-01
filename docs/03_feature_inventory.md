@@ -1915,3 +1915,15 @@
 ### Priority Shifts
 - **Reasoning Provenance Validator**: (Re-affirmed P0) Elevated with mandatory support for **RPW-compliant** watermark verification.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Designated as the primary persistence layer for **MBR-validated** reflection states.
+
+## Evolution: [2026-07-24] Updates
+
+### Proposed Additions
+- **Semantic Subsidiarity Broker (SSB)**: (P0) Authoritative coordination layer for managing recursive "Veto Contracts," allowing mission-roots to override sub-agent results that violate semantic baselines.
+- **Anchor-Drift Guard (ADG)**: (P0) Security service performing syntax-aware comparison of agent "Attention Anchors" against hardware-attested mission baselines at the Inode level.
+- **Task-Bidding Token-Cap Middleware**: (P1) Resource management feature that automatically throttles and quarantines task auctions exceeding verified agent-density thresholds to prevent bidding loops.
+- **Sovereign Context Comparator**: (P0) Infrastructure for hardware-attested verification of sub-mission termination results against initial mission intents.
+
+### Priority Shifts
+- **Reasoning Path Integrity (RPI) Validator**: (Re-affirmed P0) Elevated with mandatory integration for **SSB-compliant** veto persistence.
+- **Inode-Pinning Middleware**: (Re-affirmed P0) Designated as the primary enforcement point for **ADG-compliant** anchor locking.
