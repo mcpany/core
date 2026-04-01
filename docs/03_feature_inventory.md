@@ -1,5 +1,16 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Mission-Root Attestation Receipt (MRAR) Provider**: (P0) Authoritative receipt minting service issuing lightweight, hardware-signed trust receipts for offline-capable subagent authority.
+- **Jitter-Aware Side-Channel Guard (JASCG)**: (P0) Security middleware implementing timing variations based on "Sensitivity Scores" of requested tool schemas (CAJI compliance).
+- **Mesh-Resident Ephemeral Sharding (MRES) Hub**: (P1) Advanced coordination service facilitating dynamic, reasoning-priority-based sharding of the shared task list.
+
+### Priority Shifts
+- **Priority-Aware Mailbox Sharding (PAMS)**: (Re-affirmed P0) Elevated with the requirement for mandatory **MRES-compliant** dynamic sharding.
+- **Zero-Knowledge Discovery Broker (ZKDB)**: (Re-affirmed P0) Upgraded to support **JASCG** integration for side-channel-immune capability negotiation.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions
