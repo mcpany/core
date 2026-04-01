@@ -1,17 +1,23 @@
 # Market Sync: 2026-04-01
 
-## Ecosystem Shifts & Findings
+## Ecosystem Updates
 
 ### 1. OpenClaw: Reasoning-Bound Context Shifting
-OpenClaw's latest internal experiments reveal a move toward **"Reasoning-Bound Context Shifting"**. Instead of fixed-size context windows or simple summarization, the agent dynamically "shifts" its active context based on the current reasoning path. This reduces noise but introduces a risk of "Context Amnesia" if the shifting logic is misaligned with the mission goal.
+- **Finding**: OpenClaw is pioneering "Reasoning-Bound Context Shifting," where the agent's active memory is dynamically swapped based on the current logical branch.
+- **Context**: While this reduces token noise, it introduces "Context Amnesia" when agents jump between deeply nested reasoning paths without a standardized state-preservation layer.
+- **Significance**: Confirms that MCP Any must act as the authoritative "Context Synchronizer" across frameworks to prevent state loss during shifts.
 
-### 2. Claude Code: Normalization Fatigue
-The "Deep Symlink Escape" (CVE-2026-34812) has exposed a broader issue termed **"Normalization Fatigue"**. Developers are struggling to implement consistent path normalization across multiple OS layers (Host, Docker, Bubblewrap), leading to subtle escape vectors where `realpath` results differ between the validator and the executor.
+### 2. Claude Code: Normalization Fatigue (CVE-2026-34812)
+- **Finding**: A new class of vulnerabilities termed "Normalization Fatigue" has emerged. Developers are failing to consistently normalize paths across Host, Docker, and VM boundaries.
+- **Context**: CVE-2026-34812 demonstrates a host-level file exfiltration via a complex symlink chain that bypassed the primary validator but was resolved differently by the executor.
+- **Significance**: Highlights the need for a centralized "Normalization-as-a-Service" (NaaS) within the Universal Agent Bus.
 
 ### 3. Gemini CLI: Optimistic Capability Loading
-Gemini CLI has introduced **"Optimistic Capability Loading"**. Tools are "pre-loaded" into the agent's mental model based on predicted needs before they are fully attested by the CDQ (Collaborative Discovery Quorum). This improves perceived latency but creates a "Time-of-Check to Time-of-Use" (TOCTOU) window where an agent might attempt to use a tool that fails final attestation.
+- **Finding**: Gemini CLI has implemented "Optimistic Capability Loading" to reduce discovery latency. Tools are made available to the model before the CDQ (Collaborative Discovery Quorum) completes attestation.
+- **Context**: This introduces a TOCTOU (Time-of-Check to Time-of-Use) window where an agent might call a tool that is subsequently revoked.
+- **Significance**: MCP Any should implement an "Optimistic Attestation Gate" that provides pre-attestation signals based on historical tool behavior.
 
 ## Autonomous Agent Pain Points
-- **Shift Divergence**: Managing state when an agent "shifts" into a context that contradicts previous reasoning steps.
-- **Symlink Trap Injection**: The persistent fear that opening a new repo could lead to a host-level exfiltration via a clever `.claude/settings.json` symlink chain.
-- **Attestation Lag vs. UX**: Balancing the security of CDQ with the user demand for "Instant Tooling."
+- **Context Amnesia**: Agents losing mission-root intent during deep reasoning shifts.
+- **Symlink Traversal**: High risk of host exposure in project-local configuration files.
+- **Attestation Latency**: The performance tax of Zero-Trust discovery slowing down agent response times.

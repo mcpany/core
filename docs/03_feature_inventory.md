@@ -1882,6 +1882,14 @@
 - **Active Reasoning Redaction (ARR) Hub v2**: (P0) Recursive semantic analysis service for fragment-level intent redaction in tool-local persistent state.
 - **Just-in-Time (JIT) Capability Masking**: (P1) Advanced discovery feature for the ZKCD proxy that keeps tool schemas cryptographically invisible until a mission handshake is completed.
 
+## Evolution: [2026-07-21] Updates
+
+### Proposed Additions
+- **Reasoning Confidence Scoring (RCS) Gateway**: (P0) Authoritative confidence broker utilizing hardware-attested uncertainty signals to trigger automated supervisor escalations.
+- **Multimodal Monologue Scrubber (MMS)**: (P0) Semantic security middleware performing real-time deconstruction of SVG and Audio traces to neutralize multimodal instruction injection.
+- **Durable Mission Continuity Provider**: (P0) Evolution of the MRCP providing hardware-locked cross-session state recovery to maintain mission-root persistence across reboots.
+- **Epistemic Attestation Provider**: (P1) Identity service issuing hardware-signed "Confidence Proofs" for high-risk tool results to verify non-speculative reasoning.
+
 ### Priority Shifts
-- **Stylometric Identity Verifier (SIV)**: (Re-affirmed P0) Elevated with the requirement for mandatory **BSA** integration to neutralize cognitive mimicry.
-- **Echo-Immune Coordination Fragments**: (Re-affirmed P0) Now elevated with the requirement for mandatory **MWA** integration for all workspace writes.
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Elevated with the requirement for mandatory **Durable Continuity** to support cross-session recovery.
+- **Multimodal Inference-Time Sanitizer (MITS)**: (Re-affirmed P0) Designated as the primary enforcement point for the new **MMS-compliant** visual sanitization.

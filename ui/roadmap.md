@@ -826,3 +826,8 @@
 
 #### Upcoming (2026-07-20 Evolution)
 - [ ] **[P0] Monotonic Coordination Dashboard**: (2026-07-20) Visualize hardware-bound monotonic timestamps and mission-phase binding for all teammate state writes.
+
+#### Upcoming (2026-07-21 Evolution)
+- [ ] **[P0] Reasoning Confidence Monitor**: Real-time visualization of subagent uncertainty scores and RCS-triggered escalation events. (Added: 2026-07-21)
+- [ ] **[P0] Multimodal Trace Auditor**: Forensic UI for reviewing MMS-sanitized SVG and Audio reasoning fragments. (Added: 2026-07-21)
+- [ ] **[P0] Durable Session Explorer**: Visual workspace for reviewing hardware-locked continuity state across system reboots. (Added: 2026-07-21)

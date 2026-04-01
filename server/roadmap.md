@@ -1002,3 +1002,9 @@ These features represent the next logical steps for the product, focusing on Ent
 
 #### Upcoming (2026-07-20 Evolution)
 *   **[P0] Implement SIV Behavioral Signal Analysis**: Evolving SIV to ingest reasoning density and instruction-path entropy for higher-dimensional cognitive fingerprinting. (Added: 2026-07-20)
+
+#### Upcoming (2026-07-21 Evolution)
+*   **[P0] Reasoning Confidence Scoring (RCS) Gateway**: Authoritative confidence broker utilizing hardware-attested uncertainty signals for automated escalation. (Added: 2026-07-21)
+*   **[P0] Multimodal Monologue Scrubber (MMS)**: Semantic security middleware performing real-time deconstruction of non-textual reasoning traces. (Added: 2026-07-21)
+*   **[P0] Durable Mission Continuity Provider**: Hardware-locked cross-session state recovery to maintain mission-root persistence across reboots. (Added: 2026-07-21)
+*   **[P1] Epistemic Attestation Provider**: Identity service issuing hardware-signed "Confidence Proofs" for high-risk tool results. (Added: 2026-07-21)

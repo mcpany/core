@@ -69,3 +69,11 @@ The **Mission-Root Continuity Provider (MRCP)** is an infrastructure layer for M
 *   Resumption tokens now require a TPM-signed monotonic counter to prevent replay and leakage.
 *   Deprecating plain environment variables for identity transport in favor of kernel-bound HLES buffers.
 **Security Impact:** Prevents subagents from "squatting" on stale resumption tokens and ensures environmental sovereignty for headless handoffs.
+
+### Update: 2026-07-21 - Durable Cross-Session Persistence
+**Context:** Today's research in Claude Code and Gemini CLI confirms that "Session Volatility" is a primary pain point for long-running missions.
+**Architecture Adjustment:**
+*   Implementing **Durable Mission Continuity** which allows resumption tokens to survive full system reboots and hardware resets.
+*   Integrating **Epistemic Attestation** into the resumption handshake to ensure the restored reasoning path maintains high confidence scores.
+*   Introducing hardware-locked "Cold Storage" shards for mission-root intents.
+**Security Impact:** Ensures mission-root anchors remain pinned even across transient session loss, neutralizing the risk of "Context Amnesia" in multi-day swarms.
