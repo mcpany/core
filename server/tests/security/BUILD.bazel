@@ -2,7 +2,10 @@ load("@rules_go//go:def.bzl", "go_test")
 
 go_test(
     name = "security_test",
-    srcs = ["command_tool_security_path_test.go", "grpc_scope_security_test.go"],
+    srcs = [
+        "command_tool_security_path_test.go",
+        "grpc_scope_security_test.go",
+    ],
     deps = [
         "//proto/config/v1:config",
         "//proto/mcp_router/v1:mcp_router",
