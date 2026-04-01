@@ -62,7 +62,38 @@ interface ServicesTableProps {
 export function ServicesTable({ services, loading, onToggle, onDelete }: ServicesTableProps) {
 
   if (loading) {
-      return <div className="p-4 text-center text-muted-foreground">Loading services...</div>;
+      return (
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Trust</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Tools</TableHead>
+                <TableHead>Version</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Priority</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {[...Array(5)].map((_, i) => (
+                <TableRow key={i}>
+                  <TableCell><div className="h-4 bg-muted animate-pulse rounded w-3/4"></div></TableCell>
+                  <TableCell><div className="h-4 bg-muted animate-pulse rounded w-1/2"></div></TableCell>
+                  <TableCell><div className="h-4 bg-muted animate-pulse rounded w-1/2"></div></TableCell>
+                  <TableCell><div className="h-4 bg-muted animate-pulse rounded w-1/4"></div></TableCell>
+                  <TableCell><div className="h-4 bg-muted animate-pulse rounded w-1/4"></div></TableCell>
+                  <TableCell><div className="h-4 bg-muted animate-pulse rounded w-1/2"></div></TableCell>
+                  <TableCell><div className="h-4 bg-muted animate-pulse rounded w-1/4"></div></TableCell>
+                  <TableCell><div className="h-8 w-8 bg-muted animate-pulse rounded ml-auto"></div></TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      );
   }
 
   return (

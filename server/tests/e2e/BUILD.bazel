@@ -9,6 +9,7 @@ go_test(
         "login_test.go",
         "redactor_bug_test.go",
         "user_mgmt_test.go",
+        "dashboard_ux_test.go",
     ],
     deps = [
         "//proto/admin/v1:admin",
@@ -23,5 +24,7 @@ go_test(
         "@org_golang_google_grpc//:grpc",
         "@org_golang_google_grpc//credentials/insecure",
         "@org_golang_google_protobuf//proto",
+        "@org_golang_google_protobuf//encoding/protojson",
+        "//proto/api/v1:api",
     ],
 )
