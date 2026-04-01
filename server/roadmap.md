@@ -1008,3 +1008,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Multimodal Monologue Scrubber (MMS)**: Semantic security middleware performing real-time deconstruction of non-textual reasoning traces. (Added: 2026-07-21)
 *   **[P0] Durable Mission Continuity Provider**: Hardware-locked cross-session state recovery to maintain mission-root persistence across reboots. (Added: 2026-07-21)
 *   **[P1] Epistemic Attestation Provider**: Identity service issuing hardware-signed "Confidence Proofs" for high-risk tool results. (Added: 2026-07-21)
+
+#### Upcoming (2026-07-22 Evolution)
+*   **[P0] Reasoning-Path Watermark (RPW) Validator**: advanced provenance service for verifying cryptographic watermarks in reasoning fragments. (Added: 2026-07-22)
+*   **[P0] Adaptive Resource Reclamation (ARR) Service**: high-speed budgeting middleware for real-time token/reasoning re-allocation between teammates. (Added: 2026-07-22)
+*   **[P0] Manifest-Based Reflection (MBR) Arbiter**: authoritative service for validating subagent self-reflection against hardware-attested manifests. (Added: 2026-07-22)
