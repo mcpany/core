@@ -374,6 +374,12 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
 
+#### Upcoming (2026-04-01 Evolution)
+*   **[P0] Agentic Entropy Monitor (AEM)**: Implementation of real-time reasoning entropy scoring and coherence-based interdiction. (Added: 2026-04-01)
+*   **[P0] GC-Immune Reasoning Anchors**: Advanced context pinning to prevent eviction of mission-root anchors during aggressive context-window GC. (Added: 2026-04-01)
+*   **[P0] Environment-Aware Provenance (EAP)**: Cryptographic binding of reasoning traces to hardware-attested environment IDs. (Added: 2026-04-01)
+*   **[P0] Mission-Root Conflict Resolver (MRCR)**: Kernel-level arbiter for the Blackboard to resolve parallel state mutation collisions. (Added: 2026-04-01)
+
 #### Upcoming (2026-03-18 Evolution)
 *   **[P0] Local Listener Origin Enforcement**: Mandatory validation of Origin/Sec-Fetch-Site headers for local listeners. (Added: 2026-03-18)
 *   **[P0] Recursive Depth-Limit Middleware**: Real-time call-graph monitor to detect and block recursive agent loops. (Added: 2026-03-18)

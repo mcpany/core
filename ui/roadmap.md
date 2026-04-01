@@ -203,6 +203,12 @@
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
 
+#### Upcoming (2026-04-01 Evolution)
+- [ ] **[P0] Agentic Entropy Scoreboard**: Real-time dashboard for visualizing subagent reasoning entropy and coherence alerts. (Added: 2026-04-01)
+- [ ] **[P0] GC-Immune Anchor Visualizer**: Visual indicator for pinned reasoning anchors and protection status against CWGC. (Added: 2026-04-01)
+- [ ] **[P0] Environment-Aware Trace Inspector**: Forensic UI for verifying reasoning traces bound to specific execution environments. (Added: 2026-04-01)
+- [ ] **[P0] Blackboard Conflict Manager**: Visual arbiter for resolving concurrent state mutations and reviewing MRCR decisions. (Added: 2026-04-01)
+
 #### Upcoming (2026-07-08 Evolution)
 - [ ] **[P0] Mesh Identity Manager**: (2026-07-08) UI for reviewing and approving hardware-attested, mesh-resident agent identities.
 - [ ] **[P0] Service Mesh Topology Monitor**: (2026-07-08) Real-time visualization of authenticated inter-agent communication channels and mesh health.

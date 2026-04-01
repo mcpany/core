@@ -54,3 +54,7 @@ MCP Any needs to solve this by providing a cryptographically signed "Chain of Co
 
 ## 7. Evolutionary Changelog
 *   **2026-05-28:** Initial Document Creation.
+*   **2026-04-01:** (Iteration 2) - Integration of Environment-Aware Provenance (EAP).
+    * Context: Claude Code v3.6.0's ELMT reveals a risk of "Trace Replay" across disparate sessions.
+    * Architecture Adjustment: Mandating cryptographic binding of COTs to hardware-attested environment IDs (e.g., Docker Container ID).
+    * Security Impact: Prevents subagents from replaying valid reasoning trails from previous or concurrent sessions to authorize high-risk actions.
