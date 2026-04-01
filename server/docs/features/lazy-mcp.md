@@ -10,7 +10,7 @@ The middleware dynamically analyzes the agent's intent and loads only the necess
 lazy_mcp:
   enabled: true
   threshold: 0.85
-  cache_ttl: 600s
+  cache_ttl: 600
 ```
 
 ## How it works
