@@ -1,14 +1,18 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, request as pwRequest } from '@playwright/test';
 import { seedDashboard, cleanupUser, seedUser } from './test-data';
 
 test.describe('Metrics Seeding & Real Data', () => {
-    test.beforeAll(async ({ request }) => {
-        await seedDashboard(request);
-        await seedUser(request, "e2e-admin-metrics");
+    test.beforeAll(async () => {
+        const context = await pwRequest.newContext();
+        await seedDashboard(context);
+        await seedUser(context, "e2e-admin-metrics");
+        await context.dispose();
     });
 
-    test.afterAll(async ({ request }) => {
-        await cleanupUser(request, "e2e-admin-metrics");
+    test.afterAll(async () => {
+        const context = await pwRequest.newContext();
+        await cleanupUser(context, "e2e-admin-metrics");
+        await context.dispose();
     });
 
     test.beforeEach(async ({ page }) => {
@@ -27,7 +31,7 @@ test.describe('Metrics Seeding & Real Data', () => {
         // Search and click on a known seeded tool
         await page.fill('input[placeholder="Search tools..."]', 'calculate_sum');
         // Click the open inspector button for calculate_sum tool
-        await page.click('button[title="Open Inspector"]');
+        await page.click('button:has-text("Inspect")');
 
         // Go to Metrics & History tab
         await page.click('button:has-text("Metrics & History")');
@@ -40,11 +44,11 @@ test.describe('Metrics Seeding & Real Data', () => {
         // Since we also ran seedTraces, there should be at least 1 total call for calculate_sum.
 
         // Assert that Total Calls card is present and has a value > 0
-        const totalCallsText = await page.locator('.bg-background\\/50 >> text=Total Calls').locator('..').locator('p.text-2xl').innerText();
+        const totalCallsText = await page.locator('div').filter({ hasText: 'Total Calls' }).locator('p.text-2xl').innerText();
         expect(parseInt(totalCallsText, 10)).toBeGreaterThan(0);
 
         // Assert Success Rate card is present
-        const successRateText = await page.locator('.bg-background\\/50 >> text=Success Rate').locator('..').locator('p.text-2xl').innerText();
+        const successRateText = await page.locator('div').filter({ hasText: 'Success Rate' }).locator('p.text-2xl').innerText();
         expect(successRateText).toContain('%');
 
         // Assert execution latency chart container exists
