@@ -54,3 +54,9 @@ The industry pivot away from local network port exposure (GSA-2026-OPENCLAW-ROUT
 * Introducing **Transport-Layer Session Binding (TLSB)** for all named-pipe and local transport channels.
 * Mandatory cryptographic binding of every inter-agent connection to a unique, hardware-attested **Reasoning Session Token**.
 **Security Impact:** Prevents unauthorized context access or capability reuse by rogue sibling agents, ensuring session isolation even within the same mission root.
+
+### Update: 2026-07-24 - Port-Free Kernel-Level Handshakes
+**Context:** EU AI Act compliance requires physical isolation of agent workloads for high-risk missions.
+**Architecture Adjustment:** * Transitioning all inter-teammate handshakes to be strictly kernel-mediated via Docker-bound named pipes.
+* Eliminating fallback TCP/UDP listeners even for local dev environments to ensure "Compliant-by-Design" infrastructure.
+**Security Impact:** Prevents side-channel exfiltration and unauthorized work-claiming by rogue subagents in shared multi-tenant environments.

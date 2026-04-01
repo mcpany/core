@@ -1915,3 +1915,14 @@
 ### Priority Shifts
 - **Reasoning Provenance Validator**: (Re-affirmed P0) Elevated with mandatory support for **RPW-compliant** watermark verification.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Designated as the primary persistence layer for **MBR-validated** reflection states.
+
+## Evolution: [2026-07-24] Updates
+
+### Proposed Additions
+- **Regulatory-Bound HITL Gate**: (P0) Advanced extension for the HITL Middleware mandating human checkpoints for tasks mapped to FINRA high-risk categories.
+- **Hash-Chained Audit Trail**: (P0) Core security service implementing TPM-signed, cryptographically linked event logging for EU AI Act compliance.
+- **Compliance Posture Handshake**: (P1) Advanced A2A handshake extension requiring agents to provide verifiable compliance attestation before mesh ingestion.
+
+### Priority Shifts
+- **HITL Middleware**: (Re-affirmed P0) Evolving into the **Regulatory-Bound HITL Gate** to meet financial sector safety standards.
+- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Elevated with the requirement for mandatory **Tenant-Level Isolation** for high-risk missions.

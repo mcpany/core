@@ -841,3 +841,7 @@
 - [ ] **[P0] Reasoning Provenance Inspector**: (2026-07-22) Visual debugger for verifying RPW-compliant watermarks and reasoning lineage.
 - [ ] **[P0] Dynamic Resource Budgeting Monitor**: (2026-07-22) Real-time visualization of ARR-triggered budget re-allocations between teammates.
 - [ ] **[P0] Reflection Policy Dashboard**: (2026-07-22) UI for defining and monitoring MBR-compliant subagent reflection cycles.
+
+#### Upcoming (2026-07-24 Evolution)
+- [ ] **[P0] Regulatory Compliance Dashboard**: Visualize agent risk-levels and HITL status. (Added: 2026-07-24)
+- [ ] **[P0] Hash-Chain Integrity Monitor**: UI for verifying immutable audit logs. (Added: 2026-07-24)

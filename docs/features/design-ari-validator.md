@@ -74,3 +74,9 @@ The Atomic Reasoning Integrity (ARI) Validator is needed to perform fragment-lev
 * Mandating that all ARI-attested fragments be committed to **Entanglement Shards** via the Entangled State Broker (ESB).
 * Introducing a "Late-Binding Integrity Check" where the recipient teammate re-verifies the hardware-attested entanglement signature before reasoning ingestion.
 **Security Impact:** Prevents "Time-of-Check to Time-of-Use" (TOCTOU) attacks on shared mailbox state by ensuring state fragments are cryptographically bound to the mission-root intent throughout their entire lifecycle.
+
+### Update: 2026-07-24 - Regulatory Consistency Attestation
+**Context:** The FINRA 2026 report mandates higher scrutiny for high-risk financial agent actions.
+**Architecture Adjustment:** * Integrating "Regulatory Risk Scoring" into the Consistency Engine.
+* Fragments identified as "High Risk" now require mandatory Regulatory-Bound HITL attestation before mesh commitment.
+**Security Impact:** Ensures that agentic coordination in financial sectors remains within legal and human-supervised boundaries.
