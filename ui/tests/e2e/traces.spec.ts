@@ -6,7 +6,7 @@
 import { test, expect } from '@playwright/test';
 import { seedGlobalState, seedTraces } from './test-data';
 
-test.describe.skip('Trace Viewer', () => {
+test.describe('Trace Viewer', () => {
   test.beforeEach(async ({ page, request }) => {
     // Mock Traces API for all tests in this suite.
     // The app fetches /api/v1/traces (with the v1 prefix).
@@ -115,3 +115,53 @@ test.describe.skip('Trace Viewer', () => {
     await expect(page.getByPlaceholder('Enter command or select a tool...').or(page.locator('textarea'))).toBeVisible();
   });
 });
+
+  test('ApplePayloadInspector renders complex structured JSON', async ({ page, request }) => {
+    // Navigate to Inspector page since traces.spec.ts mostly tests /traces, but the Inspector table also shows traces.
+    // However, TraceDetail is used in both /traces and /inspector. Let's test via /inspector
+    await page.goto('/inspector');
+    await page.waitForLoadState('networkidle');
+
+    // Seed trace via API button
+    const seedBtn = page.getByRole('button', { name: 'Seed Trace' });
+    if (await seedBtn.count() > 0) {
+        await seedBtn.click();
+    }
+
+    // Wait for the trace to appear in the table
+    const traceRow = page.locator('tr.cursor-pointer').first();
+    await expect(traceRow).toBeVisible({ timeout: 10000 });
+
+    // Click the trace to open the Sheet
+    await traceRow.click();
+
+    // Switch to Payload tab
+    const payloadTab = page.getByRole('tab', { name: 'Payload' });
+    await expect(payloadTab).toBeVisible();
+    await payloadTab.click();
+
+    // Verify ApplePayloadInspector rendered the data
+    await expect(page.getByText('Request Payload')).toBeVisible();
+    await expect(page.getByText('Response Payload')).toBeVisible();
+
+    // Verify specific keys from our seeded complex JSON exist in the inspector UI
+    await expect(page.getByText('Analyze Q3 financial report')).toBeVisible();
+    await expect(page.getByText('user-session-123')).toBeVisible();
+
+    // Verify structure elements like the Array/Object badges
+    await expect(page.getByText('Object', { exact: true }).first()).toBeVisible();
+    await expect(page.getByText('Array', { exact: true }).first()).toBeVisible();
+
+    // Verify it handles nested expansion
+    const expandBtn = page.locator('.lucide-chevron-right').first();
+    if (await expandBtn.count() > 0) {
+        await expandBtn.click();
+    }
+
+    // Check for nested values inside the expanded object
+    await expect(page.getByText('timeout_ms')).toBeVisible();
+    await expect(page.getByText('5000')).toBeVisible();
+
+    // Check output payload values
+    await expect(page.getByText('Revenue up 15%')).toBeVisible();
+  });

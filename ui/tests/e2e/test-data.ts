@@ -349,6 +349,31 @@ export const seedTraces = async (requestContext?: APIRequestContext) => {
             status: 'success',
             startTime: Date.now() - 150,
             endTime: Date.now(),
+            input: {
+                query: "Analyze Q3 financial report",
+                context: {
+                    session_id: "user-session-123",
+                    flags: ["fast", "experimental"],
+                    settings: {
+                        timeout_ms: 5000,
+                        retry: true,
+                        max_retries: 3,
+                        null_val: null
+                    }
+                }
+            },
+            output: {
+                summary: "Revenue up 15%",
+                confidence: 0.98,
+                metadata: {
+                    processed_at: "2023-10-27T10:00:00Z",
+                    sources: [
+                        { id: "src-1", type: "pdf", pages: 15 },
+                        { id: "src-2", type: "database", rows_scanned: 10500 }
+                    ],
+                    tags: ["finance", "q3", "internal"]
+                }
+            },
             children: []
         },
         timestamp: new Date().toISOString(),
