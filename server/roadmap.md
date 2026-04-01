@@ -1030,3 +1030,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Semantic Invariant Enforcer (SIE) Hub**: authoritative "Cognitive Firewall" utilizing hardware-attested behavioral invariants to intercept non-compliant reasoning. (Added: 2026-07-25)
+*   **[P0] Ephemeral Skill Forge (ESF) Validator**: real-time sandboxed profiling and hardware-attestation for JIT-compiled agent tools. (Added: 2026-07-25)
+*   **[P0] Semantic Sovereignty Header (SSH) Provider**: middleware mandating hardware-attested truth-claims within the token stream for reasoning auditability. (Added: 2026-07-25)
+*   **[P1] AIR Governance Arbiter**: coordination service for resolving behavioral invariant conflicts in heterogeneous meshes. (Added: 2026-07-25)

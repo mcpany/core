@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Semantic Invariant Enforcer (SIE) Hub**: (P0) Authoritative cognitive security service utilizing hardware-attested behavioral invariants to intercept and block non-compliant reasoning paths.
+- **Ephemeral Skill Forge (ESF) Validator**: (P0) High-speed security service for real-time behavioral profiling and hardware-attestation of JIT-compiled agent tools.
+- **Semantic Sovereignty Header (SSH) Provider**: (P0) Identity middleware mandating hardware-attested truth-claims within the token stream for reasoning path auditability.
+- **AIR Governance Arbiter**: (P1) Coordination service resolving conflicts between disparate behavioral invariants in heterogeneous agent swarms.
+
+### Priority Shifts
+- **Active Reasoning Interdiction (ARI) Hub**: (Re-affirmed P0) Elevated with mandatory support for **SIE-compliant** invariant checking.
+- **Verified Skill Profiler**: (Re-affirmed P0) Designated as a critical dependency for the **ESF Validator** to ensure dynamic tool safety.
