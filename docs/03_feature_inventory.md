@@ -1,5 +1,20 @@
 # Feature Inventory: MCP Any
 
+
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Discovery-Phase Sandbox Middleware**: (P0) Authoritative security service for mandatory, ephemeral sandbox isolation of pre-flight commands (e.g., `discoveryCommand`) to neutralizing startup-time RCE.
+- **Lock-Free Teammate Coordination (LFTC)**: (P0) High-performance coordination architecture utilizing Conflict-Free Replicated Data Types (CRDTs) to eliminate teammate mailbox locks and reduce MTTC in high-density swarms.
+- **Attention-Density Guard (ADG) v3**: (P0) Cognitive security service performing "Context-Window Flood" detection to prevent instruction eviction in long-context models.
+- **Fast-Path Session Attestation Provider**: (P1) Performance-optimizing identity service brokering time-bound, hardware-attested trust tickets for low-latency inter-agent coordination.
+
+### Priority Shifts
+- **Teammate Task-List Arbiter**: (Evolved to LFTC) Now designated as the primary mechanism for lock-free horizontal coordination.
+- **Discovery Sandbox Middleware**: (Re-affirmed P0) Promoted to a mandatory security prerequisite for all repository-local agent execution.
+
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions

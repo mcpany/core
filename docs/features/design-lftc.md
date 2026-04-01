@@ -46,3 +46,10 @@ As AI agents evolve from hierarchical subagents to horizontal "Agent Teams" (e.g
 
 ## 7. Evolutionary Changelog
 * **2026-03-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - CRDT-Native Mailbox Scaling
+**Context:** High-density swarms (10+ teammates) in Claude Code are experiencing "Cognitive Stall" due to 2s+ synchronous mailbox locks. Coordination latency is now out-pacing reasoning speed.
+**Architecture Adjustment:**
+* Moving to a fully CRDT-native (Conflict-Free Replicated Data Type) mailbox architecture.
+* Introducing "Priority-Aware Gossip" for task list synchronization, ensuring that safety-critical intent corrections bypass standard teammate coordination shards.
+**Security Impact:** Neutralizes "Coordination DoS" where a single stalled teammate could lock the shared task list, and ensures real-time propagation of mission-root "Deny" signals across the mesh.

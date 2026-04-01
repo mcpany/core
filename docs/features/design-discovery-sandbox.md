@@ -50,3 +50,10 @@ The emergence of "Ghost-Execution" exploits in the Gemini CLI ecosystem has high
 * Mandating "Isolated Discovery Environments" for all project-local configurations.
 * Introducing a "Discovery Quarantine" where tool schemas are held until a hardware-attested user signal is received.
 **Security Impact:** Neutralizes startup-time RCE in cloned repositories and prevents "Context Poisoning" during the discovery phase.
+
+### Update: 2026-07-25 - Mandatory Pre-Flight Sandboxing
+**Context:** Today's market sync revealed that "Settings-as-Shell" exploits in Gemini CLI have evolved to target unauthenticated discovery phases. Attackers are weaponizing `discoveryCommand` to achieve RCE immediately upon repository entry.
+**Architecture Adjustment:**
+* Transitioning Discovery-Phase Sandbox from "Recommended" to "Mandatory Prerequisite" for all repository-local agent execution.
+* Implementing "Pre-Flight Attestation Receipts" where discovered tool schemas must match a SHA-256 manifest from a previous trusted run or undergo mandatory hardware-attested user review.
+**Security Impact:** Prevents "Rug-Pull" RCE attacks in cloned repositories and ensures that discovery-time hooks cannot exfiltrate host metadata before user engagement.
