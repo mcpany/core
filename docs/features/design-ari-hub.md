@@ -87,3 +87,10 @@ The Active Reasoning Interdiction (ARI) Hub evolves the existing validator into 
 * Integrating the **Reasoning Provenance Validator** into the Hash-Chain Validator in Section 4.
 * Upgrading the Semantic Consistency Engine to perform **Step-Level Provenance Checks**, ensuring that every internal reasoning step in a fragment is cryptographically signed and hash-chained.
 **Security Impact:** Prevents subagents from "grafting" malicious reasoning steps inside a seemingly valid fragment, providing 100% visibility into the cognitive path.
+
+### Update: 2026-07-25 - Integration with Cross-Node Consensus
+**Context:** Today's market sync confirmed the transition from local to mesh-scale consistency requirements.
+**Architecture Adjustment:**
+*   Evolving the ARI Hub to act as the primary backend for the **CNRQ Adapter**.
+*   Introducing "Consensus-Bound Shards" that require mesh-wide quorum before committing to the shared mission-root blackboard.
+**Security Impact:** Prevents "Hallucination Variance" from corrupting the mission state across distributed physical nodes.

@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Cross-Node Reasoning Quorum (CNRQ) Adapter**: (P0) Authoritative bridge for decentralized reasoning consensus across disparate physical nodes.
+- **Context-Window Sharding (CWS) Router**: (P0) High-speed, intent-aware router for mounting specific 2M+ token shards in real-time.
+- **Reasoning-Path Integrity (RPI) Guard**: (P0) Security middleware cryptographically binding internal reasoning fragments to prevent monologue contamination.
+
+### Priority Shifts
+- **Consensus Tool Validation Hub**: (Re-affirmed P0) Evolving into the **CNRQ Adapter** to support mesh-scale reasoning consensus.
+- **Live Context Sharding Middleware**: (Re-affirmed P0) Now elevated with the requirement for **CWS Router** integration for sub-millisecond shard swapping.
