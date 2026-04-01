@@ -588,6 +588,17 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-07-22]
+### Focus: Team-Mesh Sovereignty & Cross-Context Sanitization
+**Context**: The maturation of Claude Code "Agent Teams" and the disclosure of CVE-2026-0628 (Gemini Context-Riding) confirm that the "Universal Agent Bus" must now secure the **horizontal coordination mesh** and the **cross-boundary trust transition**. As agents move from isolated subagents to parallel teammate meshes, the security frontier is now the **inter-teammate mailbox** and the **integrity of the context transition** between the host and the agentic environment.
+**Strategic Pivot**:
+- **Mesh-Resident Teammate Guard**: MCP Any will evolve to act as the authoritative "Mesh Broker" for parallel Agent Teams. We will implement hardware-attested teammate isolation, ensuring that a compromised specialist agent cannot "ride" the lead agent's context to access unauthorized host resources.
+- **Cross-Context Injection Shield (CCIS)**: To neutralize "Context-Riding" exploits like CVE-2026-0628, we are introducing CCIS. This layer will perform real-time, semantic sanitization of all data crossing the boundary between the untrusted project environment and the high-trust agent reasoning loop.
+- **Lock-Free Mesh Synchronization**: Supporting the efficiency of high-density Agent Teams, we are mandating the use of Conflict-Free Replicated Data Types (CRDTs) for the shared teammate mailbox. This eliminates the "Mailbox Lock" performance ceiling observed in large swarms.
+- **Durable Mission-Root Persistence**: We are evolving the MRCP to support "Cross-Session Durable Sovereignty." Mission-root anchors will be cryptographically pinned to the hardware (TPM/SEP) across full system reboots, ensuring that long-running multi-agent missions maintain their integrity and security posture during resume.
+
+---
+
 ## Strategic Evolution: [2026-03-21]
 ### Focus: Adaptive Trust Orchestration & Content-Addressable Config Integrity
 **Context**: The "Headless Handoff" crisis in OpenClaw v1.6 and the discovery of "Binary Smuggling" (CVE-2026-31042) reveal that ephemeral trust must be bridged, not just enforced. Simultaneously, the UACO v1.5 draft for Resource Capability Claims (RCC) provides a new framework for verifying agent maturity before delegation.

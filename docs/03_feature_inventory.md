@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-22] Updates
+
+### Proposed Additions
+- **Cross-Context Injection Shield (CCIS)**: (P0) Authoritative semantic sanitization layer for all data crossing the boundary between untrusted project environments and high-trust agent loops (CVE-2026-0628 defense).
+- **Lock-Free Mesh Synchronization**: (P0) High-performance coordination middleware Utilizing Conflict-Free Replicated Data Types (CRDTs) to eliminate "Mailbox Lock" bottlenecks in large Agent Teams.
+- **Hardware-Attested SSH Sandboxing**: (P1) Secure tool execution environment leveraging OpenShell SSH sandboxes and hardware attestation to prevent host-level RCE.
+- **Durable Mission-Root Persistence**: (P0) Advanced security service cryptographically pinning mission-root anchors to hardware (TPM/SEP) across system reboots for long-haul missions.
+
+### Priority Shifts
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Elevated with the requirement for mandatory **Durable Persistence** to support multi-day mission resumption.
+- **Asynchronous Mailbox Sharding (AMS)**: (Re-affirmed P0) Evolving into **Lock-Free Mesh Synchronization** to resolve high-density coordination stalls.
+
 ## Evolution: [2026-07-15] Updates
 
 ### Proposed Additions

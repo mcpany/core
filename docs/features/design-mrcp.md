@@ -77,3 +77,11 @@ The **Mission-Root Continuity Provider (MRCP)** is an infrastructure layer for M
 *   Integrating **Epistemic Attestation** into the resumption handshake to ensure the restored reasoning path maintains high confidence scores.
 *   Introducing hardware-locked "Cold Storage" shards for mission-root intents.
 **Security Impact:** Ensures mission-root anchors remain pinned even across transient session loss, neutralizing the risk of "Context Amnesia" in multi-day swarms.
+
+### Update: 2026-07-22 - Durable Mission-Root Persistence
+**Context:** The emergence of "Durable Mesh Sovereignty" requirements in horizontal swarms reveals that session persistence must be decoupled from transient process memory.
+**Architecture Adjustment:**
+*   Implementing **Hardware-Pinned Resumption Tokens** that are cryptographically bound to the TPM/SEP across power cycles.
+*   Mandating **Cross-Context Sanitization** (via CCIS) during the resumption handshake to prevent "State Splicing" during mission recovery.
+*   Introducing **Epistemic Attestation** for all resumed reasoning fragments to verify that the cognitive state hasn't drifted during downtime.
+**Security Impact:** Prevents "Mission-Root Erasure" and ensures that long-running Agent Teams can resume with absolute cryptographic continuity.

@@ -52,3 +52,11 @@ The Cyera Research report (2026) on Gemini CLI vulnerabilities has highlighted t
 * Integrating ALSV into the Pre-Hook phase of the Command Adapter.
 * Transitioning from simple allowlisting to "Binary Security Profiles" that define authorized flags and value patterns.
 **Security Impact:** Prevents flag-based hijacking (e.g., `--compress-program`) and eliminates shell-fallback injection vectors.
+
+### Update: 2026-07-22 - Cross-Context Injection Shield (CCIS) Integration
+**Context:** The disclosure of CVE-2026-0628 (Gemini Context-Riding) confirms that untrusted project metadata is a critical injection vector.
+**Architecture Adjustment:**
+*   Integrating **CCIS** as the primary boundary layer for all project-local configuration and markdown ingestion.
+*   Implementing **Semantic Deconstruction** for visual traces (SVG/Audio) to prevent hidden instruction injection.
+*   Mandating **Hardware-Attested Origin Validation** for any data transitioning from the host environment to the high-trust reasoning loop.
+**Security Impact:** Neutralizes "Context-Riding" exploits and ensures that imperative instructions hidden in environmental metadata are redacted before agent ingestion.
