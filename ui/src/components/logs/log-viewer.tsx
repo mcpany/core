@@ -11,9 +11,21 @@ import {
 import { cn } from "@/lib/utils"
 
 // Lazy load Virtuoso to avoid SSR issues
+/**
+ * Virtuoso component.
+ * @param props - The component props.
+ * @param props.default - The default property.
+ * @returns The rendered component.
+ */
 const Virtuoso = lazy(() => import('react-virtuoso').then((m) => ({ default: m.Virtuoso })));
 
 // Lazy load the syntax highlighter
+/**
+ * JsonView component.
+ * @param props - The component props.
+ * @param props.default - The default property.
+ * @returns The rendered component.
+ */
 const JsonView = lazy(() => import('@/components/ui/json-view').then(m => ({ default: m.JsonView })));
 
 /**

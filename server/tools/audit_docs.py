@@ -19,24 +19,72 @@ VAR_CONST_PATTERN = re.compile(r'^(var|const)\s+([A-Z]\w*)\s+')
 # so we'll skip them for now or treat them simply if they are on one line.
 
 def has_summary(doc_lines):
+    """
+    Summary: has_summary.
+
+    Parameters:
+      - None.
+
+    Returns:
+      - None.
+
+    Throws/Errors:
+      - None.
+    """
     for line in doc_lines:
         if "Summary:" in line:
             return True
     return False
 
 def has_parameters(doc_lines):
+    """
+    Summary: has_parameters.
+
+    Parameters:
+      - None.
+
+    Returns:
+      - None.
+
+    Throws/Errors:
+      - None.
+    """
     for line in doc_lines:
         if "Parameters:" in line:
             return True
     return False
 
 def has_returns(doc_lines):
+    """
+    Summary: has_returns.
+
+    Parameters:
+      - None.
+
+    Returns:
+      - None.
+
+    Throws/Errors:
+      - None.
+    """
     for line in doc_lines:
         if "Returns:" in line:
             return True
     return False
 
 def check_file(filepath):
+    """
+    Summary: check_file.
+
+    Parameters:
+      - None.
+
+    Returns:
+      - None.
+
+    Throws/Errors:
+      - None.
+    """
     with open(filepath, 'r') as f:
         lines = f.readlines()
 
@@ -115,6 +163,18 @@ def check_file(filepath):
     return missing
 
 def scan_dir(root_dir):
+    """
+    Summary: scan_dir.
+
+    Parameters:
+      - None.
+
+    Returns:
+      - None.
+
+    Throws/Errors:
+      - None.
+    """
     count = 0
     for root, dirs, files in os.walk(root_dir):
         if "vendor" in root or "node_modules" in root or "test" in root and "pkg" not in root:

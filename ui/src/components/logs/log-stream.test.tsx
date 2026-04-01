@@ -12,6 +12,13 @@ import { vi } from "vitest";
 vi.mock("./log-viewer", () => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const React = require('react');
+/**
+ * HighlightText component.
+ * @param props - The component props.
+ * @param props.text - The text property.
+ * @param props.regex - The regex property.
+ * @returns The rendered component.
+ */
   const HighlightText = ({ text, regex }: { text: string; regex: RegExp | null }) => {
     if (!regex || !text) return React.createElement(React.Fragment, null, text);
     const parts = text.split(regex);
@@ -32,6 +39,13 @@ vi.mock("./log-viewer", () => {
            (trimmed.startsWith('[') && trimmed.endsWith(']'));
   };
 
+/**
+ * LogRowComponent component.
+ * @param props - The component props.
+ * @param props.log - The log property.
+ * @param props.highlightRegex - The highlightRegex property.
+ * @returns The rendered component.
+ */
   const LogRowComponent = ({ log, highlightRegex }: any) => {
     const [isExpanded, setIsExpanded] = React.useState(false);
     const isPotentialJson = isLikelyJson(log.message);
