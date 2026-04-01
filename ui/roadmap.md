@@ -841,3 +841,9 @@
 - [ ] **[P0] Reasoning Provenance Inspector**: (2026-07-22) Visual debugger for verifying RPW-compliant watermarks and reasoning lineage.
 - [ ] **[P0] Dynamic Resource Budgeting Monitor**: (2026-07-22) Real-time visualization of ARR-triggered budget re-allocations between teammates.
 - [ ] **[P0] Reflection Policy Dashboard**: (2026-07-22) UI for defining and monitoring MBR-compliant subagent reflection cycles.
+
+#### Upcoming (2026-07-24 Evolution)
+- [ ] **[P0] Entropy Drift Dashboard**: Visual monitor for subagent reasoning entropy and CRV-triggered reset events. (Added: 2026-07-24)
+- [ ] **[P0] Workspace Hook Auditor**: UI for reviewing and approving filesystem-triggered automation rules in the scratchpad. (Added: 2026-07-24)
+- [ ] **[P0] Branch-Bound Budget Tracker**: Real-time visualization of token consumption per reasoning branch. (Added: 2026-07-24)
+- [ ] **[P0] Temporal Shard Inspector**: Forensic UI for tracking monotonic sequence numbers and state inversion alerts. (Added: 2026-07-24)

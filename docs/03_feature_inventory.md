@@ -1915,3 +1915,15 @@
 ### Priority Shifts
 - **Reasoning Provenance Validator**: (Re-affirmed P0) Elevated with mandatory support for **RPW-compliant** watermark verification.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Designated as the primary persistence layer for **MBR-validated** reflection states.
+
+## Evolution: [2026-07-24] Updates
+
+### Proposed Additions
+- **Cross-Reasoning Validation (CRV) Hub**: (P0) Advanced security service for the AEM that performs multi-modal comparison of subagent reasoning against parent intent to neutralize instruction reflection exploits.
+- **Stateful Workspace Hook Guard (SWHG)**: (P0) Real-time sanitization middleware for filesystem-triggered events in shared workspaces to prevent hook-poisoning.
+- **Branch-Bound Context Quota Manager**: (P0) Resource management service enforcing granular token and compute budgets for specific reasoning branches (Gemini CWB compliance).
+- **Temporal State Integrity (TSI) Broker**: (P0) Advanced state management service providing hardware-attested monotonic sequencing for workspace writes to prevent state inversion.
+
+### Priority Shifts
+- **Agentic Entropy Monitor (AEM)**: (Re-affirmed P0) Evolving into the **CRV Hub** to counter CVE-2026-55001.
+- **Atomic Scratchpad Guard (ASG)**: (Re-affirmed P0) Elevated with the requirement for mandatory **SWHG-compliant** hook sanitization.
