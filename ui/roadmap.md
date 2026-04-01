@@ -818,3 +818,8 @@
 - [ ] **[P0] Scratchpad Contention Dashboard**: (2026-07-18) Visual tracker for atomic lock manager performance and scratchpad write-latency.
 - [ ] **[P0] Stitch-Entropy Heatmap**: (2026-07-18) Forensic UI for monitoring fragment-level correlation risks and "Cognitive Salt" effectiveness.
 - [ ] **[P0] RaaS Budget Attribution Viewer**: (2026-07-18) Visual tracker for tool-initiated reasoning effort and lineage-bound budget consumption.
+
+#### Upcoming (2026-07-19 Evolution)
+- [ ] **[P0] Stylometric Match Dashboard**: (2026-07-19) Visualize real-time stylometric confidence scores and mimicry alerts.
+- [ ] **[P0] Shard Timeline Inspector**: (2026-07-19) Forensic UI for tracking workspace write history and monotonic phase-binding.
+- [ ] **[P0] ZK-Discovery Broker Portal**: (2026-07-19) Secure workspace for reviewing and masking JIT capability proofs.

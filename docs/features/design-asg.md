@@ -51,3 +51,10 @@ Claude Code v3.0 has introduced "Agent Teams" that collaborate via a shared proj
 *   **RAR Integration**: Appending the RAR engine as a mandatory pre-processor in Section 4.
 *   **Atomic Arbiter**: Upgrading the Lock Manager to include "Conflict-Aware Redaction," ensuring that locked fragments are sanitized based on the reader's trust level.
 **Security Impact**: Mitigates stylometric mimicry and cross-agent intent leakage in high-contention team workspaces.
+
+### Update: 2026-07-19 - Neutralizing Shard Replay Cycles
+**Context**: Today's research revealed that parallel Agent Teams are suffering from "Shard Replay Cycles" where stale fragments in the shared scratchpad are re-ingested by new teammates, leading to reasoning loops.
+**Architecture Adjustment**:
+*   **Echo-Immune Fragments**: Mandating monotonic, hardware-bound timestamps for all workspace writes in Section 4.
+*   **Temporal Sharding**: Introducing mission-phase scoped shards, ensuring that fragments from terminated sub-tasks are cryptographically invalidated for future reasoning steps.
+**Security Impact**: Prevents "State Stuttering" and ensures that the swarm maintains a single, forward-moving mission mainline.

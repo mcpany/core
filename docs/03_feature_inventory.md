@@ -1861,3 +1861,15 @@
 ### Priority Shifts
 - **Atomic Scratchpad Guard (ASG)**: (Re-affirmed P0) Elevated with the requirement for mandatory **RAR** integration and **Atomic Arbiter** lock management.
 - **Skill-State Sovereignty (SSS) Broker**: (Re-affirmed P0) Elevated with mandatory **RAR** scrubbing for all SSP-compliant fragments.
+
+## Evolution: [2026-07-19] Updates
+
+### Proposed Additions
+- **Stylometric Identity Verifier (SIV)**: (P0) Authoritative behavioral security service that performs real-time stylometric analysis of reasoning traces to neutralize "Reasoning Mirroring" (CVE-2026-99012).
+- **Echo-Immune Coordination Fragments**: (P0) Transport-level security standard mandating monotonic, hardware-bound timestamps for all shared workspace writes to neutralize "Shard Replay Cycles."
+- **Zero-Knowledge Capability Discovery (ZKCD)**: (P0) Advanced discovery gateway that mandates cryptographic capability masking until a mission-bound handshake is complete.
+- **Active Reasoning Redaction (ARR) Hub**: (P0) Upgrade for the RAR Engine providing recursive semantic redaction for tool-local persistent state and shared team workspaces.
+
+### Priority Shifts
+- **Reasoning-Aware Redaction (RAR) Engine**: (Re-affirmed P0) Evolving into the **ARR Hub** to support recursive semantic analysis and shard-level redaction.
+- **Atomic Scratchpad Guard (ASG)**: (Re-affirmed P0) Elevated with the requirement for mandatory **Echo-Immune** anchoring for all workspace fragments.
