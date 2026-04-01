@@ -284,6 +284,25 @@ func (a *Application) handleDebugSeedTraces() http.HandlerFunc {
 			return
 		}
 
+		// Register a dummy orchestrator-task tool to allow replay in E2E
+		if a.ToolManager != nil {
+			dummyTool := &tool.MockTool{
+				ToolFunc: func() *mcp_router_v1.Tool {
+					name := "orchestrator-task"
+					return &mcp_router_v1.Tool{
+						Name: &name,
+					}
+				},
+				ExecuteFunc: func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+					return map[string]any{
+						"summary":    "Revenue up 15%",
+						"confidence": 0.98,
+					}, nil
+				},
+			}
+			_ = a.ToolManager.AddTool(dummyTool)
+		}
+
 		entries := generateMockAuditEntries()
 
 		for _, entry := range entries {
