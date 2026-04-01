@@ -87,12 +87,32 @@ const renderWidget = (widget: WidgetInstance) => {
     const def = getWidgetDefinition(widget.type);
     if (!def) return <div className="p-4 border border-dashed text-muted-foreground">Unknown Widget Type: {widget.type}</div>;
 
+/**
+ * Component component.
+ * @param props - The component props.
+ * @param props.widget - The unique identifier for wget.
+ * @param props.index - The index property.
+ * @param props.updateWidgetSize - The unique identifier for updateWgetSize.
+ * @param props.toggleWidgetVisibility - The unique identifier for toggleWgetVisibility.
+ * @param props.removeWidget - The unique identifier for removeWget.
+ * @returns The rendered component.
+ */
     const Component = def.component;
     return <Component />;
 };
 
 // ⚡ BOLT: [Render Optimization] Extract Draggable Widget into React.memo to prevent re-rendering all widgets during drag or single-widget state changes.
 // Randomized Selection from Top 5 High-Impact Targets
+/**
+ * MemoizedWidgetCard component.
+ * @param props - The component props.
+ * @param props.widget - The unique identifier for wget.
+ * @param props.index - The index property.
+ * @param props.updateWidgetSize - The unique identifier for updateWgetSize.
+ * @param props.toggleWidgetVisibility - The unique identifier for toggleWgetVisibility.
+ * @param props.removeWidget - The unique identifier for removeWget.
+ * @returns The rendered component.
+ */
 const MemoizedWidgetCard = React.memo(({ widget, index, updateWidgetSize, toggleWidgetVisibility, removeWidget }: {
     widget: WidgetInstance;
     index: number;

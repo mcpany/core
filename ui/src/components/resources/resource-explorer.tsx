@@ -62,6 +62,19 @@ const getIcon = (mimeType?: string) => {
 // ⚡ BOLT: [Render Optimization] Extract Resource List/Grid items into React.memo components.
 // Randomized Selection from Top 5 High-Impact Targets (React/View - Render waste).
 // This prevents re-rendering hundreds of unchanged resource rows every time selectedUri changes.
+/**
+ * MemoizedResourceListItem component.
+ * @param props - The component props.
+ * @param props.res - The res property.
+ * @param props.isSelected - The isSelected property.
+ * @param props.onSelect - The onSelect property.
+ * @param props.onDragStart - The onDragStart property.
+ * @param props.onPreview - The onPreview property.
+ * @param props.onCopyUri - The onCopyUri property.
+ * @param props.onCopyName - The name of the onCopy.
+ * @param props.onDownload - The onDownload property.
+ * @returns The rendered component.
+ */
 const MemoizedResourceListItem = React.memo(({ res, isSelected, onSelect, onDragStart, onPreview, onCopyUri, onCopyName, onDownload }: any) => {
     const Icon = getIcon(res.mimeType);
     return (
@@ -108,6 +121,18 @@ const MemoizedResourceListItem = React.memo(({ res, isSelected, onSelect, onDrag
 });
 MemoizedResourceListItem.displayName = "MemoizedResourceListItem";
 
+/**
+ * MemoizedResourceGridItem component.
+ * @param props - The component props.
+ * @param props.res - The res property.
+ * @param props.isSelected - The isSelected property.
+ * @param props.onSelect - The onSelect property.
+ * @param props.onPreview - The onPreview property.
+ * @param props.onCopyUri - The onCopyUri property.
+ * @param props.onCopyName - The name of the onCopy.
+ * @param props.onDownload - The onDownload property.
+ * @returns The rendered component.
+ */
 const MemoizedResourceGridItem = React.memo(({ res, isSelected, onSelect, onPreview, onCopyUri, onCopyName, onDownload }: any) => {
     const Icon = getIcon(res.mimeType);
     return (

@@ -211,6 +211,15 @@ type Runner interface {
 //   - MetricsGatherer: prometheus.Gatherer. Interface for gathering metrics.
 //   - BoundHTTPPort: atomic.Int32. The actual bound HTTP port.
 //   - BoundGRPCPort: atomic.Int32. The actual bound gRPC port.
+// Application ...
+//
+// Summary: Represents the Application.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Throws/Errors:
+//   - None.
 type Application struct {
 	runStdioModeFunc func(ctx context.Context, mcpSrv *mcpserver.Server) error
 	PromptManager    prompt.ManagerInterface

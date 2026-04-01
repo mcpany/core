@@ -36,6 +36,12 @@ interface McpContentRendererProps {
     content: McpContent[];
 }
 
+/**
+ * McpContentRenderer component.
+ * @param props - The component props.
+ * @param props.content - The content property.
+ * @returns The rendered component.
+ */
 function McpContentRenderer({ content }: McpContentRendererProps) {
     return (
         <div className="space-y-6 p-4">

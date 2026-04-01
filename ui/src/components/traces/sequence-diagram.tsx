@@ -44,11 +44,47 @@ interface Message {
 }
 
 // Config
+/**
+ * ACTOR_WIDTH component.
+ * @param props - The component props.
+ * @param props.trace - The trace property.
+ * @returns The rendered component.
+ */
 const ACTOR_WIDTH = 120;
+/**
+ * ACTOR_GAP component.
+ * @param props - The component props.
+ * @param props.trace - The trace property.
+ * @returns The rendered component.
+ */
 const ACTOR_GAP = 160;
+/**
+ * MESSAGE_HEIGHT component.
+ * @param props - The component props.
+ * @param props.trace - The trace property.
+ * @returns The rendered component.
+ */
 const MESSAGE_HEIGHT = 60;
+/**
+ * PADDING_TOP component.
+ * @param props - The component props.
+ * @param props.trace - The trace property.
+ * @returns The rendered component.
+ */
 const PADDING_TOP = 60;
+/**
+ * PADDING_BOTTOM component.
+ * @param props - The component props.
+ * @param props.trace - The trace property.
+ * @returns The rendered component.
+ */
 const PADDING_BOTTOM = 40;
+/**
+ * PADDING_X component.
+ * @param props - The component props.
+ * @param props.trace - The trace property.
+ * @returns The rendered component.
+ */
 const PADDING_X = 40;
 
 /**

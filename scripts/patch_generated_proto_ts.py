@@ -12,6 +12,18 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def patch_file(rel_path: str, replacements: list[tuple[str, str]]) -> None:
+    """
+    Summary: patch_file.
+
+    Parameters:
+      - None.
+
+    Returns:
+      - None.
+
+    Throws/Errors:
+      - None.
+    """
     path = ROOT / rel_path
     if not path.exists():
         return
