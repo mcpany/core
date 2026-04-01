@@ -826,3 +826,7 @@
 
 #### Upcoming (2026-07-20 Evolution)
 - [ ] **[P0] Monotonic Coordination Dashboard**: (2026-07-20) Visualize hardware-bound monotonic timestamps and mission-phase binding for all teammate state writes.
+
+### Evolution: [2026-07-21] Updates
+- **Visual Attention Dashboard Enhancement**: (P1) Integration of CBA "Entropy Scores" and real-time reasoning drivers to help developers debug "Reasoning Drift."
+- **Horizontal Swarm Topology**: (P1) Real-time visualization of teammate mailbox sharding and CRDT-based state reconciliation.
