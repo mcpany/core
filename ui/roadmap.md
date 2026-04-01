@@ -836,3 +836,8 @@
 - [ ] **[P0] Reasoning Provenance Inspector**: (2026-07-22) Visual debugger for verifying RPW-compliant watermarks and reasoning lineage.
 - [ ] **[P0] Dynamic Resource Budgeting Monitor**: (2026-07-22) Real-time visualization of ARR-triggered budget re-allocations between teammates.
 - [ ] **[P0] Reflection Policy Dashboard**: (2026-07-22) UI for defining and monitoring MBR-compliant subagent reflection cycles.
+
+#### Upcoming (2026-07-23 Evolution)
+- [ ] **[P0] Intent-Chain Visualization Hub**: Visual graph-based tracer for monitoring ICS-anchored reasoning branches and delegation lineage. (Added: 2026-07-23)
+- [ ] **[P0] Token Vaporization Dashboard**: Real-time monitor of RRTV-triggered budget reclamations and reasoning entropy heatmaps. (Added: 2026-07-23)
+- [ ] **[P1] Self-Correction Quorum Interface**: Authorization workspace for reviewing and voting on RSCQ-mediated refinement plans. (Added: 2026-07-23)

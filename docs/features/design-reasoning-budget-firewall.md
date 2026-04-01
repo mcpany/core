@@ -59,3 +59,11 @@ As AI agent frameworks like Gemini CLI and OpenClaw move toward high-intensity r
 *   Implementing **Cross-Mission Budget Continuity**. Reasoning budgets are now reconciled against a persistent "Mission Root Registry."
 *   Introducing a "Lease Migration Protocol" for framework-neutral handoffs, ensuring budget integrity as agents move between local and cloud environments.
 **Security Impact:** Prevents "Budget Reset" exploits where subagents trigger mission restarts to refresh their reasoning quotas.
+
+### Update: 2026-07-23 - Reasoning-Responsive Token Vaporization (RRTV)
+**Context:** Today's market sync revealed the emergence of "Resource Squatting" in deep swarms. Stalled or hallucinating subagents consume reasoning effort without approaching mission convergence, locking resources that could be re-allocated to high-stakes specialists.
+**Architecture Adjustment:**
+*   Integrating **Reasoning-Responsive Token Vaporization (RRTV)**. RBF now monitors real-time semantic entropy of subagent reasoning traces.
+*   Implementing **Proactive Budget Reclamation**. If a reasoning branch exceeds an "Entropy Threshold" (indicating divergence from mission intent), its budget is forcefully vaporized and returned to the mission-root pool.
+*   Introducing "Resumption-Proof Vaporization" where vaporized sub-missions are marked as "High-Entropy" to prevent unauthorized resumption or retry without mission-root re-attestation.
+**Security Impact:** Neutralizes "Agentic DoS" by preventing non-convergent subagents from exhausting the swarm's collective reasoning capacity.

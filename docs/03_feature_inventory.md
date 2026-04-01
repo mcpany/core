@@ -1,5 +1,16 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-23] Updates
+
+### Proposed Additions
+- **Intent-Chain Sovereignty (ICS) Validator**: (P0) Authoritative verification service utilizing hardware-attested intent fragments to cryptographically bind sub-missions to the user's primary mission root.
+- **RRTV (Token Vaporization) Manager**: (P0) High-speed resource reclamation service performing real-time semantic entropy analysis to proactively vaporize budgets from divergent reasoning branches.
+- **Recursive Self-Correction Quorum (RSCQ) Hub**: (P1) Multi-agent consensus broker requiring independent auditor approval for self-correction plans before blackboard commitment.
+
+### Priority Shifts
+- **Adaptive Resource Reclamation (ARR) Service**: (Re-affirmed P0) Now elevated with the requirement for mandatory **RRTV** integration for proactive mission-root protection.
+- **Mission-Locked Execution (MLE) Gateway**: (Re-affirmed P0) Designated as the primary enforcement point for **ICS-compliant** intent anchoring.
+
 ## Evolution: [2026-07-15] Updates
 
 ### Proposed Additions
