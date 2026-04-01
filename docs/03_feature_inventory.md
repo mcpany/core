@@ -1873,3 +1873,15 @@
 ### Priority Shifts
 - **Reasoning-Aware Redaction (RAR) Engine**: (Re-affirmed P0) Evolving into the **ARR Hub** to support recursive semantic analysis and shard-level redaction.
 - **Atomic Scratchpad Guard (ASG)**: (Re-affirmed P0) Elevated with the requirement for mandatory **Echo-Immune** anchoring for all workspace fragments.
+
+## Evolution: [2026-07-20] Updates
+
+### Proposed Additions
+- **Behavioral Signal Anchoring (BSA)**: (P0) Advanced extension for the SIV provider that analyzes reasoning density and instruction-path entropy to verify cognitive fingerprints.
+- **Monotonic Workspace Anchoring (MWA)**: (P0) Security standard for shared teammate state mandating hardware-bound timestamps and mission-phase binding for all scratchpad writes.
+- **Active Reasoning Redaction (ARR) Hub v2**: (P0) Recursive semantic analysis service for fragment-level intent redaction in tool-local persistent state.
+- **Just-in-Time (JIT) Capability Masking**: (P1) Advanced discovery feature for the ZKCD proxy that keeps tool schemas cryptographically invisible until a mission handshake is completed.
+
+### Priority Shifts
+- **Stylometric Identity Verifier (SIV)**: (Re-affirmed P0) Elevated with the requirement for mandatory **BSA** integration to neutralize cognitive mimicry.
+- **Echo-Immune Coordination Fragments**: (Re-affirmed P0) Now elevated with the requirement for mandatory **MWA** integration for all workspace writes.
