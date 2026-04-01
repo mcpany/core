@@ -4,20 +4,21 @@
 package app
 
 import (
-	"math/rand"
-
+	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
-	"context"
 	"fmt"
+	"math/rand"
 	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/gorilla/websocket"
+	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/audit"
 	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/tool"
 )
 
 // Span represents a span in a trace.
@@ -287,11 +288,11 @@ func (a *Application) handleDebugSeedTraces() http.HandlerFunc {
 		// Register a dummy orchestrator-task tool to allow replay in E2E
 		if a.ToolManager != nil {
 			dummyTool := &tool.MockTool{
-				ToolFunc: func() *mcp_router_v1.Tool {
+				ToolFunc: func() *v1.Tool {
 					name := "orchestrator-task"
-					return &mcp_router_v1.Tool{
+					return v1.Tool_builder{
 						Name: &name,
-					}
+					}.Build()
 				},
 				ExecuteFunc: func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 					return map[string]any{
