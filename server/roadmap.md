@@ -1032,5 +1032,5 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
 
 #### Upcoming (2026-07-25 Evolution)
-*   **[P0] Recursive Lease Validator (RLV)**: authoritative security service for narrowing hardware leases in sub-delegations. (Added: 2026-07-25)
-*   **[P0] SNT-Native Mesh Bridge**: high-performance inter-node coordination service for distributed swarms. (Added: 2026-07-25)
+*   **[P0] Recursive Lease Validator (RLV)**: Authoritative security service for narrowing hardware leases in sub-delegations. (Added: 2026-07-25)
+*   **[P0] SNT-Native Mesh Bridge**: High-performance inter-node coordination service for distributed swarms. (Added: 2026-07-25)
