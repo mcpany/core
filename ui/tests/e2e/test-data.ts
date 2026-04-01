@@ -337,6 +337,12 @@ export const cleanupCollection = async (name?: string, requestContext?: APIReque
     }
 };
 
+export const seedDashboard = async (requestContext?: APIRequestContext) => {
+    await seedGlobalState(requestContext);
+    await seedTraffic(requestContext);
+    await seedTraces(requestContext);
+};
+
 export const seedTraces = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const trace = {

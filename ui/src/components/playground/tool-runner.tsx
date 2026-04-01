@@ -358,19 +358,19 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
                     </Button>
                 </div>
                 <div className="grid grid-cols-4 gap-4 mb-8">
-                    <div className="space-y-1 p-4 border rounded-lg bg-card">
+                    <div className="space-y-1 p-4 border border-border/50 rounded-lg bg-background/50 backdrop-blur-sm shadow-sm transition-all hover:shadow-md">
                         <p className="text-[10px] uppercase text-muted-foreground font-semibold">Total Calls</p>
                         <p className="text-2xl font-bold">{historicalStats?.totalCalls ?? recentStats.total ?? 0}</p>
                     </div>
-                    <div className="space-y-1 p-4 border rounded-lg bg-card">
+                    <div className="space-y-1 p-4 border border-border/50 rounded-lg bg-background/50 backdrop-blur-sm shadow-sm transition-all hover:shadow-md">
                         <p className="text-[10px] uppercase text-muted-foreground font-semibold">Success Rate</p>
                         <p className="text-2xl font-bold text-green-500">{historicalStats?.successRate ?? 100}%</p>
                     </div>
-                    <div className="space-y-1 p-4 border rounded-lg bg-card">
+                    <div className="space-y-1 p-4 border border-border/50 rounded-lg bg-background/50 backdrop-blur-sm shadow-sm transition-all hover:shadow-md">
                         <p className="text-[10px] uppercase text-muted-foreground font-semibold">Avg Latency (50)</p>
                         <p className="text-2xl font-bold">{recentStats.avgLatency}ms</p>
                     </div>
-                    <div className="space-y-1 p-4 border rounded-lg bg-card">
+                    <div className="space-y-1 p-4 border border-border/50 rounded-lg bg-background/50 backdrop-blur-sm shadow-sm transition-all hover:shadow-md">
                         <p className="text-[10px] uppercase text-muted-foreground font-semibold">Error Count (50)</p>
                         <p className="text-2xl font-bold text-destructive">{recentStats.failures}</p>
                     </div>
