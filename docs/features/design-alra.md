@@ -57,3 +57,7 @@ Attention-Locked Reasoning Anchors (ALRA) provide a hardware-bound mechanism to 
 
 ## 7. Evolutionary Changelog
 * **2026-07-01:** Initial Document Creation.
+* **2026-04-01:** (Iteration 2) - Integration of GC-Immune Reasoning Anchors.
+    * Context: Gemini CLI v0.57.0's CWGC introduces a risk of "Silent Anchor" eviction.
+    * Architecture Adjustment: Mandating GC-Immune status for all ALRA-pinned mission-root fragments.
+    * Security Impact: Neutralizes "GC Fragility" where behavioral guardrails are lost during aggressive token cleanup.

@@ -37,6 +37,17 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-04-01] (Iteration 2)
+### Focus: Agentic Entropy Governance & Garbage-Collection Sovereignty
+**Context**: The emergence of "Agentic Entropy Scoring" (AES) in OpenClaw and the introduction of "Context-Window Garbage Collection" (CWGC) in Gemini CLI reveal that mesh stability now depends on the **semantic coherence** of reasoning and the **integrity of silent anchors**. As models aggressively prune context to handle 1M+ token windows, the risk of "Instruction Eviction" demands that infrastructure provides **GC-Immune Reasoning Anchors**. Simultaneously, the rise of "Trace Replay" attacks in multi-modal environments confirms that provenance must be **Environment-Aware**.
+**Strategic Pivot**:
+- **Agentic Entropy Monitor (AEM)**: MCP Any will evolve to act as the authoritative "Swarm Coherence Broker." We will implement the AEM, performing real-time analysis of subagent reasoning entropy to detect and block semantic drift before it leads to unauthorized tool execution.
+- **GC-Immune Reasoning Anchors**: To counter "Instruction Eviction" during aggressive context garbage collection, we are implementing mandatory ALRA-compliant pinning. Specific mission-root fragments will be marked as "GC-Immune," ensuring that core behavioral guardrails remain permanent in the attention window.
+- **Environment-Aware Provenance (EAP)**: Supporting the ELMT standard, we are evolving the provenance layer to support EAP. Every reasoning fragment will be cryptographically bound to the hardware-attested environment ID (e.g., Docker Container ID), neutralizing "Trace Replay" attacks across disparate sessions.
+- **Mission-Root Conflict Resolver (MRCR)**: To neutralize "Subagent Collision" in parallel teams, MCP Any will act as a kernel-level arbiter for the Blackboard, resolving conflicting state mutations from teammates using priority-weighted mission-root rules.
+
+---
+
 ## Strategic Evolution: [2026-07-06]
 ### Focus: Summarization Sovereignty & Performance-Optimized Side-Channel Defense
 **Context**: The official integration of Quorum-Bound Summarization (QBS) in OpenClaw and the introduction of Adaptive Jitter Profiles (AJP) in Gemini CLI reveal that **State Integrity** must now be consensus-driven and **Security Latency** must be risk-aware. As MTTC (Mean Time to Coordinate) becomes the primary performance bottleneck, the "Universal Agent Bus" must move beyond static safety gates to active **Optimistic Summarization** and **Intent-Aware Jitter**.

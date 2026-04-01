@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-04-01] (Iteration 2) Updates
+
+### Proposed Additions
+- **Agentic Entropy Monitor (AEM)**: (P0) Authoritative coherence service performing real-time analysis of subagent reasoning entropy to block semantic drift.
+- **GC-Immune Reasoning Anchors**: (P0) Advanced pinning mechanism for mission-critical context fragments to prevent eviction during aggressive context-window garbage collection.
+- **Environment-Aware Provenance (EAP) Provider**: (P0) Identity middleware cryptographically binding reasoning fragments to hardware-attested environment IDs (e.g., Container IDs) to neutralize Trace Replay attacks.
+- **Mission-Root Conflict Resolver (MRCR)**: (P0) Kernel-level arbiter for the Blackboard resolving conflicting state mutations from parallel teammates using priority-weighted mission-root rules.
+
+### Priority Shifts
+- **Reasoning Provenance Validator**: (Re-affirmed P0) Elevated with mandatory support for **EAP-compliant** environment binding.
+- **Attention-Locked Reasoning Anchors (ALRA)**: (Re-affirmed P0) Elevated with mandatory **GC-Immune** pinning.
+
 ## Evolution: [2026-07-15] Updates
 
 ### Proposed Additions
