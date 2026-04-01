@@ -831,3 +831,8 @@
 - [ ] **[P0] Reasoning Confidence Monitor**: Real-time visualization of subagent uncertainty scores and RCS-triggered escalation events. (Added: 2026-07-21)
 - [ ] **[P0] Multimodal Trace Auditor**: Forensic UI for reviewing MMS-sanitized SVG and Audio reasoning fragments. (Added: 2026-07-21)
 - [ ] **[P0] Durable Session Explorer**: Visual workspace for reviewing hardware-locked continuity state across system reboots. (Added: 2026-07-21)
+
+#### Upcoming (2026-07-22 Evolution)
+- [ ] **[P0] Reasoning Provenance Inspector**: (2026-07-22) Visual debugger for verifying RPW-compliant watermarks and reasoning lineage.
+- [ ] **[P0] Dynamic Resource Budgeting Monitor**: (2026-07-22) Real-time visualization of ARR-triggered budget re-allocations between teammates.
+- [ ] **[P0] Reflection Policy Dashboard**: (2026-07-22) UI for defining and monitoring MBR-compliant subagent reflection cycles.

@@ -1893,3 +1893,14 @@
 ### Priority Shifts
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Elevated with the requirement for mandatory **Durable Continuity** to support cross-session recovery.
 - **Multimodal Inference-Time Sanitizer (MITS)**: (Re-affirmed P0) Designated as the primary enforcement point for the new **MMS-compliant** visual sanitization.
+
+## Evolution: [2026-07-22] Updates
+
+### Proposed Additions
+- **Reasoning-Path Watermark (RPW) Validator**: (P0) Advanced provenance service for verifying cryptographic watermarks embedded in reasoning fragments to ensure thought lineage.
+- **Adaptive Resource Reclamation (ARR) Service**: (P0) High-speed budgeting middleware that re-allocates reasoning/token budgets between teammates based on task urgency.
+- **Manifest-Based Reflection (MBR) Arbiter**: (P0) Authoritative coordination service mandating that subagent self-reflection cycles align with the mission-root manifest.
+
+### Priority Shifts
+- **Reasoning Provenance Validator**: (Re-affirmed P0) Elevated with mandatory support for **RPW-compliant** watermark verification.
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Designated as the primary persistence layer for **MBR-validated** reflection states.
