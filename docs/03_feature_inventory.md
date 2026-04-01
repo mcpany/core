@@ -1894,6 +1894,17 @@
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Elevated with the requirement for mandatory **Durable Continuity** to support cross-session recovery.
 - **Multimodal Inference-Time Sanitizer (MITS)**: (Re-affirmed P0) Designated as the primary enforcement point for the new **MMS-compliant** visual sanitization.
 
+## Evolution: [2026-07-23] Updates
+
+### Proposed Additions
+- **Agentic Entropy Monitor (AEM)**: (P0) Authoritative coherence service performing real-time analysis of subagent reasoning entropy to block semantic drift.
+- **Mission-Root Conflict Resolver (MRCR)**: (P0) Kernel-level arbiter for the Blackboard resolving conflicting state mutations from parallel teammates.
+- **Environment-Aware Provenance (EAP) Provider**: (P0) Advanced identity service cryptographically binding reasoning fragments to hardware-attested environment IDs.
+
+### Priority Shifts
+- **Adaptive Resource Reclamation (ARR) Service**: (Re-affirmed P0) Designated as a critical dependency for maintaining performance during high-entropy mission phases.
+- **Attention-Locked Reasoning Anchors (ALRA)**: (Re-affirmed P0) Elevated with mandatory **GC-Immune** pinning to counter context-window garbage collection.
+
 ## Evolution: [2026-07-22] Updates
 
 ### Proposed Additions

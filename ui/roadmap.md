@@ -832,6 +832,11 @@
 - [ ] **[P0] Multimodal Trace Auditor**: Forensic UI for reviewing MMS-sanitized SVG and Audio reasoning fragments. (Added: 2026-07-21)
 - [ ] **[P0] Durable Session Explorer**: Visual workspace for reviewing hardware-locked continuity state across system reboots. (Added: 2026-07-21)
 
+#### Upcoming (2026-07-23 Evolution)
+- [ ] **[P0] Agentic Entropy Scoreboard**: (2026-07-23) Real-time dashboard for visualizing subagent reasoning entropy and coherence alerts.
+- [ ] **[P0] Blackboard Collision Manager**: (2026-07-23) Visual arbiter for resolving concurrent state mutations and reviewing MRCR decisions.
+- [ ] **[P0] Environment-Aware Provenance Tracker**: (2026-07-23) Forensic UI for visualizing reasoning traces bound to specific execution environments.
+
 #### Upcoming (2026-07-22 Evolution)
 - [ ] **[P0] Reasoning Provenance Inspector**: (2026-07-22) Visual debugger for verifying RPW-compliant watermarks and reasoning lineage.
 - [ ] **[P0] Dynamic Resource Budgeting Monitor**: (2026-07-22) Real-time visualization of ARR-triggered budget re-allocations between teammates.
