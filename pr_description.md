@@ -1,31 +1,29 @@
-## Executive Summary
-A "Truth Reconciliation Audit" was performed against 10 distinct, algorithmically sampled feature documentation files across the UI and backend logic to verify exact alignment with the product roadmap. The overall health of the sampled features is strong (9/10), with correct, modern implementations securely matching documentation logic.
+# Truth Reconciliation Audit Report
 
-However, one significant discrepancy representing **Roadmap Debt** was discovered: The **Agent Chain Tracer (A2A)** documented under the Universal Agent Bus features (`ui/docs/features/universal_agent_bus.md`) lacked proper testing for its implemented trace fetching and seeding. The divergence was aggressively remediated by engineering the proper test suites to ensure the trace visualization correctly integrated with `useTraces` hooks and backend seed configurations.
+## Executive Summary
+
+Performed a "10-File" Truth Reconciliation Audit on the project to ensure `ui/docs`, `server/docs`, and the Codebase match the Product Roadmap perfectly.
+Overall, 9/10 randomly sampled documentation files were perfectly aligned with both the Roadmap and Code Implementation, signifying robust code-doc alignment. One configuration documentation (`SSO Integration`) displayed documentation drift (code implemented correctly, but docs contained outdated behavior) which was aggressively fixed.
 
 ## Verification Matrix
+
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `ui/docs/features/universal_agent_bus.md` | **Roadmap Debt** | **Code Fix** | Authored robust unit tests `AgentChainTracer` and integration logic testing `useTraces` hook and the backend DB seeding logic (`api_traces_seed_test.go`). |
-| `ui/docs/features/playground.md` | **Verified** | None | `ui/src/components/playground/` accurately reflects live logic. |
-| `ui/docs/features/services.md` | **Verified** | None | `ui/src/app/upstream-services/` properly handles service connections and states. |
-| `ui/docs/features/stack-composer.md` | **Verified** | None | `ui/src/app/stacks/` handles config-as-code visualizations. |
-| `server/docs/features/shared_kv_store.md` | **Doc Drift** | **Doc Update** | Fixed `server/docs/features/shared_kv_store.md` to remove `enabled` / `isolation_level` and accurately match `BlackboardStore`. |
-| `server/docs/features/hitl.md` | **Verified** | None | Real-time active alerts table and API interactions map to `server/pkg/middleware/hitl.go`. |
-| `server/docs/features/recursive_context.md` | **Verified** | None | Recursive context implementation properly inherits logic inside `server/pkg/middleware/recursive_context.go`. |
-| `server/docs/features/granular_scopes.md` | **Doc Drift** | **Doc Update** | Updated the `roles` mapping inside `server/docs/features/granular_scopes.md` to match the exact string tokens specified in `server/pkg/middleware/scopes.go`. |
-| `ui/docs/features/dashboard.md` | **Verified** | None | Re-verified system overview drag-and-drop dashboard maps successfully to UI structure. |
-| `server/docs/features/context_optimizer.md` | **Verified** | None | `server/pkg/middleware/context_optimizer.go` fully truncates response size context. |
-| `server/docs/features/lazy-mcp.md` | **Code Debt** | **Code Fix** | Addressed prior codebase debt where `cache_ttl` was missing. Verified `CacheTTL` struct mapping and unit tests in `lazy_mcp.go`. |
+| `server/docs/features/lazy-mcp.md` | ALIGNED | Verified Codebase against Doc | `server/pkg/middleware/lazy_mcp.go` contains correct configs (`Enabled`, `Threshold`, `CacheTTL`) matching docs. |
+| `ui/docs/features/connection-diagnostics.md` | ALIGNED | Verified Codebase against Doc | `ui/src/components/diagnostics/connection-diagnostic.tsx` accurately maps client-side & backend diagnostics steps. |
+| `ui/docs/features/prompts.md` | ALIGNED | Verified Codebase against Doc | `ui/src/components/prompts/prompt-workbench.tsx` properly implements `Open in Playground` feature. |
+| `server/docs/features/log_streaming_ui.md` | ALIGNED | Verified Codebase against Doc | `ui/src/components/logs/log-stream.tsx` handles Live Feed, Filtering, Pause/Resume properly. |
+| `ui/docs/features/dashboard.md` | ALIGNED | Verified Codebase against Doc | `ui/src/components/dashboard/dashboard-grid.tsx` coordinates `Add Widget`, `MetricsOverview`, and `QuickActionsWidget`. |
+| `ui/docs/features/marketplace.md` | ALIGNED | Verified Codebase against Doc | `ui/src/app/marketplace/page.tsx` features proper "Install", "Configure", and config sharing elements. |
+| `ui/docs/features/hitl.md` | ALIGNED | Verified Codebase against Doc | `server/pkg/app/api_hitl.go` strictly handles `RequireMFA` and intercepts high-risk execution properly. |
+| `ui/docs/features/tool_search_bar.md` | ALIGNED | Verified Codebase against Doc | `ui/src/components/tools/smart-tool-search.tsx` actively searches against tool name and description. |
+| `ui/docs/features/logs.md` | ALIGNED | Verified Codebase against Doc | `ui/src/components/logs/log-viewer.tsx` appropriately logs trace events with color-coding and smooth-scroll. |
+| `server/docs/features/sso.md` | OUTDATED | Updated Documentation | Code in `server/pkg/middleware/sso.go` correctly returns a 401 Unauthorized JSON response, but documentation falsely stated a 302 redirect. Fixed documentation drift (Case A). |
 
 ## Remediation Log
 
-**Agent Chain Tracer (A2A) (Roadmap Debt)**
-The `ui/docs/features/universal_agent_bus.md` describes a visual timeline of multi-agent handoffs and message passing. The core frontend codebase and `seedTraces()` was present but entirely untested, representing a dangerous failure in codebase reliability.
-
-*   **Backend Testing Engineered:** Authored the `api_traces_seed_test.go` testing suite to effectively validate `seedTraces()`. Verified `mid.GetHistory()` successfully populates an audit log with realistic mock inputs.
-*   **Frontend Testing Engineered:** Designed and deployed `agent-chain-tracer.test.tsx` utilizing `vitest` and `testing-library` to properly validate visual components. The test correctly executes mock outputs mapping the component behavior against the `useTraces` data payload structures.
-*   **Code Quality:** Maintained strict typing and verified correct rendering mappings.
+*   **Case A (Documentation Drift):** Addressed `server/docs/features/sso.md`. The document claimed the system redirects unauthenticated users to the IDP login URL. However, the `SSOMiddleware` implementation safely returns a `401 Unauthorized` JSON response (`{"error": "Authentication required", "login_url": "..."}`). We updated the documentation to accurately reflect the codebase reality.
 
 ## Security Scrub
-The remediation code and audit details have been aggressively scrubbed. No live endpoints, internal subnets, credentials, user IDs, or API tokens exist within the PR logic or documentation. All seeded identifiers are securely mocked and strictly local to the testing infrastructure.
+
+*   **No PII, Secrets, or Internal IPs:** Scrubbed the report. All references relate uniquely to generalized logic flows and structural codebase paths. No explicit credentials or domains exist.
