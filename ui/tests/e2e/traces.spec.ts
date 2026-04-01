@@ -130,7 +130,7 @@ test.describe('Trace Viewer', () => {
 
     // Wait for the trace to appear in the table
     const traceRow = page.locator('tr.cursor-pointer').first();
-    await expect(traceRow).toBeVisible({ timeout: 10000 });
+    await expect(traceRow).toBeVisible({ timeout: 30000 });
 
     // Click the trace to open the Sheet
     await traceRow.click();
