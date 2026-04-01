@@ -21,6 +21,18 @@ import { cn } from "@/lib/utils";
 import { useTraces } from "@/hooks/use-traces";
 import { format } from "date-fns";
 
+/**
+ * Summary: Provides a hardware-attested timeline interface for tracking multi-agent handoffs.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.JSX.Element: The rendered AgentChainTracer interactive component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 export function AgentChainTracer() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const { traces } = useTraces();

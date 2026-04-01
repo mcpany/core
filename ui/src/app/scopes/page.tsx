@@ -6,6 +6,18 @@
 import React from "react";
 import { ScopesDashboard } from "@/components/scopes/scopes-dashboard";
 
+/**
+ * Summary: Renders the ScopesPage component, serving as the dashboard interface for configuring capability-based tokens.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.JSX.Element: The rendered ScopesPage component.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 export default function ScopesPage() {
     return (
         <div className="container py-6 space-y-6">
