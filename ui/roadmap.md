@@ -823,3 +823,6 @@
 - [ ] **[P0] Stylometric Match Dashboard**: (2026-07-19) Visualize real-time stylometric confidence scores and mimicry alerts.
 - [ ] **[P0] Shard Timeline Inspector**: (2026-07-19) Forensic UI for tracking workspace write history and monotonic phase-binding.
 - [ ] **[P0] ZK-Discovery Broker Portal**: (2026-07-19) Secure workspace for reviewing and masking JIT capability proofs.
+
+#### Upcoming (2026-07-20 Evolution)
+- [ ] **[P0] Monotonic Coordination Dashboard**: (2026-07-20) Visualize hardware-bound monotonic timestamps and mission-phase binding for all teammate state writes.

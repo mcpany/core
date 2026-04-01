@@ -45,3 +45,10 @@ Research into Claude Code's horizontal coordination revealed a vulnerability pat
 
 ## 7. Evolutionary Changelog
 * **2026-07-16:** Initial Document Creation.
+
+### Update: 2026-07-20 - Enforcing Monotonic Workspace Anchoring
+**Context:** Production swarms are reporting "Shard Replay Cycles" caused by stale state fragments in the .scratchpad.
+**Architecture Adjustment:**
+- Mandating **Monotonic Workspace Anchoring (MWA)** for all shared state writes.
+- Every fragment in the teammate mailbox or scratchpad must be cryptographically bound to a hardware monotonic counter and mission-phase.
+**Security Impact:** Prevents teammates from acting on out-of-phase or replayed instructions, ensuring temporal consistency in the shared team state.
