@@ -7,6 +7,18 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
+/**
+ * Summary: Visualizes granular capability tokens grouped by agent roles within a grid layout.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - React.JSX.Element: The rendered ScopesDashboard interface.
+ *
+ * Throws/Errors:
+ *   - None.
+ */
 export function ScopesDashboard() {
     const [roles, setRoles] = useState([
         { id: "1", role: "default", scopes: ["read"] },
