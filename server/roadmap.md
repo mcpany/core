@@ -1030,3 +1030,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] DRC (Deterministic Reasoning Checkpoint) Hub**: Authoritative state recovery service with TPM-signed snapshots for cognitive stall recovery. (Added: 2026-07-25)
+*   **[P0] Contextual Entropy Gate (CEG)**: Real-time semantic filter for tool outputs to prevent mission drift by blocking noise. (Added: 2026-07-25)
+*   **[P0] HATL (Hardware-Attested Token Lineage) Provider**: Economic provenance identity extension cryptographically binding token consumption to mission-root. (Added: 2026-07-25)
+*   **[P0] MBHL (Mission-Bound Hardware Lease) Provider**: Advanced security service for issuing TPM-signed, task-specific capability leases. (Added: 2026-07-25)

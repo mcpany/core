@@ -62,3 +62,11 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Fast-Path Tunnel Resumption
+**Context:** Today's market sync revealed that mandatory P2P tunnels (introduced by OpenClaw SNT) are adding 150ms+ latency to tool calls, impacting high-frequency Agent Team performance.
+**Architecture Adjustment:**
+* Implementing **Fast-Path Mesh Resumption** using session-bound "Mesh Tickets".
+* The AMT Broker will now issue time-bound tickets after the initial TPM-signed handshake.
+* Subsequent remote tool calls within the same mission window can bypass the full cryptographic handshake by providing a valid ticket, reducing coordination latency to <10ms.
+**Security Impact:** Maintains absolute sovereignty while neutralizing the performance tax of distributed meshing.

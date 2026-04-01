@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **DRC (Deterministic Reasoning Checkpoint) Hub**: (P0) Authoritative state recovery service facilitating TPM-signed snapshots and rewinding for agent reasoning traces.
+- **Contextual Entropy Gate (CEG)**: (P0) Real-time semantic filter for tool outputs to prevent mission drift by blocking high-entropy noise.
+- **HATL (Hardware-Attested Token Lineage) Provider**: (P0) Economic provenance identity extension cryptographically binding token consumption to mission-root hardware.
+- **Mission-Bound Hardware Leases (MBHL) Provider**: (P0) Advanced security service issuing TPM-signed, task-bound capability leases that expire automatically.
+
+### Priority Shifts
+- **Hardware-Attested Cost Attribution (HACA)**: (Re-affirmed P0) Elevated with mandatory **HATL-compliant** economic provenance.
+- **Active Subagent Reaper**: (Re-affirmed P0) Designated as a core integration point for the **MBHL** automated revocation logic.
