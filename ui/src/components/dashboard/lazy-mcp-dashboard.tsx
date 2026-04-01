@@ -28,7 +28,7 @@ export function LazyMcpDashboard() {
     return (
         <Card className="w-full mt-4">
             <CardHeader>
-                <CardTitle>Lazy-MCP Tool Search Dashboard</CardTitle>
+                <CardTitle className="text-sm font-medium">Lazy-MCP Tool Search Dashboard</CardTitle>
                 <CardDescription>Manage the on-demand tool index and monitor similarity search hits.</CardDescription>
             </CardHeader>
             <CardContent>
