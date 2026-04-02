@@ -1934,3 +1934,13 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-04-02] Updates
+
+### Proposed Additions
+- **Remote Channel Authenticator (RCA)**: (P0) Authoritative gateway for external messaging platforms (Telegram, Discord) enforcing hardware-attested, session-bound verification for remote commands.
+- **Multi-Channel Intent Validator (MCIV)**: (P0) Real-time semantic analysis middleware for remote instructions to prevent intent drift and ensure mission-root anchoring.
+- **Webhook Integrity Attestation Provider**: (P1) Security service for validating inbound messaging webhooks via hardware-bound integrity proofs.
+
+### Priority Shifts
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Elevated with mandatory support for **MCIV-compliant** remote intent validation.
