@@ -24,6 +24,34 @@ type Config struct {
 // Worker is responsible for processing jobs from the bus.
 //
 // Summary: Processes background jobs.
+// New creates a new Worker.
+// Summary: Initializes a new Worker.
+// Parameters:
+//   - busProvider: *bus.Provider. The bus provider.
+//   - cfg: *Config. The worker configuration.
+//
+// Returns:
+//   - *Worker: The initialized worker.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Start starts the worker and its background tasks.
+// Summary: Starts the worker processing loop.
+// Parameters:
+//   - ctx: context.Context. The context for the worker.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Worker struct {
 	busProvider *bus.Provider
 	pond        pond.Pool
@@ -32,16 +60,6 @@ type Worker struct {
 	wg          sync.WaitGroup
 }
 
-// New creates a new Worker.
-//
-// Summary: Initializes a new Worker.
-//
-// Parameters:
-//   - busProvider: *bus.Provider. The bus provider.
-//   - cfg: *Config. The worker configuration.
-//
-// Returns:
-//   - *Worker: The initialized worker.
 func New(busProvider *bus.Provider, cfg *Config) *Worker {
 	return &Worker{
 		busProvider: busProvider,
@@ -52,12 +70,6 @@ func New(busProvider *bus.Provider, cfg *Config) *Worker {
 	}
 }
 
-// Start starts the worker and its background tasks.
-//
-// Summary: Starts the worker processing loop.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the worker.
 func (w *Worker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	go w.startToolExecutionWorker(ctx)

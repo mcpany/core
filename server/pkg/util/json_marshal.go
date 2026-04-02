@@ -13,6 +13,32 @@ var (
 	// FastJSON is a configured instance of jsoniter that is optimized for performance.
 	//
 	// Summary: Provides a high-performance JSON marshaller.
+	// FastMarshalToString performs a high-performance JSON marshal into a string.
+	// Summary: Marshals to a string efficiently.
+	// Parameters:
+	//   - v (interface{}): The value to marshal.
+	// Returns:
+	//   - string: The marshaled string.
+	//   - error: An error if marshaling fails.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
+	// FastMarshal performs a high-performance JSON marshal into a byte slice.
+	// Summary: Marshals to a byte slice efficiently.
+	// Parameters:
+	//   - v (interface{}): The value to marshal.
+	// Returns:
+	//   - []byte: The marshaled byte slice.
+	//   - error: An error if marshaling fails.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	FastJSON = jsoniter.Config{
 		EscapeHTML:             true,
 		SortMapKeys:            false,
@@ -26,16 +52,6 @@ var (
 	}
 )
 
-// FastMarshalToString performs a high-performance JSON marshal into a string.
-//
-// Summary: Marshals to a string efficiently.
-//
-// Parameters:
-//   - v (interface{}): The value to marshal.
-//
-// Returns:
-//   - string: The marshaled string.
-//   - error: An error if marshaling fails.
 func FastMarshalToString(v interface{}) (string, error) {
 	buf := bufferPool.Get().(*bytes.Buffer)
 	buf.Reset()
@@ -53,16 +69,6 @@ func FastMarshalToString(v interface{}) (string, error) {
 	return buf.String(), nil
 }
 
-// FastMarshal performs a high-performance JSON marshal into a byte slice.
-//
-// Summary: Marshals to a byte slice efficiently.
-//
-// Parameters:
-//   - v (interface{}): The value to marshal.
-//
-// Returns:
-//   - []byte: The marshaled byte slice.
-//   - error: An error if marshaling fails.
 func FastMarshal(v interface{}) ([]byte, error) {
 	return FastJSON.Marshal(v)
 }

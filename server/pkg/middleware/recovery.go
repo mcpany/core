@@ -1,20 +1,8 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package middleware
-
-import (
-	"net/http"
-	"runtime/debug"
-
-	"github.com/mcpany/core/server/pkg/logging"
-)
-
 // RecoveryMiddleware recovers from panics in the handler chain, logs the panic,
 // and returns a generic 500 Internal Server Error response.
-//
 // Summary: Middleware to recover from panics.
-//
 // Parameters:
 //   - next (http.Handler): The next handler in the chain.
 //
@@ -24,6 +12,18 @@ import (
 // Side Effects:
 //   - Logs panic details if a panic occurs.
 //   - Writes a 500 Internal Server Error response to the client on panic.
+//
+// Errors:
+//   - None.
+package middleware
+
+import (
+	"net/http"
+	"runtime/debug"
+
+	"github.com/mcpany/core/server/pkg/logging"
+)
+
 func RecoveryMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {

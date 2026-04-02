@@ -1,6 +1,78 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// BuildHTTPEchoServer builds and starts an HTTP echo server for testing.
+// t is the t.
+// Returns the result.
+//
+// Summary: BuildHTTPEchoServer provides functionality.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// RegisterHTTPEchoService registers the HTTP echo service with the MCP server.
+// t is the t.
+// registrationClient is the registrationClient.
+// upstreamEndpoint is the upstreamEndpoint.
+//
+// Summary: RegisterHTTPEchoService provides functionality.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// BuildHTTPAuthedEchoServer builds the HTTP authed echo server for testing.
+// t is the t.
+// Returns the result.
+//
+// Summary: BuildHTTPAuthedEchoServer provides functionality.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// RegisterHTTPAuthedEchoService registers the HTTP authed echo service with the given registration client.
+// t is the t.
+// registrationClient is the registrationClient.
+// upstreamEndpoint is the upstreamEndpoint.
+//
+// Summary: RegisterHTTPAuthedEchoService provides functionality.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 package framework
 
 import (
@@ -14,11 +86,6 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// BuildHTTPEchoServer builds and starts an HTTP echo server for testing.
-//
-// t is the t.
-//
-// Returns the result.
 func BuildHTTPEchoServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	proc := integration.NewManagedProcess(t, "http_echo_server", integration.MockBinary(t, "http_echo_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
@@ -26,21 +93,11 @@ func BuildHTTPEchoServer(t *testing.T) *integration.ManagedProcess {
 	return proc
 }
 
-// RegisterHTTPEchoService registers the HTTP echo service with the MCP server.
-//
-// t is the t.
-// registrationClient is the registrationClient.
-// upstreamEndpoint is the upstreamEndpoint.
 func RegisterHTTPEchoService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	const serviceID = "e2e_http_echo"
 	integration.RegisterHTTPService(t, registrationClient, serviceID, upstreamEndpoint, "echo", "/echo", http.MethodPost, nil)
 }
 
-// BuildHTTPAuthedEchoServer builds the HTTP authed echo server for testing.
-//
-// t is the t.
-//
-// Returns the result.
 func BuildHTTPAuthedEchoServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	proc := integration.NewManagedProcess(t, "http_authed_echo_server", integration.MockBinary(t, "http_authed_echo_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
@@ -48,11 +105,6 @@ func BuildHTTPAuthedEchoServer(t *testing.T) *integration.ManagedProcess {
 	return proc
 }
 
-// RegisterHTTPAuthedEchoService registers the HTTP authed echo service with the given registration client.
-//
-// t is the t.
-// registrationClient is the registrationClient.
-// upstreamEndpoint is the upstreamEndpoint.
 func RegisterHTTPAuthedEchoService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	const serviceID = "e2e_http_authed_echo"
 	secret := configv1.SecretValue_builder{

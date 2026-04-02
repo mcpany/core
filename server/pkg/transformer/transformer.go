@@ -19,20 +19,24 @@ import (
 // specified by the template, such as JSON, XML, or plain text.
 //
 // Summary: Data transformation engine using Go templates with caching and pooling optimization.
-type Transformer struct {
-	cache sync.Map
-	pool  sync.Pool
-}
-
 // NewTransformer creates and returns a new instance of Transformer.
-//
 // Summary: Initializes a new Transformer.
-//
 // Returns:
 //   - *Transformer: The initialized transformer.
 //
 // Side Effects:
 //   - Initializes a sync.Pool for bytes.Buffer.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+type Transformer struct {
+	cache sync.Map
+	pool  sync.Pool
+}
+
 func NewTransformer() *Transformer {
 	return &Transformer{
 		pool: sync.Pool{

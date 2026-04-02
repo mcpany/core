@@ -22,7 +22,7 @@ import (
 // Returns:
 //   - None.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 type NodeState struct {
 	ID             string

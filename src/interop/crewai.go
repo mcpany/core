@@ -15,7 +15,7 @@ import (
 // Returns:
 //   - None.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:
@@ -35,7 +35,7 @@ type CrewAIAdapter struct {
 // Returns:
 //   - *CrewAIAdapter: A pointer to the newly created CrewAIAdapter instance.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:
@@ -60,7 +60,7 @@ func NewCrewAIAdapter() *CrewAIAdapter {
 // Returns:
 //   - string: The name of the adapter ("CrewAI").
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:
@@ -81,7 +81,7 @@ func (a *CrewAIAdapter) Name() string {
 //   - *TaskResult: The generalized result output, indicating success or failure.
 //   - error: An error if the capability is unsupported or if the execution fails.
 //
-// Throws/Errors:
+// Errors:
 //   - Returns "CrewAI does not support capability" if the task's intent is not supported by the adapter.
 //
 // Side Effects:
@@ -132,7 +132,7 @@ func (a *CrewAIAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult
 // Returns:
 //   - bool: True if the capability is supported, otherwise false.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:
@@ -152,7 +152,7 @@ func (a *CrewAIAdapter) SupportsCapability(capability string) bool {
 // Returns:
 //   - error: An error if the signature is missing or verification fails.
 //
-// Throws/Errors:
+// Errors:
 //   - Returns an error if the shard signature verification fails.
 //
 // Side Effects:
@@ -177,7 +177,7 @@ func (a *CrewAIAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard)
 //   - <-chan *TaskResult: A read-only channel emitting streamed chunks.
 //   - error: Indicates failure in executing the task or an unsupported intent.
 //
-// Throws/Errors:
+// Errors:
 //   - Returns an error if the framework's capability check fails for the task's intent.
 //
 // Side Effects:

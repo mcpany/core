@@ -25,7 +25,7 @@ import (
 // Returns:
 //   - None.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 type WebhookRequest struct {
 	Kind     int            `json:"kind"` // 1=PreCall, 2=PostCall
@@ -43,7 +43,7 @@ type WebhookRequest struct {
 // Returns:
 //   - None.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 type WebhookResponse struct {
 	Allowed bool    `json:"allowed"`
@@ -61,7 +61,7 @@ type WebhookResponse struct {
 // Returns:
 //   - None.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 type Status struct {
 	Code    int32  `json:"code"`

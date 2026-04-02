@@ -14,36 +14,47 @@ import (
 // It is thread-safe and supports dynamic updates.
 //
 // Summary: Represents a HTTPCORSMiddleware.
+// NewHTTPCORSMiddleware creates a new HTTPCORSMiddleware.
+// Summary: Initializes HTTP CORS middleware.
+// If allowedOrigins is empty, it defaults to allowing nothing (or behaving like standard Same-Origin).
+// To allow all, pass []string{"*"}.
+// Parameters:
+//   - allowedOrigins ([]string): The allowed origins.
+//
+// Returns:
+//   - (*HTTPCORSMiddleware): The initialized middleware.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Update updates the allowed origins.
+// Summary: Updates the allowed origins dynamically.
+// Parameters:
+//   - allowedOrigins ([]string): The new list of allowed origins.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type HTTPCORSMiddleware struct {
 	mu              sync.RWMutex
 	allowedOrigins  map[string]struct{}
 	wildcardAllowed bool
 }
 
-// NewHTTPCORSMiddleware creates a new HTTPCORSMiddleware.
-//
-// Summary: Initializes HTTP CORS middleware.
-//
-// If allowedOrigins is empty, it defaults to allowing nothing (or behaving like standard Same-Origin).
-// To allow all, pass []string{"*"}.
-//
-// Parameters:
-//   - allowedOrigins ([]string): The allowed origins.
-//
-// Returns:
-//   - (*HTTPCORSMiddleware): The initialized middleware.
 func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
 	m := &HTTPCORSMiddleware{}
 	m.updateInternal(allowedOrigins)
 	return m
 }
 
-// Update updates the allowed origins.
-//
-// Summary: Updates the allowed origins dynamically.
-//
-// Parameters:
-//   - allowedOrigins ([]string): The new list of allowed origins.
 func (m *HTTPCORSMiddleware) Update(allowedOrigins []string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -53,6 +64,19 @@ func (m *HTTPCORSMiddleware) Update(allowedOrigins []string) {
 // updateInternal populates the internal map and flags.
 // It must be called with the lock held or during initialization.
 // ⚡ Bolt Optimization: Uses map for O(1) lookup instead of O(N) slice iteration.
+// Handler wraps an http.Handler with CORS logic.
+// Summary: Middleware to handle CORS headers.
+// Parameters:
+//   - next (http.Handler): The next handler in the chain.
+//
+// Returns:
+//   - (http.Handler): The wrapped handler.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *HTTPCORSMiddleware) updateInternal(origins []string) {
 	m.allowedOrigins = make(map[string]struct{}, len(origins))
 	m.wildcardAllowed = false
@@ -65,15 +89,6 @@ func (m *HTTPCORSMiddleware) updateInternal(origins []string) {
 	}
 }
 
-// Handler wraps an http.Handler with CORS logic.
-//
-// Summary: Middleware to handle CORS headers.
-//
-// Parameters:
-//   - next (http.Handler): The next handler in the chain.
-//
-// Returns:
-//   - (http.Handler): The wrapped handler.
 func (m *HTTPCORSMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")

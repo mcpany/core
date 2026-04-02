@@ -6,6 +6,25 @@ package main
 
 import (
 	"context" //nolint:gci
+	// GetWeather implements the GetWeather method of the WeatherService.
+	// _ is an unused parameter.
+	// in is the request object.
+	// Returns the response.
+	// Returns an error if the operation fails.
+	//
+	// Summary: GetWeather provides functionality.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	"flag"
 	"fmt"
 	"log/slog"
@@ -30,13 +49,6 @@ var weatherData = map[string]string{
 	"tokyo":    "Rainy, 20°C",
 }
 
-// GetWeather implements the GetWeather method of the WeatherService.
-//
-// _ is an unused parameter.
-// in is the request object.
-//
-// Returns the response.
-// Returns an error if the operation fails.
 func (s *weatherServer) GetWeather(_ context.Context, in *weatherPb.GetWeatherRequest) (*weatherPb.GetWeatherResponse, error) {
 	slog.Info("grpc_weather_server: GetWeather called", "location", in.GetLocation())
 	weather, ok := weatherData[in.GetLocation()]
@@ -58,7 +70,7 @@ func main() {
 	var err error
 	for i := 0; i < 5; i++ {
 		var lc net.ListenConfig
-	lis, err = lc.Listen(context.Background(), "tcp", address)
+		lis, err = lc.Listen(context.Background(), "tcp", address)
 		if err == nil {
 			break
 		}

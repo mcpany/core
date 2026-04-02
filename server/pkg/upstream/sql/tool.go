@@ -200,14 +200,9 @@ func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns:
 //   - bool: True if streaming is supported.
-func (t *Tool) IsStreaming() bool {
-	return false
-}
-
+//
 // StreamExecute executes the tool in streaming mode.
-//
 // Summary: Executes the tool in streaming mode.
-//
 // Parameters:
 //   - ctx: context.Context. The context for the request.
 //   - req: *ExecutionRequest. The request object containing parameters.
@@ -215,6 +210,16 @@ func (t *Tool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+func (t *Tool) IsStreaming() bool {
+	return false
+}
+
 func (t *Tool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {

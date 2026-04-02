@@ -32,15 +32,8 @@ type Handler interface {
 // It provides a thread-safe mechanism to store and lookup handlers by name.
 //
 // Summary: Thread-safe registry for webhook handlers.
-type Registry struct {
-	mu    sync.RWMutex
-	hooks map[string]Handler
-}
-
 // NewRegistry creates and initializes a new Registry instance.
-//
 // Summary: Creates a new webhook registry.
-//
 // Parameters:
 //   - None.
 //
@@ -49,17 +42,13 @@ type Registry struct {
 //
 // Side Effects:
 //   - Allocates memory for the registry map.
-func NewRegistry() *Registry {
-	return &Registry{
-		hooks: make(map[string]Handler),
-	}
-}
-
+//
+// Errors:
+//   - None.
+//
 // Register registers a handler with a specific name.
 // If a handler with the same name already exists, it will be overwritten.
-//
 // Summary: Registers a webhook handler.
-//
 // Parameters:
 //   - name: string. The name/path to register the handler under.
 //   - handler: Handler. The Handler instance to register.
@@ -70,16 +59,12 @@ func NewRegistry() *Registry {
 //
 // Side Effects:
 //   - Updates the registry map.
-func (r *Registry) Register(name string, handler Handler) {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	r.hooks[name] = handler
-}
-
+//
+// Errors:
+//   - None.
+//
 // Get retrieves a handler by its name.
-//
 // Summary: Retrieves a webhook handler by name.
-//
 // Parameters:
 //   - name: string. The name of the handler to retrieve.
 //
@@ -89,6 +74,26 @@ func (r *Registry) Register(name string, handler Handler) {
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - None.
+type Registry struct {
+	mu    sync.RWMutex
+	hooks map[string]Handler
+}
+
+func NewRegistry() *Registry {
+	return &Registry{
+		hooks: make(map[string]Handler),
+	}
+}
+
+func (r *Registry) Register(name string, handler Handler) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.hooks[name] = handler
+}
+
 func (r *Registry) Get(name string) (Handler, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()

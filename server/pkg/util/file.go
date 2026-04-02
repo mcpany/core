@@ -23,7 +23,7 @@ import (
 //   - [][]byte: A slice of byte slices representing the lines.
 //   - error: An error if the file cannot be opened or read.
 //
-// Throws/Errors:
+// Errors:
 //   - Returns error if file open or seek fails.
 //
 // Side Effects:

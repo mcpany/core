@@ -23,18 +23,38 @@ const (
 // Summary: Implements the Entangled State Broker.
 type ESBMiddleware struct {
 	// Enable/disable the middleware
+	// NewESBMiddleware creates a new instance of the ESBMiddleware.
+	// Parameters:
+	//   - config (*configv1.Middleware): The configuration for the middleware.
+	// Returns:
+	//   - (*ESBMiddleware): The newly created middleware.
+	// Summary: Creates a new ESBMiddleware.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
+	// Execute applies the ESB logic to the incoming MCP request.
+	// It verifies the presence of required headers and injects Temporal Shard Jitter (TSJ).
+	// Parameters:
+	//   - ctx (context.Context): The context of the request.
+	//   - method (string): The MCP method being called.
+	//   - req (mcp.Request): The incoming request.
+	//   - next (mcp.MethodHandler): The next handler in the chain.
+	// Returns:
+	//   - (mcp.Result): The result of the request execution.
+	//   - (error): An error if the request fails validation or execution.
+	// Summary: Executes the ESB middleware logic.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	enabled bool
 }
 
-// NewESBMiddleware creates a new instance of the ESBMiddleware.
-//
-// Parameters:
-//   - config (*configv1.Middleware): The configuration for the middleware.
-//
-// Returns:
-//   - (*ESBMiddleware): The newly created middleware.
-//
-// Summary: Creates a new ESBMiddleware.
 func NewESBMiddleware(config *configv1.Middleware) *ESBMiddleware {
 	enabled := true
 	if config != nil {
@@ -45,20 +65,6 @@ func NewESBMiddleware(config *configv1.Middleware) *ESBMiddleware {
 	}
 }
 
-// Execute applies the ESB logic to the incoming MCP request.
-// It verifies the presence of required headers and injects Temporal Shard Jitter (TSJ).
-//
-// Parameters:
-//   - ctx (context.Context): The context of the request.
-//   - method (string): The MCP method being called.
-//   - req (mcp.Request): The incoming request.
-//   - next (mcp.MethodHandler): The next handler in the chain.
-//
-// Returns:
-//   - (mcp.Result): The result of the request execution.
-//   - (error): An error if the request fails validation or execution.
-//
-// Summary: Executes the ESB middleware logic.
 func (m *ESBMiddleware) Execute(ctx context.Context, method string, req mcp.Request, next mcp.MethodHandler) (mcp.Result, error) {
 	if !m.enabled {
 		return next(ctx, method, req)

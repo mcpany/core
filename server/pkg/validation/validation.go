@@ -2,6 +2,20 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package validation provides validation utilities for config files and other inputs.
+// IsValidBindAddress checks if a given string is a valid bind address.
+// A valid bind address is in the format "host:port".
+// Summary: Validates a bind address string.
+// Parameters:
+//   - s: string. The address string to validate.
+//
+// Returns:
+//   - error: An error if validation fails.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 package validation
 
 import (
@@ -16,16 +30,6 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// IsValidBindAddress checks if a given string is a valid bind address.
-// A valid bind address is in the format "host:port".
-//
-// Summary: Validates a bind address string.
-//
-// Parameters:
-//   - s: string. The address string to validate.
-//
-// Returns:
-//   - error: An error if validation fails.
 func IsValidBindAddress(s string) error {
 	_, port, err := net.SplitHostPort(s)
 	if err != nil {
@@ -130,7 +134,19 @@ var IsSecureRelativePath = func(path string) error {
 	}
 	// Note: We don't check for '\\' on Linux as it is a valid filename character,
 	// although unusual. Blocking it might break valid filenames.
-
+	// SetAllowedPaths sets the list of allowed paths for file operations.
+	// Summary: Sets the global allowed paths list.
+	// Parameters:
+	//   - paths: []string. The list of allowed paths.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	return nil
 }
 
@@ -138,12 +154,6 @@ var (
 	allowedPaths []string
 )
 
-// SetAllowedPaths sets the list of allowed paths for file operations.
-//
-// Summary: Sets the global allowed paths list.
-//
-// Parameters:
-//   - paths: []string. The list of allowed paths.
 func SetAllowedPaths(paths []string) {
 	allowedPaths = paths
 }
@@ -317,6 +327,22 @@ var IsAllowedPath = func(path string) error {
 }
 
 // allowedOpaqueSchemes are schemes that are allowed to not have a host component.
+// IsValidURL checks if a given string is a valid URL. This function performs
+// several checks, including for length, whitespace, the presence of a scheme,
+// and host, considering special cases for schemes like "unix" or "mailto" that
+// do not require a host.
+// Summary: Validates a URL string.
+// Parameters:
+//   - s: string. The URL string.
+//
+// Returns:
+//   - bool: True if valid.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 var allowedOpaqueSchemes = map[string]bool{
 	"dns":         true,
 	"unix":        true,
@@ -326,18 +352,6 @@ var allowedOpaqueSchemes = map[string]bool{
 	"file":        true,
 }
 
-// IsValidURL checks if a given string is a valid URL. This function performs
-// several checks, including for length, whitespace, the presence of a scheme,
-// and host, considering special cases for schemes like "unix" or "mailto" that
-// do not require a host.
-//
-// Summary: Validates a URL string.
-//
-// Parameters:
-//   - s: string. The URL string.
-//
-// Returns:
-//   - bool: True if valid.
 func IsValidURL(s string) bool {
 	if len(s) > 2048 || strings.TrimSpace(s) != s {
 		return false
@@ -376,23 +390,26 @@ func IsValidURL(s string) bool {
 			return false
 		}
 	} else if strings.HasPrefix(u.Host, ":") { // If a host is present, it must not be only a port.
+		// ValidateHTTPServiceDefinition checks the validity of an HttpCallDefinition.
+		// It ensures that the endpoint path is specified and correctly formatted, and
+		// that a valid HTTP method is set.
+		// Summary: Validates an HTTP service definition.
+		// Parameters:
+		//   - def: *configv1.HttpCallDefinition. The definition to validate.
+		// Returns:
+		//   - error: An error if validation fails.
+		//
+		// Errors:
+		//   - None.
+		//
+		// Side Effects:
+		//   - None.
 		return false
 	}
 
 	return true
 }
 
-// ValidateHTTPServiceDefinition checks the validity of an HttpCallDefinition.
-// It ensures that the endpoint path is specified and correctly formatted, and
-// that a valid HTTP method is set.
-//
-// Summary: Validates an HTTP service definition.
-//
-// Parameters:
-//   - def: *configv1.HttpCallDefinition. The definition to validate.
-//
-// Returns:
-//   - error: An error if validation fails.
 func ValidateHTTPServiceDefinition(def *configv1.HttpCallDefinition) error {
 	if def == nil {
 		return fmt.Errorf("http call definition cannot be nil")

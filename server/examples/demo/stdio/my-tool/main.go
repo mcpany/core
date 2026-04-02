@@ -22,7 +22,7 @@ import (
 // Returns:
 //   - None.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 type Request struct {
 	Name string `json:"name"`
@@ -39,7 +39,7 @@ type Request struct {
 // Returns:
 //   - None.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 type Response struct {
 	Message string `json:"message"`

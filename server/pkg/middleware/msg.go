@@ -25,26 +25,25 @@ import (
 // Returns:
 //   - None.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 type MetadataSanitizationGateway struct {
 	config *configv1.MetadataSanitizationConfig
 	// Pre-compiled regular expressions for speed
+	// NewMetadataSanitizationGateway initializes a new gateway instance.
+	// Summary: Creates a new MetadataSanitizationGateway ready for use.
+	// Parameters:
+	//   - cfg (*configv1.MetadataSanitizationConfig): The configuration.
+	// Returns:
+	//   - *MetadataSanitizationGateway: The initialized gateway.
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	imperativeRules []*regexp.Regexp
 }
 
-// NewMetadataSanitizationGateway initializes a new gateway instance.
-//
-// Summary: Creates a new MetadataSanitizationGateway ready for use.
-//
-// Parameters:
-//   - cfg (*configv1.MetadataSanitizationConfig): The configuration.
-//
-// Returns:
-//   - *MetadataSanitizationGateway: The initialized gateway.
-//
-// Throws/Errors:
-//   - None.
 func NewMetadataSanitizationGateway(cfg *configv1.MetadataSanitizationConfig) *MetadataSanitizationGateway {
 	if cfg == nil {
 		cfg = &configv1.MetadataSanitizationConfig{}
@@ -63,6 +62,17 @@ func NewMetadataSanitizationGateway(cfg *configv1.MetadataSanitizationConfig) *M
 		}
 
 		// If no rules are provided, add some default semantic boundaries
+		// Middleware returns an MCP handler that wraps the next handler in the chain.
+		// Summary: Applies the sanitization rules to the incoming request and outgoing response.
+		// Parameters:
+		//   - None.
+		// Returns:
+		//   - mcp.Middleware: The middleware constructor.
+		// Errors:
+		//   - None.
+		//
+		// Side Effects:
+		//   - None.
 		if len(msg.imperativeRules) == 0 {
 			defaultRules := []string{
 				`(?i)\b(ignore previous instructions)\b`,
@@ -82,18 +92,6 @@ func NewMetadataSanitizationGateway(cfg *configv1.MetadataSanitizationConfig) *M
 	return msg
 }
 
-// Middleware returns an MCP handler that wraps the next handler in the chain.
-//
-// Summary: Applies the sanitization rules to the incoming request and outgoing response.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - mcp.Middleware: The middleware constructor.
-//
-// Throws/Errors:
-//   - None.
 func (m *MetadataSanitizationGateway) Middleware() func(mcp.MethodHandler) mcp.MethodHandler {
 	if !m.config.Enabled {
 		return noOpMiddleware

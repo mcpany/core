@@ -78,17 +78,11 @@ func (e *ActionableError) Error() string {
 //
 // Side Effects:
 //   - None.
-func (e *ActionableError) Unwrap() error {
-	return e.Err
-}
-
+//
 // WrapActionableError wraps an error with context, preserving ActionableError semantics if present.
-//
 // Summary: Wraps an error with context, preserving ActionableError semantics.
-//
 // If the cause is an ActionableError, it returns a new ActionableError with the context added to the error message.
 // Otherwise, it returns a standard wrapped error.
-//
 // Parameters:
 //   - context (string): The context message to prefix to the error.
 //   - err (error): The error to wrap.
@@ -98,6 +92,13 @@ func (e *ActionableError) Unwrap() error {
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - None.
+func (e *ActionableError) Unwrap() error {
+	return e.Err
+}
+
 func WrapActionableError(context string, err error) error {
 	if err == nil {
 		return nil

@@ -44,33 +44,42 @@ type RateLimitMiddleware struct {
 // Option defines a functional option for RateLimitMiddleware.
 //
 // Summary: Functional option for RateLimitMiddleware.
-type Option func(*RateLimitMiddleware)
-
 // WithTokenizer sets a custom tokenizer for the middleware.
-//
 // Summary: Configures a custom tokenizer.
-//
 // Parameters:
 //   - t (tokenizer.Tokenizer): The tokenizer to use.
 //
 // Returns:
 //   - (Option): The configured option.
-func WithTokenizer(t tokenizer.Tokenizer) Option {
-	return func(m *RateLimitMiddleware) {
-		m.tokenizer = t
-	}
-}
-
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
 // NewRateLimitMiddleware creates a new RateLimitMiddleware.
-//
 // Summary: Initializes the rate limit middleware.
-//
 // Parameters:
 //   - toolManager (tool.ManagerInterface): The tool manager.
 //   - opts (...Option): Optional configuration settings.
 //
 // Returns:
 //   - (*RateLimitMiddleware): The initialized middleware.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+type Option func(*RateLimitMiddleware)
+
+func WithTokenizer(t tokenizer.Tokenizer) Option {
+	return func(m *RateLimitMiddleware) {
+		m.tokenizer = t
+	}
+}
+
 func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *RateLimitMiddleware {
 	m := &RateLimitMiddleware{
 		toolManager: toolManager,
@@ -82,6 +91,21 @@ func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *
 	m.strategies[configv1.RateLimitConfig_STORAGE_MEMORY] = NewLocalStrategy()
 	// Redis strategy requires a client provider or we can use the default one if it manages clients internally.
 	// For now, let's assume we want to use the one that manages clients.
+	// Execute executes the rate limiting middleware.
+	// Summary: Executes rate limiting logic before passing to the next handler.
+	// Parameters:
+	//   - ctx (context.Context): The context for the request.
+	//   - req (*tool.ExecutionRequest): The execution request.
+	//   - next (tool.ExecutionFunc): The next handler.
+	// Returns:
+	//   - (any): The result of the execution.
+	//   - (error): An error if the limit is exceeded or the operation fails.
+	// Side Effects:
+	//   - Checks against rate limits in memory or Redis.
+	//   - Increments counters.
+	//
+	// Errors:
+	//   - None.
 	m.strategies[configv1.RateLimitConfig_STORAGE_REDIS] = NewRedisStrategy()
 
 	for _, opt := range opts {
@@ -93,22 +117,6 @@ func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *
 	return m
 }
 
-// Execute executes the rate limiting middleware.
-//
-// Summary: Executes rate limiting logic before passing to the next handler.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The execution request.
-//   - next (tool.ExecutionFunc): The next handler.
-//
-// Returns:
-//   - (any): The result of the execution.
-//   - (error): An error if the limit is exceeded or the operation fails.
-//
-// Side Effects:
-//   - Checks against rate limits in memory or Redis.
-//   - Increments counters.
 func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

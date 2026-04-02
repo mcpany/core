@@ -38,48 +38,37 @@ type DoctorReport struct {
 // Doctor is the health check handler.
 //
 // Summary: Registry and handler for system health checks (Doctor).
-type Doctor struct {
-	checks     map[string]CheckFunc
-	mu         sync.RWMutex
-	httpClient *http.Client
-}
-
 // NewDoctor creates a new Doctor.
-//
 // Summary: Initializes a new Doctor instance.
-//
 // Returns:
 //   - *Doctor: The initialized doctor registry.
 //
 // Side Effects:
 //   - Initializes internal maps and HTTP client.
-func NewDoctor() *Doctor {
-	return &Doctor{
-		checks:     make(map[string]CheckFunc),
-		httpClient: http.DefaultClient,
-	}
-}
-
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
 // AddCheck adds a named health check.
-//
 // Summary: Registers a custom health check function.
-//
 // Parameters:
 //   - name: string. The unique name of the check.
 //   - check: CheckFunc. The function to execute.
 //
 // Side Effects:
 //   - Updates the internal checks map.
-func (d *Doctor) AddCheck(name string, check CheckFunc) {
-	d.mu.Lock()
-	defer d.mu.Unlock()
-	d.checks[name] = check
-}
-
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
 // Handler returns the http handler.
-//
 // Summary: Returns an HTTP handler that runs all checks and returns a JSON report.
-//
 // Returns:
 //   - http.HandlerFunc: The HTTP handler.
 //
@@ -88,6 +77,31 @@ func (d *Doctor) AddCheck(name string, check CheckFunc) {
 //   - Makes an external network call to google.com (connectivity check).
 //   - Reads environment variables (Auth checks).
 //   - Writes JSON response to the client.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+type Doctor struct {
+	checks     map[string]CheckFunc
+	mu         sync.RWMutex
+	httpClient *http.Client
+}
+
+func NewDoctor() *Doctor {
+	return &Doctor{
+		checks:     make(map[string]CheckFunc),
+		httpClient: http.DefaultClient,
+	}
+}
+
+func (d *Doctor) AddCheck(name string, check CheckFunc) {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	d.checks[name] = check
+}
+
 func (d *Doctor) Handler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		report := DoctorReport{

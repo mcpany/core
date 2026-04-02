@@ -19,6 +19,63 @@ import (
 // defined statically in the configuration (e.g. pointing to a URL).
 //
 // Summary: Represents a StaticResource.
+// NewStaticResource creates a new instance of StaticResource.
+// Summary: Initializes a static resource.
+// Parameters:
+//   - def: *configv1.ResourceDefinition. The resource definition.
+//   - serviceID: string. The ID of the service owning the resource.
+//
+// Returns:
+//   - *StaticResource: The initialized static resource.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Resource returns the MCP representation of the resource.
+// Summary: Retrieves the MCP resource metadata.
+// Returns:
+//   - *mcp.Resource: The MCP resource definition.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Service returns the ID of the service that provides this resource.
+// Summary: Retrieves the service ID.
+// Returns:
+//   - string: The service ID.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Read retrieves the content of the resource by fetching the URI.
+// Summary: Fetches the resource content.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//
+// Returns:
+//   - *mcp.ReadResourceResult: The resource content.
+//   - error: An error if fetching fails.
+//
+// Side Effects:
+//   - Performs an HTTP GET request to the resource URI (if not inline content).
+//
+// Errors:
+//   - None.
 type StaticResource struct {
 	resource      *mcp.Resource
 	serviceID     string
@@ -26,16 +83,6 @@ type StaticResource struct {
 	staticContent *configv1.StaticResource
 }
 
-// NewStaticResource creates a new instance of StaticResource.
-//
-// Summary: Initializes a static resource.
-//
-// Parameters:
-//   - def: *configv1.ResourceDefinition. The resource definition.
-//   - serviceID: string. The ID of the service owning the resource.
-//
-// Returns:
-//   - *StaticResource: The initialized static resource.
 func NewStaticResource(def *configv1.ResourceDefinition, serviceID string) *StaticResource {
 	return &StaticResource{
 		resource: &mcp.Resource{
@@ -51,39 +98,14 @@ func NewStaticResource(def *configv1.ResourceDefinition, serviceID string) *Stat
 	}
 }
 
-// Resource returns the MCP representation of the resource.
-//
-// Summary: Retrieves the MCP resource metadata.
-//
-// Returns:
-//   - *mcp.Resource: The MCP resource definition.
 func (r *StaticResource) Resource() *mcp.Resource {
 	return r.resource
 }
 
-// Service returns the ID of the service that provides this resource.
-//
-// Summary: Retrieves the service ID.
-//
-// Returns:
-//   - string: The service ID.
 func (r *StaticResource) Service() string {
 	return r.serviceID
 }
 
-// Read retrieves the content of the resource by fetching the URI.
-//
-// Summary: Fetches the resource content.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the request.
-//
-// Returns:
-//   - *mcp.ReadResourceResult: The resource content.
-//   - error: An error if fetching fails.
-//
-// Side Effects:
-//   - Performs an HTTP GET request to the resource URI (if not inline content).
 func (r *StaticResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
 	if r.staticContent != nil {
 		var blob []byte
@@ -137,6 +159,18 @@ func (r *StaticResource) Read(ctx context.Context) (*mcp.ReadResourceResult, err
 		reader = resp.Body
 	} else {
 		// Read up to limit + 1 to detect if the resource exceeds the limit
+		// Subscribe is not yet implemented for static resources.
+		// Summary: Subscribes to resource updates (Not Implemented).
+		// Parameters:
+		//   - _: context.Context. Unused.
+		// Returns:
+		//   - error: Always returns an error indicating not implemented.
+		//
+		// Errors:
+		//   - None.
+		//
+		// Side Effects:
+		//   - None.
 		reader = io.LimitReader(resp.Body, limit+1)
 	}
 
@@ -165,15 +199,6 @@ func (r *StaticResource) Read(ctx context.Context) (*mcp.ReadResourceResult, err
 	}, nil
 }
 
-// Subscribe is not yet implemented for static resources.
-//
-// Summary: Subscribes to resource updates (Not Implemented).
-//
-// Parameters:
-//   - _: context.Context. Unused.
-//
-// Returns:
-//   - error: Always returns an error indicating not implemented.
 func (r *StaticResource) Subscribe(_ context.Context) error {
 	return fmt.Errorf("subscribing to static resources is not yet implemented")
 }

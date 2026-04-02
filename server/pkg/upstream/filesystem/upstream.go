@@ -233,6 +233,20 @@ func (u *Upstream) Register(
 		callable := &fsCallable{handler: handler}
 
 		// Create a callable tool
+		// Call executes the filesystem tool with the provided request arguments.
+		// Summary: Executes a filesystem tool.
+		// Parameters:
+		//   - ctx: context.Context. The execution context.
+		//   - req: *tool.ExecutionRequest. The request containing arguments.
+		// Returns:
+		//   - any: The result of the execution.
+		//   - error: An error if execution fails.
+		//
+		// Errors:
+		//   - None.
+		//
+		// Side Effects:
+		//   - None.
 		callableTool, err := tool.NewCallableTool(toolDef, serviceConfig, callable, inputSchema, outputSchema)
 		if err != nil {
 			log.Error("Failed to create callable tool", "tool", toolName, "error", err)
@@ -255,17 +269,6 @@ type fsCallable struct {
 	handler func(ctx context.Context, args map[string]interface{}) (map[string]interface{}, error)
 }
 
-// Call executes the filesystem tool with the provided request arguments.
-//
-// Summary: Executes a filesystem tool.
-//
-// Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *tool.ExecutionRequest. The request containing arguments.
-//
-// Returns:
-//   - any: The result of the execution.
-//   - error: An error if execution fails.
 func (c *fsCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	args := req.Arguments
 	if args == nil && len(req.ToolInputs) > 0 {

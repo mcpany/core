@@ -26,13 +26,9 @@ const KindPostCall = "PostCall"
 // It processes incoming CloudEvents containing HTML and returns the converted Markdown.
 //
 // Summary: Webhook handler for Markdown conversion.
-type MarkdownHandler struct{}
-
 // Handle processes the markdown conversion request.
 // It expects a CloudEvent with "inputs" or "result" fields containing HTML strings or structures.
-//
 // Summary: Handles the markdown conversion request.
-//
 // Parameters:
 //   - w: http.ResponseWriter. The HTTP response writer.
 //   - r: *http.Request. The HTTP request.
@@ -43,6 +39,11 @@ type MarkdownHandler struct{}
 //
 // Side Effects:
 //   - Writes the converted Markdown to the response.
+//
+// Errors:
+//   - None.
+type MarkdownHandler struct{}
+
 func (h *MarkdownHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -100,12 +101,8 @@ func (h *MarkdownHandler) Handle(w http.ResponseWriter, r *http.Request) {
 // The maximum characters can be specified via the "max_chars" query parameter (default 100).
 //
 // Summary: Webhook handler for text truncation.
-type TruncateHandler struct{}
-
 // Handle processes the text truncation request.
-//
 // Summary: Handles the text truncation request.
-//
 // Parameters:
 //   - w: http.ResponseWriter. The HTTP response writer.
 //   - r: *http.Request. The HTTP request.
@@ -116,6 +113,11 @@ type TruncateHandler struct{}
 //
 // Side Effects:
 //   - Writes the truncated text to the response.
+//
+// Errors:
+//   - None.
+type TruncateHandler struct{}
+
 func (h *TruncateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -179,12 +181,8 @@ func (h *TruncateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 // The page size can be specified via the "page_size" query parameter (default 1000).
 //
 // Summary: Webhook handler for pagination.
-type PaginateHandler struct{}
-
 // Handle processes the pagination request.
-//
 // Summary: Handles the pagination request.
-//
 // Parameters:
 //   - w: http.ResponseWriter. The HTTP response writer.
 //   - r: *http.Request. The HTTP request.
@@ -195,6 +193,11 @@ type PaginateHandler struct{}
 //
 // Side Effects:
 //   - Writes the paginated content to the response.
+//
+// Errors:
+//   - None.
+type PaginateHandler struct{}
+
 func (h *PaginateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)

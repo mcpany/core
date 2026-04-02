@@ -17,40 +17,42 @@ import (
 type ResilienceMiddleware struct {
 	toolManager tool.ManagerInterface
 	managers    sync.Map // map[string]*resilience.Manager (serviceID -> Manager)
+	// NewResilienceMiddleware creates a new ResilienceMiddleware.
+	// Summary: Initializes the ResilienceMiddleware with a tool manager.
+	// Parameters:
+	//   - toolManager: tool.ManagerInterface. The manager for retrieving tool and service information.
+	// Returns:
+	//   - *ResilienceMiddleware: The initialized middleware.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
+	// Execute executes the resilience middleware.
+	// Summary: Executes the tool call within a resilience wrapper (circuit breaker, retry).
+	// Parameters:
+	//   - ctx: context.Context. The execution context.
+	//   - req: *tool.ExecutionRequest. The tool execution request.
+	//   - next: tool.ExecutionFunc. The next handler in the chain.
+	// Returns:
+	//   - any: The execution result.
+	//   - error: An error if the execution or resilience policy fails.
+	// Side Effects:
+	//   - Checks circuit breaker state.
+	//   - May retry the execution on failure.
+	//   - Records success/failure to update circuit breaker stats.
+	//
+	// Errors:
+	//   - None.
 }
 
-// NewResilienceMiddleware creates a new ResilienceMiddleware.
-//
-// Summary: Initializes the ResilienceMiddleware with a tool manager.
-//
-// Parameters:
-//   - toolManager: tool.ManagerInterface. The manager for retrieving tool and service information.
-//
-// Returns:
-//   - *ResilienceMiddleware: The initialized middleware.
 func NewResilienceMiddleware(toolManager tool.ManagerInterface) *ResilienceMiddleware {
 	return &ResilienceMiddleware{
 		toolManager: toolManager,
 	}
 }
 
-// Execute executes the resilience middleware.
-//
-// Summary: Executes the tool call within a resilience wrapper (circuit breaker, retry).
-//
-// Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *tool.ExecutionRequest. The tool execution request.
-//   - next: tool.ExecutionFunc. The next handler in the chain.
-//
-// Returns:
-//   - any: The execution result.
-//   - error: An error if the execution or resilience policy fails.
-//
-// Side Effects:
-//   - Checks circuit breaker state.
-//   - May retry the execution on failure.
-//   - Records success/failure to update circuit breaker stats.
 func (m *ResilienceMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

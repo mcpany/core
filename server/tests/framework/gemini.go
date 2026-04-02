@@ -19,20 +19,102 @@ import (
 const DefaultModel = "gemini-2.5-flash"
 
 // GeminiCLI handles interactions with the Gemini CLI tool for testing.
+// NewGeminiCLI creates a new GeminiCLI instance.
+// t is the t.
+// Returns the result.
+//
+// Summary: NewGeminiCLI provides functionality.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Install installs the Gemini CLI tool.
+//
+// Summary: Install provides functionality.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// AddMCP adds an MCP server to the Gemini CLI configuration.
+// name is the name of the resource.
+// endpoint is the endpoint.
+//
+// Summary: AddMCP provides functionality.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// RemoveMCP removes an MCP server from the Gemini CLI configuration.
+// name is the name of the resource.
+//
+// Summary: RemoveMCP provides functionality.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Run executes a prompt against the Gemini CLI using the provided API key.
+// apiKey is the apiKey.
+// prompt is the prompt.
+// Returns the result.
+// Returns an error if the operation fails.
+//
+// Summary: Run provides functionality.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type GeminiCLI struct {
 	t *testing.T
 }
 
-// NewGeminiCLI creates a new GeminiCLI instance.
-//
-// t is the t.
-//
-// Returns the result.
 func NewGeminiCLI(t *testing.T) *GeminiCLI {
 	return &GeminiCLI{t: t}
 }
 
-// Install installs the Gemini CLI tool.
 func (g *GeminiCLI) Install() {
 	g.t.Helper()
 	root, err := integration.GetProjectRoot()
@@ -51,10 +133,6 @@ func (g *GeminiCLI) geminiCommand(args ...string) *exec.Cmd {
 	return exec.CommandContext(context.Background(), geminiPath, args...)
 }
 
-// AddMCP adds an MCP server to the Gemini CLI configuration.
-//
-// name is the name of the resource.
-// endpoint is the endpoint.
 func (g *GeminiCLI) AddMCP(name, endpoint string) {
 	g.t.Helper()
 	cmd := g.geminiCommand("mcp", "add", "--transport", "http", name, endpoint)
@@ -62,9 +140,6 @@ func (g *GeminiCLI) AddMCP(name, endpoint string) {
 	require.NoError(g.t, err, "failed to configure gemini-cli")
 }
 
-// RemoveMCP removes an MCP server from the Gemini CLI configuration.
-//
-// name is the name of the resource.
 func (g *GeminiCLI) RemoveMCP(name string) {
 	g.t.Helper()
 	cmd := g.geminiCommand("mcp", "remove", name)
@@ -74,13 +149,6 @@ func (g *GeminiCLI) RemoveMCP(name string) {
 	}
 }
 
-// Run executes a prompt against the Gemini CLI using the provided API key.
-//
-// apiKey is the apiKey.
-// prompt is the prompt.
-//
-// Returns the result.
-// Returns an error if the operation fails.
 func (g *GeminiCLI) Run(apiKey, prompt string) (string, error) {
 	g.t.Helper()
 	var outputBuffer strings.Builder

@@ -23,7 +23,7 @@ import (
 // Returns:
 //   - None.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 type WebhookRequest struct {
 	Kind     int            `json:"kind"` // 1=PreCall, 2=PostCall
@@ -41,7 +41,7 @@ type WebhookRequest struct {
 // Returns:
 //   - None.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 type WebhookResponse struct {
 	ReplacementObject any `json:"replacement_object,omitempty"`
@@ -147,6 +147,6 @@ func convertHandler(w http.ResponseWriter, r *http.Request) {
 // Returns:
 //   - None.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 const StatusOK = 200

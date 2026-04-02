@@ -17,14 +17,8 @@ import (
 // DB wraps the sql.DB connection.
 //
 // Summary: Represents a DB.
-type DB struct {
-	*sql.DB
-}
-
 // NewDB opens or creates a SQLite database at the specified path.
-//
 // Summary: Initializes a SQLite database connection.
-//
 // Parameters:
 //   - path (string): The file path to the SQLite database.
 //
@@ -35,6 +29,13 @@ type DB struct {
 // Side Effects:
 //   - Creates the database file and directories if they don't exist.
 //   - Initializes the database schema.
+//
+// Errors:
+//   - None.
+type DB struct {
+	*sql.DB
+}
+
 func NewDB(path string) (*DB, error) {
 	if err := os.MkdirAll(filepath.Dir(path), 0750); err != nil {
 		return nil, fmt.Errorf("failed to create db directory: %w", err)

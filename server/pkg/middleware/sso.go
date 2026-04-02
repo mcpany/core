@@ -1,21 +1,7 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package middleware
-
-import (
-	"encoding/json"
-	"net/http"
-	"strings"
-	"time"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-)
-
 // SSOMiddleware creates a new SSO middleware.
-//
 // Summary: Middleware that enforces SSO authentication via trusted proxy headers or IDP bearer tokens.
-//
 // Parameters:
 //   - config: *configv1.SSOConfig. The configuration settings for SSO.
 //
@@ -27,6 +13,20 @@ import (
 //   - Calls IDP /userinfo endpoint to validate bearer tokens.
 //   - Aborts the request with 401 Unauthorized if authentication is missing or invalid.
 //   - Sets "X-User-ID" header on the request on successful authentication for downstream handlers.
+//
+// Errors:
+//   - None.
+package middleware
+
+import (
+	"encoding/json"
+	"net/http"
+	"strings"
+	"time"
+
+	configv1 "github.com/mcpany/core/proto/config/v1"
+)
+
 func SSOMiddleware(config *configv1.SSOConfig) func(http.Handler) http.Handler {
 	// Reusable HTTP client for IDP requests
 	client := &http.Client{

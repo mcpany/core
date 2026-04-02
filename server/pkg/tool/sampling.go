@@ -43,67 +43,84 @@ type Session interface {
 // Sampler is an alias for Session for backward compatibility.
 //
 // Summary: Represents a Sampler.
-type Sampler = Session
-
-type sessionContextKey struct{}
-
 // NewContextWithSession creates a new context with the given Session.
-//
 // Summary: Injects Session into context.
-//
 // Parameters:
 //   - ctx: context.Context. The parent context.
 //   - s: Session. The session to inject.
 //
 // Returns:
 //   - context.Context: The new context.
-func NewContextWithSession(ctx context.Context, s Session) context.Context {
-	return context.WithValue(ctx, sessionContextKey{}, s)
-}
-
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
 // GetSession retrieves the Session from the context.
-//
 // Summary: Retrieves Session from context.
-//
 // Parameters:
 //   - ctx: context.Context. The context.
 //
 // Returns:
 //   - Session: The session if found.
 //   - bool: True if the session exists.
-func GetSession(ctx context.Context) (Session, bool) {
-	s, ok := ctx.Value(sessionContextKey{}).(Session)
-	return s, ok
-}
-
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
 // NewContextWithSampler creates a new context with the given Sampler.
-//
 // Summary: Injects Sampler into context.
-//
 // Deprecated: Use NewContextWithSession instead.
-//
 // Parameters:
 //   - ctx: context.Context. The parent context.
 //   - s: Sampler. The sampler to inject.
 //
 // Returns:
 //   - context.Context: The new context.
-func NewContextWithSampler(ctx context.Context, s Sampler) context.Context {
-	return NewContextWithSession(ctx, s)
-}
-
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
 // GetSampler retrieves the Sampler from the context.
-//
 // Summary: Retrieves Sampler from context.
-//
 // Deprecated: Use GetSession instead.
-//
 // Parameters:
 //   - ctx: context.Context. The context.
 //
 // Returns:
 //   - Sampler: The sampler if found.
 //   - bool: True if the sampler exists.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+type Sampler = Session
+
+type sessionContextKey struct{}
+
+func NewContextWithSession(ctx context.Context, s Session) context.Context {
+	return context.WithValue(ctx, sessionContextKey{}, s)
+}
+
+func GetSession(ctx context.Context) (Session, bool) {
+	s, ok := ctx.Value(sessionContextKey{}).(Session)
+	return s, ok
+}
+
+func NewContextWithSampler(ctx context.Context, s Sampler) context.Context {
+	return NewContextWithSession(ctx, s)
+}
+
 func GetSampler(ctx context.Context) (Sampler, bool) {
 	return GetSession(ctx)
 }

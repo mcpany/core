@@ -49,6 +49,21 @@ type Bus[T any] struct {
 //
 // Side Effects:
 //   - None.
+//
+// Close closes the NATS bus connection and shuts down the embedded server if applicable.
+// Summary: Closes the NATS connection.
+// Returns:
+//
+//	None.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func New[T any](config *bus.NatsBus) (*Bus[T], error) {
 	var s *server.Server
 	if config.GetServerUrl() == "" {
@@ -75,13 +90,6 @@ func New[T any](config *bus.NatsBus) (*Bus[T], error) {
 	}, nil
 }
 
-// Close closes the NATS bus connection and shuts down the embedded server if applicable.
-//
-// Summary: Closes the NATS connection.
-//
-// Returns:
-//
-//	None.
 func (b *Bus[T]) Close() {
 	if b.nc != nil {
 		b.nc.Close()

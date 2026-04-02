@@ -1,6 +1,38 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// StartMockServer starts a new mock server with the provided handler.
+// The caller is responsible for calling Close() on the returned server.
+//
+// Summary: StartMockServer provides functionality.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// DefaultMockHandler provides a simple way to define responses for specific paths.
+// It maps path -> response body (string or bytes).
+//
+// Summary: DefaultMockHandler provides functionality.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 package integration
 
 import (
@@ -10,8 +42,6 @@ import (
 	"testing"
 )
 
-// StartMockServer starts a new mock server with the provided handler.
-// The caller is responsible for calling Close() on the returned server.
 func StartMockServer(t *testing.T, handler http.Handler) *httptest.Server {
 	t.Helper()
 	server := httptest.NewServer(handler)
@@ -19,8 +49,6 @@ func StartMockServer(t *testing.T, handler http.Handler) *httptest.Server {
 	return server
 }
 
-// DefaultMockHandler provides a simple way to define responses for specific paths.
-// It maps path -> response body (string or bytes).
 func DefaultMockHandler(t *testing.T, responses map[string]string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		bodyBytes, _ := io.ReadAll(r.Body)
@@ -35,6 +63,21 @@ func DefaultMockHandler(t *testing.T, responses map[string]string) http.Handler 
 		}
 
 		// Fallback to check path only match
+		// CreateMockServerWithResponses is a convenience function to start a server with static responses.
+		//
+		// Summary: CreateMockServerWithResponses provides functionality.
+		//
+		// Parameters:
+		//   - None.
+		//
+		// Returns:
+		//   - None.
+		//
+		// Errors:
+		//   - None.
+		//
+		// Side Effects:
+		//   - None.
 		if body, ok := responses[r.URL.Path]; ok {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
@@ -47,7 +90,6 @@ func DefaultMockHandler(t *testing.T, responses map[string]string) http.Handler 
 	})
 }
 
-// CreateMockServerWithResponses is a convenience function to start a server with static responses.
 func CreateMockServerWithResponses(t *testing.T, responses map[string]string) *httptest.Server {
 	return StartMockServer(t, DefaultMockHandler(t, responses))
 }

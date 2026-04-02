@@ -19,20 +19,47 @@ import (
 const DefaultClaudeModel = "claude-3-5-sonnet-latest"
 
 // ClaudeCLI handles interactions with the Claude CLI tool for testing.
+// NewClaudeCLI creates a new ClaudeCLI instance.
+// t is the t.
+// Returns the result.
+//
+// Summary: NewClaudeCLI provides functionality.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// Install installs the Claude CLI tool.
+//
+// Summary: Install provides functionality.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ClaudeCLI struct {
 	t *testing.T
 }
 
-// NewClaudeCLI creates a new ClaudeCLI instance.
-//
-// t is the t.
-//
-// Returns the result.
 func NewClaudeCLI(t *testing.T) *ClaudeCLI {
 	return &ClaudeCLI{t: t}
 }
 
-// Install installs the Claude CLI tool.
 func (c *ClaudeCLI) Install() {
 	c.t.Helper()
 	root, err := integration.GetProjectRoot()
@@ -48,14 +75,27 @@ func (c *ClaudeCLI) claudeCommand(args ...string) *exec.Cmd {
 	root, err := integration.GetProjectRoot()
 	require.NoError(c.t, err)
 	// Assuming the binary is 'claude'
+	// AddMCP adds an MCP server to the Claude CLI configuration.
+	// name is the name of the resource.
+	// endpoint is the endpoint.
+	//
+	// Summary: AddMCP provides functionality.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	claudePath := filepath.Join(root, "tests", "integration", "upstream", "node_modules", ".bin", "claude")
 	return exec.CommandContext(context.Background(), claudePath, args...)
 }
 
-// AddMCP adds an MCP server to the Claude CLI configuration.
-//
-// name is the name of the resource.
-// endpoint is the endpoint.
 func (c *ClaudeCLI) AddMCP(name, endpoint string) {
 	c.t.Helper()
 
@@ -63,6 +103,41 @@ func (c *ClaudeCLI) AddMCP(name, endpoint string) {
 	args = append(args, "mcp", "add")
 
 	// Check if endpoint is HTTP
+	// RemoveMCP removes an MCP server from the Claude CLI configuration.
+	// name is the name of the resource.
+	//
+	// Summary: RemoveMCP provides functionality.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
+	// Run executes a prompt against the Claude CLI.
+	// apiKey is the apiKey.
+	// prompt is the prompt.
+	// Returns the result.
+	// Returns an error if the operation fails.
+	//
+	// Summary: Run provides functionality.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	if strings.HasPrefix(endpoint, "http") {
 		args = append(args, "--transport", "http")
 	}
@@ -74,9 +149,6 @@ func (c *ClaudeCLI) AddMCP(name, endpoint string) {
 	require.NoError(c.t, err, "failed to configure claude-cli")
 }
 
-// RemoveMCP removes an MCP server from the Claude CLI configuration.
-//
-// name is the name of the resource.
 func (c *ClaudeCLI) RemoveMCP(name string) {
 	c.t.Helper()
 	cmd := c.claudeCommand("mcp", "remove", name)
@@ -86,13 +158,6 @@ func (c *ClaudeCLI) RemoveMCP(name string) {
 	}
 }
 
-// Run executes a prompt against the Claude CLI.
-//
-// apiKey is the apiKey.
-// prompt is the prompt.
-//
-// Returns the result.
-// Returns an error if the operation fails.
 func (c *ClaudeCLI) Run(apiKey, prompt string) (string, error) {
 	c.t.Helper()
 	var outputBuffer strings.Builder

@@ -15,7 +15,7 @@ import (
 // Returns:
 //   - None.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:
@@ -35,7 +35,7 @@ type AutoGenAdapter struct {
 // Returns:
 //   - *AutoGenAdapter: A newly created pointer to an AutoGenAdapter instance.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:
@@ -60,7 +60,7 @@ func NewAutoGenAdapter() *AutoGenAdapter {
 // Returns:
 //   - string: The name "AutoGen".
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:
@@ -81,7 +81,7 @@ func (a *AutoGenAdapter) Name() string {
 //   - *TaskResult: Contains the status, output, and telemetry information from the subagent.
 //   - error: Indicates failure in executing the task or an unsupported intent.
 //
-// Throws/Errors:
+// Errors:
 //   - Returns "AutoGen does not support capability" if the task's intent is missing from capabilities.
 //
 // Side Effects:
@@ -129,7 +129,7 @@ func (a *AutoGenAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResul
 // Returns:
 //   - bool: Indicates whether the given capability is supported.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:
@@ -149,7 +149,7 @@ func (a *AutoGenAdapter) SupportsCapability(capability string) bool {
 // Returns:
 //   - error: An error if the signature is invalid.
 //
-// Throws/Errors:
+// Errors:
 //   - Returns an error if the shard signature verification fails.
 //
 // Side Effects:
@@ -175,7 +175,7 @@ func (a *AutoGenAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard
 //   - <-chan *TaskResult: A read-only channel emitting streamed chunks.
 //   - error: Indicates failure in executing the task or an unsupported intent.
 //
-// Throws/Errors:
+// Errors:
 //   - Returns an error if the framework's capability check fails for the task's intent.
 //
 // Side Effects:

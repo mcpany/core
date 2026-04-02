@@ -16,17 +16,8 @@ import (
 // OpenAIEmbeddingProvider implements EmbeddingProvider for OpenAI.
 //
 // Summary: Provides vector embeddings using the OpenAI API.
-type OpenAIEmbeddingProvider struct {
-	apiKey  string
-	model   string
-	baseURL string
-	client  *http.Client
-}
-
 // NewOpenAIEmbeddingProvider creates a new OpenAIEmbeddingProvider.
-//
 // Summary: Initializes a new OpenAIEmbeddingProvider with the given API key and model.
-//
 // Parameters:
 //   - apiKey: string. The OpenAI API key.
 //   - model: string. The model ID (defaults to "text-embedding-3-small" if empty).
@@ -37,6 +28,16 @@ type OpenAIEmbeddingProvider struct {
 // Side Effects:
 //   - Sets a default model and base URL.
 //   - Initializes an HTTP client with a timeout.
+//
+// Errors:
+//   - None.
+type OpenAIEmbeddingProvider struct {
+	apiKey  string
+	model   string
+	baseURL string
+	client  *http.Client
+}
+
 func NewOpenAIEmbeddingProvider(apiKey, model string) *OpenAIEmbeddingProvider {
 	if model == "" {
 		model = "text-embedding-3-small"

@@ -29,29 +29,22 @@ type DMRHubConfig struct {
 // physical nodes upon subagent failure.
 //
 // Summary: Represents the DMR Hub middleware.
-type DMRHub struct {
-	config DMRHubConfig
-}
-
 // NewDMRHub creates a new DMRHub middleware instance.
-//
 // Summary: Creates a new Dynamic Mesh Resilience Hub instance.
-//
 // Parameters:
 //   - config (DMRHubConfig): The configuration settings.
 //
 // Returns:
 //   - *DMRHub: The resulting DMR Hub instance.
-func NewDMRHub(config DMRHubConfig) *DMRHub {
-	return &DMRHub{
-		config: config,
-	}
-}
-
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
 // Execute enforces state migration proofs before proceeding to the next handler.
-//
 // Summary: Executes the node status and ZKSA proof checks.
-//
 // Parameters:
 //   - ctx (context.Context): The execution context.
 //   - req (*tool.ExecutionRequest): The tool execution request.
@@ -60,6 +53,22 @@ func NewDMRHub(config DMRHubConfig) *DMRHub {
 // Returns:
 //   - any: The execution result if allowed.
 //   - error: An error if the migration proof is invalid or missing during failure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+type DMRHub struct {
+	config DMRHubConfig
+}
+
+func NewDMRHub(config DMRHubConfig) *DMRHub {
+	return &DMRHub{
+		config: config,
+	}
+}
+
 func (h *DMRHub) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	if !h.config.Enabled {
 		return next(ctx, req)

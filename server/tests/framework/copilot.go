@@ -32,25 +32,51 @@ type MCPServerConfig struct {
 }
 
 // MCPConfig defines the configuration file structure.
+// NewCopilotCLI creates a new CopilotCLI instance.
+// t is the t.
+// Returns the result.
+//
+// Summary: NewCopilotCLI provides functionality.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type MCPConfig struct {
 	MCPServers map[string]MCPServerConfig `json:"mcpServers"`
 }
 
-// NewCopilotCLI creates a new CopilotCLI instance.
-//
-// t is the t.
-//
-// Returns the result.
 func NewCopilotCLI(t *testing.T) *CopilotCLI {
 	tempDir := t.TempDir()
 	return &CopilotCLI{
 		t:         t,
 		configDir: tempDir, // Use a temp dir for XDG_CONFIG_HOME
-		servers:   make(map[string]MCPServerConfig),
+		// Install installs the Copilot CLI tool.
+		//
+		// Summary: Install provides functionality.
+		//
+		// Parameters:
+		//   - None.
+		//
+		// Returns:
+		//   - None.
+		//
+		// Errors:
+		//   - None.
+		//
+		// Side Effects:
+		//   - None.
+		servers: make(map[string]MCPServerConfig),
 	}
 }
 
-// Install installs the Copilot CLI tool.
 func (c *CopilotCLI) Install() {
 	c.t.Helper()
 	root, err := integration.GetProjectRoot()
@@ -69,14 +95,27 @@ func (c *CopilotCLI) copilotCommand(args ...string) *exec.Cmd {
 	// We need to be careful with the binary name.
 	// The search result said 'npm install -g @github/copilot' and the binary might be 'github-copilot-cli'.
 	// We'll trust the package.json dependency.
+	// AddMCP adds an MCP server to the Copilot CLI configuration by writing to mcp-config.json.
+	// name is the name of the resource.
+	// endpoint is the endpoint.
+	//
+	// Summary: AddMCP provides functionality.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	copilotPath := filepath.Join(root, "tests", "integration", "upstream", "node_modules", ".bin", "github-copilot-cli")
 	return exec.CommandContext(context.Background(), copilotPath, args...)
 }
 
-// AddMCP adds an MCP server to the Copilot CLI configuration by writing to mcp-config.json.
-//
-// name is the name of the resource.
-// endpoint is the endpoint.
 func (c *CopilotCLI) AddMCP(name, endpoint string) {
 	c.t.Helper()
 
@@ -85,6 +124,22 @@ func (c *CopilotCLI) AddMCP(name, endpoint string) {
 	// Determine type based on endpoint
 	// In our E2E, we usually test with HTTP servers (streamablehttp) or sse.
 	// For now we assume http type for simplicity as the previous logic did.
+	// RemoveMCP removes an MCP server.
+	// name is the name of the resource.
+	//
+	// Summary: RemoveMCP provides functionality.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	cfg.Type = "http"
 	cfg.URL = endpoint
 
@@ -92,9 +147,6 @@ func (c *CopilotCLI) AddMCP(name, endpoint string) {
 	c.writeConfig()
 }
 
-// RemoveMCP removes an MCP server.
-//
-// name is the name of the resource.
 func (c *CopilotCLI) RemoveMCP(name string) {
 	c.t.Helper()
 	delete(c.servers, name)
@@ -111,6 +163,25 @@ func (c *CopilotCLI) writeConfig() {
 	require.NoError(c.t, err)
 
 	// Create .copilot directory inside configDir
+	// Run executes a prompt.
+	// apiKey is the apiKey.
+	// prompt is the prompt.
+	// Returns the result.
+	// Returns an error if the operation fails.
+	//
+	// Summary: Run provides functionality.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	copilotDir := filepath.Join(c.configDir, ".copilot")
 	if err := os.MkdirAll(copilotDir, 0750); err != nil {
 		require.NoError(c.t, err)
@@ -121,13 +192,6 @@ func (c *CopilotCLI) writeConfig() {
 	require.NoError(c.t, err, "failed to write mcp-config.json")
 }
 
-// Run executes a prompt.
-//
-// apiKey is the apiKey.
-// prompt is the prompt.
-//
-// Returns the result.
-// Returns an error if the operation fails.
 func (c *CopilotCLI) Run(apiKey, prompt string) (string, error) {
 	c.t.Helper()
 	var outputBuffer strings.Builder

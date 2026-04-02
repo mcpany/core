@@ -172,6 +172,20 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 
 	_, err = tx.ExecContext(ctx, query,
 		entry.Timestamp, // Postgres driver handles time.Time
+		// Read implements the Store interface.
+		// Summary: Reads audit entries (Not implemented).
+		// Parameters:
+		//   - _: context.Context. Unused.
+		//   - _: Filter. Unused.
+		// Returns:
+		//   - []Entry: Nil.
+		//   - error: Always returns "not implemented".
+		//
+		// Errors:
+		//   - None.
+		//
+		// Side Effects:
+		//   - None.
 		entry.ToolName,
 		entry.UserID,
 		entry.ProfileID,
@@ -189,17 +203,6 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 	return tx.Commit()
 }
 
-// Read implements the Store interface.
-//
-// Summary: Reads audit entries (Not implemented).
-//
-// Parameters:
-//   - _: context.Context. Unused.
-//   - _: Filter. Unused.
-//
-// Returns:
-//   - []Entry: Nil.
-//   - error: Always returns "not implemented".
 func (s *PostgresAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for postgres audit store")
 }
@@ -269,6 +272,18 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 			calculatedHash = computeHash(tsStr, toolName, userID, profileID, argsStr, resultStr, errorMsg, durationMs, prevHash)
 		} else {
 			// Fallback to legacy
+			// Close closes the database connection.
+			// Summary: Closes the PostgreSQL database connection.
+			// Returns:
+			//   - error: An error if closing fails.
+			// Side Effects:
+			//   - Closes the DB connection.
+			//
+			// Parameters:
+			//   - None.
+			//
+			// Errors:
+			//   - None.
 			calculatedHash = computeHashV0(tsStr, toolName, userID, profileID, argsStr, resultStr, errorMsg, durationMs, prevHash)
 		}
 
@@ -284,15 +299,6 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 	return true, nil
 }
 
-// Close closes the database connection.
-//
-// Summary: Closes the PostgreSQL database connection.
-//
-// Returns:
-//   - error: An error if closing fails.
-//
-// Side Effects:
-//   - Closes the DB connection.
 func (s *PostgresAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

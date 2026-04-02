@@ -30,7 +30,7 @@ var upgrader = websocket.Upgrader{
 // Returns:
 //   - None.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 type Signal struct {
 	Type    string `json:"type"`

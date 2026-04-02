@@ -243,17 +243,24 @@ func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T
 	})
 
 	// Signal that regularUnsub is set
+	// Close closes the Redis client connection.
+	// Summary: Closes the Redis connection.
+	// Returns:
+	//   - error: An error if closing fails.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	close(ready)
 
 	return proxyUnsub
 }
 
-// Close closes the Redis client connection.
-//
-// Summary: Closes the Redis connection.
-//
-// Returns:
-//   - error: An error if closing fails.
 func (b *Bus[T]) Close() error {
 	return b.client.Close()
 }

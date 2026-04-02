@@ -14,6 +14,33 @@ import (
 // MockTool is a mock implementation of the Tool interface for testing purposes.
 //
 // Summary: Mock tool for testing.
+// Tool returns the protobuf definition of the mock tool.
+// Summary: Retrieves the mock tool definition.
+// Returns:
+//   - *v1.Tool: The tool definition.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// MCPTool returns the MCP tool definition.
+// Summary: Retrieves the MCP tool definition.
+// Returns:
+//   - *mcp.Tool: The MCP tool definition.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type MockTool struct {
 	ToolFunc           func() *v1.Tool
 	MCPToolFunc        func() *mcp.Tool
@@ -21,12 +48,6 @@ type MockTool struct {
 	GetCacheConfigFunc func() *configv1.CacheConfig
 }
 
-// Tool returns the protobuf definition of the mock tool.
-//
-// Summary: Retrieves the mock tool definition.
-//
-// Returns:
-//   - *v1.Tool: The tool definition.
 func (m *MockTool) Tool() *v1.Tool {
 	if m.ToolFunc != nil {
 		return m.ToolFunc()
@@ -34,12 +55,6 @@ func (m *MockTool) Tool() *v1.Tool {
 	return &v1.Tool{}
 }
 
-// MCPTool returns the MCP tool definition.
-//
-// Summary: Retrieves the MCP tool definition.
-//
-// Returns:
-//   - *mcp.Tool: The MCP tool definition.
 func (m *MockTool) MCPTool() *mcp.Tool {
 	if m.MCPToolFunc != nil {
 		return m.MCPToolFunc()
@@ -114,6 +129,20 @@ func (m *MockTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 //
 // Side Effects:
 //   - Calls the underlying mock ExecuteFunc.
+//
+// GetCacheConfig calls the mock GetCacheConfigFunc if set, otherwise returns nil.
+// Summary: Retrieves the cache configuration.
+// Returns:
+//   - *configv1.CacheConfig: The cache configuration.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if m.ExecuteFunc != nil {
 		return m.ExecuteFunc(ctx, req)
@@ -121,12 +150,6 @@ func (m *MockTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	return nil, nil
 }
 
-// GetCacheConfig calls the mock GetCacheConfigFunc if set, otherwise returns nil.
-//
-// Summary: Retrieves the cache configuration.
-//
-// Returns:
-//   - *configv1.CacheConfig: The cache configuration.
 func (m *MockTool) GetCacheConfig() *configv1.CacheConfig {
 	if m.GetCacheConfigFunc != nil {
 		return m.GetCacheConfigFunc()

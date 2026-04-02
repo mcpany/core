@@ -16,18 +16,8 @@ import (
 // for rendering strings with dynamic data.
 //
 // Summary: High-performance template engine using fasttemplate.
-type TextTemplate struct {
-	template *fasttemplate.Template
-	raw      string
-	startTag string
-	endTag   string
-	IsJSON   bool
-}
-
 // NewTemplate parses a template string and creates a new TextTemplate.
-//
 // Summary: Initializes a new TextTemplate.
-//
 // Parameters:
 //   - templateString: string. The template source.
 //   - startTag: string. The start delimiter (e.g. "{{").
@@ -39,6 +29,17 @@ type TextTemplate struct {
 //
 // Side Effects:
 //   - Auto-detects if the template output is likely JSON to enable automatic escaping.
+//
+// Errors:
+//   - None.
+type TextTemplate struct {
+	template *fasttemplate.Template
+	raw      string
+	startTag string
+	endTag   string
+	IsJSON   bool
+}
+
 func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error) {
 	tpl, err := fasttemplate.NewTemplate(templateString, startTag, endTag)
 	if err != nil {

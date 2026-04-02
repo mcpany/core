@@ -96,6 +96,19 @@ type TemplatedPrompt struct {
 func NewTemplatedPrompt(definition *configv1.PromptDefinition, serviceID string) (*TemplatedPrompt, error) {
 	// ⚡ BOLT: Pre-compile templates to avoid parsing on every request.
 	// Randomized Selection from Top 5 High-Impact Targets
+	// Prompt returns the MCP prompt definition.
+	// Summary: Retrieves the MCP prompt definition.
+	// Returns:
+	//   - *mcp.Prompt: The MCP prompt definition.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	compiledTemplates := make([]*transformer.TextTemplate, len(definition.GetMessages()))
 	for i, msg := range definition.GetMessages() {
 		if text := msg.GetText(); text != nil {
@@ -114,12 +127,6 @@ func NewTemplatedPrompt(definition *configv1.PromptDefinition, serviceID string)
 	}, nil
 }
 
-// Prompt returns the MCP prompt definition.
-//
-// Summary: Retrieves the MCP prompt definition.
-//
-// Returns:
-//   - *mcp.Prompt: The MCP prompt definition.
 func (p *TemplatedPrompt) Prompt() *mcp.Prompt {
 	args := make([]*mcp.PromptArgument, 0)
 	if p.definition.GetInputSchema() != nil {
@@ -127,6 +134,47 @@ func (p *TemplatedPrompt) Prompt() *mcp.Prompt {
 		if props, ok := fields["properties"]; ok {
 			if propsStruct := props.GetStructValue(); propsStruct != nil {
 				// Collect keys to sort them for deterministic order
+				// Service returns the ID of the service that provides this prompt.
+				// Summary: Retrieves the service ID.
+				// Returns:
+				//   - string: The service ID.
+				//
+				// Parameters:
+				//   - None.
+				//
+				// Errors:
+				//   - None.
+				//
+				// Side Effects:
+				//   - None.
+				// Definition returns the raw configuration definition of the prompt.
+				// Summary: Retrieves the prompt configuration definition.
+				// Returns:
+				//   - *configv1.PromptDefinition: The definition proto.
+				//
+				// Parameters:
+				//   - None.
+				//
+				// Errors:
+				//   - None.
+				//
+				// Side Effects:
+				//   - None.
+				// Get executes the prompt with the provided arguments.
+				// Summary: Executes the prompt.
+				// It renders the prompt template using the provided arguments.
+				// Parameters:
+				//   - _: The context (unused in this implementation).
+				//   - args: The arguments for the prompt as a raw JSON message.
+				// Returns:
+				//   - *mcp.GetPromptResult: The result of the prompt execution.
+				//   - error: An error if the operation fails (e.g., template rendering error).
+				// Errors:
+				//   - Returns error if args cannot be unmarshaled.
+				//   - Returns error if template rendering fails.
+				//
+				// Side Effects:
+				//   - None.
 				keys := make([]string, 0, len(propsStruct.GetFields()))
 				for k := range propsStruct.GetFields() {
 					keys = append(keys, k)
@@ -173,43 +221,14 @@ func (p *TemplatedPrompt) Prompt() *mcp.Prompt {
 	}
 }
 
-// Service returns the ID of the service that provides this prompt.
-//
-// Summary: Retrieves the service ID.
-//
-// Returns:
-//   - string: The service ID.
 func (p *TemplatedPrompt) Service() string {
 	return p.serviceID
 }
 
-// Definition returns the raw configuration definition of the prompt.
-//
-// Summary: Retrieves the prompt configuration definition.
-//
-// Returns:
-//   - *configv1.PromptDefinition: The definition proto.
 func (p *TemplatedPrompt) Definition() *configv1.PromptDefinition {
 	return p.definition
 }
 
-// Get executes the prompt with the provided arguments.
-//
-// Summary: Executes the prompt.
-//
-// It renders the prompt template using the provided arguments.
-//
-// Parameters:
-//   - _: The context (unused in this implementation).
-//   - args: The arguments for the prompt as a raw JSON message.
-//
-// Returns:
-//   - *mcp.GetPromptResult: The result of the prompt execution.
-//   - error: An error if the operation fails (e.g., template rendering error).
-//
-// Errors:
-//   - Returns error if args cannot be unmarshaled.
-//   - Returns error if template rendering fails.
 func (p *TemplatedPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
 	var inputs map[string]any
 	if err := json.Unmarshal(args, &inputs); err != nil {
@@ -220,6 +239,20 @@ func (p *TemplatedPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.Get
 	for i, msg := range p.definition.GetMessages() {
 		if text := msg.GetText(); text != nil {
 			// Use pre-compiled template
+			// NewPromptFromConfig creates a new Prompt from a configuration definition.
+			// Summary: Creates a Prompt from configuration.
+			// Parameters:
+			//   - definition: The prompt definition from configuration.
+			//   - serviceID: The ID of the service providing the prompt.
+			// Returns:
+			//   - Prompt: The created Prompt instance.
+			//   - error: An error if the prompt cannot be created.
+			//
+			// Errors:
+			//   - None.
+			//
+			// Side Effects:
+			//   - None.
 			tpl := p.compiledTemplates[i]
 			renderedText, err := tpl.Render(inputs)
 			if err != nil {
@@ -238,17 +271,6 @@ func (p *TemplatedPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.Get
 	}, nil
 }
 
-// NewPromptFromConfig creates a new Prompt from a configuration definition.
-//
-// Summary: Creates a Prompt from configuration.
-//
-// Parameters:
-//   - definition: The prompt definition from configuration.
-//   - serviceID: The ID of the service providing the prompt.
-//
-// Returns:
-//   - Prompt: The created Prompt instance.
-//   - error: An error if the prompt cannot be created.
 func NewPromptFromConfig(definition *configv1.PromptDefinition, serviceID string) (Prompt, error) {
 	return NewTemplatedPrompt(definition, serviceID)
 }

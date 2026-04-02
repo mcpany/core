@@ -1,6 +1,22 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// SeedStandardData populates the server with a standard set of data for E2E testing.
+// It registers a "Core" service (mocked) and a "Tools" service (mocked).
+// It also seeds some traffic history if supported.
+//
+// Summary: SeedStandardData provides functionality.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 package integration
 
 import (
@@ -12,9 +28,6 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// SeedStandardData populates the server with a standard set of data for E2E testing.
-// It registers a "Core" service (mocked) and a "Tools" service (mocked).
-// It also seeds some traffic history if supported.
 func SeedStandardData(t *testing.T, serverInfo *MCPANYTestServerInfo) {
 	t.Helper()
 
@@ -36,7 +49,7 @@ func SeedStandardData(t *testing.T, serverInfo *MCPANYTestServerInfo) {
 			Address: proto.String(mockServer.URL),
 			Tools: []*configv1.ToolDefinition{
 				configv1.ToolDefinition_builder{
-					Name: proto.String("status"),
+					Name:   proto.String("status"),
 					CallId: proto.String("status"),
 				}.Build(),
 			},
@@ -64,7 +77,7 @@ func SeedStandardData(t *testing.T, serverInfo *MCPANYTestServerInfo) {
 			Address: proto.String(mockServer.URL),
 			Tools: []*configv1.ToolDefinition{
 				configv1.ToolDefinition_builder{
-					Name: proto.String("calculator"),
+					Name:   proto.String("calculator"),
 					CallId: proto.String("calculator"),
 				}.Build(),
 			},

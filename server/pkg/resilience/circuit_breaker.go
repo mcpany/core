@@ -37,26 +37,40 @@ const (
 type CircuitBreaker struct {
 	mutex sync.Mutex
 
-	state        State // Accessed using atomics for read optimization
-	failures     int32 // Accessed using atomics
+	state    State // Accessed using atomics for read optimization
+	failures int32 // Accessed using atomics
+	// NewCircuitBreaker creates a new CircuitBreaker with the given configuration.
+	// Summary: Creates a new circuit breaker.
+	// Parameters:
+	//   - config (*configv1.CircuitBreakerConfig): The configuration for the circuit breaker.
+	// Returns:
+	//   - *CircuitBreaker: A new CircuitBreaker instance.
+	// Side Effects:
+	//   - None.
+	//
+	// Errors:
+	//   - None.
+	// Execute runs the provided work function. If the circuit breaker is open, it
+	// returns a CircuitBreakerOpenError immediately. If the work function fails,
+	// it tracks the failure and may trip the breaker.
+	// Summary: Executes a function protected by the circuit breaker.
+	// Parameters:
+	//   - ctx (context.Context): The context for the request.
+	//   - work (func(context.Context) error): The function to execute.
+	// Returns:
+	//   - error: An error if the function fails or the breaker is open.
+	// Side Effects:
+	//   - May change the state of the circuit breaker.
+	//   - Executes the provided function.
+	//
+	// Errors:
+	//   - None.
 	openTime     time.Time
 	halfOpenHits int
 
 	config *configv1.CircuitBreakerConfig
 }
 
-// NewCircuitBreaker creates a new CircuitBreaker with the given configuration.
-//
-// Summary: Creates a new circuit breaker.
-//
-// Parameters:
-//   - config (*configv1.CircuitBreakerConfig): The configuration for the circuit breaker.
-//
-// Returns:
-//   - *CircuitBreaker: A new CircuitBreaker instance.
-//
-// Side Effects:
-//   - None.
 func NewCircuitBreaker(config *configv1.CircuitBreakerConfig) *CircuitBreaker {
 	return &CircuitBreaker{
 		config: config,
@@ -64,22 +78,6 @@ func NewCircuitBreaker(config *configv1.CircuitBreakerConfig) *CircuitBreaker {
 	}
 }
 
-// Execute runs the provided work function. If the circuit breaker is open, it
-// returns a CircuitBreakerOpenError immediately. If the work function fails,
-// it tracks the failure and may trip the breaker.
-//
-// Summary: Executes a function protected by the circuit breaker.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - work (func(context.Context) error): The function to execute.
-//
-// Returns:
-//   - error: An error if the function fails or the breaker is open.
-//
-// Side Effects:
-//   - May change the state of the circuit breaker.
-//   - Executes the provided function.
 func (cb *CircuitBreaker) Execute(ctx context.Context, work func(context.Context) error) error {
 	originState := StateClosed
 
@@ -234,12 +232,8 @@ func (cb *CircuitBreaker) onFailure(originState State) {
 // CircuitBreakerOpenError is returned when the circuit breaker is in the Open state.
 //
 // Summary: Represents a CircuitBreakerOpenError.
-type CircuitBreakerOpenError struct{}
-
 // Error returns the error message for a CircuitBreakerOpenError.
-//
 // Summary: Returns the error message.
-//
 // Parameters:
 //   - None.
 //
@@ -248,6 +242,11 @@ type CircuitBreakerOpenError struct{}
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - None.
+type CircuitBreakerOpenError struct{}
+
 func (e *CircuitBreakerOpenError) Error() string {
 	return "circuit breaker is open"
 }

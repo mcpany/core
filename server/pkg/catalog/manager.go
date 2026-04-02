@@ -22,34 +22,23 @@ import (
 // Summary: Manages the service catalog.
 //
 // It scans a specified directory for service configurations and provides access to them.
-type Manager struct {
-	mu          sync.RWMutex
-	fs          afero.Fs
-	catalogPath string
-	services    []*configv1.UpstreamServiceConfig
-}
-
 // NewManager creates a new Catalog Manager.
-//
 // Summary: Initializes a new Catalog Manager.
-//
 // Parameters:
 //   - fs: afero.Fs. The filesystem to scan.
 //   - catalogPath: string. The path to the catalog directory.
 //
 // Returns:
 //   - *Manager: The initialized manager.
-func NewManager(fs afero.Fs, catalogPath string) *Manager {
-	return &Manager{
-		fs:          fs,
-		catalogPath: catalogPath,
-	}
-}
-
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
 // Load scans the catalog directory and loads all service configurations.
-//
 // Summary: Loads service configurations from the catalog directory.
-//
 // Parameters:
 //   - ctx: context.Context. The context for the operation.
 //
@@ -59,6 +48,23 @@ func NewManager(fs afero.Fs, catalogPath string) *Manager {
 // Side Effects:
 //   - Updates the internal list of services.
 //   - Reads files from the filesystem.
+//
+// Errors:
+//   - None.
+type Manager struct {
+	mu          sync.RWMutex
+	fs          afero.Fs
+	catalogPath string
+	services    []*configv1.UpstreamServiceConfig
+}
+
+func NewManager(fs afero.Fs, catalogPath string) *Manager {
+	return &Manager{
+		fs:          fs,
+		catalogPath: catalogPath,
+	}
+}
+
 func (m *Manager) Load(ctx context.Context) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -111,6 +117,19 @@ func (m *Manager) Load(ctx context.Context) error {
 			cfg, loadErr := store.Load(ctx) // Renamed err to loadErr to avoid shadowing
 			if loadErr != nil {
 				// Log error but continue
+				// ListServices returns the list of loaded services.
+				// Summary: Retrieves the list of loaded services.
+				// Parameters:
+				//   - _ context.Context: The context (unused).
+				// Returns:
+				//   - []*configv1.UpstreamServiceConfig: A slice of service configurations.
+				//   - error: Always nil.
+				//
+				// Errors:
+				//   - None.
+				//
+				// Side Effects:
+				//   - None.
 				fmt.Printf("Failed to load catalog item %s: %v\n", path, loadErr)
 				return nil
 			}
@@ -127,16 +146,6 @@ func (m *Manager) Load(ctx context.Context) error {
 	return g.Wait()
 }
 
-// ListServices returns the list of loaded services.
-//
-// Summary: Retrieves the list of loaded services.
-//
-// Parameters:
-//   - _ context.Context: The context (unused).
-//
-// Returns:
-//   - []*configv1.UpstreamServiceConfig: A slice of service configurations.
-//   - error: Always nil.
 func (m *Manager) ListServices(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

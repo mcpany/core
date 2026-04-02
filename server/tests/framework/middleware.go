@@ -1,6 +1,96 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// TestE2ECaching tests the end-to-end caching functionality.
+// t is the t.
+//
+// Summary: TestE2ECaching provides functionality.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// BuildCachingServer builds and starts a caching server for testing.
+// t is the t.
+// Returns the result.
+//
+// Summary: BuildCachingServer provides functionality.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// RegisterCachingService registers the caching service with the MCP server.
+// t is the t.
+// registrationClient is the registrationClient.
+// upstreamEndpoint is the upstreamEndpoint.
+//
+// Summary: RegisterCachingService provides functionality.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// NoOpMiddleware is a middleware that does nothing and calls the next handler.
+// _ is an unused parameter.
+// next is the next.
+// Returns the result.
+//
+// Summary: NoOpMiddleware provides functionality.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// ValidateCaching validates that caching is working correctly.
+// t is the t.
+// mcpanyEndpoint is the mcpanyEndpoint.
+// upstreamEndpoint is the upstreamEndpoint.
+//
+// Summary: ValidateCaching provides functionality.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 package framework
 
 import (
@@ -21,9 +111,6 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-// TestE2ECaching tests the end-to-end caching functionality.
-//
-// t is the t.
 func TestE2ECaching(t *testing.T) {
 	t.Parallel()
 	RunE2ETest(t, &E2ETestCase{
@@ -39,11 +126,6 @@ func TestE2ECaching(t *testing.T) {
 	})
 }
 
-// BuildCachingServer builds and starts a caching server for testing.
-//
-// t is the t.
-//
-// Returns the result.
 func BuildCachingServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	proc := integration.NewManagedProcess(t, "http_caching_server", integration.MockBinary(t, "http_caching_server"), []string{"--port", fmt.Sprintf("%d", port)}, nil)
@@ -51,11 +133,6 @@ func BuildCachingServer(t *testing.T) *integration.ManagedProcess {
 	return proc
 }
 
-// RegisterCachingService registers the caching service with the MCP server.
-//
-// t is the t.
-// registrationClient is the registrationClient.
-// upstreamEndpoint is the upstreamEndpoint.
 func RegisterCachingService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	serviceID := "e2e_caching_server"
 	operationID := "get_data"
@@ -97,12 +174,6 @@ func protoString(value string) *string {
 	return &value
 }
 
-// NoOpMiddleware is a middleware that does nothing and calls the next handler.
-//
-// _ is an unused parameter.
-// next is the next.
-//
-// Returns the result.
 func NoOpMiddleware(_ *testing.T, next http.Handler) http.Handler {
 	return next
 }
@@ -134,11 +205,6 @@ func callTool(t *testing.T, session *mcp.ClientSession, toolName string) {
 	require.NoError(t, err)
 }
 
-// ValidateCaching validates that caching is working correctly.
-//
-// t is the t.
-// mcpanyEndpoint is the mcpanyEndpoint.
-// upstreamEndpoint is the upstreamEndpoint.
 func ValidateCaching(t *testing.T, mcpanyEndpoint, upstreamEndpoint string) {
 	session := connectMCP(t, mcpanyEndpoint)
 

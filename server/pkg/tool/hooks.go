@@ -31,15 +31,8 @@ type compiledRule struct {
 // PolicyHook implements PreCallHook using CallPolicy.
 //
 // Summary: Pre-call hook that enforces call policies defined in configuration.
-type PolicyHook struct {
-	policy        *configv1.CallPolicy
-	compiledRules []compiledRule
-}
-
 // NewPolicyHook creates a new PolicyHook with the given call policy.
-//
 // Summary: Initializes a new PolicyHook.
-//
 // Parameters:
 //   - policy: *configv1.CallPolicy. The policy configuration to enforce.
 //
@@ -49,6 +42,32 @@ type PolicyHook struct {
 // Side Effects:
 //   - Compiles regex patterns from the policy rules.
 //   - Logs errors for invalid regexes.
+//
+// Errors:
+//   - None.
+//
+// ExecutePre executes the policy check before a tool is called.
+// Summary: Evaluates the tool request against the compiled policy rules.
+// Parameters:
+//   - _: context.Context. Unused.
+//   - req: *ExecutionRequest. The tool execution request.
+//
+// Returns:
+//   - Action: The action to take (Allow, Deny, etc.).
+//   - *ExecutionRequest: The modified request (nil if no modification).
+//   - error: An error if the policy denies execution.
+//
+// Errors:
+//   - Returns error if an explicit DENY rule is matched.
+//   - Returns error if the default policy is DENY and no ALLOW rule matches.
+//
+// Side Effects:
+//   - None.
+type PolicyHook struct {
+	policy        *configv1.CallPolicy
+	compiledRules []compiledRule
+}
+
 func NewPolicyHook(policy *configv1.CallPolicy) *PolicyHook {
 	compiledRules := make([]compiledRule, len(policy.GetRules()))
 	for i, rule := range policy.GetRules() {
@@ -84,22 +103,6 @@ func NewPolicyHook(policy *configv1.CallPolicy) *PolicyHook {
 	}
 }
 
-// ExecutePre executes the policy check before a tool is called.
-//
-// Summary: Evaluates the tool request against the compiled policy rules.
-//
-// Parameters:
-//   - _: context.Context. Unused.
-//   - req: *ExecutionRequest. The tool execution request.
-//
-// Returns:
-//   - Action: The action to take (Allow, Deny, etc.).
-//   - *ExecutionRequest: The modified request (nil if no modification).
-//   - error: An error if the policy denies execution.
-//
-// Errors:
-//   - Returns error if an explicit DENY rule is matched.
-//   - Returns error if the default policy is DENY and no ALLOW rule matches.
 func (h *PolicyHook) ExecutePre(
 	_ context.Context,
 	req *ExecutionRequest,
@@ -154,17 +157,8 @@ func (h *PolicyHook) ExecutePre(
 // WebhookClient handles the communication with an external webhook.
 //
 // Summary: Client for sending CloudEvents to external webhooks.
-type WebhookClient struct {
-	url     string
-	timeout time.Duration
-	client  *http.Client
-	webhook *webhook.Webhook
-}
-
 // NewWebhookClient creates a new WebhookClient.
-//
 // Summary: Initializes a new WebhookClient.
-//
 // Parameters:
 //   - config: *configv1.WebhookConfig. The webhook configuration.
 //
@@ -173,6 +167,16 @@ type WebhookClient struct {
 //
 // Side Effects:
 //   - Initializes HTTP client and optional signer.
+//
+// Errors:
+//   - None.
+type WebhookClient struct {
+	url     string
+	timeout time.Duration
+	client  *http.Client
+	webhook *webhook.Webhook
+}
+
 func NewWebhookClient(config *configv1.WebhookConfig) *WebhookClient {
 	timeout := 5 * time.Second
 	if t := config.GetTimeout(); t != nil {
@@ -264,19 +268,23 @@ func (c *WebhookClient) Call(ctx context.Context, eventType string, data any) (*
 // WebhookHook supports modification of requests and responses via external webhook using CloudEvents.
 //
 // Summary: Hook implementation that delegates logic to an external webhook.
-type WebhookHook struct {
-	client *WebhookClient
-}
-
 // NewWebhookHook creates a new WebhookHook.
-//
 // Summary: Initializes a new WebhookHook.
-//
 // Parameters:
 //   - config: *configv1.WebhookConfig. The webhook configuration.
 //
 // Returns:
 //   - *WebhookHook: The initialized hook.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+type WebhookHook struct {
+	client *WebhookClient
+}
+
 func NewWebhookHook(config *configv1.WebhookConfig) *WebhookHook {
 	return &WebhookHook{
 		client: NewWebhookClient(config),
@@ -444,15 +452,8 @@ type WebhookStatus struct {
 // SigningRoundTripper signs the request using the webhook signer.
 //
 // Summary: HTTP Transport that adds HMAC signatures to outgoing requests.
-type SigningRoundTripper struct {
-	signer *webhook.Webhook
-	base   http.RoundTripper
-}
-
 // RoundTrip executes the HTTP request with a signature.
-//
 // Summary: Intercepts the request to add Webhook-Id, Webhook-Timestamp, and Webhook-Signature headers.
-//
 // Parameters:
 //   - req: *http.Request. The outgoing request.
 //
@@ -463,6 +464,14 @@ type SigningRoundTripper struct {
 // Side Effects:
 //   - Reads and buffers the request body for signing.
 //   - Modifies request headers.
+//
+// Errors:
+//   - None.
+type SigningRoundTripper struct {
+	signer *webhook.Webhook
+	base   http.RoundTripper
+}
+
 func (s *SigningRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	if s.signer != nil {
 		payload := []byte{} // Signing requires payload, but request body might be stream.

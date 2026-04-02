@@ -1,21 +1,24 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// CheckAuth performs health checks for authentication configuration.
+// Summary: Validates the presence of critical API keys and OAuth configuration.
+// Returns:
+//   - map[string]CheckResult: A map of check names to their results.
+//
+// Side Effects:
+//   - Reads environment variables.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
 package health
 
 import (
 	"os"
 )
 
-// CheckAuth performs health checks for authentication configuration.
-//
-// Summary: Validates the presence of critical API keys and OAuth configuration.
-//
-// Returns:
-//   - map[string]CheckResult: A map of check names to their results.
-//
-// Side Effects:
-//   - Reads environment variables.
 func CheckAuth() map[string]CheckResult {
 	results := make(map[string]CheckResult)
 

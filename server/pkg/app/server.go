@@ -211,14 +211,17 @@ type Runner interface {
 //   - MetricsGatherer: prometheus.Gatherer. Interface for gathering metrics.
 //   - BoundHTTPPort: atomic.Int32. The actual bound HTTP port.
 //   - BoundGRPCPort: atomic.Int32. The actual bound gRPC port.
+//
 // Application ...
 //
 // Summary: Represents the Application.
 // Parameters:
 //   - None.
+//
 // Returns:
 //   - None.
-// Throws/Errors:
+//
+// Errors:
 //   - None.
 type Application struct {
 	runStdioModeFunc func(ctx context.Context, mcpSrv *mcpserver.Server) error
@@ -308,6 +311,19 @@ type Application struct {
 	MetricsGatherer prometheus.Gatherer
 
 	// statsCache for dashboard
+	// NewApplication creates a new Application with default dependencies.
+	// Summary: Initializes a new Application instance.
+	// Returns:
+	//   - (*Application): The initialized application.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	statsCacheMu sync.RWMutex
 	statsCache   map[string]statsCacheEntry
 }
@@ -317,12 +333,6 @@ type statsCacheEntry struct {
 	ExpiresAt time.Time
 }
 
-// NewApplication creates a new Application with default dependencies.
-//
-// Summary: Initializes a new Application instance.
-//
-// Returns:
-//   - (*Application): The initialized application.
 func NewApplication() *Application {
 	busProvider, _ := bus.NewProvider(nil)
 	return &Application{
@@ -332,7 +342,19 @@ func NewApplication() *Application {
 		AlertsManager:    alerts.NewManager(),
 		WebhooksManager:  webhooks.NewManager(),
 		CatalogManager:   catalog.NewManager(afero.NewOsFs(), "marketplace/catalog"), // Default path, can be overridden
-
+		// Run starts the MCP Any server and all its components.
+		// Summary: Executes the application.
+		// Parameters:
+		//   - opts (RunOptions): The runtime options.
+		// Returns:
+		//   - (error): An error if execution fails.
+		// Side Effects:
+		//   - Starts HTTP and gRPC servers.
+		//   - Initializes background workers.
+		//   - Loads configuration.
+		//
+		// Errors:
+		//   - None.
 		ResourceManager: resource.NewManager(),
 		UpstreamFactory: factory.NewUpstreamServiceFactory(pool.NewManager(), nil),
 		configFiles:     make(map[string]string),
@@ -343,22 +365,6 @@ func NewApplication() *Application {
 	}
 }
 
-// Run starts the MCP Any server and all its components.
-//
-// Summary: Executes the application.
-//
-// Parameters:
-//   - opts (RunOptions): The runtime options.
-//
-// Returns:
-//   - (error): An error if execution fails.
-//
-// Side Effects:
-//   - Starts HTTP and gRPC servers.
-//   - Initializes background workers.
-//   - Loads configuration.
-//
-//nolint:gocyclo // Run is the main entry point and setup function, expected to be complex
 func (a *Application) Run(opts RunOptions) error {
 	log := logging.GetLogger()
 	fs, err := setup(opts.Fs)
@@ -921,6 +927,21 @@ func (a *Application) Run(opts RunOptions) error {
 	}
 
 	// Stop workers
+	// ReloadConfig reloads the configuration from the given paths and updates the
+	// services.
+	// Summary: Reloads application configuration from disk/storage.
+	// Parameters:
+	//   - ctx (context.Context): The context for the reload operation.
+	//   - fs (afero.Fs): The filesystem interface for reading configuration files.
+	//   - configPaths ([]string): A slice of paths to configuration files to reload.
+	// Returns:
+	//   - (error): An error if the configuration reload fails.
+	// Side Effects:
+	//   - Reads configuration files.
+	//   - Updates global settings, user auth, profiles, and service registry.
+	//
+	// Errors:
+	//   - None.
 	workerCancel()
 	upstreamWorker.Stop()
 	registrationWorker.Stop()
@@ -928,22 +949,6 @@ func (a *Application) Run(opts RunOptions) error {
 	return nil
 }
 
-// ReloadConfig reloads the configuration from the given paths and updates the
-// services.
-//
-// Summary: Reloads application configuration from disk/storage.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the reload operation.
-//   - fs (afero.Fs): The filesystem interface for reading configuration files.
-//   - configPaths ([]string): A slice of paths to configuration files to reload.
-//
-// Returns:
-//   - (error): An error if the configuration reload fails.
-//
-// Side Effects:
-//   - Reads configuration files.
-//   - Updates global settings, user auth, profiles, and service registry.
 func (a *Application) ReloadConfig(ctx context.Context, fs afero.Fs, configPaths []string) error {
 	log := logging.GetLogger()
 	start := time.Now()
@@ -1352,6 +1357,19 @@ func (a *Application) generateConfigDiff(oldConfig, newConfig map[string]string)
 	for path, oldContent := range oldConfig {
 		if _, exists := newConfig[path]; !exists {
 			// Deleted file
+			// WaitForStartup waits for the application to be fully initialized.
+			// Summary: Waits for application startup completion.
+			// It blocks until the startup process is complete or the context is canceled.
+			// Parameters:
+			//   - ctx (context.Context): The context to wait on.
+			// Returns:
+			//   - (error): nil if startup completes successfully, or a context error if canceled.
+			//
+			// Errors:
+			//   - None.
+			//
+			// Side Effects:
+			//   - None.
 			d, _ := difflib.GetUnifiedDiffString(difflib.UnifiedDiff{
 				A:        difflib.SplitLines(oldContent),
 				B:        difflib.SplitLines(""),
@@ -1365,17 +1383,6 @@ func (a *Application) generateConfigDiff(oldConfig, newConfig map[string]string)
 	return strings.Join(diffs, "\n")
 }
 
-// WaitForStartup waits for the application to be fully initialized.
-//
-// Summary: Waits for application startup completion.
-//
-// It blocks until the startup process is complete or the context is canceled.
-//
-// Parameters:
-//   - ctx (context.Context): The context to wait on.
-//
-// Returns:
-//   - (error): nil if startup completes successfully, or a context error if canceled.
 func (a *Application) WaitForStartup(ctx context.Context) error {
 	select {
 	case <-a.startupCh:
@@ -1422,6 +1429,43 @@ func runStdioMode(ctx context.Context, mcpSrv *mcpserver.Server) error {
 }
 
 // configHealthCheck checks the status of the configuration.
+// HealthCheck performs a health check against a running server.
+// Summary: Checks the health of a running server.
+// The function constructs the health check URL from the provided address and
+// sends an HTTP GET request. It expects a 200 OK status code for a successful
+// health check.
+// Parameters:
+//   - out (io.Writer): The writer to which the success message will be written.
+//   - addr (string): The address (host:port) on which the server is running.
+//   - timeout (time.Duration): The maximum duration to wait for the health check.
+//
+// Returns:
+//   - (error): nil if healthy, or an error if the health check fails.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// HealthCheckWithContext performs a health check against a running server with a context.
+// Summary: Checks the health of a running server using a context.
+// The function constructs the health check URL from the provided address and
+// sends an HTTP GET request. It expects a 200 OK status code for a successful
+// health check.
+// Parameters:
+//   - ctx (context.Context): The context for managing the health check's lifecycle.
+//   - out (io.Writer): The writer to which the success message will be written.
+//   - addr (string): The address (host:port) on which the server is running.
+//
+// Returns:
+//   - (error): nil if healthy, or an error if the health check fails.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (a *Application) configHealthCheck(_ context.Context) health.CheckResult {
 	a.configMu.Lock()
 	defer a.configMu.Unlock()
@@ -1491,42 +1535,12 @@ func (a *Application) filesystemHealthCheck(_ context.Context) health.CheckResul
 	}
 }
 
-// HealthCheck performs a health check against a running server.
-//
-// Summary: Checks the health of a running server.
-//
-// The function constructs the health check URL from the provided address and
-// sends an HTTP GET request. It expects a 200 OK status code for a successful
-// health check.
-//
-// Parameters:
-//   - out (io.Writer): The writer to which the success message will be written.
-//   - addr (string): The address (host:port) on which the server is running.
-//   - timeout (time.Duration): The maximum duration to wait for the health check.
-//
-// Returns:
-//   - (error): nil if healthy, or an error if the health check fails.
 func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 	return HealthCheckWithContext(ctx, out, addr)
 }
 
-// HealthCheckWithContext performs a health check against a running server with a context.
-//
-// Summary: Checks the health of a running server using a context.
-//
-// The function constructs the health check URL from the provided address and
-// sends an HTTP GET request. It expects a 200 OK status code for a successful
-// health check.
-//
-// Parameters:
-//   - ctx (context.Context): The context for managing the health check's lifecycle.
-//   - out (io.Writer): The writer to which the success message will be written.
-//   - addr (string): The address (host:port) on which the server is running.
-//
-// Returns:
-//   - (error): nil if healthy, or an error if the health check fails.
 func HealthCheckWithContext(
 	ctx context.Context,
 	out io.Writer,
@@ -2540,6 +2554,18 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 
 				// Grant Admin privileges (Root Access) for local development/testing convenience
 				// when running in insecure mode (private network, no API key).
+				// HTTPRequestContextMiddleware injects the HTTP request into the context.
+				// Summary: Middleware to add HTTP request to context.
+				// Parameters:
+				//   - next (http.Handler): The next handler.
+				// Returns:
+				//   - (http.Handler): The wrapped handler.
+				//
+				// Errors:
+				//   - None.
+				//
+				// Side Effects:
+				//   - None.
 				ctx = auth.ContextWithRoles(ctx, []string{"admin"})
 				ctx = auth.ContextWithUser(ctx, "system-admin")
 			}
@@ -2549,15 +2575,6 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 	}
 }
 
-// HTTPRequestContextMiddleware injects the HTTP request into the context.
-//
-// Summary: Middleware to add HTTP request to context.
-//
-// Parameters:
-//   - next (http.Handler): The next handler.
-//
-// Returns:
-//   - (http.Handler): The wrapped handler.
 func (a *Application) HTTPRequestContextMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := context.WithValue(r.Context(), middleware.HTTPRequestContextKey, r)
@@ -2633,18 +2650,25 @@ func startGrpcServer(
 		if err := server.Serve(lis); err != nil && err != gogrpc.ErrServerStopped {
 			errChan <- fmt.Errorf("[%s] server failed to serve: %w", name, err)
 			cancel() // Signal shutdown goroutine to exit
+			// GetAuditMiddleware returns the current audit middleware.
+			// Summary: Returns the active audit middleware.
+			// Returns:
+			//   - *middleware.AuditMiddleware: The current audit middleware instance.
+			//
+			// Parameters:
+			//   - None.
+			//
+			// Errors:
+			//   - None.
+			//
+			// Side Effects:
+			//   - None.
 		}
 		<-shutdownComplete
 		serverLog.Info("Server shut down.")
 	}()
 }
 
-// GetAuditMiddleware returns the current audit middleware.
-//
-// Summary: Returns the active audit middleware.
-//
-// Returns:
-//   - *middleware.AuditMiddleware: The current audit middleware instance.
 func (a *Application) GetAuditMiddleware() *middleware.AuditMiddleware {
 	a.configMu.Lock()
 	defer a.configMu.Unlock()

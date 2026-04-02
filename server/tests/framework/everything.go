@@ -1,6 +1,41 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// BuildEverythingServer builds a server with everything.
+// t is the t.
+// Returns the result.
+//
+// Summary: BuildEverythingServer provides functionality.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+//
+// RegisterEverythingService registers everything service.
+// t is the t.
+// registrationClient is the registrationClient.
+// upstreamEndpoint is the upstreamEndpoint.
+//
+// Summary: RegisterEverythingService provides functionality.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 package framework
 
 import (
@@ -11,11 +46,6 @@ import (
 	"github.com/mcpany/core/server/tests/integration"
 )
 
-// BuildEverythingServer builds a server with everything.
-//
-// t is the t.
-//
-// Returns the result.
 func BuildEverythingServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	args := []string{"@modelcontextprotocol/server-everything", "streamableHttp"}
@@ -26,11 +56,6 @@ func BuildEverythingServer(t *testing.T) *integration.ManagedProcess {
 	return proc
 }
 
-// RegisterEverythingService registers everything service.
-//
-// t is the t.
-// registrationClient is the registrationClient.
-// upstreamEndpoint is the upstreamEndpoint.
 func RegisterEverythingService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	const serviceID = "e2e_everything_server_streamable"
 	integration.RegisterStreamableMCPService(t, registrationClient, serviceID, upstreamEndpoint, true, nil)

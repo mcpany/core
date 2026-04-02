@@ -18,14 +18,8 @@ import (
 // Store implements config.Store using SQLite.
 //
 // Summary: SQLite storage implementation.
-type Store struct {
-	db *DB
-}
-
 // NewStore creates a new SQLite store.
-//
 // Summary: Creates a new SQLite store.
-//
 // Parameters:
 //   - db (*DB): The database connection wrapper.
 //
@@ -34,14 +28,12 @@ type Store struct {
 //
 // Side Effects:
 //   - None.
-func NewStore(db *DB) *Store {
-	return &Store{db: db}
-}
-
+//
+// Errors:
+//   - None.
+//
 // Close closes the underlying database connection.
-//
 // Summary: Closes the database connection.
-//
 // Returns:
 //   - error: An error if closing fails.
 //
@@ -50,21 +42,36 @@ func NewStore(db *DB) *Store {
 //
 // Side Effects:
 //   - Closes the connection to SQLite.
-func (s *Store) Close() error {
-	return s.db.Close()
-}
-
+//
+// Parameters:
+//   - None.
+//
 // HasConfigSources returns true if the store has configuration sources (e.g., file paths) configured.
-//
 // Summary: Checks if the store has configuration sources.
-//
 // For DB stores, we assume they always have a source (the DB itself).
-//
 // Returns:
 //   - bool: True always for DB store.
 //
 // Side Effects:
 //   - None.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+type Store struct {
+	db *DB
+}
+
+func NewStore(db *DB) *Store {
+	return &Store{db: db}
+}
+
+func (s *Store) Close() error {
+	return s.db.Close()
+}
+
 func (s *Store) HasConfigSources() bool {
 	return true
 }
@@ -320,6 +327,20 @@ func (s *Store) SaveService(ctx context.Context, service *configv1.UpstreamServi
 	id := service.GetId()
 	if id == "" {
 		id = service.GetName() // fallback
+		// GetService retrieves an upstream service configuration by name.
+		// Summary: Retrieves a service configuration by name.
+		// Parameters:
+		//   - ctx (context.Context): The context for the request.
+		//   - name (string): The name of the service.
+		// Returns:
+		//   - *configv1.UpstreamServiceConfig: The service configuration.
+		//   - error: An error if retrieval fails.
+		// Errors:
+		//   - Returns nil, nil if service is not found.
+		//   - Returns an error if database query fails.
+		//
+		// Side Effects:
+		//   - None.
 	}
 
 	_, err = s.db.ExecContext(ctx, query, id, service.GetName(), string(configJSON))
@@ -329,21 +350,6 @@ func (s *Store) SaveService(ctx context.Context, service *configv1.UpstreamServi
 	return nil
 }
 
-// GetService retrieves an upstream service configuration by name.
-//
-// Summary: Retrieves a service configuration by name.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - name (string): The name of the service.
-//
-// Returns:
-//   - *configv1.UpstreamServiceConfig: The service configuration.
-//   - error: An error if retrieval fails.
-//
-// Errors:
-//   - Returns nil, nil if service is not found.
-//   - Returns an error if database query fails.
 func (s *Store) GetService(ctx context.Context, name string) (*configv1.UpstreamServiceConfig, error) {
 	query := "SELECT config_json FROM upstream_services WHERE name = ?"
 	row := s.db.QueryRowContext(ctx, query, name)
@@ -352,6 +358,18 @@ func (s *Store) GetService(ctx context.Context, name string) (*configv1.Upstream
 	if err := row.Scan(&configJSON); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil // Not found
+			// ListServices lists all upstream service configurations.
+			// Summary: Lists all services.
+			// Parameters:
+			//   - ctx (context.Context): The context for the request.
+			// Returns:
+			//   - []*configv1.UpstreamServiceConfig: A list of service configurations.
+			//   - error: An error if listing fails.
+			// Errors:
+			//   - Returns an error if database query fails.
+			//
+			// Side Effects:
+			//   - None.
 		}
 		return nil, fmt.Errorf("failed to scan config_json: %w", err)
 	}
@@ -363,19 +381,6 @@ func (s *Store) GetService(ctx context.Context, name string) (*configv1.Upstream
 	return &service, nil
 }
 
-// ListServices lists all upstream service configurations.
-//
-// Summary: Lists all services.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//
-// Returns:
-//   - []*configv1.UpstreamServiceConfig: A list of service configurations.
-//   - error: An error if listing fails.
-//
-// Errors:
-//   - Returns an error if database query fails.
 func (s *Store) ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	query := "SELECT config_json FROM upstream_services"
 	rows, err := s.db.QueryContext(ctx, query)
@@ -421,18 +426,9 @@ func (s *Store) ListServices(ctx context.Context) ([]*configv1.UpstreamServiceCo
 //
 // Side Effects:
 //   - Deletes a row from the upstream_services table.
-func (s *Store) DeleteService(ctx context.Context, name string) error {
-	_, err := s.db.ExecContext(ctx, "DELETE FROM upstream_services WHERE name = ?", name)
-	if err != nil {
-		return fmt.Errorf("failed to delete service: %w", err)
-	}
-	return nil
-}
-
+//
 // GetGlobalSettings retrieves the global configuration.
-//
 // Summary: Retrieves global settings.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //
@@ -443,6 +439,17 @@ func (s *Store) DeleteService(ctx context.Context, name string) error {
 // Errors:
 //   - Returns nil, nil if settings are not found.
 //   - Returns an error if database query fails.
+//
+// Side Effects:
+//   - None.
+func (s *Store) DeleteService(ctx context.Context, name string) error {
+	_, err := s.db.ExecContext(ctx, "DELETE FROM upstream_services WHERE name = ?", name)
+	if err != nil {
+		return fmt.Errorf("failed to delete service: %w", err)
+	}
+	return nil
+}
+
 func (s *Store) GetGlobalSettings(ctx context.Context) (*configv1.GlobalSettings, error) {
 	query := "SELECT config_json FROM global_settings WHERE id = 1"
 	row := s.db.QueryRowContext(ctx, query)
@@ -517,6 +524,23 @@ func (s *Store) SaveGlobalSettings(ctx context.Context, settings *configv1.Globa
 //
 // Side Effects:
 //   - Inserts a row into the users table.
+//
+// GetUser retrieves a user by ID.
+// Summary: Retrieves a user by ID.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - id (string): The user ID.
+//
+// Returns:
+//   - *configv1.User: The user.
+//   - error: An error if retrieval fails.
+//
+// Errors:
+//   - Returns nil, nil if user is not found.
+//   - Returns an error if database query fails.
+//
+// Side Effects:
+//   - None.
 func (s *Store) CreateUser(ctx context.Context, user *configv1.User) error {
 	if user.GetId() == "" {
 		return fmt.Errorf("user ID is required")
@@ -539,21 +563,6 @@ func (s *Store) CreateUser(ctx context.Context, user *configv1.User) error {
 	return nil
 }
 
-// GetUser retrieves a user by ID.
-//
-// Summary: Retrieves a user by ID.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - id (string): The user ID.
-//
-// Returns:
-//   - *configv1.User: The user.
-//   - error: An error if retrieval fails.
-//
-// Errors:
-//   - Returns nil, nil if user is not found.
-//   - Returns an error if database query fails.
 func (s *Store) GetUser(ctx context.Context, id string) (*configv1.User, error) {
 	query := "SELECT config_json FROM users WHERE id = ?"
 	row := s.db.QueryRowContext(ctx, query, id)
@@ -562,6 +571,18 @@ func (s *Store) GetUser(ctx context.Context, id string) (*configv1.User, error) 
 	if err := row.Scan(&configJSON); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil // Not found
+			// ListUsers retrieves all users.
+			// Summary: Lists all users.
+			// Parameters:
+			//   - ctx (context.Context): The context for the request.
+			// Returns:
+			//   - []*configv1.User: A list of users.
+			//   - error: An error if listing fails.
+			// Errors:
+			//   - Returns an error if database query fails.
+			//
+			// Side Effects:
+			//   - None.
 		}
 		return nil, fmt.Errorf("failed to scan user config: %w", err)
 	}
@@ -573,19 +594,6 @@ func (s *Store) GetUser(ctx context.Context, id string) (*configv1.User, error) 
 	return &user, nil
 }
 
-// ListUsers retrieves all users.
-//
-// Summary: Lists all users.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//
-// Returns:
-//   - []*configv1.User: A list of users.
-//   - error: An error if listing fails.
-//
-// Errors:
-//   - Returns an error if database query fails.
 func (s *Store) ListUsers(ctx context.Context) ([]*configv1.User, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM users")
 	if err != nil {
@@ -685,11 +693,8 @@ func (s *Store) DeleteUser(ctx context.Context, id string) error {
 }
 
 // Secrets
-
 // ListSecrets retrieves all secrets.
-//
 // Summary: Lists all secrets.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //
@@ -699,6 +704,26 @@ func (s *Store) DeleteUser(ctx context.Context, id string) error {
 //
 // Errors:
 //   - Returns an error if database query fails.
+//
+// Side Effects:
+//   - None.
+//
+// GetSecret retrieves a secret by ID.
+// Summary: Retrieves a secret by ID.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - id (string): The secret ID.
+//
+// Returns:
+//   - *configv1.Secret: The secret.
+//   - error: An error if retrieval fails.
+//
+// Errors:
+//   - Returns nil, nil if secret is not found.
+//   - Returns an error if database query fails.
+//
+// Side Effects:
+//   - None.
 func (s *Store) ListSecrets(ctx context.Context) ([]*configv1.Secret, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM secrets")
 	if err != nil {
@@ -725,21 +750,6 @@ func (s *Store) ListSecrets(ctx context.Context) ([]*configv1.Secret, error) {
 	return secrets, nil
 }
 
-// GetSecret retrieves a secret by ID.
-//
-// Summary: Retrieves a secret by ID.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - id (string): The secret ID.
-//
-// Returns:
-//   - *configv1.Secret: The secret.
-//   - error: An error if retrieval fails.
-//
-// Errors:
-//   - Returns nil, nil if secret is not found.
-//   - Returns an error if database query fails.
 func (s *Store) GetSecret(ctx context.Context, id string) (*configv1.Secret, error) {
 	query := "SELECT config_json FROM secrets WHERE id = ?"
 	row := s.db.QueryRowContext(ctx, query, id)
@@ -842,6 +852,22 @@ func (s *Store) DeleteSecret(ctx context.Context, id string) error {
 //
 // Side Effects:
 //   - Persists the log entry to the underlying storage.
+//
+// GetRecentLogs retrieves recent log entries.
+// Summary: Retrieves recent log entries.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - limit (int): The maximum number of logs to retrieve.
+//
+// Returns:
+//   - []*logging.LogEntry: A list of log entries.
+//   - error: An error if retrieval fails.
+//
+// Errors:
+//   - Returns an error if storage read fails.
+//
+// Side Effects:
+//   - None.
 func (s *Store) SaveLog(ctx context.Context, entry *logging.LogEntry) error {
 	metadataJSON, err := json.Marshal(entry.Metadata)
 	if err != nil {
@@ -859,20 +885,6 @@ func (s *Store) SaveLog(ctx context.Context, entry *logging.LogEntry) error {
 	return nil
 }
 
-// GetRecentLogs retrieves recent log entries.
-//
-// Summary: Retrieves recent log entries.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - limit (int): The maximum number of logs to retrieve.
-//
-// Returns:
-//   - []*logging.LogEntry: A list of log entries.
-//   - error: An error if retrieval fails.
-//
-// Errors:
-//   - Returns an error if storage read fails.
 func (s *Store) GetRecentLogs(ctx context.Context, limit int) ([]*logging.LogEntry, error) {
 	// We want the LATEST logs, but ordered chronologically for the broadcaster/UI.
 	// So we fetch DESC (latest first), then sort ASC.
@@ -922,11 +934,8 @@ func (s *Store) GetRecentLogs(ctx context.Context, limit int) ([]*logging.LogEnt
 }
 
 // Profiles
-
 // ListProfiles retrieves all profile definitions.
-//
 // Summary: Lists all profiles.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //
@@ -936,6 +945,26 @@ func (s *Store) GetRecentLogs(ctx context.Context, limit int) ([]*logging.LogEnt
 //
 // Errors:
 //   - Returns an error if database query fails.
+//
+// Side Effects:
+//   - None.
+//
+// GetProfile retrieves a profile definition by name.
+// Summary: Retrieves a profile by name.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - name (string): The profile name.
+//
+// Returns:
+//   - *configv1.ProfileDefinition: The profile.
+//   - error: An error if retrieval fails.
+//
+// Errors:
+//   - Returns nil, nil if profile is not found.
+//   - Returns an error if database query fails.
+//
+// Side Effects:
+//   - None.
 func (s *Store) ListProfiles(ctx context.Context) ([]*configv1.ProfileDefinition, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM profile_definitions")
 	if err != nil {
@@ -962,21 +991,6 @@ func (s *Store) ListProfiles(ctx context.Context) ([]*configv1.ProfileDefinition
 	return profiles, nil
 }
 
-// GetProfile retrieves a profile definition by name.
-//
-// Summary: Retrieves a profile by name.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - name (string): The profile name.
-//
-// Returns:
-//   - *configv1.ProfileDefinition: The profile.
-//   - error: An error if retrieval fails.
-//
-// Errors:
-//   - Returns nil, nil if profile is not found.
-//   - Returns an error if database query fails.
 func (s *Store) GetProfile(ctx context.Context, name string) (*configv1.ProfileDefinition, error) {
 	query := "SELECT config_json FROM profile_definitions WHERE name = ?"
 	row := s.db.QueryRowContext(ctx, query, name)
@@ -1064,11 +1078,8 @@ func (s *Store) DeleteProfile(ctx context.Context, name string) error {
 }
 
 // Service Collections
-
 // ListServiceCollections retrieves all service collections.
-//
 // Summary: Lists all collections.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //
@@ -1078,6 +1089,26 @@ func (s *Store) DeleteProfile(ctx context.Context, name string) error {
 //
 // Errors:
 //   - Returns an error if database query fails.
+//
+// Side Effects:
+//   - None.
+//
+// GetServiceCollection retrieves a service collection by name.
+// Summary: Retrieves a collection by name.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - name (string): The collection name.
+//
+// Returns:
+//   - *configv1.Collection: The collection.
+//   - error: An error if retrieval fails.
+//
+// Errors:
+//   - Returns nil, nil if collection is not found.
+//   - Returns an error if database query fails.
+//
+// Side Effects:
+//   - None.
 func (s *Store) ListServiceCollections(ctx context.Context) ([]*configv1.Collection, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM service_collections")
 	if err != nil {
@@ -1104,21 +1135,6 @@ func (s *Store) ListServiceCollections(ctx context.Context) ([]*configv1.Collect
 	return collections, nil
 }
 
-// GetServiceCollection retrieves a service collection by name.
-//
-// Summary: Retrieves a collection by name.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - name (string): The collection name.
-//
-// Returns:
-//   - *configv1.Collection: The collection.
-//   - error: An error if retrieval fails.
-//
-// Errors:
-//   - Returns nil, nil if collection is not found.
-//   - Returns an error if database query fails.
 func (s *Store) GetServiceCollection(ctx context.Context, name string) (*configv1.Collection, error) {
 	query := "SELECT config_json FROM service_collections WHERE name = ?"
 	row := s.db.QueryRowContext(ctx, query, name)
@@ -1224,6 +1240,24 @@ func (s *Store) DeleteServiceCollection(ctx context.Context, name string) error 
 //
 // Side Effects:
 //   - Inserts or updates the user_tokens table.
+//
+// GetToken retrieves a user token by user ID and service ID.
+// Summary: Retrieves a user token.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - userID (string): The user ID.
+//   - serviceID (string): The service ID.
+//
+// Returns:
+//   - *configv1.UserToken: The token.
+//   - error: An error if retrieval fails.
+//
+// Errors:
+//   - Returns nil, nil if token is not found.
+//   - Returns an error if database query fails.
+//
+// Side Effects:
+//   - None.
 func (s *Store) SaveToken(ctx context.Context, token *configv1.UserToken) error {
 	if token.GetUserId() == "" || token.GetServiceId() == "" {
 		return fmt.Errorf("user ID and service ID are required")
@@ -1249,22 +1283,6 @@ func (s *Store) SaveToken(ctx context.Context, token *configv1.UserToken) error 
 	return nil
 }
 
-// GetToken retrieves a user token by user ID and service ID.
-//
-// Summary: Retrieves a user token.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - userID (string): The user ID.
-//   - serviceID (string): The service ID.
-//
-// Returns:
-//   - *configv1.UserToken: The token.
-//   - error: An error if retrieval fails.
-//
-// Errors:
-//   - Returns nil, nil if token is not found.
-//   - Returns an error if database query fails.
 func (s *Store) GetToken(ctx context.Context, userID, serviceID string) (*configv1.UserToken, error) {
 	query := "SELECT config_json FROM user_tokens WHERE user_id = ? AND service_id = ?"
 	row := s.db.QueryRowContext(ctx, query, userID, serviceID)
@@ -1310,11 +1328,8 @@ func (s *Store) DeleteToken(ctx context.Context, userID, serviceID string) error
 }
 
 // Credentials
-
 // ListCredentials retrieves all credentials.
-//
 // Summary: Lists all credentials.
-//
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //
@@ -1324,6 +1339,26 @@ func (s *Store) DeleteToken(ctx context.Context, userID, serviceID string) error
 //
 // Errors:
 //   - Returns an error if database query fails.
+//
+// Side Effects:
+//   - None.
+//
+// GetCredential retrieves a credential by ID.
+// Summary: Retrieves a credential by ID.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - id (string): The credential ID.
+//
+// Returns:
+//   - *configv1.Credential: The credential.
+//   - error: An error if retrieval fails.
+//
+// Errors:
+//   - Returns nil, nil if credential is not found.
+//   - Returns an error if database query fails.
+//
+// Side Effects:
+//   - None.
 func (s *Store) ListCredentials(ctx context.Context) ([]*configv1.Credential, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM credentials")
 	if err != nil {
@@ -1350,21 +1385,6 @@ func (s *Store) ListCredentials(ctx context.Context) ([]*configv1.Credential, er
 	return credentials, nil
 }
 
-// GetCredential retrieves a credential by ID.
-//
-// Summary: Retrieves a credential by ID.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - id (string): The credential ID.
-//
-// Returns:
-//   - *configv1.Credential: The credential.
-//   - error: An error if retrieval fails.
-//
-// Errors:
-//   - Returns nil, nil if credential is not found.
-//   - Returns an error if database query fails.
 func (s *Store) GetCredential(ctx context.Context, id string) (*configv1.Credential, error) {
 	query := "SELECT config_json FROM credentials WHERE id = ?"
 	row := s.db.QueryRowContext(ctx, query, id)

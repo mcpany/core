@@ -249,6 +249,20 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 //
 // Side Effects:
 //   - None.
+//
+// Close closes the Kafka writer.
+// Summary: Closes the Kafka connection.
+// Returns:
+//   - error: An error if closing fails.
+//
+// Parameters:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("kafka bus: handler cannot be nil")
@@ -266,12 +280,6 @@ func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T
 	return unsub
 }
 
-// Close closes the Kafka writer.
-//
-// Summary: Closes the Kafka connection.
-//
-// Returns:
-//   - error: An error if closing fails.
 func (b *Bus[T]) Close() error {
 	return b.writer.Close()
 }

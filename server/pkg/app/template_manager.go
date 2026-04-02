@@ -18,21 +18,25 @@ import (
 // TemplateManager manages the persistence and lifecycle of service templates.
 //
 // Summary: Represents a TemplateManager.
+// NewTemplateManager creates a new instance of TemplateManager.
+// Summary: Initializes a new TemplateManager.
+// Parameters:
+//   - dataDir: string. The directory where template data is persisted.
+//
+// Returns:
+//   - *TemplateManager: The initialized manager.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type TemplateManager struct {
 	mu        sync.RWMutex
 	templates []*configv1.UpstreamServiceConfig
 	filePath  string
 }
 
-// NewTemplateManager creates a new instance of TemplateManager.
-//
-// Summary: Initializes a new TemplateManager.
-//
-// Parameters:
-//   - dataDir: string. The directory where template data is persisted.
-//
-// Returns:
-//   - *TemplateManager: The initialized manager.
 func NewTemplateManager(dataDir string) *TemplateManager {
 	tm := &TemplateManager{
 		filePath: filepath.Join(dataDir, "templates.json"),
@@ -122,44 +126,66 @@ func (tm *TemplateManager) save() error {
 	}
 
 	// Ensure dir exists
+	// ListTemplates returns a list of all stored templates.
+	// Summary: Retrieves all managed templates.
+	// Returns:
+	//   - []*configv1.UpstreamServiceConfig: A list of templates.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	if err := os.MkdirAll(filepath.Dir(tm.filePath), 0750); err != nil {
 		return err
 	}
 	return os.WriteFile(tm.filePath, data, 0600)
 }
 
-// ListTemplates returns a list of all stored templates.
-//
-// Summary: Retrieves all managed templates.
-//
-// Returns:
-//   - []*configv1.UpstreamServiceConfig: A list of templates.
 func (tm *TemplateManager) ListTemplates() []*configv1.UpstreamServiceConfig {
 	tm.mu.RLock()
 	defer tm.mu.RUnlock()
 	// Return a copy?
 	// Shallow copy of slice is fine if objects are treated immutable or we clone.
 	// For now just return slice.
+	// SaveTemplate saves or updates a template.
+	// Summary: Persists a template.
+	// Parameters:
+	//   - template: *configv1.UpstreamServiceConfig. The template to save.
+	// Returns:
+	//   - error: An error if persistence fails.
+	//
+	// Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	res := make([]*configv1.UpstreamServiceConfig, len(tm.templates))
 	copy(res, tm.templates)
 	return res
 }
 
-// SaveTemplate saves or updates a template.
-//
-// Summary: Persists a template.
-//
-// Parameters:
-//   - template: *configv1.UpstreamServiceConfig. The template to save.
-//
-// Returns:
-//   - error: An error if persistence fails.
 func (tm *TemplateManager) SaveTemplate(template *configv1.UpstreamServiceConfig) error {
 	tm.mu.Lock()
 	found := false
 	for i, t := range tm.templates {
 		if t.GetName() == template.GetName() { // Identify by Name for now? Or ID? ID is safer.
 			// If ID missing, use Name?
+			// DeleteTemplate deletes a template by its ID or Name.
+			// Summary: Removes a template.
+			// Parameters:
+			//   - idOrName: string. The ID or Name of the template to delete.
+			// Returns:
+			//   - error: An error if deletion or persistence fails.
+			//
+			// Errors:
+			//   - None.
+			//
+			// Side Effects:
+			//   - None.
 			if template.GetId() != "" && t.GetId() == template.GetId() {
 				tm.templates[i] = template
 				found = true
@@ -179,15 +205,6 @@ func (tm *TemplateManager) SaveTemplate(template *configv1.UpstreamServiceConfig
 	return tm.save()
 }
 
-// DeleteTemplate deletes a template by its ID or Name.
-//
-// Summary: Removes a template.
-//
-// Parameters:
-//   - idOrName: string. The ID or Name of the template to delete.
-//
-// Returns:
-//   - error: An error if deletion or persistence fails.
 func (tm *TemplateManager) DeleteTemplate(idOrName string) error {
 	tm.mu.Lock()
 	newTemplates := make([]*configv1.UpstreamServiceConfig, 0, len(tm.templates))

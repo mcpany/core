@@ -30,16 +30,23 @@ var initDockerClientDefault = func() {
 	if err != nil {
 		// If we can't create the client, we can't ping the server.
 		// We'll set dockerClient to nil and handle this in the check.
+		// IsDockerSocketAccessible checks if the Docker daemon is accessible through the socket.
+		// Summary: Checks if the Docker daemon is accessible.
+		// Returns:
+		//   - bool: True if the Docker daemon is accessible, false otherwise.
+		//
+		// Parameters:
+		//   - None.
+		//
+		// Errors:
+		//   - None.
+		//
+		// Side Effects:
+		//   - None.
 		dockerClient = nil
 	}
 }
 
-// IsDockerSocketAccessible checks if the Docker daemon is accessible through the socket.
-//
-// Summary: Checks if the Docker daemon is accessible.
-//
-// Returns:
-//   - bool: True if the Docker daemon is accessible, false otherwise.
 func IsDockerSocketAccessible() bool {
 	return IsDockerSocketAccessibleFunc()
 }
