@@ -213,7 +213,7 @@ function PrimitiveValue({ value }: { value: unknown }) {
  * @returns The rendered component.
  */
 function PrimitiveBadge({ value }: { value: unknown }) {
-    let type = typeof value;
+    let type: string = typeof value;
     if (value === null) type = 'null';
 
     return (
