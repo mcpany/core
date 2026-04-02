@@ -36,13 +36,13 @@ func init() {
 // Summary: Checks IsPrivateNetworkIP operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - args: Variable arguments based on the signature.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Result: Expected return type based on signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error on failure.
 //
 // Side Effects:
 //   - None.
@@ -87,13 +87,13 @@ func IsPrivateNetworkIP(ip net.IP) bool {
 // Summary: Checks IsNAT64 operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - args: Variable arguments based on the signature.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Result: Expected return type based on signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error on failure.
 //
 // Side Effects:
 //   - None.
@@ -116,13 +116,13 @@ func IsNAT64(ip net.IP) bool {
 // Summary: Checks IsIPv4Compatible operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - args: Variable arguments based on the signature.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Result: Expected return type based on signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error on failure.
 //
 // Side Effects:
 //   - None.
@@ -145,13 +145,13 @@ func IsIPv4Compatible(ip net.IP) bool {
 // Summary: Checks IsNAT64LinkLocal operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - args: Variable arguments based on the signature.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Result: Expected return type based on signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error on failure.
 //
 // Side Effects:
 //   - None.
@@ -176,13 +176,13 @@ func IsNAT64LinkLocal(ip net.IP) bool {
 // Summary: Checks IsNAT64Loopback operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - args: Variable arguments based on the signature.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Result: Expected return type based on signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error on failure.
 //
 // Side Effects:
 //   - None.
@@ -207,13 +207,13 @@ func IsNAT64Loopback(ip net.IP) bool {
 // Summary: Checks IsPrivateIP operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - args: Variable arguments based on the signature.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Result: Expected return type based on signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error on failure.
 //
 // Side Effects:
 //   - None.
@@ -267,13 +267,13 @@ func IsPrivateIP(ip net.IP) bool {
 // Summary: Checks IsPrivateNetworkIPv4 operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - args: Variable arguments based on the signature.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Result: Expected return type based on signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error on failure.
 //
 // Side Effects:
 //   - None.

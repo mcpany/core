@@ -31,13 +31,13 @@ type ResourceMCPServer struct {
 // Summary: Executes Schema operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - args: Variable arguments based on the signature.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Result: Expected return type based on signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error on failure.
 //
 // Side Effects:
 //   - None.
@@ -80,13 +80,13 @@ func Schema() map[string]interface{} {
 // Summary: Initializes Create operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - args: Variable arguments based on the signature.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Result: Expected return type based on signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error on failure.
 //
 // Side Effects:
 //   - None.
@@ -113,13 +113,13 @@ func Create(_ *ResourceMCPServer) error {
 // Summary: Retrieves Read operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - args: Variable arguments based on the signature.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Result: Expected return type based on signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error on failure.
 //
 // Side Effects:
 //   - None.

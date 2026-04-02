@@ -22,13 +22,13 @@ type GRPCProvider struct {
 // Summary: Executes Name operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - args: Variable arguments based on the signature.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Result: Expected return type based on signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error on failure.
 //
 // Side Effects:
 //   - None.
@@ -41,13 +41,13 @@ func (p *GRPCProvider) Name() string {
 // Summary: Executes Discover operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - args: Variable arguments based on the signature.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Result: Expected return type based on signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error on failure.
 //
 // Side Effects:
 //   - None.

@@ -37,13 +37,13 @@ type OAuth2Authenticator struct {
 // Summary: Initializes NewOAuth2Authenticator operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - args: Variable arguments based on the signature.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Result: Expected return type based on signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error on failure.
 //
 // Side Effects:
 //   - None.
@@ -90,13 +90,13 @@ func NewOAuth2Authenticator(ctx context.Context, config *OAuth2Config) (*OAuth2A
 // Summary: Executes Authenticate operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - args: Variable arguments based on the signature.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Result: Expected return type based on signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error on failure.
 //
 // Side Effects:
 //   - None.

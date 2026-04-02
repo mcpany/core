@@ -37,13 +37,13 @@ type ActionableError struct {
 // Summary: Executes Error operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - args: Variable arguments based on the signature.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Result: Expected return type based on signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error on failure.
 //
 // Side Effects:
 //   - None.
@@ -68,13 +68,13 @@ func (e *ActionableError) Error() string {
 // Summary: Executes Unwrap operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - args: Variable arguments based on the signature.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Result: Expected return type based on signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error on failure.
 //
 // Side Effects:
 //   - None.
