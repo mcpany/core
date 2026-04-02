@@ -8,22 +8,19 @@ import { useState, useEffect } from "react";
 const STORAGE_KEY = "mcpany-pinned-tools";
 
 /**
- * Summary: Document usePinnedTools
+ * Summary: Provides state management for tracking pinned tools across the UI.
  *
  * Params:
- *   - None
+ *   - None.
  *
  * Returns:
- *   - Documented below.
+ *   - Object: Contains the `pinnedTools` set, utility methods to `togglePin`, `isPinned`, and the load state.
  *
  * Errors:
- *   - None
+ *   - N/A: Local storage errors are safely logged without crashing.
  *
  * Side Effects:
- *   - None
- *
- * Hook for pinnedtools.
- * @returns The result.
+ *   - Syncs the pinned tools set to `window.localStorage`.
  */
 export function usePinnedTools() {
   const [pinnedTools, setPinnedTools] = useState<string[]>([]);

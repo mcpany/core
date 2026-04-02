@@ -14,25 +14,19 @@ interface UseTracesOptions {
 const MAX_TRACES = 1000;
 
 /**
- * Summary: Document useTraces
+ * Summary: Hook to manage live trace subscriptions via WebSocket.
  *
  * Params:
- *   - Documented below.
+ *   - options (UseTracesOptions): Optional configuration, e.g., initial pause state.
  *
  * Returns:
- *   - Documented below.
+ *   - Object: Contains traces array, state boolean flags (`isLoading`, `isConnected`, `isPaused`), and control functions (`togglePause`, `clearTraces`).
  *
  * Errors:
- *   - None
+ *   - N/A: Connection drops invoke auto-reconnection rather than throwing React errors.
  *
  * Side Effects:
- *   - None
- *
- * Hook to manage trace subscriptions via WebSocket.
- *
- * @param options - Configuration options for the trace hook.
- * @param options.initialPaused - Whether to start in a paused state.
- * @returns An object containing the current traces, loading state, connection status, and controls.
+ *   - Establishes and manages a WebSocket connection. Stores traces in component state.
  */
 export function useTraces(options: UseTracesOptions = {}) {
     const [traces, setTraces] = useState<Trace[]>([]);

@@ -68,25 +68,20 @@ const addToRemoveQueue = (toastId: string) => {
 }
 
 /**
- * Summary: Document reducer
+ * Summary: The reducer function for managing internal toast state.
  *
  * Params:
- *   - Documented below.
+ *   - state (State): The current state of the toasts.
+ *   - action (Action): The action to perform (ADD, UPDATE, DISMISS, REMOVE).
  *
  * Returns:
- *   - Documented below.
+ *   - State: The new state after applying the action.
  *
  * Errors:
- *   - None
+ *   - N/A: Pure function execution.
  *
  * Side Effects:
- *   - None
- *
- * The reducer function for managing toast state.
- *
- * @param state - The current state of the toasts.
- * @param action - The action to perform (ADD, UPDATE, DISMISS, REMOVE).
- * @returns The new state after applying the action.
+ *   - Enqueues toasts for removal (timeouts) when DISMISS_TOAST is called.
  */
 export const reducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -192,14 +187,19 @@ function toast({ ...props }: Toast) {
 }
 
 /**
- * Hook to manage toast notifications.
+ * Summary: Hook to manage toast notifications within a component.
  *
- * Provides access to the current list of toasts and functions to add or dismiss them.
+ * Params:
+ *   - None.
  *
- * @returns An object containing:
- *          - toasts: The list of active toasts.
- *          - toast: Function to add a new toast.
- *          - dismiss: Function to dismiss a toast by ID.
+ * Returns:
+ *   - Object: Contains current toasts array, and functions to add or dismiss toasts.
+ *
+ * Errors:
+ *   - N/A: Safe execution.
+ *
+ * Side Effects:
+ *   - Subscribes the component to global toast state changes.
  */
 function useToast() {
   const [state, setState] = React.useState<State>(memoryState)

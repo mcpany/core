@@ -10,32 +10,32 @@ import (
 // Summary: Defines the standard interface that all agent frameworks must implement to integrate with the universal bus.
 //
 // Parameters:
-//   - None.
+//   - N/A: Interface definition.
 //
 // Returns:
-//   - None.
+//   - N/A: Interface definition.
 //
 // Throws/Errors:
-//   - None.
+//   - N/A: Interface definition.
 //
 // Side Effects:
-//   - None.
+//   - N/A: Interface definition.
 type AgentFramework interface {
 	// Name returns the identifier of the agent framework.
 	//
 	// Summary: Retrieves the unique name of the framework.
 	//
 	// Parameters:
-	//   - None.
+	//   - N/A: Requires no parameters.
 	//
 	// Returns:
 	//   - string: The name of the agent framework.
 	//
 	// Throws/Errors:
-	//   - None.
+	//   - N/A: Never fails.
 	//
 	// Side Effects:
-	//   - None.
+	//   - N/A: Performs no state mutations.
 	//
 	Name() string
 
@@ -70,10 +70,10 @@ type AgentFramework interface {
 	//   - bool: True if the capability is supported, false otherwise.
 	//
 	// Throws/Errors:
-	//   - None.
+	//   - N/A: Never fails.
 	//
 	// Side Effects:
-	//   - None.
+	//   - N/A: Performs no state mutations.
 	//
 	SupportsCapability(capability string) bool
 
@@ -121,16 +121,16 @@ type AgentFramework interface {
 // Summary: A data structure that holds text context and an optional multimodal payload, with cryptographic lineage.
 //
 // Parameters:
-//   - None.
+//   - N/A: Struct definition.
 //
 // Returns:
-//   - None.
+//   - N/A: Struct definition.
 //
 // Throws/Errors:
-//   - None.
+//   - N/A: Struct definition.
 //
 // Side Effects:
-//   - None.
+//   - N/A: Struct definition.
 type MemoryShard struct {
 	ShardID           string `json:"shard_id"`
 	Intent            string `json:"intent"`
@@ -145,16 +145,16 @@ type MemoryShard struct {
 // Summary: A data structure that holds the definition of a task to be routed to an agent framework.
 //
 // Parameters:
-//   - None.
+//   - N/A: Struct definition.
 //
 // Returns:
-//   - None.
+//   - N/A: Struct definition.
 //
 // Throws/Errors:
-//   - None.
+//   - N/A: Struct definition.
 //
 // Side Effects:
-//   - None.
+//   - N/A: Struct definition.
 type Task struct {
 	ID        string            `json:"id"`
 	Framework string            `json:"framework"`
@@ -167,16 +167,16 @@ type Task struct {
 // Summary: A data structure that contains the result of an executed task.
 //
 // Parameters:
-//   - None.
+//   - N/A: Struct definition.
 //
 // Returns:
-//   - None.
+//   - N/A: Struct definition.
 //
 // Throws/Errors:
-//   - None.
+//   - N/A: Struct definition.
 //
 // Side Effects:
-//   - None.
+//   - N/A: Struct definition.
 type TaskResult struct {
 	TaskID    string            `json:"task_id"`
 	Status    string            `json:"status"`
@@ -190,16 +190,16 @@ type TaskResult struct {
 // Summary: A central hub that maintains registered agent adapters and routes tasks to the appropriate one.
 //
 // Parameters:
-//   - None.
+//   - N/A: Struct definition.
 //
 // Returns:
-//   - None.
+//   - N/A: Struct definition.
 //
 // Throws/Errors:
-//   - None.
+//   - N/A: Struct definition.
 //
 // Side Effects:
-//   - None.
+//   - N/A: Struct definition.
 type AdapterHub struct {
 	adapters map[string]AgentFramework
 }
@@ -209,16 +209,16 @@ type AdapterHub struct {
 // Summary: Creates and returns a new instance of AdapterHub with an empty registry.
 //
 // Parameters:
-//   - None.
+//   - N/A: Requires no parameters.
 //
 // Returns:
 //   - *AdapterHub: A pointer to the newly created AdapterHub.
 //
 // Throws/Errors:
-//   - None.
+//   - N/A: Never fails.
 //
 // Side Effects:
-//   - None.
+//   - Allocates a new struct and initializes the adapters map in memory.
 func NewAdapterHub() *AdapterHub {
 	return &AdapterHub{
 		adapters: make(map[string]AgentFramework),
@@ -233,13 +233,13 @@ func NewAdapterHub() *AdapterHub {
 //   - adapter (AgentFramework): The adapter implementation to register.
 //
 // Returns:
-//   - None.
+//   - N/A: No return value.
 //
 // Throws/Errors:
-//   - None.
+//   - N/A: Never fails.
 //
 // Side Effects:
-//   - None.
+//   - Mutates the internal adapters map by registering the new adapter under its name.
 func (h *AdapterHub) RegisterAdapter(adapter AgentFramework) {
 	h.adapters[adapter.Name()] = adapter
 }

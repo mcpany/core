@@ -4,26 +4,19 @@
  */
 
 /**
- * Summary: Document estimateTokens
+ * Summary: Provides a rough estimation of the number of tokens for UI purposes using standard English heuristics.
  *
  * Params:
- *   - None
- *
- * Estimates the number of tokens in a string or object using a simple heuristic.
- *
- * Summary: Provides a rough estimation of the number of tokens for UI purposes.
- *
- * Params:
- *   - input (any): The text or object to estimate tokens for.
+ *   - input (any): The text or object to estimate tokens for. If an object is provided, it will be JSON stringified.
  *
  * Returns:
- *   - number: The estimated token count based on heuristics.
+ *   - number: The estimated token count based on character and word count heuristics.
  *
  * Errors:
- *   - None.
+ *   - Throws standard JSON.stringify errors if the object contains circular references.
  *
  * Side Effects:
- *   - None.
+ *   - Performs no state mutations. Calculates locally.
  */
 export function estimateTokens(input: any): number {
     if (!input) return 0;
@@ -46,26 +39,19 @@ export function estimateTokens(input: any): number {
 }
 
 /**
- * Summary: Document estimateMessageTokens
+ * Summary: Aggregates the estimated token count for an array of multimodal message objects.
  *
  * Params:
- *   - None
- *
- * Calculates total tokens for a sequence of messages.
- *
- * Summary: Aggregates the estimated token count for an array of message objects.
- *
- * Params:
- *   - messages (any[]): Array of message objects containing content.
+ *   - messages (any[]): Array of message objects containing textual content, tool names, arguments, and results.
  *
  * Returns:
- *   - number: Total estimated tokens for all messages.
+ *   - number: Total estimated tokens for all messages, including tool context.
  *
  * Errors:
- *   - None.
+ *   - Throws standard JSON.stringify errors if message objects contain circular references.
  *
  * Side Effects:
- *   - None.
+ *   - Performs no state mutations. Evaluates array synchronously.
  */
 export function estimateMessageTokens(messages: any[]): number {
     return messages.reduce((acc, msg) => {
@@ -78,26 +64,19 @@ export function estimateMessageTokens(messages: any[]): number {
 }
 
 /**
- * Summary: Document formatTokenCount
+ * Summary: Converts a raw token count into a human-readable abbreviated string (e.g., 1.2k).
  *
  * Params:
- *   - None
- *
- * Formats a number of tokens into a human-readable string.
- *
- * Summary: Converts a token count into a formatted string (e.g., 1.2k).
- *
- * Params:
- *   - count (number): The number of tokens.
+ *   - count (number): The raw integer number of tokens to format.
  *
  * Returns:
- *   - string: The formatted token count string.
+ *   - string: The formatted token count string, safely scaled to 'k' for large numbers.
  *
  * Errors:
- *   - None.
+ *   - N/A: Pure formatting function.
  *
  * Side Effects:
- *   - None.
+ *   - Performs no state mutations.
  */
 export function formatTokenCount(count: number): string {
     if (count >= 1000) {
@@ -107,26 +86,19 @@ export function formatTokenCount(count: number): string {
 }
 
 /**
- * Summary: Document calculateCost
+ * Summary: Estimates the cost in USD based on a generic blended rate pricing model.
  *
  * Params:
- *   - None
- *
- * Calculates the estimated cost for a given number of tokens.
- *
- * Summary: Estimates the cost in USD based on a generic pricing model.
- *
- * Params:
- *   - tokens (number): The number of tokens.
+ *   - tokens (number): The integer number of tokens to calculate the cost for.
  *
  * Returns:
- *   - number: The estimated cost in USD.
+ *   - number: The estimated cost in floating-point USD.
  *
  * Errors:
- *   - None.
+ *   - N/A: Pure mathematical function.
  *
  * Side Effects:
- *   - None.
+ *   - Performs no state mutations.
  */
 export function calculateCost(tokens: number): number {
     // Generic blended rate: $5 per 1M tokens ($0.005 per 1k)
@@ -136,26 +108,19 @@ export function calculateCost(tokens: number): number {
 }
 
 /**
- * Summary: Document formatCost
+ * Summary: Formats a numerical cost floating-point into a proper USD currency string.
  *
  * Params:
- *   - None
- *
- * Formats a cost into a currency string.
- *
- * Summary: Formats a numerical cost into a USD currency string.
- *
- * Params:
- *   - cost (number): The cost in USD.
+ *   - cost (number): The raw cost float in USD.
  *
  * Returns:
- *   - string: The formatted string (e.g., "$0.0024").
+ *   - string: The safely formatted currency string (e.g., "$0.0024" or "$0.00").
  *
  * Errors:
- *   - None.
+ *   - N/A: Pure formatting function.
  *
  * Side Effects:
- *   - None.
+ *   - Performs no state mutations.
  */
 export function formatCost(cost: number): string {
     if (cost === 0) return "$0.00";

@@ -69,3 +69,4 @@ MCP Any uses environment variables and secrets to configure the runtime environm
 - `MCPANY_ALLOW_LOOPBACK_RESOURCES`: Set to `true` to allow loopback resources. (Default: `false`)
 - `MCPANY_CONFIG_PATH`: Path to the YAML/JSON definitions. (e.g. `/etc/mcpany/config.yaml`)
 - `MCPANY_LOG_LEVEL`: Adjust the verbosity of application logging. Options: `debug`, `info`, `warn`, `error`. (Default: `info`)
+- `MCPANY_SECRETS_TOKEN`: Required token for fetching protected secrets from a remote vault if configured.

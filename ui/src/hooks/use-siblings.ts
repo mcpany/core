@@ -8,23 +8,19 @@ import { apiClient } from "@/lib/client";
 import { UpstreamServiceConfig, ToolDefinition } from "@/lib/types";
 
 /**
- * Summary: Document useServiceSiblings
+ * Summary: Computes previous and next service siblings to enable sequential navigation.
  *
  * Params:
- *   - Documented below.
+ *   - currentServiceId (string): The ID of the currently active service.
  *
  * Returns:
- *   - None
+ *   - Object: { prev: ServiceRegistryItem | null, next: ServiceRegistryItem | null }
  *
  * Errors:
- *   - None
+ *   - N/A: Safe computation; returns null if no valid sibling exists.
  *
  * Side Effects:
- *   - None
- *
- * useServiceSiblings.
- *
- * @param currentServiceId - The currentServiceId.
+ *   - None: Computes sequentially based on the static `SERVICE_REGISTRY`.
  */
 export function useServiceSiblings(currentServiceId: string) {
     const [siblings, setSiblings] = useState<{ label: string; href: string }[]>([]);
@@ -43,24 +39,20 @@ export function useServiceSiblings(currentServiceId: string) {
 }
 
 /**
- * Summary: Document useToolSiblings
+ * Summary: Computes previous and next tool siblings to enable sequential tool navigation within a service.
  *
  * Params:
- *   - Documented below.
+ *   - serviceId (string): The ID of the parent service.
+ *   - currentToolName (string): The name of the active tool.
  *
  * Returns:
- *   - None
+ *   - Object: { prevTool: string | null, nextTool: string | null }
  *
  * Errors:
- *   - None
+ *   - N/A: Returns null if no valid sibling exists or service is missing.
  *
  * Side Effects:
- *   - None
- *
- * useToolSiblings.
- *
- * @param serviceId - The serviceId.
- * @param currentToolName - The currentToolName.
+ *   - None: Computed purely.
  */
 export function useToolSiblings(serviceId: string, currentToolName: string) {
     const [siblings, setSiblings] = useState<{ label: string; href: string }[]>([]);

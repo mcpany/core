@@ -62,22 +62,19 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
 };
 
 /**
- * Summary: Document useRealTimeTopology
+ * Summary: Hook to fetch and manage the real-time network topology graph.
  *
  * Params:
- *   - None
+ *   - None: Requires no configuration parameters.
  *
  * Returns:
- *   - Documented below.
+ *   - Object: Contains nodes, edges, lastUpdated timestamp, and toggle controls for live status.
  *
  * Errors:
- *   - None
+ *   - N/A: Absorbs backend request failures without throwing.
  *
  * Side Effects:
- *   - None
- *
- * Hook to fetch and manage the network topology graph.
- * @returns The topology state and controls.
+ *   - Polls the backend every 5 seconds when `isLive` is enabled and updates React state.
  */
 export function useRealTimeTopology() {
     const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);

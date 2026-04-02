@@ -6,24 +6,19 @@
 import { UpstreamServiceConfig } from "./client";
 
 /**
- * Summary: Document SecretHandlingMode
+ * Summary: Defines the string literal types for handling secrets within configuration structures.
  *
  * Params:
- *   - None
+ *   - N/A: Type definition.
  *
  * Returns:
- *   - None
+ *   - N/A: Type definition.
  *
  * Errors:
- *   - None
+ *   - N/A: Type definition.
  *
  * Side Effects:
- *   - None
- *
- * Defines the mode for handling secrets in configurations.
- * - 'redact': Replaces secrets with '<REDACTED>'.
- * - 'template': Replaces secrets with template placeholders (e.g., '${API_KEY}').
- * - 'unsafe': Leaves secrets as plain text (use with caution).
+ *   - N/A: Type definition.
  */
 export type SecretHandlingMode = 'redact' | 'template' | 'unsafe';
 
@@ -35,20 +30,20 @@ export type SecretHandlingMode = 'redact' | 'template' | 'unsafe';
  *
  * Sanitizes a service configuration by redacting or templating potential secrets.
  *
- * Summary: Redacts or templates secrets embedded in a service configuration object.
+ * Summary: Recursively strips or masks sensitive credentials from a service configuration object.
  *
  * Params:
- *   - service (UpstreamServiceConfig): The service configuration to sanitize.
- *   - mode (SecretHandlingMode): The secret handling mode ('redact', 'template', or 'unsafe').
+ *   - service (UpstreamServiceConfig): The upstream service configuration to sanitize.
+ *   - mode (SecretHandlingMode): The strategy to apply (`redact`, `template`, or `unsafe`).
  *
  * Returns:
- *   - UpstreamServiceConfig: A sanitized deep copy of the configuration.
+ *   - UpstreamServiceConfig: A deep clone of the service configuration with sanitized secrets.
  *
  * Errors:
- *   - None.
+ *   - N/A: Safe computation, gracefully falls back if structure is missing.
  *
  * Side Effects:
- *   - None.
+ *   - Creates a deep copy via JSON parsing; does not mutate the original object.
  */
 export function sanitizeServiceConfig(service: UpstreamServiceConfig, mode: SecretHandlingMode): UpstreamServiceConfig {
     // Deep clone to avoid mutating original

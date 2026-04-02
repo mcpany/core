@@ -8,22 +8,19 @@ import * as React from "react"
 const MOBILE_BREAKPOINT = 768
 
 /**
- * Intent: Document useIsMobile
+ * Summary: Hook to dynamically detect if the current viewport is mobile-sized.
  *
  * Params:
- *   - None
+ *   - None.
  *
  * Returns:
- *   - Documented below.
+ *   - boolean: True if the viewport is < 768px width, false otherwise.
  *
  * Errors:
- *   - None
+ *   - N/A: Only runs on the client.
  *
  * Side Effects:
- *   - None
- *
- * Hook to detect if the current viewport is mobile-sized.
- * @returns True if the viewport is mobile, false otherwise.
+ *   - Attaches a matchMedia event listener to track window resize events.
  */
 export function useIsMobile() {
   const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined)

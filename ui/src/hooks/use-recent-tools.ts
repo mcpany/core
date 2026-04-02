@@ -9,22 +9,19 @@ const STORAGE_KEY = "mcpany-recent-tools";
 const MAX_RECENT_TOOLS = 5;
 
 /**
- * Summary: Document useRecentTools
+ * Summary: Hook for managing recently used tools within the MCP Any UI, persisting up to 5 tools.
  *
  * Params:
- *   - None
+ *   - None. Requires no configuration parameters.
  *
  * Returns:
- *   - Documented below.
+ *   - Object: Contains `recentTools` array, utility functions (`addRecent`, `removeRecent`, `clearRecent`), and `isLoaded` boolean.
  *
  * Errors:
- *   - None
+ *   - Catches and logs errors when localStorage access or parsing fails.
  *
  * Side Effects:
- *   - None
- *
- * Hook for managing recently used tools.
- * @returns The recent tools state and functions.
+ *   - Reads from and writes to the browser's `localStorage` under the `mcpany-recent-tools` key.
  */
 export function useRecentTools() {
   const [recentTools, setRecentTools] = useState<string[]>([]);

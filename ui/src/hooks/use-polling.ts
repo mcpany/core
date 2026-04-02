@@ -6,25 +6,20 @@
 import { useEffect, useRef } from 'react';
 
 /**
- * Summary: Document usePolling
+ * Summary: A hook to poll a callback function at a specified interval with visibility awareness.
  *
  * Params:
- *   - Documented below.
+ *   - callback (Function): The function to execute on each interval tick.
+ *   - delay (number | null): The polling interval in milliseconds; polling halts if null.
  *
  * Returns:
- *   - None
+ *   - void
  *
  * Errors:
- *   - None
+ *   - N/A: Absorbs internal errors and logs to console without throwing.
  *
  * Side Effects:
- *   - None
- *
- * usePolling is a hook to poll a callback at a specified interval.
- * It automatically stops polling when the document is hidden and resumes when visible.
- *
- * @param callback - The function to call.
- * @param delay - The interval in milliseconds. If null, polling is paused.
+ *   - Attaches `setInterval` and `visibilitychange` listeners. Stops polling automatically when the tab is hidden to save resources.
  */
 export function usePolling(callback: () => void, delay: number | null) {
   const savedCallback = useRef(callback);

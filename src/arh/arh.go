@@ -5,16 +5,16 @@ package arh
 // Summary: Provides a verifiable audit trail for AI-powered fix suggestions, satisfying SSDF requirements.
 //
 // Parameters:
-//   - None.
+//   - N/A: Struct definition.
 //
 // Returns:
-//   - None.
+//   - N/A: Struct definition.
 //
 // Throws/Errors:
-//   - None.
+//   - N/A: Struct definition.
 //
 // Side Effects:
-//   - None.
+//   - N/A: Struct definition.
 type AutomatedRemediationHub struct {
 	Enabled bool
 }
@@ -24,16 +24,16 @@ type AutomatedRemediationHub struct {
 // Summary: Initializes the ARH placeholder.
 //
 // Parameters:
-//   - None.
+//   - N/A: Requires no parameters.
 //
 // Returns:
 //   - *AutomatedRemediationHub: The initialized placeholder.
 //
 // Throws/Errors:
-//   - None.
+//   - N/A: Never fails.
 //
 // Side Effects:
-//   - None.
+//   - Allocates a new struct in memory.
 func NewAutomatedRemediationHub() *AutomatedRemediationHub {
 	return &AutomatedRemediationHub{
 		Enabled: true,

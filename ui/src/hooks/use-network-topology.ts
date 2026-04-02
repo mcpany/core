@@ -10,21 +10,19 @@ import { Graph, Node as TopologyNode } from '../types/topology';
 import { useTopology } from '../contexts/service-health-context';
 
 /**
- * Summary: Document NetworkGraphState
+ * Summary: Defines the state and available actions for the network graph visualization.
  *
  * Params:
- *   - None
+ *   - N/A: Interface definition.
  *
  * Returns:
- *   - None
+ *   - N/A: Interface definition.
  *
  * Errors:
- *   - None
+ *   - N/A: Interface definition.
  *
  * Side Effects:
- *   - None
- *
- * State and actions for the network graph visualization.
+ *   - N/A: Interface definition.
  */
 export interface NetworkGraphState {
     /** Current list of nodes in the graph. */
@@ -81,26 +79,19 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
 };
 
 /**
- * Summary: Document useNetworkTopology
+ * Summary: Hook to fetch and manage network topology data.
  *
  * Params:
- *   - None
+ *   - None. Requires no configuration parameters.
  *
  * Returns:
- *   - Documented below.
+ *   - NetworkGraphState: The network graph state and actions including nodes, edges, and event handlers.
  *
  * Errors:
- *   - None
+ *   - N/A: Ignores internal API errors during polling without throwing them.
  *
  * Side Effects:
- *   - None
- *
- * Hook to fetch and manage network topology data.
- *
- * It periodically polls the backend for topology updates and handles layouting
- * using Dagre for automatic positioning of nodes and edges.
- *
- * @returns {NetworkGraphState} The network graph state and actions including nodes, edges, and event handlers.
+ *   - Automatically polls the backend and calculates Dagre layout positioning for nodes and edges.
  */
 export function useNetworkTopology() {
     const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
