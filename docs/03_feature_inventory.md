@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Wait-Graph Lease Arbiter (WLA)**: (P0) Authoritative deadlock resolution service for horizontal meshes that proactively identifies circular task dependencies and re-allocates leases to break coordination stalls.
+- **Speculative Tunnel Prefetcher (STP)**: (P0) Performance-optimizing coordination service that pre-emptively establishes hardware-attested P2P tunnels based on predicted tool-call lineages to neutralize mesh latency.
+- **GC-Immune Attention Hub**: (P0) Cognitive security service providing infrastructure for GIAA-compliant pinning, ensuring mission-critical intent fragments are exempt from aggressive attention-window garbage collection.
+
+### Priority Shifts
+- **Lock-Free Mesh Coordination**: (Re-affirmed P0) Elevated with mandatory **WLA** integration to resolve recursive coordination deadlocks.
+- **Attested Mesh Tunneling (AMT)**: (Re-affirmed P0) Elevated with the requirement for **STP** to minimize coordination tax in distributed swarms.
