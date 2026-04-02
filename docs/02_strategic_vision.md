@@ -1550,3 +1550,15 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Hardware-Locked Mission Leases (HLML)**: Supporting the Claude Code v3.2 standard, MCP Any will mandate HLML for all high-risk subagent delegations. Capabilities will be issued as TPM-signed, task-specific leases that are automatically revoked by the hardware root upon mission completion, neutralizing persistent privilege escalation.
 - **Privacy-Preserving Audit (PPA) Hub**: To neutralize the trade-off between transparency and privacy, we are introducing the PPA Hub. Leveraging Gemini CLI's PPRP patterns, MCP Any will facilitate the generation of Zero-Knowledge proofs for reasoning integrity, allowing for hardware-attested auditing without the exfiltration of sensitive mission context.
 - **Fast-Path Tunnel Resumption**: To counter the latency of mandatory mesh encryption, we are evolving the FPIR provider. MCP Any will support "Lightweight Mesh Handshakes," utilizing session-bound trust tickets to resume secure tunnels across distributed nodes with sub-millisecond overhead.
+
+---
+
+## Strategic Evolution: [2026-07-25]
+### Focus: Atomic State Sovereignty & Zero-Knowledge Intent Provenance
+**Context**: The emergence of "Atomic Reasoning Checkpoints" (ARC) in Claude Code and the introduction of "Zero-Knowledge Intent Verification" (ZKIV) in Gemini CLI reveal that mesh stability now depends on the **granularity of state recovery** and the **transparency of remote intent**. As swarms become more parallel and distributed, the risk of "Progress Loss" during sub-mission failure demands **Task-Specific Shard Rollbacks**. Simultaneously, the need for secure remote tool access requires that agents can prove **justified intent** without revealing full mission context.
+
+**Strategic Pivot**:
+- **Atomic Reasoning Checkpoints (ARC)**: MCP Any will evolve to act as the authoritative "Checkpoint Broker." We will implement ARC, allowing parallel teammates to create granular, task-specific state snapshots on the Blackboard. This ensures that a failure in one sub-mission only triggers a shard-level rollback, preserving the progress of sibling agents.
+- **Contextual Entropy Sharding (CES)**: Supporting the stability of deep swarms, we are introducing CES. This service will dynamically shard the Blackboard based on the semantic entropy of reasoning traces, automatically isolating speculative "High-Entropy" data from verified "Low-Entropy" state fragments to prevent memory smearing.
+- **Zero-Knowledge Intent Verification (ZKIV)**: To neutralize "Intent Leakage" during remote discovery, MCP Any will facilitate ZKIV. Agents will be able to prove that a tool request is cryptographically justified by their signed mission intent without exposing the underlying context fragments to the tool provider.
+- **Hardware-Locked Mission Leases (HLML) Persistence**: We are evolving the MRCP to support HLML-bound persistence. Capabilities will be issued as TPM-signed, task-specific leases that are automatically revoked upon mission-root task completion, ensuring that state recovery remains bound to hardware-attested task boundaries.

@@ -57,3 +57,10 @@ The Zero-Knowledge Discovery Broker (ZKDB) evolves the discovery process by mand
 
 ## 7. Evolutionary Changelog
 * **2026-07-01:** Initial Document Creation.
+
+### Update: 2026-07-25 - Integration of Zero-Knowledge Intent Verification (ZKIV)
+**Context:** Today's market sync revealed that Gemini CLI v0.60.0 has introduced ZKIV, addressing the risk of intent-leakage during remote tool discovery.
+**Architecture Adjustment:**
+*   **ZKIV Middleware**: Expanding the ZKDB to support intent-based justification proofs.
+*   **Justification Tokens**: Introducing hardware-attested tokens that prove a discovery request aligns with the signed mission intent without revealing raw context.
+**Security Impact:** Prevents "Intent Probing" by tool providers while ensuring all discovery requests are mission-authorized and justified.
