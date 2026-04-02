@@ -97,6 +97,11 @@ test.describe('Rich Result Viewer', () => {
 
     // Switch to Raw Output tab
     await viewerTabs.getByRole('tab', { name: 'Raw Output' }).click();
-    await expect(page.getByText('"stdout":')).toBeVisible();
+
+    // In our new Apple-style JsonTree, primitive keys do not have quotes rendered visually in the tree.
+    // Instead, they are rendered distinct from the values.
+    // The previous test checked for `"stdout":`, but now it will just be `stdout` (or the tree might not even expand it by default).
+    // Let's just check that "stdout" is visible in the raw view.
+    await expect(page.getByText('stdout').first()).toBeVisible();
   });
 });

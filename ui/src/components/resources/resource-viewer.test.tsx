@@ -42,7 +42,7 @@ describe('ResourceViewer', () => {
         text: '{"foo": "bar"}'
     };
     render(<ResourceViewer content={content} loading={false} />);
-    expect(screen.getByText(/"foo"/)).toBeInTheDocument();
+    expect(screen.getByText(/foo/)).toBeInTheDocument();
   });
 
   it('renders Markdown content', () => {

@@ -1,18 +1,73 @@
 import { test, expect } from '@playwright/test';
 
+// Mock trace matching the shape that generateMockTrace() produces on the backend.
+const MOCK_TRACE = {
+  id: 'trace-seed-inspector-test',
+  timestamp: new Date().toISOString(),
+  totalDuration: 1250,
+  status: 'success',
+  trigger: 'user',
+  rootSpan: {
+    id: 'span-orchestrator-1',
+    name: 'code-refactor',
+    type: 'tool',
+    status: 'success',
+    startTime: 1000,
+    endTime: 1150,
+    input: { "file": "main.py", "action": "optimize" },
+    output: {
+        "diff":   "--- a/main.py\n+++ b/main.py\n@@ -1,5 +1,5 @@\n-def slow_func():\n-    pass\n+def fast_func():\n+    return True\n",
+        "status": "success",
+        "metadata": {
+            "lines_changed": 4,
+            "is_dry_run":    false,
+            "warnings":      null,
+            "tags":          ["optimization", "performance"],
+            "ast_nodes": {
+                "functions": 2,
+                "classes":   0,
+                "imports": [
+                    {"module": "sys", "used": true},
+                    {"module": "os", "used": false},
+                ],
+            },
+        },
+    },
+    children: [],
+  },
+};
+
 test.describe('Property Inspector', () => {
     test('verifies interactive JsonTree renders correctly for complex data', async ({ page }) => {
+        // Intercept the POST request to /api/v1/debug/traces and simulate backend response
+        await page.route('**/api/v1/debug/traces', async (route) => {
+            await route.fulfill({
+                status: 201,
+                contentType: 'application/json',
+                body: JSON.stringify({ status: 'seeded', id: MOCK_TRACE.id }),
+            });
+        });
+
+        let wsSend: any = null;
+        await page.routeWebSocket('**/api/v1/ws/traces', (ws: any) => {
+            wsSend = (data: string) => ws.send(data);
+        });
+
         // 1. Navigate to Inspector
         await page.goto('/inspector');
 
         // 2. Click Seed Trace
         const seedButton = page.getByRole('button', { name: /Seed Trace/i });
-        await seedButton.waitFor({ state: 'visible', timeout: 60000 });
+        await seedButton.waitFor({ state: 'visible', timeout: 30000 });
         await seedButton.click();
 
-        // Wait for the trace to appear in the table. The mocked trace has "code-refactor".
+        if (wsSend) {
+            wsSend(JSON.stringify(MOCK_TRACE));
+        }
+
+        // Wait for the trace to appear in the table.
         const traceRow = page.getByRole('row').filter({ hasText: 'code-refactor' }).first();
-        await expect(traceRow).toBeVisible({ timeout: 60000 });
+        await expect(traceRow).toBeVisible({ timeout: 10000 });
 
         // 3. Open the trace details
         await traceRow.click();
