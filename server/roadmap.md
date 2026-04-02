@@ -1030,3 +1030,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Attestation Aggregator Hub (AAH)**: Implementation of O(1) verifiable proof compression for deep subagent chains. (Added: 2026-07-25)
+*   **[P0] Sovereign Migration Broker (SMB)**: Hardware-attested session teleportation between physical and cloud nodes. (Added: 2026-07-25)
+*   **[P0] Recursive Multi-modal Provenance (RMP)**: Hierarchical hash-chaining for non-textual reasoning fragments (SVG/Audio). (Added: 2026-07-25)
+*   **[P1] Atomic State Teleportation (AST)**: Zero-copy memfd handoffs for atomic state transfer during migration. (Added: 2026-07-25)

@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Attestation Aggregator Hub (AAH)**: (P0) Authoritative proof-compression service that collapses multi-agent attestation tokens into a single O(1) verifiable proof to neutralize "Attestation Fatigue."
+- **Sovereign Migration Broker (SMB)**: (P0) High-fidelity orchestration service facilitating the hardware-attested migration of agent sessions between physical and cloud nodes.
+- **Recursive Multi-modal Provenance (RMP) Validator**: (P0) Identity extension for the SRM Provider mandating hierarchical hash-chaining for non-textual reasoning fragments.
+- **Atomic State Teleportation (AST) Adapter**: (P1) Performance-optimizing bridge utilizing zero-copy memfd handoffs for atomic state transfer during sandbox migrations.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with mandatory support for **SMB-compliant** session migration.
+- **SRM Provider**: (Re-affirmed P0) Upgraded to support **RMP-compliant** visual and audio fragment validation.
