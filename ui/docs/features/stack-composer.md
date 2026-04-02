@@ -37,4 +37,4 @@ You can fine-tune the configuration in the Monaco Editor.
 
 ### 4. Deploy
 
-Once satisfied, click **"Save Changes"**. The system will save the configuration. If the server is configured for hot-reload, the changes will be applied automatically to the running instance.
+Once satisfied, click **"Save & Deploy"**. The system will save the configuration. If the server is configured for hot-reload, the changes will be applied automatically to the running instance.
