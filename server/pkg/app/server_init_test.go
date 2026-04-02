@@ -448,3 +448,15 @@ func TestInitializeAdminUser_RandomPassword(t *testing.T) {
 	// passhash.CheckPassword returns true if match
 	assert.False(t, passhash.CheckPassword("password", hash), "Randomly generated password should not be 'password'")
 }
+
+func TestSeedTopology(t *testing.T) {
+	app, _, cleanup := setupTestApp(t)
+	defer cleanup()
+
+	mockStore := new(MockStore)
+	mockStore.On("SaveService", mock.Anything, mock.Anything).Return(nil)
+
+	err := app.seedTopology(context.Background(), mockStore)
+	assert.NoError(t, err)
+	mockStore.AssertNumberOfCalls(t, "SaveService", 5)
+}

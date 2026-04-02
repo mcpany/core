@@ -136,11 +136,15 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 	}
 
 	// Initialize Service Templates
-		if err := a.seedTraces(ctx); err != nil {
-		log.Error("Failed to seed traces", "error", err)
+	if err := a.seedTraces(ctx); err != nil {
+		log.Error("Failed to seed traces to database", "error", err)
 	}
 	if err := a.seedTemplates(ctx, store); err != nil {
 		log.Error("Failed to seed service templates", "error", err)
+	}
+
+	if err := a.seedTopology(ctx, store); err != nil {
+		log.Error("Failed to seed topology data to database", "error", err)
 	}
 
 	// Initialize Service Collections
@@ -280,5 +284,33 @@ func (a *Application) seedTemplates(ctx context.Context, store config.Store) err
 		}
 	}
 
+	return nil
+}
+
+func (a *Application) seedTopology(ctx context.Context, store config.Store) error {
+	s, ok := store.(storage.Storage)
+	if !ok {
+		return nil
+	}
+
+	// Define nodes (Swarm Topology nodes) as upstream services
+	nodes := []string{
+		"Primary Orchestrator",
+		"Research Agent",
+		"Tool Exec",
+		"Synthesizer",
+		"Rogue Node",
+	}
+
+	for _, nodeLabel := range nodes {
+		svc := &configv1.UpstreamServiceConfig{
+			Name:        nodeLabel,
+			Description: proto.String("Swarm Topology Node: " + nodeLabel),
+		}
+
+		if err := s.SaveService(ctx, svc); err != nil {
+			return err
+		}
+	}
 	return nil
 }
