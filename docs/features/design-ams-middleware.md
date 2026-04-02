@@ -86,3 +86,10 @@ The AMS Middleware solves this by sharding the inter-agent mailbox based on the 
 * Implementing **HLAP-Compliant Jitter**: Normalizing update micro-timing for mailbox shards using TPM monotonic timers to neutralize side-channel leakage.
 * Integrating with the **ZKSA Provider** to allow shards to verify task completion via Zero-Knowledge proofs, further isolating the central bus from raw teammate state.
 **Security Impact:** Prevents side-channel intent mapping and ensures that critical safety interventions bypass coordination locks instantly.
+
+### Update: 2026-04-02 - Neutralizing Horizontal Coordination Stalls
+**Context:** OpenClaw v2.7.1 reports 2s+ stalls in high-density teams due to global locks.
+**Architecture Adjustment:**
+* Deprecating synchronous mailbox locks in favor of CRDT-based sharded synchronization.
+* Implementing hardware-attested task claiming to prevent "Mailbox Injection" by rogue subagents.
+**Security Impact:** Prevents coordinated DoS and ensures task-claim integrity in parallel swarms.

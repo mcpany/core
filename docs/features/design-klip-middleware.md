@@ -44,3 +44,10 @@ The emergence of "Symlink-to-Inode Racing" (SIR) exploits (BoryptGrab Evolution)
 
 ## 7. Evolutionary Changelog
 * **2026-05-01:** Initial Document Creation.
+
+### Update: 2026-04-02 - Neutralizing Recursive Symlink Escapes
+**Context:** Claude Code CVE-2026-44001 reveals that recursive symlinks in project settings can bridge to the host user's home directory.
+**Architecture Adjustment:**
+* Implementing **Inode-Bound Settings Validation**: All project-local settings files must be hardware-pinned to their Inodes upon first access.
+* Mandatory recursive resolution checks for all paths referenced within configuration files before handle pinning.
+**Security Impact:** Prevents "Shadow-Sandbox" escapes via configuration-based symlink races.

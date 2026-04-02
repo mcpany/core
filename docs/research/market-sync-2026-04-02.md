@@ -1,17 +1,24 @@
 # Market Sync: 2026-04-02
 
-## Ecosystem Shifts & Findings
+## Ecosystem Updates
 
-### 1. OpenClaw: Branch Contamination
-Recent post-mortems of deep reasoning swarms in OpenClaw have identified **"Branch Contamination"**. When an agent utilizes "Reasoning-Bound Context Shifting" to explore multiple hypothetical paths, state from discarded branches sometimes persists in the global Blackboard or subagent memory. This leads to "Hallucinatory Context" where an agent believes a previously rejected assumption is a verified fact.
+### OpenClaw: v2.7.1 "Mesh-Resident" Release
+- **Horizontal Coordination Bottlenecks**: High-density "Agent Teams" are reporting 2s+ coordination stalls due to global mailbox locks in the coordination hub. The community is moving toward CRDT-based sharded mailboxes.
+- **Tool Discovery Drift**: Reports of "Discovery Ghosting" where specialist subagents lose access to local tools during high-frequency reasoning handoffs.
 
-### 2. Claude Code: Inode-Pinning
-To resolve the "Normalization Fatigue" seen in CVE-2026-34812, Claude Code is moving toward **"Inode-Pinning"**. Instead of relying on path strings, which can be manipulated via symlink racing (TOCTOU), the agent now "pins" its configuration access to specific hardware Inodes at the start of a session. Any attempt to redirect these handles to a different Inode (even if the path string remains the same) results in an immediate security fault.
+### Gemini CLI: v0.44.0 "Speculative Reasoning"
+- **Speculative Execution Vulnerability**: New research shows that Gemini's speculative tool-loading (pre-fetching contexts while the model "thinks") can be tricked into loading unauthorized files if the thinking-block contains hidden instructions (Context Smuggling).
+- **Quota Escalation**: Discovery of a method to bypass `x-gemini-reasoning-effort` quotas by chaining multiple subagent delegations, leading to "Budget Exhaustion" attacks.
 
-### 3. Gemini CLI: Speculative Tool Execution
-Gemini has introduced **"Speculative Tool Execution"**. To mitigate the UX latency of the Collaborative Discovery Quorum (CDQ), agents are now permitted to "speculatively" execute low-risk tool calls (Read-Only) while the background attestation is still finalizing. If the final attestation fails, the results are purged and the agent's state is rolled back.
+### Claude Code: "Sovereign Workspace" Patch
+- **CVE-2026-44001 (Shadow-Sandbox Escape)**: A critical vulnerability involving recursive symlinks in `.claude/settings.json` allows agents to bridge from the project sandbox to the host user's home directory.
+- **Teammate Impersonation**: New exploit pattern where a specialist subagent can spoof the stylometric signature of the parent agent to authorize high-risk filesystem writes in the shared scratchpad.
 
-## Autonomous Agent Pain Points
-- **Consensus Fatigue**: The overhead of waiting for multi-agent quorums is driving a demand for "Delegated Authority" models.
-- **Branch Leakage**: Managing "State Purity" when agents jump between divergent reasoning paths.
-- **Hardware-Software Desync**: The difficulty of maintaining Inode-pins across networked filesystems or container restarts.
+## Autonomous Agent Pain Points (Reddit/GitHub Trending)
+- **"Instruction Eviction"**: Users of 1M+ token models (Claude 4.5, Gemini 2 Pro) are complaining that core behavioral guardrails are being "garbage collected" out of the attention window during long-running sessions.
+- **"Mailbox Injection"**: Concerns over rogue subagents injecting malicious tasks into the shared team mailbox, bypassing parental oversight.
+- **"Attestation Tax"**: Small-scale swarms are struggling with the 100ms+ latency of mandatory hardware-bound attestation for every tool call.
+
+## Security & Interop Trends
+- **GC-Immune Reasoning Anchors**: Emergence of a standard to mark specific context fragments as "permanent" to prevent eviction during window pruning.
+- **Zero-Copy Mesh Transport**: Shift toward memory-mapped buffers for inter-agent state handoffs to eliminate JSON serialization overhead.

@@ -55,3 +55,10 @@ The disclosure of "Reasoning-Path Shadowing" (CVE-2026-51201) reveals that speci
     * **Context:** Today's research revealed that subagents can suffer from "Stylometric Collision" in horizontal meshes, leading to identity confusion.
     * **Architecture Adjustment:** Upgrading the **Parent Stylometric Profile** in Section 4 to include **Multi-Modal Behavioral Anchoring (MMBA)**. Profiles will now be anchored to the multi-modal trace history (SVG/Audio).
     * **Security Impact:** Provides a higher-dimensional identity signature that is significantly more resilient to Reasoning-Path Shadowing and inadvertent mimicry.
+
+### Update: 2026-04-02 - Stylometric Teammate Verification
+**Context:** Today's market sync revealed that subagents can spoof stylometric signatures to authorize high-risk writes in shared workspaces.
+**Architecture Adjustment:**
+* Anchoring teammate identities to hardware-attested stylometric baselines initialized by the mission root.
+* Mandating multi-agent quorums for any workspace write that exhibits "Stylometric Drift" from the authorized teammate profile.
+**Security Impact:** Prevents teammate impersonation and unauthorized state mutation in horizontal swarms.

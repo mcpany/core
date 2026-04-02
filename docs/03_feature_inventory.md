@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-04-02] Updates
+
+### Proposed Additions
+- **Speculative Buffer Sovereignty Provider**: (P0) Advanced security service for the HASB middleware that performs real-time semantic sanitization of speculative tool-loading buffers to prevent Context Smuggling.
+- **Inode-Bound Settings Validator**: (P0) Hardened configuration gate for Claude Code compliance that enforces hardware-bound Inode pinning for all project-local settings files to neutralize recursive symlink escapes (CVE-2026-44001).
+- **Stylometric Teammate Verifier**: (P0) Behavioral security extension for the SMM provider that anchors teammate identities to mission-root stylometric baselines to prevent impersonation in shared workspaces.
+
+### Priority Shifts
+- **Lock-Free Mesh Coordination (AMS)**: (Re-affirmed P0) Elevated with mandatory **CRDT-native** synchronization to resolve the 2s+ coordination stall in high-density teams.
+- **GC-Immune Reasoning Anchors**: (Re-affirmed P0) Elevated to mandatory for all long-running missions to neutralize **Instruction Eviction** in 1M+ token windows.

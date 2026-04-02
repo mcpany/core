@@ -47,3 +47,10 @@ Speculative reasoning allows agents to prepare for potential future states, sign
 * **2026-06-05:** Update - Intent-Splicing Defense.
     * **Context:** Today's research discovered "Speculative Intent Splicing" where subagents mimic parent reasoning structure in speculative buffers.
     * **Adjustment:** PCSS evolving from simple keyword sanitization to active structural intent-deconstruction.
+
+### Update: 2026-04-02 - Speculative Buffer Sovereignty
+**Context:** Gemini CLI v0.44.0 speculative tool-loading is vulnerable to Context Smuggling via hidden instructions.
+**Architecture Adjustment:**
+* Implementing mandatory semantic sanitization of all speculative buffers before they are exposed to the reasoning engine.
+* Hardware-locking probabilistic buffers until a discovery quorum provides a final safety signal.
+**Security Impact:** Prevents "Injected Context" from influencing agent reasoning during the pre-commit phase.
