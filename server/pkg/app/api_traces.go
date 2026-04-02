@@ -383,6 +383,20 @@ func generateMockAuditEntries() []audit.Entry {
 			Result: map[string]any{
 				"diff":   "--- a/main.py\n+++ b/main.py\n@@ -1,5 +1,5 @@\n-def slow_func():\n-    pass\n+def fast_func():\n+    return True\n",
 				"status": "success",
+				"metadata": map[string]any{
+					"lines_changed": 4,
+					"is_dry_run":    false,
+					"warnings":      nil,
+					"tags":          []string{"optimization", "performance"},
+					"ast_nodes": map[string]any{
+						"functions": 2,
+						"classes":   0,
+						"imports": []map[string]any{
+							{"module": "sys", "used": true},
+							{"module": "os", "used": false},
+						},
+					},
+				},
 			},
 			Duration:   "150ms",
 			DurationMs: 150,

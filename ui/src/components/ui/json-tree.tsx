@@ -6,15 +6,17 @@
 
 
 import React, { useState } from "react";
-import { ChevronRight, ChevronDown, Copy, Check } from "lucide-react";
+import { ChevronRight, ChevronDown, Copy, Check, FileJson } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface JsonTreeProps {
   data: unknown;
   level?: number;
   defaultExpandedLevel?: number;
   className?: string;
+  name?: string;
 }
 
 /**
@@ -33,16 +35,17 @@ interface JsonTreeProps {
  *   - None
  *
  * JsonTree component.
- * Renders a recursive tree view of JSON data.
+ * Renders a recursive, polished "Apple Design Standard" tree view of JSON data.
  *
  * @param props - The component props.
  * @param props.data - The data to display.
  * @param props.level - The current nesting level (default: 0).
  * @param props.defaultExpandedLevel - The level up to which nodes are expanded by default (default: 1).
  * @param props.className - The className.
+ * @param props.name - Optional property name.
  * @returns The rendered component.
  */
-export function JsonTree({ data, level = 0, defaultExpandedLevel = 1, className }: JsonTreeProps) {
+export function JsonTree({ data, level = 0, defaultExpandedLevel = 1, className, name }: JsonTreeProps) {
   const isObject = typeof data === 'object' && data !== null;
   const isArray = Array.isArray(data);
   const isEmpty = isObject && Object.keys(data as object).length === 0;
@@ -60,14 +63,24 @@ export function JsonTree({ data, level = 0, defaultExpandedLevel = 1, className 
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const wrapperClass = level === 0
+    ? cn("font-mono text-xs rounded-md border bg-muted/10 backdrop-blur-sm p-2 w-full", className)
+    : cn("font-mono text-xs w-full", className);
+
   if (!isObject) {
     return (
-      <div className={cn("flex items-center gap-2 group/node font-mono text-xs hover:bg-white/5 rounded px-1 -ml-1", className)} style={{ paddingLeft: level > 0 ? '0' : undefined }}>
-        <PrimitiveValue value={data} />
+      <div className={cn("flex items-center gap-4 group/node hover:bg-accent/50 rounded-sm px-2 py-1 -mx-2 transition-colors w-full", wrapperClass)}>
+        {name && (
+            <span className="font-semibold opacity-90 min-w-[120px] text-foreground shrink-0">{name}</span>
+        )}
+        <div className="flex-1 flex items-center gap-3 min-w-0">
+            <PrimitiveValue value={data} />
+            <PrimitiveBadge value={data} />
+        </div>
         <Button
             variant="ghost"
             size="icon"
-            className="h-4 w-4 opacity-0 group-hover/node:opacity-100 transition-opacity ml-auto"
+            className="h-5 w-5 opacity-0 group-hover/node:opacity-100 transition-opacity ml-auto shrink-0"
             onClick={handleCopy}
             title="Copy value"
         >
@@ -79,8 +92,11 @@ export function JsonTree({ data, level = 0, defaultExpandedLevel = 1, className 
 
   if (isEmpty) {
      return (
-        <div className={cn("font-mono text-xs text-muted-foreground", className)}>
-            {isArray ? "[]" : "{}"}
+        <div className={cn("flex items-center gap-4 group/node hover:bg-accent/50 rounded-sm px-2 py-1 -mx-2 transition-colors w-full text-muted-foreground", wrapperClass)}>
+            {name && (
+                <span className="font-semibold opacity-90 min-w-[120px] text-foreground shrink-0">{name}</span>
+            )}
+            <span className="flex-1">{isArray ? "[]" : "{}"}</span>
         </div>
      );
   }
@@ -91,25 +107,39 @@ export function JsonTree({ data, level = 0, defaultExpandedLevel = 1, className 
     : `{ ${entries.slice(0, 3).map(([k]) => k).join(", ")}${entries.length > 3 ? ", ..." : ""} }`;
 
   return (
-    <div className={cn("font-mono text-xs", className)}>
+    <div className={wrapperClass}>
       <div
-        className="flex items-center gap-1 cursor-pointer hover:bg-white/5 rounded px-1 -ml-1 select-none group/node"
+        className="flex items-center gap-2 cursor-pointer hover:bg-accent/50 rounded-sm px-2 py-1 -mx-2 transition-colors select-none group/node w-full"
         onClick={() => setExpanded(!expanded)}
       >
         <span className="text-muted-foreground w-4 flex justify-center shrink-0">
             {expanded ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
         </span>
-        <span className="text-muted-foreground">{isArray ? "[" : "{"}</span>
-        {!expanded && (
-            <span className="text-muted-foreground opacity-50 mx-1 italic text-[10px]">{preview}</span>
+        {name && (
+             <span className="font-semibold opacity-90 min-w-[100px] text-foreground shrink-0">{name}</span>
         )}
-        {!expanded && (
-             <span className="text-muted-foreground">{isArray ? "]" : "}"}</span>
+
+        <div className="flex-1 flex items-center gap-2 text-muted-foreground truncate min-w-0">
+            {level === 0 && !name && <FileJson className="h-3 w-3" />}
+            {isArray ? "[" : "{"}
+            {!expanded && (
+                <span className="opacity-50 italic text-[10px] truncate">{preview}</span>
+            )}
+            {!expanded && (
+                 <span>{isArray ? "]" : "}"}</span>
+            )}
+        </div>
+
+        {expanded && (
+            <Badge variant="outline" className="h-4 px-1 text-[9px] font-normal tracking-wide text-muted-foreground opacity-50 ml-auto shrink-0 uppercase">
+                {isArray ? `Array[${entries.length}]` : 'Object'}
+            </Badge>
         )}
+
          <Button
             variant="ghost"
             size="icon"
-            className="h-4 w-4 opacity-0 group-hover/node:opacity-100 transition-opacity ml-auto"
+            className="h-5 w-5 opacity-0 group-hover/node:opacity-100 transition-opacity ml-2 shrink-0"
             onClick={handleCopy}
             title="Copy JSON"
         >
@@ -118,33 +148,24 @@ export function JsonTree({ data, level = 0, defaultExpandedLevel = 1, className 
       </div>
 
       {expanded && (
-        <div className="border-l border-white/10 ml-2 pl-2 flex flex-col">
-          {entries.map(([key, value], idx) => (
-            <div key={key} className="flex items-start gap-1">
-               {/* Key */}
-               <div className="pt-[2px] shrink-0 text-purple-400">
-                  {!isArray && (
-                      <span className="mr-1 opacity-80">
-                        "{key}":
-                      </span>
-                  )}
-               </div>
+        <div className="border-l-2 border-border/50 ml-[9px] pl-4 mt-1 flex flex-col gap-0.5 relative">
+          {/* Subtle line glow effect */}
+          <div className="absolute left-[-2px] top-0 bottom-0 w-[2px] bg-gradient-to-b from-transparent via-primary/20 to-transparent opacity-0 hover:opacity-100 transition-opacity pointer-events-none" />
 
-               {/* Value */}
-               <div className="flex-1 min-w-0">
-                  <JsonTree
-                    data={value}
-                    level={level + 1}
-                    defaultExpandedLevel={defaultExpandedLevel}
-                  />
-               </div>
-               {/* Comma if needed (optional purely visual preference, syntax highlighter usually omits in tree view but keeps structure) */}
-            </div>
+          {entries.map(([key, value]) => (
+             <div key={key} className="flex flex-col w-full">
+                <JsonTree
+                  data={value}
+                  level={level + 1}
+                  defaultExpandedLevel={defaultExpandedLevel}
+                  name={isArray ? undefined : key}
+                />
+             </div>
           ))}
         </div>
       )}
       {expanded && (
-          <div className="pl-6 text-muted-foreground">
+          <div className="pl-6 text-muted-foreground mt-1 py-1">
               {isArray ? "]" : "}"}
           </div>
       )}
@@ -162,25 +183,42 @@ function PrimitiveValue({ value }: { value: unknown }) {
   if (typeof value === 'string') {
     if (value.startsWith('data:image/') && value.length > 50) {
         return (
-            <div className="mt-1 mb-2">
-                <span className="text-green-400 break-all whitespace-pre-wrap opacity-50 text-[10px] block truncate max-w-[300px]" title="Click copy to get full string">"{value}"</span>
-                <img src={value} alt="Base64 Image" className="max-w-[200px] h-auto rounded-md border bg-black/50 mt-1" />
+            <div className="mt-1 mb-2 max-w-full">
+                <span className="text-green-500 dark:text-green-400 break-all whitespace-pre-wrap opacity-50 text-[10px] block truncate max-w-[300px]" title="Click copy to get full string">"{value}"</span>
+                <img src={value} alt="Base64 Image" className="max-w-[200px] h-auto rounded-md border bg-black/50 mt-1 shadow-sm" />
             </div>
         );
     }
-    return <span className="text-green-400 break-all whitespace-pre-wrap">"{value}"</span>;
+    return <span className="text-green-600 dark:text-green-400 break-all whitespace-pre-wrap">"{value}"</span>;
   }
   if (typeof value === 'number') {
-    return <span className="text-blue-400">{value}</span>;
+    return <span className="text-blue-600 dark:text-blue-400 font-medium">{value}</span>;
   }
   if (typeof value === 'boolean') {
-    return <span className="text-orange-400">{value ? 'true' : 'false'}</span>;
+    return <span className="text-orange-600 dark:text-orange-400 font-medium">{value ? 'true' : 'false'}</span>;
   }
   if (value === null) {
-    return <span className="text-gray-500 italic">null</span>;
+    return <span className="text-muted-foreground italic opacity-70">null</span>;
   }
   if (value === undefined) {
-    return <span className="text-gray-500 italic">undefined</span>;
+    return <span className="text-muted-foreground italic opacity-70">undefined</span>;
   }
-  return <span>{String(value)}</span>;
+  return <span className="text-foreground">{String(value)}</span>;
+}
+
+/**
+ * PrimitiveBadge component returns a distinct type badge.
+ * @param props - The component props.
+ * @param props.value - The current value.
+ * @returns The rendered component.
+ */
+function PrimitiveBadge({ value }: { value: unknown }) {
+    let type = typeof value;
+    if (value === null) type = 'null';
+
+    return (
+        <Badge variant="outline" className="h-[18px] px-1.5 text-[9px] font-normal uppercase tracking-wider text-muted-foreground opacity-50 border-muted-foreground/20 bg-muted/5">
+            {type}
+        </Badge>
+    );
 }
