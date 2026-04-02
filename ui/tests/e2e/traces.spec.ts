@@ -6,7 +6,7 @@
 import { test, expect } from '@playwright/test';
 import { seedGlobalState, seedTraces } from './test-data';
 
-test.describe.skip('Trace Viewer', () => {
+test.describe('Trace Viewer', () => {
   test.beforeEach(async ({ page, request }) => {
     // Mock Traces API for all tests in this suite.
     // The app fetches /api/v1/traces (with the v1 prefix).
