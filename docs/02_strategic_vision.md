@@ -809,6 +809,15 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Transactional Speculative Execution**: Implementing a "Shadow State" middleware that allows agents to perform speculative tool calls. Results are held in a virtual buffer and only committed to the global Blackboard once discovery quorums or policy engines provide final attestation.
 - **Cross-Branch State Isolation**: Expanding the Blackboard's isolation model to include "Branch Purity" checks. This prevents state leakage between divergent reasoning paths by requiring a "Parental Re-Attestation" before merging hypothetical results back into the primary intent chain.
 
+## Strategic Evolution: [2026-04-02] (Iteration 3)
+### Focus: Marketplace Sovereignty & Multi-Agent Stability
+**Context**: The OpenClaw v2026.3.22 release confirms that unregulated plugin ecosystems are no longer viable. The migration to curated marketplaces like "ClawHub" and the requirement for "SSH Sandboxing" signal a transition from perimeter defense to **In-Process Sovereignty**. Simultaneously, the persistence of "Branch Contamination" in parallel teams confirms that state isolation must be enforced at the cognitive fragment level.
+**Strategic Pivot**:
+- **Curated Marketplace Ingestion**: MCP Any will evolve to act as the authoritative bridge for "Sovereign Tool Registries" (e.g., ClawHub). We will provide hardware-attested discovery for curated skills, ensuring that only verified, sandboxed tools can enter the agent's attention window.
+- **JVM Injection Shielding**: To neutralize the JVM injection vulnerabilities discovered in OpenClaw, we are mandating "Fragment-Level Sanitization" for all Java-based agent hooks. MCP Any will perform real-time structural analysis of hook inputs to prevent instruction smuggling.
+- **Cross-Branch Isolation Engine**: Supporting the stability of parallel swarms, we are introducing cognitive branch isolation. This engine will provide "Intent-Sealed Shards" for every hypothetical reasoning branch, ensuring that discarded paths cannot "contaminate" the mission-root blackboard.
+- **SSH Sandboxing Adapter**: We are adopting the "OpenShell" model for all CLI-based tools. MCP Any will provide native support for isolated SSH sandboxes, ensuring that shell commands are executed in a zero-trust, network-restricted environment.
+
 ---
 
 ## Strategic Evolution: [2026-04-03]

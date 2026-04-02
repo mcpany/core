@@ -1254,6 +1254,9 @@
 - **Inode-Pinning Middleware**: (P0) Hardware-bound file handle protection that prevents symlink-racing and TOCTOU escapes in project configs.
 - **Consensus Delegation Gateway**: (P1) Implementation of "Delegated Authority" models where trusted monitor agents can authorize time-critical tasks.
 - **Branch-Purity Blackboard Validator**: (P0) Integrity layer for the Shared KV Store to prevent "Branch Contamination" between divergent reasoning paths.
+- **ClawHub Ingestion Adapter**: (P0) Authoritative bridge for curated marketplace skills, enforcing hardware-attested provenance for OpenClaw-compatible plugins.
+- **JVM Injection Shield**: (P0) Real-time structural sanitizer for Java-based subagent hooks to neutralize JVM instruction smuggling.
+- **OpenShell SSH Adapter**: (P0) Core tool adapter for executing shell commands within isolated, network-restricted SSH sandboxes.
 
 ---
 

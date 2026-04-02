@@ -433,6 +433,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Inode-Pinning Middleware**: Hardware-bound file handle protection for project-local configurations. (Added: 2026-04-02)
 *   **[P0] Branch-Purity Blackboard Validator**: Integrity layer for the Shared KV Store to prevent cross-branch state contamination. (Added: 2026-04-02)
 *   **[P1] Consensus Delegation Gateway**: Implementation of "Delegated Authority" models for time-critical agent authorization. (Added: 2026-04-02)
+*   **[P0] ClawHub Ingestion Adapter**: Secure bridge for curated marketplace skills with hardware-attested provenance. (Added: 2026-04-02)
+*   **[P0] JVM Injection Shield**: Real-time structural sanitizer for Java-based subagent hooks. (Added: 2026-04-02)
+*   **[P0] OpenShell SSH Adapter**: Isolated, network-restricted SSH sandbox for CLI tools. (Added: 2026-04-02)
 
 #### Upcoming (2026-04-03 Evolution)
 *   **[P0] Active Subagent Reaper**: Lifecycle monitor to terminate "Ghost" subagents and purge orphaned state. (Added: 2026-04-03)
