@@ -1934,3 +1934,16 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Zero-Privilege Discovery Hub (ZPDH)**: (P0) Authoritative filter service where all discovery probes and initial tool executions occur in resource-constrained bubblewrap containers.
+- **Hardware-Attested De-biometricization (HAD) Provider**: (P0) Privacy service utilizing secure enclaves to scrub PII from agent-ingested context fragments locally before cloud propagation.
+- **Natural-Language Injection Shield (NLIS)**: (P0) Core security service mandating SEMGREP-style scanning of natural language files (MD/JSON) to detect imperative instruction injection.
+- **CRDT-Native State Synchronizer**: (P0) Scaling extension for the LFSS architecture providing lock-free state synchronization for parallel horizontal Agent Teams.
+
+### Priority Shifts
+- **Discovery Sandbox Middleware**: (Re-affirmed P0) Evolving into the **Zero-Privilege Discovery Hub (ZPDH)** for more aggressive process-level isolation.
+- **De-biometricization Sanitizer**: (Promoted to P0) Critical requirement for satisfying local data sovereignty in hybrid cloud reasoning sessions.
+- **Lock-Free Mesh coordination**: (Re-affirmed P0) Elevated with the requirement for mandatory **CRDT-native** state shards to resolve the coordination latency tax.

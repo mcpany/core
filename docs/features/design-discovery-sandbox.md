@@ -50,3 +50,11 @@ The emergence of "Ghost-Execution" exploits in the Gemini CLI ecosystem has high
 * Mandating "Isolated Discovery Environments" for all project-local configurations.
 * Introducing a "Discovery Quarantine" where tool schemas are held until a hardware-attested user signal is received.
 **Security Impact:** Neutralizes startup-time RCE in cloned repositories and prevents "Context Poisoning" during the discovery phase.
+
+### Update: [2026-07-25] - Evolution to Zero-Privilege Discovery Hub (ZPDH)
+**Context:** The "BoryptGrab" crisis and the disclosure of unauthenticated loopback vulnerabilities in OpenClaw (CVE-2026-25253) confirm that simple sandboxing is insufficient. Discovery commands are now weaponized to probe the local network and exfiltrate host-level secrets.
+**Architecture Adjustment:**
+*   Deprecating optional sandboxing in favor of the **Zero-Privilege Discovery Hub (ZPDH)**.
+*   Mandating the use of Linux `bubblewrap` for all discovery commands, with a "Deny-All" default policy for filesystem and network access.
+*   Introducing "Hardware-Attested Capability Schemas": Discovered tools must have their schemas signed by the ZPDH before being promoted to the active registry.
+**Security Impact:** Prevents discovery-phase probes from accessing local network resources and ensures that malicious "Settings-as-Shell" hooks remain trapped in a zero-privilege environment.

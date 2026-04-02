@@ -59,3 +59,11 @@ The **De-biometricization Sanitizer** acts as a local-first security boundary, s
     * **Context**: Today's market sync revealed a surge in "Multi-Modal Sovereignty" requirements as agents move from text-only to video/audio task execution.
     * **Architecture Adjustment**: Expanded the `scrub_context` interface to support binary streams and multimedia metadata.
     * **Security Impact**: Prevents the exfiltration of facial geometry and voice-print metadata found in high-resolution multi-modal context buffers.
+
+### Update: [2026-07-25] - Hardware-Attested De-biometricization (HAD)
+**Context:** Today's research into "Shadow-Attestation" and "Natural Language Hooks" reveals that attackers are using complex PII-dense fragments to bypass traditional sanitizers via "Intent Splicing." Simple regex is no longer sufficient; sanitization must be backed by hardware-bound cognitive analysis.
+**Architecture Adjustment:**
+*   Upgrading the Sanitizer to the **Hardware-Attested De-biometricization (HAD) Provider**.
+*   Integrating with Secure Enclaves (TPM/SEP) to provide cryptographic proofs of sanitization. Each "Sovereignty Receipt" now includes a hardware-signed hash of the original and redacted fragments.
+*   Introducing "Natural-Language Injection Shield (NLIS)": A pre-sanitization layer that scans for imperative instructions hidden within PII-like data structures (e.g., a "Name" field containing a shell command).
+**Security Impact:** Ensures absolute local data sovereignty and prevents the "Intent Splicing" vector where malicious instructions are smuggled inside legitimate-looking sensitive data.
