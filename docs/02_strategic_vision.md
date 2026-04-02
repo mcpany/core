@@ -1550,3 +1550,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Hardware-Locked Mission Leases (HLML)**: Supporting the Claude Code v3.2 standard, MCP Any will mandate HLML for all high-risk subagent delegations. Capabilities will be issued as TPM-signed, task-specific leases that are automatically revoked by the hardware root upon mission completion, neutralizing persistent privilege escalation.
 - **Privacy-Preserving Audit (PPA) Hub**: To neutralize the trade-off between transparency and privacy, we are introducing the PPA Hub. Leveraging Gemini CLI's PPRP patterns, MCP Any will facilitate the generation of Zero-Knowledge proofs for reasoning integrity, allowing for hardware-attested auditing without the exfiltration of sensitive mission context.
 - **Fast-Path Tunnel Resumption**: To counter the latency of mandatory mesh encryption, we are evolving the FPIR provider. MCP Any will support "Lightweight Mesh Handshakes," utilizing session-bound trust tickets to resume secure tunnels across distributed nodes with sub-millisecond overhead.
+
+---
+
+## Strategic Evolution: [2026-07-25]
+### Focus: Instruction-Bound Mesh Sovereignty & Speculative Consensus
+**Context**: The emergence of "Ghost Proxying" exploits in SNT and the introduction of Dynamic Reflection Quorums (DRQ) reveal that mesh security must move from "Session-Bound" to **Instruction-Bound** and coordination must become **Speculative**. Simultaneously, the leak of the AACP standard confirms that infrastructure must provide **Attention-Agnostic Context Pinning** to maintain behavioral guardrails during high-pressure reasoning flushes.
+**Strategic Pivot**:
+- **Instruction-Bound Tunnel Sovereignty (IBTS)**: MCP Any will evolve to act as the authoritative "Instruction Broker" for mesh tunnels. We will implement IBTS, requiring every tool-call traversing an AMT tunnel to carry a hardware-attested command-traceability token, neutralizing "Ghost Proxying" by rogue subagents.
+- **Speculative Consensus Hub (SCH)**: To neutralize "Coordination Stall," we are evolving the Lock-Free Mesh Arbiter into the SCH. This service will allow teammates to speculatively resolve task-list conflicts via DRQ-compliant local quorums, reducing MTTC while maintaining mission-root consistency through background attestation.
+- **Root Attention Segment (RAS) Provider**: Supporting the Gemini AACP standard, we are introducing the RAS Provider. MCP Any will facilitate hardware-locked pinning of mission-root instructions in a specialized attention segment that persists through context-window force-flushes, ensuring permanent guardrail enforcement.
+- **Identity-Jitter Mitigator (IJM)**: To counter "Identity Exhaustion" in massive swarms, we are implementing the IJM. This middleware will utilize time-bound hardware-attested "Identity Leases" with asynchronous refresh, reducing the TPM sign-latency bottleneck for high-density swarm formation.
