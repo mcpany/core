@@ -1,5 +1,16 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Machine-Checkable Audit Provider (MCAP)**: (P0) Authoritative registry providing hardware-attested, programmatically verifiable audit trails for all tool-driven reasoning.
+- **Modular Instruction Sandbox (MIS)**: (P0) Security middleware that recursively executes and isolates imported context files (e.g., @file.md) to neutralize instruction smuggling.
+- **Teammate Boundary Enforcer (TBE)**: (P0) Advanced segmentation service mandating strict Zero-Trust isolation between specialist agents in horizontal meshes.
+
+### Priority Shifts
+- **Pre-Flight Sandbox Validator**: (Re-affirmed P0) Elevated with the requirement for mandatory **MIS-compliant** import isolation.
+- **Autonomous Verification Quorum (AVQ) Hub**: (Re-affirmed P0) Designated as the primary enforcement point for **MCAP-attested** reasoning integrity.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions

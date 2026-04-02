@@ -212,6 +212,11 @@
 *   **[P0] CI/CD Cache Integrity Guard (CCIG)**: Mandatory cryptographic signing and verification for all build caches. (Added: 2026-07-08)
 *   **[P0] Action-Chain Sovereignty Monitor (ACSM)**: Real-time validation of agent workflow sequences against mission-root intents. (Added: 2026-07-08)
 
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Machine-Checkable Audit Provider (MCAP)**: hardware-attested, programmatically verifiable audit trails for reasoning lineage. (Added: 2026-07-25)
+*   **[P0] Modular Instruction Sandbox (MIS)**: recursive zero-trust isolation for imported context files (e.g., @file.md). (Added: 2026-07-25)
+*   **[P0] Teammate Boundary Enforcer (TBE)**: mandatory Zero-Trust segmentation and lateral-movement defense for horizontal meshes. (Added: 2026-07-25)
+
 #### Upcoming (2026-06-27 Evolution)
 *   **[P0] Zero-Knowledge Discovery (ZKD) Proxy**: Authoritative discovery gateway implementing ZK-Capability Proofs for pre-flight masking. (Added: 2026-06-27)
 *   **[P0] CRDT-Native Mailbox Sharding**: Transition to full CRDT-native mailbox shards for lock-free horizontal scaling. (Added: 2026-06-27)

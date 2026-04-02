@@ -58,3 +58,11 @@ MCP Any needs to solve this by providing a cryptographically signed "Chain of Co
     * Context: Claude Code v3.6.0's ELMT reveals a risk of "Trace Replay" across disparate sessions.
     * Architecture Adjustment: Mandating cryptographic binding of COTs to hardware-attested environment IDs (e.g., Docker Container ID).
     * Security Impact: Prevents subagents from replaying valid reasoning trails from previous or concurrent sessions to authorize high-risk actions.
+
+### Update: 2026-07-25 - Machine-Checkable Audit Trails
+**Context:** Recent market sync confirms that OpenClaw and other frameworks suffer from an "Audit Deficit," where high-risk shell commands lack a programmatic lineage back to the mission-root intent.
+**Architecture Adjustment:**
+* Introducing the **Machine-Checkable Audit Provider (MCAP)** as a core component of the Traceability Middleware.
+* Every tool call must now be registered in the MCAP with a hardware-attested reasoning fragment that justifies the action based on the mission root.
+* Standardizing a JSON-schema-based "Forensic Evidence" format for all inter-agent coordination, allowing automated security quorums to verify the audit trail without human intervention.
+**Security Impact:** Neutralizes "Ghost Identity" commands by ensuring that no high-risk action can be executed without a programmatically verifiable and non-repudiable reasoning lineage.

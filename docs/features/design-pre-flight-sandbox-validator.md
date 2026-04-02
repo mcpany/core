@@ -53,3 +53,11 @@ The persistent threat of Remote Code Execution (RCE) via project-local configura
     * **Security Impact:** Neutralizes the "Absence-as-Exploit" pattern by ensuring the sandbox state remains identical to the pre-attested manifest.
 * **2026-04-10:** Integrated with the **Deterministic Attestation Gateway** to support "Full-State Manifest" requirements for Claude Code deterministic boot compliance.
 * **2026-04-09:** Initial Document Creation.
+
+### Update: 2026-07-25 - Modular Instruction Isolation
+**Context:** The introduction of modular imports (e.g., Gemini CLI's @file.md) has created a "Context-Smuggling" vector where malicious instructions can bypass the primary sandbox validator.
+**Architecture Adjustment:**
+* Implementing the **Modular Instruction Sandbox (MIS)** within the Pre-Flight lifecycle.
+* All external context files identified during the pre-flight scan are now recursively resolved and executed in an ephemeral, zero-trust sandbox.
+* The Validator now generates "Import Attestation Receipts" for every fragment, cryptographically linking modular instructions to the hardware-attested mission-root.
+**Security Impact:** Prevents "Shadow Instruction" injection via nested imports, ensuring that every fragment of the agent's attention window is part of the initial pre-attested manifest.
