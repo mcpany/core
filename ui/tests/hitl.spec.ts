@@ -2,23 +2,30 @@ import { test, expect } from '@playwright/test';
 
 test.describe('HITL Approvals Dashboard', () => {
   test.beforeEach(async ({ request, baseURL }) => {
-    const apiBaseUrl = process.env.BACKEND_URL || baseURL;
-    // We add a delay or use proper headers to ensure we don't get 502 connection refused.
-    // And also proxy the request via the Vite server correctly or pass standard authentication if needed.
-    // The previous error was a timeout waiting for drop_database to be visible.
-    await request.post(`${apiBaseUrl}/api/v1/mock/seed-hitl`, {
+    // In CI, PLAYWRIGHT_BASE_URL (or baseURL) is the frontend server, and it proxies /api/v1 to the backend.
+    // Wait, the API is actually mapped directly to the root in app/api.go for most things, but it's
+    // accessed via /api/v1/ prefix through Vite proxy or the backend router.
+    // Let's use the UI's base URL and hit the proxied API endpoint.
+    // We need to pass the API Key to the backend
+    await request.post(`${baseURL}/api/v1/mock/seed-hitl`, {
       data: {
         execution_id: 'test-execution-id-123',
         tool_name: 'production.drop_database',
         require_mfa: true,
+      },
+      headers: {
+        'X-API-Key': process.env.MCPANY_API_KEY || 'test-token',
       }
     });
 
-    await request.post(`${apiBaseUrl}/api/v1/mock/seed-hitl`, {
+    await request.post(`${baseURL}/api/v1/mock/seed-hitl`, {
       data: {
         execution_id: 'test-execution-id-456',
         tool_name: 'production.restart_server',
         require_mfa: false,
+      },
+      headers: {
+        'X-API-Key': process.env.MCPANY_API_KEY || 'test-token',
       }
     });
   });
