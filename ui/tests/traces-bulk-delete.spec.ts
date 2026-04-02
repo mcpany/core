@@ -9,7 +9,7 @@ test.describe('Trace Inspector', () => {
         await page.getByRole('button', { name: 'Seed Trace' }).click();
 
         // Wait for traces to appear in the table. Seed creates 5 traces
-        const firstTrace = page.getByText('trace-seed-').first();
+        const firstTrace = page.locator('span', { hasText: 'trace-seed' }).first();
         await expect(firstTrace).toBeVisible({ timeout: 30000 });
 
         // Count traces before deletion
