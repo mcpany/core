@@ -1025,8 +1025,14 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Adaptive Resource Reclamation (ARR) Service**: high-speed budgeting middleware for real-time token/reasoning re-allocation between teammates. (Added: 2026-07-22)
 *   **[P0] Manifest-Based Reflection (MBR) Arbiter**: authoritative service for validating subagent self-reflection against hardware-attested manifests. (Added: 2026-07-22)
 
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Enclave-Bound Port Isolation (EBPI)**: Implement hardware-attested port filtering within the AMT Broker to neutralize lateral movement. (Added: 2026-07-25)
+*   **[P0] Recursive Lease Provider (RLP)**: Support for fractionalized sub-delegation of hardware-attested mission capabilities (Claude Code v3.2.1-rc alignment). (Added: 2026-07-25)
+*   **[P0] Audit-Gated Discovery (AGD)**: Security middleware mandating reasoning-proof verification before revealing high-risk tool schemas. (Added: 2026-07-25)
+*   **[P1] Mission Attestation Aggregator**: Middleware to batch hardware-attested signals and reduce TPM-signing latency in parallel teams. (Added: 2026-07-25)
+
 #### Upcoming (2026-07-24 Evolution)
 *   **[P0] Attested Mesh Tunneling (AMT) Broker**: Implementation of hardware-attested, encrypted P2P tunnels for multi-node agent mesh support. (Added: 2026-07-24)
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
-*   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
+*   **[P0] Privacy-Preserving Audit (PPA) Hub**: (Promoted to P0) Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)

@@ -1924,6 +1924,18 @@
 - **Adaptive Resource Reclamation (ARR) Service**: (P0) High-speed budgeting middleware that re-allocates reasoning/token budgets between teammates based on task urgency.
 - **Manifest-Based Reflection (MBR) Arbiter**: (P0) Authoritative coordination service mandating that subagent self-reflection cycles align with the mission-root manifest.
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Enclave-Bound Port Isolation (EBPI) Manager**: (P0) Security extension for the AMT Broker providing hardware-attested, port-level isolation for remote tool execution.
+- **Recursive Lease Provider (RLP)**: (P0) Authoritative delegation service allowing parent agents to issue fractionalized sub-leases of hardware-attested mission capabilities.
+- **Audit-Gated Discovery (AGD) Proxy**: (P0) Security gate for the ZKDB mandating Reasoning Proof verification before exposing high-risk tool capability cards.
+- **Mission Attestation Aggregator**: (P1) Performance middleware batching multiple TPM-signatures into a single mission-bound super-signature.
+
+### Priority Shifts
+- **Privacy-Preserving Audit (PPA) Hub**: (Promoted from P1 to P0) Critical requirement for AGD-compliant discovery and Gemini CLI v0.58.1 compatibility.
+- **Hardware-Locked Mission Lease (HLML) Provider**: (Re-affirmed P0) Elevated with mandatory support for **RLP-compliant** recursive inheritance.
+
 ## Evolution: [2026-07-24] Updates
 
 ### Proposed Additions

@@ -62,3 +62,10 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Mitigating Lateral Movement via EBPI
+**Context:** Today's market sync revealed that OpenClaw v3.6.2 has implemented Enclave-Bound Port Forwarding (EBPF) to address unauthorized lateral movement.
+**Architecture Adjustment:**
+* Deprecating full-stack network tunneling in favor of **Enclave-Bound Port Isolation (EBPI)**.
+* Implementing port-level, hardware-attested filters within the AMT Broker to restrict remote agents to specific virtualized tool ports.
+**Security Impact:** Prevents a compromised remote subagent from probing the local network stack beyond its authorized tool interfaces.
