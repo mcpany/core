@@ -513,6 +513,20 @@ func RegisterPlaceholders(hub *AdapterHub) {
 		"Zero-Knowledge State Attestation (ZKSA) Provider",
 		"Unified Teammate Discovery (UTD) Gateway",
 		"Hierarchical Provenance Validator",
+		"Attestation Aggregator Hub (AAH)",
+		"Sovereign Migration Broker (SMB)",
+		"Recursive Multi-modal Provenance (RMP) Validator",
+		"Atomic State Teleportation (AST) Adapter",
+		"Attested Mesh Tunneling (AMT) Broker",
+		"Hardware-Locked Mission Lease (HLML) Provider",
+		"Privacy-Preserving Audit (PPA) Hub",
+		"Reasoning-Path Watermark (RPW) Validator",
+		"Adaptive Resource Reclamation (ARR) Service",
+		"Manifest-Based Reflection (MBR) Arbiter",
+		"Agentic Entropy Monitor (AEM)",
+		"Mission-Root Conflict Resolver (MRCR)",
+		"Environment-Aware Provenance (EAP) Provider",
+		"GC-Immune Reasoning Anchors",
 	}
 
 	for _, name := range missingFeatures {
