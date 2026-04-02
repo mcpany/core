@@ -49,13 +49,13 @@ type Manager struct {
 // Summary: Initializes NewManager operation.
 //
 // Parameters:
-//   - args: Variable arguments based on the signature.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - Result: Expected return type based on signature.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - Returns an error on failure.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -82,13 +82,13 @@ func NewManager() *Manager {
 // Summary: Executes RegisterProvider operation.
 //
 // Parameters:
-//   - args: Variable arguments based on the signature.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - Result: Expected return type based on signature.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - Returns an error on failure.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -119,13 +119,13 @@ func (m *Manager) RegisterProvider(p Provider) {
 // Summary: Executes Run operation.
 //
 // Parameters:
-//   - args: Variable arguments based on the signature.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - Result: Expected return type based on signature.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - Returns an error on failure.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -193,13 +193,13 @@ func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 // Summary: Retrieves GetStatuses operation.
 //
 // Parameters:
-//   - args: Variable arguments based on the signature.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - Result: Expected return type based on signature.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - Returns an error on failure.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -236,13 +236,13 @@ func (m *Manager) GetStatuses() []*ProviderStatus {
 // Summary: Retrieves GetProviderStatus operation.
 //
 // Parameters:
-//   - args: Variable arguments based on the signature.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - Result: Expected return type based on signature.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - Returns an error on failure.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

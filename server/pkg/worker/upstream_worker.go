@@ -39,13 +39,13 @@ type UpstreamWorker struct {
 // Summary: Initializes NewUpstreamWorker operation.
 //
 // Parameters:
-//   - args: Variable arguments based on the signature.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - Result: Expected return type based on signature.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - Returns an error on failure.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -66,13 +66,13 @@ func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *Up
 // Summary: Executes Start operation.
 //
 // Parameters:
-//   - args: Variable arguments based on the signature.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - Result: Expected return type based on signature.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - Returns an error on failure.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -144,13 +144,13 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 // Summary: Executes Stop operation.
 //
 // Parameters:
-//   - args: Variable arguments based on the signature.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - Result: Expected return type based on signature.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - Returns an error on failure.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

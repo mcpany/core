@@ -41,13 +41,13 @@ type S3Provider struct {
 // Summary: Initializes NewS3Provider operation.
 //
 // Parameters:
-//   - args: Variable arguments based on the signature.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - Result: Expected return type based on signature.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - Returns an error on failure.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -99,13 +99,13 @@ func NewS3Provider(config *configv1.S3Fs) (*S3Provider, error) {
 // Summary: Retrieves GetFs operation.
 //
 // Parameters:
-//   - args: Variable arguments based on the signature.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - Result: Expected return type based on signature.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - Returns an error on failure.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -131,13 +131,13 @@ func (p *S3Provider) GetFs() afero.Fs {
 // Summary: Executes ResolvePath operation.
 //
 // Parameters:
-//   - args: Variable arguments based on the signature.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - Result: Expected return type based on signature.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - Returns an error on failure.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -171,13 +171,13 @@ func (p *S3Provider) ResolvePath(virtualPath string) (string, error) {
 // Summary: Executes Close operation.
 //
 // Parameters:
-//   - args: Variable arguments based on the signature.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - Result: Expected return type based on signature.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - Returns an error on failure.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

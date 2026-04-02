@@ -41,13 +41,13 @@ type AuditHandler struct {
 // Summary: Initializes NewAuditHandler operation.
 //
 // Parameters:
-//   - args: Variable arguments based on the signature.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - Result: Expected return type based on signature.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - Returns an error on failure.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -113,13 +113,13 @@ func (h *AuditHandler) initializeStore(config *configv1.AuditConfig) {
 // Summary: Executes Enabled operation.
 //
 // Parameters:
-//   - args: Variable arguments based on the signature.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - Result: Expected return type based on signature.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - Returns an error on failure.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -145,13 +145,13 @@ func (h *AuditHandler) Enabled(ctx context.Context, level slog.Level) bool {
 // Summary: Executes Handle operation.
 //
 // Parameters:
-//   - args: Variable arguments based on the signature.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - Result: Expected return type based on signature.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - Returns an error on failure.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -182,13 +182,13 @@ func (h *AuditHandler) Handle(ctx context.Context, r slog.Record) error {
 // Summary: Executes WithAttrs operation.
 //
 // Parameters:
-//   - args: Variable arguments based on the signature.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - Result: Expected return type based on signature.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - Returns an error on failure.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -217,13 +217,13 @@ func (h *AuditHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 // Summary: Executes WithGroup operation.
 //
 // Parameters:
-//   - args: Variable arguments based on the signature.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - Result: Expected return type based on signature.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - Returns an error on failure.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -253,13 +253,13 @@ func (h *AuditHandler) WithGroup(name string) slog.Handler {
 // Summary: Executes Export operation.
 //
 // Parameters:
-//   - args: Variable arguments based on the signature.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - Result: Expected return type based on signature.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - Returns an error on failure.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

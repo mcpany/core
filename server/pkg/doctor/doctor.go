@@ -79,13 +79,13 @@ type CheckResult struct {
 // Summary: Executes RunChecks operation.
 //
 // Parameters:
-//   - args: Variable arguments based on the signature.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - Result: Expected return type based on signature.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - Returns an error on failure.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -131,13 +131,13 @@ func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []Check
 // Summary: Executes CheckService operation.
 //
 // Parameters:
-//   - args: Variable arguments based on the signature.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - Result: Expected return type based on signature.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - Returns an error on failure.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

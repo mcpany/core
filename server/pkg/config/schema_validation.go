@@ -73,13 +73,13 @@ func ValidateConfigAgainstSchema(rawConfig map[string]interface{}) error {
 // Summary: Executes GenerateJSONSchemaBytes operation.
 //
 // Parameters:
-//   - args: Variable arguments based on the signature.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - Result: Expected return type based on signature.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - Returns an error on failure.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
