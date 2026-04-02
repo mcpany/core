@@ -21,6 +21,18 @@ import (
 // ManagerInterface defines the interface for managing alerts.
 //
 // Summary: Represents a ManagerInterface.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ManagerInterface interface {
 	// ListAlerts returns a list of all alerts.
 	ListAlerts() []*Alert
@@ -59,6 +71,18 @@ type ManagerInterface interface {
 // Manager implements ManagerInterface using in-memory storage.
 //
 // Summary: Represents a Manager.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Manager struct {
 	mu         sync.RWMutex
 	alerts     map[string]*Alert
@@ -92,6 +116,9 @@ type Manager struct {
 //   - TODO: Document errors.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func NewManager() *Manager {
 	m := &Manager{
@@ -143,6 +170,9 @@ func (m *Manager) seedData() {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - None.
 func (m *Manager) ListAlerts() []*Alert {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -184,6 +214,9 @@ func (m *Manager) ListAlerts() []*Alert {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - None.
 func (m *Manager) GetAlert(id string) *Alert {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -216,6 +249,9 @@ func (m *Manager) GetAlert(id string) *Alert {
 //   - TODO: Document errors.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func (m *Manager) CreateAlert(alert *Alert) *Alert {
 	m.mu.Lock()
@@ -285,6 +321,9 @@ func (m *Manager) CreateAlert(alert *Alert) *Alert {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - None.
 func (m *Manager) GetAlertStats() *AlertStats {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -345,6 +384,9 @@ func (m *Manager) GetAlertStats() *AlertStats {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func (m *Manager) DeleteAlert(id string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -382,6 +424,9 @@ func (m *Manager) DeleteAlert(id string) error {
 //   - TODO: Document errors.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 	m.mu.Lock()
@@ -455,6 +500,9 @@ func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - None.
 func (m *Manager) GetWebhookURL() string {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -488,6 +536,9 @@ func (m *Manager) GetWebhookURL() string {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - None.
 func (m *Manager) SetWebhookURL(url string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -520,6 +571,9 @@ func (m *Manager) SetWebhookURL(url string) {
 //   - TODO: Document errors.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func (m *Manager) ListRules() []*AlertRule {
 	m.mu.RLock()
@@ -561,6 +615,9 @@ func (m *Manager) ListRules() []*AlertRule {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - None.
 func (m *Manager) GetRule(id string) *AlertRule {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -593,6 +650,9 @@ func (m *Manager) GetRule(id string) *AlertRule {
 //   - TODO: Document errors.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func (m *Manager) CreateRule(rule *AlertRule) *AlertRule {
 	m.mu.Lock()
@@ -632,6 +692,9 @@ func (m *Manager) CreateRule(rule *AlertRule) *AlertRule {
 //   - TODO: Document errors.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func (m *Manager) UpdateRule(id string, rule *AlertRule) *AlertRule {
 	m.mu.Lock()
@@ -678,6 +741,9 @@ func (m *Manager) UpdateRule(id string, rule *AlertRule) *AlertRule {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func (m *Manager) DeleteRule(id string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()

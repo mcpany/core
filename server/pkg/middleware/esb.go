@@ -21,6 +21,18 @@ const (
 // and enforces that requests are cryptographically bound to a mission-root intent.
 //
 // Summary: Implements the Entangled State Broker.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ESBMiddleware struct {
 	// Enable/disable the middleware
 	enabled bool
@@ -35,6 +47,12 @@ type ESBMiddleware struct {
 //   - (*ESBMiddleware): The newly created middleware.
 //
 // Summary: Creates a new ESBMiddleware.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewESBMiddleware(config *configv1.Middleware) *ESBMiddleware {
 	enabled := true
 	if config != nil {
@@ -59,6 +77,12 @@ func NewESBMiddleware(config *configv1.Middleware) *ESBMiddleware {
 //   - (error): An error if the request fails validation or execution.
 //
 // Summary: Executes the ESB middleware logic.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (m *ESBMiddleware) Execute(ctx context.Context, method string, req mcp.Request, next mcp.MethodHandler) (mcp.Result, error) {
 	if !m.enabled {
 		return next(ctx, method, req)

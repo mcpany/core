@@ -39,6 +39,9 @@ import (
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - None.
 func DebugMiddleware() mcp.Middleware {
 	return func(next mcp.MethodHandler) mcp.MethodHandler {
 		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {

@@ -71,6 +71,9 @@ var byteBufferPool = sync.Pool{
 // Side Effects:
 //   - Intercepts the response writer to buffer and compress content.
 //   - Modifies the Content-Encoding header.
+//
+// Errors/Throws:
+//   - None.
 func GzipCompressionMiddleware(next http.Handler) http.Handler {
 	pool := sync.Pool{
 		New: func() interface{} {
@@ -130,6 +133,9 @@ type gzipResponseWriter struct {
 // Side Effects:
 //   - Buffers data if the size is below the threshold.
 //   - Flushes buffer and writes to gzip writer if threshold is exceeded.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func (w *gzipResponseWriter) Write(b []byte) (int, error) {
 	// If we are already compressing, write to gzip writer
 	if w.writer != nil {
@@ -190,6 +196,12 @@ func (w *gzipResponseWriter) Write(b []byte) (int, error) {
 // Side Effects:
 //   - Sets the internal status code.
 //   - May trigger an immediate flush if the content type is not compressible.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
 func (w *gzipResponseWriter) WriteHeader(code int) {
 	if w.headerWritten {
 		return
@@ -293,6 +305,9 @@ func (w *gzipResponseWriter) flushBuffer(startGzip bool) error {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - None.
 func (w *gzipResponseWriter) Flush() {
 	// If we haven't written headers yet, we are still buffering.
 	// Force flush the buffer to start gzip stream (even if small).
@@ -338,6 +353,9 @@ func (w *gzipResponseWriter) Flush() {
 //   - TODO: Document errors.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func (w *gzipResponseWriter) Close() {
 	if w.writer != nil {

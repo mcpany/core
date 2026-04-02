@@ -15,6 +15,18 @@ import (
 // IPAllowlistMiddleware restricts access to allowed IP addresses.
 //
 // Summary: Middleware that filters requests based on a list of allowed IP addresses or CIDRs.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type IPAllowlistMiddleware struct {
 	mu            sync.RWMutex
 	allowedIPNets []*net.IPNet
@@ -30,6 +42,12 @@ type IPAllowlistMiddleware struct {
 // Returns:
 //   - *IPAllowlistMiddleware: The initialized middleware instance.
 //   - error: An error if any of the provided CIDRs are invalid.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func NewIPAllowlistMiddleware(allowedCIDRs []string) (*IPAllowlistMiddleware, error) {
 	m := &IPAllowlistMiddleware{}
 	if err := m.Update(allowedCIDRs); err != nil {
@@ -47,6 +65,12 @@ func NewIPAllowlistMiddleware(allowedCIDRs []string) (*IPAllowlistMiddleware, er
 //
 // Returns:
 //   - error: An error if any of the provided CIDRs are invalid.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
+//
+// Side Effects:
+//   - Modifies persistent state or database.
 func (m *IPAllowlistMiddleware) Update(allowedCIDRs []string) error {
 	nets := make([]*net.IPNet, 0, len(allowedCIDRs))
 	for _, cidr := range allowedCIDRs {
@@ -86,6 +110,12 @@ func (m *IPAllowlistMiddleware) Update(allowedCIDRs []string) error {
 //
 // Returns:
 //   - bool: True if allowed, false otherwise.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *IPAllowlistMiddleware) Allow(remoteAddr string) bool {
 	m.mu.RLock()
 	nets := m.allowedIPNets
@@ -129,6 +159,12 @@ func (m *IPAllowlistMiddleware) Allow(remoteAddr string) bool {
 //
 // Returns:
 //   - http.Handler: The wrapped handler.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *IPAllowlistMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !m.Allow(r.RemoteAddr) {

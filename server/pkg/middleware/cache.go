@@ -28,6 +28,18 @@ import (
 // ProviderFactory is a function that creates an EmbeddingProvider.
 //
 // Summary: Represents a ProviderFactory.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ProviderFactory func(config *configv1.SemanticCacheConfig, apiKey string) (EmbeddingProvider, error)
 
 // CachingMiddleware is a tool execution middleware that provides caching
@@ -42,6 +54,18 @@ var (
 // CachingMiddleware handles caching of tool execution results.
 //
 // Summary: Represents a CachingMiddleware.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type CachingMiddleware struct {
 	cache           *cache.Cache[any]
 	toolManager     tool.ManagerInterface
@@ -77,6 +101,9 @@ type CachingMiddleware struct {
 //   - TODO: Document errors.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware {
 	goCacheStore := gocache_store.NewGoCache(go_cache.New(5*time.Minute, 10*time.Minute))
@@ -163,6 +190,9 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - None.
 func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 	m.providerFactory = factory
 }
@@ -197,6 +227,9 @@ func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := tool.GetFromContext(ctx)
 	if !ok {
@@ -516,6 +549,9 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func (m *CachingMiddleware) Clear(ctx context.Context) error {
 	return m.cache.Clear(ctx)
 }

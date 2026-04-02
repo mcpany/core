@@ -15,6 +15,18 @@ import (
 // ProviderStatus represents the status of a discovery provider.
 //
 // Summary: Represents a ProviderStatus.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ProviderStatus struct {
 	Name            string
 	Status          string // "OK", "ERROR"
@@ -26,6 +38,18 @@ type ProviderStatus struct {
 // Manager manages auto-discovery providers.
 //
 // Summary: Represents a Manager.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Manager struct {
 	providers []Provider
 	mu        sync.RWMutex
@@ -59,6 +83,9 @@ type Manager struct {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - None.
 func NewManager() *Manager {
 	return &Manager{
 		statuses: make(map[string]*ProviderStatus),
@@ -91,6 +118,9 @@ func NewManager() *Manager {
 //   - TODO: Document errors.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func (m *Manager) RegisterProvider(p Provider) {
 	m.mu.Lock()
@@ -128,6 +158,9 @@ func (m *Manager) RegisterProvider(p Provider) {
 //   - TODO: Document errors.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 	var allServices []*configv1.UpstreamServiceConfig
@@ -203,6 +236,9 @@ func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - None.
 func (m *Manager) GetStatuses() []*ProviderStatus {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -245,6 +281,9 @@ func (m *Manager) GetStatuses() []*ProviderStatus {
 //   - TODO: Document errors.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func (m *Manager) GetProviderStatus(name string) (*ProviderStatus, bool) {
 	m.mu.RLock()

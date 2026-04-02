@@ -15,6 +15,18 @@ import (
 // SubagentStatus defines the structure for AIA heartbeat responses.
 //
 // Summary: Defines the structure for Active Intent Alignment heartbeat responses.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type SubagentStatus struct {
 	ID            string  `json:"id"`
 	Name          string  `json:"name"`

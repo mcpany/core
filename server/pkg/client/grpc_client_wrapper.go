@@ -17,6 +17,18 @@ import (
 // It is used to allow for mocking of the gRPC client in tests.
 //
 // Summary: Represents a Conn.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Conn interface {
 	grpc.ClientConnInterface
 	// Close closes the connection to the server.
@@ -34,6 +46,18 @@ type Conn interface {
 // connection pool, which can improve performance by reusing connections.
 //
 // Summary: Represents a GrpcClientWrapper.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type GrpcClientWrapper struct {
 	Conn
 	config *configv1.UpstreamServiceConfig
@@ -69,6 +93,9 @@ type GrpcClientWrapper struct {
 //   - TODO: Document errors.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func NewGrpcClientWrapper(conn Conn, config *configv1.UpstreamServiceConfig, checker health.Checker) *GrpcClientWrapper {
 	// If no checker is provided, create a new one (backward compatibility or standalone usage).
@@ -108,6 +135,9 @@ func NewGrpcClientWrapper(conn Conn, config *configv1.UpstreamServiceConfig, che
 //   - TODO: Document errors.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func (w *GrpcClientWrapper) IsHealthy(ctx context.Context) bool {
 	if w.GetState() == connectivity.Shutdown {
@@ -149,6 +179,9 @@ func (w *GrpcClientWrapper) IsHealthy(ctx context.Context) bool {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func (w *GrpcClientWrapper) Close() error {
 	return w.Conn.Close()
 }

@@ -32,6 +32,9 @@ const maxRecursionDepth = 100
 //
 // Side Effects:
 //   - Performs a deep copy of the input schema.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func SanitizeJSONSchema(schema any) (*structpb.Struct, error) {
 	if schema == nil {
 		return nil, nil

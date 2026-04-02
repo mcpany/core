@@ -47,6 +47,9 @@ type httpPool struct {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func (p *httpPool) Close() error {
 	if err := p.Pool.Close(); err != nil {
 		return err
@@ -78,6 +81,9 @@ func (p *httpPool) Close() error {
 //   - Initializes a new http.Transport and http.Client.
 //
 // Summary: Represents a NewHTTPPool.
+//
+// Errors/Throws:
+//   - None.
 var NewHTTPPool = func(
 	minSize, maxSize int,
 	idleTimeout time.Duration,

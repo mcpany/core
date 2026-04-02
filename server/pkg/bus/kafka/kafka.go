@@ -31,6 +31,18 @@ type readerInterface interface {
 // Bus is a Kafka-backed implementation of the Bus interface.
 //
 // Summary: Represents a Bus.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Bus[T any] struct {
 	writer        writerInterface
 	brokers       []string
@@ -108,6 +120,9 @@ func New[T any](config *bus.KafkaBus) (*Bus[T], error) {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 	payload, err := json.Marshal(msg)
 	if err != nil {
@@ -149,6 +164,9 @@ func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 //   - TODO: Document errors.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
@@ -249,6 +267,9 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - None.
 func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("kafka bus: handler cannot be nil")
@@ -272,6 +293,15 @@ func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T
 //
 // Returns:
 //   - error: An error if closing fails.
+//
+// Parameters:
+//   - None.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) Close() error {
 	return b.writer.Close()
 }

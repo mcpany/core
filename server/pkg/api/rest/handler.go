@@ -35,6 +35,9 @@ import (
 // Side Effects:
 //   - Reads the request body.
 //   - Writes JSON response to the response writer.
+//
+// Errors/Throws:
+//   - None.
 func ValidateConfigHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		respondWithJSONError(w, http.StatusMethodNotAllowed, "Method not allowed")

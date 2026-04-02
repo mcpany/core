@@ -13,6 +13,18 @@ import (
 // GRPCProvider discovers services via gRPC reflection.
 //
 // Summary: Represents a GRPCProvider.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type GRPCProvider struct {
 	Endpoint string // e.g., "localhost:50051"
 }
@@ -31,6 +43,9 @@ type GRPCProvider struct {
 //   - TODO: Document errors.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func (p *GRPCProvider) Name() string {
 	return "grpc"
@@ -51,6 +66,9 @@ func (p *GRPCProvider) Name() string {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func (p *GRPCProvider) Discover(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	if p.Endpoint == "" {
 		return nil, nil

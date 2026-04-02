@@ -15,6 +15,18 @@ import (
 // Summary: Server implementation for the Catalog Service.
 //
 // It handles requests to list available services from the dynamic catalog.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type CatalogServer struct {
 	manager *catalog.Manager
 }
@@ -36,6 +48,9 @@ type CatalogServer struct {
 // Side Effects:
 //
 //	None.
+//
+// Errors/Throws:
+//   - None.
 func NewCatalogServer(manager *catalog.Manager) *CatalogServer {
 	return &CatalogServer{manager: manager}
 }
@@ -57,6 +72,9 @@ func NewCatalogServer(manager *catalog.Manager) *CatalogServer {
 //
 // Side Effects:
 //   - Fetches services from the catalog manager.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func (s *CatalogServer) ListServices(ctx context.Context, _ *apiv1.ListCatalogServicesRequest) (*apiv1.ListCatalogServicesResponse, error) {
 	services, err := s.manager.ListServices(ctx)
 	if err != nil {

@@ -144,6 +144,18 @@ func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 //   - TLSKey: string. Path to the TLS private key file.
 //   - TLSClientCA: string. Path to the TLS client CA certificate file (for mTLS).
 //   - DBPath: string. Path to the SQLite database file.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type RunOptions struct {
 	Ctx             context.Context
 	Fs              afero.Fs
@@ -162,6 +174,18 @@ type RunOptions struct {
 // Runner defines the interface for running the application.
 //
 // Summary: Interface for application execution and management.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Runner interface {
 	// Run starts the application with the given options.
 	//
@@ -219,6 +243,12 @@ type Runner interface {
 // Returns:
 //   - None.
 // Throws/Errors:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
 //   - None.
 type Application struct {
 	runStdioModeFunc func(ctx context.Context, mcpSrv *mcpserver.Server) error
@@ -323,6 +353,15 @@ type statsCacheEntry struct {
 //
 // Returns:
 //   - (*Application): The initialized application.
+//
+// Parameters:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewApplication() *Application {
 	busProvider, _ := bus.NewProvider(nil)
 	return &Application{
@@ -359,6 +398,9 @@ func NewApplication() *Application {
 //   - Loads configuration.
 //
 //nolint:gocyclo // Run is the main entry point and setup function, expected to be complex
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func (a *Application) Run(opts RunOptions) error {
 	log := logging.GetLogger()
 	fs, err := setup(opts.Fs)
@@ -944,6 +986,9 @@ func (a *Application) Run(opts RunOptions) error {
 // Side Effects:
 //   - Reads configuration files.
 //   - Updates global settings, user auth, profiles, and service registry.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func (a *Application) ReloadConfig(ctx context.Context, fs afero.Fs, configPaths []string) error {
 	log := logging.GetLogger()
 	start := time.Now()
@@ -1376,6 +1421,12 @@ func (a *Application) generateConfigDiff(oldConfig, newConfig map[string]string)
 //
 // Returns:
 //   - (error): nil if startup completes successfully, or a context error if canceled.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
+//
+// Side Effects:
+//   - Starts background processes or modifies global state.
 func (a *Application) WaitForStartup(ctx context.Context) error {
 	select {
 	case <-a.startupCh:
@@ -1506,6 +1557,12 @@ func (a *Application) filesystemHealthCheck(_ context.Context) health.CheckResul
 //
 // Returns:
 //   - (error): nil if healthy, or an error if the health check fails.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -1527,6 +1584,9 @@ func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 //
 // Returns:
 //   - (error): nil if healthy, or an error if the health check fails.
+//
+// Side Effects:
+//   - None.
 func HealthCheckWithContext(
 	ctx context.Context,
 	out io.Writer,
@@ -2558,6 +2618,12 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 //
 // Returns:
 //   - (http.Handler): The wrapped handler.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (a *Application) HTTPRequestContextMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := context.WithValue(r.Context(), middleware.HTTPRequestContextKey, r)
@@ -2645,6 +2711,15 @@ func startGrpcServer(
 //
 // Returns:
 //   - *middleware.AuditMiddleware: The current audit middleware instance.
+//
+// Parameters:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (a *Application) GetAuditMiddleware() *middleware.AuditMiddleware {
 	a.configMu.Lock()
 	defer a.configMu.Unlock()

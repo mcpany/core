@@ -21,6 +21,18 @@ import (
 // capturing stderr to provide better error messages on failure.
 //
 // Summary: Represents a StdioTransport.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type StdioTransport struct {
 	Command *exec.Cmd
 }
@@ -53,6 +65,9 @@ type StdioTransport struct {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func (t *StdioTransport) Connect(_ context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
 
@@ -143,6 +158,9 @@ type stdioConn struct {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
 	if err := c.decoder.Decode(&raw); err != nil {
@@ -257,6 +275,9 @@ func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	var method string
 	var params any
@@ -320,6 +341,9 @@ func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func (c *stdioConn) Close() error {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
@@ -355,6 +379,9 @@ func (c *stdioConn) Close() error {
 //   - TODO: Document errors.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func (c *stdioConn) SessionID() string {
 	return "stdio-session"

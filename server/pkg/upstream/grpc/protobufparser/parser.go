@@ -30,6 +30,18 @@ import (
 // (Model Context Protocol) annotations within a set of protobuf files.
 //
 // Summary: Represents ParsedMcpAnnotations.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ParsedMcpAnnotations struct {
 	Tools     []McpTool
 	Prompts   []McpPrompt
@@ -40,6 +52,18 @@ type ParsedMcpAnnotations struct {
 // annotated as an MCP tool.
 //
 // Summary: Represents McpTool.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type McpTool struct {
 	Name            string
 	Description     string
@@ -60,6 +84,18 @@ type McpTool struct {
 // description, type, and whether it is repeated.
 //
 // Summary: Represents McpField.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type McpField struct {
 	Name        string
 	Description string
@@ -88,6 +124,9 @@ type McpField struct {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - None.
 func (f *McpField) GetName() string {
 	return f.Name
 }
@@ -112,6 +151,9 @@ func (f *McpField) GetName() string {
 //   - TODO: Document errors.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func (f *McpField) GetDescription() string {
 	return f.Description
@@ -138,6 +180,9 @@ func (f *McpField) GetDescription() string {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - None.
 func (f *McpField) GetType() string {
 	return f.Type
 }
@@ -162,6 +207,9 @@ func (f *McpField) GetType() string {
 //   - TODO: Document errors.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func (f *McpField) GetIsRepeated() bool {
 	return f.IsRepeated
@@ -411,6 +459,18 @@ func writeProtoFile(protoFile *configv1.ProtoFile, tempDir string) (string, erro
 // been annotated as an MCP prompt.
 //
 // Summary: Represents McpPrompt.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type McpPrompt struct {
 	Name           string
 	Description    string
@@ -426,6 +486,18 @@ type McpPrompt struct {
 // resource.
 //
 // Summary: Represents McpResource.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type McpResource struct {
 	Name        string
 	Description string
@@ -463,6 +535,9 @@ type McpResource struct {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func ParseProtoByReflection(ctx context.Context, target string) (*descriptorpb.FileDescriptorSet, error) {
 	// Create a context with a timeout for the entire reflection process
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
@@ -675,6 +750,9 @@ func getFileDescriptorByFilename(stream reflectpb.ServerReflection_ServerReflect
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func ExtractMcpDefinitions(fds *descriptorpb.FileDescriptorSet) (*ParsedMcpAnnotations, error) {
 	if fds == nil {
 		return nil, fmt.Errorf("FileDescriptorSet is nil")

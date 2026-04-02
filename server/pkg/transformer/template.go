@@ -16,6 +16,18 @@ import (
 // for rendering strings with dynamic data.
 //
 // Summary: High-performance template engine using fasttemplate.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type TextTemplate struct {
 	template *fasttemplate.Template
 	raw      string
@@ -39,6 +51,9 @@ type TextTemplate struct {
 //
 // Side Effects:
 //   - Auto-detects if the template output is likely JSON to enable automatic escaping.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error) {
 	tpl, err := fasttemplate.NewTemplate(templateString, startTag, endTag)
 	if err != nil {
@@ -80,6 +95,9 @@ func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error)
 //
 // Side Effects:
 //   - Automatically escapes strings if the template is detected as JSON.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func (t *TextTemplate) Render(params map[string]any) (string, error) {
 	return t.template.ExecuteFuncStringWithErr(func(w io.Writer, tag string) (int, error) {
 		val, ok := params[tag]

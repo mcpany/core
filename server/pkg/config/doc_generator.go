@@ -42,6 +42,9 @@ import (
 // Side Effects:
 //   - Initializes upstream services which may have side effects (though typically only on execution).
 //   - Prints warnings to stderr if service registration fails.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func GenerateDocumentation(ctx context.Context, cfg *configv1.McpAnyServerConfig) (string, error) {
 	busProvider, _ := bus.NewProvider(nil)
 	toolManager := tool.NewManager(busProvider)

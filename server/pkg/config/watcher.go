@@ -25,6 +25,18 @@ import (
 //   - done (chan bool): Channel to signal shutdown.
 //   - mu (sync.Mutex): Mutex to protect concurrent access.
 //   - timer (*time.Timer): Timer for debouncing reload events.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Watcher struct {
 	watcher *fsnotify.Watcher
 	done    chan bool
@@ -60,6 +72,9 @@ type Watcher struct {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func NewWatcher() (*Watcher, error) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -89,6 +104,9 @@ func NewWatcher() (*Watcher, error) {
 // Side Effects:
 //   - Starts a goroutine to process file events.
 //   - Registers directories with the OS watcher.
+//
+// Errors/Throws:
+//   - None.
 func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 	// Map of parent directory -> list of filenames to watch in that directory
 	watchedFiles := make(map[string][]string)
@@ -218,6 +236,9 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 //   - TODO: Document errors.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func (w *Watcher) Close() {
 	close(w.done)

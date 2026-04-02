@@ -16,6 +16,18 @@ import (
 // AIABrokerConfig defines the configuration for the Active Intent Alignment Broker.
 //
 // Summary: Configuration for Active Intent Alignment Broker.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type AIABrokerConfig struct {
 	// Enabled determines if the AIA Broker is active.
 	Enabled bool `json:"enabled"`
@@ -29,6 +41,18 @@ type AIABrokerConfig struct {
 // aligned with the mission-root intent.
 //
 // Summary: Represents the AIA Broker middleware.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type AIABroker struct {
 	config AIABrokerConfig
 }
@@ -47,6 +71,9 @@ type AIABroker struct {
 //   - None.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func NewAIABroker(config AIABrokerConfig) *AIABroker {
 	return &AIABroker{
@@ -72,6 +99,9 @@ func NewAIABroker(config AIABrokerConfig) *AIABroker {
 //
 // Side Effects:
 //   - Logs validation failures.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func (b *AIABroker) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	if !b.config.Enabled {
 		return next(ctx, req)

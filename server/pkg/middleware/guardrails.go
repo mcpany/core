@@ -15,6 +15,18 @@ import (
 // GuardrailsConfig defines patterns to block.
 //
 // Summary: Configuration for the guardrails middleware.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type GuardrailsConfig struct {
 	BlockedPhrases []string
 }
@@ -28,6 +40,12 @@ type GuardrailsConfig struct {
 //
 // Returns:
 //   - gin.HandlerFunc: The Gin middleware handler.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewGuardrailsMiddleware(config GuardrailsConfig) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Only check POST requests (likely prompt submissions)

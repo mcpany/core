@@ -16,6 +16,18 @@ import (
 // CFIAConfig defines the configuration for Context-File Integrity Attestation.
 //
 // Summary: Configuration for Context-File Integrity Attestation (CFIA) Middleware.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type CFIAConfig struct {
 	// Enabled determines if the CFIA middleware is active.
 	Enabled bool `json:"enabled"`
@@ -33,6 +45,18 @@ type CFIAConfig struct {
 // prevent Deceptive Context Injection.
 //
 // Summary: Represents the CFIA Middleware.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type CFIAMiddleware struct {
 	config CFIAConfig
 }
@@ -51,6 +75,9 @@ type CFIAMiddleware struct {
 //   - None.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func NewCFIAMiddleware(config CFIAConfig) *CFIAMiddleware {
 	return &CFIAMiddleware{
@@ -78,6 +105,9 @@ func NewCFIAMiddleware(config CFIAConfig) *CFIAMiddleware {
 // Side Effects:
 //   - Reads the target file from the filesystem.
 //   - Logs validation outcomes (success or failure).
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func (m *CFIAMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	if !m.config.Enabled {
 		return next(ctx, req)

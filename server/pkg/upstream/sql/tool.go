@@ -25,6 +25,18 @@ import (
 // Tool implements the Tool interface for a tool that executes a SQL query.
 //
 // Summary: Represents a Tool.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Tool struct {
 	tool        *v1.Tool
 	mcpTool     *mcp.Tool
@@ -64,6 +76,9 @@ type Tool struct {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - None.
 func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, policies []*configv1.CallPolicy, callID string) *Tool {
 	compiled, err := tool.CompileCallPolicies(policies)
 	to := &Tool{
@@ -100,6 +115,9 @@ func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, polici
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - None.
 func (t *Tool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -124,6 +142,9 @@ func (t *Tool) Tool() *v1.Tool {
 //   - TODO: Document errors.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func (t *Tool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
@@ -156,6 +177,9 @@ func (t *Tool) MCPTool() *mcp.Tool {
 //   - TODO: Document errors.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDef == nil {
@@ -200,6 +224,9 @@ func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns:
 //   - bool: True if streaming is supported.
+//
+// Errors/Throws:
+//   - None.
 func (t *Tool) IsStreaming() bool {
 	return false
 }
@@ -215,6 +242,12 @@ func (t *Tool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (t *Tool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -248,6 +281,9 @@ func (t *Tool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<
 //
 // Side Effects:
 //   - Executes a query on the database.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func (t *Tool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError

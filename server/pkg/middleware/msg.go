@@ -27,6 +27,12 @@ import (
 //
 // Throws/Errors:
 //   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type MetadataSanitizationGateway struct {
 	config *configv1.MetadataSanitizationConfig
 	// Pre-compiled regular expressions for speed
@@ -44,6 +50,12 @@ type MetadataSanitizationGateway struct {
 //   - *MetadataSanitizationGateway: The initialized gateway.
 //
 // Throws/Errors:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func NewMetadataSanitizationGateway(cfg *configv1.MetadataSanitizationConfig) *MetadataSanitizationGateway {
 	if cfg == nil {
@@ -93,6 +105,12 @@ func NewMetadataSanitizationGateway(cfg *configv1.MetadataSanitizationConfig) *M
 //   - mcp.Middleware: The middleware constructor.
 //
 // Throws/Errors:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func (m *MetadataSanitizationGateway) Middleware() func(mcp.MethodHandler) mcp.MethodHandler {
 	if !m.config.Enabled {

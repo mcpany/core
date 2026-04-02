@@ -17,6 +17,18 @@ import (
 // RPCs and is compatible with the standard `*grpc.ClientConn`.
 //
 // Summary: Represents a GrpcClient.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type GrpcClient interface {
 	// Invoke performs a unary RPC and blocks until the response is received.
 	//
@@ -43,6 +55,18 @@ type GrpcClient interface {
 // `*http.Client`.
 //
 // Summary: Represents a HTTPClient.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type HTTPClient interface {
 	// Do sends an HTTP request and returns an HTTP response.
 	//
@@ -55,6 +79,18 @@ type HTTPClient interface {
 // service. It provides a standard method for executing tools.
 //
 // Summary: Represents a MCPClient.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type MCPClient interface {
 	// CallTool executes a tool on the MCP service, sending the tool name and
 	// inputs and returning the result.

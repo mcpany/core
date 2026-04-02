@@ -33,6 +33,18 @@ import (
 // service configuration.
 //
 // Summary: Represents a Upstream.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Upstream struct {
 	mu      sync.Mutex
 	checker health.Checker
@@ -62,6 +74,9 @@ type Upstream struct {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -92,6 +107,9 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //   - TODO: Document errors.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{}

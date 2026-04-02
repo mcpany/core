@@ -17,6 +17,18 @@ import (
 // AuditHandler is a slog.Handler that exports logs to audit sinks.
 //
 // Summary: Represents a AuditHandler.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type AuditHandler struct {
 	next   slog.Handler
 	config *configv1.AuditConfig
@@ -50,6 +62,9 @@ type AuditHandler struct {
 //   - TODO: Document errors.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func NewAuditHandler(next slog.Handler, config *configv1.AuditConfig) *AuditHandler {
 	h := &AuditHandler{
@@ -123,6 +138,9 @@ func (h *AuditHandler) initializeStore(config *configv1.AuditConfig) {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - None.
 func (h *AuditHandler) Enabled(ctx context.Context, level slog.Level) bool {
 	return h.next.Enabled(ctx, level)
 }
@@ -155,6 +173,9 @@ func (h *AuditHandler) Enabled(ctx context.Context, level slog.Level) bool {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func (h *AuditHandler) Handle(ctx context.Context, r slog.Record) error {
 	// 1. Export the record
 	if err := h.Export(ctx, r); err != nil {
@@ -192,6 +213,9 @@ func (h *AuditHandler) Handle(ctx context.Context, r slog.Record) error {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - None.
 func (h *AuditHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	return &AuditHandler{
 		next:   h.next.WithAttrs(attrs),
@@ -226,6 +250,9 @@ func (h *AuditHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 //   - TODO: Document errors.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func (h *AuditHandler) WithGroup(name string) slog.Handler {
 	return &AuditHandler{
@@ -263,6 +290,9 @@ func (h *AuditHandler) WithGroup(name string) slog.Handler {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func (h *AuditHandler) Export(ctx context.Context, r slog.Record) error {
 	if h.store == nil {
 		return nil

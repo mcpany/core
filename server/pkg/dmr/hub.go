@@ -24,6 +24,12 @@ import (
 //
 // Throws/Errors:
 //   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type NodeState struct {
 	ID             string
 	LastHeartbeat  time.Time
@@ -34,6 +40,18 @@ type NodeState struct {
 // Hub manages the active nodes in the mesh and triggers state migration on failure.
 //
 // Summary: The authoritative coordinator for mesh resilience and state migration.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Hub interface {
 	// RegisterNode adds a new node to the mesh or updates its state.
 	//
@@ -128,6 +146,9 @@ type hubImpl struct {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - None.
 func NewHub(timeout time.Duration) Hub {
 	return &hubImpl{
 		nodes:       make(map[string]*NodeState),
@@ -152,6 +173,9 @@ func NewHub(timeout time.Duration) Hub {
 //
 // Side Effects:
 //   - Modifies the internal nodes map.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func (h *hubImpl) RegisterNode(id string, isAttested bool) error {
 	if id == "" {
 		return errors.New("node id cannot be empty")
@@ -183,6 +207,9 @@ func (h *hubImpl) RegisterNode(id string, isAttested bool) error {
 //
 // Side Effects:
 //   - Updates the LastHeartbeat time for the node.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func (h *hubImpl) Heartbeat(id string) error {
 	h.mu.Lock()
 	defer h.mu.Unlock()
@@ -211,6 +238,9 @@ func (h *hubImpl) Heartbeat(id string) error {
 //
 // Side Effects:
 //   - Can send failed node IDs to the migration channel.
+//
+// Errors/Throws:
+//   - None.
 func (h *hubImpl) CheckHealth(ctx context.Context) []string {
 	h.mu.Lock()
 	defer h.mu.Unlock()
@@ -247,6 +277,9 @@ func (h *hubImpl) CheckHealth(ctx context.Context) []string {
 //   - None.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func (h *hubImpl) MigrationChannel() <-chan string {
 	return h.migrationCh

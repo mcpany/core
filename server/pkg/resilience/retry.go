@@ -16,6 +16,18 @@ import (
 // Retry implements a retry policy for failed operations.
 //
 // Summary: Represents a Retry.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Retry struct {
 	config *configv1.RetryConfig
 }
@@ -32,6 +44,9 @@ type Retry struct {
 //   - *Retry: A new Retry instance.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func NewRetry(config *configv1.RetryConfig) *Retry {
 	if config == nil {
@@ -62,6 +77,9 @@ func NewRetry(config *configv1.RetryConfig) *Retry {
 //
 // Side Effects:
 //   - Executes the provided function multiple times.
+//
+// Errors/Throws:
+//   - None.
 func (r *Retry) Execute(ctx context.Context, work func(context.Context) error) error {
 	var err error
 	// Use int64 for attempts to match usage, though retries count is usually small.

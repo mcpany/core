@@ -14,6 +14,18 @@ import (
 // This allows requests from upstream (like sampling) to be routed to the correct downstream client.
 //
 // Summary: Represents a SessionRegistry.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type SessionRegistry struct {
 	mu       sync.RWMutex
 	sessions map[mcp.Session]tool.Session
@@ -39,6 +51,9 @@ type SessionRegistry struct {
 //   - TODO: Document errors.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func NewSessionRegistry() *SessionRegistry {
 	return &SessionRegistry{
@@ -71,6 +86,9 @@ func NewSessionRegistry() *SessionRegistry {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - None.
 func (r *SessionRegistry) Register(upstreamSession mcp.Session, downstreamSession tool.Session) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -100,6 +118,9 @@ func (r *SessionRegistry) Register(upstreamSession mcp.Session, downstreamSessio
 //   - TODO: Document errors.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func (r *SessionRegistry) Unregister(upstreamSession mcp.Session) {
 	r.mu.Lock()
@@ -131,6 +152,9 @@ func (r *SessionRegistry) Unregister(upstreamSession mcp.Session) {
 //   - TODO: Document errors.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func (r *SessionRegistry) Get(upstreamSession mcp.Session) (tool.Session, bool) {
 	r.mu.RLock()

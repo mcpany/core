@@ -28,6 +28,18 @@ import (
 // It is an enumerated string type used to indicate the outcome of a health or connectivity check.
 //
 // Summary: Represents a Status.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Status string
 
 const (
@@ -50,6 +62,18 @@ const (
 // It aggregates the status, any message, and potential error encountered during the check.
 //
 // Summary: Represents a CheckResult.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type CheckResult struct {
 	// ServiceName is the name of the service being checked.
 	ServiceName string
@@ -88,6 +112,9 @@ type CheckResult struct {
 //   - TODO: Document errors.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []CheckResult {
 	// Using 'services' variable to support existing loop
@@ -140,6 +167,9 @@ func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []Check
 //   - TODO: Document errors.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func CheckService(ctx context.Context, service *configv1.UpstreamServiceConfig) CheckResult {
 	// 5 second timeout for checks

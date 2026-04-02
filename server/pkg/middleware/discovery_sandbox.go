@@ -16,6 +16,18 @@ import (
 // DiscoverySandboxConfig defines the configuration for Discovery-Phase Sandbox Isolation.
 //
 // Summary: Represents the configuration for the Discovery-Phase Sandbox middleware.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type DiscoverySandboxConfig struct {
 	// Enabled determines if the DiscoverySandbox middleware is active.
 	Enabled bool `json:"enabled"`
@@ -31,6 +43,18 @@ type DiscoverySandboxConfig struct {
 // to prevent startup-time RCE and Ghost-Execution exploits during capability discovery.
 //
 // Summary: Represents the middleware for Discovery-Phase Sandbox Isolation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type DiscoverySandboxMiddleware struct {
 	config DiscoverySandboxConfig
 }
@@ -49,6 +73,9 @@ type DiscoverySandboxMiddleware struct {
 //   - None.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func NewDiscoverySandboxMiddleware(config DiscoverySandboxConfig) *DiscoverySandboxMiddleware {
 	return &DiscoverySandboxMiddleware{
@@ -74,6 +101,9 @@ func NewDiscoverySandboxMiddleware(config DiscoverySandboxConfig) *DiscoverySand
 //
 // Side Effects:
 //   - Logs a security audit event upon sandbox constraint enforcement.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func (m *DiscoverySandboxMiddleware) PreExecute(ctx context.Context, req *mcp.CallToolRequest, t *tool.Tool) error {
 	if !m.config.Enabled {
 		return nil
@@ -125,6 +155,9 @@ func (m *DiscoverySandboxMiddleware) PreExecute(ctx context.Context, req *mcp.Ca
 //
 // Side Effects:
 //   - Logs the teardown of the ephemeral sandbox.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func (m *DiscoverySandboxMiddleware) PostExecute(ctx context.Context, req *mcp.CallToolRequest, result *mcp.CallToolResult, err error) (*mcp.CallToolResult, error) {
 	if !m.config.Enabled {
 		return result, err

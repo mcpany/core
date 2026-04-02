@@ -6,6 +6,18 @@ package config
 // MockWatcher is a mock implementation of the Watcher for testing.
 //
 // Summary: Represents a MockWatcher.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type MockWatcher struct {
 	WatchFunc func(paths []string, reloadFunc func())
 	CloseFunc func()
@@ -31,6 +43,9 @@ type MockWatcher struct {
 //   - TODO: Document errors.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func NewMockWatcher() *MockWatcher {
 	return &MockWatcher{}
@@ -64,6 +79,9 @@ func NewMockWatcher() *MockWatcher {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - None.
 func (m *MockWatcher) Watch(paths []string, reloadFunc func()) error {
 	if m.WatchFunc != nil {
 		m.WatchFunc(paths, reloadFunc)
@@ -91,6 +109,9 @@ func (m *MockWatcher) Watch(paths []string, reloadFunc func()) error {
 //   - TODO: Document errors.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func (m *MockWatcher) Close() {
 	if m.CloseFunc != nil {

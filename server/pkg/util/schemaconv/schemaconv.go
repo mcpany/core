@@ -38,6 +38,18 @@ const (
 // MaxRecursionDepth limits the depth of nested messages to prevent infinite recursion.
 //
 // Summary: Represents a MaxRecursionDepth.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 const MaxRecursionDepth = 10
 
 // MethodDescriptorToProtoProperties converts the fields of a method's input
@@ -64,6 +76,9 @@ const MaxRecursionDepth = 10
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor) (*structpb.Struct, error) {
 	return fieldsToProperties(methodDesc.Input().Fields(), 0)
 }
@@ -92,6 +107,9 @@ func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor)
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func MethodOutputDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor) (*structpb.Struct, error) {
 	return fieldsToProperties(methodDesc.Output().Fields(), 0)
 }
@@ -189,6 +207,18 @@ func fieldToSchema(field protoreflect.FieldDescriptor, depth int) (map[string]in
 // ConfigParameter an interface for config parameter schemas.
 //
 // Summary: Represents a ConfigParameter.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ConfigParameter interface {
 	// GetSchema returns the parameter schema.
 	//
@@ -200,6 +230,18 @@ type ConfigParameter interface {
 // McpFieldParameter an interface for McpField parameter schemas.
 //
 // Summary: Represents a McpFieldParameter.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type McpFieldParameter interface {
 	// GetName returns the name of the parameter.
 	//

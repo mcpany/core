@@ -14,6 +14,18 @@ import (
 // connection pool, implementing the pool.ClosableClient interface.
 //
 // Summary: Represents a WebsocketClientWrapper.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type WebsocketClientWrapper struct {
 	Conn *websocket.Conn
 }
@@ -44,6 +56,9 @@ type WebsocketClientWrapper struct {
 //   - TODO: Document errors.
 //
 // Side Effects:
+//   - None.
+//
+// Errors/Throws:
 //   - None.
 func (w *WebsocketClientWrapper) IsHealthy(_ context.Context) bool {
 	// Send a ping to check the connection.
@@ -79,6 +94,9 @@ func (w *WebsocketClientWrapper) IsHealthy(_ context.Context) bool {
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - error: Returns an error if the operation fails.
 func (w *WebsocketClientWrapper) Close() error {
 	return w.Conn.Close()
 }

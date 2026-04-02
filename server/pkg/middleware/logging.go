@@ -43,6 +43,9 @@ import (
 //
 // Side Effects:
 //   - None.
+//
+// Errors/Throws:
+//   - None.
 func LoggingMiddleware(log *slog.Logger) mcp.Middleware {
 	if log == nil {
 		log = logging.GetLogger()
