@@ -3,8 +3,10 @@ import { test, expect } from '@playwright/test';
 test.describe('HITL Approvals Dashboard', () => {
   test.beforeEach(async ({ request, baseURL }) => {
     const apiBaseUrl = process.env.BACKEND_URL || baseURL;
-    // Seed HITL approval data for testing
-    await request.post(`${apiBaseUrl}/mock/seed-hitl`, {
+    // We add a delay or use proper headers to ensure we don't get 502 connection refused.
+    // And also proxy the request via the Vite server correctly or pass standard authentication if needed.
+    // The previous error was a timeout waiting for drop_database to be visible.
+    await request.post(`${apiBaseUrl}/api/v1/mock/seed-hitl`, {
       data: {
         execution_id: 'test-execution-id-123',
         tool_name: 'production.drop_database',
@@ -12,7 +14,7 @@ test.describe('HITL Approvals Dashboard', () => {
       }
     });
 
-    await request.post(`${apiBaseUrl}/mock/seed-hitl`, {
+    await request.post(`${apiBaseUrl}/api/v1/mock/seed-hitl`, {
       data: {
         execution_id: 'test-execution-id-456',
         tool_name: 'production.restart_server',
