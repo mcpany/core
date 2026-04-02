@@ -1030,3 +1030,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Speculative State Peering (SSP) Broker**: Authoritative coordination service for pre-commit transparency and conflict-ahead signaling. (Added: 2026-07-25)
+*   **[P0] DHT-Native Discovery Proxy**: High-speed, hardware-attested capability lookups for multi-device agent meshes. (Added: 2026-07-25)
+*   **[P0] Recursive RaaS Attribution & Interdiction**: Economic security service for cumulative token-time contract enforcement of tool-initiated reasoning. (Added: 2026-07-25)
+*   **[P0] Hardware-Enforced Memory Segmentation (HEMS)**: Physical shard isolation utilizing TPM-bound memory boundaries for zero-leakage teammate coordination. (Added: 2026-07-25)

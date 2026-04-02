@@ -59,3 +59,10 @@ As AI agent frameworks like Gemini CLI and OpenClaw move toward high-intensity r
 *   Implementing **Cross-Mission Budget Continuity**. Reasoning budgets are now reconciled against a persistent "Mission Root Registry."
 *   Introducing a "Lease Migration Protocol" for framework-neutral handoffs, ensuring budget integrity as agents move between local and cloud environments.
 **Security Impact:** Prevents "Budget Reset" exploits where subagents trigger mission restarts to refresh their reasoning quotas.
+
+### Update: 2026-07-25 - Recursive RaaS Attribution & Interdiction
+**Context:** Today's market sync identified "Reasoning Exhaustion Attacks" where subagents use "Thinking Tools" (RaaS) to bypass standard token limiters via unattributed sub-reasoning loops.
+**Architecture Adjustment:**
+*   Implementing **Recursive RaaS Attribution**. Every sub-reasoning loop initiated by a tool is now cryptographically linked to the initiating tool's lineage and the parent mission-root.
+*   Introducing **Automated Interdiction Triggers**. The RBF will now forcefully terminate tool-initiated thinking loops that exceed a cumulative "Reasoning-Depth-Time" (RDT) contract.
+**Security Impact:** Neutralizes infinite-refinement exploits and ensures that specialist tools cannot be weaponized to drain the mission root's economic resources.

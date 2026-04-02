@@ -1934,3 +1934,16 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Speculative State Peering (SSP) Broker**: (P0) Authoritative coordination service allowing parallel teammates to peer into hardware-attested draft reasoning buffers to resolve conflicts preemptively.
+- **DHT-Native Discovery Proxy**: (P0) High-speed capability lookup service supporting OpenClaw's DCD standard for decentralized multi-device meshes.
+- **Recursive RaaS Attribution & Interdiction**: (P0) Advanced economic security service recursively attributing tool-initiated reasoning effort to mission-roots and enforcing cumulative contracts.
+- **Hardware-Enforced Memory Segmentation (HEMS)**: (P0) Physical isolation service utilizing hardware-locked boundaries for DME shards to neutralize context smearing.
+
+### Priority Shifts
+- **Sovereign Discovery Proxy (SDP)**: (Re-affirmed P0) Now elevated with mandatory support for **DHT-native** capability lookups.
+- **RaaS Attribution Middleware**: (Re-affirmed P0) Elevated with the requirement for **Recursive Interdiction** of unattributed reasoning loops.
+- **Stylometric Identity Verifier (SIV)**: (Re-affirmed P0) Evolving into **HDBA v2** to support reasoning-path entropy and gradient-shift analysis.
