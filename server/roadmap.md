@@ -432,7 +432,7 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Speculative Execution Guard**: Middleware for managing "Shadow State" during speculative tool calls. (Added: 2026-04-02)
 *   **[P0] Inode-Pinning Middleware**: Hardware-bound file handle protection for project-local configurations. (Added: 2026-04-02)
 *   **[P0] Branch-Purity Blackboard Validator**: Integrity layer for the Shared KV Store to prevent cross-branch state contamination. (Added: 2026-04-02)
-*   **[P1] Consensus Delegation Gateway**: Implementation of "Delegated Authority" models for time-critical agent authorization. (Added: 2026-04-02)
+*   **[P1] Consensus Delegation Gateway**: Implementation of "Delegated Authority" models for "Brain/Muscle" swarm authorization. (Added: 2026-04-02)
 
 #### Upcoming (2026-04-03 Evolution)
 *   **[P0] Active Subagent Reaper**: Lifecycle monitor to terminate "Ghost" subagents and purge orphaned state. (Added: 2026-04-03)

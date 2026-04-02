@@ -191,7 +191,7 @@
 - [ ] **[P0] Speculative State Inspector**: (2026-04-02) UI for visualizing speculative tool results and tracking rollback events.
 - [ ] **[P0] Inode Pinning Dashboard**: (2026-04-02) Real-time monitor of pinned hardware Inodes and blocked racing attempts.
 - [ ] **[P0] Branch Purity Visualizer**: (2026-04-02) Gantt-style view of reasoning branches with state leakage alerts.
-- [ ] **[P1] Consensus Delegation Console**: (2026-04-02) UI for managing and reviewing delegated authority tokens for time-critical tasks.
+- [ ] **[P1] Consensus Delegation Console**: (2026-04-02) UI for managing and reviewing delegated authority tokens for "Brain/Muscle" swarms.
 - [ ] **[P0] Subagent Reaper Dashboard**: (2026-04-03) Real-time visualization of agent heartbeats and termination events for "Ghost" subagents.
 - [ ] **[P0] Metadata Poisoning Alert Center**: (2026-04-03) Security UI for inspecting tool structural metadata flagged for context poisoning instructions.
 - [ ] **[P1] DCA Auction Monitor**: (2026-04-03) Visual tracker for agent capability bidding and allocation latency.

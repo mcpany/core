@@ -15,3 +15,8 @@ Gemini has introduced **"Speculative Tool Execution"**. To mitigate the UX laten
 - **Consensus Fatigue**: The overhead of waiting for multi-agent quorums is driving a demand for "Delegated Authority" models.
 - **Branch Leakage**: Managing "State Purity" when agents jump between divergent reasoning paths.
 - **Hardware-Software Desync**: The difficulty of maintaining Inode-pins across networked filesystems or container restarts.
+
+### 4. Enterprise Ecosystem: Brain/Muscle Swarm Orchestration
+- **Finding**: A dominant trend is emerging where users deploy "Brain" models (high-reasoning, high-cost) to orchestrate swarms of "Muscle" models (low-cost, specialized) for execution.
+- **Impact**: This drastically reduces API costs but increases the coordination complexity and the need for **Delegated Authority** models.
+- **Security**: The "Brain" acts as a local supervisor, requiring stricter sandboxing protocols (like ClawSK) for the "Muscle" agents it commands.

@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-04-02] Updates
+
+### Proposed Additions
+- **Speculative Execution Guard**: (P0) Middleware that manages "Shadow State" for speculative tool calls, ensuring rollbacks on attestation failure and preventing hallucinatory context injection.
+- **Inode-Pinning Middleware**: (P0) Hardware-bound file handle protection that prevents symlink-racing and TOCTOU escapes in project configurations.
+- **Branch-Purity Blackboard Validator**: (P0) Integrity layer for the Shared KV Store to prevent "Branch Contamination" between divergent reasoning paths.
+- **Consensus Delegation Gateway**: (P1) Implementation of "Delegated Authority" models where high-trust "Brain" agents can authorize time-critical tasks for "Muscle" specialists.
+
+### Priority Shifts
+- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Elevated with requirements for mandatory **Branch Purity** checks to neutralize "Hallucinatory Context" in deep reasoning swarms.
+- **Speculative Execution Guard**: (P0) Designated as the primary mechanism for supporting high-performance Gemini-style speculative execution safely.
