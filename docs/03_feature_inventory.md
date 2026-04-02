@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Distributed Consensus Hub (DCH)**: (P0) Authoritative multi-node coordination service for hardware-attested swarm consensus on tool results.
+- **Enclave-Enforced Resource Allocation (EERA)**: (P0) Security middleware mandating TPM-signed "Budget Tickets" for high-intensity reasoning to prevent budget bypass.
+- **Durable Mission Continuity (DMC) Provider**: (P0) Evolution of the MRCP using "Persistence Receipts" to maintain mission sovereignty across container restarts and migrations.
+
+### Priority Shifts
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Elevated with mandatory support for **EERA-compliant** enclave enforcement.
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving into the **DMC Provider** for lifecycle-agnostic environment integrity.
