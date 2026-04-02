@@ -1,0 +1,6 @@
+# Coverage Intervention Report
+
+* **Target:** `server/pkg/middleware/project_config_guard.go`
+* **Risk Profile:** This file operates the `ProjectConfigGuardMiddleware` to ensure config components (`settings.json`, `.claude`) remain secure, preventing remote servers from mutating safe bases. This includes preventing malicious untrusted execution hooks and validating signatures like Attested HLCA Maps. Before intervention, critical portions like handling byte slicing and validation parsing for URLs were totally untested which ran the risk of panic failure modes leading to security blind spots in downstream validations.
+* **New Coverage:** The Table-Driven tests added cover the core functionality of URL mutations, failure conditions around `[]byte` type conversions during rewriting operations (including missing paths entirely), execution next handler failures and verifying that missing configurations or files that aren't strictly JSON gracefully pass or fail safely instead of crashing the proxy.
+* **Verification:** `bazelisk test //server/pkg/middleware:middleware_test` passes cleanly. Coverage metrics show 100% statement execution over previously untested branch nodes in `Execute()`.

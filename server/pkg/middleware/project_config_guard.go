@@ -225,7 +225,10 @@ func (m *ProjectConfigGuardMiddleware) Execute(ctx context.Context, req *tool.Ex
 		if _, ok := res.(string); ok {
 			return string(sanitizedBytes), nil
 		}
-		return sanitizedBytes, nil
+		if _, ok := res.([]byte); ok {
+			return sanitizedBytes, nil
+		}
+		return string(sanitizedBytes), nil
 	}
 
 	return res, nil
