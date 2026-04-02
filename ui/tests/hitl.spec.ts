@@ -1,9 +1,10 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('HITL Approvals Dashboard', () => {
-  test.beforeEach(async ({ request }) => {
+  test.beforeEach(async ({ request, baseURL }) => {
+    const apiBaseUrl = process.env.BACKEND_URL || baseURL;
     // Seed HITL approval data for testing
-    await request.post('/api/v1/mock/seed-hitl', {
+    await request.post(`${apiBaseUrl}/mock/seed-hitl`, {
       data: {
         execution_id: 'test-execution-id-123',
         tool_name: 'production.drop_database',
@@ -11,7 +12,7 @@ test.describe('HITL Approvals Dashboard', () => {
       }
     });
 
-    await request.post('/api/v1/mock/seed-hitl', {
+    await request.post(`${apiBaseUrl}/mock/seed-hitl`, {
       data: {
         execution_id: 'test-execution-id-456',
         tool_name: 'production.restart_server',
@@ -32,11 +33,11 @@ test.describe('HITL Approvals Dashboard', () => {
     await expect(page.getByText('Pending verification for sensitive tool').first()).toBeVisible();
 
     // Verify MFA requirement badge is visible
-    await expect(page.getByText('MFA validation required for approval')).toBeVisible();
+    await expect(page.getByText('MFA validation required for approval').first()).toBeVisible();
 
     // Click Approve on the item without MFA requirement
-    const restartCard = page.locator('.group, .border-white\\/10').filter({ hasText: 'production.restart_server' });
-    await restartCard.getByRole('button', { name: /Approve/ }).click();
+    const restartCard = page.locator('.shadow-lg').filter({ hasText: 'production.restart_server' });
+    await restartCard.getByRole('button', { name: 'Approve' }).click();
 
     // Verify toast appears
     await expect(page.getByText('Action Approved')).toBeVisible();
@@ -45,8 +46,8 @@ test.describe('HITL Approvals Dashboard', () => {
     await expect(page.getByText('production.restart_server')).not.toBeVisible();
 
     // Click Approve on the item with MFA requirement
-    const dropCard = page.locator('.group, .border-white\\/10').filter({ hasText: 'production.drop_database' });
-    await dropCard.getByRole('button', { name: /Approve/ }).click();
+    const dropCard = page.locator('.shadow-lg').filter({ hasText: 'production.drop_database' });
+    await dropCard.getByRole('button', { name: 'Approve' }).click();
 
     // Verify the MFA dialog appears
     await expect(page.getByRole('dialog', { name: /Multi-Factor Authentication/i })).toBeVisible();
