@@ -16,18 +16,6 @@ import (
 // Config holds the configuration for the worker.
 //
 // Summary: Configuration for worker pool.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Config struct {
 	MaxWorkers   int
 	MaxQueueSize int
@@ -36,18 +24,6 @@ type Config struct {
 // Worker is responsible for processing jobs from the bus.
 //
 // Summary: Processes background jobs.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Worker struct {
 	busProvider *bus.Provider
 	pond        pond.Pool
@@ -66,12 +42,6 @@ type Worker struct {
 //
 // Returns:
 //   - *Worker: The initialized worker.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func New(busProvider *bus.Provider, cfg *Config) *Worker {
 	return &Worker{
 		busProvider: busProvider,
@@ -88,15 +58,6 @@ func New(busProvider *bus.Provider, cfg *Config) *Worker {
 //
 // Parameters:
 //   - ctx: context.Context. The context for the worker.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - Starts background processes or modifies global state.
 func (w *Worker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	go w.startToolExecutionWorker(ctx)
@@ -128,9 +89,6 @@ func (w *Worker) Start(ctx context.Context) {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (w *Worker) Stop() {
 	w.wg.Wait() // Wait for the subscription to be set up

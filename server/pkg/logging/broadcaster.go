@@ -10,18 +10,6 @@ import (
 // Broadcaster manages a set of subscribers and broadcasts messages to them.
 //
 // Summary: Represents a Broadcaster.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Broadcaster struct {
 	mu          sync.RWMutex
 	subscribers map[chan any]struct{}
@@ -64,9 +52,6 @@ var (
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func NewBroadcaster() *Broadcaster {
 	return &Broadcaster{
 		subscribers: make(map[chan any]struct{}),
@@ -101,9 +86,6 @@ func NewBroadcaster() *Broadcaster {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (b *Broadcaster) Reset() {
 	b.mu.Lock()
@@ -141,9 +123,6 @@ func (b *Broadcaster) Reset() {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (b *Broadcaster) Subscribe() chan any {
 	return b.SubscribeBuffered(100)
 }
@@ -174,9 +153,6 @@ func (b *Broadcaster) Subscribe() chan any {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (b *Broadcaster) SubscribeBuffered(size int) chan any {
 	b.mu.Lock()
@@ -214,9 +190,6 @@ func (b *Broadcaster) SubscribeBuffered(size int) chan any {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (b *Broadcaster) SubscribeWithHistory() (chan any, []any) {
 	return b.SubscribeWithHistoryBuffered(100)
 }
@@ -248,9 +221,6 @@ func (b *Broadcaster) SubscribeWithHistory() (chan any, []any) {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (b *Broadcaster) SubscribeWithHistoryBuffered(size int) (chan any, []any) {
 	b.mu.Lock()
@@ -312,9 +282,6 @@ func (b *Broadcaster) SubscribeWithHistoryBuffered(size int) (chan any, []any) {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (b *Broadcaster) Unsubscribe(ch chan any) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -350,9 +317,6 @@ func (b *Broadcaster) Unsubscribe(ch chan any) {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (b *Broadcaster) Broadcast(msg any) {
 	// ⚡ BOLT: Optimized Broadcast to use interface{} (any) instead of []byte.
@@ -396,9 +360,6 @@ func (b *Broadcaster) Broadcast(msg any) {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (b *Broadcaster) ClearHistory() {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -433,9 +394,6 @@ func (b *Broadcaster) ClearHistory() {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (b *Broadcaster) GetHistory() []any {
 	b.mu.RLock()
@@ -490,9 +448,6 @@ func (b *Broadcaster) GetHistory() []any {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (b *Broadcaster) Hydrate(messages []any) {
 	b.mu.Lock()

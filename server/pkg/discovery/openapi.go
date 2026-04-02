@@ -13,18 +13,6 @@ import (
 // OpenAPIProvider discovers services via OpenAPI specifications.
 //
 // Summary: Represents a OpenAPIProvider.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type OpenAPIProvider struct {
 	Endpoint string // e.g., "http://localhost:8080/openapi.json"
 }
@@ -43,9 +31,6 @@ type OpenAPIProvider struct {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (p *OpenAPIProvider) Name() string {
 	return "openapi"
@@ -66,9 +51,6 @@ func (p *OpenAPIProvider) Name() string {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (p *OpenAPIProvider) Discover(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	if p.Endpoint == "" {
 		return nil, nil

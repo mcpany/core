@@ -61,9 +61,6 @@ const (
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func InitTelemetry(ctx context.Context, serviceName string, version string, cfg *config_v1.TelemetryConfig, writer io.Writer) (func(context.Context) error, error) {
 	// If writer is nil, discard output
 	if writer == nil {

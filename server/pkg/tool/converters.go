@@ -40,9 +40,6 @@ import (
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func ConvertMCPToolToProto(tool *mcp.Tool) (*pb.Tool, error) {
 	if tool == nil {
 		return nil, fmt.Errorf("cannot convert nil mcp tool to proto")
@@ -146,9 +143,6 @@ func convertJSONSchemaToStruct(schema any) (*structpb.Struct, error) {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func ConvertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) (*structpb.Struct, error) {
 	properties := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
 	for _, field := range fields {
@@ -197,9 +191,6 @@ func ConvertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) 
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func ConvertToolDefinitionToProto(toolDef *configv1.ToolDefinition, inputSchema, outputSchema *structpb.Struct) (*pb.Tool, error) {
 	if toolDef == nil {
 		return nil, fmt.Errorf("cannot convert nil tool definition to proto")
@@ -264,9 +255,6 @@ func ConvertToolDefinitionToProto(toolDef *configv1.ToolDefinition, inputSchema,
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func GetJSONSchemaForScalarType(scalarType, description string) (*jsonschema.Schema, error) {
 	s := &jsonschema.Schema{
 		Description: description,
@@ -315,9 +303,6 @@ func GetJSONSchemaForScalarType(scalarType, description string) (*jsonschema.Sch
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func ConvertProtoToMCPTool(pbTool *pb.Tool) (*mcp.Tool, error) {
 	if pbTool == nil {
 		return nil, fmt.Errorf("cannot convert nil pb tool to mcp tool")

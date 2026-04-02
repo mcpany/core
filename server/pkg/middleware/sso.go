@@ -27,9 +27,6 @@ import (
 //   - Calls IDP /userinfo endpoint to validate bearer tokens.
 //   - Aborts the request with 401 Unauthorized if authentication is missing or invalid.
 //   - Sets "X-User-ID" header on the request on successful authentication for downstream handlers.
-//
-// Errors/Throws:
-//   - None.
 func SSOMiddleware(config *configv1.SSOConfig) func(http.Handler) http.Handler {
 	// Reusable HTTP client for IDP requests
 	client := &http.Client{

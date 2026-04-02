@@ -44,9 +44,6 @@ var (
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func SetLevel(level slog.Level) {
 	programLevel.Set(level)
 }
@@ -77,9 +74,6 @@ func SetLevel(level slog.Level) {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func ForTestsOnlyResetLogger() {
 	mu.Lock()
@@ -117,9 +111,6 @@ func ForTestsOnlyResetLogger() {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func Init(level slog.Level, output io.Writer, logFilePath string, format ...string) {
 	mu.Lock()
@@ -211,9 +202,6 @@ func Init(level slog.Level, output io.Writer, logFilePath string, format ...stri
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func GetLogger() *slog.Logger {
 	// ⚡ Bolt Optimization: Fast path to avoid lock contention on every log call.
 	// Atomic load is much cheaper than mutex lock.
@@ -256,9 +244,6 @@ func GetLogger() *slog.Logger {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func ToSlogLevel(level configv1.GlobalSettings_LogLevel) slog.Level {
 	switch level {

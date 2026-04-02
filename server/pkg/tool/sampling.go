@@ -13,18 +13,6 @@ import (
 // It includes capabilities like Sampling (CreateMessage) and Roots inspection.
 //
 // Summary: Represents a Session.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Session interface {
 	// CreateMessage requests a message creation (sampling) from the client.
 	//
@@ -55,18 +43,6 @@ type Session interface {
 // Sampler is an alias for Session for backward compatibility.
 //
 // Summary: Represents a Sampler.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Sampler = Session
 
 type sessionContextKey struct{}
@@ -81,12 +57,6 @@ type sessionContextKey struct{}
 //
 // Returns:
 //   - context.Context: The new context.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func NewContextWithSession(ctx context.Context, s Session) context.Context {
 	return context.WithValue(ctx, sessionContextKey{}, s)
 }
@@ -101,12 +71,6 @@ func NewContextWithSession(ctx context.Context, s Session) context.Context {
 // Returns:
 //   - Session: The session if found.
 //   - bool: True if the session exists.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func GetSession(ctx context.Context) (Session, bool) {
 	s, ok := ctx.Value(sessionContextKey{}).(Session)
 	return s, ok
@@ -124,12 +88,6 @@ func GetSession(ctx context.Context) (Session, bool) {
 //
 // Returns:
 //   - context.Context: The new context.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func NewContextWithSampler(ctx context.Context, s Sampler) context.Context {
 	return NewContextWithSession(ctx, s)
 }
@@ -146,12 +104,6 @@ func NewContextWithSampler(ctx context.Context, s Sampler) context.Context {
 // Returns:
 //   - Sampler: The sampler if found.
 //   - bool: True if the sampler exists.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func GetSampler(ctx context.Context) (Sampler, bool) {
 	return GetSession(ctx)
 }

@@ -35,18 +35,6 @@ import (
 // S3, GCS, etc.) as defined in the service configuration.
 //
 // Summary: Represents a Upstream.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Upstream struct {
 	mu      sync.Mutex
 	closers []io.Closer
@@ -73,9 +61,6 @@ type Upstream struct {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{
@@ -108,9 +93,6 @@ func NewUpstream() upstream.Upstream {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -284,12 +266,6 @@ type fsCallable struct {
 // Returns:
 //   - any: The result of the execution.
 //   - error: An error if execution fails.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None.
 func (c *fsCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	args := req.Arguments
 	if args == nil && len(req.ToolInputs) > 0 {

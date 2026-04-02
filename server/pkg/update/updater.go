@@ -23,18 +23,6 @@ import (
 // It manages checking for updates on GitHub and applying them to the local executable.
 //
 // Summary: Represents a Updater.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Updater struct {
 	client     *github.Client
 	httpClient *http.Client
@@ -61,9 +49,6 @@ type Updater struct {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 	if httpClient == nil {
@@ -110,9 +95,6 @@ func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersion string) (*github.RepositoryRelease, bool, error) {
 	release, _, err := u.client.Repositories.GetLatestRelease(ctx, owner, repo)
 	if err != nil {
@@ -158,9 +140,6 @@ func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersio
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (u *Updater) UpdateTo(ctx context.Context, fs afero.Fs, executablePath string, release *github.RepositoryRelease, assetName, checksumsAssetName string) error {
 	var asset *github.ReleaseAsset
 	for _, a := range release.Assets {

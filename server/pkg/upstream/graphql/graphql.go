@@ -91,18 +91,6 @@ const introspectionQuery = `
 // Upstream implements the upstream.Upstream interface for GraphQL services.
 //
 // Summary: Represents a Upstream.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Upstream struct{}
 
 // NewGraphQLUpstream creates a new GraphQL upstream.
@@ -125,9 +113,6 @@ type Upstream struct{}
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func NewGraphQLUpstream() upstream.Upstream {
 	return &Upstream{}
@@ -160,9 +145,6 @@ func NewGraphQLUpstream() upstream.Upstream {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (g *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
@@ -247,18 +229,6 @@ func convertGraphQLTypeToJSONSchema(t *graphQLType) *structpb.Value {
 // Callable implements the Callable interface for GraphQL queries.
 //
 // Summary: Represents a Callable.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Callable struct {
 	client        *graphql.Client
 	query         string
@@ -295,9 +265,6 @@ type Callable struct {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	graphqlReq := graphql.NewRequest(c.query)
 	for key, value := range req.Arguments {

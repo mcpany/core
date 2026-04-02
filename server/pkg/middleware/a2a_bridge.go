@@ -17,18 +17,6 @@ import (
 // It intercepts tool calls prefixed with "call_agent_" and bridges them to the A2A protocol.
 //
 // Summary: Represents a A2ABridgeMiddleware.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type A2ABridgeMiddleware struct {
 	contextManager *RecursiveContextManager
 }
@@ -59,9 +47,6 @@ type A2ABridgeMiddleware struct {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func NewA2ABridgeMiddleware(contextManager *RecursiveContextManager) *A2ABridgeMiddleware {
 	return &A2ABridgeMiddleware{
@@ -100,9 +85,6 @@ func NewA2ABridgeMiddleware(contextManager *RecursiveContextManager) *A2ABridgeM
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (m *A2ABridgeMiddleware) Execute(ctx context.Context, method string, req mcp.Request, next mcp.MethodHandler) (mcp.Result, error) {
 	if method != "tools/call" {
 		return next(ctx, method, req)

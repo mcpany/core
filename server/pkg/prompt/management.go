@@ -17,18 +17,6 @@ import (
 // It manages the lifecycle, registration, and retrieval of prompts within the system.
 //
 // Summary: Represents a ManagerInterface.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type ManagerInterface interface {
 	// AddPrompt registers a new prompt.
 	//
@@ -76,18 +64,6 @@ type ManagerInterface interface {
 // It supports concurrent access and uses caching for efficient list operations.
 //
 // Summary: Represents a Manager.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Manager struct {
 	prompts       *xsync.Map[string, Prompt]
 	mcpServer     MCPServerProvider
@@ -113,9 +89,6 @@ type Manager struct {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func NewManager() *Manager {
 	return &Manager{
 		prompts: xsync.NewMap[string, Prompt](),
@@ -139,9 +112,6 @@ func NewManager() *Manager {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (pm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 	pm.mu.Lock()
@@ -173,9 +143,6 @@ func (pm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (pm *Manager) AddPrompt(prompt Prompt) {
 	promptName := prompt.Prompt().Name
@@ -215,9 +182,6 @@ func (pm *Manager) AddPrompt(prompt Prompt) {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (pm *Manager) UpdatePrompt(prompt Prompt) {
 	pm.prompts.Store(prompt.Prompt().Name, prompt)
 	pm.mu.Lock()
@@ -247,9 +211,6 @@ func (pm *Manager) UpdatePrompt(prompt Prompt) {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (pm *Manager) GetPrompt(name string) (Prompt, bool) {
 	prompt, ok := pm.prompts.Load(name)
 	return prompt, ok
@@ -274,9 +235,6 @@ func (pm *Manager) GetPrompt(name string) (Prompt, bool) {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (pm *Manager) ListPrompts() []Prompt {
 	// ⚡ Bolt: Use a read-through cache to avoid repeated map iteration and slice allocation.
@@ -337,9 +295,6 @@ func (pm *Manager) ListPrompts() []Prompt {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (pm *Manager) ClearPromptsForService(serviceID string) {
 	changed := false

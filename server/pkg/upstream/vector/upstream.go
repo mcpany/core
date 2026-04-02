@@ -23,35 +23,11 @@ import (
 // ClientFactory is a function that creates a VectorClient.
 //
 // Summary: Represents a ClientFactory.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type ClientFactory func(config *configv1.VectorUpstreamService) (Client, error)
 
 // Upstream implements the upstream.Upstream interface for vector database services.
 //
 // Summary: Represents a Upstream.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Upstream struct {
 	clientFactory ClientFactory
 }
@@ -76,9 +52,6 @@ type Upstream struct {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{
@@ -123,9 +96,6 @@ func defaultClientFactory(config *configv1.VectorUpstreamService) (Client, error
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
@@ -293,9 +263,6 @@ type vectorCallable struct {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (c *vectorCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return c.handler(ctx, req.Arguments)
 }
@@ -311,18 +278,6 @@ type vectorToolDef struct {
 // Client interface for different vector DB implementations.
 //
 // Summary: Represents a Client.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Client interface {
 	// Query searches for the nearest vectors in the database.
 	// It accepts a context, a query vector, the number of results to return (topK),

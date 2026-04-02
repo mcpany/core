@@ -51,9 +51,6 @@ type transportError struct {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (e *transportError) Error() string {
 	return e.Message
 }
@@ -62,18 +59,6 @@ func (e *transportError) Error() string {
 // running inside a Docker container from a bundle. It supports mounts and environment variables.
 //
 // Summary: Represents a BundleDockerTransport.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type BundleDockerTransport struct {
 	Image      string
 	Command    string
@@ -115,9 +100,6 @@ type BundleDockerTransport struct {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (t *BundleDockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
 
@@ -256,9 +238,6 @@ type bundleDockerConn struct {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (c *bundleDockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
 	if err := c.decoder.Decode(&raw); err != nil {
@@ -415,9 +394,6 @@ func setUnexportedID(idPtr interface{}, val interface{}) error {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (c *bundleDockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	// Workaround: jsonrpc.ID in the SDK marshals to {} because of unexported fields.
 	// We extract the value manually and send an intermediate struct.
@@ -561,9 +537,6 @@ func fixIDExtracted(val interface{}) interface{} {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (c *bundleDockerConn) Close() error {
 	return c.rwc.Close()
 }
@@ -588,9 +561,6 @@ func (c *bundleDockerConn) Close() error {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (c *bundleDockerConn) SessionID() string {
 	return "bundle-docker"
@@ -630,9 +600,6 @@ type bundleSlogWriter struct {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (s *bundleSlogWriter) Write(p []byte) (n int, err error) {
 	msg := string(p)
 	s.log.Log(context.Background(), s.level, msg)

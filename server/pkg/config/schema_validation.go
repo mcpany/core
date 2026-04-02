@@ -43,12 +43,6 @@ func ensureSchema() (*jsonschema.Schema, error) {
 //
 // Returns:
 //   - error: An error if validation fails.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None.
 func ValidateConfigAgainstSchema(rawConfig map[string]interface{}) error {
 	schema, err := ensureSchema()
 	if err != nil {
@@ -89,9 +83,6 @@ func ValidateConfigAgainstSchema(rawConfig map[string]interface{}) error {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func GenerateJSONSchemaBytes() ([]byte, error) {
 	cfg := configv1.McpAnyServerConfig_builder{}.Build()
 	schemaMap := GenerateSchemaMapFromProto(cfg.ProtoReflect())

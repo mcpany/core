@@ -18,18 +18,6 @@ import (
 // requiring a real browser installation.
 //
 // Summary: Represents a PageFetcher.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type PageFetcher interface {
 	// FetchText retrieves the text content of a URL.
 	//
@@ -54,18 +42,6 @@ type PageFetcher interface {
 // Provider implements a basic browser automation tool.
 //
 // Summary: Tool provider for browsing web pages.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Provider struct {
 	fetcher PageFetcher // nil → default playwrightFetcher
 }
@@ -76,15 +52,6 @@ type Provider struct {
 //
 // Returns:
 //   - *Provider: The initialized provider.
-//
-// Parameters:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func NewProvider() *Provider {
 	return &Provider{}
 }
@@ -104,12 +71,6 @@ func NewProvider() *Provider {
 // Errors:
 //   - Returns "url is required" if url is empty.
 //   - Returns "failed to start playwright" or "failed to launch browser" if the browser fails to start.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None.
 func (b *Provider) BrowsePage(ctx context.Context, url string) (string, error) {
 	if url == "" {
 		return "", fmt.Errorf("url is required")
@@ -131,15 +92,6 @@ func (b *Provider) BrowsePage(ctx context.Context, url string) (string, error) {
 //
 // Returns:
 //   - map[string]interface{}: The JSON schema definition of the tool.
-//
-// Parameters:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (b *Provider) ToolDefinition() map[string]interface{} {
 	return map[string]interface{}{
 		"name":        "browse_page",
@@ -202,12 +154,6 @@ type defaultPlaywrightRunner struct{}
 //
 // Errors:
 //   - Returns error if any.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
-//
-// Side Effects:
-//   - Starts background processes or modifies global state.
 func (d *defaultPlaywrightRunner) Run() (playwrightImpl, error) {
 	pw, err := playwright.Run()
 	if err != nil {
@@ -227,15 +173,6 @@ type realPlaywright struct{ pw *playwright.Playwright }
 //
 // Errors:
 //   - Returns error if any.
-//
-// Parameters:
-//   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None.
 func (r *realPlaywright) Stop() error { return r.pw.Stop() }
 
 // Chromium returns the chromium browser type.
@@ -244,15 +181,6 @@ func (r *realPlaywright) Stop() error { return r.pw.Stop() }
 //
 // Returns:
 //   - playwrightBrowserType: The chromium browser type.
-//
-// Parameters:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (r *realPlaywright) Chromium() playwrightBrowserType {
 	return &realBrowserType{r.pw.Chromium}
 }
@@ -272,12 +200,6 @@ type realBrowserType struct{ bt playwright.BrowserType }
 //
 // Errors:
 //   - Returns error if any.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None.
 func (r *realBrowserType) Launch(options ...playwright.BrowserTypeLaunchOptions) (playwrightBrowser, error) {
 	b, err := r.bt.Launch(options...)
 	if err != nil {
@@ -297,15 +219,6 @@ type realBrowser struct{ b playwright.Browser }
 //
 // Errors:
 //   - Returns error if any.
-//
-// Parameters:
-//   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None.
 func (r *realBrowser) Close() error { return r.b.Close() }
 
 // NewPage creates a new page in the browser.
@@ -321,12 +234,6 @@ func (r *realBrowser) Close() error { return r.b.Close() }
 //
 // Errors:
 //   - Returns error if any.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None.
 func (r *realBrowser) NewPage(options ...playwright.BrowserNewPageOptions) (playwrightPage, error) {
 	p, err := r.b.NewPage(options...)
 	if err != nil {
@@ -351,12 +258,6 @@ type realPage struct{ p playwright.Page }
 //
 // Errors:
 //   - Returns error if any.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None.
 func (r *realPage) Goto(url string, options ...playwright.PageGotoOptions) (playwright.Response, error) {
 	return r.p.Goto(url, options...)
 }
@@ -371,12 +272,6 @@ func (r *realPage) Goto(url string, options ...playwright.PageGotoOptions) (play
 //
 // Returns:
 //   - playwrightLocator: The new locator.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (r *realPage) Locator(selector string, options ...playwright.PageLocatorOptions) playwrightLocator {
 	return &realLocator{r.p.Locator(selector, options...)}
 }
@@ -396,12 +291,6 @@ type realLocator struct{ l playwright.Locator }
 //
 // Errors:
 //   - Returns error if any.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None.
 func (r *realLocator) TextContent(options ...playwright.LocatorTextContentOptions) (string, error) {
 	return r.l.TextContent(options...)
 }
@@ -428,9 +317,6 @@ type playwrightFetcher struct {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (f *playwrightFetcher) FetchText(_ context.Context, url string) (string, error) {
 	r := f.runner
 	if r == nil {

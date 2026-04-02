@@ -17,18 +17,6 @@ import (
 // It simplifies the type signature for WebSocket connection pools.
 //
 // Summary: Represents a Pool.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Pool = pool.Pool[*client.WebsocketClientWrapper]
 
 // NewPool creates a new connection pool for WebSocket clients. It
@@ -57,9 +45,6 @@ type Pool = pool.Pool[*client.WebsocketClientWrapper]
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func NewPool(maxSize int, idleTimeout time.Duration, address string) (Pool, error) {
 	factory := func(_ context.Context) (*client.WebsocketClientWrapper, error) {
 		conn, resp, err := websocket.DefaultDialer.Dial(address, nil)

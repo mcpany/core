@@ -8,18 +8,6 @@ import "net/http"
 // MockUpstreamAuthenticator is a mock implementation of UpstreamAuthenticator for testing.
 //
 // Summary: Represents a MockUpstreamAuthenticator.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type MockUpstreamAuthenticator struct {
 	AuthenticateFunc func(req *http.Request) error
 }
@@ -51,9 +39,6 @@ type MockUpstreamAuthenticator struct {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (m *MockUpstreamAuthenticator) Authenticate(req *http.Request) error {
 	if m.AuthenticateFunc != nil {
 		return m.AuthenticateFunc(req)

@@ -12,18 +12,6 @@ import (
 // Timeout implements a timeout policy for operations.
 //
 // Summary: Enforces a maximum duration for operations.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Timeout struct {
 	duration *durationpb.Duration
 }
@@ -37,12 +25,6 @@ type Timeout struct {
 //
 // Returns:
 //   - *Timeout: The initialized timeout policy.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func NewTimeout(duration *durationpb.Duration) *Timeout {
 	return &Timeout{
 		duration: duration,
@@ -65,9 +47,6 @@ func NewTimeout(duration *durationpb.Duration) *Timeout {
 //
 // Side Effects:
 //   - Creates a child context with a deadline.
-//
-// Errors/Throws:
-//   - None.
 func (t *Timeout) Execute(ctx context.Context, work func(context.Context) error) error {
 	ctx, cancel := context.WithTimeout(ctx, t.duration.AsDuration())
 	defer cancel()

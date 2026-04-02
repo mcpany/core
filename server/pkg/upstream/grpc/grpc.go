@@ -42,18 +42,6 @@ import (
 // for them. It also manages a connection pool and a cache for reflection data.
 //
 // Summary: Represents a Upstream.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Upstream struct {
 	poolManager     *pool.Manager
 	reflectionCache *ttlcache.Cache[string, *descriptorpb.FileDescriptorSet]
@@ -87,9 +75,6 @@ type Upstream struct {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -128,9 +113,6 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	cache := ttlcache.New[string, *descriptorpb.FileDescriptorSet](
@@ -171,9 +153,6 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {

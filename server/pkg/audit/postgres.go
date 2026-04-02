@@ -17,18 +17,6 @@ import (
 // PostgresAuditStore writes audit logs to a PostgreSQL database.
 //
 // Summary: Stores audit log entries in a PostgreSQL database with tamper-evident hashing.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type PostgresAuditStore struct {
 	db *sql.DB
 	mu sync.Mutex
@@ -53,9 +41,6 @@ type PostgresAuditStore struct {
 // Side Effects:
 //   - Connects to the database.
 //   - Creates the 'audit_logs' table if it doesn't exist.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func NewPostgresAuditStore(dsn string) (*PostgresAuditStore, error) {
 	if dsn == "" {
 		return nil, fmt.Errorf("postgres dsn is required")
@@ -124,9 +109,6 @@ func NewPostgresAuditStore(dsn string) (*PostgresAuditStore, error) {
 // Side Effects:
 //   - Acquires an exclusive lock on the audit_logs table.
 //   - Inserts a new row into audit_logs.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 	// We don't need mutex here because we use database transaction for concurrency control.
 	// s.mu.Lock() // removed
@@ -218,12 +200,6 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 // Returns:
 //   - []Entry: Nil.
 //   - error: Always returns "not implemented".
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None.
 func (s *PostgresAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for postgres audit store")
 }
@@ -245,9 +221,6 @@ func (s *PostgresAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) 
 //
 // Side Effects:
 //   - Reads all rows from the audit_logs table.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (s *PostgresAuditStore) Verify() (bool, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -320,12 +293,6 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 //
 // Side Effects:
 //   - Closes the DB connection.
-//
-// Parameters:
-//   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (s *PostgresAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

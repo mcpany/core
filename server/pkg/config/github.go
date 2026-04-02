@@ -43,18 +43,6 @@ var (
 //   - Path (string): The path to the file or directory within the repository.
 //   - Ref (string): The branch, tag, or commit hash.
 //   - URLType (string): The type of URL (tree or blob).
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type GitHub struct {
 	Owner         string
 	Repo          string
@@ -86,9 +74,6 @@ type GitHub struct {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func NewGitHub(_ context.Context, rawURL string) (*GitHub, error) {
 	parsedURL, err := url.Parse(rawURL)
 	if err != nil {
@@ -159,9 +144,6 @@ func isGitHubURL(rawURL string) bool {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (g *GitHub) ToRawContentURL() string {
 	return fmt.Sprintf("%s/%s/%s/%s/%s", g.rawContentURL, g.Owner, g.Repo, g.Ref, g.Path)
 }
@@ -175,18 +157,6 @@ func (g *GitHub) ToRawContentURL() string {
 //   - Type (string): The type of content (e.g., "file", "dir").
 //   - HTMLURL (string): The URL to view the content on GitHub.
 //   - DownloadURL (string): The URL to download the content (only for files).
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Content struct {
 	Name        string `json:"name"`
 	Type        string `json:"type"`
@@ -213,9 +183,6 @@ type Content struct {
 //
 // Side Effects:
 //   - Makes an HTTP GET request to the GitHub API.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (g *GitHub) List(ctx context.Context, auth *configv1.Authentication) ([]Content, error) {
 	apiURL := fmt.Sprintf("%s/repos/%s/%s/contents/%s", g.apiURL, g.Owner, g.Repo, g.Path)
 	if g.Ref != "" {

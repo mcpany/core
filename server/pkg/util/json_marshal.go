@@ -36,12 +36,6 @@ var (
 // Returns:
 //   - string: The marshaled string.
 //   - error: An error if marshaling fails.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None.
 func FastMarshalToString(v interface{}) (string, error) {
 	buf := bufferPool.Get().(*bytes.Buffer)
 	buf.Reset()
@@ -69,12 +63,6 @@ func FastMarshalToString(v interface{}) (string, error) {
 // Returns:
 //   - []byte: The marshaled byte slice.
 //   - error: An error if marshaling fails.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None.
 func FastMarshal(v interface{}) ([]byte, error) {
 	return FastJSON.Marshal(v)
 }

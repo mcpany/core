@@ -35,18 +35,6 @@ import (
 // registers tools based on the service configuration.
 //
 // Summary: Represents a Upstream.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Upstream struct {
 	poolManager *pool.Manager
 	serviceID   string
@@ -81,9 +69,6 @@ type Upstream struct {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -121,9 +106,6 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -158,9 +140,6 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{

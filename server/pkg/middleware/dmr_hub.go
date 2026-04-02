@@ -16,18 +16,6 @@ import (
 // DMRHubConfig defines the configuration for the Dynamic Mesh Resilience Hub.
 //
 // Summary: Configuration for Dynamic Mesh Resilience Hub.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type DMRHubConfig struct {
 	// Enabled determines if the DMR Hub is active.
 	Enabled bool `json:"enabled"`
@@ -41,18 +29,6 @@ type DMRHubConfig struct {
 // physical nodes upon subagent failure.
 //
 // Summary: Represents the DMR Hub middleware.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type DMRHub struct {
 	config DMRHubConfig
 }
@@ -66,12 +42,6 @@ type DMRHub struct {
 //
 // Returns:
 //   - *DMRHub: The resulting DMR Hub instance.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func NewDMRHub(config DMRHubConfig) *DMRHub {
 	return &DMRHub{
 		config: config,
@@ -90,12 +60,6 @@ func NewDMRHub(config DMRHubConfig) *DMRHub {
 // Returns:
 //   - any: The execution result if allowed.
 //   - error: An error if the migration proof is invalid or missing during failure.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None.
 func (h *DMRHub) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	if !h.config.Enabled {
 		return next(ctx, req)

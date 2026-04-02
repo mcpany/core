@@ -15,18 +15,6 @@ import (
 // Fields:
 //   - Err: error. The original error that occurred.
 //   - Suggestion: string. A human-readable suggestion on how to resolve the error.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type ActionableError struct {
 	Err        error
 	Suggestion string
@@ -59,9 +47,6 @@ type ActionableError struct {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (e *ActionableError) Error() string {
 	return fmt.Sprintf("%v\n\t-> Fix: %s", e.Err, e.Suggestion)
 }
@@ -93,9 +78,6 @@ func (e *ActionableError) Error() string {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (e *ActionableError) Unwrap() error {
 	return e.Err
 }
@@ -116,9 +98,6 @@ func (e *ActionableError) Unwrap() error {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func WrapActionableError(context string, err error) error {
 	if err == nil {
 		return nil

@@ -18,18 +18,6 @@ import (
 // Bus is a message bus implementation using NATS.
 //
 // Summary: Represents a Bus.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Bus[T any] struct {
 	nc     *natsgo.Conn
 	config *bus.NatsBus
@@ -94,15 +82,6 @@ func New[T any](config *bus.NatsBus) (*Bus[T], error) {
 // Returns:
 //
 //	None.
-//
-// Parameters:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (b *Bus[T]) Close() {
 	if b.nc != nil {
 		b.nc.Close()
@@ -137,9 +116,6 @@ func (b *Bus[T]) Close() {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (b *Bus[T]) Publish(_ context.Context, topic string, msg T) error {
 	data, err := json.Marshal(msg)
 	if err != nil {
@@ -172,9 +148,6 @@ func (b *Bus[T]) Publish(_ context.Context, topic string, msg T) error {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (b *Bus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	sub, _ := b.nc.Subscribe(topic, func(m *natsgo.Msg) {
@@ -213,9 +186,6 @@ func (b *Bus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (un
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (b *Bus[T]) SubscribeOnce(_ context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	sub, err := b.nc.Subscribe(topic, func(m *natsgo.Msg) {

@@ -15,18 +15,6 @@ import (
 // BlackboardStore represents a shared key-value store with agent-aware row-level security.
 //
 // Summary: Represents a shared key-value store with agent-aware row-level security.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type BlackboardStore struct {
 	db *sql.DB
 }
@@ -50,9 +38,6 @@ type BlackboardStore struct {
 // Side Effects:
 //   - Connects to the specified SQLite database.
 //   - Executes schema creation queries (CREATE TABLE, CREATE INDEX).
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func NewBlackboardStore(path string) (*BlackboardStore, error) {
 	if path == "" {
 		return nil, fmt.Errorf("sqlite path is required")
@@ -102,9 +87,6 @@ func NewBlackboardStore(path string) (*BlackboardStore, error) {
 //
 // Side Effects:
 //   - Executes a SELECT query on the database.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (s *BlackboardStore) Get(ctx context.Context, agentID, key string) (string, error) {
 	var value string
 	err := s.db.QueryRowContext(ctx, "SELECT value FROM blackboard WHERE agent_id = ? AND key = ?", agentID, key).Scan(&value)
@@ -135,9 +117,6 @@ func (s *BlackboardStore) Get(ctx context.Context, agentID, key string) (string,
 //
 // Side Effects:
 //   - Executes an INSERT OR REPLACE (UPSERT) query on the database.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (s *BlackboardStore) Set(ctx context.Context, agentID, key, value string) error {
 	_, err := s.db.ExecContext(ctx, `
 		INSERT INTO blackboard (agent_id, key, value) VALUES (?, ?, ?)
@@ -161,9 +140,6 @@ func (s *BlackboardStore) Set(ctx context.Context, agentID, key, value string) e
 //
 // Side Effects:
 //   - Closes the active database connection, preventing further queries.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (s *BlackboardStore) Close() error {
 	return s.db.Close()
 }

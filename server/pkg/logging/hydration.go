@@ -38,9 +38,6 @@ import (
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func HydrateFromFile(path string) error {
 	lines, err := util.ReadLastNLines(path, 1000)
 	if err != nil {

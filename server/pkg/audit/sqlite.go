@@ -20,18 +20,6 @@ import (
 // SQLiteAuditStore writes audit logs to a SQLite database.
 //
 // Summary: Stores audit logs in a local SQLite database with tamper-evident hashing.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type SQLiteAuditStore struct {
 	db *sql.DB
 	mu sync.Mutex
@@ -58,9 +46,6 @@ type SQLiteAuditStore struct {
 //   - Creates the 'audit_logs' table.
 //   - Optimizes database with PRAGMA settings.
 //   - Adds missing columns if schema migration is needed.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func NewSQLiteAuditStore(path string) (*SQLiteAuditStore, error) {
 	if path == "" {
 		return nil, fmt.Errorf("sqlite path is required")
@@ -186,9 +171,6 @@ func ensureColumn(db *sql.DB, colName string) error {
 //
 // Side Effects:
 //   - Inserts a row into the audit_logs table.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -260,9 +242,6 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 //
 // Side Effects:
 //   - Executes a SELECT query on the database.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -348,9 +327,6 @@ func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, er
 //
 // Side Effects:
 //   - Scans the entire audit_logs table.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (s *SQLiteAuditStore) Verify() (bool, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -407,12 +383,6 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 //
 // Side Effects:
 //   - Closes the DB connection.
-//
-// Parameters:
-//   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (s *SQLiteAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

@@ -32,9 +32,6 @@ import (
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func Password(password string) (string, error) {
 	// Increase cost to 12 for better security (default is 10)
 	const cost = 12
@@ -66,9 +63,6 @@ func Password(password string) (string, error) {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func CheckPassword(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))

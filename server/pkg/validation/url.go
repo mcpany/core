@@ -26,12 +26,6 @@ const trueVal = "true"
 //   - error: An error if the IP is invalid or forbidden.
 //
 // IsSafeIP is a variable to allow mocking in tests.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 var IsSafeIP = func(ipStr string) error {
 	// Bypass if explicitly allowed (for testing/development)
 	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == trueVal {
@@ -88,9 +82,6 @@ var lookupIPFunc = func(ctx context.Context, network, host string) ([]net.IP, er
 //   - Performs DNS lookup.
 //
 // IsSafeURL is a variable to allow mocking in tests.
-//
-// Errors/Throws:
-//   - None.
 var IsSafeURL = func(urlStr string) error {
 	// Bypass if explicitly allowed (for testing/development)
 	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == trueVal {
@@ -156,12 +147,6 @@ var IsSafeURL = func(urlStr string) error {
 //
 // Returns:
 //   - error: An error if the IP matches a forbidden range.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None.
 func ValidateIP(ip net.IP, allowLoopback, allowPrivate bool) error {
 	if !allowLoopback && (ip.IsLoopback() || IsNAT64Loopback(ip) || (IsIPv4Compatible(ip) && ip[12] == 127)) {
 		return fmt.Errorf("loopback address is not allowed")

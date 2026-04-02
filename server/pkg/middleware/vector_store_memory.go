@@ -13,18 +13,6 @@ import (
 // SimpleVectorStore is a naive in-memory vector store.
 //
 // Summary: Represents a SimpleVectorStore.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type SimpleVectorStore struct {
 	mu         sync.RWMutex
 	items      map[string][]*VectorEntry
@@ -34,18 +22,6 @@ type SimpleVectorStore struct {
 // VectorEntry represents a single entry in the vector store.
 //
 // Summary: Represents a VectorEntry.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type VectorEntry struct {
 	// Vector is the embedding vector.
 	Vector []float32
@@ -75,9 +51,6 @@ type VectorEntry struct {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func NewSimpleVectorStore() *SimpleVectorStore {
 	return &SimpleVectorStore{
@@ -111,9 +84,6 @@ func NewSimpleVectorStore() *SimpleVectorStore {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (s *SimpleVectorStore) Add(_ context.Context, key string, vector []float32, result any, ttl time.Duration) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -164,9 +134,6 @@ func (s *SimpleVectorStore) Add(_ context.Context, key string, vector []float32,
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float32) (any, float32, bool) {
 	s.mu.RLock()
@@ -220,9 +187,6 @@ func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float3
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (s *SimpleVectorStore) Prune(_ context.Context, key string) {
 	s.mu.Lock()

@@ -17,18 +17,6 @@ import (
 // and discovered tools for the duration of the validation request but discard them afterwards.
 //
 // Summary: Represents a TemporaryToolManager.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type TemporaryToolManager struct {
 	NoOpToolManager
 	mu          sync.RWMutex
@@ -56,9 +44,6 @@ type TemporaryToolManager struct {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func NewTemporaryToolManager() *TemporaryToolManager {
 	return &TemporaryToolManager{
@@ -88,9 +73,6 @@ func NewTemporaryToolManager() *TemporaryToolManager {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (m *TemporaryToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	m.mu.Lock()
@@ -126,9 +108,6 @@ func (m *TemporaryToolManager) AddServiceInfo(serviceID string, info *tool.Servi
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (m *TemporaryToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -163,9 +142,6 @@ func (m *TemporaryToolManager) GetServiceInfo(serviceID string) (*tool.ServiceIn
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (m *TemporaryToolManager) AddTool(t tool.Tool) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -213,9 +189,6 @@ func (m *TemporaryToolManager) AddTool(t tool.Tool) error {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (m *TemporaryToolManager) GetTool(toolName string) (tool.Tool, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -246,9 +219,6 @@ func (m *TemporaryToolManager) GetTool(toolName string) (tool.Tool, bool) {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (m *TemporaryToolManager) ListTools() []tool.Tool {
 	m.mu.RLock()
@@ -286,9 +256,6 @@ func (m *TemporaryToolManager) ListTools() []tool.Tool {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (m *TemporaryToolManager) GetToolCountForService(serviceID string) int {
 	m.mu.RLock()

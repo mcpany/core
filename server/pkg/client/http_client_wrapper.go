@@ -18,18 +18,6 @@ import (
 // and reuse them where appropriate.
 //
 // Summary: Represents a HTTPClientWrapper.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type HTTPClientWrapper struct {
 	*http.Client
 	config *configv1.UpstreamServiceConfig
@@ -65,9 +53,6 @@ type HTTPClientWrapper struct {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func NewHTTPClientWrapper(client *http.Client, config *configv1.UpstreamServiceConfig, checker health.Checker) *HTTPClientWrapper {
 	// If no checker is provided, create a new one (backward compatibility or standalone usage).
@@ -108,9 +93,6 @@ func NewHTTPClientWrapper(client *http.Client, config *configv1.UpstreamServiceC
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (w *HTTPClientWrapper) IsHealthy(ctx context.Context) bool {
 	if w.checker == nil {
 		return true // No health check configured, assume healthy.
@@ -145,9 +127,6 @@ func (w *HTTPClientWrapper) IsHealthy(ctx context.Context) bool {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (w *HTTPClientWrapper) Close() error {
 	return nil
 }

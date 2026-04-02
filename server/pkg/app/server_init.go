@@ -136,7 +136,7 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 	}
 
 	// Initialize Service Templates
-		if err := a.seedTraces(ctx); err != nil {
+	if err := a.seedTraces(ctx); err != nil {
 		log.Error("Failed to seed traces", "error", err)
 	}
 	if err := a.seedTemplates(ctx, store); err != nil {

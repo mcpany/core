@@ -88,18 +88,6 @@ var fastJSONNumber = jsoniter.Config{
 //
 // Each implementation represents a different type of underlying service
 // (e.g., gRPC, HTTP, command-line).
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Tool interface {
 	// Tool returns the protobuf definition of the tool.
 	//
@@ -168,9 +156,6 @@ type Tool interface {
 // Returns: None
 // Errors: None
 // Side Effects: None
-//
-// Errors/Throws:
-//   - None.
 type ServiceInfo struct {
 	// Name is the unique name of the service.
 	Name string
@@ -196,9 +181,6 @@ type ServiceInfo struct {
 // Returns: None
 // Errors: None
 // Side Effects: None
-//
-// Errors/Throws:
-//   - None.
 type ExecutionRequest struct {
 	// ToolName is the name of the tool to be executed.
 	ToolName string `json:"name"`
@@ -221,9 +203,6 @@ type ExecutionRequest struct {
 // Returns: None
 // Errors: None
 // Side Effects: None
-//
-// Errors/Throws:
-//   - None.
 type ServiceRegistry interface {
 	// GetTool retrieves a tool by name.
 	//
@@ -255,12 +234,6 @@ type ServiceRegistry interface {
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type ExecutionFunc func(ctx context.Context, req *ExecutionRequest) (any, error)
 
 type contextKey string
@@ -275,12 +248,6 @@ const toolContextKey = contextKey("tool")
 //
 // Returns:
 //   - context.Context: A new context containing the tool.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func NewContextWithTool(ctx context.Context, t Tool) context.Context {
 	return context.WithValue(ctx, toolContextKey, t)
 }
@@ -293,12 +260,6 @@ func NewContextWithTool(ctx context.Context, t Tool) context.Context {
 // Returns:
 //   - Tool: The tool instance from the context.
 //   - bool: True if a tool was found, false otherwise.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func GetFromContext(ctx context.Context) (Tool, bool) {
 	t, ok := ctx.Value(toolContextKey).(Tool)
 	return t, ok
@@ -309,9 +270,6 @@ func GetFromContext(ctx context.Context) (Tool, bool) {
 // Returns: None
 // Errors: None
 // Side Effects: None
-//
-// Errors/Throws:
-//   - None.
 type Callable interface {
 	// Call executes the callable with the given request.
 	//
@@ -330,9 +288,6 @@ type Callable interface {
 // Returns: None
 // Errors: None
 // Side Effects: None
-//
-// Errors/Throws:
-//   - None.
 type StreamingCallable interface {
 	Callable
 
@@ -351,18 +306,6 @@ type StreamingCallable interface {
 // Action defines the decision made by a pre-call hook.
 //
 // Summary: Enumeration of possible hook actions.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Action int
 
 const (
@@ -387,18 +330,6 @@ const (
 // CacheControl is a mutable struct to pass cache control instructions via context.
 //
 // Summary: Context-based cache control instructions.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type CacheControl struct {
 	Action Action
 }
@@ -415,12 +346,6 @@ const cacheControlContextKey = contextKey("cache_control")
 //
 // Returns:
 //   - context.Context: A new context containing the CacheControl.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func NewContextWithCacheControl(ctx context.Context, cc *CacheControl) context.Context {
 	return context.WithValue(ctx, cacheControlContextKey, cc)
 }
@@ -433,12 +358,6 @@ func NewContextWithCacheControl(ctx context.Context, cc *CacheControl) context.C
 // Returns:
 //   - *CacheControl: The CacheControl instance if found.
 //   - bool: True if CacheControl exists, false otherwise.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func GetCacheControl(ctx context.Context) (*CacheControl, bool) {
 	cc, ok := ctx.Value(cacheControlContextKey).(*CacheControl)
 	return cc, ok
@@ -447,18 +366,6 @@ func GetCacheControl(ctx context.Context) (*CacheControl, bool) {
 // PreCallHook defines the interface for hooks executed before a tool call.
 //
 // Summary: Interface for pre-execution hooks.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type PreCallHook interface {
 	// ExecutePre runs the hook. It returns an action (Allow/Deny),
 	// a potentially modified request (or nil if unchanged), and an error.
@@ -468,18 +375,6 @@ type PreCallHook interface {
 // PostCallHook defines the interface for hooks executed after a tool call.
 //
 // Summary: Interface for post-execution hooks.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type PostCallHook interface {
 	// ExecutePost runs the hook. It returns the potentially modified result
 	// (or original if unchanged) and an error.
@@ -493,18 +388,6 @@ type PostCallHook interface {
 //
 // It handles the marshalling of JSON inputs to protobuf messages and
 // invoking the gRPC method.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type GRPCTool struct {
 	tool              *v1.Tool
 	mcpTool           *mcp.Tool
@@ -536,12 +419,6 @@ type GRPCTool struct {
 //
 // Returns:
 //   - *GRPCTool: The initialized GRPCTool.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, method protoreflect.MethodDescriptor, callDefinition *configv1.GrpcCallDefinition, resilienceConfig *configv1.ResilienceConfig, policies []*configv1.CallPolicy, callID string) *GRPCTool {
 	compiled, err := CompileCallPolicies(policies)
 	t := &GRPCTool{
@@ -579,9 +456,6 @@ func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, met
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (t *GRPCTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -605,9 +479,6 @@ func (t *GRPCTool) Tool() *v1.Tool {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (t *GRPCTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
@@ -637,9 +508,6 @@ func (t *GRPCTool) MCPTool() *mcp.Tool {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
@@ -671,9 +539,6 @@ func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns:
 //   - bool: True if streaming is supported.
-//
-// Errors/Throws:
-//   - None.
 func (t *GRPCTool) IsStreaming() bool {
 	return false
 }
@@ -689,12 +554,6 @@ func (t *GRPCTool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None.
 func (t *GRPCTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -729,9 +588,6 @@ func (t *GRPCTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 //
 // Side Effects:
 //   - Makes a gRPC call to the upstream service.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError
@@ -817,18 +673,6 @@ func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 //
 // It constructs and sends an HTTP request based on the tool definition and
 // input, handling parameter mapping, authentication, and transformations.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type HTTPTool struct {
 	tool              *v1.Tool
 	mcpTool           *mcp.Tool
@@ -875,12 +719,6 @@ type HTTPTool struct {
 //
 // Returns:
 //   - *HTTPTool: The initialized HTTPTool.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.HttpCallDefinition, cfg *configv1.ResilienceConfig, policies []*configv1.CallPolicy, callID string) *HTTPTool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -999,9 +837,6 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (t *HTTPTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -1025,9 +860,6 @@ func (t *HTTPTool) Tool() *v1.Tool {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (t *HTTPTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
@@ -1057,9 +889,6 @@ func (t *HTTPTool) MCPTool() *mcp.Tool {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
@@ -1091,9 +920,6 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns:
 //   - bool: True if streaming is supported.
-//
-// Errors/Throws:
-//   - None.
 func (t *HTTPTool) IsStreaming() bool {
 	return false
 }
@@ -1109,12 +935,6 @@ func (t *HTTPTool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None.
 func (t *HTTPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -1150,9 +970,6 @@ func (t *HTTPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 //
 // Side Effects:
 //   - Makes an HTTP request to the upstream service.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -1751,18 +1568,6 @@ func (t *HTTPTool) processResponse(ctx context.Context, resp *http.Response) (an
 //
 // It acts as a proxy, forwarding the tool call to the
 // downstream MCP service.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type MCPTool struct {
 	tool                 *v1.Tool
 	mcpTool              *mcp.Tool
@@ -1788,12 +1593,6 @@ type MCPTool struct {
 //
 // Returns:
 //   - *MCPTool: The initialized MCPTool.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1.MCPCallDefinition) *MCPTool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -1846,9 +1645,6 @@ func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (t *MCPTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -1872,9 +1668,6 @@ func (t *MCPTool) Tool() *v1.Tool {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (t *MCPTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
@@ -1905,9 +1698,6 @@ func (t *MCPTool) MCPTool() *mcp.Tool {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -1937,9 +1727,6 @@ func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns:
 //   - bool: True if streaming is supported.
-//
-// Errors/Throws:
-//   - None.
 func (t *MCPTool) IsStreaming() bool {
 	return false
 }
@@ -1955,12 +1742,6 @@ func (t *MCPTool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None.
 func (t *MCPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -1996,9 +1777,6 @@ func (t *MCPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-c
 //
 // Side Effects:
 //   - Makes a call to a downstream MCP service.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError
@@ -2119,18 +1897,6 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 //
 // It constructs and sends an HTTP request based on the OpenAPI
 // operation definition.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type OpenAPITool struct {
 	tool                 *v1.Tool
 	mcpTool              *mcp.Tool
@@ -2164,12 +1930,6 @@ type OpenAPITool struct {
 //
 // Returns:
 //   - *OpenAPITool: The initialized OpenAPITool.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[string]string, method, url string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.OpenAPICallDefinition) *OpenAPITool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -2226,9 +1986,6 @@ func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[s
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (t *OpenAPITool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -2252,9 +2009,6 @@ func (t *OpenAPITool) Tool() *v1.Tool {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (t *OpenAPITool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
@@ -2285,9 +2039,6 @@ func (t *OpenAPITool) MCPTool() *mcp.Tool {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -2317,9 +2068,6 @@ func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns:
 //   - bool: True if streaming is supported.
-//
-// Errors/Throws:
-//   - None.
 func (t *OpenAPITool) IsStreaming() bool {
 	return false
 }
@@ -2335,12 +2083,6 @@ func (t *OpenAPITool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None.
 func (t *OpenAPITool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -2378,9 +2120,6 @@ func (t *OpenAPITool) StreamExecute(ctx context.Context, req *ExecutionRequest) 
 //
 // Side Effects:
 //   - Makes an HTTP request to the upstream service.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -2549,18 +2288,6 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 // Summary: Tool implementation for command-line services (via executor).
 //
 // It maps tool inputs to command-line arguments and environment variables.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type CommandTool struct {
 	tool            *v1.Tool
 	mcpTool         *mcp.Tool
@@ -2587,9 +2314,6 @@ type CommandTool struct {
 //
 // Returns:
 //   - Tool: The created CommandTool.
-//
-// Side Effects:
-//   - None.
 func NewCommandTool(
 	tool *v1.Tool,
 	service *configv1.CommandLineUpstreamService,
@@ -2629,18 +2353,6 @@ func NewCommandTool(
 // Summary: Tool implementation for local command-line services.
 //
 // It maps tool inputs to command-line arguments and environment variables.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type LocalCommandTool struct {
 	tool           *v1.Tool
 	mcpTool        *mcp.Tool
@@ -2667,9 +2379,6 @@ type LocalCommandTool struct {
 //
 // Returns:
 //   - Tool: The created LocalCommandTool.
-//
-// Side Effects:
-//   - None.
 func NewLocalCommandTool(
 	tool *v1.Tool,
 	service *configv1.CommandLineUpstreamService,
@@ -2741,9 +2450,6 @@ func NewLocalCommandTool(
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (t *LocalCommandTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -2767,9 +2473,6 @@ func (t *LocalCommandTool) Tool() *v1.Tool {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (t *LocalCommandTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
@@ -2799,9 +2502,6 @@ func (t *LocalCommandTool) MCPTool() *mcp.Tool {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDefinition == nil {
@@ -2836,9 +2536,6 @@ func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns:
 //   - bool: True if streaming is supported.
-//
-// Errors/Throws:
-//   - None.
 func (t *LocalCommandTool) IsStreaming() bool {
 	return true
 }
@@ -2854,12 +2551,6 @@ func (t *LocalCommandTool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None.
 func (t *LocalCommandTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	// Not fully implemented for stream yet
 	ch := make(chan any, 1)
@@ -2896,9 +2587,6 @@ func (t *LocalCommandTool) StreamExecute(ctx context.Context, req *ExecutionRequ
 //
 // Side Effects:
 //   - Executes a local command line process.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -3242,9 +2930,6 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (t *CommandTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -3268,9 +2953,6 @@ func (t *CommandTool) Tool() *v1.Tool {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (t *CommandTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
@@ -3300,9 +2982,6 @@ func (t *CommandTool) MCPTool() *mcp.Tool {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDefinition == nil {
@@ -3337,9 +3016,6 @@ func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns:
 //   - bool: True if streaming is supported.
-//
-// Errors/Throws:
-//   - None.
 func (t *CommandTool) IsStreaming() bool {
 	return true
 }
@@ -3355,12 +3031,6 @@ func (t *CommandTool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None.
 func (t *CommandTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -3396,9 +3066,6 @@ func (t *CommandTool) StreamExecute(ctx context.Context, req *ExecutionRequest) 
 //
 // Side Effects:
 //   - Executes a local command line process, potentially in a container.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -3760,9 +3427,6 @@ type threadSafeBuffer struct {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (tsb *threadSafeBuffer) Write(p []byte) (n int, err error) {
 	tsb.mu.Lock()
 	defer tsb.mu.Unlock()
@@ -3786,9 +3450,6 @@ func (tsb *threadSafeBuffer) Write(p []byte) (n int, err error) {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (tsb *threadSafeBuffer) String() string {
 	tsb.mu.Lock()

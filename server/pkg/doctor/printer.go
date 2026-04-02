@@ -38,9 +38,6 @@ import (
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func PrintResults(w io.Writer, results []CheckResult) {
 	if w == nil {
 		w = os.Stdout

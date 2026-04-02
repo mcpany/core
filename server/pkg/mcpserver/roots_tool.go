@@ -21,18 +21,6 @@ import (
 // for available filesystem roots.
 //
 // Summary: Represents a RootsTool.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type RootsTool struct {
 	tool    *v1.Tool
 	mcpTool *mcp.Tool
@@ -58,9 +46,6 @@ type RootsTool struct {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func NewRootsTool() *RootsTool {
 	inputSchema := &structpb.Struct{
@@ -104,9 +89,6 @@ func NewRootsTool() *RootsTool {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (t *RootsTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -131,9 +113,6 @@ func (t *RootsTool) Tool() *v1.Tool {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (t *RootsTool) MCPTool() *mcp.Tool {
 	return t.mcpTool
@@ -184,9 +163,6 @@ func (t *RootsTool) MCPTool() *mcp.Tool {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (t *RootsTool) IsStreaming() bool {
 	return false
 }
@@ -208,9 +184,6 @@ func (t *RootsTool) IsStreaming() bool {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (t *RootsTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
 	return nil, nil
 }
@@ -233,9 +206,6 @@ func (t *RootsTool) StreamExecute(ctx context.Context, req *tool.ExecutionReques
 //
 // Side Effects:
 //   - Sends a "roots/list" request to the client.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 	session, ok := tool.GetSession(ctx)
 	if !ok {
@@ -270,9 +240,6 @@ func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any,
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (t *RootsTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil

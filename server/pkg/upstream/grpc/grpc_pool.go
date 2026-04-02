@@ -52,9 +52,6 @@ type poolWithChecker[T pool.ClosableClient] struct {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (p *poolWithChecker[T]) Close() error {
 	if p.checker != nil {
 		p.checker.Stop()

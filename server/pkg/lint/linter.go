@@ -19,18 +19,6 @@ import (
 // It is used to categorize findings based on their impact and urgency.
 //
 // Summary: Represents a Severity.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Severity int
 
 const (
@@ -65,9 +53,6 @@ const (
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (s Severity) String() string {
 	switch s {
 	case Error:
@@ -86,18 +71,6 @@ func (s Severity) String() string {
 // It encapsulates all details about a detected issue, including its severity, location, and description.
 //
 // Summary: Represents a Result.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Result struct {
 	// Severity indicates how critical the finding is (Error, Warning, Info).
 	Severity Severity
@@ -129,9 +102,6 @@ type Result struct {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (r Result) String() string {
 	pathStr := ""
 	if r.Path != "" {
@@ -149,18 +119,6 @@ func (r Result) String() string {
 // It holds the configuration to be analyzed and provides methods to execute various checks.
 //
 // Summary: Represents a Linter.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Linter struct {
 	cfg *configv1.McpAnyServerConfig
 }
@@ -185,9 +143,6 @@ type Linter struct {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 	return &Linter{cfg: cfg}
@@ -218,9 +173,6 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (l *Linter) Run(ctx context.Context) ([]Result, error) {
 	// Pre-allocate to avoid performance warnings, though initial size is a guess.
 	results := make([]Result, 0, 10)

@@ -25,18 +25,6 @@ import (
 // publishes the results as ServiceRegistrationResult messages.
 //
 // Summary: Represents a ServiceRegistrationWorker.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type ServiceRegistrationWorker struct {
 	bus             *bus.Provider
 	serviceRegistry serviceregistry.ServiceRegistryInterface
@@ -66,9 +54,6 @@ type ServiceRegistrationWorker struct {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregistry.ServiceRegistryInterface) *ServiceRegistrationWorker {
 	return &ServiceRegistrationWorker{
 		bus:             bus,
@@ -95,9 +80,6 @@ func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregi
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (w *ServiceRegistrationWorker) SetRetryDelay(d time.Duration) {
 	w.retryDelay = d
 }
@@ -121,9 +103,6 @@ func (w *ServiceRegistrationWorker) SetRetryDelay(d time.Duration) {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 	w.wg.Add(1)
@@ -372,9 +351,6 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (w *ServiceRegistrationWorker) Stop() {
 	w.wg.Wait()

@@ -26,18 +26,6 @@ import (
 // as MCP resources, making them accessible to clients.
 //
 // Summary: Represents a SkillResource.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type SkillResource struct {
 	skill     *skill.Skill
 	assetPath string // Relative path to asset. If empty, represents the main SKILL.md
@@ -77,9 +65,6 @@ var _ resource.Resource = &SkillResource{}
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func NewSkillResource(s *skill.Skill) *SkillResource {
 	return &SkillResource{
 		skill: s,
@@ -113,9 +98,6 @@ func NewSkillResource(s *skill.Skill) *SkillResource {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func NewSkillAssetResource(s *skill.Skill, assetPath string) *SkillResource {
 	return &SkillResource{
 		skill:     s,
@@ -143,9 +125,6 @@ func NewSkillAssetResource(s *skill.Skill, assetPath string) *SkillResource {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (r *SkillResource) URI() string {
 	if r.assetPath == "" {
@@ -175,9 +154,6 @@ func (r *SkillResource) URI() string {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (r *SkillResource) Name() string {
 	if r.assetPath == "" {
 		return fmt.Sprintf("Skill: %s", r.skill.Name)
@@ -206,9 +182,6 @@ func (r *SkillResource) Name() string {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (r *SkillResource) Service() string {
 	return "skills"
 }
@@ -233,9 +206,6 @@ func (r *SkillResource) Service() string {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (r *SkillResource) Resource() *mcp.Resource {
 	mimeType := "text/markdown"
@@ -332,9 +302,6 @@ func (r *SkillResource) resolvePath() (string, error) {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (r *SkillResource) Read(_ context.Context) (*mcp.ReadResourceResult, error) {
 	realPath, err := r.resolvePath()
 	if err != nil {
@@ -444,9 +411,6 @@ func isTextMime(mimeType string) bool {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (r *SkillResource) Subscribe(_ context.Context) error {
 	// No-op for now
 	return nil
@@ -480,9 +444,6 @@ func (r *SkillResource) Subscribe(_ context.Context) error {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func RegisterSkillResources(rm resource.ManagerInterface, sm *skill.Manager) error {
 	skills, err := sm.ListSkills()
 	if err != nil {

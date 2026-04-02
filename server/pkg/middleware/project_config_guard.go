@@ -16,18 +16,6 @@ import (
 // ProjectConfigGuardConfig defines the configuration for the Project Configuration Security Guard.
 //
 // Summary: Configuration for the Project Configuration Security Guard middleware.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type ProjectConfigGuardConfig struct {
 	// Enabled determines if the guard is active.
 	Enabled bool `json:"enabled"`
@@ -52,18 +40,6 @@ type ProjectConfigGuardConfig struct {
 // ProjectConfigGuardMiddleware implements the Project Configuration Security Guard.
 //
 // Summary: Represents the Project Config Guard Middleware.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type ProjectConfigGuardMiddleware struct {
 	config ProjectConfigGuardConfig
 }
@@ -82,9 +58,6 @@ type ProjectConfigGuardMiddleware struct {
 //   - None.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func NewProjectConfigGuardMiddleware(config ProjectConfigGuardConfig) *ProjectConfigGuardMiddleware {
 	return &ProjectConfigGuardMiddleware{
@@ -113,9 +86,6 @@ func NewProjectConfigGuardMiddleware(config ProjectConfigGuardConfig) *ProjectCo
 // Side Effects:
 //   - May intercept and read target files.
 //   - Rewrites base URLs if configured.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (m *ProjectConfigGuardMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	if !m.config.Enabled {
 		return next(ctx, req)

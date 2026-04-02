@@ -44,15 +44,6 @@ var (
 //   - When set, this function is called synchronously during Server() access.
 //
 // Summary: Represents a AddReceivingMiddlewareHook.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
 var AddReceivingMiddlewareHook func(name string)
 
 // Server is the core of the MCP Any application.
@@ -62,18 +53,6 @@ var AddReceivingMiddlewareHook func(name string)
 // handlers and communicates with backend workers via an event bus.
 //
 // Summary: Represents a Server.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Server struct {
 	server          *mcp.Server
 	router          *Router
@@ -111,9 +90,6 @@ type Server struct {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (s *Server) Server() *mcp.Server {
 	if AddReceivingMiddlewareHook != nil {
@@ -528,9 +504,6 @@ func (s *Server) ListPrompts(
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (s *Server) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
 	// Attempt to retrieve session from context, which is populated during request handling
 	if session, ok := tool.GetSession(ctx); ok {
@@ -719,9 +692,6 @@ func (s *Server) ReadResource(
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (s *Server) AuthManager() *auth.Manager {
 	return s.authManager
 }
@@ -749,9 +719,6 @@ func (s *Server) AuthManager() *auth.Manager {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (s *Server) ToolManager() tool.ManagerInterface {
 	return s.toolManager
@@ -781,9 +748,6 @@ func (s *Server) ToolManager() tool.ManagerInterface {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (s *Server) PromptManager() prompt.ManagerInterface {
 	return s.promptManager
 }
@@ -812,9 +776,6 @@ func (s *Server) PromptManager() prompt.ManagerInterface {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (s *Server) ResourceManager() resource.ManagerInterface {
 	return s.resourceManager
 }
@@ -842,9 +803,6 @@ func (s *Server) ResourceManager() resource.ManagerInterface {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (s *Server) ServiceRegistry() *serviceregistry.ServiceRegistry {
 	return s.serviceRegistry
 }
@@ -870,9 +828,6 @@ func (s *Server) ServiceRegistry() *serviceregistry.ServiceRegistry {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (s *Server) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	s.toolManager.AddServiceInfo(serviceID, info)
@@ -903,9 +858,6 @@ func (s *Server) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (s *Server) GetTool(toolName string) (tool.Tool, bool) {
 	return s.toolManager.GetTool(toolName)
 }
@@ -931,9 +883,6 @@ func (s *Server) GetTool(toolName string) (tool.Tool, bool) {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (s *Server) ListTools() []tool.Tool {
 	logging.GetLogger().Info("Listing tools...")
@@ -972,9 +921,6 @@ func (s *Server) ListTools() []tool.Tool {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	logger := logging.GetLogger()
 	// ⚡ Bolt Optimization: Check if logging is enabled to avoid unnecessary allocations.
@@ -1133,9 +1079,6 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (s *Server) SetMCPServer(mcpServer tool.MCPServerProvider) {
 	s.toolManager.SetMCPServer(mcpServer)
 }
@@ -1164,9 +1107,6 @@ func (s *Server) SetMCPServer(mcpServer tool.MCPServerProvider) {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (s *Server) AddTool(t tool.Tool) error {
 	return s.toolManager.AddTool(t)
 }
@@ -1195,9 +1135,6 @@ func (s *Server) AddTool(t tool.Tool) error {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (s *Server) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	return s.toolManager.GetServiceInfo(serviceID)
@@ -1228,9 +1165,6 @@ func (s *Server) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (s *Server) ClearToolsForService(serviceKey string) {
 	s.toolManager.ClearToolsForService(serviceKey)
 }
@@ -1255,9 +1189,6 @@ func (s *Server) ClearToolsForService(serviceKey string) {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (s *Server) SetReloadFunc(f func(context.Context) error) {
 	s.reloadFunc = f
@@ -1287,9 +1218,6 @@ func (s *Server) SetReloadFunc(f func(context.Context) error) {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (s *Server) Reload(ctx context.Context) error {
 	if s.reloadFunc != nil {
 		return s.reloadFunc(ctx)
@@ -1405,18 +1333,6 @@ func convertMapToCallToolResult(m map[string]any) (*mcp.CallToolResult, error) {
 // its JSON content only when logged.
 //
 // Summary: Represents a LazyRedact.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type LazyRedact []byte
 
 // LogValue implements slog.LogValuer.
@@ -1442,9 +1358,6 @@ type LazyRedact []byte
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - None.
 func (l LazyRedact) LogValue() slog.Value {
 	return slog.StringValue(util.BytesToString(util.RedactJSON(l)))
 }
@@ -1455,18 +1368,6 @@ func (l LazyRedact) LogValue() slog.Value {
 // and lazily computes the string representation only when logging is enabled.
 //
 // Summary: Represents a LazyLogResult.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type LazyLogResult struct {
 	Value        any
 	JSONBytes    []byte
@@ -1496,9 +1397,6 @@ type LazyLogResult struct {
 //   - TODO: Document errors.
 //
 // Side Effects:
-//   - None.
-//
-// Errors/Throws:
 //   - None.
 func (r LazyLogResult) LogValue() slog.Value {
 	if r.Value == nil {

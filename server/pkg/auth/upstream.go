@@ -24,18 +24,6 @@ import (
 // credentials.
 //
 // Summary: Represents a UpstreamAuthenticator.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type UpstreamAuthenticator interface {
 	// Authenticate modifies the given HTTP request to add authentication
 	// information, such as headers or basic auth credentials.
@@ -89,9 +77,6 @@ type UpstreamAuthenticator interface {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func NewUpstreamAuthenticator(authConfig *configv1.Authentication) (UpstreamAuthenticator, error) {
 	if authConfig == nil {
 		return nil, nil
@@ -159,18 +144,6 @@ func NewUpstreamAuthenticator(authConfig *configv1.Authentication) (UpstreamAuth
 // It adds a specified header with a static API key value to the request.
 //
 // Summary: Represents a APIKeyAuth.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type APIKeyAuth struct {
 	ParamName string
 	Value     *configv1.SecretValue
@@ -198,9 +171,6 @@ type APIKeyAuth struct {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (a *APIKeyAuth) Authenticate(req *http.Request) error {
 	if a.Value == nil {
 		return errors.New("api key secret is not configured")
@@ -232,18 +202,6 @@ func (a *APIKeyAuth) Authenticate(req *http.Request) error {
 // authentication. It adds an "Authorization" header with a bearer token.
 //
 // Summary: Represents a BearerTokenAuth.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type BearerTokenAuth struct {
 	Token *configv1.SecretValue
 }
@@ -269,9 +227,6 @@ type BearerTokenAuth struct {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (b *BearerTokenAuth) Authenticate(req *http.Request) error {
 	if b.Token == nil {
 		return errors.New("bearer token secret is not configured")
@@ -288,18 +243,6 @@ func (b *BearerTokenAuth) Authenticate(req *http.Request) error {
 // It adds an "Authorization" header with the username and password.
 //
 // Summary: Represents a BasicAuth.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type BasicAuth struct {
 	Username string
 	Password *configv1.SecretValue
@@ -326,9 +269,6 @@ type BasicAuth struct {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (b *BasicAuth) Authenticate(req *http.Request) error {
 	if b.Password == nil {
 		return errors.New("basic auth password secret is not configured")
@@ -344,18 +284,6 @@ func (b *BasicAuth) Authenticate(req *http.Request) error {
 // OAuth2Auth implements UpstreamAuthenticator for OAuth2 client credentials flow.
 //
 // Summary: Represents a OAuth2Auth.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Errors/Throws:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type OAuth2Auth struct {
 	ClientID     *configv1.SecretValue
 	ClientSecret *configv1.SecretValue
@@ -409,9 +337,6 @@ func (o *OAuth2Auth) getTokenURL(ctx context.Context) (string, error) {
 //
 // Side Effects:
 //   - None.
-//
-// Errors/Throws:
-//   - error: Returns an error if the operation fails.
 func (o *OAuth2Auth) Authenticate(req *http.Request) error {
 	tokenURL, err := o.getTokenURL(req.Context())
 	if err != nil {
