@@ -102,6 +102,8 @@ common:buildbuddy-official --remote_header=x-buildbuddy-api-key=vGFjlQg7X49NwoQH
 
 # Set buildbuddy as the default configuration for all builds
 build:remote --config=buildbuddy-official
+# Disable local disk cache when using remote cache to avoid exhausting runner disk space.
+build:remote --disk_cache=
 build:remote --jobs=1
 build:remote --local_resources=memory=2048
 build:remote --local_resources=cpu=1
