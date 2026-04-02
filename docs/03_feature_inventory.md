@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Mesh-Resident Consensus (MRC) Hub**: (P0) Authoritative consensus service enabling distributed agents to reach quorums on tool safety and state commits without central coordination.
+- **Dynamic Lease Escalation (DLE) Manager**: (P0) Advanced security service brokering time-bound, task-specific privilege upgrades based on environmental feedback.
+- **Zero-Knowledge Shard Masking (ZKSM) Provider**: (P0) Privacy-preserving context service allowing agents to share masked shards for specialist computation without raw data exposure.
+- **Speculative Consensus Gates**: (P1) Performance-optimizing middleware allowing optimistic action execution during background mesh consensus rounds.
+
+### Priority Shifts
+- **Consensus Tool Validation Hub**: (Re-affirmed P0) Evolving into the **MRC Hub** to support decentralized P2P meshes.
+- **Ephemeral Privilege Manager (EPM)**: (Re-affirmed P0) Elevated with the requirement for mandatory **DLE-compliant** escalation paths.

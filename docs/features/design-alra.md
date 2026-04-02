@@ -61,3 +61,7 @@ Attention-Locked Reasoning Anchors (ALRA) provide a hardware-bound mechanism to 
     * Context: Gemini CLI v0.57.0's CWGC introduces a risk of "Silent Anchor" eviction.
     * Architecture Adjustment: Mandating GC-Immune status for all ALRA-pinned mission-root fragments.
     * Security Impact: Neutralizes "GC Fragility" where behavioral guardrails are lost during aggressive token cleanup.
+* **2026-07-25:** - Addressing Persistent GC Fragility in Sharded Meshes.
+    * Context: Today's market sync confirmed that agents in distributed meshes still lose behavioral guardrails when sharded fragments are evicted by aggressive context-window GC.
+    * Architecture Adjustment: Implementing "Multi-Node Anchor Replication." ALRA anchors are now replicated across at least 2 mesh nodes, and the AAE (Active Attention Enforcer) will dynamically re-inject anchors if local eviction is detected.
+    * Security Impact: Ensures "Mission-Root Sovereignty" persists even during high-density mesh coordination.

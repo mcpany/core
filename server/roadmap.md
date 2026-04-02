@@ -1030,3 +1030,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Mesh-Resident Consensus (MRC) Hub**: Authoritative consensus service enabling distributed agents to reach quorums without central coordination. (Added: 2026-07-25)
+*   **[P0] Dynamic Lease Escalation (DLE) Manager**: Advanced security service brokering time-bound, task-specific privilege upgrades based on environmental feedback. (Added: 2026-07-25)
+*   **[P0] Zero-Knowledge Shard Masking (ZKSM) Provider**: Privacy-preserving context service allowing agents to share masked shards for specialist computation. (Added: 2026-07-25)
+*   **[P1] Speculative Consensus Gates**: Performance-optimizing middleware allowing optimistic action execution during background mesh consensus rounds. (Added: 2026-07-25)
