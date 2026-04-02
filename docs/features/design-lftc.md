@@ -46,3 +46,10 @@ As AI agents evolve from hierarchical subagents to horizontal "Agent Teams" (e.g
 
 ## 7. Evolutionary Changelog
 * **2026-03-24:** Initial Document Creation.
+
+### Update: 2026-04-02 - Resolving Teammate Cognitive Stall
+**Context:** Reports from Claude Code horizontal teams indicate a 5s+ coordination stall due to synchronous mailbox locks.
+**Architecture Adjustment:**
+* **CRDT-Native Mailbox Hub**: Transitioning from synchronous SQLite locks to an Op-based CRDT for the shared task list.
+* **Isolated Named-Pipe Bus**: Mandating Docker-bound named pipes for teammate coordination to eliminate local port exposure.
+**Security Impact:** Prevents "Team Ghosting" and coordination hijacking while solving the primary performance bottleneck in horizontal meshes.

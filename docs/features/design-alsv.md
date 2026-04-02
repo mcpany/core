@@ -45,3 +45,10 @@ Recent vulnerabilities in OpenClaw (CVE-2026-32000, CVE-2026-22169) have shown t
 
 ## 7. Evolutionary Changelog
 * **2026-03-24:** Initial Document Creation.
+
+### Update: 2026-04-02 - Mandating Semantic Argument Validation
+**Context:** Recent bypasses in OpenClaw confirmed that simple string escaping is insufficient for blocking shell-fallback exploits.
+**Architecture Adjustment:**
+* **Real-time Semantic Scanning**: Mandating the use of the ALSV for all command-based tools to perform deeper flag-level analysis.
+* **Shell-Free Execution Mandate**: Disabling shell-fallback in the command execution adapter for all high-trust tool calls.
+**Security Impact:** Neutralizes command injection at the argument level, even for legitimate binaries with dangerous flag options.

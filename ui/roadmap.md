@@ -203,6 +203,12 @@
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
 
+#### Upcoming (2026-04-02 Evolution)
+- [ ] **[P0] Discovery Sandbox Monitor**: Real-time visualization of sandboxed discovery command execution and safety attestation status. (Added: 2026-04-02)
+- [ ] **[P0] Lock-Free Coordination Monitor**: Visual tracker for CRDT-based mailbox shards and teammate synchronization. (Added: 2026-04-02)
+- [ ] **[P0] Inode Pinning Dashboard**: Real-time monitor of hardware-pinned Inodes and blocked symlink-racing attempts. (Added: 2026-04-02)
+- [ ] **[P0] Speculative State Inspector**: UI for visualizing speculatively prepared tool contexts and tracking background PPRP verification. (Added: 2026-04-02)
+
 #### Upcoming (2026-04-01 Evolution)
 - [ ] **[P0] Agentic Entropy Scoreboard**: Real-time dashboard for visualizing subagent reasoning entropy and coherence alerts. (Added: 2026-04-01)
 - [ ] **[P0] GC-Immune Anchor Visualizer**: Visual indicator for pinned reasoning anchors and protection status against CWGC. (Added: 2026-04-01)

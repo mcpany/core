@@ -791,6 +791,17 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-04-02]
+### Focus: Discovery-Phase Sovereignty & Lock-Free Mesh Coordination
+**Context**: The disclosure of the Gemini CLI "Settings-as-Shell" RCE and the reported "Cognitive Stall" in Claude Code horizontal teams confirm that the Universal Agent Bus must move beyond simple bridging. Security must now extend to the **pre-flight discovery phase**, and coordination must move from synchronous locks to **asynchronous, lock-free state synchronization**. Simultaneously, "Normalization Fatigue" demands hardware-level configuration pinning.
+**Strategic Pivot**:
+- **Discovery-Phase Sandbox Sovereignty**: MCP Any will evolve to mandate "Discovery Isolation." All discovery-time execution (e.g., `discoveryCommand`) will be executed in a zero-trust, ephemeral sandbox before any tool is exposed. We will implement "Quarantined Discovery" where schemas require a hardware-attested user signal before LLM ingestion.
+- **Lock-Free Teammate Coordination (LFTC)**: To neutralize the 5s+ mailbox locks observed in horizontal swarms, we are introducing LFTC. This service will host sharded, CRDT-based mailboxes that allow parallel teammates to claim tasks and synchronize state without global coordination locks.
+- **Hardware-Linked Configuration Pinning**: Supporting the stability of project-local configurations, we are mandating Inode-Pinning. Once a config file (e.g., `.mcpany/settings.json`) is attested, its file handle is cryptographically bound to the hardware Inode, neutralizing symlink-racing (TOCTOU) exploits.
+- **Speculative Safety Brokerage**: Leveraging Gemini's PPRP patterns, MCP Any will act as a "Speculative Hub." We will allow agents to speculatively prepare tool contexts while background quorums perform attestation, using hardware-locked buffers for atomic rollbacks on failure.
+
+---
+
 ## Strategic Evolution: 2026-04-01
 ### Focus: Reasoning-Bound Context Integrity & Path Normalization Governance
 **Context**: Today's findings on "Reasoning-Bound Context Shifting" (OpenClaw) and "Normalization Fatigue" (Claude Code CVE-2026-34812) reveal that security and stability now depend on the *integrity of the path* and the *consistency of the reasoning state*.

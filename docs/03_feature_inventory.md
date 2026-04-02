@@ -1,5 +1,18 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-04-02] Updates
+
+### Proposed Additions
+- **Discovery-Phase Sandbox Middleware**: (P0) A secure, ephemeral execution environment for all discovery-time commands (e.g., `discoveryCommand`) to neutralize "Settings-as-Shell" exploits.
+- **Lock-Free Teammate Coordination (LFTC)**: (P0) Sharded, CRDT-based mailbox synchronization to eliminate 5s+ "Cognitive Stalls" in horizontal meshes.
+- **Inode-Pinning Middleware**: (P0) Hardware-level filesystem security that cryptographically binds config handles to Inodes, neutralizing symlink-racing (TOCTOU).
+- **Speculative Execution Guard**: (P0) Support for Gemini-style optimistic loading with hardware-locked rollback buffers and PPRP verification.
+- **ClawHub Skill Reputation Provider**: (P1) Integration with the curated ClawHub marketplace to provide behavioral safety signals for dynamic tools.
+
+### Priority Shifts
+- **Discovery Sandbox Middleware**: (Promoted to P0) Critical for neutralizing startup-time RCE in agent environments.
+- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Elevated with mandatory **LFTC-compliant** lock-free sharding.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions

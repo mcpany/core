@@ -374,6 +374,12 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
 
+#### Upcoming (2026-04-02 Evolution)
+*   **[P0] Discovery-Phase Sandbox Middleware**: Implement ephemeral, hardware-attested sandboxes for `discoveryCommand` execution to neutralize repo-local RCE. (Added: 2026-04-02)
+*   **[P0] Lock-Free Teammate Coordination (LFTC)**: Sharded, CRDT-based mailbox hub to resolve the 5s+ "Cognitive Stall" in horizontal swarms. (Added: 2026-04-02)
+*   **[P0] Inode-Pinning Middleware**: Hardware-level filesystem security that cryptographically binds config handles to Inodes to prevent symlink-racing. (Added: 2026-04-02)
+*   **[P0] Speculative Execution Guard**: Support for Gemini-style optimistic loading with hardware-locked rollback buffers and PPRP verification. (Added: 2026-04-02)
+
 #### Upcoming (2026-04-01 Evolution)
 *   **[P0] Agentic Entropy Monitor (AEM)**: Implementation of real-time reasoning entropy scoring and coherence-based interdiction. (Added: 2026-04-01)
 *   **[P0] GC-Immune Reasoning Anchors**: Advanced context pinning to prevent eviction of mission-root anchors during aggressive context-window GC. (Added: 2026-04-01)
