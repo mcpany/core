@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Speculative Handoff Token (SHT) Broker**: (P0) Authoritative security service issuing short-lived, hardware-bound tokens for pre-attestation tool execution across remote mesh nodes.
+- **Conflict-Free Task Sharding (CFTS) Manager**: (P0) Coordination middleware that partitions the shared teammate mailbox by task-dependency, eliminating coarse-grained locking during swarm coordination.
+- **GC-Immune Attention Pining Middleware**: (P0) Cognitive security service utilizing hardware-priority flags to protect ALRA anchors from context-window garbage collection.
+- **Ticket-Based Handshake Resumption Provider**: (P1) Performance-optimizing identity service for sub-millisecond resumption of secure P2P tunnels using hardware-attested session fragments.
+
+### Priority Shifts
+- **Attention-Locked Reasoning Anchors (ALRA)**: (Re-affirmed P0) Elevated with the requirement for mandatory **GC-Immune** priority anchoring.
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Now elevated with the requirement for **SHT-compliant** speculative execution support.
