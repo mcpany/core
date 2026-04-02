@@ -62,3 +62,10 @@ MCP Any needs to act as the final gate for any tool call that generates or modif
 *   **Specialized Injection Auditors**: Introducing a new auditor sub-type within APRIG specifically trained to detect command and prompt injection patterns.
 *   **Mandatory Schema-Aware Scanning**: Auditors will now cross-reference proposed code changes against the schemas of the tools the agent is authorized to call.
 **Security Impact:** Prevents "Ghost-Execution" and neutralizing supply chain attacks embedded in generated pull requests.
+
+### Update: 2026-07-25 - Integration with PR Injection Shield
+**Context:** Today's market sync confirmed that CVE-2025-53773 (PR description injection) is a critical vector for agentic RCE.
+**Architecture Adjustment:**
+* **Mandatory Metadata Sanitization**: APRIG will now enforce a "Sanitization Checkpoint" for all tools interacting with PR metadata.
+* **Shield Interoperability**: Every attestation quorum within APRIG will now require a verified "Sanitization Receipt" from the PR Injection Shield before authorizing a PR-related action.
+**Security Impact:** Neutralizes instruction smuggling in Pull Request descriptions and ensures that coding agents remain governed by verified intents, not external metadata probes.

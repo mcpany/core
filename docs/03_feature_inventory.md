@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Zero-Click Leak Shield (ZCLS)**: (P0) Authoritative content filtering service that sanitizes ingested metadata in real-time to neutralize "EchoLeak" exfiltration patterns.
+- **BYOA Compliance Broker**: (P1) Identity and policy gateway providing hardware-attested tokens and RBAC enforcement for framework-agnostic agents (OpenClaw, AutoGen).
+- **PR Injection Interdictor**: (P0) Advanced security extension for the APRIG middleware mandating semantic deconstruction of PR metadata to block instruction smuggling (CVE-2025-53773 defense).
+
+### Priority Shifts
+- **Inference-Time Data Sanitizer (IDS)**: (Re-affirmed P0) Elevated with mandatory support for **ZCLS-compliant** metadata scrubbing.
+- **Autonomous PR Integrity Gate (APRIG)**: (Re-affirmed P0) Designated as the primary enforcement point for the new **PR Injection Interdictor**.
