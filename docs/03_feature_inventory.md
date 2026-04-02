@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **State-Aware Routing (SAR) Broker**: (P0) Authoritative traffic controller utilizing context shard residency metadata to route tool calls to the nearest available node.
+- **Reflective Quorum (RQ) Hub**: (P0) Coordination service orchestrating synchronous multi-agent reflection phases to ensure assumption consensus before state commits.
+- **Dynamic Confidence Escalator (DCE)**: (P0) Security middleware automatically escalating reasoning budgets and triggering supervisor quorums based on subagent uncertainty scores.
+- **Consensus-Based Deadlock Resolver (CBDR)**: (P1) Kernel-level arbiter for identifying and breaking circular dependencies in reflective quorums.
+
+### Priority Shifts
+- **Zero-Copy Memory Broker (ZCMB)**: (Re-affirmed P0) Now elevated with mandatory support for **SAR-compliant** routing metadata.
+- **Atomic Reasoning Integrity (ARI) Validator**: (Re-affirmed P0) Elevated with mandatory integration for **RQ-Hub** assume-consensus proofs.
