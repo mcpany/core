@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Predictive Shard Pre-warmer (PSPW)**: (P0) Anticipatory coordination service utilizing real-time intent analysis to speculatively establish P2P tunnels and pre-authenticate capability shards.
+- **Teammate-Aware GC Manager (TAGC)**: (P0) Stability middleware synchronizing "Mission-Root" permanence signals across the entire teammate mesh to ensure guardrail immunity.
+- **Deadlock-Resilient Negotiation Broker**: (P0) Authoritative arbiter for heterogeneous meshes supporting "Priority-Weighted State Locking" to prevent circular coordination deadlocks.
+- **SVG Animation Sanitizer**: (P0) Security extension for the MMS v2 performing recursive semantic analysis of animation metadata to prevent multimodal instruction smuggling.
+
+### Priority Shifts
+- **Active Negotiation Broker (ANB)**: (Re-affirmed P0) Elevated with the requirement for **Deadlock-Resilient** priority locking.
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Predictive Pre-warming** integration.
