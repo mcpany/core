@@ -9,14 +9,15 @@ test.describe('Trace Inspector', () => {
         await page.getByRole('button', { name: 'Seed Trace' }).click();
 
         // Wait for traces to appear in the table. Seed creates 5 traces
-        const firstTrace = page.locator('span', { hasText: 'trace-seed' }).first();
-        await expect(firstTrace).toBeVisible({ timeout: 30000 });
+        // The ID is embedded in the table row. We wait for any row containing 'trace-seed'
+        const firstTraceRow = page.locator('table tbody tr').filter({ hasText: /trace-seed/i }).first();
+        await expect(firstTraceRow).toBeVisible({ timeout: 30000 });
 
         // Count traces before deletion
         const traceCountBefore = await page.locator('table tbody tr').count();
 
         // Get the first trace ID row to select
-        const firstTraceCheckbox = page.locator('table tbody tr').first().locator('button[role="checkbox"]').first();
+        const firstTraceCheckbox = firstTraceRow.locator('button[role="checkbox"]').first();
         await firstTraceCheckbox.click();
 
         // The bulk action bar should appear
