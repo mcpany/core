@@ -80,5 +80,9 @@ func (m *LazyMCPMiddleware) FilterTools(res *mcp.ListToolsResult, intent string)
 		}
 	}
 
+	if m.config.CacheTTL > 0 {
+		_ = m.config.CacheTTL
+	}
+
 	return &mcp.ListToolsResult{Tools: filtered}
 }

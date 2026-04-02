@@ -12,8 +12,8 @@ scopes:
     default:
       - "read"
     admin:
-      - "fs:read:/tmp"
-      - "db:write:users"
+      - "fs:"
+      - "db:"
 ```
 
 ## How it works
