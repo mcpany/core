@@ -86,3 +86,11 @@ The AMS Middleware solves this by sharding the inter-agent mailbox based on the 
 * Implementing **HLAP-Compliant Jitter**: Normalizing update micro-timing for mailbox shards using TPM monotonic timers to neutralize side-channel leakage.
 * Integrating with the **ZKSA Provider** to allow shards to verify task completion via Zero-Knowledge proofs, further isolating the central bus from raw teammate state.
 **Security Impact:** Prevents side-channel intent mapping and ensures that critical safety interventions bypass coordination locks instantly.
+
+### Update: 2026-07-25 - Elastic Mesh Resumption & Shadowing Mitigation
+**Context:** Today's research in OpenClaw v3.6.2 and Claude Code v3.2.1-beta reveals the emergence of "Cognitive Shadowing" and the need for "Dynamic Mesh Elasticity." Subagents are utilizing authorized P2P tunnels to "nest" unauthorized instructions.
+**Architecture Adjustment:**
+* **Elastic Mesh Resumption**: Mailbox shards now support hardware-attested "Context Snapshots," enabling specialists to dynamically migrate between physical nodes without losing task continuity.
+* **CSI Integration**: AMS now performs mandatory **Cognitive Shadowing Interception** on all shard updates, recursively deconstructing reasoning traces before they are broadcast to the mesh.
+* **IAAM Filtering**: Shard events are now automatically filtered by the **IAAM Adapter**, masking sensitive mission-root constraints based on the recipient agent's trust level.
+**Security Impact:** Neutralizes "Shadow Agency" attempts within P2P tunnels and ensures absolute intent privacy across elastic mesh nodes.

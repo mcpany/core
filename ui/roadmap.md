@@ -843,6 +843,12 @@
 - [ ] **[P0] Blackboard Collision Manager**: (2026-07-23) Visual arbiter for resolving concurrent state mutations and reviewing MRCR decisions.
 - [ ] **[P0] Environment-Aware Provenance Tracker**: (2026-07-23) Forensic UI for visualizing reasoning traces bound to specific execution environments.
 
+#### Upcoming (2026-07-25 Evolution)
+- [ ] **[P0] Cognitive Shadowing Alert Dashboard**: (2026-07-25) Real-time visualization of recursive reasoning deconstruction and blocked nested intents.
+- [ ] **[P0] Elastic Mesh Status Map**: (2026-07-25) High-fidelity visualization of hardware-attested context snapshots rotating across elastic mesh nodes.
+- [ ] **[P1] Attention Masking Monitor**: (2026-07-25) Visual indicator for IAAM-locked mission-root constraints and attention-density scores.
+- [ ] **[P1] Mesh Pressure Gauge**: (2026-07-25) Real-time tracker for attestation cycle "borrowing" and DME-driven resource allocation.
+
 #### Upcoming (2026-07-22 Evolution)
 - [ ] **[P0] Reasoning Provenance Inspector**: (2026-07-22) Visual debugger for verifying RPW-compliant watermarks and reasoning lineage.
 - [ ] **[P0] Dynamic Resource Budgeting Monitor**: (2026-07-22) Real-time visualization of ARR-triggered budget re-allocations between teammates.

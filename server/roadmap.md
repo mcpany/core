@@ -1025,6 +1025,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Adaptive Resource Reclamation (ARR) Service**: high-speed budgeting middleware for real-time token/reasoning re-allocation between teammates. (Added: 2026-07-22)
 *   **[P0] Manifest-Based Reflection (MBR) Arbiter**: authoritative service for validating subagent self-reflection against hardware-attested manifests. (Added: 2026-07-22)
 
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Cognitive Shadowing Interceptor (CSI)**: Authoritative reasoning auditor performing recursive deconstruction of inter-agent traces to block unauthorized intents in P2P tunnels. (Added: 2026-07-25)
+*   **[P0] Elastic Mesh Resumption (EMR) Provider**: High-speed coordination service facilitating hardware-attested context snapshots across elastic mesh nodes. (Added: 2026-07-25)
+*   **[P1] Intent-Aware Attention Masking (IAAM) Adapter**: Cognitive security extension for the HLAM middleware that automatically masks mission-root constraints from subagents. (Added: 2026-07-25)
+*   **[P1] Mesh-Pressure Telemetry Provider**: Resource monitoring service for DME-driven meshes tracking real-time attestation cycle "borrowing" and mesh health. (Added: 2026-07-25)
+
 #### Upcoming (2026-07-24 Evolution)
 *   **[P0] Attested Mesh Tunneling (AMT) Broker**: Implementation of hardware-attested, encrypted P2P tunnels for multi-node agent mesh support. (Added: 2026-07-24)
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)

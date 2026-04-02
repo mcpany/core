@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Cognitive Shadowing Interceptor (CSI)**: (P0) Authoritative reasoning auditor performing recursive deconstruction of inter-agent traces to block unauthorized intents in P2P tunnels.
+- **Elastic Mesh Resumption (EMR) Provider**: (P0) High-speed coordination service facilitating hardware-attested context snapshots across elastic mesh nodes.
+- **Intent-Aware Attention Masking (IAAM) Adapter**: (P1) Cognitive security extension for the HLAM middleware that automatically masks mission-root constraints from subagents.
+- **Mesh-Pressure Telemetry Provider**: (P1) Resource monitoring service for DME-driven meshes tracking real-time attestation cycle "borrowing" and mesh health.
+
+### Priority Shifts
+- **Adaptive Resource Reclamation (ARR) Service**: (Re-affirmed P0) Elevated with mandatory support for **DME-compliant** elastic resource requests.
+- **Hardware-Locked Attention Masking (HLAM)**: (Re-affirmed P0) Elevated with mandatory **IAAM-compliant** attention-head masking.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions
