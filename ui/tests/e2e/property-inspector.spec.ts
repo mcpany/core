@@ -56,14 +56,24 @@ test.describe('Property Inspector', () => {
         // 1. Navigate to Inspector
         await page.goto('/inspector');
 
+        // Wait for the main heading to ensure the page is loaded
+        await expect(page.getByRole('heading', { name: 'Inspector' })).toBeVisible();
+
         // 2. Click Seed Trace
         const seedButton = page.getByRole('button', { name: /Seed Trace/i });
         await seedButton.waitFor({ state: 'visible', timeout: 30000 });
         await seedButton.click();
 
+        // We also mock the websocket so that it automatically injects our trace.
+        // Wait for the "Trace Seeded" toast as confirmation it attempted the action
+        await expect(page.getByText('Trace Seeded').first()).toBeVisible({ timeout: 10000 });
+
         if (wsSend) {
             wsSend(JSON.stringify(MOCK_TRACE));
         }
+
+        // Wait a short time for React to render the new trace received over WS
+        await page.waitForTimeout(500);
 
         // Wait for the trace to appear in the table.
         const traceRow = page.getByRole('row').filter({ hasText: 'code-refactor' }).first();

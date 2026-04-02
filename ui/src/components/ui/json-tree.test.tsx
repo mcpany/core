@@ -28,15 +28,16 @@ describe('JsonTree', () => {
 
   it('renders null correctly', () => {
     render(<JsonTree data={null} />);
-    expect(screen.getByText('null')).toBeInTheDocument();
+    // Multiple 'null' texts exist (value and badge), so use getAllByText
+    expect(screen.getAllByText('null').length).toBeGreaterThan(0);
   });
 
   it('renders object keys and values', () => {
     const data = { foo: 'bar', num: 42 };
     render(<JsonTree data={data} defaultExpandedLevel={1} />);
-    expect(screen.getByText(/foo/)).toBeInTheDocument();
+    expect(screen.getAllByText(/foo/)[0]).toBeInTheDocument();
     expect(screen.getByText(/"bar"/)).toBeInTheDocument();
-    expect(screen.getByText(/num/)).toBeInTheDocument();
+    expect(screen.getAllByText(/num/)[0]).toBeInTheDocument();
     expect(screen.getByText('42')).toBeInTheDocument();
   });
 
@@ -55,14 +56,14 @@ describe('JsonTree', () => {
 
     // Should show root object structure collapsed
     // The preview text containing "nested" should be visible
-    expect(screen.getByText(/nested/)).toBeInTheDocument();
+    expect(screen.getAllByText(/nested/).length).toBeGreaterThan(0);
 
     // Value "value" should NOT be visible yet (it's inside nested object)
     expect(screen.queryByText(/"value"/)).not.toBeInTheDocument();
 
     // Click to expand root
     // Find the clickable header by finding the opening brace
-    const expander = screen.getByText('{');
+    const expander = screen.getAllByText('{')[0];
     fireEvent.click(expander);
 
     // Now root is expanded.
@@ -72,7 +73,7 @@ describe('JsonTree', () => {
     // 1 < 0 is false. So child is collapsed.
 
     // We should see the nested object key
-    expect(screen.getByText(/nested/)).toBeInTheDocument();
+    expect(screen.getAllByText(/nested/)[0]).toBeInTheDocument();
 
     // But the inner value "value" should still be hidden because nested object is collapsed
     expect(screen.queryByText(/"value"/)).not.toBeInTheDocument();
