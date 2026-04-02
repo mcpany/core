@@ -62,3 +62,6 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+* **2026-07-25: Support for SNT-Native P2P Tunnels**
+    * **Context:** Market sync revealed OpenClaw's implementation of Sovereign Node Tunneling (SNT).
+    * **Architecture Adjustment:** Added the `amt.ResumeTunnel` API to support session-bound "Mesh Tickets" for low-latency P2P coordination, neutralizing the tunneling overhead identified in the market sync.

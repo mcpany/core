@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Dynamic Attestation Scaler (DAS)**: (P0) Risk-adaptive security service within the CQ Hub that dynamically scales quorum sizes based on reasoning confidence.
+- **Hardened Discovery Sandbox (HDS)**: (P0) Kernel-isolated execution environment for tool discovery with mandatory ALSV to neutralize CVE-2026-25593.
+- **Verifiable Semantic Lineage (VSL) Provider**: (P0) Identity service issuing hardware-attested semantic fingerprints for multi-hop intent verification.
+- **Trust Domain Orchestrator**: (P1) Management service for Tiered Mission Sovereignty, allowing for low-latency coordination within verified mesh boundaries.
+
+### Priority Shifts
+- **Discovery Sandbox Middleware**: (Re-affirmed P0) Evolving into the **HDS** model to counter discovery-phase RCE exploits.
+- **Contextual Quorum (CQ) Hub**: (Re-affirmed P0) Elevated with mandatory **DAS** integration to resolve consensus fatigue.
