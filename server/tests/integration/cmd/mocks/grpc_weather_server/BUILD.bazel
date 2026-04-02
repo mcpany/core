@@ -10,8 +10,7 @@ go_library(
     visibility = ["//visibility:private"],
     deps = [
         "//proto/examples/weather/v1:weather",
-        "@org_golang_google_grpc//:grpc",
-        "@org_golang_google_grpc//reflection",
+        "@org_golang_google_grpc//:go_default_library",
     ],
 )
 

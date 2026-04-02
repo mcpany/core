@@ -1,0 +1,9 @@
+# docs/BUILD.bazel
+filegroup(
+    name = "docs",
+    srcs = glob(["*.md"]) + [
+        "//docs/features:docs",
+        "//docs/research:docs",
+    ],
+    visibility = ["//visibility:public"],
+)
