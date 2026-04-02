@@ -27,9 +27,9 @@ test.describe('User Management - Bulk Delete (Real Data)', () => {
         await expect(page.locator('text=e2e-user-2').first()).toBeVisible();
         await expect(page.locator('text=e2e-admin-core').first()).toBeVisible();
 
-        // Check the checkboxes for user 1 and user 2 using aria-labels
-        await page.getByRole('checkbox', { name: 'Select e2e-user-1' }).check();
-        await page.getByRole('checkbox', { name: 'Select e2e-user-2' }).check();
+        // Check the checkboxes for user 1 and user 2 by clicking the checkbox inside their respective rows
+        await page.locator('[data-testid="user-row-e2e-user-1"] button[role="checkbox"]').click();
+        await page.locator('[data-testid="user-row-e2e-user-2"] button[role="checkbox"]').click();
 
         // Verify the bulk delete banner appears with correct count
         await expect(page.locator('text=2 selected').first()).toBeVisible();
