@@ -212,6 +212,11 @@
 *   **[P0] CI/CD Cache Integrity Guard (CCIG)**: Mandatory cryptographic signing and verification for all build caches. (Added: 2026-07-08)
 *   **[P0] Action-Chain Sovereignty Monitor (ACSM)**: Real-time validation of agent workflow sequences against mission-root intents. (Added: 2026-07-08)
 
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Attention-Locked Reasoning Anchors (ALRA) Manager**: Authoritative attention-governance service enforcing ALGC-compliant pinning. (Added: 2026-07-25)
+*   **[P0] Hardware-Attested Reasoning Lineage (HARL) Provider**: TPM-signed, full-trace hashing service for non-repudiable reasoning audits. (Added: 2026-07-25)
+*   **[P0] Mesh-Bound Resumption Provider**: Performance optimization extension for FPIR facilitating sub-millisecond context resumption across distributed SNT nodes. (Added: 2026-07-25)
+
 #### Upcoming (2026-06-27 Evolution)
 *   **[P0] Zero-Knowledge Discovery (ZKD) Proxy**: Authoritative discovery gateway implementing ZK-Capability Proofs for pre-flight masking. (Added: 2026-06-27)
 *   **[P0] CRDT-Native Mailbox Sharding**: Transition to full CRDT-native mailbox shards for lock-free horizontal scaling. (Added: 2026-06-27)

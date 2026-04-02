@@ -1924,6 +1924,17 @@
 - **Adaptive Resource Reclamation (ARR) Service**: (P0) High-speed budgeting middleware that re-allocates reasoning/token budgets between teammates based on task urgency.
 - **Manifest-Based Reflection (MBR) Arbiter**: (P0) Authoritative coordination service mandating that subagent self-reflection cycles align with the mission-root manifest.
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Attention-Locked Reasoning Anchors (ALRA) Manager**: (P0) Authoritative attention-governance service enforcing ALGC-compliant pinning for mission-critical guardrails.
+- **Hardware-Attested Reasoning Lineage (HARL) Provider**: (P0) Advanced security service issuing TPM-signed, full-trace hashes for non-repudiable reasoning audits.
+- **Mesh-Bound Resumption Provider**: (P0) Performance optimization extension for FPIR facilitating sub-millisecond context resumption across distributed SNT nodes.
+
+### Priority Shifts
+- **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Elevated with mandatory support for **Mesh-Bound Resumption** to neutralize tunneling latency.
+- **Recursive Integrity Verification (RIV)**: (Re-affirmed P0) Evolving into v2 with mandatory **SNT-aware** lineage verification.
+
 ## Evolution: [2026-07-24] Updates
 
 ### Proposed Additions

@@ -59,3 +59,7 @@ The Lock-Free Mesh Arbiter (LFMA) is designed to provide a decentralized, non-bl
 
 ## 7. Evolutionary Changelog
 *   **2026-05-31:** Initial Document Creation.
+*   **2026-07-25:** Resolution of Multi-Node Semantic Collisions.
+    * **Context:** Today's market sync revealed "Recursive Intent Shadowing" vulnerabilities in SNT-linked meshes.
+    * **Architecture Adjustment:** Upgrading conflict resolution logic to include **Semantic Collision Detection**. The LFMA will now perform real-time intent-integrity checks on incoming task claims from remote SNT nodes, rejecting any claim that shadowed the mission-root.
+    * **Security Impact:** Neutralizes "Shadow Rooting" where specialist agents attempt to hijack device toolsets via unauthorized recursive task injection.

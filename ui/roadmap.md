@@ -675,6 +675,11 @@
 - [ ] **[P0] Handshake Lineage Inspector**: Forensic UI for visualizing the cryptographically bound lineage of mission-initiation signals. (Added: 2026-06-26)
 - [ ] **[P0] Differential Reasoning Debugger**: Workspace for reviewing cross-framework state handoffs and DRV-redacted payloads. (Added: 2026-06-26)
 
+#### Upcoming (2026-07-25 Evolution)
+- [ ] **[P0] Attention-Locking Console**: UI for configuring ALGC-compliant pinning and visualizing non-evictable fragments. (Added: 2026-07-25)
+- [ ] **[P0] HARL Trace Inspector**: Forensic UI for reviewing full-trace hardware-attested reasoning lineages. (Added: 2026-07-25)
+- [ ] **[P0] Mesh Resumption Heatmap**: Real-time visualization of sub-millisecond context resumption across SNT nodes. (Added: 2026-07-25)
+
 #### Upcoming (2026-06-27 Evolution)
 - [ ] **[P0] ZK-Discovery Workspace**: UI for reviewing ZK-Capability Proofs and unmasking schemas after mission-handshake. (Added: 2026-06-27)
 - [ ] **[P0] CRDT Shard Monitor**: Real-time visualization of lock-free mailbox synchronization and hardware-attested conflict resolution. (Added: 2026-06-27)

@@ -59,3 +59,7 @@ The Recursive Integrity Verification (RIV) Provider is needed to establish a cry
 
 ## 7. Evolutionary Changelog
 * **2026-06-09:** Initial Document Creation.
+* **2026-07-25:** Evolution to SNT-Aware Verification (RIV v2).
+    * **Context:** Today's research on OpenClaw v3.6.2 revealed "Recursive Intent Shadowing" (RIS) vulnerabilities in P2P SNT nodes.
+    * **Architecture Adjustment:** Upgrading the Proof Merger to include **SNT-bound Device Handshakes**. RIV proofs must now be cryptographically linked to the specific hardware enclave ID of each node in the mesh, preventing "Shadow Rooting" across physical device boundaries.
+    * **Security Impact:** Neutralizes RIS by ensuring that subagent intents crossing physical nodes cannot "shadow" the parent intent without a hardware-bound re-attestation of the complete lineage.
