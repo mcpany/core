@@ -159,4 +159,33 @@ func (a *Application) mountHITL(mux *http.ServeMux) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("{}"))
 	})
+
+	// Test endpoint to seed a HITL approval
+	mux.HandleFunc("/mock/seed-hitl", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		var reqBody struct {
+			ExecutionID string `json:"execution_id"`
+			ToolName    string `json:"tool_name"`
+			RequireMFA  bool   `json:"require_mfa"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+			http.Error(w, "Bad request", http.StatusBadRequest)
+			return
+		}
+
+		globalHITLState.mu.Lock()
+		globalHITLState.approvals[reqBody.ExecutionID] = hitlApprovalRequest{
+			ExecutionID: reqBody.ExecutionID,
+			ToolName:    reqBody.ToolName,
+			RequireMFA:  reqBody.RequireMFA,
+		}
+		globalHITLState.mu.Unlock()
+
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status":"seeded"}`))
+	})
 }
