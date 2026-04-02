@@ -109,11 +109,29 @@ upstream_services:
 	}
 }
 
-func TestFileStore_CollectFilePaths_WalkError(_ *testing.T) {
-	// Mock FS to force walk error?
-	// afero.MemMapFs doesn't easily mock errors.
-	// But we can simulate a file that acts like a directory?
-	// Or use a ReadDir error.
+type mockErrorFs struct {
+	afero.Fs
+	errToReturn error
+}
+
+func (m *mockErrorFs) Stat(name string) (os.FileInfo, error) {
+	return nil, m.errToReturn
+}
+
+func (m *mockErrorFs) Open(name string) (afero.File, error) {
+	return nil, m.errToReturn
+}
+
+func TestFileStore_CollectFilePaths_WalkError(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	require.NoError(t, afero.WriteFile(fs, "/config/file.yaml", []byte(""), 0644))
+
+	mockFs := &mockErrorFs{Fs: fs, errToReturn: os.ErrPermission}
+
+	store := NewFileStore(mockFs, []string{"/config"})
+	_, err := store.collectFilePaths()
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "permission denied")
 }
 
 func TestFileStore_Load_Error(t *testing.T) {
@@ -122,6 +140,34 @@ func TestFileStore_Load_Error(t *testing.T) {
 	_, err := store.Load(context.Background())
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to collect config file paths")
+}
+
+func TestFileStore_LoadOneConfig_Errors(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	// Add an unreadable file by wrapping fs in a mock that fails ReadFile
+	mockFs := &mockErrorFs{Fs: fs, errToReturn: os.ErrPermission}
+	store := NewFileStore(mockFs, []string{"/config/file.yaml"})
+
+	// Create the file so collect doesn't fail but read fails
+	require.NoError(t, afero.WriteFile(fs, "/config/file.yaml", []byte(""), 0644))
+
+	_, err := store.loadOneConfig(context.Background(), "/config/file.yaml")
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to read config file")
+
+	// Engine error when loading a bad extension
+	require.NoError(t, afero.WriteFile(fs, "/config/file.badext", []byte("content"), 0644))
+
+	store = NewFileStore(fs, []string{"/config/file.badext"})
+	_, err = store.loadOneConfig(context.Background(), "/config/file.badext")
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "unsupported config file extension")
+
+	// Same error but with skipErrors
+	storeWithSkip := NewFileStoreWithSkipErrors(fs, []string{"/config/file.badext"})
+	cfg, errSkip := storeWithSkip.loadOneConfig(context.Background(), "/config/file.badext")
+	assert.NoError(t, errSkip) // error should be suppressed
+	assert.Nil(t, cfg)
 }
 
 func TestFileStore_Load_Engines(t *testing.T) {
@@ -262,11 +308,123 @@ global_settings:
 	assert.Equal(t, configv1.GlobalSettings_LOG_LEVEL_INFO, cfg.GetGlobalSettings().GetLogLevel())
 }
 
-func TestYamlEngine_ValidationFail(_ *testing.T) {
-	_ = afero.NewMemMapFs()
-	// Invalid config: missing required fields or constraint violation?
-	// Currently validation is weak (stubbed).
-	// But duplicate service names in different files?
+func TestApplyPathToMap(t *testing.T) {
+	// 1. "upstream" should be rewritten to "upstream_services"
+	m := make(map[string]interface{})
+	var cfg configv1.McpAnyServerConfig
+	applyPathToMap(m, []string{"upstream"}, "foo", &cfg)
+	// Because "upstream_services" is a list field, applyPathToMap converts a direct value into a list.
+	// So we expect a slice.
+	assert.Equal(t, []interface{}{"foo"}, m["upstream_services"])
+
+	// 2. Deep path setting on empty map
+	m2 := make(map[string]interface{})
+	applyPathToMap(m2, []string{"global_settings", "log_level"}, "DEBUG", &cfg)
+
+	gs, ok := m2["global_settings"].(map[string]interface{})
+	require.True(t, ok)
+	assert.Equal(t, "DEBUG", gs["log_level"])
+}
+
+func TestResolveEnvValue(t *testing.T) {
+	var cfg configv1.McpAnyServerConfig
+
+	// Test field not found fallback
+	val := resolveEnvValue(&cfg, []string{"non_existent_field"}, "value")
+	assert.Equal(t, "value", val)
+
+	// Test bool array fallback (malformed bool returns string)
+	// Experimental features might not be a bool array, let's use a known string or bool array field if any exist.
+	// The core config might not have repeated bools. But we can test parsing string.
+	val2 := resolveEnvValue(&cfg, []string{"global_settings", "disable_auth"}, "invalid_bool")
+	assert.Equal(t, "invalid_bool", val2)
+
+	// Test path continuing past a scalar (mismatch)
+	// global_settings.log_level is a scalar enum. Let's try adding another path segment.
+	val3 := resolveEnvValue(&cfg, []string{"global_settings", "log_level", "extra"}, "value")
+	assert.Equal(t, "value", val3)
+}
+
+func TestYamlEngine_ValidationFail(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	// Invalid config: passing services instead of upstream_services should throw an error
+	require.NoError(t, afero.WriteFile(fs, "/config/invalid.yaml", []byte(`
+services:
+  - name: "wrapper-test"
+    http_service:
+      address: "https://example.com"
+`), 0644))
+
+	store := NewFileStore(fs, []string{"/config/invalid.yaml"})
+	_, err := store.Load(context.Background())
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "Did you mean \"upstream_services\"?")
+}
+
+func TestYamlEngine_SkipValidation(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	require.NoError(t, afero.WriteFile(fs, "/config/schema.yaml", []byte(`
+global_settings:
+  log_level: INVALID_LOG_LEVEL
+`), 0644))
+
+	store := NewFileStore(fs, []string{"/config/schema.yaml"})
+	// Without skipValidation, validation shouldn't fail explicitly yet due to how protojson handles enums,
+	// but let's test that the flag propagates.
+	store.SetSkipValidation(true)
+	_, err := store.Load(context.Background())
+	// protojson will still fail to unmarshal an invalid enum string, returning an error.
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "invalid value for enum field")
+}
+
+func TestSplitByCommaIgnoringBraces(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected []string
+	}{
+		{"a,b,c", []string{"a", "b", "c"}},
+		{"a,\"b,c\",d", []string{"a", "\"b,c\"", "d"}}, // Comma inside quotes
+		{"a,{b,c},d", []string{"a", "{b,c}", "d"}},    // Comma inside braces
+		{"a,[b,c],d", []string{"a", "[b,c]", "d"}},    // Comma inside brackets
+		{"a,b\\,c,d", []string{"a", "b\\,c", "d"}},    // Escaped comma (or just escape sequence)
+		{"a,\"b", []string{"a", "\"b"}},               // Unclosed quote (ends string)
+		{"a,{b", []string{"a", "{b"}},                 // Unclosed brace
+		{"a,\\", []string{"a", "\\"}},                 // Trailing escape
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.input, func(t *testing.T) {
+			res := splitByCommaIgnoringBraces(tc.input)
+			assert.Equal(t, tc.expected, res)
+		})
+	}
+}
+
+func TestUnquoteCSV(t *testing.T) {
+	assert.Equal(t, "abc", unquoteCSV("\"abc\""))
+	assert.Equal(t, "abc", unquoteCSV("abc"))
+	assert.Equal(t, "\"abc", unquoteCSV("\"abc")) // Unclosed
+	assert.Equal(t, "abc\"", unquoteCSV("abc\"")) // Unstarted
+	assert.Equal(t, "ab\"c", unquoteCSV("\"ab\"\"c\"")) // Double quotes inside
+}
+
+func TestFindKeyLine(t *testing.T) {
+	yamlBytes := []byte(`
+global_settings:
+  log_level: DEBUG
+upstream_services: []
+`)
+	line := findKeyLine(yamlBytes, "log_level")
+	assert.Equal(t, 3, line)
+
+	invalidYaml := []byte(`
+global_settings:
+  log_level: DEBUG
+  - invalid
+`)
+	lineInvalid := findKeyLine(invalidYaml, "log_level")
+	assert.Equal(t, 0, lineInvalid) // Unmarshal error
 }
 
 func TestReadURL_Redirect(t *testing.T) {
