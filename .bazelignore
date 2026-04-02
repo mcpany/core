@@ -1,6 +1,5 @@
 build/
 node_modules/
-docs/
 server/build/
 server/docs/
 server/tests/integration/upstream/node_modules/
