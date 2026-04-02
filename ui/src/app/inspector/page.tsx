@@ -48,9 +48,19 @@ export default function InspectorPage() {
       isPaused,
       setIsPaused,
       clearTraces,
+      deleteTraces,
       refresh
   } = useTraces();
   const { toast } = useToast();
+
+  const handleDeleteTraces = async (ids: string[]) => {
+      try {
+          await deleteTraces(ids);
+          toast({ title: "Traces Deleted", description: `Successfully removed ${ids.length} trace(s).` });
+      } catch (e) {
+          toast({ title: "Deletion Failed", variant: "destructive", description: String(e) });
+      }
+  };
   const [seeding, setSeeding] = useState(false);
 
   // Filter State
@@ -193,7 +203,7 @@ export default function InspectorPage() {
       </div>
 
       <div className="flex-1 min-h-0">
-        <InspectorTable traces={filteredTraces} loading={loading && traces.length === 0} />
+        <InspectorTable traces={filteredTraces} loading={loading && traces.length === 0} onDeleteTraces={handleDeleteTraces} />
       </div>
     </div>
   );

@@ -2364,6 +2364,26 @@ export const apiClient = {
     },
 
     /**
+     * Deletes specific execution traces.
+     *
+     * Summary: Deletes traces by ID.
+     *
+     * @param ids - The array of trace IDs to delete.
+     * @returns A promise that resolves when the traces are deleted.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a DELETE request to /api/v1/traces/bulk.
+     */
+    deleteTraces: async (ids: string[]) => {
+        const res = await fetchWithAuth('/api/v1/traces/bulk', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ trace_ids: ids })
+        });
+        if (!res.ok) throw new Error('Failed to delete traces');
+    },
+
+    /**
      * Gets the network topology graph.
      *
      * Summary: Retrieves network topology.

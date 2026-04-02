@@ -202,6 +202,17 @@ export function useTraces(options: UseTracesOptions = {}) {
         }
     };
 
+    const deleteTraces = async (ids: string[]) => {
+        try {
+            await apiClient.deleteTraces(ids);
+            const idSet = new Set(ids);
+            setTraces(prev => prev.filter(t => !idSet.has(t.id)));
+            bufferRef.current = bufferRef.current.filter(t => !idSet.has(t.id));
+        } catch (e) {
+            console.error("Failed to delete traces", e);
+        }
+    };
+
     const refresh = () => {
         setTraces([]);
         connect();
@@ -214,6 +225,7 @@ export function useTraces(options: UseTracesOptions = {}) {
         isPaused,
         setIsPaused,
         clearTraces,
+        deleteTraces,
         refresh
     };
 }

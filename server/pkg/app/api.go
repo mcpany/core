@@ -209,6 +209,14 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
 	})
+	mux.HandleFunc("/traces/bulk", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodDelete:
+			a.handleBulkDeleteTraces()(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})
 	mux.HandleFunc("/ws/logs", a.handleLogsWS())
 	mux.HandleFunc("/ws/traces", a.handleTracesWS())
 

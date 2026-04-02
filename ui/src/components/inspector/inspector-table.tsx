@@ -20,8 +20,10 @@ import {
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { TraceDetail } from "@/components/traces/trace-detail";
-import { CheckCircle2, AlertCircle, Clock, Terminal, Globe, Database, ChevronRight, ChevronDown, Cpu, MessageSquare } from "lucide-react";
+import { CheckCircle2, AlertCircle, Clock, Terminal, Globe, Database, ChevronRight, ChevronDown, Cpu, MessageSquare, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
 import { formatDistanceToNow } from "date-fns";
 import { TableVirtuoso } from "react-virtuoso";
 
@@ -37,6 +39,10 @@ interface InspectorTableProps {
    * Whether the table is currently loading data.
    */
   loading?: boolean;
+  /**
+   * Callback to delete selected traces.
+   */
+  onDeleteTraces?: (ids: string[]) => Promise<void> | void;
 }
 
 /**
@@ -103,9 +109,46 @@ interface VisibleRow {
  * @param props.loading - Whether the data is loading.
  * @returns The rendered table component.
  */
-export function InspectorTable({ traces, loading }: InspectorTableProps) {
+export function InspectorTable({ traces, loading, onDeleteTraces }: InspectorTableProps) {
   const [selectedTrace, setSelectedTrace] = useState<Trace | null>(null);
   const [expandedSpans, setExpandedSpans] = useState<Set<string>>(new Set());
+  const [selectedTraces, setSelectedTraces] = useState<Set<string>>(new Set());
+
+  const handleSelectAll = (checked: boolean) => {
+      if (checked) {
+          setSelectedTraces(new Set(traces.map(t => t.id)));
+      } else {
+          setSelectedTraces(new Set());
+      }
+  };
+
+  const handleSelectOne = (traceId: string, checked: boolean) => {
+      setSelectedTraces(prev => {
+          const newSelected = new Set(prev);
+          if (checked) {
+              newSelected.add(traceId);
+          } else {
+              newSelected.delete(traceId);
+          }
+          return newSelected;
+      });
+  };
+
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleBulkDelete = async () => {
+      if (onDeleteTraces && selectedTraces.size > 0) {
+          setIsDeleting(true);
+          try {
+              await onDeleteTraces(Array.from(selectedTraces));
+              setSelectedTraces(new Set());
+          } finally {
+              setIsDeleting(false);
+          }
+      }
+  };
+
+  const isAllSelected = traces.length > 0 && selectedTraces.size === traces.length;
 
   const toggleExpand = (spanId: string) => {
       setExpandedSpans(prev => {
@@ -138,6 +181,16 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
 
   return (
     <>
+      {selectedTraces.size > 0 && (
+          <div className="flex items-center gap-2 p-2 bg-muted/40 rounded-md animate-in fade-in slide-in-from-top-1 duration-200 mb-4 sticky top-0 z-10 backdrop-blur-md border">
+              <span className="text-sm text-muted-foreground mr-2 font-medium px-2">{selectedTraces.size} selected</span>
+              <div className="h-4 w-px bg-border mx-1" />
+              <Button size="sm" variant="ghost" onClick={handleBulkDelete} disabled={isDeleting} className="h-8 text-red-600 hover:text-red-700 hover:bg-red-100 dark:hover:bg-red-900/20">
+                  <Trash2 className={cn("mr-2 h-4 w-4", isDeleting ? "animate-pulse" : "")} />
+                  {isDeleting ? "Deleting..." : "Delete"}
+              </Button>
+          </div>
+      )}
       <div className="rounded-md border bg-card h-full w-full overflow-hidden">
         {/*
             ⚡ BOLT: Implemented virtualization for trace table using react-virtuoso.
@@ -165,11 +218,19 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
                     TableHead: TableHeader,
                     TableBody: TableBody,
                     TableRow: ({ item, context, ...props }: any) => (
-                        <TableRow {...props} className="cursor-pointer hover:bg-muted/50" onClick={() => context.onClick(item.trace)} />
+                        <TableRow {...props} className={cn("cursor-pointer hover:bg-muted/50", selectedTraces.has(item?.trace?.id) ? "bg-muted/50" : "")} onClick={() => context.onClick(item.trace)} />
                     ),
                 }}
                 fixedHeaderContent={() => (
                     <TableRow>
+                    <TableHead className="w-[30px] pr-0 bg-card z-10">
+                        <Checkbox
+                            checked={isAllSelected}
+                            onCheckedChange={(checked) => handleSelectAll(!!checked)}
+                            aria-label="Select all"
+                            className="translate-y-[2px]"
+                        />
+                    </TableHead>
                     <TableHead className="w-[180px] bg-card z-10">Timestamp</TableHead>
                     <TableHead className="w-[50px] bg-card z-10">Type</TableHead>
                     <TableHead className="bg-card z-10">Method / Name</TableHead>
@@ -179,6 +240,16 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
                 )}
                 itemContent={(index, row: VisibleRow) => (
                     <>
+                    <TableCell className="pr-0" onClick={(e) => e.stopPropagation()}>
+                        {row.depth === 0 ? (
+                            <Checkbox
+                                checked={selectedTraces.has(row.trace.id)}
+                                onCheckedChange={(checked) => handleSelectOne(row.trace.id, !!checked)}
+                                aria-label={`Select ${row.trace.id}`}
+                                className="translate-y-[2px]"
+                            />
+                        ) : null}
+                    </TableCell>
                     <TableCell className="font-mono text-xs text-muted-foreground">
                         {row.depth === 0 ? (
                             <>

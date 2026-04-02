@@ -319,6 +319,31 @@ func (m *AuditMiddleware) ClearHistory() {
 	}
 }
 
+// DeleteTraces removes specific traces from the broadcast history.
+//
+// Summary: Deletes traces by ID.
+//
+// Parameters:
+//   - traceIDs ([]string): The IDs of the traces to delete.
+//
+// Side Effects:
+//   - Removes traces from the history in the broadcaster.
+func (m *AuditMiddleware) DeleteTraces(traceIDs []string) {
+	if m.broadcaster != nil {
+		idMap := make(map[string]struct{}, len(traceIDs))
+		for _, id := range traceIDs {
+			idMap[id] = struct{}{}
+		}
+		m.broadcaster.DeleteMessages(func(msg any) bool {
+			if entry, ok := msg.(audit.Entry); ok {
+				_, exists := idMap[entry.TraceID]
+				return exists
+			}
+			return false
+		})
+	}
+}
+
 // Broadcast manually broadcasts an audit entry, used primarily for test seeding.
 //
 // Summary: Broadcasts an audit entry.

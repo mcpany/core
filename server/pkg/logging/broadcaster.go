@@ -422,6 +422,76 @@ func (b *Broadcaster) GetHistory() []any {
 	return result
 }
 
+// DeleteMessages removes messages from the history buffer that match the given predicate.
+//
+// Parameters:
+//   - predicate (func(any) bool): The predicate function that returns true for messages to be deleted.
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - Modifies the history buffer.
+//
+// Summary: Executes DeleteMessages operation.
+//
+// Parameters:
+//   - predicate: Document parameter.
+//
+// Returns:
+//   - Document returns.
+//
+// Errors:
+//   - Document errors.
+//
+// Side Effects:
+//   - None.
+func (b *Broadcaster) DeleteMessages(predicate func(any) bool) {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+
+	count := b.limit
+	if !b.full {
+		count = b.head
+	}
+
+	if count == 0 {
+		return
+	}
+
+	newHistory := make([]any, b.limit)
+	newHead := 0
+
+	idx := 0
+	if b.full {
+		idx = b.head
+	}
+
+	for i := 0; i < count; i++ {
+		msg := b.history[idx]
+		if !predicate(msg) {
+			newHistory[newHead] = msg
+			newHead++
+		}
+		idx++
+		if idx >= b.limit {
+			idx = 0
+		}
+	}
+
+	b.history = newHistory
+	if newHead >= b.limit {
+		b.head = 0
+		b.full = true
+	} else {
+		b.head = newHead
+		b.full = false
+	}
+}
+
 // Hydrate populates the history buffer with messages. It is intended to be called at startup. Messages are NOT broadcasted to subscribers, as subscribers shouldn't exist yet, or shouldn't receive old history as "new" events.
 //
 // Parameters:
