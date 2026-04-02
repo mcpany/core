@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Recursive Shard Nesting (RSN) Hub**: (P0) Authoritative broker for hierarchical context allowing for infinite nesting of mission-root intents with hardware-attested state handoffs.
+- **Anti-Shadowing Attention Guard**: (P0) Cognitive security middleware implementing "Frequency-Aware Intent Pinning" to prevent mission-root eviction by high-frequency subagent noise.
+- **Verifiable Ephemeral Filesystem (VEF) Broker**: (P0) Advanced tool execution service providing cryptographically attested memory-mapped views and multi-agent integrity quorums for commits.
+- **Adaptive Negotiation Arbitrator (ANA)**: (P1) Efficiency service dynamically shifting bidding processes to hardware-attested capability matching to reduce swarm coordination tax.
+
+### Priority Shifts
+- **Attention-Locked Reasoning Anchors (ALRA)**: (Re-affirmed P0) Elevated with mandatory requirement for **Anti-Shadowing** frequency-aware pinning.
+- **DCA Negotiation Guard**: (Re-affirmed P0) Now elevated with mandatory **ANA** integration to neutralize negotiation drift in large meshes.
