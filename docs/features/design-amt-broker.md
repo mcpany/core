@@ -62,3 +62,11 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Neutralizing Mesh-Ticket Hijacking & QBSS Integration
+**Context:** Today's market sync revealed emergent exploits targeting "Mesh-Tickets" for session hijacking in P2P tunnels. Simultaneously, the introduction of the QBSS Provider allows for reputation-aware node verification.
+**Architecture Adjustment:**
+*   **Monotonic Ticket Binding:** Deprecating static session tickets in Section 4. Introducing hardware-attested monotonic counters for every tunnel resumption attempt.
+*   **Reputation-Gated Tunneling:** AMT Broker now queries the QBSS Provider before establishing a tunnel to a remote NodeID.
+*   **Dynamic Revocation:** Tunnels are forcefully terminated if the remote node's QBSS reputation falls below the mission-critical threshold.
+**Security Impact:** Mitigates the "Stale-Token" hijacking vector and ensures that only reputable nodes can participate in the high-trust mesh.

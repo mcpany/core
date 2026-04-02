@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Quorum-Based Skill Scoring (QBSS) Provider**: (P0) Authoritative mesh-wide reputation service that collects hardware-attested votes on tool safety.
+- **Context-Bleed Firewall (CBF)**: (P0) Advanced cognitive security middleware that performs entropy analysis to prevent mission-root leaks in high-density swarms.
+- **Hardware-Attested Intent Verification (HAIV) Adapter**: (P0) Security middleware implementing the Gemini v0.60.0 standard for TPM-signed intent continuity.
+- **Predictive Attestation Gateway**: (P1) Performance optimization service for speculatively validating tool calls based on mesh-wide reputation.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Now elevated with the requirement for mandatory **QBSS-compliant** remote node verification.
+- **Hardware-Attested Attention Locking (HAAL)**: (Re-affirmed P0) Evolving to support **CBF-compliant** entropy monitoring.
