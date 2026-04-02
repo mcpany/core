@@ -1,0 +1,52 @@
+WARNING: The following configs were expanded more than once: [remote, buildbuddy-official]. For repeatable flags, repeats are counted twice and may lead to unexpected behavior.
+INFO: Invocation ID: 52c00c75-3cc4-416e-bc07-b1693d3d7e77
+INFO: Streaming build results to: https://onehumancorp.buildbuddy.io/invocation/52c00c75-3cc4-416e-bc07-b1693d3d7e77
+INFO: Options provided by the client:
+  Inherited 'common' options: --isatty=0 --terminal_columns=80
+INFO: Reading rc options for 'coverage' from /app/.bazelrc:
+  Inherited 'build' options: --config=remote --disk_cache=~/.cache/bazel-disk-cache --action_env=CGO_ENABLED=1 --spawn_strategy=sandboxed,local --incompatible_strict_action_env --announce_rc --action_env=GEMINI_API_KEY --action_env=MCP_BUNDLE_DIR --action_env=CI
+INFO: Reading rc options for 'coverage' from /app/.bazelrc:
+  Inherited 'test' options: --config=remote --test_output=errors --build_tests_only --test_timeout=300,600,900,1800 --test_env=GEMINI_API_KEY --test_env=MCP_BUNDLE_DIR --test_env=CI --test_env=HOME --test_env=MCPANY_DEBUG --test_env=MCPANY_DANGEROUS_ALLOW_LOCAL_IPS --test_env=PATH --local_test_jobs=1
+INFO: Found applicable config definition build:remote in file /app/.bazelrc: --remote_download_all --config=buildbuddy-official --jobs=1 --local_resources=memory=2048 --local_resources=cpu=1
+INFO: Found applicable config definition common:buildbuddy-official in file /app/.bazelrc: --remote_cache=grpcs://onehumancorp.buildbuddy.io --remote_upload_local_results --remote_timeout=10m --remote_executor=grpcs://onehumancorp.buildbuddy.io --remote_cache_compression --jobs=200 --remote_local_fallback --remote_header=x-buildbuddy-api-key=vGFjlQg7X49NwoQHAfRW
+INFO: Found applicable config definition build:buildbuddy-official in file /app/.bazelrc: --bes_results_url=https://onehumancorp.buildbuddy.io/invocation/ --bes_backend=grpcs://onehumancorp.buildbuddy.io
+INFO: Found applicable config definition test:remote in file /app/.bazelrc: --local_test_jobs=1
+INFO: Found applicable config definition build:remote in file /app/.bazelrc: --remote_download_all --config=buildbuddy-official --jobs=1 --local_resources=memory=2048 --local_resources=cpu=1
+INFO: Found applicable config definition common:buildbuddy-official in file /app/.bazelrc: --remote_cache=grpcs://onehumancorp.buildbuddy.io --remote_upload_local_results --remote_timeout=10m --remote_executor=grpcs://onehumancorp.buildbuddy.io --remote_cache_compression --jobs=200 --remote_local_fallback --remote_header=x-buildbuddy-api-key=vGFjlQg7X49NwoQHAfRW
+INFO: Found applicable config definition build:buildbuddy-official in file /app/.bazelrc: --bes_results_url=https://onehumancorp.buildbuddy.io/invocation/ --bes_backend=grpcs://onehumancorp.buildbuddy.io
+INFO: Found applicable config definition test:remote in file /app/.bazelrc: --local_test_jobs=1
+WARNING: --remote_upload_local_results is set, but the remote cache does not support uploading action results or the current account is not authorized to write local results to the remote cache.
+Computing main repo mapping:
+Loading:
+Loading: 0 packages loaded
+WARNING: Build option --instrumentation_filter has changed, discarding analysis cache (this can be expensive, see https://bazel.build/advanced/performance/iteration-speed).
+Analyzing: target //server/pkg/config:config_test (0 packages loaded, 0 targets configured)
+Analyzing: target //server/pkg/config:config_test (0 packages loaded, 0 targets configured)
+
+Analyzing: target //server/pkg/config:config_test (0 packages loaded, 6047 targets configured)
+
+INFO: Analyzed target //server/pkg/config:config_test (0 packages loaded, 7034 targets configured, 31 aspect applications).
+[4 / 10] checking cached actions
+[1,211 / 1,216] GoCompilePkg server/pkg/config/config_test.internal.a; 0s disk-cache, remote-cache, linux-sandbox
+[1,212 / 1,216] [Prepa] GoCompilePkgExternal server/pkg/config/config_test_test.external.a
+[1,214 / 1,216] GoLink server/pkg/config/config_test_/config_test; 0s disk-cache, remote-cache, linux-sandbox
+[1,215 / 1,216] [Prepa] runfiles for //server/pkg/config:config_test
+[1,231 / 1,232] Testing //server/pkg/config:config_test; 0s disk-cache, remote-cache, linux-sandbox
+[1,231 / 1,232] 1 / 1 tests; Testing //server/pkg/config:config_test; 3s disk-cache, remote-cache, linux-sandbox
+INFO: LCOV coverage report is located at /home/jules/.cache/bazel/_bazel_jules/8c069df52082beee3c95ca17836fb8e2/execroot/_main/bazel-out/_coverage/_baseline_report.dat
+ and execpath is bazel-out/_coverage/_baseline_report.dat
+INFO: LCOV coverage report is located at /home/jules/.cache/bazel/_bazel_jules/8c069df52082beee3c95ca17836fb8e2/execroot/_main/bazel-out/_coverage/_coverage_report.dat
+ and execpath is bazel-out/_coverage/_coverage_report.dat
+INFO: Found 1 test target...
+Target //server/pkg/config:config_test up-to-date:
+  bazel-bin/server/pkg/config/config_test_/config_test
+INFO: Elapsed time: 17.857s, Critical Path: 13.21s
+INFO: 13 processes: 1224 action cache hit, 6 internal, 7 linux-sandbox.
+INFO: Build completed successfully, 13 total actions
+INFO:
+//server/pkg/config:config_test                                          PASSED in 3.3s
+  /home/jules/.cache/bazel/_bazel_jules/8c069df52082beee3c95ca17836fb8e2/execroot/_main/bazel-out/k8-fastbuild/testlogs/server/pkg/config/config_test/coverage.dat
+
+Executed 1 out of 1 test: 1 test passes.
+There were tests whose specified size is too big. Use the --test_verbose_timeout_warnings command line option to see which ones these are.
+INFO: Streaming build results to: https://onehumancorp.buildbuddy.io/invocation/52c00c75-3cc4-416e-bc07-b1693d3d7e77

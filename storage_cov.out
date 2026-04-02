@@ -1,0 +1,55 @@
+WARNING: The following configs were expanded more than once: [remote, buildbuddy-official]. For repeatable flags, repeats are counted twice and may lead to unexpected behavior.
+INFO: Invocation ID: 6a6c7def-c260-4ad1-86c2-18074e0be57c
+INFO: Streaming build results to: https://onehumancorp.buildbuddy.io/invocation/6a6c7def-c260-4ad1-86c2-18074e0be57c
+INFO: Options provided by the client:
+  Inherited 'common' options: --isatty=0 --terminal_columns=80
+INFO: Reading rc options for 'coverage' from /app/.bazelrc:
+  Inherited 'build' options: --config=remote --disk_cache=~/.cache/bazel-disk-cache --action_env=CGO_ENABLED=1 --spawn_strategy=sandboxed,local --incompatible_strict_action_env --announce_rc --action_env=GEMINI_API_KEY --action_env=MCP_BUNDLE_DIR --action_env=CI
+INFO: Reading rc options for 'coverage' from /app/.bazelrc:
+  Inherited 'test' options: --config=remote --test_output=errors --build_tests_only --test_timeout=300,600,900,1800 --test_env=GEMINI_API_KEY --test_env=MCP_BUNDLE_DIR --test_env=CI --test_env=HOME --test_env=MCPANY_DEBUG --test_env=MCPANY_DANGEROUS_ALLOW_LOCAL_IPS --test_env=PATH --local_test_jobs=1
+INFO: Found applicable config definition build:remote in file /app/.bazelrc: --remote_download_all --config=buildbuddy-official --jobs=1 --local_resources=memory=2048 --local_resources=cpu=1
+INFO: Found applicable config definition common:buildbuddy-official in file /app/.bazelrc: --remote_cache=grpcs://onehumancorp.buildbuddy.io --remote_upload_local_results --remote_timeout=10m --remote_executor=grpcs://onehumancorp.buildbuddy.io --remote_cache_compression --jobs=200 --remote_local_fallback --remote_header=x-buildbuddy-api-key=vGFjlQg7X49NwoQHAfRW
+INFO: Found applicable config definition build:buildbuddy-official in file /app/.bazelrc: --bes_results_url=https://onehumancorp.buildbuddy.io/invocation/ --bes_backend=grpcs://onehumancorp.buildbuddy.io
+INFO: Found applicable config definition test:remote in file /app/.bazelrc: --local_test_jobs=1
+INFO: Found applicable config definition build:remote in file /app/.bazelrc: --remote_download_all --config=buildbuddy-official --jobs=1 --local_resources=memory=2048 --local_resources=cpu=1
+INFO: Found applicable config definition common:buildbuddy-official in file /app/.bazelrc: --remote_cache=grpcs://onehumancorp.buildbuddy.io --remote_upload_local_results --remote_timeout=10m --remote_executor=grpcs://onehumancorp.buildbuddy.io --remote_cache_compression --jobs=200 --remote_local_fallback --remote_header=x-buildbuddy-api-key=vGFjlQg7X49NwoQHAfRW
+INFO: Found applicable config definition build:buildbuddy-official in file /app/.bazelrc: --bes_results_url=https://onehumancorp.buildbuddy.io/invocation/ --bes_backend=grpcs://onehumancorp.buildbuddy.io
+INFO: Found applicable config definition test:remote in file /app/.bazelrc: --local_test_jobs=1
+WARNING: --remote_upload_local_results is set, but the remote cache does not support uploading action results or the current account is not authorized to write local results to the remote cache.
+Computing main repo mapping:
+Loading:
+Loading: 0 packages loaded
+WARNING: Build option --instrumentation_filter has changed, discarding analysis cache (this can be expensive, see https://bazel.build/advanced/performance/iteration-speed).
+Analyzing: 3 targets (0 packages loaded, 0 targets configured)
+Analyzing: 3 targets (0 packages loaded, 0 targets configured)
+
+Analyzing: 3 targets (1 packages loaded, 6175 targets configured, 31 aspect applications)
+[1 / 1] no actions running
+INFO: Analyzed 3 targets (1 packages loaded, 6175 targets configured, 31 aspect applications).
+[413 / 426] [Sched] GoCompilePkg server/pkg/storage/sqlite/sqlite_test~testmain.a
+[417 / 426] GoLink server/pkg/storage/sqlite/sqlite_test_/sqlite_test; 0s disk-cache, remote-cache, linux-sandbox
+[419 / 427] GoLink server/pkg/storage/memory/memory_test_/memory_test; 0s disk-cache, remote-cache, linux-sandbox
+[420 / 427] [Prepa] runfiles for //server/pkg/storage/memory:memory_test
+[422 / 428] [Prepa] GoCompilePkgExternal server/pkg/storage/postgres/postgres_test_test.external.a
+[424 / 428] GoLink server/pkg/storage/postgres/postgres_test_/postgres_test; 1s disk-cache, remote-cache, linux-sandbox
+[443 / 446] Testing //server/pkg/storage/memory:memory_test; 0s disk-cache, remote-cache, linux-sandbox
+[445 / 446] 3 / 3 tests; Testing //server/pkg/storage/sqlite:sqlite_test; 1s disk-cache, remote-cache, linux-sandbox
+INFO: LCOV coverage report is located at /home/jules/.cache/bazel/_bazel_jules/8c069df52082beee3c95ca17836fb8e2/execroot/_main/bazel-out/_coverage/_baseline_report.dat
+ and execpath is bazel-out/_coverage/_baseline_report.dat
+INFO: LCOV coverage report is located at /home/jules/.cache/bazel/_bazel_jules/8c069df52082beee3c95ca17836fb8e2/execroot/_main/bazel-out/_coverage/_coverage_report.dat
+ and execpath is bazel-out/_coverage/_coverage_report.dat
+INFO: Found 3 test targets...
+INFO: Elapsed time: 13.156s, Critical Path: 3.84s
+INFO: 29 processes: 424 action cache hit, 12 internal, 17 linux-sandbox.
+INFO: Build completed successfully, 29 total actions
+INFO:
+//server/pkg/storage/memory:memory_test                                  PASSED in 0.5s
+  /home/jules/.cache/bazel/_bazel_jules/8c069df52082beee3c95ca17836fb8e2/execroot/_main/bazel-out/k8-fastbuild/testlogs/server/pkg/storage/memory/memory_test/coverage.dat
+//server/pkg/storage/postgres:postgres_test                              PASSED in 0.5s
+  /home/jules/.cache/bazel/_bazel_jules/8c069df52082beee3c95ca17836fb8e2/execroot/_main/bazel-out/k8-fastbuild/testlogs/server/pkg/storage/postgres/postgres_test/coverage.dat
+//server/pkg/storage/sqlite:sqlite_test                                  PASSED in 1.0s
+  /home/jules/.cache/bazel/_bazel_jules/8c069df52082beee3c95ca17836fb8e2/execroot/_main/bazel-out/k8-fastbuild/testlogs/server/pkg/storage/sqlite/sqlite_test/coverage.dat
+
+Executed 3 out of 3 tests: 3 tests pass.
+There were tests whose specified size is too big. Use the --test_verbose_timeout_warnings command line option to see which ones these are.
+INFO: Streaming build results to: https://onehumancorp.buildbuddy.io/invocation/6a6c7def-c260-4ad1-86c2-18074e0be57c
