@@ -675,6 +675,13 @@
 - [ ] **[P0] Handshake Lineage Inspector**: Forensic UI for visualizing the cryptographically bound lineage of mission-initiation signals. (Added: 2026-06-26)
 - [ ] **[P0] Differential Reasoning Debugger**: Workspace for reviewing cross-framework state handoffs and DRV-redacted payloads. (Added: 2026-06-26)
 
+#### Upcoming (2026-07-25 Evolution)
+- [ ] **[P0] Logic-Grafting Interdiction Console**: Real-time visualization of semantic hash-chaining and blocked grafting attempts in shared shards. (Added: 2026-07-25)
+- [ ] **[P0] Durable Continuity Explorer**: Visual workspace for reviewing hardware-locked mission recovery states across reboots. (Added: 2026-07-25)
+- [ ] **[P0] RRR v2 Reclamation Log**: Real-time tracker for autonomous budget reclamation and resource efficiency gains. (Added: 2026-07-25)
+- [ ] **[P0] Summarization Quorum Hub**: (2026-07-25) UI for monitoring multi-agent attestation on context compaction events.
+- [ ] **[P0] Stylometric Identity Dashboard v2**: Enhanced security workspace for visualizing multi-modal behavioral anchoring and mimicry alerts. (Added: 2026-07-25)
+
 #### Upcoming (2026-06-27 Evolution)
 - [ ] **[P0] ZK-Discovery Workspace**: UI for reviewing ZK-Capability Proofs and unmasking schemas after mission-handshake. (Added: 2026-06-27)
 - [ ] **[P0] CRDT Shard Monitor**: Real-time visualization of lock-free mailbox synchronization and hardware-attested conflict resolution. (Added: 2026-06-27)

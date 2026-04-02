@@ -1,5 +1,18 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Logic-Grafting Interceptor (LGI) Hub**: (P0) Authoritative reasoning validator utilizing fragment-level semantic hash-chaining to detect and block unauthorized reasoning branches.
+- **Durable Mission Continuity (DMC) Provider**: (P0) Advanced resumption service utilizing a TPM-bound "Continuity Seed" for hardware-locked, monotonic re-attestation across reboots.
+- **Quorum-Bound Summarization (QBS) Gateway**: (P0) Coordination service requiring multi-agent consensus before context compaction to prevent "Mission-Root Erasure."
+- **Stylometric Identity Verifier (SIV) v2**: (P0) Advanced identity service anchoring profiles to multi-modal trace history (SVG/Audio) and instruction-path entropy.
+- **Recursive Resource Reclamation (RRR) v2**: (P0) Automated economic security service for aggressive reclamation of unused token and reasoning budgets from dormant sub-missions.
+
+### Priority Shifts
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Elevated with mandatory **DMC-compliant** hardware-locked re-attestation.
+- **Stylometric Mimicry Mitigator (SMM)**: (Re-affirmed P0) Evolving into **SIV v2** to support multi-modal behavioral anchoring.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions

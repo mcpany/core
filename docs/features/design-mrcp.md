@@ -77,3 +77,11 @@ The **Mission-Root Continuity Provider (MRCP)** is an infrastructure layer for M
 *   Integrating **Epistemic Attestation** into the resumption handshake to ensure the restored reasoning path maintains high confidence scores.
 *   Introducing hardware-locked "Cold Storage" shards for mission-root intents.
 **Security Impact:** Ensures mission-root anchors remain pinned even across transient session loss, neutralizing the risk of "Context Amnesia" in multi-day swarms.
+
+### Update: 2026-07-25 - Durable Mission Continuity (DMC) Integration
+**Context:** Today's research on Gemini CLI v0.59.0 confirms that long-running missions require state recovery that survives hardware resets and full reboots.
+**Architecture Adjustment:**
+*   Implementing the **Durable Mission Continuity (DMC)** standard within MRCP.
+*   Utilizing a TPM-bound "Continuity Seed" to re-attest the mission-root identity across cold starts, independent of temporary session tokens.
+*   Introducing hardware-locked "Cold Storage" shards for mission-root intents and reasoning lineage.
+**Security Impact:** Provides a deterministic proof of mission continuity that survives environment reboots, neutralizing the risk of "Instruction Eviction" during transient system failure.

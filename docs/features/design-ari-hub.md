@@ -87,3 +87,11 @@ The Active Reasoning Interdiction (ARI) Hub evolves the existing validator into 
 * Integrating the **Reasoning Provenance Validator** into the Hash-Chain Validator in Section 4.
 * Upgrading the Semantic Consistency Engine to perform **Step-Level Provenance Checks**, ensuring that every internal reasoning step in a fragment is cryptographically signed and hash-chained.
 **Security Impact:** Prevents subagents from "grafting" malicious reasoning steps inside a seemingly valid fragment, providing 100% visibility into the cognitive path.
+
+### Update: 2026-07-25 - Accelerating Logic-Grafting Interception
+**Context:** Today's market sync revealed the official release of OpenClaw's MRLGI (Mesh-Resident Logic-Grafting Interceptor).
+**Architecture Adjustment:**
+*   Accelerating the deployment of the **Logic-Grafting Interceptor (LGI) Hub** as a core P0 component of ARI v2.
+*   Mandating real-time, fragment-level semantic hash-chaining for all shared teammate shards.
+*   Integrating the LGI Hub directly with the kernel-level memory management of the Blackboard to perform sub-millisecond interdiction.
+**Security Impact:** Neutralizes "Silent Grafting" attempts in high-speed meshes, ensuring the "Reasoning Mainline" cannot be hijacked by specialists even in low-latency coordination scenarios.
