@@ -70,3 +70,11 @@ The Active Subagent Reaper is a mandatory lifecycle management layer in MCP Any 
 * Implementing hardware-attested "Termination Proofs" to ensure absolute resource reclamation.
 * Integrating with the **Recursive Resource Reclamation (RRR)** Manager to automatically sink orphaned token budgets.
 **Security Impact:** Eliminates the risk of side-channel state pollution and unmonitored compute consumption by compromised or orphaned specialist agents.
+
+### Update: 2026-04-03 - Task-Bound Resource Quotas
+**Context:** Today's market sync on "Reasoning Intensity Fatigue" and "Ghost Reasoning" confirms that simple termination is not enough. We must enforce economic boundaries to prevent "Lifecycle Zombies" from exhausting mission budgets before they are reaped.
+**Architecture Adjustment:**
+* Integrating the **Reaper Daemon** with the **Reasoning-Budget Firewall (RBF)**.
+* Implementing "Mission-Root Budget Continuity": if a sub-mission is pruned, its remaining token budget is automatically credited back to the parent mission root.
+* Subagents now operate under "Micro-Leases": if a lease is not renewed by a `Heartbeat` AND a verified `IGD-Proof`, the Reaper triggers immediate resource revocation.
+**Security Impact:** Prevents "Budget Hijacking" by subagents that attempt to remain active after their specific task has been superseded.

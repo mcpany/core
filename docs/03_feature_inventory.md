@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-04-03] (Iteration 2) Updates
+
+### Proposed Additions
+- **Intent-Gated Delegation (IGD) Validator**: (P0) Security middleware mandating hardware-attested proof that subagent tasks directly serve an authorized parent intent, neutralizing "Ghost Reasoning."
+- **Provider-Agnostic Context Normalizer (PACN)**: (P1) Lifecycle extension for the ContextEngine that normalizes summarization and truncation signals across disparate LLM providers (e.g., Claude, Ollama, Gemini).
+- **Burst-Mode Trust Lease Broker**: (P0) High-performance extension for the FPIR provider that issues short-lived trust leases for high-frequency reasoning bursts to mitigate "Reasoning Intensity Fatigue."
+
+### Priority Shifts
+- **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Elevated to critical status for resolving performance bottlenecks in high-frequency Agent Teams.
+- **Active Subagent Reaper**: (Re-affirmed P0) Now elevated with mandatory **IGD-compliant** mission tracking.
