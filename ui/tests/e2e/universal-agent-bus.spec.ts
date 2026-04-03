@@ -1,12 +1,27 @@
 import { test, expect } from '@playwright/test';
+import { seedUser, cleanupUser, seedCollection, cleanupCollection } from './test-data';
 
 test.describe('Universal Agent Bus', () => {
-  test('should load the dashboard and display all feature cards', async ({ page }) => {
-    // 1. Perform a real user interaction to navigate to the page
-    // Assuming the user is not authenticated or there is a public route
-    await page.goto('/');
+  test.beforeEach(async ({ request, page }) => {
+      await seedCollection('mcpany-system', request);
+      await seedUser(request, "e2e-admin-uab");
+      // Login
+      await page.goto('/login');
+      await page.waitForLoadState('networkidle');
+      await page.fill('input[name="username"]', "e2e-admin-uab");
+      await page.fill('input[name="password"]', 'password');
+      await Promise.all([
+        page.waitForURL('/', { timeout: 30000 }),
+        page.click('button[type="submit"]', { force: true })
+      ]);
+  });
 
-    // 2. Navigate via sidebar if possible, else go directly to the Universal Agent Bus page
+  test.afterEach(async ({ request }) => {
+      await cleanupCollection('mcpany-system', request);
+  });
+
+  test('should load the dashboard and display all feature cards', async ({ page }) => {
+    // 1. Navigate directly to the Universal Agent Bus page after login
     await page.goto('/universal-agent-bus');
 
     // Verify title and description are present.
@@ -39,14 +54,15 @@ test.describe('Universal Agent Bus', () => {
     await page.goto('/universal-agent-bus');
 
     // 3. Verify the timeline elements appear instead of the empty state
-    await expect(page.locator('text=orchestrator-task')).toBeVisible();
-    await expect(page.locator('text=search-tool')).toBeVisible();
+    // Note: use wait condition or timeout because ws takes a moment to connect
+    await expect(page.getByText('orchestrator-task')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('search-tool')).toBeVisible({ timeout: 10000 });
 
     // 4. Expand one of the trace elements to verify details
     const firstTraceRow = page.locator('.relative.group').first();
     await firstTraceRow.click();
 
     // 5. Verify the formatted JSON payload exists in the expanded view
-    await expect(page.locator('pre code')).toContainText('query');
+    await expect(page.locator('pre code').first()).toContainText('query', { timeout: 10000 });
   });
 });
