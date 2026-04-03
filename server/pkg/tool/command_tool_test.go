@@ -320,15 +320,14 @@ func TestCommandTool_Execute_EdgeCases(t *testing.T) {
 			Name: proto.String("test-tool"),
 		}.Build()
 
-		policies := []*configv1.Policy{
-			{
-				Action: configv1.Policy_ACTION_DENY,
-				Condition: &configv1.Condition{
-					Rule: &configv1.Condition_Cel{
-						Cel: "true",
-					},
+		policies := []*configv1.CallPolicy{
+			(&configv1.CallPolicy_builder{
+				Rules: []*configv1.CallPolicyRule{
+					(&configv1.CallPolicyRule_builder{
+						Action: configv1.CallPolicy_DENY.Enum(),
+					}).Build(),
 				},
-			},
+			}).Build(),
 		}
 
 		cmdTool := tool.NewCommandTool(
