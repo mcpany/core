@@ -91,8 +91,10 @@ function ExpandableRow({
 
   const hasDetails =
     (isTool && (item.inputSchema || item.input_schema)) ||
-    (isPrompt && item.arguments && item.arguments.length > 0) ||
-    (isResource && item.uriTemplate);
+    (isPrompt &&
+      (item.arguments || item.arg || item.args) &&
+      (item.arguments || item.arg || item.args).length > 0) ||
+    (isResource && (item.uriTemplate || item.uri_template));
 
   return (
     <>
@@ -156,22 +158,24 @@ function ExpandableRow({
                   />
                 </div>
               )}
-              {isPrompt && item.arguments && item.arguments.length > 0 && (
-                <div className="space-y-2">
-                  <h4 className="text-sm font-semibold flex items-center gap-2 text-muted-foreground">
-                    Arguments
-                  </h4>
-                  <JsonView data={item.arguments} />
-                </div>
-              )}
-              {isResource && item.uriTemplate && (
+              {isPrompt &&
+                (item.arguments || item.arg || item.args) &&
+                (item.arguments || item.arg || item.args).length > 0 && (
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-semibold flex items-center gap-2 text-muted-foreground">
+                      Arguments
+                    </h4>
+                    <JsonView data={item.arguments || item.arg || item.args} />
+                  </div>
+                )}
+              {isResource && (item.uriTemplate || item.uri_template) && (
                 <div className="space-y-2 text-sm">
                   <div className="flex flex-col gap-1">
                     <span className="font-semibold text-muted-foreground">
                       URI Template
                     </span>
                     <code className="bg-muted px-2 py-1 rounded-md text-xs">
-                      {item.uriTemplate}
+                      {item.uriTemplate || item.uri_template}
                     </code>
                   </div>
                   {item.mimeType && (
