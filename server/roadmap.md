@@ -374,6 +374,10 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
 
+#### Upcoming (2026-04-03 Evolution)
+*   **[P0] Repository-Gated Configuration (RGC)**: Implementation of authoritative attestation for project-local configurations to neutralize mission-root hijacking (CVE-2026-21852 defense). (Added: 2026-04-03)
+*   **[P0] Context-Aware Injection Shield (CAIS)**: Implementation of real-time semantic layer-7 inspection of tool interactions to block "Prompt-to-Command" exploits. (Added: 2026-04-03)
+
 #### Upcoming (2026-04-01 Evolution)
 *   **[P0] Agentic Entropy Monitor (AEM)**: Implementation of real-time reasoning entropy scoring and coherence-based interdiction. (Added: 2026-04-01)
 *   **[P0] GC-Immune Reasoning Anchors**: Advanced context pinning to prevent eviction of mission-root anchors during aggressive context-window GC. (Added: 2026-04-01)

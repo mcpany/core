@@ -203,6 +203,10 @@
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
 
+#### Upcoming (2026-04-03 Evolution)
+- [ ] **[P0] RGC Attestation Portal**: Interactive workspace for reviewing and TPM-signing project-local configuration blocks. (Added: 2026-04-03)
+- [ ] **[P0] Injection Shield Alert Center**: (Re-affirmed P0) UI for reviewing semantically flagged tool interactions and blocked "Prompt-to-Command" attempts. (Added: 2026-04-03)
+
 #### Upcoming (2026-04-01 Evolution)
 - [ ] **[P0] Agentic Entropy Scoreboard**: Real-time dashboard for visualizing subagent reasoning entropy and coherence alerts. (Added: 2026-04-01)
 - [ ] **[P0] GC-Immune Anchor Visualizer**: Visual indicator for pinned reasoning anchors and protection status against CWGC. (Added: 2026-04-01)

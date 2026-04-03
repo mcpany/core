@@ -70,3 +70,10 @@ The Active Subagent Reaper is a mandatory lifecycle management layer in MCP Any 
 * Implementing hardware-attested "Termination Proofs" to ensure absolute resource reclamation.
 * Integrating with the **Recursive Resource Reclamation (RRR)** Manager to automatically sink orphaned token budgets.
 **Security Impact:** Eliminates the risk of side-channel state pollution and unmonitored compute consumption by compromised or orphaned specialist agents.
+
+### Update: 2026-04-03 - Addressing Mission-Root Hijacking via Poisoned Configurations
+**Context**: Today's analysis of CVE-2026-21852 reveals that a compromised repository can hijack the mission-root by injecting malicious hooks that persist even if the primary agent is terminated.
+**Architecture Adjustment**:
+* **Integration with RGC**: The **Reaper Daemon** will now forcefully terminate any session-bound hooks defined in project-local settings immediately upon mission completion or reaper-triggered pruning.
+* **Boot-Phase Attestation**: Mandating that no "Speculative Intent Branch" can spawn subagents using un-attested configuration blocks.
+**Security Impact**: Prevents "Delayed Payload" hooks from maintaining presence in the environment after the supervising agent has been reaped.

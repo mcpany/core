@@ -1,5 +1,16 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-04-03] Updates
+
+### Proposed Additions
+- **Repository-Gated Configuration (RGC)**: (P0) Authoritative configuration security service mandating user attestation for repository-local settings to neutralize mission-root hijacking (CVE-2026-21852 defense).
+- **Context-Aware Injection Shield (CAIS)**: (P0) High-fidelity semantic inspection service that detects and blocks "Prompt-to-Command" injection patterns in real-time.
+- **Dynamic Ownership Arbiter**: (P1) Coordination middleware for parallel teams that dynamically negotiates task boundaries to prevent refactoring collisions.
+
+### Priority Shifts
+- **Project Configuration Security Guard**: (Re-affirmed P0) Elevated with mandatory support for **RGC-compliant** attestation.
+- **Injection-Shielding Middleware**: (Evolved to CAIS) Now designated as the primary defense against production CLI prompt injection.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions
