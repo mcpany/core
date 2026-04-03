@@ -8,6 +8,21 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
+/**
+ * Summary: Executes or defines LazyMcpDashboard.
+ *
+ * Parameters:
+ *   - various: See signature.
+ *
+ * Returns:
+ *   various: See signature.
+ *
+ * Errors:
+ *   - None explicitly documented.
+ *
+ * Side Effects:
+ *   - None explicitly documented.
+ */
 export function LazyMcpDashboard() {
     const [query, setQuery] = useState("");
     const [results, setResults] = useState<{name: string, score: number}[]>([]);

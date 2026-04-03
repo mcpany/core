@@ -17,6 +17,21 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Summary: Executes or defines DiagnosticResult.
+ *
+ * Parameters:
+ *   - various: See signature.
+ *
+ * Returns:
+ *   various: See signature.
+ *
+ * Errors:
+ *   - None explicitly documented.
+ *
+ * Side Effects:
+ *   - None explicitly documented.
+ */
 export interface DiagnosticResult {
   category: "network" | "auth" | "configuration" | "protocol" | "unknown";
   title: string;

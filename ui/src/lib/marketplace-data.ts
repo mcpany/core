@@ -20,6 +20,21 @@
 
 
 
+/**
+ * Summary: Executes or defines MarketplaceItemConfig.
+ *
+ * Parameters:
+ *   - various: See signature.
+ *
+ * Returns:
+ *   various: See signature.
+ *
+ * Errors:
+ *   - None explicitly documented.
+ *
+ * Side Effects:
+ *   - None explicitly documented.
+ */
 export interface MarketplaceItemConfig {
   command: string;
   args: string[];

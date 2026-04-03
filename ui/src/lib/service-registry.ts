@@ -17,6 +17,21 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Summary: Executes or defines ServiceRegistryItem.
+ *
+ * Parameters:
+ *   - various: See signature.
+ *
+ * Returns:
+ *   various: See signature.
+ *
+ * Errors:
+ *   - None explicitly documented.
+ *
+ * Side Effects:
+ *   - None explicitly documented.
+ */
 export interface ServiceRegistryItem {
   id: string;
   name: string;

@@ -17,6 +17,21 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Summary: Executes or defines STACK_CONFIG_SCHEMA.
+ *
+ * Parameters:
+ *   - various: See signature.
+ *
+ * Returns:
+ *   various: See signature.
+ *
+ * Errors:
+ *   - None explicitly documented.
+ *
+ * Side Effects:
+ *   - None explicitly documented.
+ */
 export const STACK_CONFIG_SCHEMA = {
   uri: "http://mcp-any/stack-config.json",
   fileMatch: ["*"],

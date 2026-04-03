@@ -17,6 +17,21 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Summary: Executes or defines Severity.
+ *
+ * Parameters:
+ *   - various: See signature.
+ *
+ * Returns:
+ *   various: See signature.
+ *
+ * Errors:
+ *   - None explicitly documented.
+ *
+ * Side Effects:
+ *   - None explicitly documented.
+ */
 export type Severity = "critical" | "warning" | "info";
 /**
  * Summary: Document AlertStatus
@@ -82,6 +97,21 @@ export interface Alert {
  * Alert type definition.
  */
 
+/**
+ * Summary: Executes or defines AlertRule.
+ *
+ * Parameters:
+ *   - various: See signature.
+ *
+ * Returns:
+ *   various: See signature.
+ *
+ * Errors:
+ *   - None explicitly documented.
+ *
+ * Side Effects:
+ *   - None explicitly documented.
+ */
 export interface AlertRule {
   id: string;
   name: string;
