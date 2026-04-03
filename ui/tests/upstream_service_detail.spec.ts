@@ -111,64 +111,37 @@ test.describe("Upstream Service Detail Page", () => {
     const service = await response.json();
     expect(service.priority).toBe(5);
   });
-});
 
-test("expands tool row to view schema in DefinitionsTable", async ({
-  page,
-}) => {
-  await page.goto(`/service/e2e-detail-test-service`);
-
-  // Wait for the page to load
-  await expect(
-    page.getByRole("heading", { name: serviceName, exact: false }),
-  ).toBeVisible({ timeout: 10000 });
-
-  // Find the example_tool row
-  const toolRow = page.locator("tr").filter({ hasText: "example_tool" });
-  await expect(toolRow).toBeVisible();
-
-  // Click the expand button (chevron)
-  const expandButton = toolRow.locator("button");
-  await expandButton.click();
-
-  // Verify the expanded content shows the schema field "test_param"
-  await expect(page.getByText("test_param")).toBeVisible();
-
-  // Optional: test prompt and resource expansion
-  const promptRow = page.locator("tr").filter({ hasText: "example_prompt" });
-  await promptRow.locator("button").click();
-  await expect(page.getByText("arg1")).toBeVisible();
-
-  const resourceRow = page
-    .locator("tr")
-    .filter({ hasText: "example_resource" });
-  await resourceRow.locator("button").click();
-  await expect(page.getByText("file:///test/{name}.txt")).toBeVisible();
-
-  test('expands tool row to view schema in DefinitionsTable', async ({ page }) => {
+  test("expands tool row to view schema in DefinitionsTable", async ({
+    page,
+  }) => {
     await page.goto(`/service/${serviceName}`);
 
     // Wait for the page to load
-    await expect(page.getByRole("heading", { name: serviceName, exact: false })).toBeVisible({ timeout: 10000 });
+    await expect(
+      page.getByRole("heading", { name: serviceName, exact: false }),
+    ).toBeVisible({ timeout: 10000 });
 
     // Find the example_tool row
-    const toolRow = page.locator('tr').filter({ hasText: 'example_tool' });
+    const toolRow = page.locator("tr").filter({ hasText: "example_tool" });
     await expect(toolRow).toBeVisible();
 
     // Click the expand button (chevron)
-    const expandButton = toolRow.locator('button');
+    const expandButton = toolRow.locator("button");
     await expandButton.click();
 
     // Verify the expanded content shows the schema field "test_param"
-    await expect(page.getByText('test_param')).toBeVisible();
+    await expect(page.getByText("test_param")).toBeVisible();
 
     // Optional: test prompt and resource expansion
-    const promptRow = page.locator('tr').filter({ hasText: 'example_prompt' });
-    await promptRow.locator('button').click();
-    await expect(page.getByText('arg1')).toBeVisible();
+    const promptRow = page.locator("tr").filter({ hasText: "example_prompt" });
+    await promptRow.locator("button").click();
+    await expect(page.getByText("arg1")).toBeVisible();
 
-    const resourceRow = page.locator('tr').filter({ hasText: 'example_resource' });
-    await resourceRow.locator('button').click();
-    await expect(page.getByText('file:///test/{name}.txt')).toBeVisible();
+    const resourceRow = page
+      .locator("tr")
+      .filter({ hasText: "example_resource" });
+    await resourceRow.locator("button").click();
+    await expect(page.getByText("file:///test/{name}.txt")).toBeVisible();
   });
 });
