@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Collective Intent Mirror (CIM) Broker**: (P0) Authoritative coherence service requiring a multi-agent quorum to attest to the mission-root state before context pruning.
+- **Dynamic Sandbox Sharding (DSS) Adapter**: (P0) Kernel-level resource management layer for spawning isolated sub-sandboxes with hardware-enforced quotas.
+- **Side-Channel-Immune Handshake Provider**: (P0) Security middleware injecting timing jitter and normalizing heartbeats for P2P agent tunnels.
+
+### Priority Shifts
+- **Quorum-Bound Summarization (QBS) Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **CIM** integration.
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with the requirement for mandatory **Side-Channel-Immune** handshakes.
