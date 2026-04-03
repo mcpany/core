@@ -1030,3 +1030,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-04-03 Evolution - v2)
+*   **[P0] Active Subagent Reaper**: authoritative lifecycle monitor to terminate "Ghost" subagents and purge orphaned Blackboard state (Added: 2026-04-03).
+*   **[P0] Structural Metadata Sovereignty**: middleware for real-time instruction interdiction in JSON-RPC schemas (Added: 2026-04-03).
+*   **[P0] High-Speed Negotiation Broker**: hardware-accelerated auctioning bus for subagent tool bidding (Added: 2026-04-03).
+*   **[P1] Intent-Leased Shadow Tables**: transactional Blackboard isolation for speculative branches (Added: 2026-04-03).

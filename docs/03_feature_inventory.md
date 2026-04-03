@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-04-03] Updates
+
+### Proposed Additions
+- **Active Subagent Reaper**: (P0) Authoritative lifecycle service that forcefully terminates "Ghost" subagents and purges orphaned Blackboard state.
+- **Structural Metadata Sanitizer**: (P0) Security middleware performing real-time instruction interdiction in JSON-RPC schemas to prevent context poisoning.
+- **High-Speed Negotiation Broker (HSNB)**: (P0) Hardware-accelerated auctioning bus for subagent tool bidding, neutralizing the DCA negotiation tax.
+- **Intent-Leased Shadow Tables**: (P1) Transactional Blackboard extension that isolates speculative branch writes until mission commitment.
+
+### Priority Shifts
+- **DCA Auction Broker**: (Re-affirmed P1) Designated as the primary integration point for the new **HSNB** acceleration layer.
+- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Elevated with mandatory support for **Intent-Leased Shadow Tables**.

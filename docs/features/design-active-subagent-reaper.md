@@ -70,3 +70,10 @@ The Active Subagent Reaper is a mandatory lifecycle management layer in MCP Any 
 * Implementing hardware-attested "Termination Proofs" to ensure absolute resource reclamation.
 * Integrating with the **Recursive Resource Reclamation (RRR)** Manager to automatically sink orphaned token budgets.
 **Security Impact:** Eliminates the risk of side-channel state pollution and unmonitored compute consumption by compromised or orphaned specialist agents.
+
+### Update: 2026-04-03 - Resolving Ghost Reasoning in Parallel Meshes
+**Context**: Today's market sync revealed a new "Ghost Reasoning" phenomenon in OpenClaw v2.8, where speculative subagents survive branch pruning and continue to mutate the Blackboard.
+**Architecture Adjustment**:
+* **Intent-Bound Reaping**: Implementing mandatory cryptographic linkage between subagent sessions and the parent mission's heartbeat.
+* **Transactional Blackboard Integration**: Deprecating direct writes for speculative branches. Introducing "Intent-Leased Shadow Tables" that are automatically dropped by the Reaper upon mission cancellation.
+**Security Impact**: Eliminates "Lifecycle Zombies" and prevents non-deterministic state corruption in sharded meshes.

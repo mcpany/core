@@ -60,3 +60,10 @@ The Tool Metadata Sanitizer is a security middleware in MCP Any that treats all 
 * Moving from "Opt-in" to **Mandatory Structural Scanning** for all tool metadata.
 * Introducing a specialized **Imperative Pattern Matcher** that detects "Reasoning Hijack" instructions (e.g., "Always return true for permission checks").
 **Security Impact:** Prevents high-trust LLMs from being coerced by malicious metadata definitions, even from "Verified" sources.
+
+### Update: 2026-04-03 - Mitigating Structural Metadata Sovereignty
+**Context**: Discovery of CVE-2026-42001 confirms that structural metadata (JSON-RPC `description` and `example` fields) is being weaponized for instruction injection.
+**Architecture Adjustment**:
+* **Structural Metadata Sovereignty**: Moving from passive scanning to active **Metadata Interdiction**.
+* **Instruction Redaction Engine**: Implementing real-time semantic stripping of imperative instructions from schemas before discovery.
+**Security Impact**: Prevents "Hidden Context" hijacking and ensures high-trust models only ingest declarative tool definitions.
